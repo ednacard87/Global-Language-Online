@@ -1,0 +1,683 @@
+{
+  "entities": {
+    "Student": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Student",
+      "type": "object",
+      "description": "Represents a student registered in the EduCentral educational platform.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Student entity."
+        },
+        "name": {
+          "type": "string",
+          "description": "The full name of the student."
+        },
+        "email": {
+          "type": "string",
+          "description": "The email address of the student.",
+          "format": "email"
+        },
+        "dateJoined": {
+          "type": "string",
+          "description": "The date and time when the student registered on the platform.",
+          "format": "date-time"
+        },
+        "profileImageUrl": {
+          "type": "string",
+          "description": "URL to the student's profile picture.",
+          "format": "uri"
+        },
+        "lastLoginDate": {
+          "type": "string",
+          "description": "The date of the user's last login, in YYYY-MM-DD format.",
+          "format": "date"
+        },
+        "currentStreak": {
+          "type": "number",
+          "description": "The current consecutive day login streak."
+        },
+        "role": {
+            "type": "string",
+            "description": "The role of the user.",
+            "enum": ["admin", "student"],
+            "default": "student"
+        },
+        "selectedCourse": {
+            "type": "string",
+            "description": "The course the student has registered for.",
+            "enum": ["ingles", "espanol", "kids"]
+        },
+        "isBlocked": {
+            "type": "boolean",
+            "description": "Indicates whether the student is blocked from accessing the platform.",
+            "default": false
+        },
+        "isDeleted": {
+            "type": "boolean",
+            "description": "Indicates whether the student has been soft-deleted.",
+            "default": false
+        },
+        "progress": {
+            "type": "object",
+            "description": "Progress of the student in different courses, stored as key-value pairs where the key is the course/lesson ID and the value is the percentage.",
+            "additionalProperties": {
+                "type": "number"
+            },
+            "default": {}
+        },
+        "tasks": {
+          "type": "array",
+          "description": "A list of personal to-do tasks for the student.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "text": {
+                "type": "string"
+              },
+              "done": {
+                "type": "boolean"
+              }
+            },
+            "required": ["id", "text", "done"]
+          },
+          "default": []
+        },
+        "lessonProgress": {
+            "type": "object",
+            "description": "Stores the completion status of individual lessons and paths as complex objects.",
+            "additionalProperties": true,
+            "default": {}
+        },
+        "unlockedCourses": {
+            "type": "array",
+            "description": "An array of course codes (e.g., 'a1', 'a2') that are unlocked for the student.",
+            "items": {
+                "type": "string"
+            },
+            "default": []
+        },
+        "unlockedQuizzes": {
+            "type": "object",
+            "description": "Indicates which quizzes are unlocked for the student.",
+            "properties": {
+                "quiz1": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "quiz2": {
+                    "type": "boolean",
+                    "default": false
+                }
+            },
+            "default": {
+                "quiz1": false,
+                "quiz2": false
+            }
+        },
+        "unlockedClasses": {
+            "type": "array",
+            "description": "An array of class codes (e.g., 'a1-2', 'a2-1') that are unlocked for the student.",
+            "items": {
+                "type": "string"
+            },
+            "default": []
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "email",
+        "dateJoined",
+        "role",
+        "selectedCourse"
+      ]
+    },
+    "Instructor": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Instructor",
+      "type": "object",
+      "description": "Represents an instructor teaching courses on the EduCentral platform.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Instructor entity."
+        },
+        "name": {
+          "type": "string",
+          "description": "The full name of the instructor."
+        },
+        "email": {
+          "type": "string",
+          "description": "The email address of the instructor.",
+          "format": "email"
+        },
+        "bio": {
+          "type": "string",
+          "description": "A short biography or description of the instructor."
+        },
+        "profileImageUrl": {
+          "type": "string",
+          "description": "URL to the instructor's profile picture.",
+          "format": "uri"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "email"
+      ]
+    },
+    "Course": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Course",
+      "type": "object",
+      "description": "Represents a course offered on the EduCentral platform.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Course entity."
+        },
+        "title": {
+          "type": "string",
+          "description": "The title or name of the course."
+        },
+        "description": {
+          "type": "string",
+          "description": "A detailed description of the course content and objectives."
+        },
+        "instructorId": {
+          "type": "string",
+          "description": "Reference to the Instructor teaching this course. (Relationship: Instructor 1:N Course)"
+        },
+        "startDate": {
+          "type": "string",
+          "description": "The start date of the course.",
+          "format": "date"
+        },
+        "endDate": {
+          "type": "string",
+          "description": "The end date of the course.",
+          "format": "date"
+        },
+        "thumbnailUrl": {
+          "type": "string",
+          "description": "URL to a thumbnail image representing the course.",
+          "format": "uri"
+        },
+        "courseCode": {
+          "type": "string",
+          "description": "A unique alphanumeric code for the course."
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "description",
+        "instructorId",
+        "startDate",
+        "endDate",
+        "courseCode"
+      ]
+    },
+    "Lesson": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Lesson",
+      "type": "object",
+      "description": "Represents a single lesson or module within a course.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Lesson entity."
+        },
+        "courseId": {
+          "type": "string",
+          "description": "Reference to the Course this lesson belongs to. (Relationship: Course 1:N Lesson)"
+        },
+        "title": {
+          "type": "string",
+          "description": "The title of the lesson."
+        },
+        "description": {
+          "type": "string",
+          "description": "A brief description of the lesson content."
+        },
+        "order": {
+          "type": "number",
+          "description": "The sequential order of the lesson within its course."
+        },
+        "contentUrl": {
+          "type": "string",
+          "description": "URL to the actual lesson content (e.g., video, document, interactive module).",
+          "format": "uri"
+        }
+      },
+      "required": [
+        "id",
+        "courseId",
+        "title",
+        "order"
+      ]
+    },
+    "Enrollment": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Enrollment",
+      "type": "object",
+      "description": "Represents a student's enrollment in a specific course, tracking their progress.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Enrollment entity."
+        },
+        "studentId": {
+          "type": "string",
+          "description": "Reference to the Student enrolled. (Relationship: Student 1:N Enrollment)"
+        },
+        "courseId": {
+          "type": "string",
+          "description": "Reference to the Course the student is enrolled in. (Relationship: Course 1:N Enrollment)"
+        },
+        "enrollmentDate": {
+          "type": "string",
+          "description": "The date and time when the student enrolled in the course.",
+          "format": "date-time"
+        },
+        "completionPercentage": {
+          "type": "number",
+          "description": "The current percentage of the course completed by the student (0-100)."
+        },
+        "status": {
+          "type": "string",
+          "description": "The current status of the student's enrollment (e.g., 'Active', 'Completed', 'Dropped')."
+        },
+        "lastAccessedDate": {
+          "type": "string",
+          "description": "The last date and time the student accessed this course.",
+          "format": "date-time"
+        },
+        "currentOverallGrade": {
+          "type": "number",
+          "description": "The student's current overall grade in the course (e.g., 85.5)."
+        }
+      },
+      "required": [
+        "id",
+        "studentId",
+        "courseId",
+        "enrollmentDate",
+        "completionPercentage",
+        "status"
+      ]
+    },
+    "Assignment": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Assignment",
+      "type": "object",
+      "description": "Represents an assignment or task given to students within a lesson or course.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Assignment entity."
+        },
+        "lessonId": {
+          "type": "string",
+          "description": "Reference to the Lesson this assignment belongs to. (Relationship: Lesson 1:N Assignment)"
+        },
+        "title": {
+          "type": "string",
+          "description": "The title or name of the assignment."
+        },
+        "description": {
+          "type": "string",
+          "description": "Detailed instructions or description for the assignment."
+        },
+        "dueDate": {
+          "type": "string",
+          "description": "The date and time when the assignment is due.",
+          "format": "date-time"
+        },
+        "maxPoints": {
+          "type": "number",
+          "description": "The maximum points obtainable for this assignment."
+        },
+        "submissionType": {
+          "type": "string",
+          "description": "The expected type of submission (e.g., 'Text', 'File Upload', 'Quiz')."
+        }
+      },
+      "required": [
+        "id",
+        "lessonId",
+        "title",
+        "dueDate",
+        "maxPoints",
+        "submissionType"
+      ]
+    },
+    "Submission": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Submission",
+      "type": "object",
+      "description": "Records a student's submission for a particular assignment.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Submission entity."
+        },
+        "assignmentId": {
+          "type": "string",
+          "description": "Reference to the Assignment this submission is for. (Relationship: Assignment 1:N Submission)"
+        },
+        "studentId": {
+          "type": "string",
+          "description": "Reference to the Student who made the submission. (Relationship: Student 1:N Submission)"
+        },
+        "submissionDate": {
+          "type": "string",
+          "description": "The date and time when the submission was made.",
+          "format": "date-time"
+        },
+        "submittedContentUrl": {
+          "type": "string",
+          "description": "URL to the actual submitted content (e.g., a document file, a link to an external project).",
+          "format": "uri"
+        },
+        "grade": {
+          "type": "number",
+          "description": "The score or grade received for this submission."
+        },
+        "feedback": {
+          "type": "string",
+          "description": "Instructor's feedback on the submission."
+        },
+        "isGraded": {
+          "type": "boolean",
+          "description": "Indicates whether the submission has been graded."
+        }
+      },
+      "required": [
+        "id",
+        "assignmentId",
+        "studentId",
+        "submissionDate",
+        "isGraded"
+      ]
+    },
+    "StudySession": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "StudySession",
+      "type": "object",
+      "description": "Records a period of time a student spent studying, for performance analysis.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the StudySession entity."
+        },
+        "studentId": {
+          "type": "string",
+          "description": "Reference to the Student who conducted the study session. (Relationship: Student 1:N StudySession)"
+        },
+        "courseId": {
+          "type": "string",
+          "description": "Optional reference to the Course that was studied during this session. (Relationship: Course 1:N StudySession)"
+        },
+        "lessonId": {
+          "type": "string",
+          "description": "Optional reference to the Lesson that was studied during this session. (Relationship: Lesson 1:N StudySession)"
+        },
+        "startTime": {
+          "type": "string",
+          "description": "The start date and time of the study session.",
+          "format": "date-time"
+        },
+        "endTime": {
+          "type": "string",
+          "description": "The end date and time of the study session.",
+          "format": "date-time"
+        },
+        "durationMinutes": {
+          "type": "number",
+          "description": "The duration of the study session in minutes."
+        },
+        "notes": {
+          "type": "string",
+          "description": "Any notes or reflections from the student about the study session."
+        }
+      },
+      "required": [
+        "id",
+        "studentId",
+        "startTime",
+        "endTime",
+        "durationMinutes"
+      ]
+    },
+    "Achievement": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Achievement",
+      "type": "object",
+      "description": "Records a significant accomplishment or milestone achieved by a student.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Achievement entity."
+        },
+        "studentId": {
+          "type": "string",
+          "description": "Reference to the Student who achieved this milestone. (Relationship: Student 1:N Achievement)"
+        },
+        "title": {
+          "type": "string",
+          "description": "The title or name of the achievement (e.g., 'Completed Module 1', 'Top Scorer')."
+        },
+        "description": {
+          "type": "string",
+          "description": "A detailed description of what the achievement entails."
+        },
+        "achievedDate": {
+          "type": "string",
+          "description": "The date and time when the achievement was accomplished.",
+          "format": "date-time"
+        },
+        "type": {
+          "type": "string",
+          "description": "The category or type of achievement (e.g., 'Course Completion', 'Grade Milestone', 'Badge Earned')."
+        },
+        "relatedEntityId": {
+          "type": "string",
+          "description": "Optional reference to an entity related to the achievement (e.g., courseId for course completion)."
+        }
+      },
+      "required": [
+        "id",
+        "studentId",
+        "title",
+        "achievedDate",
+        "type"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/students/{studentId}",
+        "definition": {
+          "entityName": "Student",
+          "schema": {
+            "$ref": "#/backend/entities/Student"
+          },
+          "description": "Stores individual student profiles. The document ID `{studentId}` MUST correspond to the authenticated user's UID (`request.auth.uid`). This data is primarily private to the student, with limited read access for related instructors.",
+          "params": [
+            {
+              "name": "studentId",
+              "description": "The unique identifier of the student, matching the Firebase Auth UID."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/instructors/{instructorId}",
+        "definition": {
+          "entityName": "Instructor",
+          "schema": {
+            "$ref": "#/backend/entities/Instructor"
+          },
+          "description": "Stores individual instructor profiles. The document ID `{instructorId}` MUST correspond to the authenticated user's UID (`request.auth.uid`). This data is primarily private to the instructor, with read access for all authenticated users to view instructor details.",
+          "params": [
+            {
+              "name": "instructorId",
+              "description": "The unique identifier of the instructor, matching the Firebase Auth UID."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/courses/{courseId}",
+        "definition": {
+          "entityName": "Course",
+          "schema": {
+            "$ref": "#/backend/entities/Course"
+          },
+          "description": "Stores details about courses offered. Publicly readable for all authenticated users for browsing. Modifiable only by the `instructorId` specified within the document. Includes `instructorId` for explicit ownership.",
+          "params": [
+            {
+              "name": "courseId",
+              "description": "The unique identifier for the course."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/courses/{courseId}/lessons/{lessonId}",
+        "definition": {
+          "entityName": "Lesson",
+          "schema": {
+            "$ref": "#/backend/entities/Lesson"
+          },
+          "description": "A subcollection storing lessons for a specific course. Each lesson document includes denormalized `courseInstructorId` (copied from its parent Course) to enable Authorization Independence for modification by the instructor and read by enrolled students without a `get()` call.",
+          "params": [
+            {
+              "name": "courseId",
+              "description": "The unique identifier of the parent course."
+            },
+            {
+              "name": "lessonId",
+              "description": "The unique identifier for the lesson."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/enrollments/{enrollmentId}",
+        "definition": {
+          "entityName": "Enrollment",
+          "schema": {
+            "$ref": "#/backend/entities/Enrollment"
+          },
+          "description": "A top-level collection representing a student's enrollment in a course. Each document includes denormalized `studentId` and `instructorId` (from the associated Course) to enable Authorization Independence for both student (owner) and instructor (course manager) access without `get()` calls. This allows QAPs for both student and instructor queries.",
+          "params": [
+            {
+              "name": "enrollmentId",
+              "description": "The unique identifier for the enrollment record."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/courses/{courseId}/lessons/{lessonId}/assignments/{assignmentId}",
+        "definition": {
+          "entityName": "Assignment",
+          "schema": {
+            "$ref": "#/backend/entities/Assignment"
+          },
+          "description": "A subcollection storing assignments for a specific lesson. Each assignment document includes denormalized `courseInstructorId` (copied from its grandparent Course) to enable Authorization Independence for modification by the instructor and read by enrolled students without a `get()` call.",
+          "params": [
+            {
+              "name": "courseId",
+              "description": "The unique identifier of the parent course."
+            },
+            {
+              "name": "lessonId",
+              "description": "The unique identifier of the parent lesson."
+            },
+            {
+              "name": "assignmentId",
+              "description": "The unique identifier for the assignment."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/students/{studentId}/submissions/{submissionId}",
+        "definition": {
+          "entityName": "Submission",
+          "schema": {
+            "$ref": "#/backend/entities/Submission"
+          },
+          "description": "A subcollection storing student submissions for assignments. Each submission document includes denormalized `assignmentId`, `courseId`, and `courseInstructorId` (from the parent assignment's course) to enable Authorization Independence for instructor grading/feedback and student ownership without `get()` calls. The `studentId` is implicitly authorized by being part of the path.",
+          "params": [
+            {
+              "name": "studentId",
+              "description": "The unique identifier of the student who made the submission, matching the Firebase Auth UID."
+            },
+            {
+              "name": "submissionId",
+              "description": "The unique identifier for the submission record."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/students/{studentId}/studySessions/{studySessionId}",
+        "definition": {
+          "entityName": "StudySession",
+          "schema": {
+            "$ref": "#/backend/entities/StudySession"
+          },
+          "description": "A subcollection storing individual study sessions for a student. This data is private to the student, and `studentId` in the path ensures direct ownership for security rules.",
+          "params": [
+            {
+              "name": "studentId",
+              "description": "The unique identifier of the student who conducted the study session, matching the Firebase Auth UID."
+            },
+            {
+              "name": "studySessionId",
+              "description": "The unique identifier for the study session."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/students/{studentId}/achievements/{achievementId}",
+        "definition": {
+          "entityName": "Achievement",
+          "schema": {
+            "$ref": "#/backend/entities/Achievement"
+          },
+          "description": "A subcollection storing accomplishments and milestones for a student. This data is private to the student, and `studentId` in the path ensures direct ownership for security rules.",
+          "params": [
+            {
+              "name": "studentId",
+              "description": "The unique identifier of the student who achieved the milestone, matching the Firebase Auth UID."
+            },
+            {
+              "name": "achievementId",
+              "description": "The unique identifier for the achievement."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore data structure for EduCentral prioritizes Authorization Independence by denormalizing key authorization fields directly into documents, thereby eliminating the need for `get()` calls in security rules. This strategy significantly enhances rule simplicity, debuggability, and enables atomic writes.\n\nKey design principles applied:\n\n1.  **Authorization Independence & Denormalization (Mandate A):**\n    *   For `Lesson` documents (under `/courses/{courseId}/lessons/{lessonId}`), the `courseInstructorId` field is denormalized from the parent `Course` document. This allows security rules to instantly verify if `request.auth.uid` is the course instructor without a slow and potentially complex `get()` operation on the parent `Course` document.\n    *   Similarly, `Assignment` documents (under `/courses/{courseId}/lessons/{lessonId}/assignments/{assignmentId}`) also denormalize `courseInstructorId` from their grandparent `Course` document for the same reason.\n    *   `Enrollment` documents are placed in a top-level collection `/enrollments/{enrollmentId}`. Each `Enrollment` document includes denormalized `studentId` and `instructorId` (from the associated `Course`). This is critical because `Enrollment` data needs to be accessible by both the student (owner) and the instructor (manager of the course). By having both IDs within the document, rules can evaluate access for either party without `get()` calls.\n    *   `Submission` documents (under `/students/{studentId}/submissions/{submissionId}`) denormalize `assignmentId`, `courseId`, and `courseInstructorId`. This enables instructors to grade submissions for their courses directly by checking `resource.data.courseInstructorId == request.auth.uid`, and students to manage their own submissions via `request.auth.uid == studentId` (from path).\n\n2.  **Structural Segregation (Mandate B):** Collections are designed to have a homogeneous security posture. For instance, `/students/{studentId}/studySessions` and `/students/{studentId}/achievements` are strictly private to the student, simplifying their respective rules. `Courses` are top-level and generally public-readable for discovery, with modifications restricted to the `instructorId`.\n\n3.  **Access Modeling (Mandate C):**\n    *   **Private Data & Hierarchical Paths:** Student-specific data like `StudySession` and `Achievement` are structured under `/students/{studentId}/...`, leveraging path-based ownership for straightforward security rules (`request.auth.uid == studentId`).\n    *   **Continue Hierarchy:** Nested data like `Lessons` and `Assignments` follow the `Course -> Lesson -> Assignment` hierarchy, augmented with denormalized fields for authorization.\n    *   **Collaborative/Cross-Entity Data (`Enrollment`, `Submission`):** `Enrollment` is a top-level collection, allowing efficient queries from both student and instructor perspectives by filtering on the denormalized `studentId` or `instructorId` fields. `Submission` is nested under `students` to prioritize student's dashboard view, but includes denormalized `courseInstructorId` for instructor access and QAPs.\n\n4.  **QAPs (Rules are not Filters):**\n    *   The structure supports secure and efficient `list` operations (QAPs). For ejemplo:\n        *   A student can list their `Enrollments` from `/enrollments` by querying `where('studentId', '==', request.auth.uid)`.\n        *   An instructor can list `Enrollments` for their courses from `/enrollments` by querying `where('instructorId', '==', request.auth.uid)`.\n        *   A student can list their `Submissions`, `StudySessions`, and `Achievements` from their respective subcollections under `/students/{studentId}` using `request.auth.uid == studentId` in the path.\n        *   An instructor can list `Lessons` and `Assignments` for their courses efficiently within their respective subcollections by checking `resource.data.courseInstructorId == request.auth.uid`.\n    *   This ensures that all `list` operations can be constrained by explicit security rules and efficient queries on indexed fields, preventing accidental data leakage or expensive scans.\n\n5.  **Data Clarity and Predictability (Mandate D):** Standardized field names (e.g., `instructorId`, `studentId`, `courseInstructorId`) and descriptive wildcards (e.g., `{studentId}`, `{courseId}`) are used consistently throughout the path definitions, promoting clear intent and easier rule writing."
+  }
+}

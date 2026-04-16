@@ -1,0 +1,95 @@
+.landing-page-container {
+  background-image: url('https://t4.ftcdn.net/jpg/04/91/98/53/360_F_491985342_3bC5ozLT8ANkJLSlFLPFPmcXbMUpfsVG.jpg');
+  background-size: cover;
+  background-position: center;
+}
+
+.ingles-dashboard-bg {
+  background-image: url('https://images.unsplash.com/photo-1673526759337-c4d4c4c8bc72?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1yZWxhdGVkfDM2fHx8ZW58MHx8fHx8');
+  background-size: cover;
+  background-position: center;
+}
+
+.espanol-dashboard-bg {
+  background-image: url('https://static.vecteezy.com/system/resources/previews/006/831/719/non_2x/gradient-pick-color-for-background-social-media-post-or-banner-best-combination-color-famous-color-combination-booth-backdrop-vintage-color-combination-free-photo.jpg');
+  background-size: cover;
+  background-position: center;
+}
+
+.kids-page-container {
+  background-image: url('https://s3.envato.com/files/1a8011a5-217f-4a8a-9618-c2ddefbe08e3/inline_image_preview.jpg');
+  background-size: cover;
+  background-position: center;
+}
+
+.intro-adventure-container {
+  background-image: url('https://img.freepik.com/free-vector/online-videogame-controller-background-with-text-space_1017-54747.jpg');
+  background-size: cover;
+  background-position: center;
+}
+
+.will-lesson-bg {
+    background-image: url('https://img.freepik.com/vector-gratis/fondo-morado-abstracto-degradado_23-2149121882.jpg?semt=ais_hybrid&w=740&q=80');
+    background-size: cover;
+    background-position: center;
+}
+
+.a1-kids-bg {
+  background-image: url('https://img.freepik.com/vector-gratis/fondo-azul-degradado-ondulado_23-2149116409.jpg');
+  background-size: cover;
+  background-position: center;
+}
+
+.a2-kids-bg {
+  background-image: url('https://www.shutterstock.com/image-vector/gaming-controller-on-blue-background-600nw-2696165525.jpg');
+  background-size: cover;
+  background-position: center;
+}
+
+.hero-card {
+  aspect-ratio: 3 / 4;
+}
+
+.english-card .bg-gradient-to-t {
+  background-image: linear-gradient(to top, rgba(0, 71, 171, 0.8), rgba(0, 71, 171, 0.4), transparent);
+}
+
+.english-card .text-5xl {
+  color: #ffffff;
+}
+
+.english-card .button {
+  background-color: #007bff;
+  border-color: #007bff;
+  color: white;
+}
+
+.spanish-card .bg-gradient-to-t {
+  background-image: linear-gradient(to top, rgba(205, 92, 92, 0.8), rgba(205, 92, 92, 0.4), transparent);
+}
+
+.spanish-card .text-5xl {
+  color: #ffffff;
+}
+
+.spanish-card .button {
+  background-color: #ff7f50;
+  border-color: #ff7f50;
+  color: white;
+}
+
+.kids-card .bg-gradient-to-t {
+  background-image: linear-gradient(to top, rgba(75, 0, 130, 0.8), rgba(75, 0, 130, 0.4), transparent);
+}
+
+.kids-card .text-5xl {
+    color: #ccff00;
+    font-size: 2.25rem;
+    line-height: 2.5rem;
+}
+
+.kids-card .button {
+  background-color: #8a2be2;
+  border-color: #8a2be2;
+  color: white;
+}

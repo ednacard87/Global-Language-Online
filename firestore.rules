@@ -1,0 +1,232 @@
+/**
+ * This ruleset enforces a security model for the EduCentral platform, balancing
+ * user privacy with collaborative educational features.
+ *
+ * Core Philosophy:
+ * The rules are built on a principle of "Authorization Independence," where
+ * authorization data (like instructor or student IDs) is denormalized directly
+ * onto documents. This avoids costly and slow `get()` calls in rules, making
+ * them more performant, secure, and easier to debug. Access is granted based on
+ * explicit roles (student owner, course instructor) or path-based ownership.
+ *
+ * Data Structure:
+ * - /students/{studentId}: Private user data, including nested private subcollections
+ *   for submissions, study sessions, and achievements.
+ * - /instructors/{instructorId}: Publicly viewable instructor profiles, manageable
+ *   only by the instructor themselves.
+ * - /courses/{courseId}: Publicly browsable course catalog. Course content
+ *   (lessons, assignments) is restricted to the
+ *   course instructor.
+ * - /enrollments/{enrollmentId}: A top-level collection for managing student-course
+ *   relationships, accessible by both the student and the relevant instructor.
+ *
+ * Key Security Decisions:
+ * - Strict Ownership: A user's private data under `/students/{studentId}` is
+ *   accessible only to them. User profiles are self-managed.
+ * - Denormalization for Security: Course content (lessons, assignments) and
+ *   shared documents (enrollments, submissions) contain a denormalized
+ *   `instructorId` or `courseInstructorId`. This allows for direct authorization
+ *   checks without needing to read parent documents.
+ * - Public Discovery vs. Private Writes: Collections like `/courses` and
+ *   `/instructors` are readable by any authenticated user to facilitate discovery,
+ *   but write operations are strictly limited to the document owner.
+ * - Query-Based Security: For collections like `/enrollments` that need to be
+ *   queried by different user types (students and instructors), `list` access
+*    is granted to all authenticated users, with the expectation that client-side
+*    queries will filter the data securely (e.g., `where('studentId', '==', auth.uid)`).
+*/
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // -------------------------------------------------------------------------
+    // Helper Functions
+    // -------------------------------------------------------------------------
+
+    /**
+     * Checks if the user is authenticated.
+     */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    /**
+     * Checks if the requesting user's UID matches the provided userId.
+     * This is the primary function for enforcing document ownership.
+     */
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    /**
+     * Checks if the user is an administrator.
+     * For performance and security, admin status is determined by a hardcoded
+     * email address, avoiding extra document reads in rules.
+     */
+    function isAdmin() {
+      return isSignedIn() && request.auth.token.email == 'ednacard87@gmail.com';
+    }
+
+    /**
+     * Checks for ownership on an existing document. Used for safe updates and deletes.
+     */
+    function isExistingOwner(userId) {
+      return isOwner(userId) && resource != null;
+    }
+
+    /**
+     * Validates that the user is the student associated with a given document.
+     * Checks against a 'studentId' field within the document data.
+     */
+    function isDocumentStudent(docData) {
+      return isSignedIn() && docData.studentId == request.auth.uid;
+    }
+
+    /**
+     * Validates that the user is the instructor associated with a given document.
+     * Checks against an 'instructorId' field within the document data.
+     */
+    function isCourseInstructor(docData) {
+      return isSignedIn() && docData.instructorId == request.auth.uid;
+    }
+
+    /**
+     * Validates that the user is the instructor for nested course content.
+     * Checks against a denormalized 'courseInstructorId' field.
+     */
+    function isDenormalizedCourseInstructor(docData) {
+      return isSignedIn() && docData.courseInstructorId == request.auth.uid;
+    }
+
+    /**
+     * Ensures a critical relational field cannot be changed after creation.
+     */
+    function isImmutable(field) {
+      return request.resource.data[field] == resource.data[field];
+    }
+
+
+    /**
+     * @description Manages student profiles. Students can manage their own profile, while admins have full access.
+     * @path /students/{studentId}
+     * @allow (list) An admin listing all student profiles.
+     * @deny (list) A non-admin user trying to list all student profiles.
+     * @principle Restricts collection read access to admins, while allowing document ownership for individuals.
+     */
+    match /students/{studentId} {
+      // Admins can perform any action. Users can only manage their own document.
+      allow get, update, delete: if isOwner(studentId) || isAdmin();
+      // Only admins can list all students.
+      allow list: if isAdmin();
+      // Users can only create their own profile.
+      allow create: if isOwner(studentId) && request.resource.data.id == studentId;
+
+      /**
+       * @description Manages a student's submissions. Readable/updatable by the student and the course instructor.
+       * @path /students/{studentId}/submissions/{submissionId}
+       * @allow (update) An instructor with UID 'instrABC' updating a submission document that has `courseInstructorId: 'instrABC'`.
+       * @deny (delete) An instructor trying to delete a student's submission.
+       * @principle Implements shared access between a student (owner) and an instructor (grader) using denormalized IDs.
+       */
+      match /submissions/{submissionId} {
+        allow get: if isOwner(studentId) || isDenormalizedCourseInstructor(resource.data);
+        allow list: if isOwner(studentId);
+        allow create: if isOwner(studentId) && request.resource.data.studentId == studentId;
+        allow update: if (isOwner(studentId) || isDenormalizedCourseInstructor(resource.data)) && resource != null && isImmutable('studentId');
+        allow delete: if isExistingOwner(studentId);
+      }
+
+      /**
+       * @description Manages a student's private study sessions.
+       * @path /students/{studentId}/studySessions/{studySessionId}
+       * @allow (create) Student 'user123' creating a new study session in their own subcollection.
+       * @deny (list) Any user other than 'user123' trying to list study sessions.
+       * @principle Enforces strict ownership for private, user-generated data.
+       */
+      match /studySessions/{studySessionId} {
+        allow get, list, update, delete: if isOwner(studentId);
+        allow create: if isOwner(studentId) && request.resource.data.studentId == studentId;
+      }
+
+      /**
+       * @description Manages a student's private achievements.
+       * @path /students/{studentId}/achievements/{achievementId}
+       * @allow (get) Student 'user123' reading an achievement in their own subcollection.
+       * @deny (create) User 'user456' trying to create an achievement for 'user123'.
+       * @principle Enforces strict ownership for private, user-generated data.
+       */
+      match /achievements/{achievementId} {
+        allow get, list, update, delete: if isOwner(studentId);
+        allow create: if isOwner(studentId) && request.resource.data.studentId == studentId;
+      }
+    }
+
+    /**
+     * @description Manages instructor profiles. Writable only by the owner, but readable by any authenticated user.
+     * @path /instructors/{instructorId}
+     * @allow (get) Any authenticated user reading the profile at `/instructors/instrABC`.
+     * @deny (update) User 'user123' trying to modify the profile of 'instrABC'.
+     * @principle Enforces document ownership for writes while allowing public reads for discovery.
+     */
+    match /instructors/{instructorId} {
+      allow get: if isSignedIn();
+      allow list: if false; // Disallow listing all instructors
+      allow create: if isOwner(instructorId) && request.resource.data.id == instructorId;
+      allow update, delete: if isExistingOwner(instructorId);
+    }
+
+    /**
+     * @description Manages courses. Readable by any authenticated user, but only writable by the designated instructor.
+     * @path /courses/{courseId}
+     * @allow (list) Any authenticated user listing all available courses.
+     * @deny (create) A user creating a course where the `instructorId` field does not match their own UID.
+     * @principle Public read access for a catalog, with write access controlled by an ownership field (`instructorId`) in the document.
+     */
+    match /courses/{courseId} {
+      allow get, list: if isSignedIn();
+      allow create: if isCourseInstructor(request.resource.data);
+      allow update, delete: if isCourseInstructor(resource.data) && resource != null;
+
+      /**
+       * @description Manages course lessons. Readable by any authenticated user, writable only by the course instructor.
+       * @path /courses/{courseId}/lessons/{lessonId}
+       * @allow (get) Any signed-in student reading a lesson for a course they are interested in.
+       * @deny (update) A user trying to modify a lesson when they are not the `courseInstructorId` on the document.
+       * @principle Inherits read access from the parent collection and uses a denormalized ID for write authorization.
+       */
+      match /lessons/{lessonId} {
+        allow get, list: if isSignedIn();
+        allow create: if isDenormalizedCourseInstructor(request.resource.data) && request.resource.data.courseId == courseId;
+        allow update, delete: if isDenormalizedCourseInstructor(resource.data) && resource != null;
+      }
+
+      /**
+       * @description Manages course assignments. Readable by any authenticated user, writable only by the course instructor.
+       * @path /courses/{courseId}/lessons/{lessonId}/assignments/{assignmentId}
+       * @allow (list) Any signed-in student listing assignments for a course they are browsing.
+       * @deny (create) An instructor trying to create an assignment for a course they do not own.
+       * @principle Inherits read access from the parent collection and uses a denormalized ID for write authorization.
+       */
+      match /assignments/{assignmentId} {
+        allow get, list: if isSignedIn();
+        allow create: if isDenormalizedCourseInstructor(request.resource.data);
+        allow update, delete: if isDenormalizedCourseInstructor(resource.data) && resource != null;
+      }
+    }
+
+    /**
+     * @description Manages student enrollments in courses. Accessible by both the student and the course instructor.
+     * @path /enrollments/{enrollmentId}
+     * @allow (update) An instructor with UID 'instrABC' updating an enrollment that has `instructorId: 'instrABC'`.
+     * @deny (delete) An instructor trying to delete a student's enrollment record.
+     * @principle Implements shared document access using denormalized `studentId` and `instructorId` fields.
+     */
+    match /enrollments/{enrollmentId} {
+      allow get: if isDocumentStudent(resource.data) || isCourseInstructor(resource.data);
+      allow list: if isSignedIn(); // Allows clients to query by studentId or instructorId
+      allow create: if isDocumentStudent(request.resource.data);
+      allow update: if (isDocumentStudent(resource.data) || isCourseInstructor(resource.data)) && resource != null && isImmutable('studentId') && isImmutable('courseId');
+      allow delete: if isDocumentStudent(resource.data) && resource != null;
+    }
+  }
+}

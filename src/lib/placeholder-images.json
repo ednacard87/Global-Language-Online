@@ -1,0 +1,118 @@
+{
+  "placeholderImages": [
+    {
+      "id": "user-avatar-1",
+      "description": "User avatar",
+      "imageUrl": "https://images.unsplash.com/photo-1549417338-6f137ab2cd20?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxwb3J0cmFpdCUyMHBlcnNvbnxlbnwwfHx8fDE3NzEyODIyMjF8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "portrait person"
+    },
+    {
+      "id": "weekly-performance-person",
+      "description": "Person studying in front of a computer",
+      "imageUrl": "https://img.freepik.com/premium-vector/person-studies-laptop-neat-desk-surrounded-by-books-plants-warm-lighting-someone-is-studying-online_538213-143340.jpg",
+      "imageHint": "illustration study"
+    },
+    {
+      "id": "money-related",
+      "description": "A piggy bank with a coin",
+      "imageUrl": "https://images.unsplash.com/photo-1553729459-efe14ef6055d?q=80&w=2070&auto=format&fit=crop",
+      "imageHint": "money savings"
+    },
+    {
+      "id": "abc-english",
+      "description": "Learn the English alphabet",
+      "imageUrl": "https://www.archeenglish.com/wp-content/uploads/Alphabet_Arche-English-724x1024.jpg",
+      "imageHint": "alphabet chart"
+    },
+    {
+      "id": "nemo-icon",
+      "description": "Icono de pez para la barra de progreso",
+      "imageUrl": "https://thumbs.dreamstime.com/b/cute-aquarium-fish-white-background-flat-vector-illustration-simple-child-style-373316134.jpg",
+      "imageHint": "aquarium fish"
+    },
+    {
+      "id": "guide-fish",
+      "description": "Mascota de robot de dibujos animados para aprender inglés",
+      "imageUrl": "https://www.shutterstock.com/image-illustration/cute-3d-robot-hand-hello-600nw-2299232587.jpg",
+      "imageHint": "cute robot waving"
+    },
+    {
+      "id": "clown-fish-guide",
+      "description": "Pez payaso guía para la barra de progreso",
+      "imageUrl": "https://image.spreadshirtmedia.net/image-server/v1/products/T1459A839PA4459PT28X0Y0D329610644W10000H10000/views/1,width=378,height=378,appearanceId=839,backgroundColor=F2F2F2/pez-payaso-lindo-dibujos-animados-kawaii-acuarela-animal-pe.jpg",
+      "imageHint": "cute clownfish"
+    },
+    {
+      "id": "telling-time",
+      "description": "A clock explaining how to tell the time in English",
+      "imageUrl": "https://comoaprenderinglesbien.com/wp-content/uploads/2013/11/151.jpg",
+      "imageHint": "clock time"
+    },
+    {
+      "id": "fishbowl",
+      "description": "Acuario para la barra de progreso",
+      "imageUrl": "https://img.freepik.com/vector-gratis/pez-bol_1308-35661.jpg?semt=ais_rp_progressive&w=740&q=80",
+      "imageHint": "fishbowl illustration"
+    },
+    {
+      "id": "a1-mascot",
+      "description": "Gato mago mascota del curso A1",
+      "imageUrl": "https://png.pngtree.com/png-vector/20241230/ourmid/pngtree-futuristic-robot-using-laptop-cartoon-vector-artwork-png-image_14975139.png",
+      "imageHint": "wizard cat"
+    },
+    {
+      "id": "avatar-woman-1",
+      "description": "Woman avatar",
+      "imageUrl": "https://st5.depositphotos.com/51587144/66212/v/450/depositphotos_662124514-stock-illustration-profile-image-woman-avatar-social.jpg",
+      "imageHint": "woman avatar"
+    },
+    {
+      "id": "avatar-woman-2",
+      "description": "Woman avatar with glasses",
+      "imageUrl": "https://pub-static.fotor.com/assets/projects/pages/d5bdd0513a0740a8a38752dbc32586d0/fotor-03d1a91a0cec4542927f53c87e0599f6.jpg",
+      "imageHint": "woman glasses"
+    },
+    {
+      "id": "avatar-man-1",
+      "description": "Man avatar",
+      "imageUrl": "https://pub-static.fotor.com/assets/projects/pages/7827811578ac47baa172e2598aae70af/fotor-650f940080a244c0bad9a06e0551ec49.jpg",
+      "imageHint": "man avatar"
+    },
+    {
+      "id": "avatar-man-2",
+      "description": "Man icon avatar",
+      "imageUrl": "https://img.freepik.com/fotos-premium/hombre-boton-icono_665280-69541.jpg?semt=ais_hybrid&w=740&q=80",
+      "imageHint": "man icon"
+    },
+    {
+      "id": "vr-gamer-avatar",
+      "description": "Avatar of a gamer with VR glasses",
+      "imageUrl": "https://i.pinimg.com/736x/0a/a2/58/0aa258a531e405a463c63d2740263f35.jpg",
+      "imageHint": "vr gamer"
+    },
+    {
+      "id": "kids-adventure-mascot",
+      "description": "Robot futurista usando una laptop",
+      "imageUrl": "https://png.pngtree.com/png-vector/20241230/ourmid/pngtree-futuristic-robot-using-laptop-cartoon-vector-artwork-png-image_14975139.png",
+      "imageHint": "robot laptop"
+    },
+    {
+      "id": "english-card-bg",
+      "description": "Smiling woman wearing headphones with UK and US landmarks in the background.",
+      "imageUrl": "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=2071&auto=format&fit=crop",
+      "imageHint": "woman headphones"
+    },
+    {
+      "id": "spanish-card-bg",
+      "description": "Person working on a laptop.",
+      "imageUrl": "https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?q=80&w=2070&auto=format&fit=crop",
+      "imageHint": "person laptop"
+    },
+    {
+      "id": "kids-card-bg",
+      "description": "Cartoon illustration of two boys DJing with futuristic elements.",
+      "imageUrl": "https://img.freepik.com/free-vector/hand-drawn-anime-style-boy-band_52683-111162.jpg?w=1380&t=st=1716309859~exp=1716310459~hmac=a1f11e9a31a50a3c26786c310c85c276e0d37e2467576594b4e9f7e53f191b2c",
+      "imageHint": "cartoon djs"
+    }
+  ]
+}

@@ -1,0 +1,102 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 270 60% 99%;
+    --foreground: 240 10% 3.9%;
+    
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 10%;
+
+    --primary: 165 47% 65%;
+    --primary-foreground: 355 100% 97%;
+
+    --secondary: 236 40% 95%;
+    --secondary-foreground: 0 0% 10%;
+
+    --muted: 236 40% 95%;
+    --muted-foreground: 184 6% 53%;
+
+    --accent: 0 0% 10%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 236 20% 91%;
+    --input: 236 40% 95%;
+    --ring: 165 47% 65%;
+    --radius: 1rem;
+
+    /* Charts */
+    --chart-1: 165 47% 65%;
+    --chart-2: 236 100% 86%; /* Purple */
+    --chart-3: 211 100% 90%; /* Blue */
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+    
+    /* Brand Colors */
+    --brand-teal: 165 47% 65%;
+    --brand-purple: 236 100% 86%;
+    --brand-blue: 211 100% 90%;
+    --brand-lilac: 270 80% 98%;
+
+  }
+
+  .dark {
+    --background: 240 5% 12%;
+    --foreground: 0 0% 98%;
+
+    --card: 240 5% 15%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 165 47% 75%;
+    --primary-foreground: 165 80% 10%;
+
+    --secondary: 240 5% 10%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 240 5% 10%;
+    --muted-foreground: 0 0% 60%;
+
+    --accent: 0 0% 98%;
+    --accent-foreground: 0 0% 10%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 240 4% 20%;
+    --input: 240 4% 20%;
+    --ring: 165 47% 75%;
+    
+    --radius: 1rem;
+    
+    /* Charts */
+    --chart-1: 165 47% 75%;
+    --chart-2: 236 100% 86%;
+    --chart-3: 211 100% 90%;
+    
+    /* Brand Colors */
+    --brand-lilac: 240 3% 15%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-body;
+  }
+  main {
+    color: hsl(var(--foreground));
+  }
+}
