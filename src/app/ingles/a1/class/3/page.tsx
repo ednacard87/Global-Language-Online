@@ -144,12 +144,12 @@ const class3ShortAnswerEx3Data: ShortAnswerPresentSimplePrompt[] = [
 ];
 
 const class3LargeTextEx4Dialogue: DialogueLine[] = [
-    { speaker: "MARY", line: "¿VIVES EN BARCELONA?", answer: ["do you live in barcelona"] },
-    { speaker: "JON", line: "NO, NO VIVO EN BARCELONA. VIVO EN MADRID, PERO MI HERMANA VIVE ALLÍ.", answer: ["no i do not live in barcelona i live in madrid but my sister lives there", "no i don't live in barcelona i live in madrid but my sister lives there"] },
+    { speaker: "MARY", line: "¿TE VISITA EN MADRID?", answer: ["does she visit you in Madrid?"] },
+    { speaker: "JON", line: "ELLA NO VIENE A MADRID MUY A MENUDO. YO LA VISITO EN BARCELONA.", answer: ["she doesn't come to madrid very often. i visit her in barcelona", "she does not come to madrid very often. i visit her in barcelona"] },
     { speaker: "MARY", line: "¿Y LE GUSTA?", answer: ["and does she like it"] },
     { speaker: "JON", line: "SÍ, LE ENCANTA BARCELONA. ELLA TRABAJA EN UN BANCO POR LAS MAÑANAS. POR LAS TARDES, ELLA JUEGA AL TENIS CON SU NOVIO O ELLA MIRA LA TV EN CASA. POR LAS NOCHES, ELLA VA A LA PLAYA O ELLA HACE SU TAREA DE INGLÉS. ESTUDIA INGLÉS LOS SÁBADOS.", answer: ["yes, she loves barcelona. she works in a bank in the morning, in the afternoon, she plays tennis with her boyfriend or she watches tv at home, at night she goes to the beach or she does her english homework. she studies english on saturday"] },
-    { speaker: "MARY", line: "¿TE VISITA EN MADRID?", answer: ["does she visit you in madrid?"] },
-    { speaker: "JON", line: "ELLA NO VIENE A MADRID MUY A MENUDO. YO LA VISITO EN BARCELONA.", answer: ["she doesn't come to madrid very often i visit her in barcelona", "she does not come to madrid very often i visit her in barcelona"] },
+    { speaker: "MARY", line: "¿VIVES EN BARCELONA?", answer: ["do you live in barcelona"] },
+    { speaker: "JON", line: "NO, NO VIVO EN BARCELONA. VIVO EN MADRID, PERO MI HERMANA VIVE ALLÍ.", answer: ["no i do not live in barcelona i live in madrid but my sister lives there", "no i don't live in barcelona i live in madrid but my sister lives there"] },
 ];
 
 export default function EngA1Class3Page() {
@@ -349,7 +349,7 @@ export default function EngA1Class3Page() {
         }
         setSelectedTopic(topicKey);
 
-        const exerciseKeys: string[] = ['mixedExercises1', 'ex2_1', 'ex2_2', 'ex3_3', 'ex3_4'];
+        const exerciseKeys: string[] = ['mixedExercises1', 'ex2_1', 'ex2_2', 'ex3_3', 'ex3_4', 'can1', 'can2'];
         if (!exerciseKeys.includes(topicKey)) {
             setTopicToComplete(topicKey);
         }
@@ -525,6 +525,56 @@ export default function EngA1Class3Page() {
                     dialogue={class3LargeTextEx4Dialogue}
                     onComplete={() => handleTopicComplete('ex3_4')}
                 />
+            );
+        }
+
+        if (selectedTopic === 'can') {
+            return (
+                <div className="space-y-6">
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                        <CardHeader>
+                            <CardTitle>Verbo Modal "CAN"</CardTitle>
+                            <CardDescription>Habilidad, Posibilidad, Permiso</CardDescription>
+                        </CardHeader>
+                        <CardContent className="text-lg">
+                            <p>El verbo <span className="font-bold text-primary">'CAN'</span> es un verbo modal que se utiliza para expresar habilidad, posibilidad o permiso. En español, generalmente se traduce como <span className="font-semibold">'poder'</span>.</p>
+                            <ul className="list-disc list-inside mt-4 space-y-2 text-base">
+                                <li><span className="font-semibold">Habilidad:</span> "I can speak English." (Yo puedo hablar inglés.)</li>
+                                <li><span className="font-semibold">Posibilidad:</span> "It can rain tomorrow." (Puede llover mañana.)</li>
+                                <li><span className="font-semibold">Permiso:</span> "Can I go to the bathroom?" (¿Puedo ir al baño?)</li>
+                            </ul>
+                        </CardContent>
+                    </Card>
+        
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                        <CardHeader>
+                            <CardTitle>Estructura de "CAN"</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="space-y-2 p-4 bg-muted rounded-lg font-mono text-base">
+                                <p><span className="font-bold text-lg text-green-500 mr-2">(+)</span> pronoun + can + verb (infinitive) + complement</p>
+                                <p><span className="font-bold text-lg text-red-500 mr-2">(-)</span> pronoun + can + not + verb (infinitive) + complement</p>
+                                <p><span className="font-bold text-lg text-blue-500 mr-2">(?)</span> Can + pronoun + verb (infinitive) + complement ?</p>
+                            </div>
+                            <div>
+                                <h3 className="text-xl font-semibold mb-2">Respuestas Cortas</h3>
+                                <div className="space-y-2 p-4 bg-muted rounded-lg font-mono text-base">
+                                    <p><span className="font-bold text-lg text-green-500 mr-2">(+A)</span> Yes, pronoun + can</p>
+                                    <p><span className="font-bold text-lg text-red-500 mr-2">(-A)</span> No, pronoun + can't</p>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+        
+                    <Card className="shadow-soft rounded-lg border-2 border-destructive">
+                        <CardHeader>
+                            <CardTitle>Contracción Negativa</CardTitle>
+                        </CardHeader>
+                        <CardContent className="text-center font-mono text-xl p-6">
+                           <p>CAN + NOT = <span className="font-bold text-destructive">CAN'T</span></p>
+                        </CardContent>
+                    </Card>
+                </div>
             );
         }
 
