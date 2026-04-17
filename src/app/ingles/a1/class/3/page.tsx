@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
@@ -147,8 +148,8 @@ const class3LargeTextEx4Dialogue: DialogueLine[] = [
     { speaker: "JON", line: "NO, NO VIVO EN BARCELONA. VIVO EN MADRID, PERO MI HERMANA VIVE ALLÍ.", answer: ["no i do not live in barcelona i live in madrid but my sister lives there", "no i don't live in barcelona i live in madrid but my sister lives there"] },
     { speaker: "MARY", line: "¿Y LE GUSTA?", answer: ["and does she like it"] },
     { speaker: "JON", line: "SÍ, LE ENCANTA BARCELONA. ELLA TRABAJA EN UN BANCO POR LAS MAÑANAS. POR LAS TARDES, ELLA JUEGA AL TENIS CON SU NOVIO O ELLA MIRA LA TV EN CASA. POR LAS NOCHES, ELLA VA A LA PLAYA O ELLA HACE SU TAREA DE INGLÉS. ESTUDIA INGLÉS LOS SÁBADOS.", answer: ["yes, she loves barcelona. she works in a bank in the morning, in the afternoon, she plays tennis with her boyfriend or she watches tv at home, at night she goes to the beach or she does her english homework. she studies english on saturday"] },
-    { speaker: "MARY", line: "¿TE VISITA A MADRID?", answer: ["does she visit you in madrid"] },
-    { speaker: "JON", line: "ELLA NO VIENE A MADRID MUY A MENUDO. YO SUELO VISITARLA EN BARCELONA.", answer: ["she does not come to madrid very often i usually visit her in barcelona", "she doesn't come to madrid very often i usually visit her in barcelona"] },
+    { speaker: "MARY", line: "¿Te visita en Madrid?", answer: ["does she visit you in madrid"] },
+    { speaker: "JON", line: "ELLA NO VIENE A MADRID MUY A MENUDO. YO LA VISITO EN BARCELONA.", answer: ["she doesn't come to madrid very often i visit her in barcelona", "she does not come to madrid very often i visit her in barcelona"] },
 ];
 
 export default function EngA1Class3Page() {
@@ -610,3 +611,4 @@ export default function EngA1Class3Page() {
         </div>
     );
 }
+
