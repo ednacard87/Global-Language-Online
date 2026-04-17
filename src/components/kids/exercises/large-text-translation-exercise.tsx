@@ -3,60 +3,99 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { cn } from '@/lib/utils';
+import { Label } from '@/components/ui/label';
 
+export interface DialogueLine {
+    speaker: string;
+    line: string;
+    answer: string[];
+}
 
 interface LargeTextTranslationExerciseProps {
     title: string;
-    spanishText: string[];
+    dialogue: DialogueLine[];
     onComplete: () => void;
 }
 
-export const LargeTextTranslationExercise = ({ title, spanishText, onComplete }: LargeTextTranslationExerciseProps) => {
+export const LargeTextTranslationExercise = ({ title, dialogue, onComplete }: LargeTextTranslationExerciseProps) => {
     const { toast } = useToast();
-    const [translation, setTranslation] = useState('');
+    const [userAnswers, setUserAnswers] = useState<string[]>(Array(dialogue.length).fill(''));
+    const [validationStatus, setValidationStatus] = useState<('correct' | 'incorrect' | 'unchecked')[]>(Array(dialogue.length).fill('unchecked'));
 
-    const handleCheck = () => {
-        // For now, since checking a large text is complex, we will just mark as complete
-        toast({
-            title: "¡Ejercicio Enviado!",
-            description: "Tu traducción ha sido registrada. ¡Buen trabajo!",
+    const handleInputChange = (index: number, value: string) => {
+        const newAnswers = [...userAnswers];
+        newAnswers[index] = value;
+        setUserAnswers(newAnswers);
+
+        const newValidation = [...validationStatus];
+        if(newValidation[index] !== 'unchecked') {
+            newValidation[index] = 'unchecked';
+            setValidationStatus(newValidation);
+        }
+    };
+
+    const handleCheckAnswers = () => {
+        let allCorrect = true;
+        const newValidationStatus = dialogue.map((item, index) => {
+            const userAnswer = userAnswers[index].trim().toLowerCase().replace(/[.?,¿!¡]/g, '');
+            const correctAnswers = item.answer.map(ans => ans.toLowerCase().replace(/[.?,¿!¡]/g, ''));
+            const isCorrect = correctAnswers.some(ans => ans === userAnswer);
+            if (!isCorrect) {
+                allCorrect = false;
+            }
+            return isCorrect ? 'correct' : 'incorrect';
         });
-        onComplete();
+        setValidationStatus(newValidationStatus);
+
+        if (allCorrect) {
+            toast({
+                title: "¡Excelente!",
+                description: "Has completado el ejercicio de traducción.",
+            });
+            onComplete();
+        } else {
+            toast({
+                variant: "destructive",
+                title: "Algunas respuestas son incorrectas",
+                description: "Por favor, revisa los campos marcados en rojo.",
+            });
+        }
+    };
+
+    const getInputClass = (status: 'correct' | 'incorrect' | 'unchecked') => {
+        if (status === 'correct') return 'border-green-500 focus-visible:ring-green-500';
+        if (status === 'incorrect') return 'border-destructive focus-visible:ring-destructive';
+        return '';
     };
 
     return (
         <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
             <CardHeader>
                 <CardTitle>{title}</CardTitle>
-                <CardDescription>Traduce el siguiente diálogo al inglés.</CardDescription>
+                <CardDescription>Traduce cada línea del diálogo al inglés.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-                 <Accordion type="single" collapsible className="w-full">
-                    <AccordionItem value="item-1">
-                        <AccordionTrigger>Ver texto en Español</AccordionTrigger>
-                        <AccordionContent>
-                           <div className="p-4 bg-muted rounded-lg border space-y-2">
-                                {spanishText.map((line, index) => (
-                                    <p key={index} className="text-base">{line}</p>
-                                ))}
-                            </div>
-                        </AccordionContent>
-                    </AccordionItem>
-                </Accordion>
-                <div>
-                    <Textarea
-                        value={translation}
-                        onChange={(e) => setTranslation(e.target.value)}
-                        placeholder="Escribe tu traducción aquí..."
-                        className="min-h-[250px] text-base"
-                    />
-                </div>
+                {dialogue.map((item, index) => (
+                    <div key={index} className="grid gap-2">
+                        <Label htmlFor={`line-${index}`} className="text-muted-foreground">
+                            <span className="font-bold text-foreground">{item.speaker}:</span> {item.line}
+                        </Label>
+                        <Input
+                            id={`line-${index}`}
+                            value={userAnswers[index]}
+                            onChange={(e) => handleInputChange(index, e.target.value)}
+                            className={cn(getInputClass(validationStatus[index]))}
+                            placeholder="Escribe la traducción..."
+                            autoComplete="off"
+                        />
+                    </div>
+                ))}
             </CardContent>
             <CardFooter>
-                <Button onClick={handleCheck}>Verificar y Completar</Button>
+                <Button onClick={handleCheckAnswers}>Verificar y Completar</Button>
             </CardFooter>
         </Card>
     );

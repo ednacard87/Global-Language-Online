@@ -17,7 +17,7 @@ import { SimpleTranslationExercise } from '@/components/dashboard/simple-transla
 import { PresentSimpleExercise, type ExercisePrompt } from '@/components/kids/exercises/present-simple';
 import { QAShortAnswerExercise, type QAShortAnswerPrompt } from '@/components/kids/exercises/q-a-short-answer-exercise';
 import { ShortAnswerPresentSimpleExercise, type ShortAnswerPresentSimplePrompt } from '@/components/kids/exercises/short-answer-present-simple';
-import { LargeTextTranslationExercise } from '@/components/kids/exercises/large-text-translation-exercise';
+import { LargeTextTranslationExercise, type DialogueLine } from '@/components/kids/exercises/large-text-translation-exercise';
 
 
 type Topic = {
@@ -142,13 +142,13 @@ const class3ShortAnswerEx3Data: ShortAnswerPresentSimplePrompt[] = [
     { question: "DOES SHE TEACH MATH?", answers: { shortAffirmative: ["yes, she does"], shortNegative: ["no, she does not", "no, she doesn't"] } },
 ];
 
-const class3LargeTextEx4Data = [
-    "MARY: ¿VIVES EN BARCELONA?",
-    "JON: NO, NO VIVO EN BARCELONA. VIVO EN MADRID, PERO MI HERMANA VIVE ALLÍ.",
-    "MARY: ¿Y LE GUSTA?",
-    "JON: SÍ, LE ENCANTA BARCELONA. TRABAJA EN UN BANCO POR LAS MAÑANAS. POR LAS TARDES, JUEGA AL TENIS CON SU NOVIO O MIRA LA TELE EN CASA. POR LAS NOCHES, SUELE PASEAR POR LA PLAYA O HACER SUS DEBERES DE INGLÉS. ESTUDIA INGLÉS LOS SÁBADOS.",
-    "MARY: ¿TE VISITA A MADRID?",
-    "JON: ELLA NO VENGO A MADRID MUY A MENUDO. YO SUELO VISITARLA EN BARCELONA."
+const class3LargeTextEx4Dialogue: DialogueLine[] = [
+    { speaker: "MARY", line: "¿VIVES EN BARCELONA?", answer: ["do you live in barcelona"] },
+    { speaker: "JON", line: "NO, NO VIVO EN BARCELONA. VIVO EN MADRID, PERO MI HERMANA VIVE ALLÍ.", answer: ["no i do not live in barcelona i live in madrid but my sister lives there", "no i don't live in barcelona i live in madrid but my sister lives there"] },
+    { speaker: "MARY", line: "¿Y LE GUSTA?", answer: ["and does she like it"] },
+    { speaker: "JON", line: "SÍ, LE ENCANTA BARCELONA. TRABAJA EN UN BANCO POR LAS MAÑANAS. POR LAS TARDES, JUEGA AL TENIS CON SU NOVIO O MIRA LA TELE EN CASA. POR LAS NOCHES, SUELE PASEAR POR LA PLAYA O HACER SUS DEBERES DE INGLÉS. ESTUDIA INGLÉS LOS SÁBADOS.", answer: ["yes she loves barcelona she works at a bank in the mornings in the afternoons she plays tennis with her boyfriend or watches tv at home at night she usually walks on the beach or does her english homework she studies english on saturdays"] },
+    { speaker: "MARY", line: "¿TE VISITA A MADRID?", answer: ["does she visit you in madrid"] },
+    { speaker: "JON", line: "ELLA NO VIENE A MADRID MUY A MENUDO. YO SUELO VISITARLA EN BARCELONA.", answer: ["she does not come to madrid very often i usually visit her in barcelona", "she doesn't come to madrid very often i usually visit her in barcelona"] },
 ];
 
 export default function EngA1Class3Page() {
@@ -520,8 +520,8 @@ export default function EngA1Class3Page() {
         if (selectedTopic === 'ex3_4') {
             return (
                 <LargeTextTranslationExercise
-                    title="Ejercicio 4: Traducción de Texto"
-                    spanishText={class3LargeTextEx4Data}
+                    title="Ejercicio 4: Traducción de Diálogo"
+                    dialogue={class3LargeTextEx4Dialogue}
                     onComplete={() => handleTopicComplete('ex3_4')}
                 />
             );
