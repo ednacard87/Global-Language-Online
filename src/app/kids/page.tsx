@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 import { Loader2, Check, Flame, Gamepad2, Ear, BookOpen, Swords, CaseSensitive, Lock, Star, Rocket } from 'lucide-react';
 import { DashboardHeader } from "@/components/dashboard/header";
 import { useTranslation } from "@/context/language-context";
-import { useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
+import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { Progress } from "@/components/ui/progress";
@@ -96,7 +96,7 @@ export default function KidsCoursePage() {
     () => (user ? doc(firestore, 'students', user.uid) : null),
     [firestore, user]
   );
-  const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{role?: 'admin' | 'student', progress?: Record<string, number>, name?: string, photoURL?: string, selectedCourse?: string }>(studentDocRef);
+  const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{role?: 'admin' | 'student', progress?: Record<string, number>, name?: string, photoURL?: string, selectedCourse?: string, currentStreak?: number, lastLoginDate?: string }>(studentDocRef);
 
   const vrGamerAvatar = PlaceHolderImages.find(p => p.id === 'vr-gamer-avatar');
 
@@ -135,6 +135,27 @@ export default function KidsCoursePage() {
         setIsRedirecting(false);
     }
   }, [user, studentProfile, isUserLoading, isProfileLoading, isAdmin, router]);
+
+  useEffect(() => {
+    if (!user || !studentProfile || !firestore) return;
+
+    const today = new Date();
+    const todayStr = new Date(today.getFullYear(), today.getMonth(), today.getDate()).toISOString().split('T')[0];
+    const lastLoginStr = studentProfile.lastLoginDate;
+
+    if (lastLoginStr !== todayStr) {
+        const yesterday = new Date(today);
+        yesterday.setDate(today.getDate() - 1);
+        const yesterdayStr = new Date(yesterday.getFullYear(), yesterday.getMonth(), yesterday.getDate()).toISOString().split('T')[0];
+
+        let newStreak = (lastLoginStr === yesterdayStr) ? (studentProfile.currentStreak || 0) + 1 : 1;
+        
+        updateDocumentNonBlocking(doc(firestore, 'students', user.uid), {
+            currentStreak: newStreak,
+            lastLoginDate: todayStr
+        });
+    }
+  }, [user, studentProfile, firestore]);
 
   const courses = useMemo(() => {
     if (!studentProfile && !isAdmin) return [];
@@ -237,7 +258,16 @@ export default function KidsCoursePage() {
                         </div>
                         <NeonCard icon={Ear} title="LISTENING" href="/listening-practice" />
                         <NeonCard icon={BookOpen} title="READING" href="/reading-exercise" />
-                        <NeonCard icon={Flame} title="DAILY STREAK" href="#" />
+                        <Card className="bg-gray-800/50 border-2 border-purple-500/50 rounded-2xl text-center p-4 transition-all hover:bg-purple-500/20 hover:border-purple-400 hover:shadow-[0_0_15px_theme(colors.purple.500)] aspect-square flex flex-col justify-center items-center">
+                            {(studentProfile?.currentStreak || 0) > 1 ? (
+                                <div className="h-12 w-12 mx-auto flex items-center justify-center">
+                                    <span className="text-4xl font-bold text-cyan-400">{studentProfile?.currentStreak}</span>
+                                </div>
+                            ) : (
+                                <Flame className="h-12 w-12 mx-auto text-cyan-400" />
+                            )}
+                            <p className="mt-2 font-bold text-white">DAILY STREAK</p>
+                        </Card>
                     </div>
                 </div>
 
@@ -288,7 +318,16 @@ export default function KidsCoursePage() {
                     </div>
                     <NeonCard icon={Ear} title="LISTENING" href="/listening-practice" />
                     <NeonCard icon={BookOpen} title="READING" href="/reading-exercise" />
-                    <NeonCard icon={Flame} title="DAILY STREAK" href="#" />
+                    <Card className="bg-gray-800/50 border-2 border-purple-500/50 rounded-2xl text-center p-4 transition-all hover:bg-purple-500/20 hover:border-purple-400 hover:shadow-[0_0_15px_theme(colors.purple.500)] aspect-square flex flex-col justify-center items-center">
+                        {(studentProfile?.currentStreak || 0) > 1 ? (
+                            <div className="h-12 w-12 mx-auto flex items-center justify-center">
+                                <span className="text-4xl font-bold text-cyan-400">{studentProfile?.currentStreak}</span>
+                            </div>
+                        ) : (
+                            <Flame className="h-12 w-12 mx-auto text-cyan-400" />
+                        )}
+                        <p className="mt-2 font-bold text-white">DAILY STREAK</p>
+                    </Card>
                 </div>
               </div>
               
