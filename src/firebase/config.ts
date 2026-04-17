@@ -2,11 +2,11 @@
 // You can find your project's configuration in the Firebase Console.
 
 export const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "edna-language-app.firebaseapp.com",
-  projectId: "edna-language-app",
-  storageBucket: "edna-language-app.appspot.com",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID",
-  measurementId: "G-YOUR_MEASUREMENT_ID"
+  projectId: "studio-1908798070-d8011",
+  appId: "1:327530640689:web:4047183ab8e6213e942c10",
+  apiKey: "AIzaSyA5RA5fP2y9J_iMx1rbOPHYHNWpPijMm_w",
+  authDomain: "studio-1908798070-d8011.firebaseapp.com",
+  measurementId: "",
+  messagingSenderId: "327530640689",
+  storageBucket: "studio-1908798070-d8011.appspot.com"
 };
