@@ -257,7 +257,7 @@ export default function EspanolDashboardPage() {
                         </Dialog>
                         <NeonCard icon={Mic} title="PODCAST" href="https://www.youtube.com/watch?v=WRJnVyqVGpc" />
                         <NeonCard icon={Video} title="VIDEO" href="https://www.youtube.com/watch?v=7J-PYxCP1_Y" />
-                        <NeonCard icon={Music} title="MUSICA" href="https://www.youtube.com/watch?v=ZOlZxOR5gS8&list=RDZOlZxOR5gS8&start_radio=1" />
+                        <NeonCard icon={Music} title="MUSICA" href="https://www.youtube.com/watch?v=ygZ002seRlU&amp;list=RDygZ002seRlU&amp;start_radio=1" />
                     </div>
                 </div>
 
@@ -343,7 +343,7 @@ export default function EspanolDashboardPage() {
                     </Dialog>
                     <NeonCard icon={Mic} title="PODCAST" href="https://www.youtube.com/watch?v=WRJnVyqVGpc" />
                     <NeonCard icon={Video} title="VIDEO" href="https://www.youtube.com/watch?v=7J-PYxCP1_Y" />
-                    <NeonCard icon={Music} title="MUSICA" href="https://www.youtube.com/watch?v=ZOlZxOR5gS8&list=RDZOlZxOR5gS8&start_radio=1" />
+                    <NeonCard icon={Music} title="MUSICA" href="https://www.youtube.com/watch?v=ygZ002seRlU&amp;list=RDygZ002seRlU&amp;start_radio=1" />
                 </div>
               </div>
               
