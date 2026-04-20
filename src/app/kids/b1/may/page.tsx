@@ -103,33 +103,33 @@ const mayInterrogativeVocab = {
 
 const mayMixedExercises = [
     {
-        spanish: "Nosotros podríamos viajar a la luna algún día.",
+        spanish: "Puede que ella consiga un trabajo.",
         answers: {
-            affirmative: ["we might travel to the moon someday"],
-            negative: ["we might not travel to the moon someday"],
-            interrogative: ["might we travel to the moon someday?"],
-            shortAffirmative: ["yes, we might"],
-            shortNegative: ["no, we might not"]
+            affirmative: ["She may get a job."],
+            negative: ["She may not get a job."],
+            interrogative: ["May she get a job?"],
+            shortAffirmative: ["Yes, she may."],
+            shortNegative: ["No, she may not."]
         }
     },
     {
-        spanish: "Puede que llueva esta tarde.",
+        spanish: "Tal vez nos mudemos al extranjero.",
         answers: {
-            affirmative: ["it may rain this afternoon"],
-            negative: ["it may not rain this afternoon"],
-            interrogative: ["may it rain this afternoon?"],
-            shortAffirmative: ["yes, it may"],
-            shortNegative: ["no, it may not"]
+            affirmative: ["We might move abroad."],
+            negative: ["We might not move abroad."],
+            interrogative: ["Might we move abroad?"],
+            shortAffirmative: ["Yes, we might."],
+            shortNegative: ["No, we might not."]
         }
     },
     {
-        spanish: "Él tal vez compre un carro nuevo.",
+        spanish: "Puede que solicite una beca.",
         answers: {
-            affirmative: ["he might buy a new car"],
-            negative: ["he might not buy a new car"],
-            interrogative: ["might he buy a new car?"],
-            shortAffirmative: ["yes, he might"],
-            shortNegative: ["no, he might not"]
+            affirmative: ["I may apply for a scholarship."],
+            negative: ["I may not apply for a scholarship."],
+            interrogative: ["May I apply for a scholarship?"],
+            shortAffirmative: ["Yes, you may."],
+            shortNegative: ["No, you may not."]
         }
     }
 ];
