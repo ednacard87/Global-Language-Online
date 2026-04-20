@@ -19,7 +19,7 @@ const whExercisesData = {
             { spanish: '¿QUIEN ESTA EN LA PUERTA?', english: ["who is at the door?"] }
         ]
     },
-    'what1': {
+    'What1': {
         title: "What: Qué?",
         prompts: [
             { spanish: 'QUE HACES?', english: ["what do you do?"] },
@@ -29,7 +29,7 @@ const whExercisesData = {
             { spanish: 'QUE COMEN ELLOS EN LA NOCHE?', english: ["what do they eat at night?"] }
         ]
     },
-    'what2': {
+    'What2': {
         title: "What: Cual?",
         prompts: [
             { spanish: '¿CUAL ES TU CARRO FAVORITO?', english: ["what is your favorite car?"] },
@@ -39,7 +39,7 @@ const whExercisesData = {
             { spanish: '¿CUALES SON TUS ANIMALES FAVORITOS?', english: ["what are your favorite animals?"] }
         ]
     },
-    'what-kind-of': {
+    'What kind of': {
         title: "WHAT KIND OF?  QUE TIPO/CLASE DE ________? –",
         prompts: [
             { spanish: '¿QUE TIPO DE ZAPATOS TE GUSTAN?', english: ["what kind of shoes do you like?"] },
@@ -49,7 +49,7 @@ const whExercisesData = {
             { spanish: '¿QUE TIPO DE ROPA TE GUSTA?', english: ["what kind of clothes do you like?"] }
         ]
     },
-    'how': {
+    'How': {
         title: "HOW? - COMO? -",
         prompts: [
             { spanish: 'COMO ESTAS?', english: ["how are you?"] },
@@ -59,7 +59,7 @@ const whExercisesData = {
             { spanish: 'COMO ESTA TU ESPOSO?', english: ["how is your husband?"] }
         ]
     },
-    'how-adjective': {
+    'How + Adjective': {
         title: "HOW + ADJECTIVE =QUE TAN + ADJETIVO...?",
         prompts: [
             { spanish: '¿QUE TAN ALTO ERES?', english: ["how tall are you?"] },
@@ -69,7 +69,7 @@ const whExercisesData = {
             { spanish: '¿QUE TAN GRANDE ES MEDELLIN?', english: ["how big is medellin?"] }
         ]
     },
-    'how-often': {
+    'How + Often': {
         title: "HOW + OFTEN: ¿QUE TAN SEGUIDO?",
         prompts: [
             { spanish: '¿QUE TAN SEGUIDO VAS AL GIMNASIO?', english: ["how often do you go to the gym?"] },
@@ -79,7 +79,7 @@ const whExercisesData = {
             { spanish: '¿QUE TAN SEGUIDO ESTUDIAS QUIZLET?', english: ["how often do you study quizlet?"] }
         ]
     },
-    'whose': {
+    'Whose': {
         title: "WHOSE? - DE QUIEN – DE QUIENES? -",
         prompts: [
             { spanish: '¿DE QUIEN ES ESTA SOMBRILLA?', english: ["whose umbrella is this?"] },
@@ -89,7 +89,7 @@ const whExercisesData = {
             { spanish: 'DE QUIEN SON ESTAS LLAVES?', english: ["whose keys are these?"] }
         ]
     },
-    'where': {
+    'Where': {
         title: "WHERE? ¿DONDE?",
         prompts: [
             { spanish: '¿DONDE ESTA WILLIAM?', english: ["where is william?"] },
@@ -99,7 +99,7 @@ const whExercisesData = {
             { spanish: '¿DONDE COMPRA ELLA LA CARNE?', english: ["where does she buy the meat?"] }
         ]
     },
-    'which': {
+    'Which': {
         title: "WHICH? -CUAL? (en un grupo definido- ya conozco las opciones a elegir)",
         prompts: [
             { spanish: '¿CUAL MOTO LE GUSTA A EL?  (DE ESTOS QUE TE MUESTRO)', english: ["which motorcycle does he like?"] },
@@ -109,7 +109,7 @@ const whExercisesData = {
             { spanish: '¿CUAL CARRO QUIERES COMPRAR?', english: ["which car do you want to buy?"] }
         ]
     },
-    'when': {
+    'When': {
         title: "WHEN? ¿CUÁNDO?",
         prompts: [
             { spanish: '¿CUÁNDO ES TU CUMPLEAÑOS?', english: ["when is your birthday?"] },
@@ -119,7 +119,7 @@ const whExercisesData = {
             { spanish: 'CUANDO ES LA CLASE DE YOGA?', english: ["when is the yoga class?"] }
         ]
     },
-    'why': {
+    'Why': {
         title: "WHY? –POR QUÉ (SE USA PARA PREGUNTAS) - BECAUSE…- PORQUE……(SE USA PARA RESPUESTAS)",
         prompts: [
             { spanish: '¿POR QUÉ VAS ALLÁ? – PORQUE YO VOY A LA FINCA DE MIS PADRES.', english: ["why do you go there? because i go to my parents' farm."] },
