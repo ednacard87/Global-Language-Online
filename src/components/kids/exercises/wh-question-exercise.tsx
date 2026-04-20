@@ -10,7 +10,7 @@ import { ArrowLeft, ArrowRight, Trophy } from 'lucide-react';
 
 const whExercisesData = {
     'Who': {
-        title: "Who : Quién/ Quienes",
+        title: "Who : Quién/ Quienes?",
         prompts: [
             { spanish: '¿QUIEN ES ESE HOMBRE?', english: ["who is that man?"] },
             { spanish: '¿QUIENES SON TEDDY Y APOLO?', english: ["who are teddy and apolo?"] },
