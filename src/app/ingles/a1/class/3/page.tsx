@@ -217,7 +217,7 @@ const can1ExerciseData: ExercisePrompt[] = [
 export default function EngA1Class3Page() {
     const { t } = useTranslation();
     const { toast } = useToast();
-    const { user } = useUser();
+    const { user, isUserLoading } = useUser();
     const firestore = useFirestore();
 
     const studentDocRef = useMemoFirebase(
@@ -273,7 +273,7 @@ export default function EngA1Class3Page() {
     ], [t]);
     
     useEffect(() => {
-        if (isProfileLoading) return;
+        if (isProfileLoading || isUserLoading) return;
         const newPath = initialLearningPath.map(topic => ({
             ...topic,
             status: isAdmin ? 'completed' : topic.status,
@@ -299,10 +299,10 @@ export default function EngA1Class3Page() {
         const firstActive = newPath.find(p => p.status === 'active') || newPath.flatMap(p => p.subItems || []).find(sp => sp?.status === 'active');
         if (firstActive) {
             setSelectedTopic(firstActive.key);
-        } else {
-            setSelectedTopic(newPath[0]?.key || '');
+        } else if (newPath.length > 0) {
+            setSelectedTopic(newPath[0].key);
         }
-    }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading]);
+    }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading, isUserLoading]);
     
     const progress = useMemo(() => {
         let totalTopics = 0;
@@ -320,8 +320,8 @@ export default function EngA1Class3Page() {
     }, [learningPath]);
 
     useEffect(() => {
-        if (isProfileLoading) return;
-        if (!isAdmin && studentDocRef) {
+        if (isProfileLoading || isUserLoading) return;
+        if (!isAdmin && studentDocRef && learningPath.length > 0) {
             const statusesToSave: Record<string, any> = {};
             learningPath.forEach(item => {
                 statusesToSave[item.key] = item.status;
@@ -337,7 +337,7 @@ export default function EngA1Class3Page() {
         if (progress >= 100) {
           window.dispatchEvent(new CustomEvent('progressUpdated'));
         }
-    }, [learningPath, isAdmin, progress, studentDocRef, isProfileLoading]);
+    }, [learningPath, isAdmin, progress, studentDocRef, isProfileLoading, isUserLoading]);
 
     useEffect(() => {
         if (!topicToComplete) return;
