@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,20 +8,48 @@ import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { ArrowLeft, ArrowRight, Trophy } from 'lucide-react';
 
-const exercisePrompts = [
-    { spanish: "Frase de ejemplo 1...", english: ["Example sentence 1..."] },
-    { spanish: "Frase de ejemplo 2...", english: ["Example sentence 2..."] },
-    { spanish: "Frase de ejemplo 3...", english: ["Example sentence 3..."] },
-];
+const whExercisesData = {
+    'Who': {
+        title: "Who : Quién/ Quienes",
+        prompts: [
+            { spanish: '¿QUIEN ES ESE HOMBRE?', english: ["who is that man?"] },
+            { spanish: '¿QUIENES SON TEDDY Y APOLO?', english: ["who are teddy and apolo?"] },
+            { spanish: '¿QUIEN ES LUIS?', english: ["who is luis?"] },
+            { spanish: '¿QUIEN ES TU TIA?', english: ["who is your aunt?"] },
+            { spanish: '¿QUIEN ESTA EN LA PUERTA?', english: ["who is at the door?"] }
+        ]
+    },
+    'default': {
+        title: 'Ejercicio',
+        prompts: [
+            { spanish: "Frase de ejemplo 1...", english: ["Example sentence 1..."] },
+            { spanish: "Frase de ejemplo 2...", english: ["Example sentence 2..."] },
+            { spanish: "Frase de ejemplo 3...", english: ["Example sentence 3..."] },
+        ]
+    }
+};
 
 type ValidationStatus = 'correct' | 'incorrect' | 'unchecked';
 
 export function WhQuestionExercise({ exerciseName, onComplete }: { exerciseName: string, onComplete: () => void }) {
     const { toast } = useToast();
     const [currentIndex, setCurrentIndex] = useState(0);
+
+    const { title, prompts: exercisePrompts } = whExercisesData[exerciseName as keyof typeof whExercisesData] || {
+        title: `Ejercicio: ${exerciseName}`,
+        prompts: whExercisesData.default.prompts
+    };
+
     const [userAnswers, setUserAnswers] = useState<string[]>(Array(exercisePrompts.length).fill(''));
     const [validationStates, setValidationStates] = useState<ValidationStatus[]>(Array(exercisePrompts.length).fill('unchecked'));
     const [showCompletionMessage, setShowCompletionMessage] = useState(false);
+
+    useEffect(() => {
+        setUserAnswers(Array(exercisePrompts.length).fill(''));
+        setValidationStates(Array(exercisePrompts.length).fill('unchecked'));
+        setCurrentIndex(0);
+        setShowCompletionMessage(false);
+    }, [exerciseName, exercisePrompts.length]);
 
     const handleAnswerChange = (value: string) => {
         const newAnswers = [...userAnswers];
@@ -36,10 +64,29 @@ export function WhQuestionExercise({ exerciseName, onComplete }: { exerciseName:
     };
     
     const handleFinalCheck = () => {
-        // For design purposes, let's just pretend it's correct and complete.
-        toast({ title: "Ejercicio completado!", description: "Has completado este ejercicio." });
-        setShowCompletionMessage(true);
-        onComplete();
+        let allCorrect = true;
+        const newValidationStates = exercisePrompts.map((prompt, index) => {
+            const userAnswer = userAnswers[index]?.trim().toLowerCase().replace(/[.?,]/g, '') || '';
+            const correctAnswers = prompt.english.map(a => a.toLowerCase().replace(/[.?]/g, ''));
+            const isCorrect = correctAnswers.includes(userAnswer);
+            if (!isCorrect) {
+                allCorrect = false;
+            }
+            return isCorrect ? 'correct' : 'incorrect';
+        });
+        setValidationStates(newValidationStates);
+
+        if (allCorrect) {
+            toast({ title: "¡Excelente!", description: "Todas tus respuestas son correctas." });
+            setShowCompletionMessage(true);
+            onComplete();
+        } else {
+            toast({ 
+                variant: 'destructive', 
+                title: "Algunas respuestas son incorrectas", 
+                description: "Revisa las bolitas rojas y corrige tus respuestas." 
+            });
+        }
     };
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -67,7 +114,7 @@ export function WhQuestionExercise({ exerciseName, onComplete }: { exerciseName:
     return (
         <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
             <CardHeader>
-                <CardTitle>Ejercicio: {exerciseName}</CardTitle>
+                <CardTitle>{title}</CardTitle>
                  <CardDescription>Traduce las frases.</CardDescription>
                 <div className="flex items-center justify-start flex-wrap gap-2 pt-4">
                     {exercisePrompts.map((_, index) => (
