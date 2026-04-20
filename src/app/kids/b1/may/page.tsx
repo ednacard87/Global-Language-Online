@@ -13,6 +13,99 @@ import { Progress } from '@/components/ui/progress';
 import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+
+const readingTextData = {
+    title: "Life is Full of Choices",
+    content: "Next year, I might take a gap year to travel. I may study abroad in Spain. It's a big decision! My friend, Sarah, will set up a business. She thinks she may get a promotion first. I will not start a family soon, but I might join a charity to help animals. We all have big dreams for the future.",
+    questions: [
+        { id: 'q1', question: "What might the narrator do next year?", answers: ["take a gap year", "take a gap year to travel"] },
+        { id: 'q2', question: "Where may the narrator study?", answers: ["in spain", "spain"] },
+        { id: 'q3', question: "What will Sarah do?", answers: ["set up a business"] },
+        { id: 'q4', question: "What might the narrator join?", answers: ["a charity", "a charity to help animals"] }
+    ]
+};
+
+const ReadingExercise = ({ onComplete }: { onComplete: () => void }) => {
+    const { t } = useTranslation();
+    const { toast } = useToast();
+    const [userAnswers, setUserAnswers] = useState<Record<string, string>>({});
+    const [validationStatus, setValidationStatus] = useState<Record<string, 'correct' | 'incorrect' | 'unchecked'>>({});
+
+    const handleInputChange = (questionId: string, value: string) => {
+        setUserAnswers(prev => ({ ...prev, [questionId]: value }));
+        setValidationStatus(prev => ({ ...prev, [questionId]: 'unchecked' }));
+    };
+
+    const handleCheckAnswers = () => {
+        let allCorrect = true;
+        const newValidationStatus: Record<string, 'correct' | 'incorrect' | 'unchecked'> = {};
+
+        readingTextData.questions.forEach(q => {
+            const userAnswer = userAnswers[q.id]?.trim().toLowerCase().replace(/[.?]/g, '') || '';
+            const correctAnswers = q.answers.map(a => a.toLowerCase().replace(/[.?]/g, ''));
+            
+            if (correctAnswers.includes(userAnswer)) {
+                newValidationStatus[q.id] = 'correct';
+            } else {
+                newValidationStatus[q.id] = 'incorrect';
+                allCorrect = false;
+            }
+        });
+
+        setValidationStatus(newValidationStatus);
+
+        if (allCorrect) {
+            toast({ title: "Correcto!", description: "¡Todas las respuestas son correctas!" });
+            onComplete();
+        } else {
+            toast({
+                variant: 'destructive',
+                title: "Incorrecto",
+                description: "Revisa las respuestas marcadas en rojo."
+            });
+        }
+    };
+    
+    const getInputClass = (questionId: string) => {
+        const status = validationStatus[questionId];
+        if (status === 'correct') return 'border-green-500 focus-visible:ring-green-500';
+        if (status === 'incorrect') return 'border-destructive focus-visible:ring-destructive';
+        return '';
+    };
+
+    return (
+        <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+            <CardHeader>
+                <CardTitle>Reading Comprehension: "{readingTextData.title}"</CardTitle>
+                <CardDescription>Lee el texto y responde las preguntas para probar tu comprensión.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+                <div className="p-4 bg-muted rounded-lg border">
+                    <p className="text-base leading-relaxed">{readingTextData.content}</p>
+                </div>
+                <div className="space-y-4 pt-4 border-t">
+                    {readingTextData.questions.map(q => (
+                        <div key={q.id} className="grid gap-2">
+                            <Label htmlFor={q.id}>{q.question}</Label>
+                            <Input
+                                id={q.id}
+                                value={userAnswers[q.id] || ''}
+                                onChange={(e) => handleInputChange(q.id, e.target.value)}
+                                className={cn(getInputClass(q.id))}
+                                autoComplete="off"
+                            />
+                        </div>
+                    ))}
+                </div>
+            </CardContent>
+            <CardFooter>
+                <Button onClick={handleCheckAnswers}>Verificar Respuestas</Button>
+            </CardFooter>
+        </Card>
+    );
+};
 
 type Topic = {
   key: string;
@@ -59,6 +152,7 @@ export default function MayPage() {
         { key: 'exercise2', name: 'Ejercicio 2', icon: PenSquare, status: 'locked' },
         { key: 'exercise3', name: 'Ejercicio 3', icon: PenSquare, status: 'locked' },
         { key: 'game', name: 'Sopa de Letras (Life Goals)', icon: Gamepad2, status: 'locked' },
+        { key: 'reading', name: 'Lectura', icon: BookOpen, status: 'locked' },
     ], []);
     
     useEffect(() => {
@@ -151,7 +245,7 @@ export default function MayPage() {
         }
         setSelectedTopic(topicKey);
 
-        const exerciseKeys = ['exercise1', 'exercise2', 'exercise3', 'game'];
+        const exerciseKeys = ['exercise1', 'exercise2', 'exercise3', 'game', 'reading'];
         if (!exerciseKeys.includes(topicKey)) {
              handleTopicComplete(topicKey);
         }
@@ -288,6 +382,8 @@ export default function MayPage() {
                         </CardContent>
                     </Card>
                 );
+            case 'reading':
+                return <ReadingExercise onComplete={() => handleTopicComplete('reading')} />;
             default:
                 return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple min-h-[500px]">
