@@ -628,6 +628,11 @@ export default function WillPage() {
         setTopicToComplete(completedKey);
     };
 
+    const handleContinueToGrammar = () => {
+        handleTopicComplete('vocabulary');
+        setSelectedTopic('grammar');
+    };
+
     const handleTopicSelect = (topicKey: string) => {
         const mainTopic = learningPath.find(t => t.key === topicKey || t.subItems?.some(st => st.key === topicKey));
         const subTopic = mainTopic?.subItems?.find(st => st.key === topicKey);
@@ -647,110 +652,102 @@ export default function WillPage() {
     const renderContent = () => {
         const topic = learningPath.find(t => t.key === selectedTopic) || learningPath.flatMap(t => t.subItems || []).find(st => st?.key === selectedTopic);
 
-        if (selectedTopic === 'vocabulary') {
-            return (
-                <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-                    <CardHeader>
-                        <CardTitle>{t('kidsB1Will.vocabulary')}</CardTitle>
-                        <CardDescription>Vocabulario del Medio Ambiente</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-lg">
-                            <div className="font-bold p-3 bg-muted rounded-lg text-left">English</div>
-                            <div className="font-bold p-3 bg-muted rounded-lg text-left">Español</div>
-                            {vocabularyData.map((item, index) => (
-                                <React.Fragment key={index}>
-                                    <div className="p-3 bg-card border rounded-lg flex items-center">{item.english}</div>
-                                    <div className="p-3 bg-card border rounded-lg flex items-center">{item.spanish}</div>
-                                </React.Fragment>
-                            ))}
-                        </div>
-                    </CardContent>
-                </Card>
-            );
-        }
-        
-        if (selectedTopic === 'grammar') {
-            return (
-                <div className="space-y-6">
+        switch(selectedTopic) {
+            case 'vocabulary':
+                return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
                         <CardHeader>
-                            <CardTitle>¿Cuándo usamos WILL?</CardTitle>
+                            <CardTitle>{t('kidsB1Will.vocabulary')}</CardTitle>
+                            <CardDescription>Vocabulario del Medio Ambiente</CardDescription>
                         </CardHeader>
-                        <CardContent className="space-y-2 text-lg">
-                            <p>Usamos <span className="font-bold text-primary">WILL</span> para hablar sobre el futuro. Es como hacer una promesa o una predicción.</p>
-                            <ul className="list-disc list-inside text-muted-foreground space-y-1 pl-2">
-                                <li>Para decisiones que tomas en el momento. (Ej: "I will have the chicken.")</li>
-                                <li>Para predecir algo que crees que pasará. (Ej: "It will rain tomorrow.")</li>
-                                <li>Para hacer promesas u ofrecimientos. (Ej: "I will help you.")</li>
-                            </ul>
+                        <CardContent>
+                            <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-lg">
+                                <div className="font-bold p-3 bg-muted rounded-lg text-left">English</div>
+                                <div className="font-bold p-3 bg-muted rounded-lg text-left">Español</div>
+                                {vocabularyData.map((item, index) => (
+                                    <React.Fragment key={index}>
+                                        <div className="p-3 bg-card border rounded-lg flex items-center">{item.english}</div>
+                                        <div className="p-3 bg-card border rounded-lg flex items-center">{item.spanish}</div>
+                                    </React.Fragment>
+                                ))}
+                            </div>
                         </CardContent>
+                        <CardFooter>
+                            <Button onClick={handleContinueToGrammar}>
+                                Continuar con Gramática
+                            </Button>
+                        </CardFooter>
                     </Card>
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                );
+            case 'grammar':
+                 return (
+                    <div className="space-y-6">
+                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                            <CardHeader>
+                                <CardTitle>¿Cuándo usamos WILL?</CardTitle>
+                            </CardHeader>
+                            <CardContent className="space-y-2 text-lg">
+                                <p>Usamos <span className="font-bold text-primary">WILL</span> para hablar sobre el futuro. Es como hacer una promesa o una predicción.</p>
+                                <ul className="list-disc list-inside text-muted-foreground space-y-1 pl-2">
+                                    <li>Para decisiones que tomas en el momento. (Ej: "I will have the chicken.")</li>
+                                    <li>Para predecir algo que crees que pasará. (Ej: "It will rain tomorrow.")</li>
+                                    <li>Para hacer promesas u ofrecimientos. (Ej: "I will help you.")</li>
+                                </ul>
+                            </CardContent>
+                        </Card>
+                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                            <CardHeader>
+                                <CardTitle>Estructura de WILL</CardTitle>
+                            </CardHeader>
+                            <CardContent className="space-y-2 font-mono text-base">
+                                <p><span className="font-bold text-lg text-green-500 mr-2">(+)</span> pronoun + WILL + Verb + Complement</p>
+                                <p><span className="font-bold text-lg text-red-500 mr-2">(-)</span> pronoun + WILL + NOT + Verb + Complement</p>
+                                <p><span className="font-bold text-lg text-blue-500 mr-2">(?)</span> WILL + pronoun + Verb + Complement?</p>
+                                <div className="border-t my-2" />
+                                <p className="font-sans font-semibold pt-2">Respuestas Cortas</p>
+                                <p><span className="font-bold text-lg text-green-500 mr-2">(+A)</span> Yes, pronoun + WILL</p>
+                                <p><span className="font-bold text-lg text-red-500 mr-2">(-A)</span> No, pronoun + WILL + NOT</p>
+                            </CardContent>
+                        </Card>
+                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                            <CardHeader>
+                                <CardTitle>Contracción Negativa</CardTitle>
+                            </CardHeader>
+                            <CardContent className="text-center font-mono text-xl p-6">
+                                <p>WILL + NOT = <span className="font-bold text-red-500">WON'T</span></p>
+                            </CardContent>
+                        </Card>
+                    </div>
+                );
+            case 'positive':
+                return <SingleFormExercise key="positive" onComplete={() => handleTopicComplete('positive')} exerciseData={willPositiveExercises} title="Ejercicios: Forma Positiva" description="Traduce las frases a su forma afirmativa usando 'will'." formType="affirmative" />;
+            case 'negative':
+                return <SingleFormExercise key="negative" onComplete={() => handleTopicComplete('negative')} exerciseData={willNegativeExercises} title="Ejercicios: Forma Negativa" description="Traduce las frases a su forma negativa usando 'will not' o 'won't'." formType="negative" />;
+            case 'interrogative':
+                return <SingleFormExercise key="interrogative" onComplete={() => handleTopicComplete('interrogative')} exerciseData={willInterrogativeExercises} title="Ejercicios: Forma Interrogativa" description="Convierte las frases en preguntas usando 'will'." formType="interrogative" />;
+            case 'mixedExercises':
+                return <PresentSimpleExercise onComplete={() => handleTopicComplete('mixedExercises')} exerciseData={willMixedExercises} title="Ejercicios Mixtos (Will)" showShortAnswers={true} />;
+            case 'reading':
+                return <ReadingExercise onComplete={() => handleTopicComplete('reading')} />;
+            case 'finalVocabulary':
+                return <FinalVocabularyExercise onComplete={() => handleTopicComplete('finalVocabulary')} />;
+            case 'game':
+                return <WordSearchGame onComplete={() => handleTopicComplete('game')} />;
+            default:
+                return (
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple min-h-[500px]">
                         <CardHeader>
-                            <CardTitle>Estructura de WILL</CardTitle>
+                            <CardTitle>{topic?.name || 'Cargando...'}</CardTitle>
+                            <CardDescription>Contenido para este tema estará disponible pronto.</CardDescription>
                         </CardHeader>
-                        <CardContent className="space-y-2 font-mono text-base">
-                            <p><span className="font-bold text-lg text-green-500 mr-2">(+)</span> pronoun + WILL + Verb + Complement</p>
-                            <p><span className="font-bold text-lg text-red-500 mr-2">(-)</span> pronoun + WILL + NOT + Verb + Complement</p>
-                            <p><span className="font-bold text-lg text-blue-500 mr-2">(?)</span> WILL + pronoun + Verb + Complement?</p>
-                            <div className="border-t my-2" />
-                            <p className="font-sans font-semibold pt-2">Respuestas Cortas</p>
-                            <p><span className="font-bold text-lg text-green-500 mr-2">(+A)</span> Yes, pronoun + WILL</p>
-                            <p><span className="font-bold text-lg text-red-500 mr-2">(-A)</span> No, pronoun + WILL + NOT</p>
+                        <CardContent>
+                            <div className="flex items-center justify-center h-64">
+                                <Trophy className="w-24 h-24 text-yellow-300" />
+                            </div>
                         </CardContent>
                     </Card>
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-                        <CardHeader>
-                            <CardTitle>Contracción Negativa</CardTitle>
-                        </CardHeader>
-                        <CardContent className="text-center font-mono text-xl p-6">
-                            <p>WILL + NOT = <span className="font-bold text-red-500">WON'T</span></p>
-                        </CardContent>
-                    </Card>
-                </div>
-            );
+                );
         }
-
-        if (selectedTopic === 'positive') {
-            return <SingleFormExercise key="positive" onComplete={() => handleTopicComplete('positive')} exerciseData={willPositiveExercises} title="Ejercicios: Forma Positiva" description="Traduce las frases a su forma afirmativa usando 'will'." formType="affirmative" />;
-        }
-        if (selectedTopic === 'negative') {
-            return <SingleFormExercise key="negative" onComplete={() => handleTopicComplete('negative')} exerciseData={willNegativeExercises} title="Ejercicios: Forma Negativa" description="Traduce las frases a su forma negativa usando 'will not' o 'won't'." formType="negative" />;
-        }
-        if (selectedTopic === 'interrogative') {
-            return <SingleFormExercise key="interrogative" onComplete={() => handleTopicComplete('interrogative')} exerciseData={willInterrogativeExercises} title="Ejercicios: Forma Interrogativa" description="Convierte las frases en preguntas usando 'will'." formType="interrogative" />;
-        }
-
-        if (selectedTopic === 'mixedExercises') {
-            return <PresentSimpleExercise onComplete={() => handleTopicComplete('mixedExercises')} exerciseData={willMixedExercises} title="Ejercicios Mixtos (Will)" />;
-        }
-
-        if (selectedTopic === 'reading') {
-            return <ReadingExercise onComplete={() => handleTopicComplete('reading')} />;
-        }
-        
-        if (selectedTopic === 'finalVocabulary') {
-            return <FinalVocabularyExercise onComplete={() => handleTopicComplete('finalVocabulary')} />;
-        }
-        
-        if (selectedTopic === 'game') {
-            return <WordSearchGame onComplete={() => handleTopicComplete('game')} />;
-        }
-
-        return (
-            <Card className="shadow-soft rounded-lg border-2 border-brand-purple min-h-[500px]">
-              <CardHeader>
-                <CardTitle>{topic?.name || 'Cargando...'}</CardTitle>
-                <CardDescription>Contenido para este tema estará disponible pronto.</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center justify-center h-64">
-                    <Trophy className="w-24 h-24 text-yellow-300" />
-                </div>
-              </CardContent>
-            </Card>
-        );
     };
 
     return (
