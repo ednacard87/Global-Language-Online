@@ -103,7 +103,7 @@ const mayInterrogativeVocab = {
 
 const mayMixedExercises = [
     {
-        spanish: "ella puede que consiga un empleo - \"MAY\" (Posibilidad probable - 50%)",
+        spanish: "ella puede que consiga un empleo -\"MAY\" (Posibilidad probable - 50%)",
         answers: {
             affirmative: ["She may get a job."],
             negative: ["She may not get a job."],
@@ -376,7 +376,7 @@ const ICONS = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_kids_b1_may_v1';
+const progressStorageVersion = 'progress_kids_b1_may_v3';
 const mainProgressKey = 'progress_kids_b1_may';
 
 export default function MayPage() {
@@ -418,57 +418,57 @@ export default function MayPage() {
         { key: 'mixedExercises', name: 'Ejercicios Mixtos', icon: PenSquare, status: 'locked' },
         { key: 'game', name: 'Sopa de Letras (Life Goals)', icon: Gamepad2, status: 'locked' },
         { key: 'reading', name: 'Lectura', icon: BookText, status: 'locked' },
+        { key: 'finalVocabulary', name: 'Vocabulario Final', icon: BookOpen, status: 'locked' },
     ], []);
     
     useEffect(() => {
-        if (isUserLoading || isProfileLoading) {
-            return;
+        if (isUserLoading || isProfileLoading || !initialLearningPath.length) return;
+
+        let newPath: Topic[] = initialLearningPath.map(topic => ({
+            ...topic,
+            subItems: topic.subItems ? topic.subItems.map(sub => ({ ...sub })) : undefined,
+        }));
+        
+        let pathIsLoadedFromProfile = false;
+
+        if (isAdmin) {
+            newPath.forEach(item => {
+                item.status = 'completed';
+                if(item.subItems) {
+                    item.subItems.forEach(sub => sub.status = 'completed');
+                }
+            });
+            pathIsLoadedFromProfile = true;
+        } else if (studentProfile?.lessonProgress?.[progressStorageVersion]) {
+            const savedStatuses = studentProfile.lessonProgress[progressStorageVersion];
+            newPath.forEach(item => {
+                if (savedStatuses[item.key]) item.status = savedStatuses[item.key];
+                if (item.subItems && savedStatuses.subItems?.[item.key]) {
+                    item.subItems.forEach(subItem => {
+                        if (savedStatuses.subItems[item.key][subItem.key]) {
+                            subItem.status = savedStatuses.subItems[item.key][subItem.key];
+                        }
+                    });
+                }
+            });
+            pathIsLoadedFromProfile = true;
         }
 
+        setLearningPath(newPath);
+
         if (!initialLoadComplete) {
-            const newPath = initialLearningPath.map(topic => ({
-                ...topic,
-                subItems: topic.subItems ? topic.subItems.map(sub => ({ ...sub })) : undefined,
-            }));
-    
-            if (isAdmin) {
-                newPath.forEach(item => {
-                    item.status = 'completed';
-                    if(item.subItems) {
-                        item.subItems.forEach(sub => sub.status = 'completed');
-                    }
-                });
-            } else if (studentProfile?.lessonProgress?.[progressStorageVersion]) {
-                const savedStatuses = studentProfile.lessonProgress[progressStorageVersion];
-                newPath.forEach(item => {
-                    if (savedStatuses[item.key]) item.status = savedStatuses[item.key];
-                    if (item.subItems && savedStatuses.subItems?.[item.key]) {
-                        item.subItems.forEach(subItem => {
-                            if (savedStatuses.subItems[item.key][subItem.key]) {
-                                subItem.status = savedStatuses.subItems[item.key][subItem.key];
-                            }
-                        });
-                    }
-                });
-            }
-    
-            setLearningPath(newPath);
-            
-            const firstActive = newPath.find(p => p.status === 'active') || newPath.find(p => p.subItems?.some(s => s.status === 'active'));
-            if (firstActive) {
-                if (firstActive.subItems) {
-                    const firstActiveSub = firstActive.subItems.find(s => s.status === 'active');
-                    setSelectedTopic(firstActiveSub?.key || firstActive.key);
-                } else {
-                    setSelectedTopic(firstActive.key);
-                }
+            const firstActiveItem = newPath.find(p => p.status === 'active' && !p.subItems) || newPath.find(p => p.subItems?.some(sp => sp.status === 'active'));
+
+            if (firstActiveItem?.subItems) {
+                const firstActiveSubItem = firstActiveItem.subItems.find(sp => sp.status === 'active');
+                setSelectedTopic(firstActiveSubItem?.key || firstActiveItem.key);
             } else {
-                setSelectedTopic(newPath[0]?.key || '');
+                setSelectedTopic(firstActiveItem?.key || newPath[0]?.key || '');
             }
             setInitialLoadComplete(true);
         }
     
-    }, [isAdmin, initialLearningPath, studentProfile, isUserLoading, isProfileLoading, initialLoadComplete]);
+    }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading, isUserLoading, initialLoadComplete]);
 
     
     const progress = useMemo(() => {
@@ -488,9 +488,9 @@ export default function MayPage() {
     }, [learningPath, initialLoadComplete]);
 
     useEffect(() => {
-        if (!initialLoadComplete || isUserLoading || isProfileLoading || learningPath.length === 0) return;
+        if (!initialLoadComplete || isUserLoading || isProfileLoading || learningPath.length === 0 || isAdmin) return;
 
-        if (!isAdmin && studentDocRef) {
+        if (studentDocRef) {
             const statusesToSave: Record<string, any> = {};
             learningPath.forEach(item => {
                 statusesToSave[item.key] = item.status;
@@ -500,7 +500,6 @@ export default function MayPage() {
                     item.subItems.forEach(sub => { statusesToSave.subItems[item.key][sub.key] = sub.status; });
                 }
             });
-            
             updateDocumentNonBlocking(studentDocRef, { [`lessonProgress.${progressStorageVersion}`]: statusesToSave });
             updateDocumentNonBlocking(studentDocRef, { [`progress.${mainProgressKey}`]: Math.round(progress) });
         }
@@ -572,7 +571,6 @@ export default function MayPage() {
 
     const handleContinueToGrammar = () => {
         handleTopicComplete('vocabulary');
-        setSelectedTopic('grammar');
     };
 
     const handleTopicSelect = (topicKey: string) => {
@@ -585,7 +583,7 @@ export default function MayPage() {
         }
         setSelectedTopic(topicKey);
 
-        const exerciseKeys = ['positive-ex', 'negative-ex', 'interrogative-ex', 'mixedExercises', 'game', 'reading'];
+        const exerciseKeys = ['positive-ex', 'negative-ex', 'interrogative-ex', 'mixedExercises', 'game', 'reading', 'finalVocabulary'];
         if (!exerciseKeys.includes(topicKey)) {
              handleTopicComplete(topicKey);
         }
@@ -671,7 +669,7 @@ export default function MayPage() {
                             </CardContent>
                         </Card>
                         
-                        <Card className="shadow-soft rounded-lg border-2 border-destructive bg-background dark:bg-card">
+                        <Card className="shadow-soft rounded-lg border-2 border-destructive bg-white dark:bg-card">
                             <CardHeader>
                                 <CardTitle className="text-destructive dark:text-destructive">Nota Importante</CardTitle>
                             </CardHeader>
