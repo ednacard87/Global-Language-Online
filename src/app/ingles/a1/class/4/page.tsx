@@ -376,6 +376,58 @@ export default function EngA1Class4Page() {
             );
         }
 
+        if (selectedTopic === 'grammar') {
+            return (
+                <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                    <CardHeader>
+                        <CardTitle>Genitivo Sajón ('s)</CardTitle>
+                        <CardDescription>Se utiliza para indicar posesión (quién es el dueño de algo).</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                        <Accordion type="multiple" defaultValue={['rule-1']} className="w-full">
+                            <AccordionItem value="rule-1">
+                                <AccordionTrigger className="text-lg font-semibold">Regla General (Poseedor Singular)</AccordionTrigger>
+                                <AccordionContent className="text-base space-y-2">
+                                    <p>Se añade un apóstrofo y una "s" ('s) al final del nombre del poseedor.</p>
+                                    <p className="font-semibold">Estructura: POSEEDOR + 'S + POSESIÓN</p>
+                                    <div className="p-3 bg-muted rounded-lg font-mono">
+                                        <p>el carro de mi papá → my dad<span className="font-bold text-primary">'s</span> car</p>
+                                        <p>la casa de Maria → Maria<span className="font-bold text-primary">'s</span> house</p>
+                                    </div>
+                                </AccordionContent>
+                            </AccordionItem>
+                            <AccordionItem value="rule-2">
+                                <AccordionTrigger className="text-lg font-semibold">Poseedores Plurales terminados en "s"</AccordionTrigger>
+                                <AccordionContent className="text-base space-y-2">
+                                    <p>Solo se añade un apóstrofo (') al final del nombre.</p>
+                                    <p className="font-semibold">Estructura: POSEEDOR + ' + POSESIÓN</p>
+                                    <div className="p-3 bg-muted rounded-lg font-mono">
+                                        <p>la casa de mis padres → my parents<span className="font-bold text-primary">'</span> house</p>
+                                        <p>el colegio de las niñas → the girls<span className="font-bold text-primary">'</span> school</p>
+                                    </div>
+                                </AccordionContent>
+                            </AccordionItem>
+                            <AccordionItem value="rule-3">
+                                <AccordionTrigger className="text-lg font-semibold">Poseedores Plurales que NO terminan en "s"</AccordionTrigger>
+                                <AccordionContent className="text-base space-y-2">
+                                    <p>Se aplica la regla general: se añade apóstrofo y "s" ('s).</p>
+                                     <div className="p-3 bg-muted rounded-lg font-mono">
+                                        <p>los juguetes de los niños → the children<span className="font-bold text-primary">'s</span> toys</p>
+                                        <p>la ropa de los hombres → the men<span className="font-bold text-primary">'s</span> clothes</p>
+                                    </div>
+                                </AccordionContent>
+                            </AccordionItem>
+                        </Accordion>
+                        <div className="mt-6 p-4 bg-yellow-100 dark:bg-yellow-900/30 border-l-4 border-yellow-500 text-yellow-800 dark:text-yellow-300 rounded-r-lg">
+                            <p className="font-bold">¡OJO!</p>
+                            <p className="mt-2">No se usa el genitivo sajón cuando el poseedor es un objeto. En su lugar, se usa la estructura "the... of the...".</p>
+                            <p className="font-mono bg-background p-2 rounded mt-1">la puerta del carro → the door <span className="font-bold text-primary">of the</span> car</p>
+                        </div>
+                    </CardContent>
+                </Card>
+            );
+        }
+
         return (
             <Card className="shadow-soft rounded-lg border-2 border-brand-purple min-h-[500px]">
               <CardHeader>
