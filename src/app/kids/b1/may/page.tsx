@@ -47,6 +47,41 @@ const mayInterrogativeExercises = [
     { spanish: "¿Podría ella jubilarse joven? (Preguntando por una posibilidad).", answer: ["May she retire early?"] }
 ];
 
+const mayPositiveVocab = {
+    "conseguir": "to get",
+    "empleo": "job",
+    "mudarse": "to move",
+    "extranjero": "abroad",
+    "viajar": "to travel",
+    "mundo": "world",
+    "proximo año": "next year",
+    "idioma": "language",
+    "aprender": "to learn"
+};
+
+const mayNegativeVocab = {
+    "graduarse": "to graduate",
+    "este": "this",
+    "solicitar": "to apply",
+    "beca": "scholarship",
+    "cambiar": "to change",
+    "carrera": "career",
+    "ahorrar": "to save",
+    "suficiente": "enough",
+    "dinero": "money"
+};
+
+const mayInterrogativeVocab = {
+    "formar": "to start",
+    "futuro": "future",
+    "ganar": "to win",
+    "premio": "award",
+    "empezar": "to start",
+    "negocio": "business",
+    "juntos": "together",
+    "jubilarse": "to retire"
+};
+
 
 const ReadingExercise = ({ onComplete }: { onComplete: () => void }) => {
     const { t } = useTranslation();
@@ -458,11 +493,11 @@ export default function MayPage() {
                     </div>
                 );
             case 'positive-ex':
-                return <SingleFormExercise onComplete={() => handleTopicComplete('positive-ex')} exerciseData={mayPositiveExercises} title="Ejercicios: Forma Positiva" description="Traduce las frases a su forma afirmativa." formType="affirmative" />;
+                return <SingleFormExercise onComplete={() => handleTopicComplete('positive-ex')} exerciseData={mayPositiveExercises} title="Ejercicios: Forma Positiva" description="Traduce las frases a su forma afirmativa." formType="affirmative" vocabulary={mayPositiveVocab} />;
             case 'negative-ex':
-                return <SingleFormExercise onComplete={() => handleTopicComplete('negative-ex')} exerciseData={mayNegativeExercises} title="Ejercicios: Forma Negativa" description="Traduce las frases a su forma negativa." formType="negative" />;
+                return <SingleFormExercise onComplete={() => handleTopicComplete('negative-ex')} exerciseData={mayNegativeExercises} title="Ejercicios: Forma Negativa" description="Traduce las frases a su forma negativa." formType="negative" vocabulary={mayNegativeVocab} />;
             case 'interrogative-ex':
-                return <SingleFormExercise onComplete={() => handleTopicComplete('interrogative-ex')} exerciseData={mayInterrogativeExercises} title="Ejercicios: Forma Interrogativa" description="Traduce las frases a su forma interrogativa." formType="interrogative" />;
+                return <SingleFormExercise onComplete={() => handleTopicComplete('interrogative-ex')} exerciseData={mayInterrogativeExercises} title="Ejercicios: Forma Interrogativa" description="Convierte las frases en preguntas." formType="interrogative" vocabulary={mayInterrogativeVocab} />;
             case 'exercise2':
             case 'exercise3':
                  return (

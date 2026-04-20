@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,8 +8,9 @@ import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
-import { ArrowRight, Trophy } from 'lucide-react';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { ArrowRight, Trophy, BookText } from 'lucide-react';
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
+
 
 export const positiveExercisesData = [
     { spanish: 'yo bebo agua', answer: ["I drink water"] },
@@ -36,22 +36,21 @@ export const interrogativeExercisesData = [
 
 type ValidationStatus = 'correct' | 'incorrect' | 'unchecked';
 
-const nemoImage = PlaceHolderImages.find(p => p.id === 'nemo-icon');
-const clownFishImage = PlaceHolderImages.find(p => p.id === 'clown-fish-guide');
-
 
 export const SingleFormExercise = ({
   onComplete,
   exerciseData,
   title,
   description,
-  formType
+  formType,
+  vocabulary
 }: {
   onComplete: () => void;
   exerciseData: { spanish: string; answer: string[] }[];
   title: string;
   description: string;
   formType: "affirmative" | "negative" | "interrogative";
+  vocabulary?: Record<string, string>;
 }) => {
     const { toast } = useToast();
     
@@ -111,6 +110,7 @@ export const SingleFormExercise = ({
     };
     
     const progress = (completedPrompts.filter(c => c).length / exerciseData.length) * 100;
+    const isExerciseComplete = completedPrompts.every(c => c);
 
     const formConfig = {
         affirmative: { label: '(+)', color: 'text-green-500' },
@@ -118,55 +118,51 @@ export const SingleFormExercise = ({
         interrogative: { label: '(?)', color: 'text-blue-500' },
     }[formType];
 
+    if (isExerciseComplete) {
+        return (
+             <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                <CardContent className="p-6 text-center flex flex-col items-center justify-center min-h-[300px]">
+                    <Trophy className="h-16 w-16 text-yellow-400 mb-4" />
+                    <h2 className="text-3xl font-bold">¡Ejercicio Completado!</h2>
+                    <Button onClick={onComplete} className="mt-4">Continuar</Button>
+                </CardContent>
+            </Card>
+        )
+    }
+
     return (
         <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
             <CardHeader>
                 <CardTitle>{title}</CardTitle>
                 <CardDescription>{description}</CardDescription>
-                <div className="pt-4 space-y-2">
-                    <div className="flex justify-between items-center px-1">
-                        <span className="text-sm font-medium text-muted-foreground">Progreso del Ejercicio</span>
-                        <span className="text-sm font-bold">{Math.round(progress)}%</span>
-                    </div>
-                     <div className="relative flex items-center">
-                        <Progress 
-                            value={progress} 
-                            className="h-6 rounded-full bg-destructive/20"
-                            indicatorClassName={cn(
-                                "rounded-full transition-all duration-500 !bg-brand-blue",
-                                validationStatus === 'incorrect' && "!bg-destructive",
-                                progress === 100 ? '!bg-brand-blue' : ''
-                            )}
-                        />
-                        {nemoImage && progress < 100 && (
-                             <div 
-                                className="absolute top-1/2 -translate-y-1/2 z-10 transition-all duration-500"
-                                style={{ left: `calc(${progress}% - 14px)` }}
-                             >
-                                <Image
-                                    src={nemoImage.imageUrl}
-                                    alt={nemoImage.description}
-                                    width={28}
-                                    height={28}
-                                    className="object-contain"
-                                    data-ai-hint={nemoImage.imageHint}
-                                />
+                {vocabulary && (
+                    <Popover>
+                        <PopoverTrigger asChild>
+                            <Button variant="outline" size="sm" className="mt-2 w-fit">
+                                <BookText className="mr-2 h-4 w-4" />
+                                Vocabulario
+                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent>
+                            <div className="grid gap-4">
+                                <div className="space-y-2">
+                                    <h4 className="font-medium leading-none">Vocabulario Clave</h4>
+                                    <p className="text-sm text-muted-foreground">
+                                        Palabras importantes para este ejercicio.
+                                    </p>
+                                </div>
+                                <div className="grid gap-2 text-sm">
+                                    {Object.entries(vocabulary).map(([spanish, english]) => (
+                                        <div key={spanish} className="grid grid-cols-2 items-center gap-4">
+                                            <span className="text-muted-foreground capitalize">{spanish}</span>
+                                            <span className="font-semibold text-right">{english}</span>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
-                        )}
-                        {clownFishImage && (
-                             <div className="absolute right-2 top-1/2 -translate-y-1/2 z-10">
-                                <Image
-                                    src={clownFishImage.imageUrl}
-                                    alt={clownFishImage.description}
-                                    width={28}
-                                    height={28}
-                                    className="object-contain"
-                                    data-ai-hint={clownFishImage.imageHint}
-                                />
-                            </div>
-                        )}
-                    </div>
-                </div>
+                        </PopoverContent>
+                    </Popover>
+                )}
             </CardHeader>
             <CardContent className="space-y-6">
                 <div>
