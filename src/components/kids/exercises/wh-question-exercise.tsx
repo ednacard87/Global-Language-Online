@@ -138,12 +138,12 @@ export function WhQuestionExercise({ exerciseName, onComplete }: { exerciseName:
                 <div>
                     <h3 className="text-lg font-semibold mb-2">Frase a traducir:</h3>
                      <div className="bg-muted p-4 rounded-lg border">
-                        <p className="text-lg font-medium">{exercisePrompts[currentIndex].spanish}</p>
+                        <p className="text-lg font-medium">{exercisePrompts[currentIndex]?.spanish}</p>
                      </div>
                 </div>
                 <div>
                     <Input 
-                        value={userAnswers[currentIndex]}
+                        value={userAnswers[currentIndex] || ''}
                         onChange={(e) => handleAnswerChange(e.target.value)}
                         onKeyDown={handleKeyDown}
                         className={cn(
