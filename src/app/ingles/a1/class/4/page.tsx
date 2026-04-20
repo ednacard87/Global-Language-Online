@@ -268,7 +268,7 @@ export default function EngA1Class4Page() {
         }
         setSelectedTopic(topicKey);
 
-        const exerciseKeys = ['vocabulary', 'genitivo', 'who', 'what1', 'what2', 'what-kind-of', 'how', 'how-adjective', 'how-often', 'whose', 'where', 'which', 'when', 'why', 'ejercicio-wh', 'ejercicio-gs', 'ejercicio2-wh', 'ejercicio3-wh'];
+        const exerciseKeys = ['genitivo', 'who', 'what1', 'what2', 'what-kind-of', 'how', 'how-adjective', 'how-often', 'whose', 'where', 'which', 'when', 'why', 'ejercicio-wh', 'ejercicio-gs', 'ejercicio2-wh', 'ejercicio3-wh'];
         if (!exerciseKeys.includes(topicKey)) {
             handleTopicComplete(topicKey);
         }
@@ -431,6 +431,85 @@ export default function EngA1Class4Page() {
 
         if (selectedTopic === 'genitivo') {
             return <GenitiveCaseExercise onComplete={() => handleTopicComplete('genitivo')} />;
+        }
+
+        if (selectedTopic === 'wh-questions') {
+            return (
+                <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                    <CardHeader>
+                        <CardTitle>WH Questions (Interrogativos)</CardTitle>
+                        <CardDescription>Estructuras para hacer preguntas informativas en inglés.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                        <Accordion type="multiple" defaultValue={['rule-1']} className="w-full">
+                            <AccordionItem value="rule-1">
+                                <AccordionTrigger className="text-lg font-semibold">Regla 1: Verbo "To Be"</AccordionTrigger>
+                                <AccordionContent className="space-y-4 pt-2">
+                                    <div>
+                                        <h4 className="font-medium text-base">Estructura Básica</h4>
+                                        <div className="p-3 bg-muted rounded-lg font-mono mt-1 text-sm">
+                                            <p>WH + To be + Pronoun + complement?</p>
+                                            <p className="text-xs text-muted-foreground mt-1">Ej: What is your name?</p>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h4 className="font-medium text-base">Con Posesivos (Tipo 1)</h4>
+                                        <div className="p-3 bg-muted rounded-lg font-mono mt-1 text-sm">
+                                            <p>WH + To be + Pronoun + possessive + noun + complement?</p>
+                                             <p className="text-xs text-muted-foreground mt-1">Ej: Where is his car?</p>
+                                        </div>
+                                    </div>
+                                     <div>
+                                        <h4 className="font-medium text-base">Con Posesivos (Tipo 2)</h4>
+                                        <div className="p-3 bg-muted rounded-lg font-mono mt-1 text-sm">
+                                            <p>WH + To be + possessive + noun + complement?</p>
+                                             <p className="text-xs text-muted-foreground mt-1">Ej: What is her sister's job?</p>
+                                        </div>
+                                    </div>
+                                </AccordionContent>
+                            </AccordionItem>
+                            <AccordionItem value="rule-2">
+                                <AccordionTrigger className="text-lg font-semibold">Regla 2: Auxiliar "Do/Does"</AccordionTrigger>
+                                <AccordionContent className="space-y-2 pt-2">
+                                     <div className="p-3 bg-muted rounded-lg font-mono text-sm">
+                                        <p>WH + Do/Does + pronoun + verb + complement?</p>
+                                        <p className="text-xs text-muted-foreground mt-1">Ej: Where do you live?</p>
+                                    </div>
+                                </AccordionContent>
+                            </AccordionItem>
+                            <AccordionItem value="rule-3">
+                                <AccordionTrigger className="text-lg font-semibold">Regla 3: Excepciones y Estructuras con Sustantivo</AccordionTrigger>
+                                <AccordionContent className="space-y-4 pt-2">
+                                     <div>
+                                        <h4 className="font-medium text-base">Palabras WH especiales:</h4>
+                                        <ul className="list-disc list-inside pl-4 mt-1 text-sm space-y-1">
+                                            <li><span className="font-semibold text-primary">Which:</span> ¿Cuál? (cuando hay opciones limitadas)</li>
+                                            <li><span className="font-semibold text-primary">Whose:</span> ¿De quién? (para indicar posesión)</li>
+                                            <li><span className="font-semibold text-primary">What kind of:</span> ¿Qué tipo de?</li>
+                                        </ul>
+                                    </div>
+                                     <div className="border-t pt-4">
+                                        <h4 className="font-medium text-base">Estructura con Sustantivo + To Be:</h4>
+                                         <div className="p-3 bg-muted rounded-lg font-mono mt-1 text-sm">
+                                            <p>WH-word (Which/What/Whose) + noun + To be + ... ?</p>
+                                            <p className="text-xs text-muted-foreground mt-1">Ej: Which color is your car?</p>
+                                            <p className="text-xs text-muted-foreground mt-1">Ej: Whose book is this?</p>
+                                        </div>
+                                    </div>
+                                    <div className="border-t pt-4">
+                                        <h4 className="font-medium text-base">Estructura con Sustantivo + Do/Does:</h4>
+                                        <div className="p-3 bg-muted rounded-lg font-mono mt-1 text-sm">
+                                            <p>WH-word (Which/What/Whose) + noun + do/does + pronoun + verb...?</p>
+                                            <p className="text-xs text-muted-foreground mt-1">Ej: Which car do you prefer?</p>
+                                            <p className="text-xs text-muted-foreground mt-1">Ej: What kind of music do you like?</p>
+                                        </div>
+                                    </div>
+                                </AccordionContent>
+                            </AccordionItem>
+                        </Accordion>
+                    </CardContent>
+                </Card>
+            );
         }
 
         return (
