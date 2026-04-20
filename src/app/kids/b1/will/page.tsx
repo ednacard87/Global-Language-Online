@@ -6,8 +6,8 @@ import { DashboardHeader } from "@/components/dashboard/header";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, ChevronDown, Trophy, Gamepad2 } from 'lucide-react';
-import { useTranslation } from '@/context/language-context';
+import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, Gamepad2, ChevronDown, Trophy } from 'lucide-react';
+import { useTranslation } from "@/context/language-context";
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
 import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
@@ -652,7 +652,7 @@ export default function WillPage() {
                 <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
                     <CardHeader>
                         <CardTitle>{t('kidsB1Will.vocabulary')}</CardTitle>
-                        <CardDescription>Vocabulario del Medio Ambiente (Ampliación)</CardDescription>
+                        <CardDescription>Vocabulario del Medio Ambiente</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-lg">
@@ -760,7 +760,7 @@ export default function WillPage() {
                 <div className="max-w-7xl mx-auto">
                     <div className="mb-8">
                         <Link href="/kids/b1" className="hover:underline text-sm text-muted-foreground">Volver al curso B1</Link>
-                        <h1 className="text-4xl font-bold dark:text-primary">{t('kidsB1.will')}</h1>
+                        <h1 className="text-4xl font-bold text-white dark:text-primary">{t('kidsB1.will')}</h1>
                     </div>
                     <div className="grid gap-8 md:grid-cols-12">
                         <div className="md:col-span-9">{renderContent()}</div>
