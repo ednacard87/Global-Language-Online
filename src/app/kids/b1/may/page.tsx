@@ -128,8 +128,8 @@ const mayMixedExercises = [
             affirmative: ["I may apply for a scholarship."],
             negative: ["I may not apply for a scholarship."],
             interrogative: ["May I apply for a scholarship?"],
-            shortAffirmative: ["Yes, you may.", "yes, i may"],
-            shortNegative: ["No, you may not.", "no, i may not"]
+            shortAffirmative: ["yes, you may", "yes, i may"],
+            shortNegative: ["no, you may not", "no, i may not"]
         }
     }
 ];
@@ -233,7 +233,7 @@ const WordSearchGame = ({ onComplete }: { onComplete: () => void }) => {
     const [isSelecting, setIsSelecting] = useState(false);
 
     useEffect(() => {
-        const gridSize = 18;
+        const gridSize = 22;
         const newGrid: (string | null)[][] = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null));
         const directions = [
             { dr: 0, dc: 1 },  // Horizontal (right)
@@ -249,7 +249,7 @@ const WordSearchGame = ({ onComplete }: { onComplete: () => void }) => {
         words.forEach(originalWord => {
             let placed = false;
             let attempts = 0;
-            while (!placed && attempts < 1000) {
+            while (!placed && attempts < 2000) {
                 attempts++;
                 
                 const wordToPlace = Math.random() > 0.5 ? originalWord.split('').reverse().join('') : originalWord;
