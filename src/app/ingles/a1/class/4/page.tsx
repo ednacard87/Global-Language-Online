@@ -293,7 +293,7 @@ export default function EngA1Class4Page() {
     };
 
     const handleCheckAnswers = () => {
-        let allCorrect = true;
+        let atLeastOneCorrect = false;
         const newValidationStatus: {[key: string]: ('correct' | 'incorrect' | 'unchecked')[]} = {};
     
         Object.entries(vocabularyData).forEach(([category, items]) => {
@@ -301,18 +301,24 @@ export default function EngA1Class4Page() {
                 const userAnswer = (userAnswers[category]?.[index] || '').trim().toLowerCase();
                 const correctAnswer = item.english.toLowerCase();
                 const isCorrect = userAnswer === correctAnswer;
-                if (!isCorrect) allCorrect = false;
+                if (isCorrect) {
+                    atLeastOneCorrect = true;
+                }
                 return isCorrect ? 'correct' : 'incorrect';
             });
         });
 
         setValidationStatus(newValidationStatus);
         
-        if (allCorrect) {
+        if (atLeastOneCorrect) {
             handleTopicComplete('vocabulary');
-            toast({ title: '¡Perfecto!', description: 'Has completado el vocabulario.' });
+            toast({ title: '¡Bien hecho!', description: 'Has acertado al menos una. ¡Tema desbloqueado!' });
         } else {
-            toast({ variant: 'destructive', title: 'Sigue intentando', description: 'Algunas respuestas son incorrectas.' });
+            toast({ 
+                variant: 'destructive', 
+                title: 'Sigue intentando', 
+                description: 'Revisa tus respuestas. ¡Necesitas al menos una correcta para continuar!' 
+            });
         }
     };
     
