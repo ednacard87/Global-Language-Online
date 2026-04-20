@@ -425,35 +425,35 @@ export default function MayPage() {
             return;
         }
 
-        const newPath = initialLearningPath.map(topic => ({
-            ...topic,
-            subItems: topic.subItems ? topic.subItems.map(sub => ({ ...sub })) : undefined,
-        }));
-
-        if (isAdmin) {
-            newPath.forEach(item => {
-                item.status = 'completed';
-                if(item.subItems) {
-                    item.subItems.forEach(sub => sub.status = 'completed');
-                }
-            });
-        } else if (studentProfile?.lessonProgress?.[progressStorageVersion]) {
-            const savedStatuses = studentProfile.lessonProgress[progressStorageVersion];
-            newPath.forEach(item => {
-                if (savedStatuses[item.key]) item.status = savedStatuses[item.key];
-                if (item.subItems && savedStatuses.subItems?.[item.key]) {
-                    item.subItems.forEach(subItem => {
-                        if (savedStatuses.subItems[item.key][subItem.key]) {
-                            subItem.status = savedStatuses.subItems[item.key][subItem.key];
-                        }
-                    });
-                }
-            });
-        }
-
-        setLearningPath(newPath);
-        
         if (!initialLoadComplete) {
+            const newPath = initialLearningPath.map(topic => ({
+                ...topic,
+                subItems: topic.subItems ? topic.subItems.map(sub => ({ ...sub })) : undefined,
+            }));
+    
+            if (isAdmin) {
+                newPath.forEach(item => {
+                    item.status = 'completed';
+                    if(item.subItems) {
+                        item.subItems.forEach(sub => sub.status = 'completed');
+                    }
+                });
+            } else if (studentProfile?.lessonProgress?.[progressStorageVersion]) {
+                const savedStatuses = studentProfile.lessonProgress[progressStorageVersion];
+                newPath.forEach(item => {
+                    if (savedStatuses[item.key]) item.status = savedStatuses[item.key];
+                    if (item.subItems && savedStatuses.subItems?.[item.key]) {
+                        item.subItems.forEach(subItem => {
+                            if (savedStatuses.subItems[item.key][subItem.key]) {
+                                subItem.status = savedStatuses.subItems[item.key][subItem.key];
+                            }
+                        });
+                    }
+                });
+            }
+    
+            setLearningPath(newPath);
+            
             const firstActive = newPath.find(p => p.status === 'active') || newPath.find(p => p.subItems?.some(s => s.status === 'active'));
             if (firstActive) {
                 if (firstActive.subItems) {
@@ -671,7 +671,7 @@ export default function MayPage() {
                             </CardContent>
                         </Card>
                         
-                        <Card className="shadow-soft rounded-lg border-2 border-destructive bg-white dark:bg-card">
+                        <Card className="shadow-soft rounded-lg border-2 border-destructive bg-background dark:bg-card">
                             <CardHeader>
                                 <CardTitle className="text-destructive dark:text-destructive">Nota Importante</CardTitle>
                             </CardHeader>
