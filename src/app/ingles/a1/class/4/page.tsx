@@ -76,6 +76,11 @@ export default function EngA1Class4Page() {
                 { key: 'why', name: 'Why', icon: PenSquare, status: 'locked' },
             ],
         },
+        { key: 'ejercicio-wh', name: 'Ejercicio Wh', icon: PenSquare, status: 'locked' },
+        { key: 'vocabulario-wh', name: 'Vocabulario Wh', icon: BookOpen, status: 'locked' },
+        { key: 'ejercicio-gs', name: 'Ejercicio G.S', icon: PenSquare, status: 'locked' },
+        { key: 'ejercicio2-wh', name: 'Ejercicio2 Wh', icon: PenSquare, status: 'locked' },
+        { key: 'ejercicio3-wh', name: 'Ejercicio3 Wh', icon: PenSquare, status: 'locked' },
     ], [t]);
     
     useEffect(() => {
@@ -216,7 +221,7 @@ export default function EngA1Class4Page() {
         }
         setSelectedTopic(topicKey);
 
-        const exerciseKeys: string[] = ['genitivo', 'who', 'what1', 'what2', 'what-kind-of', 'how', 'how-adjective', 'how-often', 'whose', 'where', 'which', 'when', 'why'];
+        const exerciseKeys: string[] = ['genitivo', 'who', 'what1', 'what2', 'what-kind-of', 'how', 'how-adjective', 'how-often', 'whose', 'where', 'which', 'when', 'why', 'ejercicio-wh', 'ejercicio-gs', 'ejercicio2-wh', 'ejercicio3-wh'];
         if (!exerciseKeys.includes(topicKey)) {
             handleTopicComplete(topicKey);
         }
