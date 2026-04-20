@@ -40,7 +40,7 @@ const whExercisesData = {
         ]
     },
     'what-kind-of': {
-        title: "WHAT KIND OF?  QUE TIPO/CLASE DE ________? –",
+        title: "WHAT KIND OF? QUE TIPO/CLASE DE ________? –",
         prompts: [
             { spanish: '¿QUE TIPO DE ZAPATOS TE GUSTAN?', english: ["what kind of shoes do you like?"] },
             { spanish: '¿QUE TIPO DE PORTATIL LE GUSTA A ELLA?', english: ["what kind of laptop does she like?"] },
