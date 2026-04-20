@@ -112,11 +112,16 @@
                 "quiz2": {
                     "type": "boolean",
                     "default": false
+                },
+                "finalQuiz": {
+                    "type": "boolean",
+                    "default": false
                 }
             },
             "default": {
                 "quiz1": false,
-                "quiz2": false
+                "quiz2": false,
+                "finalQuiz": false
             }
         },
         "unlockedClasses": {

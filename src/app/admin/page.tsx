@@ -31,13 +31,16 @@ interface Student {
   unlockedQuizzes?: {
     quiz1?: boolean;
     quiz2?: boolean;
+    finalQuiz?: boolean;
   };
   unlockedCourses?: string[];
   unlockedClasses?: string[];
-  selectedCourse?: string;
+  selectedCourse?: 'ingles' | 'espanol' | 'kids';
 }
 
-const courseIds = ['a1', 'a2', 'b1', 'b2'];
+const inglesCourseIds = ['a1', 'a2', 'b1', 'b2'];
+const espanolCourseIds = ['a1', 'a2'];
+const kidsCourseIds = ['a1', 'a2', 'b1'];
 
 export default function AdminDashboardPage() {
   const firestore = useFirestore();
@@ -98,11 +101,11 @@ export default function AdminDashboardPage() {
     }
   };
 
-  const handleToggleQuizAccess = async (studentId: string, quiz: 'quiz1' | 'quiz2', currentStatus: boolean) => {
+  const handleToggleQuizAccess = async (studentId: string, quiz: 'quiz1' | 'quiz2' | 'finalQuiz', currentStatus: boolean) => {
     if (!firestore) return;
     setUpdatingStudentId(studentId);
     const studentRef = doc(firestore, 'students', studentId);
-    const data = { unlockedQuizzes: { [quiz]: !currentStatus } };
+    const data = { unlockedQuizzes: { ...displayedStudents?.find(s => s.id === studentId)?.unlockedQuizzes, [quiz]: !currentStatus } };
     try {
         await setDoc(studentRef, data, { merge: true });
         setDisplayedStudents(prev => prev!.map(s => s.id === studentId ? {...s, unlockedQuizzes: { ...s.unlockedQuizzes, [quiz]: !currentStatus } } : s));
@@ -267,112 +270,129 @@ export default function AdminDashboardPage() {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {visibleStudents.map((student) => (
-                                    <TableRow key={student.id}>
-                                        <TableCell className="font-medium">
-                                            <div className="flex items-center gap-3">
-                                                <Avatar className="h-8 w-8">
-                                                    <AvatarImage src={student.profileImageUrl} alt={student.name} />
-                                                    <AvatarFallback>{student.name.charAt(0)}</AvatarFallback>
-                                                </Avatar>
-                                                <div className="flex flex-col">
-                                                    <span>{student.name}</span>
-                                                    <span className="text-xs text-muted-foreground">{new Date(student.dateJoined).toLocaleDateString()}</span>
+                                {visibleStudents.map((student) => {
+                                    const courseIdsToShow = 
+                                        student.selectedCourse === 'espanol' ? espanolCourseIds :
+                                        student.selectedCourse === 'kids' ? kidsCourseIds :
+                                        inglesCourseIds;
+                                    return (
+                                        <TableRow key={student.id}>
+                                            <TableCell className="font-medium">
+                                                <div className="flex items-center gap-3">
+                                                    <Avatar className="h-8 w-8">
+                                                        <AvatarImage src={student.profileImageUrl} alt={student.name} />
+                                                        <AvatarFallback>{student.name.charAt(0)}</AvatarFallback>
+                                                    </Avatar>
+                                                    <div className="flex flex-col">
+                                                        <span>{student.name}</span>
+                                                        <span className="text-xs text-muted-foreground">{new Date(student.dateJoined).toLocaleDateString()}</span>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </TableCell>
-                                        <TableCell>{student.email}</TableCell>
-                                        <TableCell>
-                                            <Badge variant={student.isBlocked ? 'destructive' : 'secondary'}>
-                                                {student.isBlocked ? 'Blocked' : 'Active'}
-                                            </Badge>
-                                        </TableCell>
-                                        <TableCell>
-                                            <Badge variant="outline" className="capitalize">{student.selectedCourse}</Badge>
-                                        </TableCell>
-                                        <TableCell>
-                                          {getReadableProgress(student)}
-                                        </TableCell>
-                                        <TableCell>
-                                            <div className="flex flex-wrap gap-2 max-w-xs">
-                                                {courseIds.map(courseId => (
+                                            </TableCell>
+                                            <TableCell>{student.email}</TableCell>
+                                            <TableCell>
+                                                <Badge variant={student.isBlocked ? 'destructive' : 'secondary'}>
+                                                    {student.isBlocked ? 'Blocked' : 'Active'}
+                                                </Badge>
+                                            </TableCell>
+                                            <TableCell>
+                                                <Badge variant="outline" className="capitalize">{student.selectedCourse}</Badge>
+                                            </TableCell>
+                                            <TableCell>
+                                              {getReadableProgress(student)}
+                                            </TableCell>
+                                            <TableCell>
+                                                <div className="flex flex-wrap gap-2 max-w-xs">
+                                                    {courseIdsToShow.map(courseId => (
+                                                        <Button
+                                                            key={courseId}
+                                                            size="sm"
+                                                            variant={(student.unlockedCourses || []).includes(courseId) ? 'secondary' : 'outline'}
+                                                            onClick={() => handleToggleCourseAccess(student.id, courseId, student.unlockedCourses || [])}
+                                                            disabled={updatingStudentId === student.id}
+                                                            className="h-8"
+                                                        >
+                                                            {(student.unlockedCourses || []).includes(courseId) ? <Unlock className="mr-2 h-4 w-4" /> : <Lock className="mr-2 h-4 w-4" />}
+                                                            {courseId.toUpperCase()}
+                                                        </Button>
+                                                    ))}
+                                                </div>
+                                            </TableCell>
+                                            <TableCell>
+                                                <div className="flex flex-wrap gap-1 max-w-xs">
+                                                    {courseIdsToShow.map(course => (
+                                                        <DropdownMenu key={`${student.id}-${course}`}>
+                                                            <DropdownMenuTrigger asChild>
+                                                                <Button variant="outline" size="sm" className="h-8">{course.toUpperCase()}</Button>
+                                                            </DropdownMenuTrigger>
+                                                            <DropdownMenuContent>
+                                                                {Array.from({ length: 14 }, (_, i) => i + 2).map(classNum => { // Classes 2-15
+                                                                    const classId = `${course}-${classNum}`;
+                                                                    return (
+                                                                        <DropdownMenuCheckboxItem
+                                                                            key={classId}
+                                                                            checked={(student.unlockedClasses || []).includes(classId)}
+                                                                            onCheckedChange={() => handleToggleClassAccess(student.id, classId)}
+                                                                            disabled={updatingStudentId === student.id}
+                                                                        >
+                                                                            Clase {classNum}
+                                                                        </DropdownMenuCheckboxItem>
+                                                                    );
+                                                                })}
+                                                            </DropdownMenuContent>
+                                                        </DropdownMenu>
+                                                    ))}
+                                                </div>
+                                            </TableCell>
+                                            <TableCell>
+                                                <div className="flex flex-col gap-2 items-start">
                                                     <Button
-                                                        key={courseId}
                                                         size="sm"
-                                                        variant={(student.unlockedCourses || []).includes(courseId) ? 'secondary' : 'outline'}
-                                                        onClick={() => handleToggleCourseAccess(student.id, courseId, student.unlockedCourses || [])}
+                                                        variant={student.unlockedQuizzes?.quiz1 ? 'secondary' : 'outline'}
+                                                        onClick={() => handleToggleQuizAccess(student.id, 'quiz1', !!student.unlockedQuizzes?.quiz1)}
                                                         disabled={updatingStudentId === student.id}
-                                                        className="h-8"
                                                     >
-                                                        {(student.unlockedCourses || []).includes(courseId) ? <Unlock className="mr-2 h-4 w-4" /> : <Lock className="mr-2 h-4 w-4" />}
-                                                        {courseId.toUpperCase()}
+                                                        {student.unlockedQuizzes?.quiz1 ? <Unlock className="mr-2 h-4 w-4" /> : <Lock className="mr-2 h-4 w-4" />}
+                                                        Quiz 1
                                                     </Button>
-                                                ))}
-                                            </div>
-                                        </TableCell>
-                                        <TableCell>
-                                            <div className="flex flex-wrap gap-1 max-w-xs">
-                                                {courseIds.map(course => (
-                                                    <DropdownMenu key={`${student.id}-${course}`}>
-                                                        <DropdownMenuTrigger asChild>
-                                                            <Button variant="outline" size="sm" className="h-8">{course.toUpperCase()}</Button>
-                                                        </DropdownMenuTrigger>
-                                                        <DropdownMenuContent>
-                                                            {Array.from({ length: 14 }, (_, i) => i + 2).map(classNum => { // Classes 2-15
-                                                                const classId = `${course}-${classNum}`;
-                                                                return (
-                                                                    <DropdownMenuCheckboxItem
-                                                                        key={classId}
-                                                                        checked={(student.unlockedClasses || []).includes(classId)}
-                                                                        onCheckedChange={() => handleToggleClassAccess(student.id, classId)}
-                                                                        disabled={updatingStudentId === student.id}
-                                                                    >
-                                                                        Clase {classNum}
-                                                                    </DropdownMenuCheckboxItem>
-                                                                );
-                                                            })}
-                                                        </DropdownMenuContent>
-                                                    </DropdownMenu>
-                                                ))}
-                                            </div>
-                                        </TableCell>
-                                        <TableCell>
-                                            <div className="flex flex-col gap-2 items-start">
-                                                <Button
-                                                    size="sm"
-                                                    variant={student.unlockedQuizzes?.quiz1 ? 'secondary' : 'outline'}
-                                                    onClick={() => handleToggleQuizAccess(student.id, 'quiz1', !!student.unlockedQuizzes?.quiz1)}
-                                                    disabled={updatingStudentId === student.id}
-                                                >
-                                                    {student.unlockedQuizzes?.quiz1 ? <Unlock className="mr-2 h-4 w-4" /> : <Lock className="mr-2 h-4 w-4" />}
-                                                    Quiz 1
-                                                </Button>
-                                                <Button
-                                                    size="sm"
-                                                    variant={student.unlockedQuizzes?.quiz2 ? 'secondary' : 'outline'}
-                                                    onClick={() => handleToggleQuizAccess(student.id, 'quiz2', !!student.unlockedQuizzes?.quiz2)}
-                                                    disabled={updatingStudentId === student.id}
-                                                >
-                                                    {student.unlockedQuizzes?.quiz2 ? <Unlock className="mr-2 h-4 w-4" /> : <Lock className="mr-2 h-4 w-4" />}
-                                                    Quiz 2
-                                                </Button>
-                                            </div>
-                                        </TableCell>
-                                        <TableCell className="text-right">
-                                            {updatingStudentId === student.id ? (
-                                                <Button variant="ghost" size="icon" disabled>
-                                                    <Loader2 className="h-4 w-4 animate-spin" />
-                                                </Button>
-                                            ) : (
-                                                <>
-                                                    <Button variant="ghost" size="icon" onClick={() => handleToggleBlockStudent(student.id, !!student.isBlocked)}>
-                                                        {student.isBlocked ? <Shield className="h-4 w-4 text-green-500" /> : <ShieldOff className="h-4 w-4" />}
+                                                    <Button
+                                                        size="sm"
+                                                        variant={student.unlockedQuizzes?.quiz2 ? 'secondary' : 'outline'}
+                                                        onClick={() => handleToggleQuizAccess(student.id, 'quiz2', !!student.unlockedQuizzes?.quiz2)}
+                                                        disabled={updatingStudentId === student.id}
+                                                    >
+                                                        {student.unlockedQuizzes?.quiz2 ? <Unlock className="mr-2 h-4 w-4" /> : <Lock className="mr-2 h-4 w-4" />}
+                                                        Quiz 2
                                                     </Button>
-                                                </>
-                                            )}
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
+                                                    {student.selectedCourse === 'kids' && (
+                                                        <Button
+                                                            size="sm"
+                                                            variant={student.unlockedQuizzes?.finalQuiz ? 'secondary' : 'outline'}
+                                                            onClick={() => handleToggleQuizAccess(student.id, 'finalQuiz', !!student.unlockedQuizzes?.finalQuiz)}
+                                                            disabled={updatingStudentId === student.id}
+                                                        >
+                                                            {student.unlockedQuizzes?.finalQuiz ? <Unlock className="mr-2 h-4 w-4" /> : <Lock className="mr-2 h-4 w-4" />}
+                                                            Quiz Final
+                                                        </Button>
+                                                    )}
+                                                </div>
+                                            </TableCell>
+                                            <TableCell className="text-right">
+                                                {updatingStudentId === student.id ? (
+                                                    <Button variant="ghost" size="icon" disabled>
+                                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                                    </Button>
+                                                ) : (
+                                                    <>
+                                                        <Button variant="ghost" size="icon" onClick={() => handleToggleBlockStudent(student.id, !!student.isBlocked)}>
+                                                            {student.isBlocked ? <Shield className="h-4 w-4 text-green-500" /> : <ShieldOff className="h-4 w-4" />}
+                                                        </Button>
+                                                    </>
+                                                )}
+                                            </TableCell>
+                                        </TableRow>
+                                    );
+                                })}
                             </TableBody>
                         </Table>
                     )}
