@@ -9,16 +9,22 @@ import { cn } from '@/lib/utils';
 import { ArrowLeft, ArrowRight, Trophy } from 'lucide-react';
 
 const exercisePrompts = [
-    { spanish: "La casa de mi madre es grande.", english: ["my mother's house is big"] },
-    { spanish: "El carro de mi hermano es rojo.", english: ["my brother's car is red"] },
-    { spanish: "El juguete del perro es viejo.", english: ["the dog's toy is old"] },
-    { spanish: "Los libros de los estudiantes son nuevos.", english: ["the students' books are new"] },
-    { spanish: "El computador de Charles es costoso.", english: ["charles's computer is expensive", "charles' computer is expensive"] },
-    { spanish: "Los amigos de mis hermanas son amigables.", english: ["my sisters' friends are friendly"] },
-    { spanish: "El vestido de la niña es rosado.", english: ["the girl's dress is pink"] },
-    { spanish: "La comida de los gatos está en el tazón.", english: ["the cats' food is in the bowl"] },
-    { spanish: "El trabajo de James es interesante.", english: ["james's job is interesting", "james' job is interesting"] },
-    { spanish: "La habitación de los niños está desordenada.", english: ["the children's room is messy"] },
+    { spanish: "LOS JUGUETES DE TU GATO", english: ["your cat's toys"] },
+    { spanish: "LA CASA DE MIS PADRES ES COMODA", english: ["my parents' house is comfortable"] },
+    { spanish: "EL COMPUTADOR DE SARA", english: ["sara's computer"] },
+    { spanish: "LOS CELULARES DE PETER", english: ["peter's cellphones"] },
+    { spanish: "EL VIAJE DEL SABADO", english: ["saturday's trip"] },
+    { spanish: "EL HIJO DE WILLIAM ES DOCTOR", english: ["william's son is a doctor"] },
+    { spanish: "LOS PANTALONES CORTOS DE DANNY", english: ["danny's shorts"] },
+    { spanish: "LOS ZAPATOS DE MIS AMIGOS SON ADIDAS", english: ["my friends' shoes are adidas"] },
+    { spanish: "EL CLOSET DE SU HERMANA ESTA LIMPIO (DE ÉL)", english: ["his sister's closet is clean"] },
+    { spanish: "EL PERRO DE THOMAS ES PEQUEÑO", english: ["thomas's dog is small", "thomas' dog is small"] },
+    { spanish: "LOS AUDIFONOS DE MARY SON NEGROS", english: ["mary's headphones are black"] },
+    { spanish: "¿EL APARTAMENTO DE TOM ES GRANDE?", english: ["is tom's apartment big?"] },
+    { spanish: "EL CARRO DE JORDAN NO ESTA SUCIO", english: ["jordan's car is not dirty", "jordan's car isn't dirty"] },
+    { spanish: "EL COMPUTADOR DE ANA ES RAPIDO", english: ["ana's computer is fast"] },
+    { spanish: "LOS HIJOS DE DANIEL SON ALTOS", english: ["daniel's sons are tall"] },
+    { spanish: "¿LA FINCA DE TUS ABUELOS ES PEQUEÑA?", english: ["is your grandparents' farm small?"] },
 ];
 
 type ValidationStatus = 'correct' | 'incorrect' | 'unchecked';
@@ -46,7 +52,7 @@ export function GenitiveCaseExercise({ onComplete }: { onComplete: () => void })
         let allCorrect = true;
         const newValidationStates = exercisePrompts.map((prompt, index) => {
             const userAnswer = userAnswers[index]?.trim().toLowerCase().replace(/[.]/g, '') || '';
-            const correctAnswers = prompt.english.map(a => a.toLowerCase().replace(/[.]/g, ''));
+            const correctAnswers = prompt.english.map(a => a.toLowerCase().replace(/[.?]/g, ''));
             const isCorrect = correctAnswers.includes(userAnswer);
             if (!isCorrect) {
                 allCorrect = false;
