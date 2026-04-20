@@ -15,6 +15,7 @@ import { doc } from 'firebase/firestore';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { SingleFormExercise } from '@/components/kids/exercises/single-form';
 
 const readingTextData = {
     title: "Life is Full of Choices",
@@ -26,6 +27,26 @@ const readingTextData = {
         { id: 'q4', question: "What might the narrator join?", answers: ["a charity", "a charity to help animals"] }
     ]
 };
+
+const mayPositiveExercises = [
+    { spanish: "Puede que yo consiga un trabajo mañana. (50% probabilidad).", answer: ["I may get a job tomorrow."] },
+    { spanish: "ella tal vez se mude al extranjero. (30% probabilidad).", answer: ["She might move abroad."] },
+    { spanish: "Nosotros podríamos viajar por el mundo el próximo año. (50% probabilidad).", answer: ["We may travel the world next year."] },
+    { spanish: "Él tal vez aprenda unidioma nuevo. (30% probabilidad).", answer: ["He might learn a new language."] }
+];
+const mayNegativeExercises = [
+    { spanish: "Puede que ellos no se gradúen este semestre. (50% probabilidad).", answer: ["They may not graduate this semester."] },
+    { spanish: "Tal vez yo no solicite la beca. (30% probabilidad).", answer: ["I might not apply for the scholarship."] },
+    { spanish: "Ella podría no cambiar de carrera. (50% probabilidad).", answer: ["She may not change career."] },
+    { spanish: "Nosotros tal vez no ahorremos suficiente dinero. (30% probabilidad).", answer: ["We might not save enough money."] }
+];
+const mayInterrogativeExercises = [
+    { spanish: "¿Podría yo formar una familia en el futuro? (Preguntando por una posibilidad remota).", answer: ["Might I start a family in the future?"] },
+    { spanish: "¿Puede que él gane un premio? (Preguntando por una posibilidad).", answer: ["May he win an award?"] },
+    { spanish: "¿Tal vez nosotros empecemos un negocio juntos? (Posibilidad remota).", answer: ["Might we start a business together?"] },
+    { spanish: "¿Podría ella jubilarse joven? (Preguntando por una posibilidad).", answer: ["May she retire early?"] }
+];
+
 
 const ReadingExercise = ({ onComplete }: { onComplete: () => void }) => {
     const { t } = useTranslation();
@@ -148,7 +169,17 @@ export default function MayPage() {
     const initialLearningPath = useMemo((): Topic[] => [
         { key: 'vocabulary', name: 'Vocabulario (Life Goals)', icon: BookOpen, status: 'active' },
         { key: 'grammar', name: 'Grammar', icon: GraduationCap, status: 'locked' },
-        { key: 'exercise1', name: 'Ejercicio 1', icon: PenSquare, status: 'locked' },
+        {
+            key: 'exercise1',
+            name: 'Ejercicio 1',
+            icon: PenSquare,
+            status: 'locked',
+            subItems: [
+                { key: 'positive-ex', name: 'Positiva', icon: PenSquare, status: 'locked' },
+                { key: 'negative-ex', name: 'Negativa', icon: PenSquare, status: 'locked' },
+                { key: 'interrogative-ex', name: 'Interrogativa', icon: PenSquare, status: 'locked' },
+            ]
+        },
         { key: 'exercise2', name: 'Ejercicio 2', icon: PenSquare, status: 'locked' },
         { key: 'exercise3', name: 'Ejercicio 3', icon: PenSquare, status: 'locked' },
         { key: 'game', name: 'Sopa de Letras (Life Goals)', icon: Gamepad2, status: 'locked' },
@@ -158,24 +189,42 @@ export default function MayPage() {
     useEffect(() => {
         if (isUserLoading || isProfileLoading) return;
 
-        const newPath = initialLearningPath.map(topic => ({ ...topic }));
+        const newPath = initialLearningPath.map(topic => ({
+            ...topic,
+            subItems: topic.subItems ? topic.subItems.map(sub => ({ ...sub })) : undefined,
+        }));
 
         if (isAdmin) {
             newPath.forEach(item => {
                 item.status = 'completed';
+                if(item.subItems) {
+                    item.subItems.forEach(sub => sub.status = 'completed');
+                }
             });
         } else if (studentProfile?.lessonProgress?.[progressStorageVersion]) {
             const savedStatuses = studentProfile.lessonProgress[progressStorageVersion];
             newPath.forEach(item => {
                 if (savedStatuses[item.key]) item.status = savedStatuses[item.key];
+                if (item.subItems && savedStatuses.subItems?.[item.key]) {
+                    item.subItems.forEach(subItem => {
+                        if (savedStatuses.subItems[item.key][subItem.key]) {
+                            subItem.status = savedStatuses.subItems[item.key][subItem.key];
+                        }
+                    });
+                }
             });
         }
 
         setLearningPath(newPath);
         
-        const firstActive = newPath.find(p => p.status === 'active');
+        const firstActive = newPath.find(p => p.status === 'active') || newPath.find(p => p.subItems?.some(s => s.status === 'active'));
         if (firstActive) {
-            setSelectedTopic(firstActive.key);
+            if (firstActive.subItems) {
+                const firstActiveSub = firstActive.subItems.find(s => s.status === 'active');
+                setSelectedTopic(firstActiveSub?.key || firstActive.key);
+            } else {
+                setSelectedTopic(firstActive.key);
+            }
         } else {
             setSelectedTopic(newPath[0]?.key || '');
         }
@@ -185,18 +234,33 @@ export default function MayPage() {
     
     const progress = useMemo(() => {
         if (learningPath.length === 0) return 0;
-        const completedTopics = learningPath.filter(t => t.status === 'completed').length;
-        return (completedTopics / learningPath.length) * 100;
+        let totalTopics = 0;
+        let completedTopics = 0;
+        learningPath.forEach(t => {
+            if(t.subItems) {
+                totalTopics += t.subItems.length;
+                completedTopics += t.subItems.filter(st => st.status === 'completed').length;
+            } else {
+                totalTopics++;
+                if (t.status === 'completed') completedTopics++;
+            }
+        });
+        return (totalTopics > 0) ? (completedTopics / totalTopics) * 100 : 0;
     }, [learningPath]);
 
     useEffect(() => {
         if (isUserLoading || isProfileLoading || learningPath.length === 0) return;
 
         if (!isAdmin && studentDocRef) {
-            const statusesToSave = learningPath.reduce((acc, item) => {
-                acc[item.key] = item.status;
-                return acc;
-            }, {} as Record<string, string>);
+            const statusesToSave: Record<string, any> = {};
+            learningPath.forEach(item => {
+                statusesToSave[item.key] = item.status;
+                if (item.subItems) {
+                    if (!statusesToSave.subItems) statusesToSave.subItems = {};
+                    statusesToSave.subItems[item.key] = {};
+                    item.subItems.forEach(sub => { statusesToSave.subItems[item.key][sub.key] = sub.status; });
+                }
+            });
             
             updateDocumentNonBlocking(studentDocRef, { [`lessonProgress.${progressStorageVersion}`]: statusesToSave });
             updateDocumentNonBlocking(studentDocRef, { [`progress.${mainProgressKey}`]: Math.round(progress) });
@@ -210,18 +274,54 @@ export default function MayPage() {
         if (!topicToComplete) return;
     
         setLearningPath(currentPath => {
-            const newPath = [...currentPath];
-            const currentIndex = newPath.findIndex(t => t.key === topicToComplete);
-            
-            if (currentIndex !== -1 && newPath[currentIndex].status !== 'completed') {
-                newPath[currentIndex].status = 'completed';
+            const newPath = currentPath.map(t => ({
+                ...t,
+                subItems: t.subItems ? t.subItems.map(s => ({ ...s })) : undefined,
+            }));
+          
+            let nextSelectedTopic: string | null = null;
+            let topicFound = false;
+            let wasTopicUnlocked = false;
 
-                const nextIndex = currentIndex + 1;
-                if (nextIndex < newPath.length && newPath[nextIndex].status === 'locked') {
-                    newPath[nextIndex].status = 'active';
-                    toast({ title: "¡Siguiente tema desbloqueado!" });
+            for (let i = 0; i < newPath.length && !topicFound; i++) {
+                const currentTopic = newPath[i];
+          
+                if (currentTopic.key === topicToComplete) {
+                    if (currentTopic.status !== 'completed') { currentTopic.status = 'completed'; }
+                    if (i + 1 < newPath.length && newPath[i + 1].status === 'locked') {
+                        const next = newPath[i + 1];
+                        next.status = 'active';
+                        if (next.subItems?.[0]) { next.subItems[0].status = 'active'; nextSelectedTopic = next.subItems[0].key; } 
+                        else { nextSelectedTopic = next.key; }
+                        wasTopicUnlocked = true;
+                    }
+                    topicFound = true;
+                } else if (currentTopic.subItems) {
+                    const subIndex = currentTopic.subItems.findIndex(s => s.key === topicToComplete);
+                    if (subIndex !== -1) {
+                        if (currentTopic.subItems[subIndex].status !== 'completed') { currentTopic.subItems[subIndex].status = 'completed'; }
+                        const nextSubIndex = subIndex + 1;
+                        if (nextSubIndex < currentTopic.subItems.length && currentTopic.subItems[nextSubIndex].status === 'locked') {
+                            currentTopic.subItems[nextSubIndex].status = 'active';
+                            nextSelectedTopic = currentTopic.subItems[nextSubIndex].key;
+                            wasTopicUnlocked = true;
+                        } else if (currentTopic.subItems.every(s => s.status === 'completed')) {
+                            if (currentTopic.status !== 'completed') { currentTopic.status = 'completed'; }
+                            if (i + 1 < newPath.length && newPath[i + 1].status === 'locked') {
+                                const next = newPath[i + 1];
+                                next.status = 'active';
+                                if (next.subItems?.[0]) { next.subItems[0].status = 'active'; nextSelectedTopic = next.subItems[0].key; } 
+                                else { nextSelectedTopic = next.key; }
+                                wasTopicUnlocked = true;
+                            }
+                        }
+                        topicFound = true;
+                    }
                 }
             }
+        
+            if (nextSelectedTopic) { setSelectedTopic(nextSelectedTopic); }
+            if(wasTopicUnlocked) { toast({ title: "¡Siguiente tema desbloqueado!" }); }
             return newPath;
         });
         setTopicToComplete(null);
@@ -237,22 +337,23 @@ export default function MayPage() {
     };
 
     const handleTopicSelect = (topicKey: string) => {
-        const topic = learningPath.find(t => t.key === topicKey);
+        const mainTopic = learningPath.find(t => t.key === topicKey || t.subItems?.some(st => st.key === topicKey));
+        const subTopic = mainTopic?.subItems?.find(st => st.key === topicKey);
         
-        if (!isAdmin && topic?.status === 'locked') {
+        if (!isAdmin && ((subTopic && subTopic.status === 'locked') || (!subTopic && mainTopic?.status === 'locked'))) {
             toast({ variant: "destructive", title: "Contenido Bloqueado" });
             return;
         }
         setSelectedTopic(topicKey);
 
-        const exerciseKeys = ['exercise1', 'exercise2', 'exercise3', 'game', 'reading'];
+        const exerciseKeys = ['positive-ex', 'negative-ex', 'interrogative-ex', 'exercise2', 'exercise3', 'game', 'reading'];
         if (!exerciseKeys.includes(topicKey)) {
              handleTopicComplete(topicKey);
         }
     };
     
     const renderContent = () => {
-        const topic = learningPath.find(t => t.key === selectedTopic);
+        const topic = learningPath.find(t => t.key === selectedTopic) || learningPath.flatMap(t => t.subItems || []).find(st => st?.key === selectedTopic);
 
         switch(selectedTopic) {
             case 'vocabulary':
@@ -290,7 +391,7 @@ export default function MayPage() {
                         </CardContent>
                         <CardFooter>
                             <Button onClick={handleContinueToGrammar}>
-                                Continuar con Grammar
+                                Continuar con Gramática
                             </Button>
                         </CardFooter>
                     </Card>
@@ -351,12 +452,17 @@ export default function MayPage() {
                                 <CardTitle className="text-destructive dark:text-destructive">Nota Importante</CardTitle>
                             </CardHeader>
                             <CardContent className="text-center font-mono text-xl p-6 bg-brand-lilac dark:bg-muted rounded-b-lg">
-                                <p>No se suelen usar contracciones (como <code className="p-1 rounded bg-muted dark:bg-background">mightn't</code>) en el inglés moderno; es mejor decir <code className="p-1 rounded bg-muted dark:bg-background">might not</code>.</p>
+                                <p>No se suelen usar contracciones (como <code className="p-1 rounded bg-muted dark:bg-background">mightn't</code>) en el inglés moderno; es mejor decir <code className="p-1 rounded bg-background">might not</code>.</p>
                             </CardContent>
                         </Card>
                     </div>
                 );
-            case 'exercise1':
+            case 'positive-ex':
+                return <SingleFormExercise onComplete={() => handleTopicComplete('positive-ex')} exerciseData={mayPositiveExercises} title="Ejercicios: Forma Positiva" description="Traduce las frases a su forma afirmativa." formType="affirmative" />;
+            case 'negative-ex':
+                return <SingleFormExercise onComplete={() => handleTopicComplete('negative-ex')} exerciseData={mayNegativeExercises} title="Ejercicios: Forma Negativa" description="Traduce las frases a su forma negativa." formType="negative" />;
+            case 'interrogative-ex':
+                return <SingleFormExercise onComplete={() => handleTopicComplete('interrogative-ex')} exerciseData={mayInterrogativeExercises} title="Ejercicios: Forma Interrogativa" description="Traduce las frases a su forma interrogativa." formType="interrogative" />;
             case 'exercise2':
             case 'exercise3':
                  return (
@@ -391,6 +497,11 @@ export default function MayPage() {
                             <CardTitle>{topic?.name || 'Cargando...'}</CardTitle>
                             <CardDescription>Contenido para este tema estará disponible pronto.</CardDescription>
                         </CardHeader>
+                        <CardContent>
+                            <div className="flex items-center justify-center h-64">
+                                <Trophy className="w-24 h-24 text-yellow-300" />
+                            </div>
+                        </CardContent>
                     </Card>
                 );
         }
@@ -415,14 +526,42 @@ export default function MayPage() {
                                         <ul className="space-y-1">
                                             {learningPath.map((item) => (
                                                 <li key={item.key}>
-                                                    <div onClick={() => handleTopicSelect(item.key)}
-                                                        className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors', item.status === 'locked' && !isAdmin ? 'cursor-not-allowed text-muted-foreground/50' : 'cursor-pointer hover:bg-muted', selectedTopic === item.key && 'bg-muted text-primary font-semibold')}>
-                                                        <div className="flex items-center gap-3">
-                                                            <item.icon className={cn("h-5 w-5", item.status === 'completed' ? 'text-green-500' : '')} />
-                                                            <span>{item.name}</span>
+                                                    {!item.subItems ? (
+                                                        <div onClick={() => handleTopicSelect(item.key)}
+                                                            className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors', item.status === 'locked' && !isAdmin ? 'cursor-not-allowed text-muted-foreground/50' : 'cursor-pointer hover:bg-muted', selectedTopic === item.key && 'bg-muted text-primary font-semibold')}>
+                                                            <div className="flex items-center gap-3">
+                                                                <item.icon className={cn("h-5 w-5", item.status === 'completed' ? 'text-green-500' : '')} />
+                                                                <span>{item.name}</span>
+                                                            </div>
+                                                            {item.status === 'locked' && !isAdmin && <Lock className="h-4 w-4 text-yellow-500" />}
                                                         </div>
-                                                        {item.status === 'locked' && !isAdmin && <Lock className="h-4 w-4 text-yellow-500" />}
-                                                    </div>
+                                                    ) : (
+                                                        <Collapsible defaultOpen={item.subItems.some(si => si.status !== 'locked')} disabled={item.status === 'locked' && !isAdmin}>
+                                                            <CollapsibleTrigger className="w-full">
+                                                                <div className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors w-full', item.status === 'locked' && !isAdmin ? 'cursor-not-allowed text-muted-foreground/50' : 'cursor-pointer hover:bg-muted', item.subItems.some(si => si.key === selectedTopic) && 'bg-muted text-primary font-semibold')}>
+                                                                    <div className="flex items-center gap-3">
+                                                                        <item.icon className={cn("h-5 w-5", item.status === 'completed' ? 'text-green-500' : '')} />
+                                                                        <span>{item.name}</span>
+                                                                    </div>
+                                                                    {item.status === 'locked' && !isAdmin ? <Lock className="h-4 w-4 text-yellow-500" /> : <ChevronDown className="h-4 w-4 transition-transform [&[data-state=open]]:rotate-180" />}
+                                                                </div>
+                                                            </CollapsibleTrigger>
+                                                            <CollapsibleContent>
+                                                                <ul className="pl-8 pt-1 space-y-1">
+                                                                    {item.subItems.map((subItem) => (
+                                                                        <li key={subItem.key} onClick={() => handleTopicSelect(subItem.key)}
+                                                                            className={cn('flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors', subItem.status === 'locked' && !isAdmin ? 'cursor-not-allowed text-muted-foreground/50' : 'cursor-pointer hover:bg-muted', selectedTopic === subItem.key && 'bg-muted text-primary font-semibold')}>
+                                                                            <div className='flex items-center gap-3'>
+                                                                                <subItem.icon className={cn("h-5 w-5", subItem.status === 'completed' ? 'text-green-500' : '')} />
+                                                                                <span>{subItem.name}</span>
+                                                                            </div>
+                                                                            {subItem.status === 'locked' && !isAdmin && <Lock className="h-4 w-4 text-yellow-500" />}
+                                                                        </li>
+                                                                    ))}
+                                                                </ul>
+                                                            </CollapsibleContent>
+                                                        </Collapsible>
+                                                    )}
                                                 </li>
                                             ))}
                                         </ul>
