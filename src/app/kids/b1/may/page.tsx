@@ -128,8 +128,8 @@ const mayMixedExercises = [
             affirmative: ["I may apply for a scholarship."],
             negative: ["I may not apply for a scholarship."],
             interrogative: ["May I apply for a scholarship?"],
-            shortAffirmative: ["Yes, you may."],
-            shortNegative: ["No, you may not."]
+            shortAffirmative: ["Yes, you may.", "yes, i may"],
+            shortNegative: ["No, you may not.", "no, i may not"]
         }
     }
 ];
