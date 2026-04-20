@@ -6,7 +6,7 @@ import { DashboardHeader } from "@/components/dashboard/header";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, Gamepad2, ChevronDown, Trophy } from 'lucide-react';
+import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, Gamepad2, ChevronDown, Trophy, BookText } from 'lucide-react';
 import { useTranslation } from "@/context/language-context";
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
@@ -16,6 +16,9 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { SingleFormExercise } from '@/components/kids/exercises/single-form';
+import { PresentSimpleExercise } from '@/components/kids/exercises/present-simple';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+
 
 const readingTextData = {
     title: "Life is Full of Choices",
@@ -79,9 +82,41 @@ const mayInterrogativeVocab = {
     "empezar": "to start",
     "negocio": "business",
     "juntos": "together",
-    "jubilarse": "to retire"
+    "jubilarse": "retire"
 };
 
+const mayMixedExercises = [
+    {
+        spanish: "Nosotros podríamos viajar a la luna algún día.",
+        answers: {
+            affirmative: ["we might travel to the moon someday"],
+            negative: ["we might not travel to the moon someday"],
+            interrogative: ["might we travel to the moon someday?"],
+            shortAffirmative: ["yes, we might"],
+            shortNegative: ["no, we might not"]
+        }
+    },
+    {
+        spanish: "Puede que llueva esta tarde.",
+        answers: {
+            affirmative: ["it may rain this afternoon"],
+            negative: ["it may not rain this afternoon"],
+            interrogative: ["may it rain this afternoon?"],
+            shortAffirmative: ["yes, it may"],
+            shortNegative: ["no, it may not"]
+        }
+    },
+    {
+        spanish: "Él tal vez compre un carro nuevo.",
+        answers: {
+            affirmative: ["he might buy a new car"],
+            negative: ["he might not buy a new car"],
+            interrogative: ["might he buy a new car?"],
+            shortAffirmative: ["yes, he might"],
+            shortNegative: ["no, he might not"]
+        }
+    }
+];
 
 const ReadingExercise = ({ onComplete }: { onComplete: () => void }) => {
     const { t } = useTranslation();
@@ -215,8 +250,7 @@ export default function MayPage() {
                 { key: 'interrogative-ex', name: 'Interrogativa', icon: PenSquare, status: 'locked' },
             ]
         },
-        { key: 'exercise2', name: 'Ejercicio 2', icon: PenSquare, status: 'locked' },
-        { key: 'exercise3', name: 'Ejercicio 3', icon: PenSquare, status: 'locked' },
+        { key: 'mixedExercises', name: 'Ejercicios Mixtos', icon: PenSquare, status: 'locked' },
         { key: 'game', name: 'Sopa de Letras (Life Goals)', icon: Gamepad2, status: 'locked' },
         { key: 'reading', name: 'Lectura', icon: BookOpen, status: 'locked' },
     ], []);
@@ -381,7 +415,7 @@ export default function MayPage() {
         }
         setSelectedTopic(topicKey);
 
-        const exerciseKeys = ['positive-ex', 'negative-ex', 'interrogative-ex', 'exercise2', 'exercise3', 'game', 'reading'];
+        const exerciseKeys = ['positive-ex', 'negative-ex', 'interrogative-ex', 'mixedExercises', 'game', 'reading'];
         if (!exerciseKeys.includes(topicKey)) {
              handleTopicComplete(topicKey);
         }
@@ -442,20 +476,22 @@ export default function MayPage() {
                                 <p>Ambos se usan para hablar de posibilidades en el futuro, pero hay un matiz de probabilidad:</p>
                                 <div className="space-y-2">
                                     <h4 className="font-bold text-primary">MAY (50% de probabilidad)</h4>
-                                    <p className="text-muted-foreground text-base">Se usa cuando algo es muy posible. Es más formal y educado.</p>
+                                    <p className="text-muted-foreground text-base">Se usa cuando algo es muy posible.</p>
                                     <ul className="list-disc list-inside text-base text-muted-foreground pl-4">
                                         <li>Significa: Puede que / Podría.</li>
                                         <li>Indica que la acción está más cerca de ser real.</li>
+                                        <li>Es más formal y educado.</li>
                                         <li>Se usa para pedir permiso formal (Ej: "May I come in?").</li>
                                     </ul>
                                     <p className="mt-2 p-3 bg-muted rounded-lg font-mono text-base">"I have good grades, so I may get a degree next year." (Es probable).</p>
                                 </div>
                                 <div className="space-y-2">
                                     <h4 className="font-bold text-primary">MIGHT (30% de probabilidad)</h4>
-                                    <p className="text-muted-foreground text-base">Se usa para posibilidades más remotas o distantes. Es un poco más informal/común en conversación.</p>
+                                    <p className="text-muted-foreground text-base">Se usa para posibilidades más remotas o distantes.</p>
                                      <ul className="list-disc list-inside text-base text-muted-foreground pl-4">
                                         <li>Significa: Podría / Tal vez (pero con menos probabilidad).</li>
                                         <li>Indica que la acción es más un "sueño" o algo difícil.</li>
+                                        <li>Es un poco más informal/común en conversación.</li>
                                         <li>Casi nunca se usa para pedir permiso.</li>
                                     </ul>
                                     <p className="mt-2 p-3 bg-muted rounded-lg font-mono text-base">"I don't have much money, but I might move abroad someday." (Es un sueño lejano).</p>
@@ -487,7 +523,7 @@ export default function MayPage() {
                                 <CardTitle className="text-destructive dark:text-destructive">Nota Importante</CardTitle>
                             </CardHeader>
                             <CardContent className="text-center font-mono text-xl p-6 bg-brand-lilac dark:bg-muted rounded-b-lg">
-                                <p>No se suelen usar contracciones (como <code className="p-1 rounded bg-muted dark:bg-background">mightn't</code>) en el inglés moderno; es mejor decir <code className="p-1 rounded bg-background">might not</code>.</p>
+                                <p>No se suelen usar contracciones (como <code className="p-1 rounded bg-background">mightn't</code>) en el inglés moderno; es mejor decir <code className="p-1 rounded bg-background">might not</code>.</p>
                             </CardContent>
                         </Card>
                     </div>
@@ -498,19 +534,8 @@ export default function MayPage() {
                 return <SingleFormExercise onComplete={() => handleTopicComplete('negative-ex')} exerciseData={mayNegativeExercises} title="Ejercicios: Forma Negativa" description="Traduce las frases a su forma negativa." formType="negative" vocabulary={mayNegativeVocab} />;
             case 'interrogative-ex':
                 return <SingleFormExercise onComplete={() => handleTopicComplete('interrogative-ex')} exerciseData={mayInterrogativeExercises} title="Ejercicios: Forma Interrogativa" description="Convierte las frases en preguntas." formType="interrogative" vocabulary={mayInterrogativeVocab} />;
-            case 'exercise2':
-            case 'exercise3':
-                 return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-                        <CardHeader>
-                            <CardTitle>{topic?.name}</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p>Contenido del ejercicio.</p>
-                             <Button onClick={() => handleTopicComplete(selectedTopic)} className="mt-4">Marcar como completado</Button>
-                        </CardContent>
-                    </Card>
-                );
+            case 'mixedExercises':
+                return <PresentSimpleExercise onComplete={() => handleTopicComplete('mixedExercises')} exerciseData={mayMixedExercises} title="Ejercicios Mixtos" showShortAnswers={true} />;
             case 'game':
                  return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
