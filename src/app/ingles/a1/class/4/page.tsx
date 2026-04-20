@@ -16,6 +16,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { GenitiveCaseExercise } from '@/components/kids/exercises/genitive-case-exercise';
+import { WhQuestionExercise } from '@/components/kids/exercises/wh-question-exercise';
 
 
 type Topic = {
@@ -510,6 +511,15 @@ export default function EngA1Class4Page() {
                     </CardContent>
                 </Card>
             );
+        }
+
+        const practiceTopics = [
+            'who', 'what1', 'what2', 'what-kind-of', 'how', 'how-adjective', 
+            'how-often', 'whose', 'where', 'which', 'when', 'why'
+        ];
+        if (practiceTopics.includes(selectedTopic)) {
+            const topicData = learningPath.flatMap(t => t.subItems || []).find(st => st.key === selectedTopic);
+            return <WhQuestionExercise exerciseName={topicData?.name || ''} onComplete={() => handleTopicComplete(selectedTopic)} />;
         }
 
         return (
