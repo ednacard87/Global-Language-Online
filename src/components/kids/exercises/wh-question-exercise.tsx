@@ -40,7 +40,7 @@ const whExercisesData = {
         ]
     },
     'what-kind-of': {
-        title: "WHAT KIND OF? QUE TIPO/CLASE DE ________? –",
+        title: "WHAT KIND OF?  QUE TIPO/CLASE DE ________? –",
         prompts: [
             { spanish: '¿QUE TIPO DE ZAPATOS TE GUSTAN?', english: ["what kind of shoes do you like?"] },
             { spanish: '¿QUE TIPO DE PORTATIL LE GUSTA A ELLA?', english: ["what kind of laptop does she like?"] },
@@ -123,9 +123,9 @@ const whExercisesData = {
         title: "WHY? –POR QUÉ (SE USA PARA PREGUNTAS) - BECAUSE…- PORQUE……(SE USA PARA RESPUESTAS)",
         prompts: [
             { spanish: '¿POR QUÉ VAS ALLÁ? – PORQUE YO VOY A LA FINCA DE MIS PADRES.', english: ["why do you go there? because i go to my parents' farm."] },
-            { spanish: '¿POR QUÉ ESTAS TRISTE? ------- PORQUE NO PUEDO VISITAR A MI ABUELA.', english: ["why are you sad? because i can\'t visit my grandmother."] },
+            { spanish: '¿POR QUÉ ESTAS TRISTE? ------- PORQUE NO PUEDO VISITAR A MI ABUELA.', english: ["why are you sad? because i can't visit my grandmother."] },
             { spanish: '¿POR QUÉ ELLA ESTA FELIZ? – PORQUE ELLA TIENE UN VIAJE A BARCELONA.', english: ["why is she happy? because she has a trip to barcelona."] },
-            { spanish: '¿POR QUÉ ESTUDIAS EN NOCHE? – PORQUE YO NO TENGO TIEMPO DURANTE EL DIA.', english: ["why do you study at night? because i don\'t have time during the day."] },
+            { spanish: '¿POR QUÉ ESTUDIAS EN NOCHE? – PORQUE YO NO TENGO TIEMPO DURANTE EL DIA.', english: ["why do you study at night? because i don't have time during the day."] },
             { spanish: '¿POR QUE VIVES LEJOS? – POR QUE A MI ME GUSTA VIVIR EN LA NATURALEZA.', english: ["why do you live far away? because i like to live in nature."] }
         ]
     },
