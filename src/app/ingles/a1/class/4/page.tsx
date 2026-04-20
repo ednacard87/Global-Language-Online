@@ -15,6 +15,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { GenitiveCaseExercise } from '@/components/kids/exercises/genitive-case-exercise';
 
 
 type Topic = {
@@ -426,6 +427,10 @@ export default function EngA1Class4Page() {
                     </CardContent>
                 </Card>
             );
+        }
+
+        if (selectedTopic === 'genitivo') {
+            return <GenitiveCaseExercise onComplete={() => handleTopicComplete('genitivo')} />;
         }
 
         return (
