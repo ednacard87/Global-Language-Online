@@ -20,6 +20,22 @@ import { PresentSimpleExercise } from '@/components/kids/exercises/present-simpl
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 
+const lifeGoalsVocab = [
+    { spanish: "Solicitar una beca.", english: "Apply for a scholarship" },
+    { spanish: "Tomarse un año sabático.", english: "Take a gap year" },
+    { spanish: "Estudiar en el extranjero.", english: "Study abroad" },
+    { spanish: "Obtener un ascenso.", english: "Get a promotion" },
+    { spanish: "Cambiar de carrera/profesión.", english: "Change career" },
+    { spanish: "Formar una familia.", english: "Start a family" },
+    { spanish: "Unirse a una organización benéfica.", english: "Join a charity" },
+    { spanish: "Aprender un oficio (ej. carpintería, mecánica).", english: "Learn a trade" },
+    { spanish: "Obtener un título universitario.", english: "Get a degree" },
+    { spanish: "Mudarse al extranjero.", english: "Move abroad" },
+    { spanish: "Jubilarse joven.", english: "Retire early" },
+    { spanish: "Montar un negocio.", english: "Set up a business" },
+];
+
+
 const readingTextData = {
     title: "Life is Full of Choices",
     content: "Next year, I might take a gap year to travel. I may study abroad in Spain. It's a big decision! My friend, Sarah, will set up a business. She thinks she may get a promotion first. I will not start a family soon, but I might join a charity to help animals. We all have big dreams for the future.",
@@ -206,6 +222,154 @@ type Topic = {
   subItems?: { key: string; name: string; status: 'locked' | 'active' | 'completed', icon?: React.ElementType }[];
 };
 
+const WordSearchGame = ({ onComplete }: { onComplete: () => void }) => {
+    const { t } = useTranslation();
+    const { toast } = useToast();
+    
+    const words = useMemo(() => lifeGoalsVocab.map(v => v.english.replace(/ /g, '').toUpperCase()), []);
+    const [grid, setGrid] = useState<string[][]>([]);
+    const [foundWords, setFoundWords] = useState<{ word: string, cells: { row: number, col: number }[] }[]>([]);
+    const [selection, setSelection] = useState<{row: number, col: number}[]>([]);
+    const [isSelecting, setIsSelecting] = useState(false);
+
+    useEffect(() => {
+        const gridSize = 18;
+        const newGrid: (string | null)[][] = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null));
+        const directions = [
+            { dr: 0, dc: 1 },  // Horizontal (right)
+            { dr: 1, dc: 0 },  // Vertical (down)
+            { dr: 1, dc: 1 },  // Diagonal (down-right)
+            { dr: 0, dc: -1 }, // Horizontal (left)
+            { dr: -1, dc: 0 }, // Vertical (up)
+            { dr: 1, dc: -1 }, // Diagonal (down-left)
+            { dr: -1, dc: 1 }, // Diagonal (up-right)
+            { dr: -1, dc: -1 },// Diagonal (up-left)
+        ];
+
+        words.forEach(originalWord => {
+            let placed = false;
+            let attempts = 0;
+            while (!placed && attempts < 1000) {
+                attempts++;
+                
+                const wordToPlace = Math.random() > 0.5 ? originalWord.split('').reverse().join('') : originalWord;
+                const dir = directions[Math.floor(Math.random() * directions.length)];
+                
+                const startRow = Math.floor(Math.random() * gridSize);
+                const startCol = Math.floor(Math.random() * gridSize);
+
+                let canPlace = true;
+                
+                for (let i = 0; i < wordToPlace.length; i++) {
+                    const newRow = startRow + i * dir.dr;
+                    const newCol = startCol + i * dir.dc;
+
+                    if (newRow < 0 || newRow >= gridSize || newCol < 0 || newCol >= gridSize) {
+                        canPlace = false;
+                        break;
+                    }
+                    
+                    if (newGrid[newRow][newCol] && newGrid[newRow][newCol] !== wordToPlace[i]) {
+                        canPlace = false;
+                        break;
+                    }
+                }
+
+                if (canPlace) {
+                    for (let i = 0; i < wordToPlace.length; i++) {
+                        const newRow = startRow + i * dir.dr;
+                        const newCol = startCol + i * dir.dc;
+                        newGrid[newRow][newCol] = wordToPlace[i];
+                    }
+                    placed = true;
+                }
+            }
+            if (!placed) {
+                console.warn(`Could not place word: ${originalWord}`);
+            }
+        });
+        
+        const finalGrid = newGrid.map(row => row.map(cell => cell || 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[Math.floor(Math.random() * 26)]));
+        setGrid(finalGrid);
+        setFoundWords([]);
+    }, [words]);
+
+    const handleMouseUp = () => {
+        if (!isSelecting || grid.length === 0) return;
+        setIsSelecting(false);
+
+        const selectedWord = selection.map(({ row, col }) => grid[row][col]).join('');
+        const reversedSelectedWord = selectedWord.split('').reverse().join('');
+        
+        const wordFound = words.find(w => !foundWords.some(fw => fw.word === w) && (w === selectedWord || w === reversedSelectedWord));
+
+        if (wordFound) {
+            setFoundWords(prev => [...prev, { word: wordFound, cells: selection }]);
+            toast({ title: "¡Palabra encontrada!", description: `Has encontrado "${wordFound}".` });
+        }
+        
+        setSelection([]);
+    };
+    
+    useEffect(() => {
+        if (words && foundWords.length === words.length && words.length > 0) {
+            onComplete();
+        }
+    }, [foundWords, words, onComplete]);
+
+
+    return (
+         <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+            <CardHeader>
+                <CardTitle>{t('wordSearch.title')}</CardTitle>
+                <CardDescription>{t('wordSearch.description')}</CardDescription>
+            </CardHeader>
+            <CardContent className="grid md:grid-cols-3 gap-8 items-start">
+                <div onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp} className="bg-muted p-2 rounded-lg md:col-span-2">
+                    <div className="grid gap-1" style={{ gridTemplateColumns: `repeat(${grid.length > 0 ? grid.length : 1}, minmax(0, 1fr))` }}>
+                        {grid.map((row, rowIndex) => (
+                            row.map((cell, colIndex) => {
+                                const isSelected = selection.some(s => s.row === rowIndex && s.col === colIndex);
+                                const isFound = foundWords.some(fw => fw.cells.some(c => c.row === rowIndex && c.col === colIndex));
+                                return (
+                                <div key={`${rowIndex}-${colIndex}`}
+                                    onMouseDown={() => { setIsSelecting(true); setSelection([{row: rowIndex, col: colIndex}]); }}
+                                    onMouseEnter={() => { if(isSelecting) setSelection(s => [...s, {row: rowIndex, col: colIndex}])}}
+                                    className={cn("flex items-center justify-center aspect-square select-none cursor-pointer rounded bg-background text-sm sm:text-base font-bold", 
+                                        isFound ? "bg-primary text-primary-foreground" : (isSelected ? "bg-primary/50" : "")
+                                    )}
+                                >
+                                    {cell}
+                                </div>
+                                )
+                            })
+                        ))}
+                    </div>
+                </div>
+                 <div className="md:col-span-1">
+                    <h3 className="font-semibold mb-2">{t('wordSearch.wordsToFind')}</h3>
+                    <ul className="space-y-1 text-sm">
+                        {words.map(word => (
+                            <li key={word} className={cn("transition-all", foundWords.some(fw => fw.word === word) && "line-through text-muted-foreground opacity-70")}>
+                                {word}
+                            </li>
+                        ))}
+                    </ul>
+                 </div>
+            </CardContent>
+             {foundWords.length === words.length && words.length > 0 && (
+                <CardFooter className="justify-center">
+                    <div className="text-center p-4">
+                        <Trophy className="h-12 w-12 text-yellow-400 mx-auto mb-2" />
+                        <h3 className="text-xl font-bold">{t('wordSearch.allWordsFound')}</h3>
+                    </div>
+                </CardFooter>
+            )}
+        </Card>
+    );
+};
+
+
 const ICONS = {
     locked: Lock,
     active: BookOpen,
@@ -235,6 +399,7 @@ export default function MayPage() {
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
     const [selectedTopic, setSelectedTopic] = useState<string>('');
     const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
+    const [initialLoadComplete, setInitialLoadComplete] = useState(false);
 
     const initialLearningPath = useMemo((): Topic[] => [
         { key: 'vocabulary', name: 'Vocabulario (Life Goals)', icon: BookOpen, status: 'active' },
@@ -256,7 +421,9 @@ export default function MayPage() {
     ], []);
     
     useEffect(() => {
-        if (isUserLoading || isProfileLoading) return;
+        if (isUserLoading || isProfileLoading) {
+            return;
+        }
 
         const newPath = initialLearningPath.map(topic => ({
             ...topic,
@@ -286,23 +453,26 @@ export default function MayPage() {
 
         setLearningPath(newPath);
         
-        const firstActive = newPath.find(p => p.status === 'active') || newPath.find(p => p.subItems?.some(s => s.status === 'active'));
-        if (firstActive) {
-            if (firstActive.subItems) {
-                const firstActiveSub = firstActive.subItems.find(s => s.status === 'active');
-                setSelectedTopic(firstActiveSub?.key || firstActive.key);
+        if (!initialLoadComplete) {
+            const firstActive = newPath.find(p => p.status === 'active') || newPath.find(p => p.subItems?.some(s => s.status === 'active'));
+            if (firstActive) {
+                if (firstActive.subItems) {
+                    const firstActiveSub = firstActive.subItems.find(s => s.status === 'active');
+                    setSelectedTopic(firstActiveSub?.key || firstActive.key);
+                } else {
+                    setSelectedTopic(firstActive.key);
+                }
             } else {
-                setSelectedTopic(firstActive.key);
+                setSelectedTopic(newPath[0]?.key || '');
             }
-        } else {
-            setSelectedTopic(newPath[0]?.key || '');
+            setInitialLoadComplete(true);
         }
     
-    }, [isAdmin, initialLearningPath, studentProfile, isUserLoading, isProfileLoading]);
+    }, [isAdmin, initialLearningPath, studentProfile, isUserLoading, isProfileLoading, initialLoadComplete]);
 
     
     const progress = useMemo(() => {
-        if (learningPath.length === 0) return 0;
+        if (!initialLoadComplete) return 0;
         let totalTopics = 0;
         let completedTopics = 0;
         learningPath.forEach(t => {
@@ -314,11 +484,11 @@ export default function MayPage() {
                 if (t.status === 'completed') completedTopics++;
             }
         });
-        return (totalTopics > 0) ? (completedTopics / totalTopics) * 100 : 0;
-    }, [learningPath]);
+        return totalTopics > 0 ? (completedTopics / totalTopics) * 100 : 0;
+    }, [learningPath, initialLoadComplete]);
 
     useEffect(() => {
-        if (isUserLoading || isProfileLoading || learningPath.length === 0) return;
+        if (!initialLoadComplete || isUserLoading || isProfileLoading || learningPath.length === 0) return;
 
         if (!isAdmin && studentDocRef) {
             const statusesToSave: Record<string, any> = {};
@@ -337,7 +507,7 @@ export default function MayPage() {
         if (progress >= 100) {
           window.dispatchEvent(new CustomEvent('progressUpdated'));
         }
-    }, [learningPath, isAdmin, progress, studentDocRef, isUserLoading, isProfileLoading]);
+    }, [learningPath, isAdmin, progress, studentDocRef, isUserLoading, isProfileLoading, initialLoadComplete]);
 
     useEffect(() => {
         if (!topicToComplete) return;
@@ -426,21 +596,6 @@ export default function MayPage() {
 
         switch(selectedTopic) {
             case 'vocabulary':
-                const lifeGoalsVocab = [
-                    { spanish: "Solicitar una beca.", english: "Apply for a scholarship" },
-                    { spanish: "Tomarse un año sabático.", english: "Take a gap year" },
-                    { spanish: "Estudiar en el extranjero.", english: "Study abroad" },
-                    { spanish: "Obtener un ascenso.", english: "Get a promotion" },
-                    { spanish: "Cambiar de carrera/profesión.", english: "Change career" },
-                    { spanish: "Formar una familia.", english: "Start a family" },
-                    { spanish: "Unirse a una organización benéfica.", english: "Join a charity" },
-                    { spanish: "Aprender un oficio (ej. carpintería, mecánica).", english: "Learn a trade" },
-                    { spanish: "Obtener un título universitario.", english: "Get a degree" },
-                    { spanish: "Mudarse al extranjero.", english: "Move abroad" },
-                    { spanish: "Jubilarse joven.", english: "Retire early" },
-                    { spanish: "Montar un negocio.", english: "Set up a business" },
-                ];
-
                 return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
                         <CardHeader>
@@ -537,17 +692,7 @@ export default function MayPage() {
             case 'mixedExercises':
                 return <PresentSimpleExercise onComplete={() => handleTopicComplete('mixedExercises')} exerciseData={mayMixedExercises} title="Ejercicios Mixtos" showShortAnswers={true} />;
             case 'game':
-                 return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-                        <CardHeader>
-                            <CardTitle>Sopa de Letras (Life Goals)</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p>Aquí va el juego de sopa de letras.</p>
-                            <Button onClick={() => handleTopicComplete('game')} className="mt-4">Marcar como completado</Button>
-                        </CardContent>
-                    </Card>
-                );
+                 return <WordSearchGame onComplete={() => handleTopicComplete('game')} />;
             case 'reading':
                 return <ReadingExercise onComplete={() => handleTopicComplete('reading')} />;
             default:
