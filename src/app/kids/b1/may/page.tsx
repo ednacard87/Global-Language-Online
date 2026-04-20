@@ -103,7 +103,7 @@ const mayInterrogativeVocab = {
 
 const mayMixedExercises = [
     {
-        spanish: "Puede que ella consiga un trabajo.",
+        spanish: "ella puede que consiga un empleo",
         answers: {
             affirmative: ["She may get a job."],
             negative: ["She may not get a job."],
@@ -113,7 +113,7 @@ const mayMixedExercises = [
         }
     },
     {
-        spanish: "Tal vez nos mudemos al extranjero.",
+        spanish: "tal vez nosotros nos mudemos al extranjero",
         answers: {
             affirmative: ["We might move abroad."],
             negative: ["We might not move abroad."],
@@ -123,7 +123,7 @@ const mayMixedExercises = [
         }
     },
     {
-        spanish: "Puede que solicite una beca.",
+        spanish: "yo puede que solicite una beca",
         answers: {
             affirmative: ["I may apply for a scholarship."],
             negative: ["I may not apply for a scholarship."],
@@ -417,7 +417,7 @@ export default function MayPage() {
         },
         { key: 'mixedExercises', name: 'Ejercicios Mixtos', icon: PenSquare, status: 'locked' },
         { key: 'game', name: 'Sopa de Letras (Life Goals)', icon: Gamepad2, status: 'locked' },
-        { key: 'reading', name: 'Lectura', icon: BookOpen, status: 'locked' },
+        { key: 'reading', name: 'Lectura', icon: BookText, status: 'locked' },
     ], []);
     
     useEffect(() => {
