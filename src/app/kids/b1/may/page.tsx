@@ -210,15 +210,29 @@ export default function MayPage() {
                             </CardHeader>
                             <CardContent className="space-y-4 text-lg">
                                 <p>Ambos se usan para hablar de posibilidades en el futuro, pero hay un matiz de probabilidad:</p>
-                                <div>
+                                <div className="space-y-2">
                                     <h4 className="font-bold text-primary">MAY (50% de probabilidad)</h4>
-                                    <p className="text-muted-foreground">Se usa cuando algo es muy posible. Es un poco más formal.</p>
+                                    <p className="text-muted-foreground text-base">Se usa cuando algo es muy posible. Es más formal y educado.</p>
+                                    <ul className="list-disc list-inside text-base text-muted-foreground pl-4">
+                                        <li>Significa: Puede que / Podría.</li>
+                                        <li>Indica que la acción está más cerca de ser real.</li>
+                                        <li>Se usa para pedir permiso formal (Ej: "May I come in?").</li>
+                                    </ul>
                                     <p className="mt-2 p-3 bg-muted rounded-lg font-mono text-base">"I have good grades, so I may get a degree next year." (Es probable).</p>
                                 </div>
-                                <div>
+                                <div className="space-y-2">
                                     <h4 className="font-bold text-primary">MIGHT (30% de probabilidad)</h4>
-                                    <p className="text-muted-foreground">Se usa para posibilidades más remotas o distantes.</p>
+                                    <p className="text-muted-foreground text-base">Se usa para posibilidades más remotas o distantes. Es un poco más informal/común en conversación.</p>
+                                     <ul className="list-disc list-inside text-base text-muted-foreground pl-4">
+                                        <li>Significa: Podría / Tal vez (pero con menos probabilidad).</li>
+                                        <li>Indica que la acción es más un "sueño" o algo difícil.</li>
+                                        <li>Casi nunca se usa para pedir permiso.</li>
+                                    </ul>
                                     <p className="mt-2 p-3 bg-muted rounded-lg font-mono text-base">"I don't have much money, but I might move abroad someday." (Es un sueño lejano).</p>
+                                </div>
+                                <div className="border-t pt-4">
+                                    <h4 className="font-bold">En resumen:</h4>
+                                    <p className="text-muted-foreground mt-1 text-base">Si crees que hay un buen chance, usa <span className="font-semibold text-primary">May</span>. Si es algo que ves difícil o muy incierto, usa <span className="font-semibold text-primary">Might</span>.</p>
                                 </div>
                             </CardContent>
                         </Card>
@@ -238,12 +252,12 @@ export default function MayPage() {
                             </CardContent>
                         </Card>
                         
-                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card">
+                        <Card className="shadow-soft rounded-lg border-2 border-destructive bg-white dark:bg-card">
                             <CardHeader>
-                                <CardTitle>Nota Importante</CardTitle>
+                                <CardTitle className="text-destructive dark:text-destructive">Nota Importante</CardTitle>
                             </CardHeader>
-                            <CardContent>
-                                <p className="text-lg">No se suelen usar contracciones (como <code className="font-mono bg-brand-lilac p-1 rounded">mightn't</code>) en el inglés moderno; es mejor decir <code className="font-mono bg-brand-lilac p-1 rounded">might not</code>.</p>
+                            <CardContent className="text-center font-mono text-xl p-6 bg-brand-lilac dark:bg-muted rounded-b-lg">
+                                <p>No se suelen usar contracciones (como <code className="p-1 rounded bg-muted dark:bg-background">mightn't</code>) en el inglés moderno; es mejor decir <code className="p-1 rounded bg-muted dark:bg-background">might not</code>.</p>
                             </CardContent>
                         </Card>
                     </div>
