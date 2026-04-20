@@ -103,7 +103,7 @@ const mayInterrogativeVocab = {
 
 const mayMixedExercises = [
     {
-        spanish: "ella puede que consiga un empleo",
+        spanish: "ella puede que consiga un empleo - \"MAY\" (Posibilidad probable - 50%)",
         answers: {
             affirmative: ["She may get a job."],
             negative: ["She may not get a job."],
@@ -113,7 +113,7 @@ const mayMixedExercises = [
         }
     },
     {
-        spanish: "tal vez nosotros nos mudemos al extranjero",
+        spanish: "tal vez nosotros nos mudemos al extranjero - \"MIGHT\" (Posibilidad remota - 30%)",
         answers: {
             affirmative: ["We might move abroad."],
             negative: ["We might not move abroad."],
@@ -123,7 +123,7 @@ const mayMixedExercises = [
         }
     },
     {
-        spanish: "yo puede que solicite una beca",
+        spanish: "yo puede que solicite por una beca- \"MAY\" (Uso de permiso o posibilidad)",
         answers: {
             affirmative: ["I may apply for a scholarship."],
             negative: ["I may not apply for a scholarship."],
@@ -631,8 +631,7 @@ export default function MayPage() {
                                 <p>Ambos se usan para hablar de posibilidades en el futuro, pero hay un matiz de probabilidad:</p>
                                 <div className="space-y-2">
                                     <h4 className="font-bold text-primary">MAY (50% de probabilidad)</h4>
-                                    <p className="text-muted-foreground text-base">Se usa cuando algo es muy posible.</p>
-                                    <ul className="list-disc list-inside text-base text-muted-foreground pl-4">
+                                     <ul className="list-disc list-inside text-base text-muted-foreground pl-4 space-y-1">
                                         <li>Significa: Puede que / Podría.</li>
                                         <li>Indica que la acción está más cerca de ser real.</li>
                                         <li>Es más formal y educado.</li>
@@ -642,8 +641,7 @@ export default function MayPage() {
                                 </div>
                                 <div className="space-y-2">
                                     <h4 className="font-bold text-primary">MIGHT (30% de probabilidad)</h4>
-                                    <p className="text-muted-foreground text-base">Se usa para posibilidades más remotas o distantes.</p>
-                                     <ul className="list-disc list-inside text-base text-muted-foreground pl-4">
+                                     <ul className="list-disc list-inside text-base text-muted-foreground pl-4 space-y-1">
                                         <li>Significa: Podría / Tal vez (pero con menos probabilidad).</li>
                                         <li>Indica que la acción es más un "sueño" o algo difícil.</li>
                                         <li>Es un poco más informal/común en conversación.</li>
