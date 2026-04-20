@@ -39,8 +39,8 @@ const whExercisesData = {
             { spanish: '¿CUALES SON TUS ANIMALES FAVORITOS?', english: ["what are your favorite animals?"] }
         ]
     },
-    'What kind of': {
-        title: "WHAT KIND OF?  QUE TIPO/CLASE DE ________? –",
+    'what-kind-of': {
+        title: "WHAT KIND OF? QUE TIPO/CLASE DE ________?",
         prompts: [
             { spanish: '¿QUE TIPO DE ZAPATOS TE GUSTAN?', english: ["what kind of shoes do you like?"] },
             { spanish: '¿QUE TIPO DE PORTATIL LE GUSTA A ELLA?', english: ["what kind of laptop does she like?"] },
@@ -50,7 +50,7 @@ const whExercisesData = {
         ]
     },
     'How': {
-        title: "HOW? - COMO? -",
+        title: "HOW? - COMO?",
         prompts: [
             { spanish: 'COMO ESTAS?', english: ["how are you?"] },
             { spanish: 'COMO ESTÁN ELLOS?', english: ["how are they?"] },
@@ -59,8 +59,8 @@ const whExercisesData = {
             { spanish: 'COMO ESTA TU ESPOSO?', english: ["how is your husband?"] }
         ]
     },
-    'How + Adjective': {
-        title: "HOW + ADJECTIVE =QUE TAN + ADJETIVO...?",
+    'how-adjective': {
+        title: "HOW + ADJECTIVE = QUE TAN + ADJETIVO...?",
         prompts: [
             { spanish: '¿QUE TAN ALTO ERES?', english: ["how tall are you?"] },
             { spanish: '¿QUE TAN PICANTE ESTA LA SOPA?', english: ["how spicy is the soup?"] },
@@ -69,7 +69,7 @@ const whExercisesData = {
             { spanish: '¿QUE TAN GRANDE ES MEDELLIN?', english: ["how big is medellin?"] }
         ]
     },
-    'How + Often': {
+    'how-often': {
         title: "HOW + OFTEN: ¿QUE TAN SEGUIDO?",
         prompts: [
             { spanish: '¿QUE TAN SEGUIDO VAS AL GIMNASIO?', english: ["how often do you go to the gym?"] },
@@ -120,7 +120,7 @@ const whExercisesData = {
         ]
     },
     'Why': {
-        title: "WHY? –POR QUÉ (SE USA PARA PREGUNTAS) - BECAUSE…- PORQUE……(SE USA PARA RESPUESTAS)",
+        title: "Why? = Por qué? (se usa para preguntas) | Because... = Porque (se usa para respuestas)",
         prompts: [
             { spanish: '¿POR QUÉ VAS ALLÁ? – PORQUE YO VOY A LA FINCA DE MIS PADRES.', english: ["why do you go there? because i go to my parents' farm."] },
             { spanish: '¿POR QUÉ ESTAS TRISTE? ------- PORQUE NO PUEDO VISITAR A MI ABUELA.', english: ["why are you sad? because i can't visit my grandmother."] },
@@ -220,6 +220,8 @@ export function WhQuestionExercise({ exerciseName, onComplete }: { exerciseName:
             </Card>
         );
     }
+    
+    const currentPrompt = exercisePrompts[currentIndex];
 
     return (
         <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
@@ -248,7 +250,7 @@ export function WhQuestionExercise({ exerciseName, onComplete }: { exerciseName:
                 <div>
                     <h3 className="text-lg font-semibold mb-2">Frase a traducir:</h3>
                      <div className="bg-muted p-4 rounded-lg border">
-                        <p className="text-lg font-medium">{exercisePrompts[currentIndex]?.spanish}</p>
+                        <p className="text-lg font-medium">{currentPrompt?.spanish}</p>
                      </div>
                 </div>
                 <div>
