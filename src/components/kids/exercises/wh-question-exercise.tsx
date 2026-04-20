@@ -102,9 +102,9 @@ const whExercisesData = {
     'which': {
         title: "WHICH? -CUAL? (en un grupo definido- ya conozco las opciones a elegir)",
         prompts: [
-            { spanish: '¿CUAL MOTO LE GUSTA A EL? (DE ESTOS QUE TE MUESTRO)', english: ["which motorcycle does he like?"] },
-            { spanish: '¿CUAL HELADO QUIERES? (en una heladería)', english: ["which ice cream do you want?"] },
-            { spanish: '¿CUAL CELULAR TE GUSTA? (en una tienda de celulares)', english: ["which cellphone do you like?"] },
+            { spanish: '¿CUAL MOTO LE GUSTA A EL?  (DE ESTOS QUE TE MUESTRO)', english: ["which motorcycle does he like?"] },
+            { spanish: '¿CUAL HELADO QUIERES?  (en una heladería)', english: ["which ice cream do you want?"] },
+            { spanish: '¿CUAL CELULAR TE GUSTA?  (en una tienda de celulares)', english: ["which cellphone do you like?"] },
             { spanish: '¿CUAL COMPUTADOR NECESITAS?', english: ["which computer do you need?"] },
             { spanish: '¿CUAL CARRO QUIERES COMPRAR?', english: ["which car do you want to buy?"] }
         ]
