@@ -1,9 +1,10 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { DashboardHeader } from "@/components/dashboard/header";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, Gamepad2 } from 'lucide-react';
@@ -145,7 +146,7 @@ export default function MayPage() {
         }
         setSelectedTopic(topicKey);
 
-        const exerciseKeys = ['vocabulary', 'exercise1', 'exercise2', 'exercise3', 'game'];
+        const exerciseKeys = ['exercise1', 'exercise2', 'exercise3', 'game'];
         if (!exerciseKeys.includes(topicKey)) {
              handleTopicComplete(topicKey);
         }
@@ -156,15 +157,43 @@ export default function MayPage() {
 
         switch(selectedTopic) {
             case 'vocabulary':
+                const lifeGoalsVocab = [
+                    { spanish: "Solicitar una beca.", english: "Apply for a scholarship" },
+                    { spanish: "Tomarse un año sabático.", english: "Take a gap year" },
+                    { spanish: "Estudiar en el extranjero.", english: "Study abroad" },
+                    { spanish: "Obtener un ascenso.", english: "Get a promotion" },
+                    { spanish: "Cambiar de carrera/profesión.", english: "Change career" },
+                    { spanish: "Formar una familia.", english: "Start a family" },
+                    { spanish: "Unirse a una organización benéfica.", english: "Join a charity" },
+                    { spanish: "Aprender un oficio (ej. carpintería, mecánica).", english: "Learn a trade" },
+                    { spanish: "Obtener un título universitario.", english: "Get a degree" },
+                    { spanish: "Mudarse al extranjero.", english: "Move abroad" },
+                    { spanish: "Jubilarse joven.", english: "Retire early" },
+                    { spanish: "Montar un negocio.", english: "Set up a business" },
+                ];
+
                 return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
                         <CardHeader>
-                            <CardTitle>Vocabulario (Life Goals)</CardTitle>
+                            <CardTitle>Life Goals and Events</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <p>Aquí va el vocabulario sobre metas de vida.</p>
-                            <Button onClick={() => handleTopicComplete('vocabulary')} className="mt-4">Marcar como completado</Button>
+                            <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-lg">
+                                <div className="font-bold p-3 bg-muted rounded-lg text-left">Español</div>
+                                <div className="font-bold p-3 bg-muted rounded-lg text-left">Inglés</div>
+                                {lifeGoalsVocab.map((item, index) => (
+                                    <React.Fragment key={index}>
+                                        <div className="p-3 bg-card border rounded-lg flex items-center">{item.spanish}</div>
+                                        <div className="p-3 bg-card border rounded-lg flex items-center">{item.english}</div>
+                                    </React.Fragment>
+                                ))}
+                            </div>
                         </CardContent>
+                        <CardFooter>
+                            <Button onClick={() => handleTopicComplete('vocabulary')}>
+                                Continuar con Grammar
+                            </Button>
+                        </CardFooter>
                     </Card>
                 );
             case 'grammar':
