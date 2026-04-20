@@ -182,9 +182,6 @@ const can1ExerciseData: ExercisePrompt[] = [
             shortNegative: ["no, they cannot", "no, they can't"],
         }
     },
-];
-
-const can2ExerciseData: ExercisePrompt[] = [
     {
         spanish: "Nosotros podemos jugar futbol",
         answers: {
@@ -270,8 +267,7 @@ export default function EngA1Class3Page() {
             icon: PenSquare,
             status: 'locked',
             subItems: [
-                { key: 'can1', name: t('kidsA1Class3.can1'), icon: PenSquare, status: 'locked' },
-                { key: 'can2', name: t('kidsA1Class3.can2'), icon: PenSquare, status: 'locked' },
+                { key: 'can1', name: 'Ejercicios con CAN', icon: PenSquare, status: 'locked' },
             ],
         },
     ], [t]);
@@ -414,7 +410,7 @@ export default function EngA1Class3Page() {
         }
         setSelectedTopic(topicKey);
 
-        const exerciseKeys: string[] = ['mixedExercises1', 'ex2_1', 'ex2_2', 'ex3_3', 'ex3_4', 'can1', 'can2'];
+        const exerciseKeys: string[] = ['mixedExercises1', 'ex2_1', 'ex2_2', 'ex3_3', 'ex3_4', 'can1'];
         if (!exerciseKeys.includes(topicKey)) {
             setTopicToComplete(topicKey);
         }
@@ -648,15 +644,6 @@ export default function EngA1Class3Page() {
                 exerciseData={can1ExerciseData}
                 onComplete={() => handleTopicComplete('can1')}
                 title="Ejercicios con CAN"
-                showShortAnswers={true}
-            />;
-        }
-
-        if (selectedTopic === 'can2') {
-            return <PresentSimpleExercise
-                exerciseData={can2ExerciseData}
-                onComplete={() => handleTopicComplete('can2')}
-                title="Ejercicios con CAN 2"
                 showShortAnswers={true}
             />;
         }
