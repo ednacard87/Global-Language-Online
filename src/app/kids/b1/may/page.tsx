@@ -125,7 +125,6 @@ export default function MayPage() {
                 const nextIndex = currentIndex + 1;
                 if (nextIndex < newPath.length && newPath[nextIndex].status === 'locked') {
                     newPath[nextIndex].status = 'active';
-                    setSelectedTopic(newPath[nextIndex].key);
                     toast({ title: "¡Siguiente tema desbloqueado!" });
                 }
             }
@@ -136,6 +135,11 @@ export default function MayPage() {
 
     const handleTopicComplete = (completedKey: string) => {
         setTopicToComplete(completedKey);
+    };
+
+    const handleContinueToGrammar = () => {
+        handleTopicComplete('vocabulary');
+        setSelectedTopic('grammar');
     };
 
     const handleTopicSelect = (topicKey: string) => {
@@ -191,7 +195,7 @@ export default function MayPage() {
                             </div>
                         </CardContent>
                         <CardFooter>
-                            <Button onClick={() => handleTopicComplete('vocabulary')}>
+                            <Button onClick={handleContinueToGrammar}>
                                 Continuar con Grammar
                             </Button>
                         </CardFooter>
