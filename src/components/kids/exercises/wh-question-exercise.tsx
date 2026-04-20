@@ -19,6 +19,16 @@ const whExercisesData = {
             { spanish: '¿QUIEN ESTA EN LA PUERTA?', english: ["who is at the door?"] }
         ]
     },
+    'What1': {
+        title: "What: Qué?",
+        prompts: [
+            { spanish: 'QUE HACES?', english: ["what do you do?"] },
+            { spanish: 'QUE COME ELLA?', english: ["what does she eat?"] },
+            { spanish: 'QUE LEES EN EL METRO?', english: ["what do you read on the subway?"] },
+            { spanish: 'QUE BEBE EL NIÑO?', english: ["what does the child drink?"] },
+            { spanish: 'QUE COMEN ELLOS EN LA NOCHE?', english: ["what do they eat at night?"] }
+        ]
+    },
     'default': {
         title: 'Ejercicio',
         prompts: [
