@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
@@ -19,6 +20,7 @@ type Topic = {
   name: string;
   icon: React.ElementType;
   status: 'locked' | 'active' | 'completed';
+  subItems?: { key: string; name: string; status: 'locked' | 'active' | 'completed', icon?: React.ElementType }[];
 };
 
 const ICONS = {
@@ -198,14 +200,50 @@ export default function MayPage() {
                 );
             case 'grammar':
                  return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-                        <CardHeader>
-                            <CardTitle>Gramática: MAY</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p>Explicación sobre el uso de "MAY".</p>
-                        </CardContent>
-                    </Card>
+                    <div className="space-y-6">
+                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                            <CardHeader>
+                                <CardTitle>Diferencia entre MAY y MIGHT</CardTitle>
+                            </CardHeader>
+                            <CardContent className="space-y-4 text-lg">
+                                <p>Ambos se usan para hablar de posibilidades en el futuro, pero hay un matiz de probabilidad:</p>
+                                <div>
+                                    <h4 className="font-bold text-primary">MAY (50% de probabilidad)</h4>
+                                    <p className="text-muted-foreground">Se usa cuando algo es muy posible. Es un poco más formal.</p>
+                                    <p className="mt-2 p-3 bg-muted rounded-lg font-mono text-base">"I have good grades, so I may get a degree next year." (Es probable).</p>
+                                </div>
+                                <div>
+                                    <h4 className="font-bold text-primary">MIGHT (30% de probabilidad)</h4>
+                                    <p className="text-muted-foreground">Se usa para posibilidades más remotas o distantes.</p>
+                                    <p className="mt-2 p-3 bg-muted rounded-lg font-mono text-base">"I don't have much money, but I might move abroad someday." (Es un sueño lejano).</p>
+                                </div>
+                            </CardContent>
+                        </Card>
+            
+                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                            <CardHeader>
+                                <CardTitle>Estructura Gramatical</CardTitle>
+                            </CardHeader>
+                            <CardContent className="space-y-2 font-mono text-base">
+                                <p><span className="font-bold text-lg text-green-500 mr-2">(+)</span> pronoun + may/might + verb + complement</p>
+                                <p><span className="font-bold text-lg text-red-500 mr-2">(-)</span> pronoun + may/might + not + verb + complement</p>
+                                <p><span className="font-bold text-lg text-blue-500 mr-2">(?)</span> May/Might + pronoun + verb + complement?</p>
+                                <div className="border-t my-2" />
+                                <p className="font-sans font-semibold pt-2">Respuestas Cortas</p>
+                                <p><span className="font-bold text-lg text-green-500 mr-2">(+A)</span> Yes, pronoun + may/might.</p>
+                                <p><span className="font-bold text-lg text-red-500 mr-2">(-A)</span> No, pronoun + may/might not.</p>
+                            </CardContent>
+                        </Card>
+                        
+                        <Card className="shadow-soft rounded-lg border-2 border-yellow-500/50 bg-yellow-500/10">
+                            <CardHeader>
+                                <CardTitle>Nota Importante</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <p className="text-lg">No se suelen usar contracciones (como <code className="font-mono bg-muted p-1 rounded">mightn't</code>) en el inglés moderno; es mejor decir <code className="font-mono bg-muted p-1 rounded">might not</code>.</p>
+                            </CardContent>
+                        </Card>
+                    </div>
                 );
             case 'exercise1':
             case 'exercise2':
