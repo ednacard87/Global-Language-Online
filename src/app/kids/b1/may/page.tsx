@@ -214,6 +214,83 @@ const ReadingExercise = ({ onComplete }: { onComplete: () => void }) => {
     );
 };
 
+const FinalVocabularyExercise = ({ onComplete }: { onComplete: () => void }) => {
+    const { t } = useTranslation();
+    const { toast } = useToast();
+    const [userAnswers, setUserAnswers] = useState<Record<number, string>>({});
+    const [validationStatus, setValidationStatus] = useState<Record<number, 'correct' | 'incorrect' | 'unchecked'>>({});
+
+    const handleInputChange = (index: number, value: string) => {
+        setUserAnswers(prev => ({ ...prev, [index]: value }));
+        setValidationStatus(prev => {
+            const newStatus = { ...prev };
+            if (newStatus[index] && newStatus[index] !== 'unchecked') {
+                newStatus[index] = 'unchecked';
+            }
+            return newStatus;
+        });
+    };
+
+    const handleCheckAnswers = () => {
+        let allCorrect = true;
+        const newValidationStatus: Record<number, 'correct' | 'incorrect' | 'unchecked'> = {};
+        lifeGoalsVocab.forEach((item, index) => {
+            const userAnswer = userAnswers[index]?.trim().toLowerCase() || '';
+            const correctAnswer = item.english.toLowerCase();
+            if (userAnswer === correctAnswer) {
+                newValidationStatus[index] = 'correct';
+            } else {
+                newValidationStatus[index] = 'incorrect';
+                allCorrect = false;
+            }
+        });
+        setValidationStatus(newValidationStatus);
+
+        if (allCorrect) {
+            toast({ title: "¡Excelente!", description: "Has completado el vocabulario." });
+            onComplete();
+        } else {
+            toast({ variant: "destructive", title: "Sigue intentando", description: "Algunas respuestas son incorrectas." });
+        }
+    };
+    
+    const getInputClass = (status: 'correct' | 'incorrect' | 'unchecked') => {
+        if (status === 'correct') return 'border-green-500 focus-visible:ring-green-500';
+        if (status === 'incorrect') return 'border-destructive focus-visible:ring-destructive';
+        return '';
+    };
+
+    return (
+        <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+            <CardHeader>
+                <CardTitle>Vocabulario Final</CardTitle>
+                <CardDescription>Escribe la traducción correcta en inglés para cada término.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-lg">
+                    <div className="font-bold p-3 bg-muted rounded-lg text-left">Español</div>
+                    <div className="font-bold p-3 bg-muted rounded-lg text-left">Inglés</div>
+                    {lifeGoalsVocab.map((item, index) => (
+                        <React.Fragment key={index}>
+                            <div className="p-3 bg-card border rounded-lg flex items-center">{item.spanish}</div>
+                            <div className="p-3 bg-card border rounded-lg flex items-center">
+                                <Input
+                                    value={userAnswers[index] || ''}
+                                    onChange={(e) => handleInputChange(index, e.target.value)}
+                                    className={cn(getInputClass(validationStatus[index]))}
+                                />
+                            </div>
+                        </React.Fragment>
+                    ))}
+                </div>
+            </CardContent>
+            <CardFooter>
+                <Button onClick={handleCheckAnswers}>Verificar</Button>
+            </CardFooter>
+        </Card>
+    );
+};
+
 type Topic = {
   key: string;
   name: string;
@@ -571,6 +648,7 @@ export default function MayPage() {
 
     const handleContinueToGrammar = () => {
         handleTopicComplete('vocabulary');
+        setSelectedTopic('grammar');
     };
 
     const handleTopicSelect = (topicKey: string) => {
@@ -691,6 +769,8 @@ export default function MayPage() {
                  return <WordSearchGame onComplete={() => handleTopicComplete('game')} />;
             case 'reading':
                 return <ReadingExercise onComplete={() => handleTopicComplete('reading')} />;
+            case 'finalVocabulary':
+                return <FinalVocabularyExercise onComplete={() => handleTopicComplete('finalVocabulary')} />;
             default:
                 return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple min-h-[500px]">
