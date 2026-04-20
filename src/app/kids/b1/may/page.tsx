@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
@@ -7,7 +6,7 @@ import { DashboardHeader } from "@/components/dashboard/header";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, Gamepad2, ChevronDown } from 'lucide-react';
+import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, Gamepad2, ChevronDown, Trophy } from 'lucide-react';
 import { useTranslation } from "@/context/language-context";
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
@@ -235,12 +234,12 @@ export default function MayPage() {
                             </CardContent>
                         </Card>
                         
-                        <Card className="shadow-soft rounded-lg border-2 border-yellow-500/50 bg-yellow-500/10">
+                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card">
                             <CardHeader>
                                 <CardTitle>Nota Importante</CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <p className="text-lg">No se suelen usar contracciones (como <code className="font-mono bg-muted p-1 rounded">mightn't</code>) en el inglés moderno; es mejor decir <code className="font-mono bg-muted p-1 rounded">might not</code>.</p>
+                                <p className="text-lg">No se suelen usar contracciones (como <code className="font-mono bg-brand-lilac p-1 rounded">mightn't</code>) en el inglés moderno; es mejor decir <code className="font-mono bg-brand-lilac p-1 rounded">might not</code>.</p>
                             </CardContent>
                         </Card>
                     </div>
