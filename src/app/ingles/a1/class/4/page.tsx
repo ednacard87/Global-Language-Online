@@ -12,6 +12,7 @@ import { Progress } from '@/components/ui/progress';
 import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 type Topic = {
   key: string;
@@ -29,6 +30,32 @@ const ICONS = {
 
 const progressStorageVersion = 'progress_a1_eng_unit_1_class_4_v1';
 const mainProgressKey = 'progress_a1_eng_unit_1_class_4';
+
+// Vocabulary data from the image
+const basicAdjectives = [
+    { spanish: 'ALTO', english: 'TALL' },
+    { spanish: 'BAJO', english: 'SHORT' },
+    { spanish: 'GRANDE', english: 'BIG' },
+    { spanish: 'PEQUEÑO', english: 'SMALL' },
+    { spanish: 'JOVEN', english: 'YOUNG' },
+    { spanish: 'VIEJO', english: 'OLD' },
+    { spanish: 'CARO', english: 'EXPENSIVE' },
+    { spanish: 'BARATO', english: 'CHEAP' },
+    { spanish: 'INTERESANTE', english: 'INTERESTING' },
+    { spanish: 'FEO/A', english: 'UGLY' },
+];
+
+const basicWords = [
+    { spanish: 'ANTES', english: 'BEFORE' },
+    { spanish: 'DESPUÉS', english: 'AFTER' },
+    { spanish: 'TEMPRANO', english: 'EARLY' },
+    { spanish: 'TARDE', english: 'LATE' },
+    { spanish: 'HASTA', english: 'UNTIL' },
+    { spanish: 'DESDE', english: 'FROM' },
+    { spanish: 'ACERCA DE', english: 'ABOUT' },
+    { spanish: 'PRONTO', english: 'SOON' },
+];
+
 
 export default function EngA1Class4Page() {
     const { t } = useTranslation();
@@ -221,7 +248,7 @@ export default function EngA1Class4Page() {
         }
         setSelectedTopic(topicKey);
 
-        const exerciseKeys: string[] = ['genitivo', 'who', 'what1', 'what2', 'what-kind-of', 'how', 'how-adjective', 'how-often', 'whose', 'where', 'which', 'when', 'why', 'ejercicio-wh', 'ejercicio-gs', 'ejercicio2-wh', 'ejercicio3-wh'];
+        const exerciseKeys = ['genitivo', 'who', 'what1', 'what2', 'what-kind-of', 'how', 'how-adjective', 'how-often', 'whose', 'where', 'which', 'when', 'why', 'ejercicio-wh', 'ejercicio-gs', 'ejercicio2-wh', 'ejercicio3-wh'];
         if (!exerciseKeys.includes(topicKey)) {
             handleTopicComplete(topicKey);
         }
@@ -229,6 +256,51 @@ export default function EngA1Class4Page() {
     
     const renderContent = () => {
         const topic = learningPath.find(t => t.key === selectedTopic) || learningPath.flatMap(t => t.subItems || []).find(st => st?.key === selectedTopic);
+
+        if (selectedTopic === 'vocabulary') {
+            return (
+                <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                    <CardHeader>
+                        <CardTitle>Vocabulario</CardTitle>
+                        <CardDescription>Adjetivos y Palabras Básicas</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <Accordion type="multiple" defaultValue={['adjectives']} className="w-full">
+                            <AccordionItem value="adjectives">
+                                <AccordionTrigger className="text-lg font-semibold">Adjetivos Básicos</AccordionTrigger>
+                                <AccordionContent>
+                                    <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-base">
+                                        <div className="font-bold p-3 bg-muted rounded-lg">Español</div>
+                                        <div className="font-bold p-3 bg-muted rounded-lg">Inglés</div>
+                                        {basicAdjectives.map((word, index) => (
+                                            <React.Fragment key={`adj-${index}`}>
+                                                <div className="p-3 bg-card border rounded-lg flex items-center">{word.spanish}</div>
+                                                <div className="p-3 bg-card border rounded-lg flex items-center">{word.english}</div>
+                                            </React.Fragment>
+                                        ))}
+                                    </div>
+                                </AccordionContent>
+                            </AccordionItem>
+                            <AccordionItem value="words">
+                                <AccordionTrigger className="text-lg font-semibold">Palabras Básicas</AccordionTrigger>
+                                <AccordionContent>
+                                    <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-base">
+                                        <div className="font-bold p-3 bg-muted rounded-lg">Español</div>
+                                        <div className="font-bold p-3 bg-muted rounded-lg">Inglés</div>
+                                        {basicWords.map((word, index) => (
+                                            <React.Fragment key={`word-${index}`}>
+                                                <div className="p-3 bg-card border rounded-lg flex items-center">{word.spanish}</div>
+                                                <div className="p-3 bg-card border rounded-lg flex items-center">{word.english}</div>
+                                            </React.Fragment>
+                                        ))}
+                                    </div>
+                                </AccordionContent>
+                            </AccordionItem>
+                        </Accordion>
+                    </CardContent>
+                </Card>
+            );
+        }
 
         return (
             <Card className="shadow-soft rounded-lg border-2 border-brand-purple min-h-[500px]">
