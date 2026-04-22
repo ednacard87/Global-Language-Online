@@ -402,7 +402,7 @@ function DashboardPage() {
                         <NeonCard icon={Pencil} title="ESCRITURA" href="/writing-exercise"/>
                         <NeonCard icon={Mic} title="PODCAST" href="https://youtu.be/bdpyQm5l78o?si=CZz43xsGxDaF6k2S"/>
                         <NeonCard icon={Newspaper} title="NEWS" href="https://www.youtube.com/watch?v=Ap-UM1O9RBU"/>
-                        <NeonCard icon={Tv} title="TRAILER" href="https://www.youtube.com/watch?v=fSlAnjOpMdw" />
+                        <NeonCard icon={Music} title="SONG" href="https://es.lyricstraining.com/sign_up" />
                         <NeonCard icon={FileText} title="DOCUMENTARY" href="https://www.youtube.com/watch?v=KpuIyXzv0G4&t=15s" />
                         <NeonCard icon={Music} title="MUSIC" href="https://www.youtube.com/watch?v=57B3YNufv8o&list=RD57B3YNufv8o&start_radio=1" />
                         <div onClick={canPlayIntroGames ? undefined : handleLockedGamesClick}>
@@ -494,7 +494,7 @@ function DashboardPage() {
                     <NeonCard icon={Pencil} title="ESCRITURA" href="/writing-exercise"/>
                     <NeonCard icon={Mic} title="PODCAST" href="https://www.youtube.com/watch?v=bdpyQm5l78o"/>
                     <NeonCard icon={Newspaper} title="NEWS" href="https://www.youtube.com/watch?v=Ap-UM1O9RBU"/>
-                    <NeonCard icon={Tv} title="TRAILER" href="https://www.youtube.com/watch?v=fSlAnjOpMdw" />
+                    <NeonCard icon={Music} title="SONG" href="https://es.lyricstraining.com/sign_up" />
                     <NeonCard icon={FileText} title="DOCUMENTARY" href="https://www.youtube.com/watch?v=KpuIyXzv0G4&t=15s" />
                     <NeonCard icon={Music} title="MUSIC" href="https://www.youtube.com/watch?v=57B3YNufv8o&list=RD57B3YNufv8o&start_radio=1" />
                     <div onClick={canPlayIntroGames ? undefined : handleLockedGamesClick}>
