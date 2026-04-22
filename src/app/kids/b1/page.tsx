@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo } from "react";
@@ -25,7 +26,7 @@ export default function KidsB1CoursePage() {
     () => (user ? doc(firestore, 'students', user.uid) : null),
     [firestore, user]
   );
-  const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{role?: 'admin' | 'student', progress?: Record<string, number>}>(studentDocRef);
+  const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{role?: 'admin' | 'student', progress?: Record<string, number>, unlockedClasses?: string[]}>(studentDocRef);
 
   const adventureMascotImage = PlaceHolderImages.find(p => p.id === 'kids-adventure-mascot');
 
@@ -53,21 +54,30 @@ export default function KidsB1CoursePage() {
         });
 
         const itemsWithLockState = itemsWithProgress.map((item, index, arr) => {
-            if (isAdmin) {
-                return { ...item, locked: false };
-            }
-            if (index === 0) { // Start is always unlocked
-                return { ...item, locked: false };
-            }
-            const previousItem = arr[index - 1];
-            // Unlock the first lesson after the 'start' node
-            if (previousItem.type === 'start') {
-                return { ...item, locked: false };
-            }
-            const isLocked = (previousItem.progress ?? 0) < 100;
-            return { ...item, locked: isLocked };
-        });
+            const finalItem = { ...item };
 
+            if (isAdmin) {
+                finalItem.locked = false;
+            } else {
+                if (index === 0) {
+                    finalItem.locked = false; // Start is always unlocked
+                } else {
+                    const classId = `kids-b1-${item.href?.split('/').pop()}`;
+                    if (studentProfile?.unlockedClasses?.includes(classId)) {
+                        finalItem.locked = false;
+                    } else {
+                        const previousItem = arr[index - 1];
+                        if (previousItem.type === 'start') {
+                          finalItem.locked = false;
+                        } else {
+                          finalItem.locked = (previousItem.progress ?? 0) < 100;
+                        }
+                    }
+                }
+            }
+            return finalItem;
+        });
+      
         itemsWithLockState.forEach(item => item.className = '');
 
         const nextActiveItem = itemsWithLockState.find(item => !item.locked && (item.progress ?? 0) < 100 && (item.type === 'class' || item.type === 'practice'));

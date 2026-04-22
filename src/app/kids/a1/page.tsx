@@ -26,7 +26,7 @@ export default function KidsA1CoursePage() {
     () => (user ? doc(firestore, 'students', user.uid) : null),
     [firestore, user]
   );
-  const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{role?: 'admin' | 'student', progress?: Record<string, number>}>(studentDocRef);
+  const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{role?: 'admin' | 'student', progress?: Record<string, number>, unlockedClasses?: string[]}>(studentDocRef);
 
   const adventureMascotImage = PlaceHolderImages.find(p => p.id === 'kids-adventure-mascot');
 
@@ -60,6 +60,12 @@ export default function KidsA1CoursePage() {
             if (index === 0) { // Start is always unlocked
                 return { ...item, locked: false };
             }
+            
+            const classId = `kids-a1-${item.href?.split('/').pop()}`;
+            if (studentProfile?.unlockedClasses?.includes(classId)) {
+                return { ...item, locked: false };
+            }
+
             const previousItem = arr[index - 1];
             // A simple sequential unlock based on 100% progress of the previous item.
             const isLocked = (previousItem.progress ?? 0) < 100;

@@ -42,6 +42,46 @@ const inglesCourseIds = ['a1', 'a2', 'b1', 'b2'];
 const espanolCourseIds = ['a1', 'a2'];
 const kidsCourseIds = ['a1', 'a2', 'b1'];
 
+const kidsClassesMap = {
+    a1: [
+        { id: 'kids-a1-to-be', name: 'To be' },
+        { id: 'kids-a1-present-simple', name: 'Presente Simple' },
+        { id: 'kids-a1-can', name: 'Can' },
+        { id: 'kids-a1-genitivo-sajon', name: 'Genitivo Sajón' },
+        { id: 'kids-a1-wh-questions', name: 'Wh Questions' },
+        { id: 'kids-a1-posesivos', name: 'Posesivos' },
+        { id: 'kids-a1-verbos-preferencia', name: 'Verbos de Preferencia' },
+        { id: 'kids-a1-demostrativos', name: 'Demostrativos' },
+        { id: 'kids-a1-one-ones', name: 'One/Ones' },
+        { id: 'kids-a1-present-continuous', name: 'Presente Continuo' },
+        { id: 'kids-a1-pronombres-objeto', name: 'Pronombres Objeto' },
+        { id: 'kids-a1-comparativos-y-superlativos', name: 'Comparativos y Superlativos' },
+        { id: 'kids-a1-adverbios-de-frecuencia', name: 'Adverbios de Frecuencia' },
+    ],
+    a2: [
+        { id: 'kids-a2-at-on-in-1', name: 'AT - ON - IN 1' },
+        { id: 'kids-a2-at-on-in-2', name: 'AT - ON - IN 2' },
+        { id: 'kids-a2-pasado-simple', name: 'Pasado Simple' },
+        { id: 'kids-a2-pasado-continuo', name: 'Pasado Continuo' },
+        { id: 'kids-a2-contables-y-no-contables', name: 'Contables y No Contables' },
+        { id: 'kids-a2-presente-perfecto', name: 'Presente Perfecto' },
+        { id: 'kids-a2-used-to', name: 'Used to' },
+    ],
+    b1: [
+        { id: 'kids-b1-will', name: 'Will' },
+        { id: 'kids-b1-may', name: 'May' },
+        { id: 'kids-b1-be-going-to', name: 'Be Going To' },
+        { id: 'kids-b1-zero-conditional', name: 'Zero Conditional' },
+        { id: 'kids-b1-first-conditional', name: 'First Conditional' },
+        { id: 'kids-b1-would-like-to', name: 'Would like to' },
+        { id: 'kids-b1-should', name: 'Should' },
+        { id: 'kids-b1-must-have-to', name: 'Must, Have to' },
+        { id: 'kids-b1-second-conditional', name: 'Second Conditional' },
+        { id: 'kids-b1-1-2-conditional', name: '1 & 2 Conditional' },
+        { id: 'kids-b1-connectors', name: 'Connectors' },
+    ]
+};
+
 export default function AdminDashboardPage() {
   const firestore = useFirestore();
   const { toast } = useToast();
@@ -326,19 +366,32 @@ export default function AdminDashboardPage() {
                                                                 <Button variant="outline" size="sm" className="h-8">{course.toUpperCase()}</Button>
                                                             </DropdownMenuTrigger>
                                                             <DropdownMenuContent>
-                                                                {Array.from({ length: 14 }, (_, i) => i + 2).map(classNum => { // Classes 2-15
-                                                                    const classId = `${course}-${classNum}`;
-                                                                    return (
+                                                                {student.selectedCourse === 'kids' ? (
+                                                                    (kidsClassesMap[course as keyof typeof kidsClassesMap] || []).map(classInfo => (
                                                                         <DropdownMenuCheckboxItem
-                                                                            key={classId}
-                                                                            checked={(student.unlockedClasses || []).includes(classId)}
-                                                                            onCheckedChange={() => handleToggleClassAccess(student.id, classId)}
+                                                                            key={classInfo.id}
+                                                                            checked={(student.unlockedClasses || []).includes(classInfo.id)}
+                                                                            onCheckedChange={() => handleToggleClassAccess(student.id, classInfo.id)}
                                                                             disabled={updatingStudentId === student.id}
                                                                         >
-                                                                            Clase {classNum}
+                                                                            {classInfo.name}
                                                                         </DropdownMenuCheckboxItem>
-                                                                    );
-                                                                })}
+                                                                    ))
+                                                                ) : (
+                                                                    Array.from({ length: 14 }, (_, i) => i + 2).map(classNum => { // Classes 2-15
+                                                                        const classId = `${course}-${classNum}`;
+                                                                        return (
+                                                                            <DropdownMenuCheckboxItem
+                                                                                key={classId}
+                                                                                checked={(student.unlockedClasses || []).includes(classId)}
+                                                                                onCheckedChange={() => handleToggleClassAccess(student.id, classId)}
+                                                                                disabled={updatingStudentId === student.id}
+                                                                            >
+                                                                                Clase {classNum}
+                                                                            </DropdownMenuCheckboxItem>
+                                                                        );
+                                                                    })
+                                                                )}
                                                             </DropdownMenuContent>
                                                         </DropdownMenu>
                                                     ))}
