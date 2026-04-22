@@ -404,7 +404,7 @@ function DashboardPage() {
                         <NeonCard icon={Newspaper} title="NEWS" href="https://www.youtube.com/watch?v=Ap-UM1O9RBU"/>
                         <NeonCard icon={Music} title="SONG" href="https://es.lyricstraining.com/sign_up" />
                         <NeonCard icon={FileText} title="DOCUMENTARY" href="https://www.youtube.com/watch?v=KpuIyXzv0G4&t=15s" />
-                        <NeonCard icon={Music} title="MUSIC" href="https://www.youtube.com/watch?v=rFSVwmKzCAQ&list=RDrFSVwmKzCAQ&start_radio=1&t=17s" />
+                        <NeonCard icon={Music} title="MUSIC" href="https://www.youtube.com/watch?v=c0GmkFsS5pA&list=RDc0GmkFsS5pA&start_radio=1" />
                         <div onClick={canPlayIntroGames ? undefined : handleLockedGamesClick}>
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
@@ -496,7 +496,7 @@ function DashboardPage() {
                     <NeonCard icon={Newspaper} title="NEWS" href="https://www.youtube.com/watch?v=Ap-UM1O9RBU"/>
                     <NeonCard icon={Music} title="SONG" href="https://es.lyricstraining.com/sign_up" />
                     <NeonCard icon={FileText} title="DOCUMENTARY" href="https://www.youtube.com/watch?v=KpuIyXzv0G4&t=15s" />
-                    <NeonCard icon={Music} title="MUSIC" href="https://www.youtube.com/watch?v=rFSVwmKzCAQ&list=RDrFSVwmKzCAQ&start_radio=1&t=17s" />
+                    <NeonCard icon={Music} title="MUSIC" href="https://www.youtube.com/watch?v=c0GmkFsS5pA&list=RDc0GmkFsS5pA&start_radio=1" />
                     <div onClick={canPlayIntroGames ? undefined : handleLockedGamesClick}>
                      <DropdownMenu>
                           <DropdownMenuTrigger asChild>
