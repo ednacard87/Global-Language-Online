@@ -5,7 +5,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from 'next/navigation';
-import { Loader2, Check, Flame, Gamepad2, Ear, BookOpen, Swords, CaseSensitive, Lock, Star, Rocket } from 'lucide-react';
+import { Loader2, Check, Flame, Gamepad2, Ear, BookOpen, Swords, CaseSensitive, Lock, Star, Rocket, Music } from 'lucide-react';
 import { DashboardHeader } from "@/components/dashboard/header";
 import { useTranslation } from "@/context/language-context";
 import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
@@ -258,16 +258,7 @@ export default function KidsCoursePage() {
                         </div>
                         <NeonCard icon={Ear} title="LISTENING" href="/listening-practice" />
                         <NeonCard icon={BookOpen} title="READING" href="/reading-exercise" />
-                        <Card className="bg-gray-800/50 border-2 border-purple-500/50 rounded-2xl text-center p-4 transition-all hover:bg-purple-500/20 hover:border-purple-400 hover:shadow-[0_0_15px_theme(colors.purple.500)] aspect-square flex flex-col justify-center items-center">
-                            {(studentProfile?.currentStreak || 0) > 1 ? (
-                                <div className="h-12 w-12 mx-auto flex items-center justify-center">
-                                    <span className="text-4xl font-bold text-cyan-400">{studentProfile?.currentStreak}</span>
-                                </div>
-                            ) : (
-                                <Flame className="h-12 w-12 mx-auto text-cyan-400" />
-                            )}
-                            <p className="mt-2 font-bold text-white">DAILY STREAK</p>
-                        </Card>
+                        <NeonCard icon={Music} title="Music" href="https://www.youtube.com/watch?v=rFSVwmKzCAQ&list=RDrFSVwmKzCAQ&start_radio=1&t=17s" />
                     </div>
                 </div>
 
@@ -318,6 +309,7 @@ export default function KidsCoursePage() {
                     </div>
                     <NeonCard icon={Ear} title="LISTENING" href="/listening-practice" />
                     <NeonCard icon={BookOpen} title="READING" href="/reading-exercise" />
+                    <NeonCard icon={Music} title="Music" href="https://www.youtube.com/watch?v=rFSVwmKzCAQ&list=RDrFSVwmKzCAQ&start_radio=1&t=17s" />
                     <Card className="bg-gray-800/50 border-2 border-purple-500/50 rounded-2xl text-center p-4 transition-all hover:bg-purple-500/20 hover:border-purple-400 hover:shadow-[0_0_15px_theme(colors.purple.500)] aspect-square flex flex-col justify-center items-center">
                         {(studentProfile?.currentStreak || 0) > 1 ? (
                             <div className="h-12 w-12 mx-auto flex items-center justify-center">
