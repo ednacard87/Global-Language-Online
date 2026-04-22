@@ -23,7 +23,7 @@ export default function A2EngUnitPage() {
     () => (user ? doc(firestore, 'students', user.uid) : null),
     [firestore, user]
   );
-  const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{role?: 'admin' | 'student', progress?: Record<string, number>}>(studentDocRef);
+  const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{role?: 'admin' | 'student', progress?: Record<string, number>, unlockedClasses?: string[]}>(studentDocRef);
 
   const isAdmin = useMemo(() => {
       if (!user) return false;
@@ -57,6 +57,15 @@ export default function A2EngUnitPage() {
                 return acc;
             }
 
+            const classNumber = item.label.split(' ')[1];
+            if (classNumber && !isNaN(parseInt(classNumber))) {
+                const classId = `a2-${classNumber}`;
+                if (studentProfile?.unlockedClasses?.includes(classId)) {
+                    acc.push({ ...item, locked: false });
+                    return acc;
+                }
+            }
+            
             if (index === 0) {
                 acc.push({ ...item, locked: false });
                 return acc;
