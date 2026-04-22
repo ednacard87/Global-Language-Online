@@ -310,7 +310,7 @@ export default function KidsCoursePage() {
                     <NeonCard icon={Ear} title="LISTENING" href="/listening-practice" />
                     <NeonCard icon={BookOpen} title="READING" href="/reading-exercise" />
                     <NeonCard icon={Music} title="Music" href="https://www.youtube.com/watch?v=rFSVwmKzCAQ&list=RDrFSVwmKzCAQ&start_radio=1&t=17s" />
-                    <Card className="bg-gray-800/50 border-2 border-purple-500/50 rounded-2xl text-center p-4 transition-all hover:bg-purple-500/20 hover:border-purple-400 hover:shadow-[0_0_15px_theme(colors.purple.500)] aspect-square flex flex-col justify-center items-center">
+                     <Card className="bg-gray-800/50 border-2 border-purple-500/50 rounded-2xl text-center p-4 transition-all hover:bg-purple-500/20 hover:border-purple-400 hover:shadow-[0_0_15px_theme(colors.purple.500)] aspect-square flex flex-col justify-center items-center">
                         {(studentProfile?.currentStreak || 0) > 1 ? (
                             <div className="h-12 w-12 mx-auto flex items-center justify-center">
                                 <span className="text-4xl font-bold text-cyan-400">{studentProfile?.currentStreak}</span>
