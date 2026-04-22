@@ -257,6 +257,7 @@ export default function EspanolDashboardPage() {
                         </Dialog>
                         <NeonCard icon={Mic} title="PODCAST" href="https://www.youtube.com/watch?v=WRJnVyqVGpc" />
                         <NeonCard icon={Video} title="VIDEO" href="https://www.youtube.com/watch?v=7J-PYxCP1_Y" />
+                        <NeonCard icon={Music} title="MÚSICA" href="https://www.youtube.com/playlist?list=PL-R52P_o02vF-n-l0g_9gS6dQLo1a_Fp" />
                         <NeonCard icon={Music} title="CANCIÓN" href="https://es.lyricstraining.com/sign_up" />
                     </div>
                 </div>
@@ -343,6 +344,7 @@ export default function EspanolDashboardPage() {
                     </Dialog>
                     <NeonCard icon={Mic} title="PODCAST" href="https://www.youtube.com/watch?v=WRJnVyqVGpc" />
                     <NeonCard icon={Video} title="VIDEO" href="https://www.youtube.com/watch?v=7J-PYxCP1_Y" />
+                    <NeonCard icon={Music} title="MÚSICA" href="https://www.youtube.com/playlist?list=PL-R52P_o02vF-n-l0g_9gS6dQLo1a_Fp" />
                     <NeonCard icon={Music} title="CANCIÓN" href="https://es.lyricstraining.com/sign_up" />
                 </div>
               </div>
