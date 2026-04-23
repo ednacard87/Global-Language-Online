@@ -1,27 +1,489 @@
 'use client';
 
-import { DashboardHeader } from "@/components/dashboard/header";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import Link from "next/link";
+import React, { useState, useMemo, useEffect } from 'react';
+import Link from 'next/link';
+import Image from "next/image";
+import {
+  BookOpen,
+  PenSquare,
+  Lock,
+  GraduationCap,
+  BrainCircuit,
+  Hand,
+  Clock,
+  Globe,
+  Trophy,
+  CheckCircle,
+  RefreshCw,
+  Flame,
+} from 'lucide-react';
+import { DashboardHeader } from '@/components/dashboard/header';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { cn } from '@/lib/utils';
+import { useTranslation } from '@/context/language-context';
+import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
+import { doc } from 'firebase/firestore';
+import { Progress } from "@/components/ui/progress";
+import { useToast } from "@/hooks/use-toast";
+import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { Label } from '@/components/ui/label';
+
+// Data
+const greetingsAndFarewellsData = [
+    { spanish: 'Hola', english: 'Hello' },
+    { spanish: 'Buenos días', english: 'Good morning' },
+    { spanish: 'Buenas tardes', english: 'Good afternoon' },
+    { spanish: 'Buenas noches', english: 'Good night' },
+    { spanish: 'Adiós', english: 'Goodbye' },
+    { spanish: 'Hasta luego', english: 'See you later' },
+];
+
+const countriesExerciseData = [
+    { pais: 'Estados Unidos', country: 'United States', nationality: 'American' },
+    { pais: 'Canadá', country: 'Canada', nationality: 'Canadian' },
+    { pais: 'México', country: 'Mexico', nationality: 'Mexican' },
+    { pais: 'Brasil', country: 'Brazil', nationality: 'Brazilian' },
+    { pais: 'Inglaterra', country: 'England', nationality: 'English' },
+    { pais: 'Francia', country: 'France', nationality: 'French' },
+];
+
+const readingData = {
+    title: 'Mi Rutina Diaria',
+    content: "Hola, me llamo Carlos. Cada mañana, me levanto a las siete. Bebo café y leo las noticias. Trabajo en una oficina. Por la tarde, me gusta caminar en el parque. Por la noche, ceno con mi familia y vemos la televisión. A las diez de la noche, me voy a dormir. ¡Buenas noches!",
+    questions: [
+        { id: 'q1', question: '¿A qué hora se levanta Carlos?', answer: 'a las siete' },
+        { id: 'q2', question: '¿Qué bebe por la mañana?', answer: 'café' },
+        { id: 'q3', question: '¿Qué hace por la tarde?', answer: 'caminar en el parque' },
+    ]
+};
+
+const mixedExercisesData = [
+    { spanish: 'Me levanto a las siete', english: 'I get up at seven' },
+    { spanish: 'Él es de Estados Unidos', english: 'He is from the United States' },
+    { spanish: 'Buenas tardes, ¿cómo estás?', english: 'Good afternoon, how are you?' },
+];
+
+// Components inside the page file
+
+const MemoryGame = ({ data, onComplete }: { data: { spanish: string; english: string; }[], onComplete: () => void }) => {
+    const [cards, setCards] = useState<any[]>([]);
+    const [flippedIndices, setFlippedIndices] = useState<number[]>([]);
+    const [matchedPairIds, setMatchedPairIds] = useState<number[]>([]);
+    const [isChecking, setIsChecking] = useState(false);
+    const [streak, setStreak] = useState(0);
+
+    const initializeGame = React.useCallback(() => {
+        const gameCards = data.flatMap((pair, index) => [
+            { id: index * 2, pairId: index, text: pair.english },
+            { id: index * 2 + 1, pairId: index, text: pair.spanish },
+        ]).sort(() => Math.random() - 0.5);
+        
+        setCards(gameCards);
+        setFlippedIndices([]);
+        setMatchedPairIds([]);
+        setIsChecking(false);
+        setStreak(0);
+    }, [data]);
+
+    useEffect(() => {
+        initializeGame();
+    }, [initializeGame]);
+    
+    useEffect(() => {
+        if (flippedIndices.length === 2) {
+            setIsChecking(true);
+            const [firstIndex, secondIndex] = flippedIndices;
+            const isMatch = cards[firstIndex].pairId === cards[secondIndex].pairId;
+
+            if (isMatch) {
+                setMatchedPairIds(prev => [...prev, cards[firstIndex].pairId]);
+                setStreak(prev => prev + 1);
+                setFlippedIndices([]);
+                setIsChecking(false);
+            } else {
+                setStreak(0);
+                setTimeout(() => {
+                    setFlippedIndices([]);
+                    setIsChecking(false);
+                }, 800);
+            }
+        }
+    }, [flippedIndices, cards]);
+
+    const isGameComplete = matchedPairIds.length === data.length;
+
+    useEffect(() => {
+        if (isGameComplete) {
+            onComplete();
+        }
+    }, [isGameComplete, onComplete]);
+
+    const handleCardClick = (index: number) => {
+        if (isChecking || flippedIndices.length >= 2 || flippedIndices.includes(index) || matchedPairIds.includes(cards[index].pairId)) {
+            return;
+        }
+        setFlippedIndices(prev => [...prev, index]);
+    };
+
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle>Juego de Memoria: Saludos y Despedidas</CardTitle>
+                <div className="flex justify-between items-center pt-2">
+                    <Button size="icon" variant="ghost" onClick={initializeGame}><RefreshCw className="h-5 w-5" /></Button>
+                    <div className="flex items-center gap-2 text-orange-500 font-bold"><Flame className="h-5 w-5" /><span>{streak}</span></div>
+                </div>
+            </CardHeader>
+            <CardContent>
+                {isGameComplete ? (
+                     <div className="text-center p-8 flex flex-col items-center"><Trophy className="h-16 w-16 text-yellow-400 mb-4" /><h2 className="text-2xl font-bold">¡Juego Completado!</h2></div>
+                ) : (
+                    <div className="grid grid-cols-4 gap-2">
+                        {cards.map((card, index) => {
+                            const isFlipped = flippedIndices.includes(index);
+                            const isMatched = matchedPairIds.includes(card.pairId);
+                            return (
+                                <Card key={card.id} onClick={() => handleCardClick(index)}
+                                    className={cn("flex items-center justify-center aspect-square cursor-pointer", isFlipped || isMatched ? "bg-card border-primary" : "bg-secondary", isMatched && "border-green-500")}>
+                                    <CardContent className="p-1 text-center">
+                                        {isFlipped || isMatched ? <span className="text-sm font-bold">{card.text}</span> : <BrainCircuit className="h-5 w-5 text-primary/50" />}
+                                    </CardContent>
+                                </Card>
+                            )
+                        })}
+                    </div>
+                )}
+            </CardContent>
+        </Card>
+    );
+};
+
+type ValidationStatus = 'correct' | 'incorrect' | 'unchecked';
+
+const CountriesExercise = ({ onComplete }: { onComplete: () => void }) => {
+    const { t } = useTranslation();
+    const { toast } = useToast();
+    const [userAnswers, setUserAnswers] = useState<Record<number, Partial<{ country: string; nationality: string }>>>({});
+    const [validationStatus, setValidationStatus] = useState<Record<number, { country: ValidationStatus, nationality: ValidationStatus }>>({});
+
+    const handleInputChange = (index: number, field: 'country' | 'nationality', value: string) => {
+        setUserAnswers(prev => ({ ...prev, [index]: { ...prev[index], [field]: value } }));
+        setValidationStatus(prev => {
+            const newStatus = { ...prev };
+            if (newStatus[index]) {
+                newStatus[index][field] = 'unchecked';
+            }
+            return newStatus;
+        });
+    };
+
+    const handleCheckAnswers = () => {
+        let allCorrect = true;
+        const newValidationStatus: Record<number, { country: ValidationStatus, nationality: ValidationStatus }> = {};
+        countriesExerciseData.forEach((correctAnswer, index) => {
+            const userAnswer = userAnswers[index] || {};
+            const isCountryCorrect = (userAnswer.country || '').trim().toLowerCase() === correctAnswer.country.toLowerCase();
+            const isNationalityCorrect = (userAnswer.nationality || '').trim().toLowerCase() === correctAnswer.nationality.toLowerCase();
+            newValidationStatus[index] = {
+                country: isCountryCorrect ? 'correct' : 'incorrect',
+                nationality: isNationalityCorrect ? 'correct' : 'incorrect',
+            };
+            if (!isCountryCorrect || !isNationalityCorrect) allCorrect = false;
+        });
+
+        setValidationStatus(newValidationStatus);
+
+        if (allCorrect) {
+            toast({ title: t('countries.allCorrect') });
+            onComplete();
+        } else {
+            toast({ variant: 'destructive', title: t('countries.someIncorrect') });
+        }
+    };
+    
+    const getInputClass = (status: ValidationStatus) => {
+        if (status === 'correct') return 'border-green-500';
+        if (status === 'incorrect') return 'border-destructive';
+        return '';
+    };
+
+    return (
+        <Card>
+            <CardHeader><CardTitle>Países y Nacionalidades</CardTitle></CardHeader>
+            <CardContent>
+                <Table>
+                    <TableHeader><TableRow><TableHead>País</TableHead><TableHead>Country</TableHead><TableHead>Nationality</TableHead></TableRow></TableHeader>
+                    <TableBody>
+                        {countriesExerciseData.map((data, index) => (
+                            <TableRow key={index}>
+                                <TableCell>{data.pais}</TableCell>
+                                <TableCell><Input value={userAnswers[index]?.country || ''} onChange={(e) => handleInputChange(index, 'country', e.target.value)} className={cn(getInputClass(validationStatus[index]?.country))} /></TableCell>
+                                <TableCell><Input value={userAnswers[index]?.nationality || ''} onChange={(e) => handleInputChange(index, 'nationality', e.target.value)} className={cn(getInputClass(validationStatus[index]?.nationality))} /></TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </CardContent>
+            <CardFooter><Button onClick={handleCheckAnswers}>Verificar</Button></CardFooter>
+        </Card>
+    );
+};
+
+const ReadingExercise = ({ onComplete }: { onComplete: () => void }) => {
+    const [userAnswers, setUserAnswers] = useState<Record<string, string>>({});
+    const [validationStatus, setValidationStatus] = useState<Record<string, ValidationStatus>>({});
+    const { toast } = useToast();
+
+    const handleInputChange = (id: string, value: string) => setUserAnswers(prev => ({ ...prev, [id]: value }));
+
+    const handleCheckReading = () => {
+        const newValidation: Record<string, ValidationStatus> = {};
+        let allCorrect = true;
+        readingData.questions.forEach(q => {
+            const isCorrect = (userAnswers[q.id] || '').trim().toLowerCase() === q.answer.toLowerCase();
+            if (!isCorrect) allCorrect = false;
+            newValidation[q.id] = isCorrect ? 'correct' : 'incorrect';
+        });
+        setValidationStatus(newValidation);
+        if (allCorrect) {
+            toast({ title: '¡Muy bien!', description: 'Has respondido todo correctamente.' });
+            onComplete();
+        } else {
+            toast({ variant: 'destructive', title: 'Algunas respuestas son incorrectas.' });
+        }
+    };
+    
+    return (
+        <Card>
+            <CardHeader><CardTitle>Lectura: {readingData.title}</CardTitle></CardHeader>
+            <CardContent className="space-y-4">
+                <p className="text-lg leading-relaxed bg-muted p-4 rounded-md">{readingData.content}</p>
+                <div className="space-y-4 border-t pt-4">
+                {readingData.questions.map(q => (
+                    <div key={q.id}>
+                        <Label htmlFor={q.id} className="text-base">{q.question}</Label>
+                        <Input id={q.id} value={userAnswers[q.id] || ''} onChange={e => handleInputChange(q.id, e.target.value)}
+                            className={cn('mt-1', validationStatus[q.id] === 'correct' && 'border-green-500', validationStatus[q.id] === 'incorrect' && 'border-destructive')} />
+                    </div>
+                ))}
+                </div>
+            </CardContent>
+            <CardFooter><Button onClick={handleCheckReading}>Verificar Lectura</Button></CardFooter>
+        </Card>
+    );
+};
+
+const MixedExercise = ({ onComplete }: { onComplete: () => void }) => {
+    const { toast } = useToast();
+    const [userAnswers, setUserAnswers] = useState<Record<number, string>>({});
+    const [validationStatus, setValidationStatus] = useState<Record<number, ValidationStatus>>({});
+    
+    const handleInputChange = (index: number, value: string) => setUserAnswers(prev => ({ ...prev, [index]: value }));
+
+    const handleCheckAnswers = () => {
+        let allCorrect = true;
+        const newValidationStatus: Record<number, ValidationStatus> = {};
+        mixedExercisesData.forEach((item, index) => {
+            const isCorrect = (userAnswers[index] || '').trim().toLowerCase() === item.english.toLowerCase();
+            if(!isCorrect) allCorrect = false;
+            newValidationStatus[index] = isCorrect ? 'correct' : 'incorrect';
+        });
+        setValidationStatus(newValidationStatus);
+        if (allCorrect) {
+            toast({ title: '¡Excelente!', description: 'Todas las traducciones son correctas.' });
+            onComplete();
+        } else {
+            toast({ variant: 'destructive', title: 'Revisa tus respuestas.' });
+        }
+    };
+
+    return (
+        <Card>
+            <CardHeader><CardTitle>Ejercicios Mixtos</CardTitle></CardHeader>
+            <CardContent>
+                <Table>
+                    <TableHeader><TableRow><TableHead>Español</TableHead><TableHead>Inglés</TableHead></TableRow></TableHeader>
+                    <TableBody>
+                        {mixedExercisesData.map((item, index) => (
+                            <TableRow key={index}>
+                                <TableCell>{item.spanish}</TableCell>
+                                <TableCell><Input value={userAnswers[index] || ''} onChange={e => handleInputChange(index, e.target.value)} className={cn(validationStatus[index] === 'correct' && 'border-green-500', validationStatus[index] === 'incorrect' && 'border-destructive')} /></TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </CardContent>
+            <CardFooter><Button onClick={handleCheckAnswers}>Verificar Ejercicios</Button></CardFooter>
+        </Card>
+    );
+};
+
+type Topic = {
+  key: string;
+  name: string;
+  icon: React.ElementType;
+  status: 'locked' | 'active' | 'completed';
+};
+
+const progressStorageKey = 'progress_espanol_intro_2_v1';
+const mainProgressKey = 'progress_espanol_intro_2';
 
 export default function EspanolIntro2Page() {
+    const { toast } = useToast();
+    const { user, isUserLoading } = useUser();
+    const firestore = useFirestore();
+
+    const [learningPath, setLearningPath] = useState<Topic[]>([]);
+    const [selectedTopic, setSelectedTopic] = useState('memory_game');
+    const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
+
+    const studentDocRef = useMemoFirebase(() => (user ? doc(firestore, 'students', user.uid) : null), [firestore, user]);
+    const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{ role?: string; lessonProgress?: any; progress?: any }>(studentDocRef);
+
+    const isAdmin = useMemo(() => (user && (studentProfile?.role === 'admin' || user.email === 'ednacard87@gmail.com')), [user, studentProfile]);
+
+    const timeImage = PlaceHolderImages.find(p => p.id === 'telling-time');
+    
+    const initialLearningPath = useMemo((): Topic[] => [
+        { key: 'memory_game', name: 'Juego de Memoria', icon: BrainCircuit, status: 'active' },
+        { key: 'time', name: 'La Hora', icon: Clock, status: 'locked' },
+        { key: 'countries', name: 'Países y Nacionalidades', icon: Globe, status: 'locked' },
+        { key: 'reading', name: 'Lectura y Comprensión', icon: BookOpen, status: 'locked' },
+        { key: 'mixed_exercises', name: 'Ejercicios Mixtos', icon: PenSquare, status: 'locked' },
+    ], []);
+
+    useEffect(() => {
+        if (isUserLoading || isProfileLoading) return;
+        const newPath = initialLearningPath.map(item => ({...item}));
+        
+        if (isAdmin) {
+            newPath.forEach(item => item.status = 'completed');
+        } else if (studentProfile?.lessonProgress?.[progressStorageKey]) {
+            const savedStatuses = studentProfile.lessonProgress[progressStorageKey];
+            newPath.forEach(item => { if (savedStatuses[item.key]) item.status = savedStatuses[item.key]; });
+        }
+        
+        setLearningPath(newPath);
+        const firstActive = newPath.find(p => p.status === 'active');
+        setSelectedTopic(firstActive?.key || 'memory_game');
+    }, [isAdmin, initialLearningPath, studentProfile, isUserLoading, isProfileLoading]);
+
+    const progress = useMemo(() => {
+        if (learningPath.length === 0) return 0;
+        const completedCount = learningPath.filter(t => t.status === 'completed').length;
+        return Math.round((completedCount / learningPath.length) * 100);
+    }, [learningPath]);
+
+    useEffect(() => {
+        if (isProfileLoading || isUserLoading) return;
+        if (!isAdmin && studentDocRef && learningPath.length > 0) {
+            const statusesToSave: Record<string, string> = {};
+            learningPath.forEach(item => { statusesToSave[item.key] = item.status; });
+            updateDocumentNonBlocking(studentDocRef, { 
+                [`lessonProgress.${progressStorageKey}`]: statusesToSave,
+                [`progress.${mainProgressKey}`]: progress
+            });
+            window.dispatchEvent(new CustomEvent('progressUpdated'));
+        }
+    }, [learningPath, progress, isAdmin, studentDocRef, isProfileLoading, isUserLoading]);
+
+    useEffect(() => {
+        if (!topicToComplete) return;
+        setLearningPath(currentPath => {
+            const newPath = [...currentPath];
+            const currentIndex = newPath.findIndex(item => item.key === topicToComplete);
+            
+            if (currentIndex !== -1 && newPath[currentIndex].status !== 'completed') {
+                newPath[currentIndex].status = 'completed';
+                const nextIndex = currentIndex + 1;
+                if (nextIndex < newPath.length && newPath[nextIndex].status === 'locked') {
+                    newPath[nextIndex].status = 'active';
+                    setSelectedTopic(newPath[nextIndex].key);
+                     toast({ title: "¡Tema desbloqueado!", description: `Ahora puedes continuar con ${newPath[nextIndex].name}` });
+                } else if (newPath.every(item => item.status === 'completed')) {
+                    toast({ title: "¡Felicidades!", description: "Has completado todos los temas de esta lección." });
+                }
+            }
+            return newPath;
+        });
+        setTopicToComplete(null);
+    }, [topicToComplete, toast]);
+
+    const handleTopicComplete = (key: string) => {
+        setTopicToComplete(key);
+    };
+
+    const handleTopicSelect = (key: string) => {
+        const topic = learningPath.find(t => t.key === key);
+        if (topic?.status === 'locked' && !isAdmin) {
+            toast({ variant: 'destructive', title: 'Tema Bloqueado' });
+            return;
+        }
+        setSelectedTopic(key);
+        if (['time'].includes(key)) {
+            handleTopicComplete(key);
+        }
+    };
+
+    const renderContent = () => {
+        switch(selectedTopic) {
+            case 'memory_game': return <MemoryGame data={greetingsAndFarewellsData} onComplete={() => handleTopicComplete('memory_game')} />;
+            case 'time': return <Card><CardHeader><CardTitle>La Hora</CardTitle></CardHeader><CardContent>{timeImage && <Image src={timeImage.imageUrl} alt={timeImage.description} width={600} height={848} className="mx-auto" />}</CardContent></Card>;
+            case 'countries': return <CountriesExercise onComplete={() => handleTopicComplete('countries')} />;
+            case 'reading': return <ReadingExercise onComplete={() => handleTopicComplete('reading')} />;
+            case 'mixed_exercises': return <MixedExercise onComplete={() => handleTopicComplete('mixed_exercises')} />;
+            default: return <p>Selecciona un tema para empezar.</p>;
+        }
+    };
+
     return (
-        <div className="flex w-full flex-col min-h-screen">
-          <DashboardHeader />
-          <main className="flex-1 p-4 md:p-8">
-            <div className="max-w-7xl mx-auto">
-              <div className="mb-8">
-                <Link href={`/espanol/intro`} className="hover:underline text-sm text-muted-foreground">
-                    Volver a la Aventura Intro
-                </Link>
-                <h1 className="text-4xl font-bold dark:text-primary">Intro 2</h1>
-              </div>
-              <Card>
-                <CardHeader><CardTitle>Contenido Próximamente</CardTitle></CardHeader>
-                <CardContent><p>El contenido para esta lección estará disponible pronto.</p></CardContent>
-              </Card>
-            </div>
-          </main>
+        <div className="flex w-full flex-col min-h-screen espanol-dashboard-bg">
+            <DashboardHeader />
+            <main className="flex-1 p-4 md:p-8">
+                <div className="max-w-7xl mx-auto">
+                    <div className="mb-8">
+                        <Link href="/espanol/intro" className="hover:underline text-sm text-muted-foreground">Volver a Aventura Intro</Link>
+                        <h1 className="text-4xl font-bold dark:text-primary">Intro 2 Español</h1>
+                    </div>
+                    <div className="grid gap-8 md:grid-cols-12">
+                        <div className="md:col-span-4">
+                            <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple">
+                                <CardHeader><CardTitle>Ruta de Aprendizaje</CardTitle></CardHeader>
+                                <CardContent>
+                                    <nav>
+                                        <ul className="space-y-1">
+                                            {learningPath.map(item => {
+                                                const Icon = item.icon;
+                                                return (
+                                                    <li key={item.key} onClick={() => handleTopicSelect(item.key)}
+                                                        className={cn('flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer',
+                                                            item.status === 'locked' && !isAdmin ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted',
+                                                            selectedTopic === item.key && 'bg-muted text-primary font-semibold'
+                                                        )}>
+                                                        {item.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500"/> : <Icon className="h-5 w-5" />}
+                                                        <span>{item.name}</span>
+                                                        {item.status === 'locked' && !isAdmin && <Lock className="h-4 w-4 text-yellow-500 ml-auto" />}
+                                                    </li>
+                                                )
+                                            })}
+                                        </ul>
+                                    </nav>
+                                     <div className="mt-6 pt-6 border-t">
+                                        <div className="flex justify-between items-center text-sm font-medium text-muted-foreground mb-2">
+                                            <span>Progreso</span><span className="font-bold text-foreground">{progress}%</span>
+                                        </div>
+                                        <Progress value={progress} className="h-2" />
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </div>
+                        <div className="md:col-span-8">{renderContent()}</div>
+                    </div>
+                </div>
+            </main>
         </div>
     );
 }
