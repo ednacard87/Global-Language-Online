@@ -71,12 +71,15 @@ const mayPositiveVocab = {
     "conseguir": "to get",
     "un/ una": "a - an",
     "empleo": "job",
+    "mañana": "tomorrow",
+    "por": "for",
     "mudarse": "to move",
     "extranjero": "abroad",
     "viajar": "to travel",
     "mundo": "world",
     "proximo año": "next year",
     "idioma": "language",
+    "nuevo": "new",
     "aprender": "to learn"
 };
 
