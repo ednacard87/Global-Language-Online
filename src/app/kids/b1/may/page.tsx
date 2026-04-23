@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
@@ -68,6 +69,7 @@ const mayInterrogativeExercises = [
 
 const mayPositiveVocab = {
     "conseguir": "to get",
+    "un/ una": "a - an",
     "empleo": "job",
     "mudarse": "to move",
     "extranjero": "abroad",
@@ -770,7 +772,10 @@ export default function MayPage() {
             case 'interrogative-ex':
                 return <SingleFormExercise key="interrogative" onComplete={() => handleTopicComplete('interrogative-ex')} exerciseData={mayInterrogativeExercises} title="Ejercicios: Forma Interrogativa" description="Convierte las frases en preguntas usando 'will'." formType="interrogative" vocabulary={mayInterrogativeVocab} highlightVocabulary={true} />;
             case 'mixedExercises':
-                return <PresentSimpleExercise onComplete={() => handleTopicComplete('mixedExercises')} exerciseData={mayMixedExercises} title="Ejercicios Mixtos" showShortAnswers={true} />;
+                return <PresentSimpleExercise onComplete={() => {
+                  handleTopicComplete('mixedExercises');
+                  handleTopicComplete('exercise1'); // Also complete parent
+                }} exerciseData={mayMixedExercises} title="Ejercicios Mixtos" showShortAnswers={true} />;
             case 'game':
                  return <WordSearchGame onComplete={() => handleTopicComplete('game')} />;
             case 'reading':
