@@ -43,7 +43,8 @@ export const SingleFormExercise = ({
   title,
   description,
   formType,
-  vocabulary
+  vocabulary,
+  highlightVocabulary = false
 }: {
   onComplete: () => void;
   exerciseData: { spanish: string; answer: string[] }[];
@@ -51,6 +52,7 @@ export const SingleFormExercise = ({
   description: string;
   formType: "affirmative" | "negative" | "interrogative";
   vocabulary?: Record<string, string>;
+  highlightVocabulary?: boolean;
 }) => {
     const { toast } = useToast();
     
@@ -138,7 +140,7 @@ export const SingleFormExercise = ({
                 {vocabulary && (
                     <Popover>
                         <PopoverTrigger asChild>
-                            <Button variant="outline" size="sm" className="mt-2 w-fit">
+                            <Button variant="outline" size="sm" className={cn("mt-2 w-fit", highlightVocabulary && "border-2 border-brand-blue animate-pulse")}>
                                 <BookText className="mr-2 h-4 w-4" />
                                 Vocabulario
                             </Button>

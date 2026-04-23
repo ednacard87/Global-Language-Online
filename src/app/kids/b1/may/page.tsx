@@ -667,7 +667,7 @@ export default function MayPage() {
         }
         setSelectedTopic(topicKey);
 
-        const exerciseKeys = ['positive-ex', 'negative-ex', 'interrogative-ex', 'mixedExercises', 'game', 'reading', 'finalVocabulary'];
+        const exerciseKeys = ['positive-ex', 'negative-ex', 'interrogative-ex', 'mixedExercises', 'finalVocabulary', 'reading', 'game'];
         if (!exerciseKeys.includes(topicKey)) {
              handleTopicComplete(topicKey);
         }
@@ -764,11 +764,11 @@ export default function MayPage() {
                     </div>
                 );
             case 'positive-ex':
-                return <SingleFormExercise onComplete={() => handleTopicComplete('positive-ex')} exerciseData={mayPositiveExercises} title="Ejercicios: Forma Positiva" description="Traduce las frases a su forma afirmativa." formType="affirmative" vocabulary={mayPositiveVocab} />;
+                return <SingleFormExercise key="positive" onComplete={() => handleTopicComplete('positive')} exerciseData={mayPositiveExercises} title="Ejercicios: Forma Positiva" description="Traduce las frases a su forma afirmativa usando 'will'." formType="affirmative" vocabulary={mayPositiveVocab} highlightVocabulary={true} />;
             case 'negative-ex':
-                return <SingleFormExercise onComplete={() => handleTopicComplete('negative-ex')} exerciseData={mayNegativeExercises} title="Ejercicios: Forma Negativa" description="Traduce las frases a su forma negativa." formType="negative" vocabulary={mayNegativeVocab} />;
+                return <SingleFormExercise key="negative" onComplete={() => handleTopicComplete('negative')} exerciseData={mayNegativeExercises} title="Ejercicios: Forma Negativa" description="Traduce las frases a su forma negativa usando 'will not' o 'won't'." formType="negative" vocabulary={mayNegativeVocab} />;
             case 'interrogative-ex':
-                return <SingleFormExercise onComplete={() => handleTopicComplete('interrogative-ex')} exerciseData={mayInterrogativeExercises} title="Ejercicios: Forma Interrogativa" description="Convierte las frases en preguntas." formType="interrogative" vocabulary={mayInterrogativeVocab} />;
+                return <SingleFormExercise key="interrogative" onComplete={() => handleTopicComplete('interrogative')} exerciseData={mayInterrogativeExercises} title="Ejercicios: Forma Interrogativa" description="Convierte las frases en preguntas usando 'will'." formType="interrogative" vocabulary={mayInterrogativeVocab} />;
             case 'mixedExercises':
                 return <PresentSimpleExercise onComplete={() => handleTopicComplete('mixedExercises')} exerciseData={mayMixedExercises} title="Ejercicios Mixtos" showShortAnswers={true} />;
             case 'game':
