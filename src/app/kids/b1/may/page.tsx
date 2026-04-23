@@ -308,6 +308,7 @@ const WordSearchGame = ({ onComplete }: { onComplete: () => void }) => {
     const [foundWords, setFoundWords] = useState<{ word: string, cells: { row: number, col: number }[] }[]>([]);
     const [selection, setSelection] = useState<{row: number, col: number}[]>([]);
     const [isSelecting, setIsSelecting] = useState(false);
+    const [gameIsFinished, setGameIsFinished] = useState(false);
 
     useEffect(() => {
         const gridSize = 22;
@@ -389,11 +390,14 @@ const WordSearchGame = ({ onComplete }: { onComplete: () => void }) => {
     };
     
     useEffect(() => {
-        if (words && foundWords.length === words.length && words.length > 0) {
-            onComplete();
+        if (words && foundWords.length === words.length && words.length > 0 && !gameIsFinished) {
+            setGameIsFinished(true);
+            toast({
+                title: "¡Felicidades!",
+                description: "Has encontrado todas las palabras. Ahora puedes continuar."
+            });
         }
-    }, [foundWords, words, onComplete]);
-
+    }, [foundWords, words, gameIsFinished, toast]);
 
     return (
          <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
@@ -434,17 +438,19 @@ const WordSearchGame = ({ onComplete }: { onComplete: () => void }) => {
                     </ul>
                  </div>
             </CardContent>
-             {foundWords.length === words.length && words.length > 0 && (
-                <CardFooter className="justify-center">
-                    <div className="text-center p-4">
-                        <Trophy className="h-12 w-12 text-yellow-400 mx-auto mb-2" />
-                        <h3 className="text-xl font-bold">{t('wordSearch.allWordsFound')}</h3>
-                    </div>
-                </CardFooter>
-            )}
+            <CardFooter className="justify-end">
+                <Button 
+                    onClick={onComplete}
+                    disabled={!gameIsFinished}
+                    className="bg-green-600 hover:bg-green-700"
+                >
+                    Continuar con Lectura
+                </Button>
+            </CardFooter>
         </Card>
     );
 };
+
 
 
 const ICONS = {
