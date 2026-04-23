@@ -29,6 +29,11 @@ export function WeeklyChart() {
   const firestore = useFirestore();
   const isMobile = useIsMobile();
   const { t } = useTranslation();
+  const [isClient, setIsClient] = React.useState(false);
+
+  React.useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const chartConfig = {
     minutes: {
@@ -38,7 +43,7 @@ export function WeeklyChart() {
   } satisfies ChartConfig;
 
   const studySessionsQuery = useMemoFirebase(() => {
-      if (!user || !firestore) return null;
+      if (!user || !firestore || !isClient) return null;
   
       const now = new Date();
       const weekStart = startOfWeek(now, { weekStartsOn: 1 });
@@ -47,7 +52,7 @@ export function WeeklyChart() {
           collection(firestore, 'students', user.uid, 'studySessions'),
           where('startTime', '>=', weekStart.toISOString())
       );
-  }, [user, firestore]);
+  }, [user, firestore, isClient]);
   
   const { data: studySessions, isLoading } = useCollection<{ startTime: string; durationMinutes: number }>(studySessionsQuery);
   
