@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
-import { useFirestore } from '@/firebase';
-import { collection, doc, setDoc, getDocs } from 'firebase/firestore';
+import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { collection, doc, setDoc } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import {
   Table,
@@ -86,34 +86,25 @@ export default function AdminDashboardPage() {
   const firestore = useFirestore();
   const { toast } = useToast();
   
-  const [displayedStudents, setDisplayedStudents] = useState<Student[] | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const [updatingStudentId, setUpdatingStudentId] = useState<string | null>(null);
 
+  const studentsCollectionRef = useMemoFirebase(
+    () => (firestore ? collection(firestore, 'students') : null),
+    [firestore]
+  );
+  
+  const { data: displayedStudents, isLoading, error } = useCollection<Omit<Student, 'id'>>(studentsCollectionRef);
+
   useEffect(() => {
-    if (!firestore) return;
-
-    const fetchStudents = async () => {
-        setIsLoading(true);
-        try {
-            const studentsCollectionRef = collection(firestore, 'students');
-            const querySnapshot = await getDocs(studentsCollectionRef);
-            const studentsList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Student[];
-            setDisplayedStudents(studentsList);
-        } catch (error: any) {
-            console.error("Error fetching students: ", error);
-            toast({
-                variant: "destructive",
-                title: "Error al Cargar",
-                description: `No se pudieron cargar los estudiantes: ${error.message}`,
-            });
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    fetchStudents();
-  }, [firestore, toast]);
+    if(error) {
+      console.error("Error fetching students: ", error);
+      toast({
+          variant: "destructive",
+          title: "Error al Cargar",
+          description: `No se pudieron cargar los estudiantes: ${error.message}`,
+      });
+    }
+  }, [error, toast]);
 
 
   const handleToggleBlockStudent = async (studentId: string, isBlocked: boolean) => {
@@ -123,8 +114,6 @@ export default function AdminDashboardPage() {
     const data = { isBlocked: !isBlocked };
     try {
       await setDoc(studentRef, data, { merge: true });
-      // Update local state for immediate feedback
-      setDisplayedStudents(prev => prev!.map(s => s.id === studentId ? {...s, isBlocked: !isBlocked} : s));
       toast({
         title: "Estado Actualizado",
         description: `El estudiante ha sido ${!isBlocked ? 'bloqueado' : 'desbloqueado'}.`,
@@ -148,7 +137,6 @@ export default function AdminDashboardPage() {
     const data = { unlockedQuizzes: { ...displayedStudents?.find(s => s.id === studentId)?.unlockedQuizzes, [quiz]: !currentStatus } };
     try {
         await setDoc(studentRef, data, { merge: true });
-        setDisplayedStudents(prev => prev!.map(s => s.id === studentId ? {...s, unlockedQuizzes: { ...s.unlockedQuizzes, [quiz]: !currentStatus } } : s));
         toast({
           title: "Acceso Actualizado",
           description: `El acceso para el ${quiz} ha sido ${!currentStatus ? 'concedido' : 'revocado'}.`,
@@ -178,7 +166,6 @@ export default function AdminDashboardPage() {
     const data = { unlockedCourses: updatedCourses };
     try {
         await setDoc(studentRef, data, { merge: true });
-        setDisplayedStudents(prev => prev!.map(s => s.id === studentId ? {...s, unlockedCourses: updatedCourses } : s));
         toast({
           title: "Acceso Actualizado",
           description: `El acceso para el curso ${courseId.toUpperCase()} ha sido ${!isUnlocked ? 'concedido' : 'revocado'}.`,
@@ -217,7 +204,6 @@ export default function AdminDashboardPage() {
 
     try {
         await setDoc(studentRef, data, { merge: true });
-        setDisplayedStudents(prev => prev!.map(s => s.id === studentId ? {...s, unlockedClasses: updatedClasses } : s));
         toast({
           title: "Acceso Actualizado",
           description: `El acceso para la clase ${classId.toUpperCase()} ha sido ${!isUnlocked ? 'concedido' : 'revocado'}.`,
@@ -290,7 +276,7 @@ export default function AdminDashboardPage() {
                     <CardDescription>Manage students and their progress.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    {isLoading && !displayedStudents ? (
+                    {isLoading ? (
                         <div className="flex items-center justify-center p-8">
                             <Loader2 className="h-8 w-8 animate-spin text-primary" />
                         </div>
