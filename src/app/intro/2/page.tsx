@@ -185,7 +185,11 @@ const CountriesExercise = ({ onComplete }: { onComplete: () => void }) => {
 // By changing this version, we can force a progress reset for all users
 // if there's a breaking change in the path structure.
 const progressStorageVersion = "_v1_sequential_intro2";
-
+interface Student {
+    role?: 'admin' | 'student';
+    lessonProgress?: any;
+    progress?: Record<string, number>;
+}
 export default function Intro2Page() {
     const { t } = useTranslation();
     const [intro2Path, setIntro2Path] = useState<Intro2PathItem[]>([]);
@@ -198,7 +202,7 @@ export default function Intro2Page() {
         () => (user ? doc(firestore, 'students', user.uid) : null),
         [firestore, user]
     );
-    const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{role?: 'admin' | 'student'}>(studentDocRef);
+    const { data: studentProfile, isLoading: isProfileLoading } = useDoc<Student>(studentDocRef);
     const guideFishImage = PlaceHolderImages.find(p => p.id === 'guide-fish');
     const timeImage = PlaceHolderImages.find(p => p.id === 'telling-time');
 
@@ -238,6 +242,15 @@ export default function Intro2Page() {
                 return defaultPath.map(item => ({ ...item, status: 'active' }));
             }
             const versionedKey = storageKey + progressStorageVersion;
+            
+            if (studentProfile?.lessonProgress?.[versionedKey]) {
+                const savedStatuses = studentProfile.lessonProgress[versionedKey];
+                return defaultPath.map(item => ({
+                    ...item,
+                    status: savedStatuses[item.key] || item.status
+                }));
+            }
+
             try {
                 const savedStatusJSON = localStorage.getItem(versionedKey);
                 if (savedStatusJSON) {
@@ -255,7 +268,7 @@ export default function Intro2Page() {
     
         setIntro2Path(loadPath('intro2Path', initialIntroPath));
 
-    }, [t, isAdmin, isProfileLoading]);
+    }, [t, isAdmin, isProfileLoading, studentProfile]);
 
     const completeTopic = (topicKey: string) => {
         setIntro2Path(currentPath => {
@@ -297,18 +310,17 @@ export default function Intro2Page() {
 
     useEffect(() => {
         if (isProfileLoading) return;
-        if (!intro2Path.length || isAdmin) return;
-
-        const savePathStatus = (key: string, path: {key: string, status: string}[]) => {
-            const versionedKey = key + progressStorageVersion;
-            const statusOnly = path.reduce((acc, item) => ({...acc, [item.key]: item.status}), {});
-            localStorage.setItem(versionedKey, JSON.stringify(statusOnly));
-        };
-        
-        savePathStatus('intro2Path', intro2Path);
-        
-        localStorage.setItem('intro2Progress', String(progress));
-    }, [intro2Path, progress, isAdmin, isProfileLoading]);
+        if (!isAdmin && studentDocRef) {
+            if (intro2Path.length > 0) {
+                const versionedKey = 'intro2Path' + progressStorageVersion;
+                const statusOnly = intro2Path.reduce((acc, item) => ({...acc, [item.key]: item.status}), {});
+                 updateDocumentNonBlocking(studentDocRef, {
+                    [`lessonProgress.${versionedKey}`]: statusOnly,
+                    'progress.intro2Progress': progress,
+                });
+            }
+        }
+    }, [intro2Path, progress, isAdmin, isProfileLoading, studentDocRef]);
     
   return (
     <div className="flex w-full flex-col ingles-dashboard-bg min-h-screen">

@@ -299,6 +299,12 @@ type SpellingPathItem = {
     status: 'completed' | 'active' | 'locked';
 };
 
+interface Student {
+    role?: 'admin' | 'student';
+    lessonProgress?: any;
+    progress?: Record<string, number>;
+}
+
 // By changing this version, we can force a progress reset for all users
 // if there's a breaking change in the path structure.
 const progressStorageVersion = "_v1_sequential_admin";
@@ -325,25 +331,12 @@ export default function Intro1Page() {
         () => (user ? doc(firestore, 'students', user.uid) : null),
         [firestore, user]
     );
-    const { data: studentProfile } = useDoc<{role?: 'admin' | 'student'}>(studentDocRef);
+    const { data: studentProfile, isLoading: isProfileLoading } = useDoc<Student>(studentDocRef);
 
     const isAdmin = useMemo(() => {
         if (!user) return false;
         return studentProfile?.role === 'admin' || user.email === 'ednacard87@gmail.com';
     }, [user, studentProfile]);
-
-    const handleSpellingTopicSelect = (topicKey: SpellingExerciseKey) => {
-        const isAbcTopic = abcSpellingPath.some(t => t.key === topicKey);
-        const path = isAbcTopic ? abcSpellingPath : numbersSpellingPath;
-        const currentItem = path.find(item => item.key === topicKey);
-
-        if (!isAdmin && (!currentItem || currentItem.status === 'locked')) {
-            return;
-        }
-
-        setShowCongratulations(false);
-        setSelectedSpellingTopic(topicKey);
-    };
 
     const possessivesData = [
         { english: 'My', spanish: 'Mi / Mis' },
@@ -375,31 +368,36 @@ export default function Intro1Page() {
     ];
 
     useEffect(() => {
+        if (isProfileLoading) return;
+
         const initialIntroPath = getIntro1PathData(t);
         const initialAbcPath = getAbcSpellingPathData(t);
         const initialNumbersPath = getNumbersSpellingPathData(t);
-    
+
         const loadPath = (storageKey: string, defaultPath: any[]) => {
             if (isAdmin) {
                 return defaultPath.map(item => ({ ...item, status: 'active' }));
             }
             const versionedKey = storageKey + progressStorageVersion;
+
+            if (studentProfile?.lessonProgress?.[versionedKey]) {
+                const savedStatuses = studentProfile.lessonProgress[versionedKey];
+                return defaultPath.map(item => ({ ...item, status: savedStatuses[item.key] || item.status }));
+            }
+
             try {
                 const savedStatusJSON = localStorage.getItem(versionedKey);
                 if (savedStatusJSON) {
                     const savedStatuses = JSON.parse(savedStatusJSON);
-                    return defaultPath.map(item => ({
-                        ...item,
-                        status: savedStatuses[item.key] || item.status
-                    }));
+                    return defaultPath.map(item => ({ ...item, status: savedStatuses[item.key] || item.status }));
                 }
             } catch (e) {
                 console.error(`Failed to load path from ${versionedKey}`, e);
             }
             return defaultPath;
         };
-    
-        setIntro1Path(loadPath('intro1Path', initialIntroPath).map(item => ({...item, href: '#'} as PathItem)));
+
+        setIntro1Path(loadPath('intro1Path', initialIntroPath).map(item => ({ ...item, href: '#' } as PathItem)));
         setAbcSpellingPath(loadPath('abcSpellingPath', initialAbcPath) as SpellingPathItem[]);
         setNumbersSpellingPath(loadPath('numbersSpellingPath', initialNumbersPath) as SpellingPathItem[]);
 
@@ -408,13 +406,7 @@ export default function Intro1Page() {
             return;
         }
 
-        const savedSpellingTopic = localStorage.getItem('selectedSpellingTopic' + progressStorageVersion);
-        if (savedSpellingTopic) {
-            try {
-                setSelectedSpellingTopic(JSON.parse(savedSpellingTopic) as SpellingExerciseKey);
-            } catch {}
-        }
-    }, [t, isAdmin]);
+    }, [t, isAdmin, studentProfile, isProfileLoading]);
 
     useEffect(() => {
         setHighlightedLetter(null);
@@ -560,30 +552,28 @@ export default function Intro1Page() {
     const progress = useMemo(() => intro1Path.length > 0 ? Math.round((completedItems / intro1Path.length) * 100) : 0, [completedItems, intro1Path.length]);
 
     useEffect(() => {
-        if (!intro1Path.length || !abcSpellingPath.length || !numbersSpellingPath.length || isAdmin) return;
+        if (isProfileLoading || isAdmin || !studentDocRef) return;
 
-        const savePathStatus = (key: string, path: {key: string, status: string}[]) => {
-            const versionedKey = key + progressStorageVersion;
-            const statusOnly = path.reduce((acc, item) => ({...acc, [item.key]: item.status}), {});
-            localStorage.setItem(versionedKey, JSON.stringify(statusOnly));
+        const dataToSave: Record<string, any> = {
+            'progress.intro1Progress': progress
         };
-        
-        savePathStatus('intro1Path', intro1Path);
-        savePathStatus('abcSpellingPath', abcSpellingPath);
-        savePathStatus('numbersSpellingPath', numbersSpellingPath);
-        
-        localStorage.setItem('intro1Progress', String(progress));
-    }, [intro1Path, abcSpellingPath, numbersSpellingPath, progress, isAdmin]);
-    
-    useEffect(() => {
-        if (!user || !firestore || progress === undefined) return;
 
-        const studentRef = doc(firestore, 'students', user.uid);
-        updateDocumentNonBlocking(studentRef, {
-            'progress.intro1Progress': progress,
-        });
-
-    }, [progress, user, firestore]);
+        if (intro1Path.length > 0) {
+            const statusOnly = intro1Path.reduce((acc, item) => ({ ...acc, [item.key]: item.status }), {});
+            dataToSave[`lessonProgress.${'intro1Path' + progressStorageVersion}`] = statusOnly;
+        }
+        if (abcSpellingPath.length > 0) {
+            const statusOnly = abcSpellingPath.reduce((acc, item) => ({ ...acc, [item.key]: item.status }), {});
+            dataToSave[`lessonProgress.${'abcSpellingPath' + progressStorageVersion}`] = statusOnly;
+        }
+        if (numbersSpellingPath.length > 0) {
+            const statusOnly = numbersSpellingPath.reduce((acc, item) => ({ ...acc, [item.key]: item.status }), {});
+            dataToSave[`lessonProgress.${'numbersSpellingPath' + progressStorageVersion}`] = statusOnly;
+        }
+        
+        updateDocumentNonBlocking(studentDocRef, dataToSave);
+        
+    }, [intro1Path, abcSpellingPath, numbersSpellingPath, progress, isAdmin, studentDocRef, isProfileLoading]);
 
   return (
     <div className="flex w-full flex-col ingles-dashboard-bg min-h-screen">

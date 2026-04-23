@@ -69,6 +69,13 @@ const initialLearningPathData: Omit<Topic, 'status'>[] = [
     { key: 'memory-possessives', name: 'Memory (posesivos)', icon: BrainCircuit },
 ];
 
+interface Student {
+    role?: 'admin' | 'student';
+    lessonProgress?: any;
+    progress?: Record<string, number>;
+}
+
+
 export default function KidsIntro1Page() {
   const { t } = useTranslation();
   const { toast } = useToast();
@@ -89,7 +96,7 @@ export default function KidsIntro1Page() {
     () => (user ? doc(firestore, 'students', user.uid) : null),
     [firestore, user]
   );
-  const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{role?: 'admin' | 'student', lessonProgress?: any}>(studentDocRef);
+  const { data: studentProfile, isLoading: isProfileLoading } = useDoc<Student>(studentDocRef);
 
   const isAdmin = useMemo(() => {
     if (!user) return false;

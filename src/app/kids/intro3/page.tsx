@@ -7,12 +7,19 @@ import {
   PenSquare,
   Lock,
   GraduationCap,
-  Languages,
   BrainCircuit,
-  CheckCircle
+  Hand,
+  MessageSquare,
+  RefreshCw,
+  Flame,
+  Trophy,
+  CheckCircle,
 } from 'lucide-react';
 import { DashboardHeader } from '@/components/dashboard/header';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { cn } from '@/lib/utils';
 import { useTranslation } from '@/context/language-context';
 import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
@@ -42,12 +49,18 @@ const initialLearningPathData: Omit<Topic, 'status'>[] = [
     { key: 'future-exercise', name: 'Ejercicio Futuro Simple', icon: PenSquare },
 ];
 
+interface Student {
+    role?: 'admin' | 'student';
+    lessonProgress?: any;
+    progress?: Record<string, number>;
+}
 
 export default function KidsIntro3Page() {
   const { t } = useTranslation();
   const { toast } = useToast();
   const [selectedTopic, setSelectedTopic] = useState<string>('past-simple');
   const [isClient, setIsClient] = useState(false);
+  const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
 
   const { user } = useUser();
   const firestore = useFirestore();
@@ -56,7 +69,7 @@ export default function KidsIntro3Page() {
     () => (user ? doc(firestore, 'students', user.uid) : null),
     [firestore, user]
   );
-  const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{role?: 'admin' | 'student', lessonProgress?: any}>(studentDocRef);
+  const { data: studentProfile, isLoading: isProfileLoading } = useDoc<Student>(studentDocRef);
 
   const isAdmin = useMemo(() => {
     if (!user) return false;
@@ -124,11 +137,12 @@ export default function KidsIntro3Page() {
 
     window.dispatchEvent(new CustomEvent('progressUpdated'));
   }, [learningPath, progress, isAdmin, isClient, studentDocRef, isProfileLoading]);
-
-  const handleTopicComplete = (topicKey: string) => {
+  
+  useEffect(() => {
+    if (!topicToComplete) return;
     setLearningPath((prevPath) => {
         const newPath = [...prevPath];
-        const currentIndex = newPath.findIndex((t) => t.key === topicKey);
+        const currentIndex = newPath.findIndex((t) => t.key === topicToComplete);
         
         if (currentIndex !== -1 && newPath[currentIndex].status !== 'completed') {
             newPath[currentIndex].status = 'completed';
@@ -143,7 +157,8 @@ export default function KidsIntro3Page() {
         }
         return newPath;
     });
-  };
+    setTopicToComplete(null);
+  }, [topicToComplete, toast]);
 
   const handleTopicSelect = (topicKey: string) => {
     const topic = learningPath.find((t) => t.key === topicKey);
@@ -154,7 +169,7 @@ export default function KidsIntro3Page() {
 
     // This is a placeholder for actual exercise components.
     // For now, we'll just auto-complete it on select to demonstrate progress.
-    handleTopicComplete(topicKey);
+    setTopicToComplete(topicKey);
   };
 
   const renderContent = () => {

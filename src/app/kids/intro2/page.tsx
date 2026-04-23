@@ -352,6 +352,12 @@ const initialLearningPathData: Omit<Topic, 'status'>[] = [
     { key: 'countries', name: 'Paises y Nacionalidades', icon: BookOpen },
 ];
 
+interface Student {
+    role?: 'admin' | 'student';
+    lessonProgress?: any;
+    progress?: Record<string, number>;
+}
+
 export default function KidsIntro2Page() {
   const { t } = useTranslation();
   const [selectedTopic, setSelectedTopic] = useState<string>('greetings');
@@ -366,7 +372,7 @@ export default function KidsIntro2Page() {
     () => (user ? doc(firestore, 'students', user.uid) : null),
     [user, firestore]
   );
-  const { data: studentProfile } = useDoc<{role?: 'admin' | 'student', lessonProgress?: any}>(studentDocRef);
+  const { data: studentProfile, isLoading: isProfileLoading } = useDoc<Student>(studentDocRef);
 
   const isAdmin = useMemo(() => {
     if (!user) return false;
@@ -388,7 +394,7 @@ export default function KidsIntro2Page() {
   }, []);
 
   useEffect(() => {
-    if (!isClient) return;
+    if (!isClient || isProfileLoading) return;
 
     let path = initialLearningPathData.map((item, index) => ({
       ...item,
@@ -408,7 +414,7 @@ export default function KidsIntro2Page() {
     setLearningPath(path);
     const firstActive = path.find(p => p.status === 'active');
     setSelectedTopic(firstActive?.key || path[0].key);
-  }, [isAdmin, isClient, studentProfile]);
+  }, [isAdmin, isClient, studentProfile, isProfileLoading]);
 
   const progress = useMemo(() => {
     const completedTopics = learningPath.filter(t => t.status === 'completed').length;
@@ -416,7 +422,8 @@ export default function KidsIntro2Page() {
   }, [learningPath]);
 
   useEffect(() => {
-    if (!isClient) return;
+    if (!isClient || isProfileLoading) return;
+    
     if (!isAdmin && studentDocRef && learningPath.length > 0) {
         const statuses = learningPath.reduce((acc, item) => {
             acc[item.key] = item.status;
@@ -434,7 +441,7 @@ export default function KidsIntro2Page() {
     }
 
     window.dispatchEvent(new CustomEvent('progressUpdated'));
-  }, [learningPath, progress, isAdmin, isClient, studentDocRef]);
+  }, [learningPath, progress, isAdmin, isClient, studentDocRef, isProfileLoading]);
 
   useEffect(() => {
     if (previousPath) {
@@ -507,7 +514,7 @@ export default function KidsIntro2Page() {
                 </Card>
             );
         case 'greetings-memory':
-            return <MemoryGame title="Memory (Saludos)" data={greetingsData} onGameComplete={() => setTopicToComplete('greetings-memory')} />;
+             return <MemoryGame title="Memory (Saludos)" data={greetingsData} onGameComplete={() => setTopicToComplete('greetings-memory')} />;
         
         case 'tobe2':
             return (
@@ -618,10 +625,10 @@ export default function KidsIntro2Page() {
                   <nav>
                     <ul className="space-y-1">
                       {learningPath.map((item) => {
-                        const isLocked = item.status === 'locked';
-                        const isSelected = selectedTopic === item.key;
-                        const StatusIcon = ICONS[item.status];
-                        return (
+                          const isLocked = item.status === 'locked';
+                          const isSelected = selectedTopic === item.key;
+                          const StatusIcon = ICONS[item.status];
+                          return (
                             <li
                               key={item.key}
                               onClick={() => handleTopicSelect(item.key)}
@@ -636,7 +643,7 @@ export default function KidsIntro2Page() {
                                 <span>{item.name}</span>
                               </div>
                             </li>
-                        );
+                          )
                       })}
                     </ul>
                   </nav>
