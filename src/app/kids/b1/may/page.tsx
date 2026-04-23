@@ -52,7 +52,7 @@ const mayPositiveExercises = [
     { spanish: "Puede que yo consiga un trabajo mañana. (50% probabilidad).", answer: ["I may get a job tomorrow."] },
     { spanish: "ella tal vez se mude al extranjero. (30% probabilidad).", answer: ["She might move abroad."] },
     { spanish: "Nosotros podríamos viajar por el mundo el próximo año. (50% probabilidad).", answer: ["we may travel for the world next year"] },
-    { spanish: "Él tal vez aprenda unidioma nuevo. (30% probabilidad).", answer: ["He might learn a new language."] }
+    { spanish: "Él tal vez aprenda un idioma nuevo. (30% probabilidad).", answer: ["He might learn a new language."] }
 ];
 const mayNegativeExercises = [
     { spanish: "Puede que ellos no se gradúen este semestre. (50% probabilidad).", answer: ["They may not graduate this semester."] },
