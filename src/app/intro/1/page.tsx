@@ -548,6 +548,17 @@ export default function Intro1Page() {
         }
     };
 
+    const handleSpellingTopicSelect = (topicKey: SpellingExerciseKey) => {
+        const isNumbersExercise = selectedTopicKey === 'numbersspelling';
+        const path = isNumbersExercise ? numbersSpellingPath : abcSpellingPath;
+        const currentItem = path.find(item => item.key === topicKey);
+
+        if (isAdmin || (currentItem && currentItem.status !== 'locked')) {
+            setShowCongratulations(false);
+            setSelectedSpellingTopic(topicKey);
+        }
+    };
+
     const completedItems = useMemo(() => intro1Path.filter(item => item.status === 'completed').length, [intro1Path]);
     const progress = useMemo(() => intro1Path.length > 0 ? Math.round((completedItems / intro1Path.length) * 100) : 0, [completedItems, intro1Path.length]);
 
