@@ -2,7 +2,6 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
-import Image from "next/image";
 import {
   BookOpen,
   PenSquare,
@@ -28,8 +27,8 @@ import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocki
 import { doc } from 'firebase/firestore';
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
-import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Label } from '@/components/ui/label';
+import { Separator } from '@/components/ui/separator';
 
 // Data
 const greetingsAndFarewellsData = [
@@ -166,10 +165,14 @@ type ValidationStatus = 'correct' | 'incorrect' | 'unchecked';
 const CountriesExercise = ({ onComplete }: { onComplete: () => void }) => {
     const { t } = useTranslation();
     const { toast } = useToast();
-    const [userAnswers, setUserAnswers] = useState<Record<number, Partial<{ country: string; nationality: string }>>>({});
-    const [validationStatus, setValidationStatus] = useState<Record<number, { country: ValidationStatus, nationality: ValidationStatus }>>({});
+    type CountryAnswers = { pais: string; };
+    type UserAnswers = Record<number, Partial<CountryAnswers>>;
+    type ValidationState = Record<number, { pais: ValidationStatus }>;
 
-    const handleInputChange = (index: number, field: 'country' | 'nationality', value: string) => {
+    const [userAnswers, setUserAnswers] = useState<UserAnswers>({});
+    const [validationStatus, setValidationStatus] = useState<ValidationState>({});
+
+    const handleInputChange = (index: number, field: 'pais', value: string) => {
         setUserAnswers(prev => ({ ...prev, [index]: { ...prev[index], [field]: value } }));
         setValidationStatus(prev => {
             const newStatus = { ...prev };
@@ -182,29 +185,28 @@ const CountriesExercise = ({ onComplete }: { onComplete: () => void }) => {
 
     const handleCheckAnswers = () => {
         let allCorrect = true;
-        const newValidationStatus: Record<number, { country: ValidationStatus, nationality: ValidationStatus }> = {};
+        const newValidationStatus: ValidationState = {};
         countriesExerciseData.forEach((correctAnswer, index) => {
             const userAnswer = userAnswers[index] || {};
-            const isCountryCorrect = (userAnswer.country || '').trim().toLowerCase() === correctAnswer.country.toLowerCase();
-            const isNationalityCorrect = (userAnswer.nationality || '').trim().toLowerCase() === correctAnswer.nationality.toLowerCase();
+            const isCountryCorrect = (userAnswer.pais || '').trim().toLowerCase() === correctAnswer.pais.toLowerCase();
+            
             newValidationStatus[index] = {
-                country: isCountryCorrect ? 'correct' : 'incorrect',
-                nationality: isNationalityCorrect ? 'correct' : 'incorrect',
+                pais: isCountryCorrect ? 'correct' : 'incorrect',
             };
-            if (!isCountryCorrect || !isNationalityCorrect) allCorrect = false;
+            if (!isCountryCorrect) allCorrect = false;
         });
 
         setValidationStatus(newValidationStatus);
 
         if (allCorrect) {
-            toast({ title: t('countries.allCorrect') });
+            toast({ title: "¡Excelente!", description: "Todas tus respuestas son correctas." });
             onComplete();
         } else {
-            toast({ variant: 'destructive', title: t('countries.someIncorrect') });
+            toast({ variant: 'destructive', title: "Algunas respuestas son incorrectas" });
         }
     };
     
-    const getInputClass = (status: ValidationStatus) => {
+    const getInputClass = (status?: ValidationStatus) => {
         if (status === 'correct') return 'border-green-500';
         if (status === 'incorrect') return 'border-destructive';
         return '';
@@ -212,16 +214,15 @@ const CountriesExercise = ({ onComplete }: { onComplete: () => void }) => {
 
     return (
         <Card>
-            <CardHeader><CardTitle>Países y Nacionalidades</CardTitle></CardHeader>
+            <CardHeader><CardTitle>Países</CardTitle></CardHeader>
             <CardContent>
                 <Table>
-                    <TableHeader><TableRow><TableHead>País</TableHead><TableHead>Country</TableHead><TableHead>Nationality</TableHead></TableRow></TableHeader>
+                    <TableHeader><TableRow><TableHead>Country</TableHead><TableHead>País</TableHead></TableRow></TableHeader>
                     <TableBody>
                         {countriesExerciseData.map((data, index) => (
                             <TableRow key={index}>
-                                <TableCell>{data.pais}</TableCell>
-                                <TableCell><Input value={userAnswers[index]?.country || ''} onChange={(e) => handleInputChange(index, 'country', e.target.value)} className={cn(getInputClass(validationStatus[index]?.country))} /></TableCell>
-                                <TableCell><Input value={userAnswers[index]?.nationality || ''} onChange={(e) => handleInputChange(index, 'nationality', e.target.value)} className={cn(getInputClass(validationStatus[index]?.nationality))} /></TableCell>
+                                <TableCell>{data.country}</TableCell>
+                                <TableCell><Input value={userAnswers[index]?.pais || ''} onChange={(e) => handleInputChange(index, 'pais', e.target.value)} className={cn(getInputClass(validationStatus[index]?.pais))} /></TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
@@ -287,7 +288,7 @@ const MixedExercise = ({ onComplete }: { onComplete: () => void }) => {
         let allCorrect = true;
         const newValidationStatus: Record<number, ValidationStatus> = {};
         mixedExercisesData.forEach((item, index) => {
-            const isCorrect = (userAnswers[index] || '').trim().toLowerCase() === item.english.toLowerCase();
+            const isCorrect = (userAnswers[index] || '').trim().toLowerCase() === item.spanish.toLowerCase();
             if(!isCorrect) allCorrect = false;
             newValidationStatus[index] = isCorrect ? 'correct' : 'incorrect';
         });
@@ -305,11 +306,11 @@ const MixedExercise = ({ onComplete }: { onComplete: () => void }) => {
             <CardHeader><CardTitle>Ejercicios Mixtos</CardTitle></CardHeader>
             <CardContent>
                 <Table>
-                    <TableHeader><TableRow><TableHead>Español</TableHead><TableHead>Inglés</TableHead></TableRow></TableHeader>
+                    <TableHeader><TableRow><TableHead>Inglés</TableHead><TableHead>Español</TableHead></TableRow></TableHeader>
                     <TableBody>
                         {mixedExercisesData.map((item, index) => (
                             <TableRow key={index}>
-                                <TableCell>{item.spanish}</TableCell>
+                                <TableCell>{item.english}</TableCell>
                                 <TableCell><Input value={userAnswers[index] || ''} onChange={e => handleInputChange(index, e.target.value)} className={cn(validationStatus[index] === 'correct' && 'border-green-500', validationStatus[index] === 'incorrect' && 'border-destructive')} /></TableCell>
                             </TableRow>
                         ))}
@@ -344,8 +345,6 @@ export default function EspanolIntro2Page() {
     const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{ role?: string; lessonProgress?: any; progress?: any }>(studentDocRef);
 
     const isAdmin = useMemo(() => (user && (studentProfile?.role === 'admin' || user.email === 'ednacard87@gmail.com')), [user, studentProfile]);
-
-    const timeImage = PlaceHolderImages.find(p => p.id === 'telling-time');
     
     const initialLearningPath = useMemo((): Topic[] => [
         { key: 'memory_game', name: 'Juego de Memoria', icon: BrainCircuit, status: 'active' },
@@ -431,7 +430,30 @@ export default function EspanolIntro2Page() {
     const renderContent = () => {
         switch(selectedTopic) {
             case 'memory_game': return <MemoryGame data={greetingsAndFarewellsData} onComplete={() => handleTopicComplete('memory_game')} />;
-            case 'time': return <Card><CardHeader><CardTitle>La Hora</CardTitle></CardHeader><CardContent>{timeImage && <Image src={timeImage.imageUrl} alt={timeImage.description} width={600} height={848} className="mx-auto" />}</CardContent></Card>;
+            case 'time': return (
+                <Card>
+                    <CardHeader><CardTitle>La Hora</CardTitle></CardHeader>
+                    <CardContent>
+                        <h3 className="text-xl font-semibold mb-4">¿Qué hora es? - What time is it?</h3>
+                        <div className="space-y-4 text-lg">
+                            <p><span className="font-bold">2:00</span> - Son las dos en punto. (It's two o'clock.)</p>
+                            <p><span className="font-bold">2:05</span> - Son las dos y cinco. (It's five past two.)</p>
+                            <p><span className="font-bold">2:15</span> - Son las dos y cuarto. (It's a quarter past two.)</p>
+                            <p><span className="font-bold">2:30</span> - Son las dos y media. (It's half past two.)</p>
+                            <p><span className="font-bold">2:45</span> - Son las tres menos cuarto. (It's a quarter to three.)</p>
+                            <p><span className="font-bold">2:50</span> - Son las tres menos diez. (It's ten to three.)</p>
+                        </div>
+                        <Separator className="my-6" />
+                        <h3 className="text-xl font-semibold mb-4">Otras formas</h3>
+                        <div className="space-y-4 text-lg">
+                            <p><span className="font-bold">AM</span> - de la mañana (e.g., 8:00 AM - las ocho de la mañana)</p>
+                            <p><span className="font-bold">PM</span> - de la tarde / de la noche (e.g., 3:00 PM - las tres de la tarde; 9:00 PM - las nueve de la noche)</p>
+                            <p><span className="font-bold">Mediodía</span> - Noon (12:00 PM)</p>
+                            <p><span className="font-bold">Medianoche</span> - Midnight (12:00 AM)</p>
+                        </div>
+                    </CardContent>
+                </Card>
+            );
             case 'countries': return <CountriesExercise onComplete={() => handleTopicComplete('countries')} />;
             case 'reading': return <ReadingExercise onComplete={() => handleTopicComplete('reading')} />;
             case 'mixed_exercises': return <MixedExercise onComplete={() => handleTopicComplete('mixed_exercises')} />;
