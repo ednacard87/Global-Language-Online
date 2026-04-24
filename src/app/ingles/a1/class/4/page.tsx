@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, ChevronDown, HelpCircle } from 'lucide-react';
+import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, ChevronDown, HelpCircle, XCircle } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
@@ -17,6 +17,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { GenitiveCaseExercise } from '@/components/kids/exercises/genitive-case-exercise';
 import { WhQuestionExercise } from '@/components/kids/exercises/wh-question-exercise';
+import { WhQuestionsMainExercise } from '@/components/kids/exercises/wh-questions-main-exercise';
 
 
 type Topic = {
@@ -113,7 +114,7 @@ export default function EngA1Class4Page() {
                 { key: 'why', name: 'Why', icon: PenSquare, status: 'locked' },
             ],
         },
-        { key: 'ejercicio-wh', name: 'Ejercicio Wh', icon: PenSquare, status: 'locked' },
+        { key: 'ejercicio-wh', name: 'Ejercicios Wh Questions', icon: PenSquare, status: 'locked' },
         { key: 'vocabulario-wh', name: 'Vocabulario Wh', icon: BookOpen, status: 'locked' },
         { key: 'ejercicio-gs', name: 'Ejercicio G.S', icon: PenSquare, status: 'locked' },
         { key: 'ejercicio2-wh', name: 'Ejercicio2 Wh', icon: PenSquare, status: 'locked' },
@@ -521,9 +522,9 @@ export default function EngA1Class4Page() {
             const topicData = learningPath.flatMap(t => t.subItems || []).find(st => st.key === selectedTopic);
             return <WhQuestionExercise exerciseName={topicData?.name || ''} onComplete={() => handleTopicComplete(selectedTopic)} />;
         }
-
+        
         if (selectedTopic === 'ejercicio-wh') {
-            return <WhQuestionExercise exerciseName="Who" onComplete={() => handleTopicComplete('ejercicio-wh')} />;
+            return <WhQuestionsMainExercise onComplete={() => handleTopicComplete('ejercicio-wh')} />;
         }
 
         return (
