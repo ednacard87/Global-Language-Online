@@ -6,7 +6,6 @@ import { MazeGame } from "@/components/dashboard/maze-game";
 import { getB2UnitPath, PathItem } from "@/lib/course-data";
 import { useTranslation } from "@/context/language-context";
 import { useParams } from 'next/navigation';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
 import { doc } from 'firebase/firestore';
