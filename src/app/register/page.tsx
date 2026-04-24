@@ -180,10 +180,10 @@ export default function RegisterPage() {
                         >
                           <FormItem className="flex items-center space-x-3 space-y-0">
                             <FormControl>
-                              <RadioGroupItem value="ingles" />
+                              <RadioGroupItem value="kids" />
                             </FormControl>
                             <FormLabel className="font-normal">
-                              Inglés
+                              Niños (+12)
                             </FormLabel>
                           </FormItem>
                           <FormItem className="flex items-center space-x-3 space-y-0">
@@ -196,10 +196,10 @@ export default function RegisterPage() {
                           </FormItem>
                           <FormItem className="flex items-center space-x-3 space-y-0">
                             <FormControl>
-                              <RadioGroupItem value="kids" />
+                              <RadioGroupItem value="ingles" />
                             </FormControl>
                             <FormLabel className="font-normal">
-                              Niños (+10)
+                              Ingles (+16)
                             </FormLabel>
                           </FormItem>
                         </RadioGroup>
