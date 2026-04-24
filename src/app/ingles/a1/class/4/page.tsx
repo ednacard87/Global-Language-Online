@@ -522,6 +522,10 @@ export default function EngA1Class4Page() {
             return <WhQuestionExercise exerciseName={topicData?.name || ''} onComplete={() => handleTopicComplete(selectedTopic)} />;
         }
 
+        if (selectedTopic === 'ejercicio-wh') {
+            return <WhQuestionExercise exerciseName="Who" onComplete={() => handleTopicComplete('ejercicio-wh')} />;
+        }
+
         return (
             <Card className="shadow-soft rounded-lg border-2 border-brand-purple min-h-[500px]">
               <CardHeader>
