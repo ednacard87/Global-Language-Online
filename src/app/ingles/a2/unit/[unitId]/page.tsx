@@ -142,28 +142,6 @@ export default function A2EngUnitPage() {
                 isLoading={!isClient || isProfileLoading}
             />
         </div>
-         <Card className="w-full max-w-7xl shadow-soft rounded-lg border-2 border-brand-purple">
-            <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                    <Puzzle />
-                    {isClient ? t('a2course.practiceTitle') : ''}
-                </CardTitle>
-            </CardHeader>
-            <CardContent>
-                <p className="text-muted-foreground text-center mb-6">{isClient ? t('a2course.practiceDescription') : ''}</p>
-                <div className="flex items-center justify-center gap-4 md:gap-8 p-4">
-                    <div className="flex h-16 w-16 items-center justify-center rounded-lg border-2 font-bold text-xl cursor-pointer hover:bg-muted/50 transition-colors">1</div>
-                    <div className="flex-1 border-t-2 border-dashed border-border"></div>
-                    <div className="flex h-16 w-16 items-center justify-center rounded-lg border-2 font-bold text-xl cursor-pointer hover:bg-muted/50 transition-colors">2</div>
-                    <div className="flex-1 border-t-2 border-dashed border-border"></div>
-                    <div className="flex h-16 w-16 items-center justify-center rounded-lg border-2 font-bold text-xl cursor-pointer hover:bg-muted/50 transition-colors">3</div>
-                    <div className="flex-1 border-t-2 border-dashed border-border"></div>
-                    <div className="flex h-16 w-16 items-center justify-center rounded-lg border-2 font-bold text-xl cursor-pointer hover:bg-muted/50 transition-colors">4</div>
-                    <div className="flex-1 border-t-2 border-dashed border-border"></div>
-                    <div className="flex h-16 w-16 items-center justify-center rounded-lg border-2 font-bold text-xl cursor-pointer hover:bg-muted/50 transition-colors">5</div>
-                </div>
-            </CardContent>
-        </Card>
       </main>
     </div>
   );
