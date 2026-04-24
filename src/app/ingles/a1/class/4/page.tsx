@@ -21,6 +21,7 @@ import { WhQuestionsMainExercise } from '@/components/kids/exercises/wh-question
 import { FillInTheBlanksExercise } from '@/components/kids/exercises/fill-in-the-blanks';
 import { GenitiveSaxonGsExercise } from '@/components/kids/exercises/genitive-saxon-gs-exercise';
 import { WhFillInTheBlanksExercise } from '@/components/kids/exercises/wh-fill-in-the-blanks-exercise';
+import { WhQuestionsMainExercise3 } from '@/components/kids/exercises/wh-questions-main-exercise-3';
 
 
 type Topic = {
@@ -552,6 +553,9 @@ export default function EngA1Class4Page() {
         }
         if (selectedTopic === 'ejercicio2-wh') {
             return <WhFillInTheBlanksExercise onComplete={() => handleTopicComplete('ejercicio2-wh')} />;
+        }
+        if (selectedTopic === 'ejercicio3-wh') {
+            return <WhQuestionsMainExercise3 onComplete={() => handleTopicComplete('ejercicio3-wh')} />;
         }
 
         const practiceTopics = [
