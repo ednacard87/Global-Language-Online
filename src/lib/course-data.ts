@@ -474,8 +474,8 @@ export const getA2EngUnitPath = (unitId: string | number, t: (key: string) => st
 
 export const getA2EspanolPath = (t: (key: string) => string): PathItem[] => [
     { type: 'start', icon: Footprints, label: 'dashboard.start' },
-    { type: 'class', icon: BookOpen, label: 'a2Espanol.verbosRegulares', href: '#', storageKey: 'progress_a2_es_1' },
-    { type: 'class', icon: BookOpen, label: 'a2Espanol.verbosIrregulares', href: '#', storageKey: 'progress_a2_es_2' },
+    { type: 'class', icon: BookOpen, label: 'a2Espanol.verbosRegulares', href: '/espanol/a2/verbos-regulares', storageKey: 'progress_a2_es_1' },
+    { type: 'class', icon: BookOpen, label: 'a2Espanol.verbosIrregulares', href: '/espanol/a2/verbos-irregulares', storageKey: 'progress_a2_es_2' },
     { type: 'class', icon: BookOpen, label: 'a2Espanol.reflexivosRegulares', href: '/espanol/a2/reflexivos-regulares', storageKey: 'progress_a2_es_3' },
     { type: 'class', icon: BookOpen, label: 'a2Espanol.reflexivosIrregulares', href: '/espanol/a2/reflexivos-irregulares', storageKey: 'progress_a2_es_4' },
     { type: 'class', icon: BookOpen, label: 'a2Espanol.reflexivosMix', href: '/espanol/a2/reflexivos-mix', storageKey: 'progress_a2_es_5' },
@@ -485,7 +485,7 @@ export const getA2EspanolPath = (t: (key: string) => string): PathItem[] => [
     { type: 'class', icon: BookOpen, label: 'a2Espanol.imperfecto', href: '#', storageKey: 'progress_a2_es_9' },
     { type: 'class', icon: BookOpen, label: 'a2Espanol.preteritoPerfecto', href: '#', storageKey: 'progress_a2_es_10' },
     { type: 'class', icon: BookOpen, label: 'a2Espanol.preteritoPerfectoContinuo', href: '#', storageKey: 'progress_a2_es_11' },
-    { type: 'end', icon: Flag, label: 'dashboard.finish' },
+    { type: 'end', icon: Flag, label: 'dashboard.end' },
 ];
 
 export const getA2UnitPath = (unitId: string | number, t: (key: string) => string): PathItem[] => {
