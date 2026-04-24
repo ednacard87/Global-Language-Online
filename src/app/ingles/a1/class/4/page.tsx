@@ -18,6 +18,7 @@ import { Button } from '@/components/ui/button';
 import { GenitiveCaseExercise } from '@/components/kids/exercises/genitive-case-exercise';
 import { WhQuestionExercise } from '@/components/kids/exercises/wh-question-exercise';
 import { WhQuestionsMainExercise } from '@/components/kids/exercises/wh-questions-main-exercise';
+import { FillInTheBlanksExercise } from '@/components/kids/exercises/fill-in-the-blanks';
 
 
 type Topic = {
@@ -62,6 +63,27 @@ const vocabularyData = {
         { spanish: 'PRONTO', english: 'SOON' },
     ]
 };
+
+const whVocabularyExerciseData = [
+    { spanish: 'ALTO', english: 'TALL', gapped: 'TA_L' },
+    { spanish: 'BAJO', english: 'SHORT', gapped: 'S_ORT' },
+    { spanish: 'GRANDE', english: 'BIG', gapped: 'B_G' },
+    { spanish: 'PEQUEÑO', english: 'SMALL', gapped: 'SMA_L' },
+    { spanish: 'JOVEN', english: 'YOUNG', gapped: 'Y_UNG' },
+    { spanish: 'VIEJO', english: 'OLD', gapped: 'O_D' },
+    { spanish: 'CARO', english: 'EXPENSIVE', gapped: 'EXP_NSIVE' },
+    { spanish: 'BARATO', english: 'CHEAP', gapped: 'CH_AP' },
+    { spanish: 'INTERESANTE', english: 'INTERESTING', gapped: 'INT_RESTING' },
+    { spanish: 'FEO/A', english: 'UGLY', gapped: 'UG_Y' },
+    { spanish: 'ANTES', english: 'BEFORE', gapped: 'BE_ORE' },
+    { spanish: 'DESPUÉS', english: 'AFTER', gapped: 'A_TER' },
+    { spanish: 'TEMPRANO', english: 'EARLY', gapped: 'EAR_Y' },
+    { spanish: 'TARDE', english: 'LATE', gapped: 'LA_E' },
+    { spanish: 'HASTA', english: 'UNTIL', gapped: 'UN_IL' },
+    { spanish: 'DESDE', english: 'FROM', gapped: 'F_OM' },
+    { spanish: 'ACERCA DE', english: 'ABOUT', gapped: 'ABO_T' },
+    { spanish: 'PRONTO', english: 'SOON', gapped: 'S_ON' },
+];
 
 
 export default function EngA1Class4Page() {
@@ -270,7 +292,7 @@ export default function EngA1Class4Page() {
         }
         setSelectedTopic(topicKey);
 
-        const exerciseKeys = ['genitivo', 'who', 'what1', 'what2', 'what-kind-of', 'how', 'how-adjective', 'how-often', 'whose', 'where', 'which', 'when', 'why', 'ejercicio-wh', 'ejercicio-gs', 'ejercicio2-wh', 'ejercicio3-wh'];
+        const exerciseKeys = ['genitivo', 'who', 'what1', 'what2', 'what-kind-of', 'how', 'how-adjective', 'how-often', 'whose', 'where', 'which', 'when', 'why', 'ejercicio-wh', 'ejercicio-gs', 'ejercicio2-wh', 'ejercicio3-wh', 'vocabulario-wh'];
         if (!exerciseKeys.includes(topicKey)) {
             handleTopicComplete(topicKey);
         }
@@ -511,6 +533,16 @@ export default function EngA1Class4Page() {
                         </Accordion>
                     </CardContent>
                 </Card>
+            );
+        }
+
+        if (selectedTopic === 'vocabulario-wh') {
+            return (
+                <FillInTheBlanksExercise 
+                    data={whVocabularyExerciseData} 
+                    onComplete={() => handleTopicComplete('vocabulario-wh')} 
+                    title="Vocabulario Wh"
+                />
             );
         }
 
