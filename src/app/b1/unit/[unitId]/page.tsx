@@ -8,7 +8,6 @@ import { useTranslation } from "@/context/language-context";
 import { useParams } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
-import { Puzzle } from "lucide-react";
 import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
 import { doc } from 'firebase/firestore';
 
@@ -141,28 +140,6 @@ export default function B1UnitPage() {
                 isLoading={!isClient || isProfileLoading}
             />
         </div>
-         <Card className="w-full max-w-7xl shadow-soft rounded-lg border-2 border-brand-purple">
-            <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                    <Puzzle />
-                    {isClient ? t('b1course.practiceTitle') : ''}
-                </CardTitle>
-            </CardHeader>
-            <CardContent>
-                <p className="text-muted-foreground text-center mb-6">{isClient ? t('b1course.practiceDescription') : ''}</p>
-                <div className="flex items-center justify-center gap-4 md:gap-8 p-4">
-                    <div className="flex h-16 w-16 items-center justify-center rounded-lg border-2 font-bold text-xl cursor-pointer hover:bg-muted/50 transition-colors">1</div>
-                    <div className="flex-1 border-t-2 border-dashed border-border"></div>
-                    <div className="flex h-16 w-16 items-center justify-center rounded-lg border-2 font-bold text-xl cursor-pointer hover:bg-muted/50 transition-colors">2</div>
-                    <div className="flex-1 border-t-2 border-dashed border-border"></div>
-                    <div className="flex h-16 w-16 items-center justify-center rounded-lg border-2 font-bold text-xl cursor-pointer hover:bg-muted/50 transition-colors">3</div>
-                    <div className="flex-1 border-t-2 border-dashed border-border"></div>
-                    <div className="flex h-16 w-16 items-center justify-center rounded-lg border-2 font-bold text-xl cursor-pointer hover:bg-muted/50 transition-colors">4</div>
-                    <div className="flex-1 border-t-2 border-dashed border-border"></div>
-                    <div className="flex h-16 w-16 items-center justify-center rounded-lg border-2 font-bold text-xl cursor-pointer hover:bg-muted/50 transition-colors">5</div>
-                </div>
-            </CardContent>
-        </Card>
       </main>
     </div>
   );
