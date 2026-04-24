@@ -117,12 +117,17 @@ export default {
             transform: 'translate3d(4px, 0, 0)',
           },
         },
+        'border-pulse': {
+          '0%, 100%': { borderColor: 'hsl(var(--brand-purple) / 1)' },
+          '50%': { borderColor: 'hsl(var(--brand-purple) / 0.3)' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
         'pulse-glow': 'pulse-glow 2s infinite',
         'shake': 'shake 0.82s cubic-bezier(.36, .07, .19, .97) both',
+        'border-pulse': 'border-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
       },
     },
   },

@@ -75,8 +75,8 @@ export default function LandingPage() {
                 <Button asChild variant="outline" className="bg-white/10 text-white border-white/50 backdrop-blur-sm hover:bg-white/20">
                     <Link href="/login">LOGIN</Link>
                 </Button>
-                <Button asChild className="bg-blue-500 hover:bg-blue-600 text-white">
-                    <Link href="/register">Registrarse</Link>
+                <Button asChild className="bg-blue-500 hover:bg-blue-600 text-white border-2 animate-border-pulse">
+                    <Link href="/register">REGISTRARSE</Link>
                 </Button>
             </div>
         )}
@@ -98,7 +98,7 @@ export default function LandingPage() {
               title="ESPAÑOL (+18)"
               description="Conecta con hispanohablantes y  Vive la Cultura Latina"
               buttonText="¡DESCUBRE MÁS!"
-              href="/espanol"
+              href="/login"
               imageUrl={spanishCardBg?.imageUrl || ''}
               imageHint={spanishCardBg?.imageHint || 'person laptop'}
               cardClass="spanish-card"
@@ -106,8 +106,8 @@ export default function LandingPage() {
             <HeroCard
               title="Zona joven (niños +12)"
               description="Domina el idioma, Supera desafios y desbloquea niveles ."
-              buttonText="¡ACEPTAR DESAFÍO!"
-              href="/kids"
+              buttonText="¡ACEPTAR DESAFIO!"
+              href="/login"
               imageUrl={kidsCardBg?.imageUrl || ''}
               imageHint={kidsCardBg?.imageHint || 'cartoon djs'}
               cardClass="kids-card"
