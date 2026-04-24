@@ -20,6 +20,7 @@ import { WhQuestionExercise } from '@/components/kids/exercises/wh-question-exer
 import { WhQuestionsMainExercise } from '@/components/kids/exercises/wh-questions-main-exercise';
 import { FillInTheBlanksExercise } from '@/components/kids/exercises/fill-in-the-blanks';
 import { GenitiveSaxonGsExercise } from '@/components/kids/exercises/genitive-saxon-gs-exercise';
+import { WhFillInTheBlanksExercise } from '@/components/kids/exercises/wh-fill-in-the-blanks-exercise';
 
 
 type Topic = {
@@ -548,6 +549,9 @@ export default function EngA1Class4Page() {
         }
         if (selectedTopic === 'ejercicio-gs') {
             return <GenitiveSaxonGsExercise onComplete={() => handleTopicComplete('ejercicio-gs')} />;
+        }
+        if (selectedTopic === 'ejercicio2-wh') {
+            return <WhFillInTheBlanksExercise onComplete={() => handleTopicComplete('ejercicio2-wh')} />;
         }
 
         const practiceTopics = [
