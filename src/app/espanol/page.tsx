@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 import Image from 'next/image';
-import { BookOpen, Mic, Video, Music, Lock, CheckCircle, Flame, Gamepad2, Star } from 'lucide-react';
+import { BookOpen, Mic, Video, Music, Lock, CheckCircle, Flame, Gamepad2, Star, Rocket } from 'lucide-react';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -132,6 +132,8 @@ export default function EspanolDashboardPage() {
         }, 0);
         return Math.round((completedItems / totalItems) * 100);
     }, [studentProfile, t]);
+
+    const b1Progress = 0; // Placeholder for B1 progress calculation
     
     const courses = useMemo(() => {
         if (!studentProfile && !isAdmin) return [];
@@ -160,8 +162,16 @@ export default function EspanolDashboardPage() {
               locked: isAdmin ? false : a1Progress < 100,
               icon: Gamepad2
           },
+          { 
+            title: "Curso B1 - Español", 
+            description: "Perfecciona tu español y habla con fluidez.",
+            href: "#",
+            progress: b1Progress,
+            locked: isAdmin ? false : a2Progress < 100,
+            icon: Rocket
+        },
         ];
-    }, [t, studentProfile, user, introProgress, a1Progress, a2Progress, isAdmin]);
+    }, [t, studentProfile, user, introProgress, a1Progress, a2Progress, b1Progress, isAdmin]);
 
     const introCourse = useMemo(() => courses.find(c => c.href === "/espanol/intro"), [courses]);
     const otherCourses = useMemo(() => courses.filter(c => c.href !== "/espanol/intro"), [courses]);
