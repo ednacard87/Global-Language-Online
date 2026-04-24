@@ -19,6 +19,7 @@ import { GenitiveCaseExercise } from '@/components/kids/exercises/genitive-case-
 import { WhQuestionExercise } from '@/components/kids/exercises/wh-question-exercise';
 import { WhQuestionsMainExercise } from '@/components/kids/exercises/wh-questions-main-exercise';
 import { FillInTheBlanksExercise } from '@/components/kids/exercises/fill-in-the-blanks';
+import { GenitiveSaxonGsExercise } from '@/components/kids/exercises/genitive-saxon-gs-exercise';
 
 
 type Topic = {
@@ -544,6 +545,9 @@ export default function EngA1Class4Page() {
                     title="Vocabulario Wh"
                 />
             );
+        }
+        if (selectedTopic === 'ejercicio-gs') {
+            return <GenitiveSaxonGsExercise onComplete={() => handleTopicComplete('ejercicio-gs')} />;
         }
 
         const practiceTopics = [
