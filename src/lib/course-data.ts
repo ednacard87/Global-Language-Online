@@ -488,6 +488,17 @@ export const getA2EspanolPath = (t: (key: string) => string): PathItem[] => [
     { type: 'end', icon: Flag, label: 'dashboard.end' },
 ];
 
+export const getB1EspanolPath = (): PathItem[] => [
+    { type: 'start', icon: Footprints, label: 'dashboard.start' },
+    { type: 'class', icon: BookOpen, label: 'b1Espanol.pronombres', href: '#', storageKey: 'progress_b1_es_1' },
+    { type: 'class', icon: BookOpen, label: 'b1Espanol.doblePronombre', href: '#', storageKey: 'progress_b1_es_2' },
+    { type: 'class', icon: BookOpen, label: 'b1Espanol.porPara', href: '#', storageKey: 'progress_b1_es_3' },
+    { type: 'class', icon: BookOpen, label: 'b1Espanol.futuro', href: '#', storageKey: 'progress_b1_es_4' },
+    { type: 'class', icon: BookOpen, label: 'b1Espanol.imperativo', href: '#', storageKey: 'progress_b1_es_5' },
+    { type: 'class', icon: BookOpen, label: 'b1Espanol.presenteSubjuntivo', href: '#', storageKey: 'progress_b1_es_6' },
+    { type: 'end', icon: Flag, label: 'dashboard.finish' },
+];
+
 export const getA2UnitPath = (unitId: string | number, t: (key: string) => string): PathItem[] => {
     const unitPaths: {[key: string]: PathItem[]} = {
         '1': [

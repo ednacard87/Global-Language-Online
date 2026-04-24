@@ -64,6 +64,16 @@
     "startHere": "Start Here",
     "unlockGames": "You must complete 30% of the introductory course to unlock the games"
   },
+  "b1Espanol": {
+    "title": "B1 Course - Spanish",
+    "pronombres": "Pronouns",
+    "doblePronombre": "Double Pronoun",
+    "porPara": "Por/Para",
+    "futuro": "Future",
+    "imperativo": "Imperative",
+    "presenteSubjuntivo": "Present Subjunctive",
+    "final": "End"
+  },
   "achievements": {
     "completedIntro": "Completed \"Introductory Course\"",
     "completedA1Class1": "Completed \"Class 1\" A1",
@@ -593,7 +603,7 @@
   "kidsA2PastContinuous": {
     "vocabulary": "Vocabulary",
     "memory": "Memory",
-    "clothes": "Clothes",
+    "clothes": "Ropa",
     "clothesVocabulary": "Clothing Vocabulary",
     "grammar": "Grammar",
     "exercises": "Exercises",

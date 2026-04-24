@@ -13,7 +13,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { useTranslation } from '@/context/language-context';
-import { calculateEspanolIntroProgress, getA1MainPath, getA2EspanolPath } from '@/lib/course-data';
+import { calculateEspanolIntroProgress, getA1MainPath, getA2EspanolPath, getB1EspanolPath } from '@/lib/course-data';
 import { cn } from '@/lib/utils';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -133,7 +133,20 @@ export default function EspanolDashboardPage() {
         return Math.round((completedItems / totalItems) * 100);
     }, [studentProfile, t]);
 
-    const b1Progress = 0; // Placeholder for B1 progress calculation
+    const b1Progress = useMemo(() => {
+        if (!studentProfile?.progress) return 0;
+        const b1Items = getB1EspanolPath();
+        const storageItems = b1Items.filter(item => item.storageKey);
+        const totalItems = storageItems.length;
+        if (totalItems <= 0) return 0;
+        const completedItems = storageItems.reduce((acc, item) => {
+            if (item.storageKey && (studentProfile.progress?.[item.storageKey] ?? 0) >= 100) {
+                return acc + 1;
+            }
+            return acc;
+        }, 0);
+        return Math.round((completedItems / totalItems) * 100);
+    }, [studentProfile]);
     
     const courses = useMemo(() => {
         if (!studentProfile && !isAdmin) return [];
@@ -165,7 +178,7 @@ export default function EspanolDashboardPage() {
           { 
             title: "Curso B1 - Español", 
             description: "Perfecciona tu español y habla con fluidez.",
-            href: "#",
+            href: "/espanol/b1",
             progress: b1Progress,
             locked: isAdmin ? false : a2Progress < 100,
             icon: Rocket

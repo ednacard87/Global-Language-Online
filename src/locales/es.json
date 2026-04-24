@@ -64,6 +64,16 @@
     "startHere": "Comienza por aquí",
     "unlockGames": "Debes completar el 30% del curso de introduccion para desbloquear los juegos"
   },
+  "b1Espanol": {
+    "title": "Curso B1 - Español",
+    "pronombres": "Pronombres",
+    "doblePronombre": "Doble Pronombre",
+    "porPara": "Por/Para",
+    "futuro": "Futuro",
+    "imperativo": "Imperativo",
+    "presenteSubjuntivo": "Presente Subjuntivo",
+    "final": "Final"
+  },
   "achievements": {
     "completedIntro": "Completado \"Curso Introductorio\"",
     "completedA1Class1": "Completado \"Clase 1\" A1",
