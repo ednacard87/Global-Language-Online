@@ -6,9 +6,7 @@ import { MazeGame } from "@/components/dashboard/maze-game";
 import { getB1UnitPath, PathItem } from "@/lib/course-data";
 import { useTranslation } from "@/context/language-context";
 import { useParams } from 'next/navigation';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
-import { Puzzle } from "lucide-react";
 import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
 import { doc } from 'firebase/firestore';
 
@@ -23,7 +21,7 @@ export default function B1UnitPage() {
     () => (user ? doc(firestore, 'students', user.uid) : null),
     [firestore, user]
   );
-  const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{role?: 'admin' | 'student', progress?: Record<string, number>}>(studentDocRef);
+  const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{role?: 'admin' | 'student', progress?: Record<string, number>, unlockedClasses?: string[]}>(studentDocRef);
 
   const isAdmin = useMemo(() => {
       if (!user) return false;
@@ -55,6 +53,14 @@ export default function B1UnitPage() {
             if (isAdmin) {
                 acc.push({ ...item, locked: false });
                 return acc;
+            }
+
+            if (item.href && item.href !== '#') {
+                const classId = `b1-${item.href.split('/').pop()}`;
+                if (studentProfile?.unlockedClasses?.includes(classId)) {
+                    acc.push({ ...item, locked: false });
+                    return acc;
+                }
             }
 
             if (index === 0) {
@@ -116,7 +122,7 @@ export default function B1UnitPage() {
   }, [unitProgress, unitId, studentDocRef, isProfileLoading]);
 
   return (
-    <div className="flex w-full flex-col">
+    <div className="flex w-full flex-col ingles-dashboard-bg min-h-screen">
       <DashboardHeader />
       <main className="flex flex-1 flex-col items-center gap-8 p-4 md:py-12">
         <div className="text-center">
@@ -133,28 +139,6 @@ export default function B1UnitPage() {
                 isLoading={!isClient || isProfileLoading}
             />
         </div>
-         <Card className="w-full max-w-7xl shadow-soft rounded-lg border-2 border-brand-purple">
-            <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                    <Puzzle />
-                    {isClient ? t('b1course.practiceTitle') : ''}
-                </CardTitle>
-            </CardHeader>
-            <CardContent>
-                <p className="text-muted-foreground text-center mb-6">{isClient ? t('b1course.practiceDescription') : ''}</p>
-                <div className="flex items-center justify-center gap-4 md:gap-8 p-4">
-                    <div className="flex h-16 w-16 items-center justify-center rounded-lg border-2 font-bold text-xl cursor-pointer hover:bg-muted/50 transition-colors">1</div>
-                    <div className="flex-1 border-t-2 border-dashed border-border"></div>
-                    <div className="flex h-16 w-16 items-center justify-center rounded-lg border-2 font-bold text-xl cursor-pointer hover:bg-muted/50 transition-colors">2</div>
-                    <div className="flex-1 border-t-2 border-dashed border-border"></div>
-                    <div className="flex h-16 w-16 items-center justify-center rounded-lg border-2 font-bold text-xl cursor-pointer hover:bg-muted/50 transition-colors">3</div>
-                    <div className="flex-1 border-t-2 border-dashed border-border"></div>
-                    <div className="flex h-16 w-16 items-center justify-center rounded-lg border-2 font-bold text-xl cursor-pointer hover:bg-muted/50 transition-colors">4</div>
-                    <div className="flex-1 border-t-2 border-dashed border-border"></div>
-                    <div className="flex h-16 w-16 items-center justify-center rounded-lg border-2 font-bold text-xl cursor-pointer hover:bg-muted/50 transition-colors">5</div>
-                </div>
-            </CardContent>
-        </Card>
       </main>
     </div>
   );
