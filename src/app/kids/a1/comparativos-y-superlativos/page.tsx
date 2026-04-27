@@ -72,6 +72,23 @@ const bisyllabicData: SyllableExerciseData = [
     { spanish: 'ESTRECHO', answers: { adjective: 'narrow', comparative: 'narrower', superlative: 'the narrowest' } },
 ];
 
+const longAdjectivesData: SyllableExerciseData = [
+    { spanish: 'CARO', answers: { adjective: 'expensive', comparative: 'more expensive than', superlative: 'the most expensive' } },
+    { spanish: 'MODERNO', answers: { adjective: 'modern', comparative: 'more modern than', superlative: 'the most modern' } },
+    { spanish: 'HERMOSO', answers: { adjective: 'beautiful', comparative: 'more beautiful than', superlative: 'the most beautiful' } },
+    { spanish: 'ELEGANTE', answers: { adjective: 'elegant', comparative: 'more elegant than', superlative: 'the most elegant' } },
+    { spanish: 'INTERESANTE', answers: { adjective: 'interesting', comparative: 'more interesting than', superlative: 'the most interesting' } },
+    { spanish: 'PELIGROSO', answers: { adjective: 'dangerous', comparative: 'more dangerous than', superlative: 'the most dangerous' } },
+    { spanish: 'FAMOSO', answers: { adjective: 'famous', comparative: 'more famous than', superlative: 'the most famous' } },
+    { spanish: 'DIFICIL', answers: { adjective: 'difficult', comparative: 'more difficult than', superlative: 'the most difficult' } },
+    { spanish: 'INTELIGENTE', answers: { adjective: 'intelligent', comparative: 'more intelligent than', superlative: 'the most intelligent' } },
+    { spanish: 'HONESTO', answers: { adjective: 'honest', comparative: 'more honest than', superlative: 'the most honest' } },
+    { spanish: 'HUMILDE', answers: { adjective: 'humble', comparative: 'more humble than', superlative: 'the most humble' } },
+    { spanish: 'EDUCADO', answers: { adjective: 'polite', comparative: 'more polite than', superlative: 'the most polite' } },
+    { spanish: 'ABURRIDO', answers: { adjective: 'boring', comparative: 'more boring than', superlative: 'the most boring' } },
+];
+
+
 export default function ComparativosSuperlativosPage() {
     const { toast } = useToast();
     const { user, isUserLoading } = useUser();
@@ -174,7 +191,7 @@ export default function ComparativosSuperlativosPage() {
             return;
         }
         setSelectedTopic(key);
-        if (!['vocabulario', 'mixtos', 'sopa_letras', 'mixtos2', 'ejercicio-comparativo', 'ejercicio-superlativo', 'monosilabos', 'bisilabos'].includes(key)) {
+        if (!['vocabulario', 'mixtos', 'sopa_letras', 'mixtos2', 'ejercicio-comparativo', 'ejercicio-superlativo', 'monosilabos', 'bisilabos', 'largos'].includes(key)) {
           setTopicToComplete(key);
         }
     };
@@ -275,7 +292,7 @@ export default function ComparativosSuperlativosPage() {
                     </CardHeader>
                     <CardContent className="space-y-6 text-lg">
                         <div>
-                            <h3 className="text-xl font-bold text-primary">COMPARATIVOS  (Adjective+ ER)</h3>
+                            <h3 className="text-xl font-bold text-primary">COMPARATIVOS (Adjective+ ER)</h3>
                             <p className="mt-2 text-muted-foreground"><span className="font-semibold">USO:</span> se usa en inglés para comparar diferencias entre los dos sustantivos a los que modifica.</p>
                         </div>
 
@@ -383,20 +400,20 @@ export default function ComparativosSuperlativosPage() {
                              <li>
                                 <span className='font-semibold'>LOS QUE TERMINAN EN ‘’-Y’’ PRECEDIDA DE CONSONANTE, CAMBIAN LA ‘’Y’’ POR ‘’I’’-</span>
                                 <div className="mt-2 space-y-1 font-mono bg-muted p-4 rounded-lg text-base">
-                                    <p>EASY - EASIER – THE EASIEST</p>
+                                    <p>EASY-EASIER- THE EASIEST</p>
                                 </div>
                             </li>
                              <li>
                                 <span className='font-semibold'>LOS QUE TERMINAN EN ‘’-Y’’ PRECEDIDA POR VOCAL, MANTIENEN LA REGLA GENERAL-</span>
                                  <div className="mt-2 space-y-1 font-mono bg-muted p-4 rounded-lg text-base">
-                                    <p>GRAY - GRAYER – THE GRAYEST</p>
+                                    <p>GRAY- GRAYER- THE GRAYEST</p>
                                 </div>
                             </li>
                              <li>
                                 <span className='font-semibold'>LOS TERMINADOS EN UNA SOLA CONSONANTE PRECEDIDA DE VOCAL, DOBLAN LA CONSONANTE ANTES DE LAS TERMINACIONES:</span>
                                 <div className="mt-2 space-y-1 font-mono bg-muted p-4 rounded-lg text-base">
-                                    <p>BIG - BIGGER – THE BIGGEST</p>
-                                    <p>HOT - HOTTER – THE HOTTEST</p>
+                                    <p>BIG- BIGGER- THE BIGGEST</p>
+                                    <p>HOT- HOTTER- THE HOTTEST</p>
                                 </div>
                                 <p className="text-sm text-muted-foreground italic mt-2">– excepción: new</p>
                             </li>
@@ -433,6 +450,22 @@ export default function ComparativosSuperlativosPage() {
                         adjective: "BISILABOS (ADJETIVO)",
                         comparative: "COMPARATIVO",
                         superlative: "SUPERLATIVO",
+                    }}
+                />
+            );
+        }
+        
+        if (selectedTopic === 'largos') {
+            return (
+                <SyllableExercise
+                    data={longAdjectivesData}
+                    title="Adjetivos Largos"
+                    description="Completa la tabla con las formas correctas de los adjetivos largos."
+                    onComplete={() => setTopicToComplete('largos')}
+                    columnHeaders={{
+                        adjective: "ADJETIVOS LARGOS.",
+                        comparative: "COMPARATIVO (MORE +ADJETIVO+ THAN )",
+                        superlative: "SUPERLATIVO (THE MOST +ADJETIVO)",
                     }}
                 />
             );
