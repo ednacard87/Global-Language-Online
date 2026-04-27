@@ -233,7 +233,7 @@ export default function ComparativosSuperlativosPage() {
             );
         }
 
-        if (selectedTopic === 'gramatica') {
+        if (selectedTopic === 'gramatica' || selectedTopic === 'superlativos') {
             return (
                 <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
                     <CardHeader>
@@ -267,7 +267,7 @@ export default function ComparativosSuperlativosPage() {
                         <div>
                             <h3 className="text-xl font-bold text-primary">TOPICS</h3>
                             <ul className="mt-2 list-disc list-inside space-y-2 text-base">
-                                <li><span className="font-semibold">Monosílabos:</span> Adjetivos Cortos (Adjective + EST)</li>
+                                <li><span className="font-semibold">Monosilabos:</span> Adjetivos Cortos (Adjective + EST)</li>
                                 <li><span className="font-semibold">Bisílabos:</span> Adjetivos con 2 sílabas (Adjective + EST)</li>
                                 <li><span className="font-semibold">Adjetivos Largos:</span> Tienen más de 2 sílabas (The Most + adjetivo largo)</li>
                                 <li><span className="font-semibold">Adjetivos Irregulares:</span> Cambian en todas sus formas</li>
