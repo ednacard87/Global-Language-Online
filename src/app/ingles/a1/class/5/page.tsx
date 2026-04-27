@@ -233,8 +233,8 @@ export default function EngA1Class5Page() {
         } else {
             toast({
                 variant: 'destructive',
-                title: 'Sigue intentando',
-                description: 'Revisa tus respuestas. ¡Necesitas al menos una correcta para continuar!',
+                title: "Sigue intentando",
+                description: "Revisa tus respuestas. ¡Necesitas al menos una correcta para continuar!",
             });
             setCanAdvance(false);
         }
@@ -316,6 +316,167 @@ export default function EngA1Class5Page() {
                 </Card>
             );
         }
+        
+        if (selectedTopic === 'nota-importante') {
+            return (
+                <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                    <CardHeader>
+                        <CardTitle>Notas Importantes</CardTitle>
+                        <CardDescription>Reglas y tips para recordar.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <Accordion type="multiple" className="w-full" defaultValue={['item-1']}>
+                            <AccordionItem value="item-1">
+                                <AccordionTrigger>1. Dos verbos juntos</AccordionTrigger>
+                                <AccordionContent>
+                                    <p>Cuando tenemos dos verbos juntos, en la mitad se agrega "TO".</p>
+                                </AccordionContent>
+                            </AccordionItem>
+        
+                            <AccordionItem value="item-2">
+                                <AccordionTrigger>2. Verbo "GO"</AccordionTrigger>
+                                <AccordionContent>
+                                    <p className="font-mono">go to the + lugar especifico</p>
+                                    <p className="font-mono">go + cuando no tenemos un lugar</p>
+                                </AccordionContent>
+                            </AccordionItem>
+        
+                            <AccordionItem value="item-3">
+                                <AccordionTrigger>3. NUNCA PERO NUNCA</AccordionTrigger>
+                                <AccordionContent>
+                                    <p>Una frase tiene verbo TO BE y DO/DOES.</p>
+                                </AccordionContent>
+                            </AccordionItem>
+        
+                            <AccordionItem value="item-4">
+                                <AccordionTrigger>4. Genitivo Sajón</AccordionTrigger>
+                                <AccordionContent>
+                                    <p>Nunca tiene el artículo "THE" adelante de él.</p>
+                                    <div className="mt-2 p-3 bg-muted rounded-lg font-mono text-sm">
+                                        <p>la casa de maria</p>
+                                        <p className="text-green-600">Maria's house</p>
+                                        <p className="text-red-600">the Maria's house (incorrecto)</p>
+                                    </div>
+                                </AccordionContent>
+                            </AccordionItem>
+                            
+                            <AccordionItem value="item-5">
+                                <AccordionTrigger>5. Preposiciones Comunes</AccordionTrigger>
+                                <AccordionContent>
+                                   <div className="grid grid-cols-3 gap-4">
+                                        <div>
+                                            <h4 className="font-bold">IN</h4>
+                                            <ul className="list-disc list-inside text-sm">
+                                                <li>in the morning</li>
+                                                <li>in the afternoon</li>
+                                                <li>in + months</li>
+                                            </ul>
+                                        </div>
+                                       <div>
+                                            <h4 className="font-bold">AT</h4>
+                                             <ul className="list-disc list-inside text-sm">
+                                                <li>at night</li>
+                                                <li>at work</li>
+                                                <li>at school</li>
+                                                <li>at university</li>
+                                                <li>at home</li>
+                                            </ul>
+                                       </div>
+                                       <div>
+                                            <h4 className="font-bold">ON</h4>
+                                             <ul className="list-disc list-inside text-sm">
+                                                <li>on + dias de la semana</li>
+                                                <li>on weekend</li>
+                                                <li>on + month + day</li>
+                                            </ul>
+                                       </div>
+                                   </div>
+                                </AccordionContent>
+                            </AccordionItem>
+        
+                            <AccordionItem value="item-6">
+                                <AccordionTrigger>6. Diferencias entre TÚ y TU</AccordionTrigger>
+                                <AccordionContent>
+                                    <h4 className="font-bold">TÚ = PRONOUN</h4>
+                                    <p className="font-mono">PRONOUN = TÚ + VERB</p>
+                                    <div className="mt-2 p-3 bg-muted rounded-lg font-mono text-sm">
+                                        <p>tú eres = you are</p>
+                                        <p>tú estás = you are</p>
+                                        <p>tú vives = you live</p>
+                                    </div>
+        
+                                     <h4 className="font-bold mt-4">TU = POSSESSIVE</h4>
+                                    <p className="font-mono">POSSESSIVE = TU + NOUN</p>
+                                     <div className="mt-2 p-3 bg-muted rounded-lg font-mono text-sm">
+                                        <p>tu casa = your house</p>
+                                        <p>tu celular = your cellphone</p>
+                                        <p>tu perro = your dog</p>
+                                    </div>
+                                </AccordionContent>
+                            </AccordionItem>
+        
+                            <AccordionItem value="item-7">
+                                <AccordionTrigger>7. Explanation: Desde</AccordionTrigger>
+                                <AccordionContent>
+                                    <h4 className="font-bold">Since: Años</h4>
+                                    <p>Es un tiempo específico en el pasado hasta ahora.</p>
+                                    <div className="mt-2 p-3 bg-muted rounded-lg font-mono text-sm">
+                                        <p>yo trabajo en esa empresa desde 2022</p>
+                                        <p>i work in that company since 2022</p>
+                                    </div>
+                                    <h4 className="font-bold mt-4">From .... To /Until: Rango de tiempo</h4>
+                                    <div className="mt-2 p-3 bg-muted rounded-lg font-mono text-sm">
+                                        <p>yo trabajo desde las 8 a.m hasta las 7 p.m</p>
+                                        <p>i work from 8 a.m until 7 p.m</p>
+                                        <br/>
+                                        <p>yo trabajo de 8 a.m a 7 p.m</p>
+                                        <p>i work from 8 a.m to 7 p.m</p>
+                                    </div>
+                                     <h4 className="font-bold mt-4">de: from: Origen de una persona</h4>
+                                    <div className="mt-2 p-3 bg-muted rounded-lg font-mono text-sm">
+                                        <p>i am from Colombia</p>
+                                    </div>
+                                </AccordionContent>
+                            </AccordionItem>
+        
+                            <AccordionItem value="item-8">
+                                <AccordionTrigger>8. Adjectives: -ED vs -ING</AccordionTrigger>
+                                <AccordionContent>
+                                     <h4 className="font-bold">ED = Bored</h4>
+                                    <p>la persona lo siente desde adentro. (sentimientos, emociones)</p>
+                                    <div className="mt-2 p-3 bg-muted rounded-lg font-mono text-sm">
+                                        <p>yo estoy aburrida : i'm bored</p>
+                                        <p>él está aburrido : he's bored</p>
+                                    </div>
+                                     <h4 className="font-bold mt-4">ING = Boring</h4>
+                                    <p>caracteristicas de un sustantivo.</p>
+                                     <div className="mt-2 p-3 bg-muted rounded-lg font-mono text-sm">
+                                        <p>él es aburridor : he's boring</p>
+                                        <br/>
+                                        <p>esa pelicula es aburridora, no me gusta</p>
+                                        <p>that movie is boring, i don't like it</p>
+                                    </div>
+                                </AccordionContent>
+                            </AccordionItem>
+                            
+                            <AccordionItem value="item-9">
+                                <AccordionTrigger>9. Futuro en Ingles (WILL)</AccordionTrigger>
+                                <AccordionContent>
+                                    <div className="mt-2 p-3 bg-muted rounded-lg font-mono text-sm">
+                                        <p>yo llamaré</p>
+                                        <p>i will call you</p>
+                                        <br/>
+                                        <p>yo trabajaré el fin de semana</p>
+                                        <p>i will work on weekend</p>
+                                    </div>
+                                </AccordionContent>
+                            </AccordionItem>
+        
+                        </Accordion>
+                    </CardContent>
+                </Card>
+            );
+        }
 
         return (
             <Card className="shadow-soft rounded-lg border-2 border-brand-purple min-h-[500px]">
@@ -355,7 +516,11 @@ export default function EngA1Class5Page() {
                                                 const Icon = item.status === 'completed' ? CheckCircle : (item.status === 'active' ? item.icon : Lock);
                                                 return (
                                                     <li key={item.key} onClick={() => handleTopicSelect(item.key)}
-                                                        className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors', item.status === 'locked' && !isAdmin ? 'cursor-not-allowed text-muted-foreground/50' : 'cursor-pointer hover:bg-muted', selectedTopic === item.key && 'bg-muted text-primary font-semibold')}>
+                                                        className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer',
+                                                            item.status === 'locked' && !isAdmin ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted',
+                                                            selectedTopic === item.key && 'bg-muted text-primary font-semibold'
+                                                        )}
+                                                    >
                                                         <div className="flex items-center gap-3">
                                                             <Icon className={cn("h-5 w-5", item.status === 'completed' ? 'text-green-500' : (item.status === 'locked' ? 'text-yellow-500' : ''))} />
                                                             <span>{item.name}</span>
