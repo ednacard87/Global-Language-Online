@@ -10,18 +10,6 @@ import { ArrowLeft, ArrowRight, Trophy } from 'lucide-react';
 
 const exercisePrompts = [
     { spanish: "MI CASA ES LA MAS GRANDE DE MI BARRIO", english: ["my house is the biggest in my neighborhood"] },
-    { spanish: "ESTA CASA ES LA![CDATA['use client';
-
-import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { useToast } from '@/hooks/use-toast';
-import { cn } from '@/lib/utils';
-import { ArrowLeft, ArrowRight, Trophy } from 'lucide-react';
-
-const exercisePrompts = [
-    { spanish: "MI CASA ES LA MAS GRANDE DE MI BARRIO", english: ["my house is the biggest in my neighborhood"] },
     { spanish: "ESTA CASA ES LA MAS PEQUEÑA DE SU BARRIO (DE ELLA)", english: ["this house is the smallest in her neighborhood"] },
     { spanish: "SOY EL MAS ALTO DEL SALON DE CLASE", english: ["i am the tallest in the classroom"] },
     { spanish: "PETER ES EL MAS VIEJO DE LA PELICULA", english: ["peter is the oldest in the movie"] },
