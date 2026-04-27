@@ -62,7 +62,9 @@ export default function ComparativosSuperlativosPage() {
     const initialLearningPath = useMemo((): Topic[] => [
         { key: 'vocabulario', name: 'Vocabulario (Adjetivos)', icon: BookOpen, status: 'active' },
         { key: 'gramatica', name: 'Comparativos', icon: GraduationCap, status: 'locked' },
+        { key: 'ejercicio-comparativo', name: 'Ejercicio Comparativo', icon: PenSquare, status: 'locked' },
         { key: 'superlativos', name: 'Superlativos', icon: GraduationCap, status: 'locked' },
+        { key: 'ejercicio-superlativo', name: 'Ejercicio Superlativo', icon: PenSquare, status: 'locked' },
         { key: 'grammar-mixto', name: 'Grammar mixto', icon: GraduationCap, status: 'locked' },
         { key: 'monosilabos', name: 'Monosilabos', icon: Feather, status: 'locked' },
         { key: 'bisilabos', name: 'Bisilabos', icon: Feather, status: 'locked' },
@@ -140,7 +142,7 @@ export default function ComparativosSuperlativosPage() {
             return;
         }
         setSelectedTopic(key);
-        if (!['vocabulario', 'mixtos', 'sopa_letras', 'mixtos2'].includes(key)) {
+        if (!['vocabulario', 'mixtos', 'sopa_letras', 'mixtos2', 'ejercicio-comparativo', 'ejercicio-superlativo'].includes(key)) {
           setTopicToComplete(key);
         }
     };
@@ -364,7 +366,7 @@ export default function ComparativosSuperlativosPage() {
             );
         }
 
-        const isExercise = ['mixtos', 'sopa_letras', 'mixtos2'].includes(selectedTopic);
+        const isExercise = ['mixtos', 'sopa_letras', 'mixtos2', 'ejercicio-comparativo', 'ejercicio-superlativo'].includes(selectedTopic);
         return (
             <Card>
                 <CardHeader><CardTitle>{topic?.name}</CardTitle></CardHeader>
