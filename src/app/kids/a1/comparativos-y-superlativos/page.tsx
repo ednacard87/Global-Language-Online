@@ -51,6 +51,7 @@ export default function ComparativosSuperlativosPage() {
     // State for the new exercise
     const [vocabAnswers, setVocabAnswers] = useState<string[]>(Array(vocabularyData.length).fill(''));
     const [validationStatus, setValidationStatus] = useState<('correct' | 'incorrect' | 'unchecked')[]>(Array(vocabularyData.length).fill('unchecked'));
+    const [canAdvanceFromVocab, setCanAdvanceFromVocab] = useState(false);
 
     const studentDocRef = useMemoFirebase(() => (user ? doc(firestore, 'students', user.uid) : null), [firestore, user]);
     const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{ role?: string; lessonProgress?: any; progress?: any }>(studentDocRef);
@@ -136,14 +137,11 @@ export default function ComparativosSuperlativosPage() {
             return;
         }
         setSelectedTopic(key);
-        // This is a temporary measure.
-        // For non-exercise topics, we can auto-complete them on selection.
         if (!['vocabulario', 'mixtos', 'sopa_letras', 'mixtos2'].includes(key)) {
           setTopicToComplete(key);
         }
     };
 
-    // New handlers for vocabulary exercise
     const handleVocabInputChange = (index: number, value: string) => {
         const newAnswers = [...vocabAnswers];
         newAnswers[index] = value;
@@ -154,27 +152,33 @@ export default function ComparativosSuperlativosPage() {
             newValidation[index] = 'unchecked';
             setValidationStatus(newValidation);
         }
+        setCanAdvanceFromVocab(false);
     };
 
     const handleCheckVocab = () => {
-        let allCorrect = true;
+        let atLeastOneCorrect = false;
         const newValidation = vocabularyData.map((item, index) => {
             const userAnswer = vocabAnswers[index]?.trim().toLowerCase();
             const correctAnswers = item.english.map(e => e.toLowerCase());
-            if (correctAnswers.includes(userAnswer)) {
-                return 'correct';
-            } else {
-                allCorrect = false;
-                return 'incorrect';
+            const isCorrect = correctAnswers.includes(userAnswer);
+            if (isCorrect) {
+                atLeastOneCorrect = true;
             }
+            return isCorrect ? 'correct' : 'incorrect';
         });
         setValidationStatus(newValidation as ('correct' | 'incorrect' | 'unchecked')[]);
 
-        if (allCorrect) {
-            toast({ title: "¡Excelente!", description: "Todas las respuestas son correctas." });
+        if (atLeastOneCorrect) {
+            toast({ title: "¡Bien hecho!", description: "Has acertado al menos una. ¡Tema desbloqueado!" });
             setTopicToComplete('vocabulario');
+            setCanAdvanceFromVocab(true);
         } else {
-            toast({ variant: "destructive", title: "Algunas respuestas incorrectas." });
+            toast({ 
+                variant: "destructive", 
+                title: "Sigue intentando", 
+                description: "Revisa tus respuestas. ¡Necesitas al menos una correcta para continuar!" 
+            });
+            setCanAdvanceFromVocab(false);
         }
     };
 
@@ -213,8 +217,14 @@ export default function ComparativosSuperlativosPage() {
                             ))}
                         </div>
                     </CardContent>
-                    <CardFooter>
+                    <CardFooter className="flex justify-between">
                         <Button onClick={handleCheckVocab}>Verificar Vocabulario</Button>
+                        <Button 
+                            onClick={() => setSelectedTopic('gramatica')} 
+                            disabled={!canAdvanceFromVocab}
+                        >
+                            Avanzar
+                        </Button>
                     </CardFooter>
                 </Card>
             );
