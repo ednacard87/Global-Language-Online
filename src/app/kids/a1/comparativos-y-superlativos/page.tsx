@@ -60,7 +60,9 @@ export default function ComparativosSuperlativosPage() {
     
     const initialLearningPath = useMemo((): Topic[] => [
         { key: 'vocabulario', name: 'Vocabulario (Adjetivos)', icon: BookOpen, status: 'active' },
-        { key: 'gramatica', name: 'Grammar', icon: GraduationCap, status: 'locked' },
+        { key: 'gramatica', name: 'Comparativos', icon: GraduationCap, status: 'locked' },
+        { key: 'superlativos', name: 'Superlativos', icon: GraduationCap, status: 'locked' },
+        { key: 'grammar-mixto', name: 'Grammar mixto', icon: GraduationCap, status: 'locked' },
         { key: 'monosilabos', name: 'Monosilabos', icon: Feather, status: 'locked' },
         { key: 'bisilabos', name: 'Bisilabos', icon: Feather, status: 'locked' },
         { key: 'largos', name: 'Largos', icon: Feather, status: 'locked' },
