@@ -23,6 +23,7 @@ import { IrregularAdjectivesExercise } from '@/components/kids/exercises/irregul
 import { MixedComparativeSuperlativeExercise } from '@/components/kids/exercises/mixed-comparative-superlative-exercise';
 import { useTranslation } from '@/context/language-context';
 import { HolidayTextExercise } from '@/components/kids/exercises/holiday-text-exercise';
+import { MixedExercise3 } from '@/components/kids/exercises/mixed-exercise-3';
 
 
 type Topic = {
@@ -299,7 +300,7 @@ export default function ComparativosSuperlativosPage() {
         { key: 'mixtos', name: 'Mixtos', icon: PenSquare, status: 'locked' },
         { key: 'sopa_letras', name: 'Sopa de Letras (Adjetivos)', icon: Gamepad2, status: 'locked' },
         { key: 'mixtos2', name: 'Mixtos 2', icon: PenSquare, status: 'locked' },
-        { key: 'adjetivos', name: 'Adjetivos', icon: FileText, status: 'locked' },
+        { key: 'mixtos3', name: 'Mixtos 3', icon: PenSquare, status: 'locked' },
     ], []);
 
     useEffect(() => {
@@ -368,7 +369,7 @@ export default function ComparativosSuperlativosPage() {
             return;
         }
         setSelectedTopic(key);
-        const exerciseKeys = ['vocabulario', 'mixtos', 'sopa_letras', 'mixtos2', 'ejercicio-comparativo', 'ejercicio-superlativo', 'ejercicio-monosilabos', 'ejercicio-bisilabos', 'ejercicio-largos', 'ejercicio-irregulares'];
+        const exerciseKeys = ['vocabulario', 'mixtos', 'sopa_letras', 'mixtos2', 'ejercicio-comparativo', 'ejercicio-superlativo', 'ejercicio-monosilabos', 'ejercicio-bisilabos', 'ejercicio-largos', 'ejercicio-irregulares', 'mixtos3'];
         if (!exerciseKeys.includes(key)) {
           setTopicToComplete(key);
         }
@@ -614,19 +615,9 @@ export default function ComparativosSuperlativosPage() {
                 return <WordSearchGame onComplete={() => setTopicToComplete('sopa_letras')} />;
             case 'mixtos2':
                 return <HolidayTextExercise onComplete={() => setTopicToComplete('mixtos2')} />;
+            case 'mixtos3':
+                return <MixedExercise3 onComplete={() => setTopicToComplete('mixtos3')} />;
             default:
-                const isExercise = ['adjetivos'].includes(selectedTopic);
-                if (isExercise) {
-                    return (
-                        <Card>
-                            <CardHeader><CardTitle>{topic?.name}</CardTitle></CardHeader>
-                            <CardContent>
-                                <p>Contenido para {topic?.name} estará disponible pronto.</p>
-                                <Button className="mt-4" onClick={() => setTopicToComplete(selectedTopic)}>Completar Ejercicio</Button>
-                            </CardContent>
-                        </Card>
-                    );
-                }
                 return (
                     <Card>
                         <CardHeader><CardTitle>{topic?.name}</CardTitle></CardHeader>
