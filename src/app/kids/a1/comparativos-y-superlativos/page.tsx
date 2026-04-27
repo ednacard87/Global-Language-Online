@@ -45,31 +45,31 @@ const vocabularyData = [
 ];
 
 const monosyllabicData: SyllableExerciseData = [
-    { spanish: 'PEQUEÑO', answers: { adjective: 'small', comparative: 'smaller', superlative: 'the smallest' } },
-    { spanish: 'ALTO', answers: { adjective: 'tall', comparative: 'taller', superlative: 'the tallest' } },
-    { spanish: 'JOVEN', answers: { adjective: 'young', comparative: 'younger', superlative: 'the youngest' } },
-    { spanish: 'VIEJO', answers: { adjective: 'old', comparative: 'older', superlative: 'the oldest' } },
-    { spanish: 'NUEVO', answers: { adjective: 'new', comparative: 'newer', superlative: 'the newest' } },
-    { spanish: 'LARGO', answers: { adjective: 'long', comparative: 'longer', superlative: 'the longest' } },
-    { spanish: 'CORTO, BAJO', answers: { adjective: 'short', comparative: 'shorter', superlative: 'the shortest' } },
-    { spanish: 'GORDO', answers: { adjective: 'fat', comparative: 'fatter', superlative: 'the fattest' } },
-    { spanish: 'GRANDE', answers: { adjective: 'big', comparative: 'bigger', superlative: 'the biggest' } },
-    { spanish: 'CALIENTE', answers: { adjective: 'hot', comparative: 'hotter', superlative: 'the hottest' } },
-    { spanish: 'ALTO', answers: { adjective: 'high', comparative: 'higher', superlative: 'the highest' } },
-    { spanish: 'RAPIDO', answers: { adjective: 'fast', comparative: 'faster', superlative: 'the fastest' } },
-    { spanish: 'SECO', answers: { adjective: 'dry', comparative: 'drier', superlative: 'the driest' } },
-    { spanish: 'MOJADO', answers: { adjective: 'wet', comparative: 'wetter', superlative: 'the wettest' } },
-    { spanish: 'TRISTE', answers: { adjective: 'sad', comparative: 'sadder', superlative: 'the saddest' } },
-    { spanish: 'CALIDO', answers: { adjective: 'warm', comparative: 'warmer', superlative: 'the warmest' } },
+    { spanish: 'PEQUEÑO', answers: { adjective: 'small', comparative: 'smaller than', superlative: 'the smallest' } },
+    { spanish: 'ALTO', answers: { adjective: 'tall', comparative: 'taller than', superlative: 'the tallest' } },
+    { spanish: 'JOVEN', answers: { adjective: 'young', comparative: 'younger than', superlative: 'the youngest' } },
+    { spanish: 'VIEJO', answers: { adjective: 'old', comparative: 'older than', superlative: 'the oldest' } },
+    { spanish: 'NUEVO', answers: { adjective: 'new', comparative: 'newer than', superlative: 'the newest' } },
+    { spanish: 'LARGO', answers: { adjective: 'long', comparative: 'longer than', superlative: 'the longest' } },
+    { spanish: 'CORTO, BAJO', answers: { adjective: 'short', comparative: 'shorter than', superlative: 'the shortest' } },
+    { spanish: 'GORDO', answers: { adjective: 'fat', comparative: 'fatter than', superlative: 'the fattest' } },
+    { spanish: 'GRANDE', answers: { adjective: 'big', comparative: 'bigger than', superlative: 'the biggest' } },
+    { spanish: 'CALIENTE', answers: { adjective: 'hot', comparative: 'hotter than', superlative: 'the hottest' } },
+    { spanish: 'ALTO', answers: { adjective: 'high', comparative: 'higher than', superlative: 'the highest' } },
+    { spanish: 'RAPIDO', answers: { adjective: 'fast', comparative: 'faster than', superlative: 'the fastest' } },
+    { spanish: 'SECO', answers: { adjective: 'dry', comparative: 'drier than', superlative: 'the driest' } },
+    { spanish: 'MOJADO', answers: { adjective: 'wet', comparative: 'wetter than', superlative: 'the wettest' } },
+    { spanish: 'TRISTE', answers: { adjective: 'sad', comparative: 'sadder than', superlative: 'the saddest' } },
+    { spanish: 'CALIDO', answers: { adjective: 'warm', comparative: 'warmer than', superlative: 'the warmest' } },
 ];
 
 const bisyllabicData: SyllableExerciseData = [
-    { spanish: 'FACIL', answers: { adjective: 'easy', comparative: 'easier', superlative: 'the easiest' } },
-    { spanish: 'FELIZ', answers: { adjective: 'happy', comparative: 'happier', superlative: 'the happiest' } },
-    { spanish: 'LOCO', answers: { adjective: 'crazy', comparative: 'crazier', superlative: 'the craziest' } },
-    { spanish: 'PESADO', answers: { adjective: 'heavy', comparative: 'heavier', superlative: 'the heaviest' } },
-    { spanish: 'TIERNO', answers: { adjective: 'tender', comparative: 'tenderer', superlative: 'the tenderest' } },
-    { spanish: 'ESTRECHO', answers: { adjective: 'narrow', comparative: 'narrower', superlative: 'the narrowest' } },
+    { spanish: 'FACIL', answers: { adjective: 'easy', comparative: 'easier than', superlative: 'the easiest' } },
+    { spanish: 'FELIZ', answers: { adjective: 'happy', comparative: 'happier than', superlative: 'the happiest' } },
+    { spanish: 'LOCO', answers: { adjective: 'crazy', comparative: 'crazier than', superlative: 'the craziest' } },
+    { spanish: 'PESADO', answers: { adjective: 'heavy', comparative: 'heavier than', superlative: 'the heaviest' } },
+    { spanish: 'TIERNO', answers: { adjective: 'tender', comparative: 'tenderer than', superlative: 'the tenderest' } },
+    { spanish: 'ESTRECHO', answers: { adjective: 'narrow', comparative: 'narrower than', superlative: 'the narrowest' } },
 ];
 
 const longAdjectivesData: SyllableExerciseData = [
@@ -86,6 +86,15 @@ const longAdjectivesData: SyllableExerciseData = [
     { spanish: 'HUMILDE', answers: { adjective: 'humble', comparative: 'more humble than', superlative: 'the most humble' } },
     { spanish: 'EDUCADO', answers: { adjective: 'polite', comparative: 'more polite than', superlative: 'the most polite' } },
     { spanish: 'ABURRIDO', answers: { adjective: 'boring', comparative: 'more boring than', superlative: 'the most boring' } },
+];
+
+const irregularAdjectivesData: SyllableExerciseData = [
+    { spanish: 'BUENO', answers: { adjective: 'good', comparative: 'better than', superlative: 'the best' } },
+    { spanish: 'BIEN', answers: { adjective: 'well', comparative: 'better than', superlative: 'the best' } },
+    { spanish: 'MALO', answers: { adjective: 'bad', comparative: 'worse than', superlative: 'the worst' } },
+    { spanish: 'MUCHO', answers: { adjective: 'much/many', comparative: 'more than', superlative: 'the most' } },
+    { spanish: 'POCO', answers: { adjective: 'little', comparative: 'less than', superlative: 'the least' } },
+    { spanish: 'LEJOS', answers: { adjective: 'far', comparative: 'farther/further than', superlative: 'the farthest/the furthest' } },
 ];
 
 
@@ -191,7 +200,8 @@ export default function ComparativosSuperlativosPage() {
             return;
         }
         setSelectedTopic(key);
-        if (!['vocabulario', 'mixtos', 'sopa_letras', 'mixtos2', 'ejercicio-comparativo', 'ejercicio-superlativo', 'monosilabos', 'bisilabos', 'largos'].includes(key)) {
+        const exerciseKeys = ['vocabulario', 'mixtos', 'sopa_letras', 'mixtos2', 'ejercicio-comparativo', 'ejercicio-superlativo', 'monosilabos', 'bisilabos', 'largos', 'irregulares'];
+        if (!exerciseKeys.includes(key)) {
           setTopicToComplete(key);
         }
     };
@@ -466,6 +476,22 @@ export default function ComparativosSuperlativosPage() {
                         adjective: "ADJETIVOS LARGOS.",
                         comparative: "COMPARATIVO (MORE +ADJETIVO+ THAN )",
                         superlative: "SUPERLATIVO (THE MOST +ADJETIVO)",
+                    }}
+                />
+            );
+        }
+        
+        if (selectedTopic === 'irregulares') {
+            return (
+                <SyllableExercise
+                    data={irregularAdjectivesData}
+                    title="Adjetivos Irregulares"
+                    description="Completa la tabla con las formas correctas de los adjetivos irregulares."
+                    onComplete={() => setTopicToComplete('irregulares')}
+                    columnHeaders={{
+                        adjective: "ADJETIVOS IRREGULARES.",
+                        comparative: "COMPARATIVO",
+                        superlative: "SUPERLATIVO",
                     }}
                 />
             );
