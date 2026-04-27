@@ -165,7 +165,7 @@ export default function ComparativosSuperlativosPage() {
             return;
         }
         setSelectedTopic(key);
-        if (!['vocabulario', 'mixtos', 'sopa_letras', 'mixtos2', 'ejercicio-comparativo', 'ejercicio-superlativo', 'monosilabos'].includes(key)) {
+        if (!['vocabulario', 'mixtos', 'sopa_letras', 'mixtos2', 'ejercicio-comparativo', 'ejercicio-superlativo', 'monosilabos', 'bisilabos'].includes(key)) {
           setTopicToComplete(key);
         }
     };
@@ -363,7 +363,7 @@ export default function ComparativosSuperlativosPage() {
                         <CardTitle>Grammar Mixto: Reglas de Ortografía</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-6 text-lg">
-                        <p className='text-base text-muted-foreground'>PARA LA FORMACION DE LOS GRADOS COMPARATIVOS Y SUPERLATIVO DE LOS ADJETIVOS ‘’CORTOS’’, DEBEN TENERSE EN CUENTA LAS SIGUIENTES CONSIDERACIONES:</p>
+                        <p className='text-base text-muted-foreground'>PARA LA FORMACION DE LOS GRADOS COMPARATIVOS Y SUPERLATIVO  DE LOS ADJETIVOS  ‘’CORTOS’’, DEBEN TENERSE EN CUENTA LAS SIGUIENTES CONSIDERACIONES:</p>
                         <ol className="list-decimal list-inside space-y-4">
                             <li>
                                 <span className='font-semibold'>LOS QUE TERMINAN EN ‘’-E’’ SOLO AÑADEN ‘’-R’’ Y ‘’-ST’’.</span>
@@ -372,13 +372,13 @@ export default function ComparativosSuperlativosPage() {
                                 </div>
                             </li>
                              <li>
-                                <span className='font-semibold'>LOS QUE TERMINAN EN ‘’-Y’’ PRECEDIDA DE CONSONANTE, CAMBIAN LA ‘’Y’’ POR ‘’I’’</span>
+                                <span className='font-semibold'>LOS QUE TERMINAN EN ‘’-Y’’ PRECEDIDA DE CONSONANTE, CAMBIAN LA ‘’Y’’ POR ‘’I’’-</span>
                                 <div className="mt-2 space-y-1 font-mono bg-muted p-4 rounded-lg text-base">
                                     <p>EASY - EASIER – THE EASIEST</p>
                                 </div>
                             </li>
                              <li>
-                                <span className='font-semibold'>LOS QUE TERMINAN EN ‘’-Y’’ PRECEDIDA POR VOCAL, MANTIENEN LA REGLA GENERAL</span>
+                                <span className='font-semibold'>LOS QUE TERMINAN EN ‘’-Y’’ PRECEDIDA POR VOCAL, MANTIENEN LA REGLA GENERAL-</span>
                                  <div className="mt-2 space-y-1 font-mono bg-muted p-4 rounded-lg text-base">
                                     <p>GRAY - GRAYER – THE GRAYEST</p>
                                 </div>
@@ -404,6 +404,17 @@ export default function ComparativosSuperlativosPage() {
                     title="Monosílabos"
                     description="Completa la tabla con las formas correctas de los adjetivos monosilábicos."
                     onComplete={() => setTopicToComplete('monosilabos')}
+                />
+            );
+        }
+
+        if (selectedTopic === 'bisilabos') {
+            return (
+                <SyllableExercise
+                    data={monosyllabicData}
+                    title="Bisílabos"
+                    description="Completa la tabla con las formas correctas de los adjetivos bisilábicos."
+                    onComplete={() => setTopicToComplete('bisilabos')}
                 />
             );
         }
