@@ -18,6 +18,7 @@ import { SuperlativeExercise } from '@/components/kids/exercises/superlative-exe
 import { SyllableExercise, type SyllableExerciseData } from '@/components/kids/exercises/syllable-exercise';
 import { MonosyllabicExercise } from '@/components/kids/exercises/monosyllabic-exercise';
 import { BisyllabicExercise } from '@/components/kids/exercises/bisyllabic-exercise';
+import { LongAdjectivesExercise } from '@/components/kids/exercises/long-adjectives-exercise';
 
 
 type Topic = {
@@ -440,10 +441,12 @@ export default function ComparativosSuperlativosPage() {
                 return <BisyllabicExercise onComplete={() => setTopicToComplete('ejercicio-bisilabos')} />;
             case 'largos':
                 return <SyllableExercise data={longAdjectivesData} title="Adjetivos Largos" description="Completa la tabla con las formas correctas de los adjetivos largos." onComplete={() => setTopicToComplete('largos')} columnHeaders={{ adjective: 'ADJETIVOS LARGOS.', comparative: 'COMPARATIVO (MORE + ADJETIVO + THAN)', superlative: 'SUPERLATIVO (THE MOST + ADJETIVO)' }} />;
+            case 'ejercicio-largos':
+                return <LongAdjectivesExercise onComplete={() => setTopicToComplete('ejercicio-largos')} />;
             case 'irregulares':
                 return <SyllableExercise data={irregularAdjectivesData} title="Adjetivos Irregulares" description="Completa la tabla con las formas correctas de los adjetivos irregulares." onComplete={() => setTopicToComplete('irregulares')} columnHeaders={{ adjective: 'ADJETIVOS IRREGULARES.', comparative: 'COMPARATIVO', superlative: 'SUPERLATIVO' }} />;
             default:
-                const isExercise = ['mixtos', 'sopa_letras', 'mixtos2', 'ejercicio-largos', 'ejercicio-irregulares'].includes(selectedTopic);
+                const isExercise = ['mixtos', 'sopa_letras', 'mixtos2', 'ejercicio-irregulares'].includes(selectedTopic);
                 if (isExercise) {
                     return (
                         <Card>
