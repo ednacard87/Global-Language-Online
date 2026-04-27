@@ -22,6 +22,7 @@ import { LongAdjectivesExercise } from '@/components/kids/exercises/long-adjecti
 import { IrregularAdjectivesExercise } from '@/components/kids/exercises/irregular-adjectives-exercise';
 import { MixedComparativeSuperlativeExercise } from '@/components/kids/exercises/mixed-comparative-superlative-exercise';
 import { useTranslation } from '@/context/language-context';
+import { HolidayTextExercise } from '@/components/kids/exercises/holiday-text-exercise';
 
 
 type Topic = {
@@ -611,8 +612,10 @@ export default function ComparativosSuperlativosPage() {
                 return <MixedComparativeSuperlativeExercise onComplete={() => setTopicToComplete('mixtos')} />;
             case 'sopa_letras':
                 return <WordSearchGame onComplete={() => setTopicToComplete('sopa_letras')} />;
+            case 'mixtos2':
+                return <HolidayTextExercise onComplete={() => setTopicToComplete('mixtos2')} />;
             default:
-                const isExercise = ['mixtos2'].includes(selectedTopic);
+                const isExercise = ['adjetivos'].includes(selectedTopic);
                 if (isExercise) {
                     return (
                         <Card>
