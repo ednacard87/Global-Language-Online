@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { BookOpen, PenSquare, Lock, CheckCircle, Info } from 'lucide-react';
+import { BookOpen, PenSquare, Lock, Info, CheckCircle } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
@@ -191,7 +191,7 @@ export default function EngA1Class5Page() {
                             <AccordionItem value="verbos">
                                 <AccordionTrigger className="text-lg font-semibold">Verbos</AccordionTrigger>
                                 <AccordionContent>
-                                    <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-base">
+                                    <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-lg">
                                         <div className="font-bold p-3 bg-muted rounded-lg">Español</div>
                                         <div className="font-bold p-3 bg-muted rounded-lg">Inglés</div>
                                         {vocabularyData.verbos.map((word, index) => (
@@ -206,7 +206,7 @@ export default function EngA1Class5Page() {
                             <AccordionItem value="adjetivos">
                                 <AccordionTrigger className="text-lg font-semibold">Adjetivos Básicos</AccordionTrigger>
                                 <AccordionContent>
-                                    <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-base">
+                                    <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-lg">
                                         <div className="font-bold p-3 bg-muted rounded-lg">Español</div>
                                         <div className="font-bold p-3 bg-muted rounded-lg">Inglés</div>
                                         {vocabularyData.adjetivos.map((word, index) => (
