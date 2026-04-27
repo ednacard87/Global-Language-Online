@@ -148,6 +148,7 @@ export default function ComparativosSuperlativosPage() {
                         <h1 className="text-4xl font-bold dark:text-primary">Comparativos y Superlativos</h1>
                     </div>
                     <div className="grid gap-8 md:grid-cols-12">
+                        <div className="md:col-span-8">{renderContent()}</div>
                         <div className="md:col-span-4">
                             <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple">
                                 <CardHeader><CardTitle>Ruta de Aprendizaje</CardTitle></CardHeader>
@@ -176,7 +177,6 @@ export default function ComparativosSuperlativosPage() {
                                 </CardContent>
                             </Card>
                         </div>
-                        <div className="md:col-span-8">{renderContent()}</div>
                     </div>
                 </div>
             </main>
