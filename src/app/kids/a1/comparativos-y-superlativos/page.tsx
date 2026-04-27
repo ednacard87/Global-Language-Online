@@ -323,6 +323,47 @@ export default function ComparativosSuperlativosPage() {
             );
         }
 
+        if (selectedTopic === 'grammar-mixto') {
+            return (
+                <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                    <CardHeader>
+                        <CardTitle>Grammar Mixto: Reglas de Ortografía</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-6 text-lg">
+                        <p className='text-base text-muted-foreground'>PARA LA FORMACION DE LOS GRADOS COMPARATIVOS Y SUPERLATIVO DE LOS ADJETIVOS ‘’CORTOS’’, DEBEN TENERSE EN CUENTA LAS SIGUIENTES CONSIDERACIONES:</p>
+                        <ol className="list-decimal list-inside space-y-4">
+                            <li>
+                                <span className='font-semibold'>LOS QUE TERMINAN EN ‘’-E’’ SOLO AÑADEN ‘’-R’’ Y ‘’-ST’’</span>
+                                <div className="mt-2 space-y-1 font-mono bg-muted p-4 rounded-lg text-base">
+                                    <p>NICE - NICER – THE NICEST</p>
+                                </div>
+                            </li>
+                             <li>
+                                <span className='font-semibold'>LOS QUE TERMINAN EN ‘’-Y’’ PRECEDIDA DE CONSONANTE, CAMBIAN LA ‘’Y’’ POR ‘’I’’</span>
+                                <div className="mt-2 space-y-1 font-mono bg-muted p-4 rounded-lg text-base">
+                                    <p>EASY - EASIER – THE EASIEST</p>
+                                </div>
+                            </li>
+                             <li>
+                                <span className='font-semibold'>LOS QUE TERMINAN EN ‘’-Y’’ PRECEDIDA POR VOCAL, MANTIENEN LA REGLA GENERAL</span>
+                                 <div className="mt-2 space-y-1 font-mono bg-muted p-4 rounded-lg text-base">
+                                    <p>GRAY - GRAYER – THE GRAYEST</p>
+                                </div>
+                            </li>
+                             <li>
+                                <span className='font-semibold'>LOS TERMINADOS EN UNA SOLA CONSONANTE PRECEDIDA DE VOCAL, DOBLAN LA CONSONANTE ANTES DE LAS TERMINACIONES</span>
+                                <div className="mt-2 space-y-1 font-mono bg-muted p-4 rounded-lg text-base">
+                                    <p>BIG - BIGGER – THE BIGGEST</p>
+                                    <p>HOT - HOTTER – THE HOTTEST</p>
+                                </div>
+                                <p className="text-sm text-muted-foreground italic mt-2">– excepción: new</p>
+                            </li>
+                        </ol>
+                    </CardContent>
+                </Card>
+            );
+        }
+
         const isExercise = ['mixtos', 'sopa_letras', 'mixtos2'].includes(selectedTopic);
         return (
             <Card>
