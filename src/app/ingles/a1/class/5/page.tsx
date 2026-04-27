@@ -14,6 +14,7 @@ import { doc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Input } from '@/components/ui/input';
+import { ErrorCorrectionExercise, type ErrorCorrectionPrompt } from '@/components/kids/exercises/error-correction-exercise';
 
 type Topic = {
   key: string;
@@ -60,6 +61,24 @@ const vocabularyData = {
         { spanish: 'OCUPADO', english: 'BUSY' },
     ]
 };
+
+const exercise1Data: ErrorCorrectionPrompt[] = [
+    { incorrect: "SHE DONT ANSWER MY QUESTION", translationHint: "(ELLA NO CONTESTA MIS PREGUNTAS)", correctAnswers: ["she does not answer my questions", "she doesn't answer my questions"] },
+    { incorrect: "WE DONT GOES TO SCHOL THE SONDAYS.", translationHint: "", correctAnswers: ["we do not go to school on sundays", "we don't go to school on sundays"] },
+    { incorrect: "DOIS JOSEPH LIKES MUVIS?", translationHint: "(¿A JOSEPH LE GUSTAN LAS PELÍCULAS?)", correctAnswers: ["does joseph like movies?"] },
+    { incorrect: "I DONT WORKS THERE", translationHint: "( YO NO TRABAJO ALLA)", correctAnswers: ["i do not work there", "i don't work there"] },
+    { incorrect: "SHI ARE NO ROSE", translationHint: "( ELLA NO ES LUISA)", correctAnswers: ["she is not rose", "she isn't rose"] },
+    { incorrect: "DOES SHE ARE YUR MOTHER?", translationHint: "(ELLA ES TU MAMA?)", correctAnswers: ["is she your mother?"] },
+    { incorrect: "DO YOU TRAVELS EVERY WINTAR OR SOMER?", translationHint: "(¿VIAJAS CADA VERANO?)", correctAnswers: ["do you travel every winter or summer?"] },
+    { incorrect: "DOES MARCO AND MARIA GOES THERE?", translationHint: "(¿MARCO Y MARIA VAN ALLA?)", correctAnswers: ["do marco and maria go there?"] },
+    { incorrect: "MARY’S PLEY EVERY DEY", translationHint: "", correctAnswers: ["mary plays every day"] },
+    { incorrect: "WHAT DO SHE DOES?", translationHint: "(QUE HACE ELLA?)", correctAnswers: ["what does she do?"] },
+    { incorrect: "WHERE DOES HE GOUS?", translationHint: "(¿DONDE VA EL?)", correctAnswers: ["where does he go?"] },
+    { incorrect: "WHY DOES YOU WORKS IN THE NIGTH?", translationHint: "", correctAnswers: ["why do you work at night?"] },
+    { incorrect: "SHE STUDYS ITALIANO END ESPANISH.", translationHint: "(ELLA ESTUDIA ITALIANO Y ESPAÑOL)", correctAnswers: ["she studies italian and spanish"] },
+    { incorrect: "THEY DON’T ARE OUR TEACHERS", translationHint: "(ELLOS NO SON NUESTROS PROFESORES)", correctAnswers: ["they are not our teachers", "they aren't our teachers"] },
+    { incorrect: "DO YOU WORK ARE IN JON COMPANY?", translationHint: "(¿TRABAJAS EN LA EMPRESA DE JON?)", correctAnswers: ["do you work in jon's company?"] }
+];
 
 export default function EngA1Class5Page() {
     const { t } = useTranslation();
@@ -211,11 +230,11 @@ export default function EngA1Class5Page() {
 
     const handleCheckVocab = () => {
         let atLeastOneCorrect = false;
-        const newValidation: { [key: string]: ('correct' | 'incorrect' | 'unchecked')[] } = {};
+        const newValidationStatus: { [key: string]: ('correct' | 'incorrect' | 'unchecked')[] } = {};
 
         Object.keys(vocabularyData).forEach(category => {
             const cat = category as keyof typeof vocabularyData;
-            newValidation[cat] = vocabularyData[cat].map((item, index) => {
+            newValidationStatus[cat] = vocabularyData[cat].map((item, index) => {
                 const userAnswer = (vocabAnswers[cat]?.[index] || '').trim().toLowerCase();
                 const isCorrect = item.english.toLowerCase() === userAnswer;
                 if (isCorrect) {
@@ -225,7 +244,7 @@ export default function EngA1Class5Page() {
             });
         });
 
-        setValidationStatus(newValidation);
+        setValidationStatus(newValidationStatus);
 
         if (atLeastOneCorrect) {
             toast({ title: "¡Bien hecho!", description: "Has acertado al menos una. ¡Ya puedes avanzar!" });
@@ -475,6 +494,16 @@ export default function EngA1Class5Page() {
                         </Accordion>
                     </CardContent>
                 </Card>
+            );
+        }
+        
+        if (selectedTopic === 'ejercicio-1') {
+            return (
+                <ErrorCorrectionExercise
+                    exerciseData={exercise1Data}
+                    onComplete={() => handleTopicComplete('ejercicio-1')}
+                    title="Ejercicio 1: Encuentra el error"
+                />
             );
         }
 
