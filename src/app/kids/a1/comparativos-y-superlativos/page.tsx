@@ -19,6 +19,7 @@ import { SyllableExercise, type SyllableExerciseData } from '@/components/kids/e
 import { MonosyllabicExercise } from '@/components/kids/exercises/monosyllabic-exercise';
 import { BisyllabicExercise } from '@/components/kids/exercises/bisyllabic-exercise';
 import { LongAdjectivesExercise } from '@/components/kids/exercises/long-adjectives-exercise';
+import { IrregularAdjectivesExercise } from '@/components/kids/exercises/irregular-adjectives-exercise';
 
 
 type Topic = {
@@ -112,7 +113,7 @@ export default function ComparativosSuperlativosPage() {
     // State for the new exercise
     const [vocabAnswers, setVocabAnswers] = useState<string[]>(Array(vocabularyData.length).fill(''));
     const [validationStatus, setValidationStatus] = useState<('correct' | 'incorrect' | 'unchecked')[]>(Array(vocabularyData.length).fill('unchecked'));
-    const [canAdvanceFromVocab, setCanAdvanceFromVocab] = useState(false);
+    const [canAdvance, setCanAdvance] = useState(false);
 
     const studentDocRef = useMemoFirebase(() => (user ? doc(firestore, 'students', user.uid) : null), [firestore, user]);
     const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{ role?: string; lessonProgress?: any; progress?: any }>(studentDocRef);
@@ -206,7 +207,7 @@ export default function ComparativosSuperlativosPage() {
             return;
         }
         setSelectedTopic(key);
-        const exerciseKeys = ['vocabulario', 'mixtos', 'sopa_letras', 'mixtos2', 'ejercicio-comparativo', 'ejercicio-superlativo', 'monosilabos', 'bisilabos', 'largos', 'irregulares', 'ejercicio-monosilabos', 'ejercicio-bisilabos', 'ejercicio-largos', 'ejercicio-irregulares'];
+        const exerciseKeys = ['vocabulario', 'mixtos', 'sopa_letras', 'mixtos2', 'ejercicio-comparativo', 'ejercicio-superlativo', 'ejercicio-monosilabos', 'ejercicio-bisilabos', 'ejercicio-largos', 'ejercicio-irregulares'];
         if (!exerciseKeys.includes(key)) {
           setTopicToComplete(key);
         }
@@ -222,7 +223,7 @@ export default function ComparativosSuperlativosPage() {
             newValidation[index] = 'unchecked';
             setValidationStatus(newValidation);
         }
-        setCanAdvanceFromVocab(false);
+        setCanAdvance(false);
     };
 
     const handleCheckVocab = () => {
@@ -240,14 +241,14 @@ export default function ComparativosSuperlativosPage() {
 
         if (atLeastOneCorrect) {
             toast({ title: "¡Bien hecho!", description: "Has acertado al menos una. ¡Ya puedes avanzar!" });
-            setCanAdvanceFromVocab(true);
+            setCanAdvance(true);
         } else {
             toast({ 
                 variant: "destructive", 
                 title: "Sigue intentando", 
                 description: "Revisa tus respuestas. ¡Necesitas al menos una correcta para continuar!" 
             });
-            setCanAdvanceFromVocab(false);
+            setCanAdvance(false);
         }
     };
 
@@ -294,7 +295,7 @@ export default function ComparativosSuperlativosPage() {
                                     handleTopicComplete('vocabulario');
                                     setSelectedTopic('comparativos');
                                 }} 
-                                disabled={!canAdvanceFromVocab}
+                                disabled={!canAdvance}
                             >
                                 Avanzar
                             </Button>
@@ -445,8 +446,10 @@ export default function ComparativosSuperlativosPage() {
                 return <LongAdjectivesExercise onComplete={() => setTopicToComplete('ejercicio-largos')} />;
             case 'irregulares':
                 return <SyllableExercise data={irregularAdjectivesData} title="Adjetivos Irregulares" description="Completa la tabla con las formas correctas de los adjetivos irregulares." onComplete={() => setTopicToComplete('irregulares')} columnHeaders={{ adjective: 'ADJETIVOS IRREGULARES.', comparative: 'COMPARATIVO', superlative: 'SUPERLATIVO' }} />;
+            case 'ejercicio-irregulares':
+                return <IrregularAdjectivesExercise onComplete={() => setTopicToComplete('ejercicio-irregulares')} />;
             default:
-                const isExercise = ['mixtos', 'sopa_letras', 'mixtos2', 'ejercicio-irregulares'].includes(selectedTopic);
+                const isExercise = ['mixtos', 'sopa_letras', 'mixtos2'].includes(selectedTopic);
                 if (isExercise) {
                     return (
                         <Card>
