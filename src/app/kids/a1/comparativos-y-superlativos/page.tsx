@@ -15,6 +15,8 @@ import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { ComparativeExercise } from '@/components/kids/exercises/comparative-exercise';
 import { SuperlativeExercise } from '@/components/kids/exercises/superlative-exercise';
+import { SyllableExercise, type SyllableExerciseData } from '@/components/kids/exercises/syllable-exercise';
+
 
 type Topic = {
   key: string;
@@ -42,6 +44,25 @@ const vocabularyData = [
     { spanish: 'MOJADO', english: ['wet'] },
 ];
 
+const monosyllabicData: SyllableExerciseData = [
+    { spanish: 'PEQUEÑO', answers: { adjective: 'small', comparative: 'smaller', superlative: 'the smallest' } },
+    { spanish: 'ALTO', answers: { adjective: 'tall', comparative: 'taller', superlative: 'the tallest' } },
+    { spanish: 'JOVEN', answers: { adjective: 'young', comparative: 'younger', superlative: 'the youngest' } },
+    { spanish: 'VIEJO', answers: { adjective: 'old', comparative: 'older', superlative: 'the oldest' } },
+    { spanish: 'NUEVO', answers: { adjective: 'new', comparative: 'newer', superlative: 'the newest' } },
+    { spanish: 'LARGO', answers: { adjective: 'long', comparative: 'longer', superlative: 'the longest' } },
+    { spanish: 'CORTO, BAJO', answers: { adjective: 'short', comparative: 'shorter', superlative: 'the shortest' } },
+    { spanish: 'GORDO', answers: { adjective: 'fat', comparative: 'fatter', superlative: 'the fattest' } },
+    { spanish: 'GRANDE', answers: { adjective: 'big', comparative: 'bigger', superlative: 'the biggest' } },
+    { spanish: 'CALIENTE', answers: { adjective: 'hot', comparative: 'hotter', superlative: 'the hottest' } },
+    { spanish: 'ALTO', answers: { adjective: 'high', comparative: 'higher', superlative: 'the highest' } },
+    { spanish: 'RAPIDO', answers: { adjective: 'fast', comparative: 'faster', superlative: 'the fastest' } },
+    { spanish: 'SECO', answers: { adjective: 'dry', comparative: 'drier', superlative: 'the driest' } },
+    { spanish: 'MOJADO', answers: { adjective: 'wet', comparative: 'wetter', superlative: 'the wettest' } },
+    { spanish: 'TRISTE', answers: { adjective: 'sad', comparative: 'sadder', superlative: 'the saddest' } },
+    { spanish: 'CALIDO', answers: { adjective: 'warm', comparative: 'warmer', superlative: 'the warmest' } },
+];
+
 export default function ComparativosSuperlativosPage() {
     const { toast } = useToast();
     const { user, isUserLoading } = useUser();
@@ -63,7 +84,7 @@ export default function ComparativosSuperlativosPage() {
     
     const initialLearningPath = useMemo((): Topic[] => [
         { key: 'vocabulario', name: 'Vocabulario (Adjetivos)', icon: BookOpen, status: 'active' },
-        { key: 'gramatica', name: 'Comparativos', icon: GraduationCap, status: 'locked' },
+        { key: 'comparativos', name: 'Comparativos', icon: GraduationCap, status: 'locked' },
         { key: 'ejercicio-comparativo', name: 'Ejercicio Comparativo', icon: PenSquare, status: 'locked' },
         { key: 'superlativos', name: 'Superlativos', icon: GraduationCap, status: 'locked' },
         { key: 'ejercicio-superlativo', name: 'Ejercicio Superlativo', icon: PenSquare, status: 'locked' },
@@ -144,7 +165,7 @@ export default function ComparativosSuperlativosPage() {
             return;
         }
         setSelectedTopic(key);
-        if (!['vocabulario', 'mixtos', 'sopa_letras', 'mixtos2', 'ejercicio-comparativo', 'ejercicio-superlativo'].includes(key)) {
+        if (!['vocabulario', 'mixtos', 'sopa_letras', 'mixtos2', 'ejercicio-comparativo', 'ejercicio-superlativo', 'monosilabos'].includes(key)) {
           setTopicToComplete(key);
         }
     };
@@ -227,7 +248,7 @@ export default function ComparativosSuperlativosPage() {
                     <CardFooter className="flex justify-between">
                         <Button onClick={handleCheckVocab}>Verificar Vocabulario</Button>
                         <Button 
-                            onClick={() => setSelectedTopic('gramatica')} 
+                            onClick={() => setSelectedTopic('comparativos')} 
                             disabled={!canAdvanceFromVocab}
                         >
                             Avanzar
@@ -237,7 +258,7 @@ export default function ComparativosSuperlativosPage() {
             );
         }
 
-        if (selectedTopic === 'gramatica') {
+        if (selectedTopic === 'comparativos') {
             return (
                 <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
                     <CardHeader>
@@ -245,7 +266,7 @@ export default function ComparativosSuperlativosPage() {
                     </CardHeader>
                     <CardContent className="space-y-6 text-lg">
                         <div>
-                            <h3 className="text-xl font-bold text-primary">COMPARATIVOS (Adjective+ ER)</h3>
+                            <h3 className="text-xl font-bold text-primary">COMPARATIVOS  (Adjective+ ER)</h3>
                             <p className="mt-2 text-muted-foreground"><span className="font-semibold">USO:</span> se usa en inglés para comparar diferencias entre los dos sustantivos a los que modifica.</p>
                         </div>
 
@@ -290,21 +311,21 @@ export default function ComparativosSuperlativosPage() {
             return (
                 <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
                     <CardHeader>
-                        <CardTitle>LOS ADJETIVOS EN GRADO SUPERLATIVO: (ADJETIVO + EST)</CardTitle>
+                        <CardTitle>SUPERLATIVOS (Adjective+ EST)</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-6 text-lg">
                         <div>
-                            <h3 className="text-xl font-bold text-primary">SUPERLATIVOS (Adjective + EST)</h3>
-                            <p className="mt-2 text-muted-foreground"><span className="font-semibold">USO:</span> se emplea para describir un sustantivo que se encuentra en el extremo superior (el más) o el inferior (el menos).</p>
+                            <h3 className="text-xl font-bold text-primary">USO</h3>
+                            <p className="mt-2 text-muted-foreground">se emplea para describir un sustantivo que se encuentra en el extremo superior (el mas) ó el inferior (el menos )</p>
                         </div>
 
                         <Separator />
 
                         <div>
-                            <h3 className="text-xl font-bold text-primary">Modificación del Adjetivo</h3>
+                            <h3 className="text-xl font-bold text-primary">Modificacíon del Adjetivo</h3>
                             <div className="mt-2 space-y-1 font-mono bg-muted p-4 rounded-lg">
                                 <p>Tall =&gt; The <span className="font-bold">TALLEST</span> (el más alto)</p>
-                                <p>Fast =&gt; The <span className="font-bold">FASTEST</span> (el más rápido)</p>
+                                <p>Fast =&gt; The <span className="font-bold">FASTEST</span> (el más rapido)</p>
                             </div>
                         </div>
 
@@ -312,7 +333,7 @@ export default function ComparativosSuperlativosPage() {
 
                         <div>
                             <h3 className="text-xl font-bold text-primary">ESTRUCTURA</h3>
-                            <p className="mt-2 font-mono bg-muted p-4 rounded-lg">sustantivo + verbo + THE + Adjetivo superlativo + Sustantivos o complemento</p>
+                            <p className="mt-2 font-mono bg-muted p-4 rounded-lg">sustantivo + verbo + THE + Adjetivo superlativo + Sustantivos ó complemento</p>
                         </div>
                         
                         <Separator />
@@ -320,10 +341,10 @@ export default function ComparativosSuperlativosPage() {
                         <div>
                             <h3 className="text-xl font-bold text-primary">TOPICS</h3>
                             <ul className="mt-2 list-disc list-inside space-y-2 text-base">
-                                <li><span className="font-semibold">Monosilabos:</span> Adjetivos Cortos (Adjective + EST)</li>
-                                <li><span className="font-semibold">Bisílabos:</span> Adjetivos con 2 sílabas (Adjective + EST)</li>
-                                <li><span className="font-semibold">Adjetivos Largos:</span> Tienen más de 2 sílabas (The Most + adjetivo largo)</li>
-                                <li><span className="font-semibold">Adjetivos Irregulares:</span> Cambian en todas sus formas</li>
+                                <li><span className="font-semibold">1- Monosilabos:</span> Adjetivos Cortos (Adjective + EST)</li>
+                                <li><span className="font-semibold">2- Bisilabos:</span> Adjetivos con 2 silabas (Adjective + EST)</li>
+                                <li><span className="font-semibold">3- Adjetivos Largos:</span> Tienen mas de 2 silabas (The Most + adjetivos largo)</li>
+                                <li><span className="font-semibold">4- Adjetivos Irregulares:</span> Cambian en todas sus formas</li>
                             </ul>
                         </div>
                     </CardContent>
@@ -345,7 +366,7 @@ export default function ComparativosSuperlativosPage() {
                         <p className='text-base text-muted-foreground'>PARA LA FORMACION DE LOS GRADOS COMPARATIVOS Y SUPERLATIVO DE LOS ADJETIVOS ‘’CORTOS’’, DEBEN TENERSE EN CUENTA LAS SIGUIENTES CONSIDERACIONES:</p>
                         <ol className="list-decimal list-inside space-y-4">
                             <li>
-                                <span className='font-semibold'>LOS QUE TERMINAN EN ‘’-E’’ SOLO AÑADEN ‘’-R’’ Y ‘’-ST’’</span>
+                                <span className='font-semibold'>LOS QUE TERMINAN EN ‘’-E’’ SOLO AÑADEN ‘’-R’’ Y ‘’-ST’’.</span>
                                 <div className="mt-2 space-y-1 font-mono bg-muted p-4 rounded-lg text-base">
                                     <p>NICE - NICER – THE NICEST</p>
                                 </div>
@@ -373,6 +394,17 @@ export default function ComparativosSuperlativosPage() {
                         </ol>
                     </CardContent>
                 </Card>
+            );
+        }
+
+        if (selectedTopic === 'monosilabos') {
+            return (
+                <SyllableExercise
+                    data={monosyllabicData}
+                    title="Monosílabos"
+                    description="Completa la tabla con las formas correctas de los adjetivos monosilábicos."
+                    onComplete={() => setTopicToComplete('monosilabos')}
+                />
             );
         }
 
