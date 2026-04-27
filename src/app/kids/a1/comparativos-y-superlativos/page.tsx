@@ -4,13 +4,14 @@ import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, Gamepad2, Feather, FileText, Bot } from 'lucide-react';
 import { DashboardHeader } from "@/components/dashboard/header";
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 type Topic = {
   key: string;
@@ -22,6 +23,22 @@ type Topic = {
 const progressStorageKey = 'progress_kids_a1_comparatives_v1';
 const mainProgressKey = 'progress_kids_a1_comparatives';
 
+// New vocabulary data
+const vocabularyData = [
+    { spanish: 'BONITO/A', english: ['pretty', 'beautiful'] },
+    { spanish: 'ANCHO', english: ['wide'] },
+    { spanish: 'DESPIERTO', english: ['awake'] },
+    { spanish: 'DIFERENTE', english: ['different'] },
+    { spanish: 'LARGO', english: ['long'] },
+    { spanish: 'SECO', english: ['dry'] },
+    { spanish: 'ENOJADO', english: ['angry'] },
+    { spanish: 'CANSADO', english: ['tired'] },
+    { spanish: 'BRILLANTE', english: ['bright'] },
+    { spanish: 'SUCIO', english: ['dirty'] },
+    { spanish: 'LIMPIO', english: ['clean'] },
+    { spanish: 'MOJADO', english: ['wet'] },
+];
+
 export default function ComparativosSuperlativosPage() {
     const { toast } = useToast();
     const { user, isUserLoading } = useUser();
@@ -30,6 +47,10 @@ export default function ComparativosSuperlativosPage() {
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
     const [selectedTopic, setSelectedTopic] = useState('');
     const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
+
+    // State for the new exercise
+    const [vocabAnswers, setVocabAnswers] = useState<string[]>(Array(vocabularyData.length).fill(''));
+    const [validationStatus, setValidationStatus] = useState<('correct' | 'incorrect' | 'unchecked')[]>(Array(vocabularyData.length).fill('unchecked'));
 
     const studentDocRef = useMemoFirebase(() => (user ? doc(firestore, 'students', user.uid) : null), [firestore, user]);
     const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{ role?: string; lessonProgress?: any; progress?: any }>(studentDocRef);
@@ -117,13 +138,88 @@ export default function ComparativosSuperlativosPage() {
         setSelectedTopic(key);
         // This is a temporary measure.
         // For non-exercise topics, we can auto-complete them on selection.
-        if (!['mixtos', 'sopa_letras', 'mixtos2'].includes(key)) {
+        if (!['vocabulario', 'mixtos', 'sopa_letras', 'mixtos2'].includes(key)) {
           setTopicToComplete(key);
         }
     };
 
+    // New handlers for vocabulary exercise
+    const handleVocabInputChange = (index: number, value: string) => {
+        const newAnswers = [...vocabAnswers];
+        newAnswers[index] = value;
+        setVocabAnswers(newAnswers);
+
+        const newValidation = [...validationStatus];
+        if (newValidation[index] !== 'unchecked') {
+            newValidation[index] = 'unchecked';
+            setValidationStatus(newValidation);
+        }
+    };
+
+    const handleCheckVocab = () => {
+        let allCorrect = true;
+        const newValidation = vocabularyData.map((item, index) => {
+            const userAnswer = vocabAnswers[index]?.trim().toLowerCase();
+            const correctAnswers = item.english.map(e => e.toLowerCase());
+            if (correctAnswers.includes(userAnswer)) {
+                return 'correct';
+            } else {
+                allCorrect = false;
+                return 'incorrect';
+            }
+        });
+        setValidationStatus(newValidation as ('correct' | 'incorrect' | 'unchecked')[]);
+
+        if (allCorrect) {
+            toast({ title: "¡Excelente!", description: "Todas las respuestas son correctas." });
+            setTopicToComplete('vocabulario');
+        } else {
+            toast({ variant: "destructive", title: "Algunas respuestas incorrectas." });
+        }
+    };
+
+    const getInputClass = (index: number) => {
+        const status = validationStatus[index];
+        if (status === 'correct') return 'border-green-500 focus-visible:ring-green-500';
+        if (status === 'incorrect') return 'border-destructive focus-visible:ring-destructive';
+        return '';
+    };
+
     const renderContent = () => {
         const topic = learningPath.find(t => t.key === selectedTopic);
+        
+        if (selectedTopic === 'vocabulario') {
+            return (
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Vocabulario (Adjetivos)</CardTitle>
+                        <CardDescription>Escribe la traducción en inglés para cada adjetivo.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-lg">
+                            <div className="font-bold p-3 bg-muted rounded-lg text-left">Español</div>
+                            <div className="font-bold p-3 bg-muted rounded-lg text-left">Inglés</div>
+                            {vocabularyData.map((item, index) => (
+                                <React.Fragment key={index}>
+                                    <div className="p-3 bg-card border rounded-lg flex items-center">{item.spanish}</div>
+                                    <div className="p-3 bg-card border rounded-lg flex items-center">
+                                        <Input
+                                            value={vocabAnswers[index]}
+                                            onChange={e => handleVocabInputChange(index, e.target.value)}
+                                            className={cn(getInputClass(index))}
+                                        />
+                                    </div>
+                                </React.Fragment>
+                            ))}
+                        </div>
+                    </CardContent>
+                    <CardFooter>
+                        <Button onClick={handleCheckVocab}>Verificar Vocabulario</Button>
+                    </CardFooter>
+                </Card>
+            );
+        }
+
         const isExercise = ['mixtos', 'sopa_letras', 'mixtos2'].includes(selectedTopic);
         return (
             <Card>
