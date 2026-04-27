@@ -125,9 +125,13 @@ export default function ComparativosSuperlativosPage() {
         { key: 'ejercicio-superlativo', name: 'Ejercicio Superlativo', icon: PenSquare, status: 'locked' },
         { key: 'grammar-mixto', name: 'Grammar mixto', icon: GraduationCap, status: 'locked' },
         { key: 'monosilabos', name: 'Monosilabos', icon: Feather, status: 'locked' },
+        { key: 'ejercicio-monosilabos', name: 'Ejercicio Monosilabos', icon: PenSquare, status: 'locked' },
         { key: 'bisilabos', name: 'Bisilabos', icon: Feather, status: 'locked' },
+        { key: 'ejercicio-bisilabos', name: 'Ejercicio Bisilabos', icon: PenSquare, status: 'locked' },
         { key: 'largos', name: 'Largos', icon: Feather, status: 'locked' },
+        { key: 'ejercicio-largos', name: 'Ejercicio Largos', icon: PenSquare, status: 'locked' },
         { key: 'irregulares', name: 'Irregulares', icon: Bot, status: 'locked' },
+        { key: 'ejercicio-irregulares', name: 'Ejercicio Irregulares', icon: PenSquare, status: 'locked' },
         { key: 'mixtos', name: 'Mixtos', icon: PenSquare, status: 'locked' },
         { key: 'sopa_letras', name: 'Sopa de Letras (Adjetivos)', icon: Gamepad2, status: 'locked' },
         { key: 'mixtos2', name: 'Mixtos 2', icon: PenSquare, status: 'locked' },
@@ -200,7 +204,7 @@ export default function ComparativosSuperlativosPage() {
             return;
         }
         setSelectedTopic(key);
-        const exerciseKeys = ['vocabulario', 'mixtos', 'sopa_letras', 'mixtos2', 'ejercicio-comparativo', 'ejercicio-superlativo', 'monosilabos', 'bisilabos', 'largos', 'irregulares'];
+        const exerciseKeys = ['vocabulario', 'mixtos', 'sopa_letras', 'mixtos2', 'ejercicio-comparativo', 'ejercicio-superlativo', 'monosilabos', 'bisilabos', 'largos', 'irregulares', 'ejercicio-monosilabos', 'ejercicio-bisilabos', 'ejercicio-largos', 'ejercicio-irregulares'];
         if (!exerciseKeys.includes(key)) {
           setTopicToComplete(key);
         }
@@ -233,8 +237,7 @@ export default function ComparativosSuperlativosPage() {
         setValidationStatus(newValidation as ('correct' | 'incorrect' | 'unchecked')[]);
 
         if (atLeastOneCorrect) {
-            toast({ title: "¡Bien hecho!", description: "Has acertado al menos una. ¡Tema desbloqueado!" });
-            setTopicToComplete('vocabulario');
+            toast({ title: "¡Bien hecho!", description: "Has acertado al menos una. ¡Ya puedes avanzar!" });
             setCanAdvanceFromVocab(true);
         } else {
             toast({ 
@@ -284,7 +287,10 @@ export default function ComparativosSuperlativosPage() {
                     <CardFooter className="flex justify-between">
                         <Button onClick={handleCheckVocab}>Verificar Vocabulario</Button>
                         <Button 
-                            onClick={() => setSelectedTopic('comparativos')} 
+                            onClick={() => {
+                                handleTopicComplete('vocabulario');
+                                setSelectedTopic('comparativos');
+                            }} 
                             disabled={!canAdvanceFromVocab}
                         >
                             Avanzar
@@ -497,15 +503,24 @@ export default function ComparativosSuperlativosPage() {
             );
         }
 
-        const isExercise = ['mixtos', 'sopa_letras', 'mixtos2', 'ejercicio-comparativo', 'ejercicio-superlativo'].includes(selectedTopic);
+        const isExercise = ['mixtos', 'sopa_letras', 'mixtos2', 'ejercicio-monosilabos', 'ejercicio-bisilabos', 'ejercicio-largos', 'ejercicio-irregulares'].includes(selectedTopic);
+        if (isExercise) {
+            return (
+                <Card>
+                    <CardHeader><CardTitle>{topic?.name}</CardTitle></CardHeader>
+                    <CardContent>
+                        <p>Contenido para {topic?.name} estará disponible pronto.</p>
+                        <Button className="mt-4" onClick={() => setTopicToComplete(selectedTopic)}>Completar Ejercicio</Button>
+                    </CardContent>
+                </Card>
+            );
+        }
+        
         return (
             <Card>
                 <CardHeader><CardTitle>{topic?.name}</CardTitle></CardHeader>
                 <CardContent>
                     <p>Contenido para {topic?.name} estará disponible pronto.</p>
-                    {isExercise && (
-                      <Button className="mt-4" onClick={() => setTopicToComplete(selectedTopic)}>Completar Ejercicio</Button>
-                    )}
                 </CardContent>
             </Card>
         );
