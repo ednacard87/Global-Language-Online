@@ -20,6 +20,7 @@ import { MonosyllabicExercise } from '@/components/kids/exercises/monosyllabic-e
 import { BisyllabicExercise } from '@/components/kids/exercises/bisyllabic-exercise';
 import { LongAdjectivesExercise } from '@/components/kids/exercises/long-adjectives-exercise';
 import { IrregularAdjectivesExercise } from '@/components/kids/exercises/irregular-adjectives-exercise';
+import { MixedComparativeSuperlativeExercise } from '@/components/kids/exercises/mixed-comparative-superlative-exercise';
 
 
 type Topic = {
@@ -292,8 +293,7 @@ export default function ComparativosSuperlativosPage() {
                             <Button onClick={handleCheckVocab}>Verificar Vocabulario</Button>
                             <Button 
                                 onClick={() => {
-                                    handleTopicComplete('vocabulario');
-                                    setSelectedTopic('comparativos');
+                                    setTopicToComplete('vocabulario');
                                 }} 
                                 disabled={!canAdvance}
                             >
@@ -448,8 +448,10 @@ export default function ComparativosSuperlativosPage() {
                 return <SyllableExercise data={irregularAdjectivesData} title="Adjetivos Irregulares" description="Completa la tabla con las formas correctas de los adjetivos irregulares." onComplete={() => setTopicToComplete('irregulares')} columnHeaders={{ adjective: 'ADJETIVOS IRREGULARES.', comparative: 'COMPARATIVO', superlative: 'SUPERLATIVO' }} />;
             case 'ejercicio-irregulares':
                 return <IrregularAdjectivesExercise onComplete={() => setTopicToComplete('ejercicio-irregulares')} />;
+            case 'mixtos':
+                return <MixedComparativeSuperlativeExercise onComplete={() => setTopicToComplete('mixtos')} />;
             default:
-                const isExercise = ['mixtos', 'sopa_letras', 'mixtos2'].includes(selectedTopic);
+                const isExercise = ['sopa_letras', 'mixtos2'].includes(selectedTopic);
                 if (isExercise) {
                     return (
                         <Card>
