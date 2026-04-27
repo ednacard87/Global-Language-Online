@@ -17,6 +17,7 @@ import { Input } from '@/components/ui/input';
 import { ErrorCorrectionExercise, type ErrorCorrectionPrompt } from '@/components/kids/exercises/error-correction-exercise';
 import { PresentSimpleExercise, type ExercisePrompt } from '@/components/kids/exercises/present-simple';
 import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
+import { Class5VocabExercise } from '@/components/kids/exercises/class5-vocab-exercise';
 
 type Topic = {
   key: string;
@@ -644,6 +645,10 @@ export default function EngA1Class5Page() {
                     title="Ejercicio 3: Adjetivos Posesivos"
                 />
             );
+        }
+        
+        if (selectedTopic === 'ejercicio-vocabulario') {
+            return <Class5VocabExercise onComplete={() => handleTopicComplete('ejercicio-vocabulario')} />;
         }
 
         return (
