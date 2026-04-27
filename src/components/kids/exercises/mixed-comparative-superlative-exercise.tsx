@@ -32,6 +32,7 @@ export function MixedComparativeSuperlativeExercise({ onComplete }: { onComplete
     const [userAnswers, setUserAnswers] = useState<string[]>(Array(exerciseData.length).fill(''));
     const [validationStatus, setValidationStatus] = useState<ValidationStatus[]>(Array(exerciseData.length).fill('unchecked'));
     const [showCompletionMessage, setShowCompletionMessage] = useState(false);
+    const [canAdvance, setCanAdvance] = useState(false);
 
     const handleInputChange = (index: number, value: string) => {
         const newAnswers = [...userAnswers];
@@ -43,6 +44,7 @@ export function MixedComparativeSuperlativeExercise({ onComplete }: { onComplete
             newValidation[index] = 'unchecked';
             setValidationStatus(newValidation);
         }
+        setCanAdvance(false);
     };
 
     const handleCheckAnswers = () => {
@@ -59,16 +61,21 @@ export function MixedComparativeSuperlativeExercise({ onComplete }: { onComplete
         setValidationStatus(newValidationStatus);
 
         if (allCorrect) {
-            toast({ title: "¡Excelente!", description: "Todas tus respuestas son correctas." });
-            setShowCompletionMessage(true);
-            onComplete();
+            toast({ title: "¡Excelente!", description: "Todas tus respuestas son correctas. ¡Ya puedes avanzar!" });
+            setCanAdvance(true);
         } else {
             toast({
                 variant: 'destructive',
                 title: "Algunas respuestas son incorrectas",
                 description: "Por favor, revisa los campos marcados en rojo.",
             });
+            setCanAdvance(false);
         }
+    };
+
+    const handleAdvance = () => {
+        setShowCompletionMessage(true);
+        onComplete();
     };
     
     const getInputClass = (status: ValidationStatus) => {
@@ -136,8 +143,9 @@ export function MixedComparativeSuperlativeExercise({ onComplete }: { onComplete
                     </table>
                 </div>
             </CardContent>
-            <CardFooter>
+            <CardFooter className="flex justify-between">
                 <Button onClick={handleCheckAnswers}>Verificar Respuestas</Button>
+                <Button onClick={handleAdvance} disabled={!canAdvance}>Avanzar</Button>
             </CardFooter>
         </Card>
     );
