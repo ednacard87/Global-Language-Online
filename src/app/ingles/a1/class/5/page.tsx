@@ -651,6 +651,17 @@ export default function EngA1Class5Page() {
             return <Class5VocabExercise onComplete={() => handleTopicComplete('ejercicio-vocabulario')} />;
         }
 
+        if (selectedTopic === 'ejercicio-4') {
+             return (
+                 <SimpleTranslationExercise
+                    course="a1"
+                    exerciseKey="c5_mixed4" 
+                    onComplete={() => handleTopicComplete('ejercicio-4')}
+                    title="Ejercicio 4"
+                />
+            );
+        }
+
         return (
             <Card className="shadow-soft rounded-lg border-2 border-brand-purple min-h-[500px]">
               <CardHeader>

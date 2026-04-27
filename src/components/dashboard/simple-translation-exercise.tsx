@@ -109,13 +109,6 @@ const exercises = {
             { spanish: 'EL TREN SALE A LAS 7 P.M', english: ['the train leaves at 7 p.m.'] },
         ],
     },
-    c2_mixed2: {
-        title: 'a1class1.exercise',
-        prompts: [
-            { spanish: 'Placeholder 1 para Clase 2 - Ej 2', english: ['...'] },
-            { spanish: 'Placeholder 2 para Clase 2 - Ej 2', english: ['...'] },
-        ],
-    },
     c5_mixed3: {
         title: 'a1class1.exercise',
         prompts: [
@@ -125,6 +118,18 @@ const exercises = {
             { spanish: '¿ESTE ES TU CARRO?', english: ["is this your car?"] },
             { spanish: '¿ERES SU TÍO (UNCLE)? (DE EL)', english: ["are you his uncle?"] },
             { spanish: 'ELLOS NO SON NUESTROS ABUELOS (GRANDPARENTS)', english: ["they are not our grandparents", "they aren't our grandparents"] },
+        ]
+    },
+    c5_mixed4: {
+        title: 'a1class1.exercise',
+        prompts: [
+            { spanish: '¿DÓNDE ESTAN TUS PADRES?', english: ["where are your parents?"] },
+            { spanish: '¿ESTAS CON WILLIAM?', english: ["are you with william?"] },
+            { spanish: 'ELLOS NO SON NUESTROS HERMANOS', english: ["they are not our brothers", "they aren't our brothers"] },
+            { spanish: 'YO ESTOY CON (WITH) MI HERMANA', english: ["i am with my sister", "i'm with my sister"] },
+            { spanish: '¿QUIENES SON ELLOS?', english: ["who are they?"] },
+            { spanish: 'ELLA NO ESTA CANSADA', english: ["she is not tired", "she isn't tired"] },
+            { spanish: 'ESTOS (THESE)NO SON NUESTROS CARROS', english: ["these are not our cars", "these aren't our cars"] }
         ]
     }
 };
