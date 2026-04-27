@@ -16,6 +16,7 @@ import { Separator } from '@/components/ui/separator';
 import { ComparativeExercise } from '@/components/kids/exercises/comparative-exercise';
 import { SuperlativeExercise } from '@/components/kids/exercises/superlative-exercise';
 import { SyllableExercise, type SyllableExerciseData } from '@/components/kids/exercises/syllable-exercise';
+import { MonosyllabicExercise } from '@/components/kids/exercises/monosyllabic-exercise';
 
 
 type Topic = {
@@ -89,8 +90,7 @@ const longAdjectivesData: SyllableExerciseData = [
 ];
 
 const irregularAdjectivesData: SyllableExerciseData = [
-    { spanish: 'BUENO', answers: { adjective: 'good', comparative: 'better', superlative: 'the best' } },
-    { spanish: 'BIEN', answers: { adjective: 'well', comparative: 'better', superlative: 'the best' } },
+    { spanish: 'BUENO', answers: { adjective: ['good', 'well'], comparative: 'better', superlative: 'the best' } },
     { spanish: 'MALO', answers: { adjective: 'bad', comparative: 'worse', superlative: 'the worst' } },
     { spanish: 'MUCHO', answers: { adjective: ['much', 'many'], comparative: 'more', superlative: 'the most' } },
     { spanish: 'POCO', answers: { adjective: 'little', comparative: 'less', superlative: 'the least' } },
@@ -453,6 +453,10 @@ export default function ComparativosSuperlativosPage() {
                     }}
                 />
             );
+        }
+        
+        if (selectedTopic === 'ejercicio-monosilabos') {
+            return <MonosyllabicExercise onComplete={() => setTopicToComplete('ejercicio-monosilabos')} />;
         }
 
         if (selectedTopic === 'bisilabos') {
