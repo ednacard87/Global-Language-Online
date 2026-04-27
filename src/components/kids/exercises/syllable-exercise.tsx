@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -41,9 +41,15 @@ type ValidationState = Record<keyof UserAnswers, ValidationStatus>;
 
 export function SyllableExercise({ data, title, description, onComplete, columnHeaders }: SyllableExerciseProps) {
     const { toast } = useToast();
-    const [userAnswers, setUserAnswers] = useState<UserAnswers[]>(Array(data.length).fill({ adjective: '', comparative: '', superlative: '' }));
-    const [validationStatus, setValidationStatus] = useState<ValidationState[]>(Array(data.length).fill({ adjective: 'unchecked', comparative: 'unchecked', superlative: 'unchecked' }));
+    const [userAnswers, setUserAnswers] = useState<UserAnswers[]>([]);
+    const [validationStatus, setValidationStatus] = useState<ValidationState[]>([]);
     const [showCompletionMessage, setShowCompletionMessage] = useState(false);
+
+    useEffect(() => {
+        setUserAnswers(Array(data.length).fill({ adjective: '', comparative: '', superlative: '' }));
+        setValidationStatus(Array(data.length).fill({ adjective: 'unchecked', comparative: 'unchecked', superlative: 'unchecked' }));
+        setShowCompletionMessage(false);
+    }, [data]);
 
     const handleInputChange = (index: number, field: keyof UserAnswers, value: string) => {
         const newAnswers = [...userAnswers];
@@ -51,7 +57,7 @@ export function SyllableExercise({ data, title, description, onComplete, columnH
         setUserAnswers(newAnswers);
 
         const newValidation = [...validationStatus];
-        if (newValidation[index][field] !== 'unchecked') {
+        if (newValidation[index]?.[field] !== 'unchecked') {
             newValidation[index] = { ...newValidation[index], [field]: 'unchecked' };
             setValidationStatus(newValidation);
         }
@@ -94,7 +100,7 @@ export function SyllableExercise({ data, title, description, onComplete, columnH
         }
     };
 
-    const getInputClass = (status: ValidationStatus) => {
+    const getInputClass = (status?: ValidationStatus) => {
         if (status === 'correct') return 'border-green-500 focus-visible:ring-green-500';
         if (status === 'incorrect') return 'border-destructive focus-visible:ring-destructive';
         return '';
@@ -106,7 +112,7 @@ export function SyllableExercise({ data, title, description, onComplete, columnH
                 <CardContent className="p-6 text-center flex flex-col items-center justify-center min-h-[300px]">
                     <Trophy className="h-16 w-16 text-yellow-400 mb-4" />
                     <h2 className="text-3xl font-bold">¡Ejercicio Completado!</h2>
-                    <p className="text-muted-foreground mt-2">Has dominado los adjetivos monosilábicos.</p>
+                    <p className="text-muted-foreground mt-2">Has dominado los adjetivos.</p>
                 </CardContent>
             </Card>
         );
@@ -135,23 +141,23 @@ export function SyllableExercise({ data, title, description, onComplete, columnH
                                     <td className="p-2 font-medium">{item.spanish}</td>
                                     <td className="p-2">
                                         <Input
-                                            value={userAnswers[index].adjective}
+                                            value={userAnswers[index]?.adjective || ''}
                                             onChange={(e) => handleInputChange(index, 'adjective', e.target.value)}
-                                            className={cn(getInputClass(validationStatus[index].adjective))}
+                                            className={cn(getInputClass(validationStatus[index]?.adjective))}
                                         />
                                     </td>
                                     <td className="p-2">
                                         <Input
-                                            value={userAnswers[index].comparative}
+                                            value={userAnswers[index]?.comparative || ''}
                                             onChange={(e) => handleInputChange(index, 'comparative', e.target.value)}
-                                            className={cn(getInputClass(validationStatus[index].comparative))}
+                                            className={cn(getInputClass(validationStatus[index]?.comparative))}
                                         />
                                     </td>
                                     <td className="p-2">
                                         <Input
-                                            value={userAnswers[index].superlative}
+                                            value={userAnswers[index]?.superlative || ''}
                                             onChange={(e) => handleInputChange(index, 'superlative', e.target.value)}
-                                            className={cn(getInputClass(validationStatus[index].superlative))}
+                                            className={cn(getInputClass(validationStatus[index]?.superlative))}
                                         />
                                     </td>
                                 </tr>
