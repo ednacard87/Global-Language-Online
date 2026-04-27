@@ -13,6 +13,7 @@ import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocki
 import { doc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Input } from '@/components/ui/input';
 
 type Topic = {
   key: string;
@@ -81,6 +82,12 @@ export default function EngA1Class5Page() {
     const [selectedTopic, setSelectedTopic] = useState<string>('');
     const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
 
+    // State for vocabulary exercise
+    const [vocabAnswers, setVocabAnswers] = useState<{[key: string]: string[]}>({});
+    const [vocabValidation, setVocabValidation] = useState<{[key: string]: ('correct' | 'incorrect' | 'unchecked')[]}>({});
+    const [canAdvance, setCanAdvance] = useState(false);
+
+
     const initialLearningPath = useMemo((): Topic[] => [
         { key: 'vocabulary', name: 'Vocabulario', icon: BookOpen, status: 'active' },
         { key: 'nota-importante', name: 'Nota Importante', icon: Info, status: 'locked' },
@@ -113,6 +120,18 @@ export default function EngA1Class5Page() {
         } else if (newPath.length > 0) {
             setSelectedTopic(newPath[0].key);
         }
+
+        // Initialize vocab answers state
+        const initialAnswers: { [key: string]: string[] } = {};
+        const initialValidation: { [key: string]: ('correct' | 'incorrect' | 'unchecked')[] } = {};
+        Object.keys(vocabularyData).forEach(category => {
+            const cat = category as keyof typeof vocabularyData;
+            initialAnswers[cat] = Array(vocabularyData[cat].length).fill('');
+            initialValidation[cat] = Array(vocabularyData[cat].length).fill('unchecked');
+        });
+        setVocabAnswers(initialAnswers);
+        setVocabValidation(initialValidation);
+        setCanAdvance(false);
     }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading, isUserLoading]);
     
     const progress = useMemo(() => {
@@ -170,10 +189,62 @@ export default function EngA1Class5Page() {
         }
         setSelectedTopic(topicKey);
 
-        const exerciseKeys = ['ejercicio-1', 'ejercicio-2', 'ejercicio-3', 'ejercicio-vocabulario', 'ejercicio-4'];
+        const exerciseKeys = ['vocabulary', 'ejercicio-1', 'ejercicio-2', 'ejercicio-3', 'ejercicio-vocabulario', 'ejercicio-4'];
         if (!exerciseKeys.includes(topicKey)) {
             handleTopicComplete(topicKey);
         }
+    };
+
+    const handleVocabInputChange = (category: string, index: number, value: string) => {
+        setVocabAnswers(prev => ({
+            ...prev,
+            [category]: prev[category].map((ans, i) => (i === index ? value : ans)),
+        }));
+        const newValidation = { ...vocabValidation };
+        const catKey = category as keyof typeof vocabValidation;
+        if (newValidation[catKey]?.[index] !== 'unchecked') {
+            newValidation[catKey][index] = 'unchecked';
+            setVocabValidation(newValidation);
+        }
+        setCanAdvance(false);
+    };
+
+    const handleCheckVocab = () => {
+        let atLeastOneCorrect = false;
+        const newValidation: { [key: string]: ('correct' | 'incorrect' | 'unchecked')[] } = {};
+
+        Object.keys(vocabularyData).forEach(category => {
+            const cat = category as keyof typeof vocabularyData;
+            newValidation[cat] = vocabularyData[cat].map((item, index) => {
+                const userAnswer = (vocabAnswers[cat]?.[index] || '').trim().toLowerCase();
+                const isCorrect = item.english.toLowerCase() === userAnswer;
+                if (isCorrect) {
+                    atLeastOneCorrect = true;
+                }
+                return isCorrect ? 'correct' : 'incorrect';
+            });
+        });
+
+        setValidationStatus(newValidation);
+
+        if (atLeastOneCorrect) {
+            toast({ title: "¡Bien hecho!", description: "Has acertado al menos una. ¡Ya puedes avanzar!" });
+            setCanAdvance(true);
+        } else {
+            toast({
+                variant: 'destructive',
+                title: 'Sigue intentando',
+                description: 'Revisa tus respuestas. ¡Necesitas al menos una correcta para continuar!',
+            });
+            setCanAdvance(false);
+        }
+    };
+    
+    const getVocabInputClass = (category: string, index: number) => {
+        const status = vocabValidation[category as keyof typeof vocabValidation]?.[index];
+        if (status === 'correct') return 'border-green-500 focus-visible:ring-green-500';
+        if (status === 'incorrect') return 'border-destructive focus-visible:ring-destructive';
+        return '';
     };
     
     const renderContent = () => {
@@ -184,7 +255,7 @@ export default function EngA1Class5Page() {
                 <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
                     <CardHeader>
                         <CardTitle>Vocabulario</CardTitle>
-                        <CardDescription>Verbos y Adjetivos Básicos</CardDescription>
+                        <CardDescription>Escribe la traducción correcta en inglés para cada palabra.</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <Accordion type="multiple" defaultValue={['verbos', 'adjetivos']} className="w-full">
@@ -192,12 +263,19 @@ export default function EngA1Class5Page() {
                                 <AccordionTrigger className="text-lg font-semibold">Verbos</AccordionTrigger>
                                 <AccordionContent>
                                     <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-lg">
-                                        <div className="font-bold p-3 bg-muted rounded-lg">Español</div>
-                                        <div className="font-bold p-3 bg-muted rounded-lg">Inglés</div>
+                                        <div className="font-bold p-3 bg-muted rounded-lg text-left">Español</div>
+                                        <div className="font-bold p-3 bg-muted rounded-lg text-left">Inglés</div>
                                         {vocabularyData.verbos.map((word, index) => (
                                             <React.Fragment key={`verbo-${index}`}>
                                                 <div className="p-3 bg-card border rounded-lg flex items-center">{word.spanish}</div>
-                                                <div className="p-3 bg-card border rounded-lg flex items-center font-semibold">{word.english}</div>
+                                                <div className="p-3 bg-card border rounded-lg flex items-center">
+                                                     <Input
+                                                        value={vocabAnswers.verbos?.[index] || ''}
+                                                        onChange={(e) => handleVocabInputChange('verbos', index, e.target.value)}
+                                                        className={cn(getVocabInputClass('verbos', index))}
+                                                        autoComplete="off"
+                                                    />
+                                                </div>
                                             </React.Fragment>
                                         ))}
                                     </div>
@@ -207,12 +285,19 @@ export default function EngA1Class5Page() {
                                 <AccordionTrigger className="text-lg font-semibold">Adjetivos Básicos</AccordionTrigger>
                                 <AccordionContent>
                                     <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-lg">
-                                        <div className="font-bold p-3 bg-muted rounded-lg">Español</div>
-                                        <div className="font-bold p-3 bg-muted rounded-lg">Inglés</div>
+                                        <div className="font-bold p-3 bg-muted rounded-lg text-left">Español</div>
+                                        <div className="font-bold p-3 bg-muted rounded-lg text-left">Inglés</div>
                                         {vocabularyData.adjetivos.map((word, index) => (
                                             <React.Fragment key={`adj-${index}`}>
                                                 <div className="p-3 bg-card border rounded-lg flex items-center">{word.spanish}</div>
-                                                <div className="p-3 bg-card border rounded-lg flex items-center font-semibold">{word.english}</div>
+                                                <div className="p-3 bg-card border rounded-lg flex items-center">
+                                                    <Input
+                                                        value={vocabAnswers.adjetivos?.[index] || ''}
+                                                        onChange={(e) => handleVocabInputChange('adjetivos', index, e.target.value)}
+                                                        className={cn(getVocabInputClass('adjetivos', index))}
+                                                        autoComplete="off"
+                                                    />
+                                                </div>
                                             </React.Fragment>
                                         ))}
                                     </div>
@@ -220,9 +305,12 @@ export default function EngA1Class5Page() {
                             </AccordionItem>
                         </Accordion>
                     </CardContent>
-                    <CardFooter>
-                       <Button onClick={() => handleTopicComplete('vocabulary')}>
-                           Continuar
+                    <CardFooter className="flex justify-between">
+                       <Button onClick={handleCheckVocab}>
+                           Verificar
+                       </Button>
+                       <Button onClick={() => handleTopicComplete('vocabulary')} disabled={!canAdvance}>
+                           Avanzar
                        </Button>
                    </CardFooter>
                 </Card>
