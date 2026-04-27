@@ -21,11 +21,26 @@ const correctAnswers = [
     "better"
 ];
 
+const textParts = [
+    "JAMES: I’M GOING SKIING NEXT WEEK.\nTINA: I’D LOVE TO HAVE A HOLIDAY IN NOVEMBER, BUT MY CHILDREN ARE AT SCHOOL NOW, SO IT’S ",
+    " (CONVENIENT) FOR THEM TO GO DURING THE SCHOOL HOLIDAYS. I KNOW IT’S PROBABLY ",
+    " (BAD) TIME TO GO ON HOLIDAY, BECAUSE EVERYBODY ELSE IS GOING TOO AND THE HOTEL PRICES ARE ",
+    " (EXPENSIVE) THAN NOW.\nJAMES: I KNOW, BUT THE CHRISTMAS HOLIDAY IS ALSO ",
+    " (GOOD) TIME FOR THE SKIING RESORTS. IF YOU WANT TO MAKE A LOT OF FRIENDS, IT’S ",
+    " (GOOD) TO GO IN DECEMBER THAN IN NOVEMBER.\nTINA: MY FAVORITE TIME FOR GOING ON HOLIDAY IS SEPTEMBER. THE WEATHER IS ",
+    " (DRY) THAN IN OCTOBER AND EVERYTHING IS ",
+    " (CHEAP) AND ",
+    " (QUIET) THAN IN AUGUST, ESPECIALLY IF YOU WANT TO GO TO THE BEACH. I THINK SEPTEMBER IS ",
+    " (BEAUTIFUL) MONTH OF THE YEAR.\nJAMES: I AGREE WITH YOU. IT’S DEFINITELY MUCH ",
+    " (GOOD) TO GO IN SEPTEMBER THAN AT HOLIDAY, WHEN EVERYBODY ELSE IS WORKING!"
+];
+
 export function HolidayTextExercise({ onComplete }: { onComplete: () => void }) {
     const { toast } = useToast();
     const [userAnswers, setUserAnswers] = useState<string[]>(Array(correctAnswers.length).fill(''));
     const [validationStatus, setValidationStatus] = useState<('correct' | 'incorrect' | 'unchecked')[]>(Array(correctAnswers.length).fill('unchecked'));
     const [showCompletionMessage, setShowCompletionMessage] = useState(false);
+    const [canAdvance, setCanAdvance] = useState(false);
 
     const handleInputChange = (index: number, value: string) => {
         const newAnswers = [...userAnswers];
@@ -37,6 +52,7 @@ export function HolidayTextExercise({ onComplete }: { onComplete: () => void }) 
             newValidation[index] = 'unchecked';
             setValidationStatus(newValidation);
         }
+        setCanAdvance(false);
     };
 
     const handleCheckAnswers = () => {
@@ -50,17 +66,22 @@ export function HolidayTextExercise({ onComplete }: { onComplete: () => void }) 
 
         if (allCorrect) {
             toast({ title: "¡Excelente!", description: "Has completado el texto correctamente." });
-            setShowCompletionMessage(true);
-            onComplete();
+            setCanAdvance(true);
         } else {
             toast({
                 variant: "destructive",
                 title: "Algunas respuestas son incorrectas",
                 description: "Por favor, revisa los campos marcados en rojo.",
             });
+            setCanAdvance(false);
         }
     };
 
+    const handleAdvance = () => {
+        setShowCompletionMessage(true);
+        onComplete();
+    };
+    
     const getInputClass = (status: 'correct' | 'incorrect' | 'unchecked') => {
         if (status === 'correct') return 'border-green-500 focus-visible:ring-green-500';
         if (status === 'incorrect') return 'border-destructive focus-visible:ring-destructive';
@@ -78,19 +99,27 @@ export function HolidayTextExercise({ onComplete }: { onComplete: () => void }) 
         );
     }
 
-    const textParts = [
-        "JAMES: I’M GOING SKIING NEXT WEEK.\nTINA: I’D LOVE TO HAVE A HOLIDAY IN NOVEMBER, BUT MY CHILDREN ARE AT SCHOOL NOW, SO IT’S ",
-        " (CONVENIENT) FOR THEM TO GO DURING THE SCHOOL HOLIDAYS. I KNOW IT’S PROBABLY ",
-        " (BAD) TIME TO GO ON HOLIDAY, BECAUSE EVERYBODY ELSE IS GOING TOO AND THE HOTEL PRICES ARE ",
-        " (EXPENSIVE) THAN NOW.\nJAMES: I KNOW, BUT THE CHRISTMAS HOLIDAY IS ALSO ",
-        " (GOOD) TIME FOR THE SKIING RESORTS. IF YOU WANT TO MAKE A LOT OF FRIENDS, IT’S ",
-        " (GOOD) TO GO IN DECEMBER THAN IN NOVEMBER.\nTINA: MY FAVORITE TIME FOR GOING ON HOLIDAY IS SEPTEMBER. THE WEATHER IS ",
-        " (DRY) THAN IN OCTOBER AND EVERYTHING IS ",
-        " (CHEAP) AND ",
-        " (QUIET) THAN IN AUGUST, ESPECIALLY IF YOU WANT TO GO TO THE BEACH. I THINK SEPTEMBER IS ",
-        " (BEAUTIFUL) MONTH OF THE YEAR.\nJAMES: I AGREE WITH YOU. IT’S DEFINITELY MUCH ",
-        " (GOOD) TO GO IN SEPTEMBER THAN AT HOLIDAY, WHEN EVERYBODY ELSE IS WORKING!"
-    ];
+    const renderStyledText = (text: string) => {
+        const lines = text.split('\n');
+        return lines.map((line, lineIndex) => (
+            <React.Fragment key={lineIndex}>
+                {line.startsWith('JAMES:') ? (
+                    <>
+                        <span className="font-bold text-primary">JAMES:</span>
+                        {line.substring(6)}
+                    </>
+                ) : line.startsWith('TINA:') ? (
+                    <>
+                        <span className="font-bold text-chart-2">TINA:</span>
+                        {line.substring(5)}
+                    </>
+                ) : (
+                    line
+                )}
+                {lineIndex < lines.length - 1 && <br />}
+            </React.Fragment>
+        ));
+    };
 
     return (
         <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
@@ -102,7 +131,7 @@ export function HolidayTextExercise({ onComplete }: { onComplete: () => void }) 
                  <p className='whitespace-pre-wrap'>
                     {textParts.map((part, index) => (
                         <React.Fragment key={index}>
-                            {part}
+                            {renderStyledText(part)}
                             {index < correctAnswers.length && (
                                 <Input
                                     value={userAnswers[index]}
@@ -114,8 +143,9 @@ export function HolidayTextExercise({ onComplete }: { onComplete: () => void }) 
                     ))}
                 </p>
             </CardContent>
-            <CardFooter>
+            <CardFooter className="flex justify-between">
                 <Button onClick={handleCheckAnswers}>Verificar y Completar</Button>
+                <Button onClick={handleAdvance} disabled={!canAdvance}>Avanzar</Button>
             </CardFooter>
         </Card>
     );
