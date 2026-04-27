@@ -17,6 +17,7 @@ import { ComparativeExercise } from '@/components/kids/exercises/comparative-exe
 import { SuperlativeExercise } from '@/components/kids/exercises/superlative-exercise';
 import { SyllableExercise, type SyllableExerciseData } from '@/components/kids/exercises/syllable-exercise';
 import { MonosyllabicExercise } from '@/components/kids/exercises/monosyllabic-exercise';
+import { BisyllabicExercise } from '@/components/kids/exercises/bisyllabic-exercise';
 
 
 type Topic = {
@@ -90,7 +91,7 @@ const longAdjectivesData: SyllableExerciseData = [
 ];
 
 const irregularAdjectivesData: SyllableExerciseData = [
-    { spanish: 'BUENO', answers: { adjective: ['good', 'well'], comparative: 'better', superlative: 'the best' } },
+    { spanish: 'BUENO/BIEN', answers: { adjective: ['good', 'well'], comparative: 'better', superlative: 'the best' } },
     { spanish: 'MALO', answers: { adjective: 'bad', comparative: 'worse', superlative: 'the worst' } },
     { spanish: 'MUCHO', answers: { adjective: ['much', 'many'], comparative: 'more', superlative: 'the most' } },
     { spanish: 'POCO', answers: { adjective: 'little', comparative: 'less', superlative: 'the least' } },
@@ -259,275 +260,210 @@ export default function ComparativosSuperlativosPage() {
     const renderContent = () => {
         const topic = learningPath.find(t => t.key === selectedTopic);
         
-        if (selectedTopic === 'vocabulario') {
-            return (
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Vocabulario (Adjetivos)</CardTitle>
-                        <CardDescription>Escribe la traducción en inglés para cada adjetivo.</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-lg">
-                            <div className="font-bold p-3 bg-muted rounded-lg text-left">Español</div>
-                            <div className="font-bold p-3 bg-muted rounded-lg text-left">Inglés</div>
-                            {vocabularyData.map((item, index) => (
-                                <React.Fragment key={index}>
-                                    <div className="p-3 bg-card border rounded-lg flex items-center">{item.spanish}</div>
-                                    <div className="p-3 bg-card border rounded-lg flex items-center">
-                                        <Input
-                                            value={vocabAnswers[index]}
-                                            onChange={e => handleVocabInputChange(index, e.target.value)}
-                                            className={cn(getInputClass(index))}
-                                        />
+        switch (selectedTopic) {
+            case 'vocabulario':
+                return (
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Vocabulario (Adjetivos)</CardTitle>
+                            <CardDescription>Escribe la traducción en inglés para cada adjetivo.</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-lg">
+                                <div className="font-bold p-3 bg-muted rounded-lg text-left">Español</div>
+                                <div className="font-bold p-3 bg-muted rounded-lg text-left">Inglés</div>
+                                {vocabularyData.map((item, index) => (
+                                    <React.Fragment key={index}>
+                                        <div className="p-3 bg-card border rounded-lg flex items-center">{item.spanish}</div>
+                                        <div className="p-3 bg-card border rounded-lg flex items-center">
+                                            <Input
+                                                value={vocabAnswers[index]}
+                                                onChange={e => handleVocabInputChange(index, e.target.value)}
+                                                className={cn(getInputClass(index))}
+                                            />
+                                        </div>
+                                    </React.Fragment>
+                                ))}
+                            </div>
+                        </CardContent>
+                        <CardFooter className="flex justify-between">
+                            <Button onClick={handleCheckVocab}>Verificar Vocabulario</Button>
+                            <Button 
+                                onClick={() => {
+                                    handleTopicComplete('vocabulario');
+                                    setSelectedTopic('comparativos');
+                                }} 
+                                disabled={!canAdvanceFromVocab}
+                            >
+                                Avanzar
+                            </Button>
+                        </CardFooter>
+                    </Card>
+                );
+
+            case 'comparativos':
+                return (
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                        <CardHeader>
+                            <CardTitle>LOS ADJETIVOS EN GRADO COMPARATIVO: (ADJETIVO + ER)</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-6 text-lg">
+                            <div>
+                                <h3 className="text-xl font-bold text-primary">USO</h3>
+                                <p className="mt-2 text-muted-foreground">se usa en inglés para comparar diferencias entre los dos sustantivos a los que modifica.</p>
+                            </div>
+
+                            <Separator />
+
+                            <div>
+                                <h3 className="text-xl font-bold text-primary">Modificación del Adjetivo</h3>
+                                <div className="mt-2 space-y-1 font-mono bg-muted p-4 rounded-lg">
+                                    <p>small =&gt; <span className="font-bold">SMALLER</span> (más pequeño que )</p>
+                                    <p>high =&gt; <span className="font-bold">HIGHER</span> (más alto que )</p>
+                                </div>
+                            </div>
+
+                            <Separator />
+
+                            <div>
+                                <h3 className="text-xl font-bold text-primary">Estructura</h3>
+                                <p className="mt-2 font-mono bg-muted p-4 rounded-lg">sustantivo + verbo + adjetivo comparativo + than + sustantivo</p>
+                            </div>
+                            
+                            <Separator />
+                            
+                            <div>
+                                <h3 className="text-xl font-bold text-primary">TOPICS</h3>
+                                <ul className="mt-2 list-disc list-inside space-y-2 text-base">
+                                    <li><span className="font-semibold">Monosilabos:</span> Adjetivos Cortos (Adjective + ER)</li>
+                                    <li><span className="font-semibold">Bisilabos:</span> Adjetivos con 2 silabas (Adjective + ER)</li>
+                                    <li><span className="font-semibold">Adjetivos Largos:</span> Tienen mas de 2 silabas (more + adjetivos largo + than)</li>
+                                    <li><span className="font-semibold">Adjetivos Irregulares:</span> Cambian en todas sus formas</li>
+                                </ul>
+                            </div>
+                        </CardContent>
+                    </Card>
+                );
+            case 'ejercicio-comparativo':
+                return <ComparativeExercise onComplete={() => setTopicToComplete('ejercicio-comparativo')} />;
+            case 'superlativos':
+                return (
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                        <CardHeader>
+                            <CardTitle>SUPERLATIVOS (Adjective+ EST)</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-6 text-lg">
+                            <div>
+                                <h3 className="text-xl font-bold text-primary">USO</h3>
+                                <p className="mt-2 text-muted-foreground">se emplea para describir un sustantivo que se encuentra en el extremo superior (el mas) ó el inferior (el menos )</p>
+                            </div>
+
+                            <Separator />
+
+                            <div>
+                                <h3 className="text-xl font-bold text-primary">Modificacíon del Adjetivo</h3>
+                                <div className="mt-2 space-y-1 font-mono bg-muted p-4 rounded-lg">
+                                    <p>Tall =&gt; The <span className="font-bold">TALLEST</span> (el más alto)</p>
+                                    <p>Fast =&gt; The <span className="font-bold">FASTEST</span> (el más rapido)</p>
+                                </div>
+                            </div>
+
+                            <Separator />
+
+                            <div>
+                                <h3 className="text-xl font-bold text-primary">ESTRUCTURA</h3>
+                                <p className="mt-2 font-mono bg-muted p-4 rounded-lg">sustantivo + verbo + THE + Adjetivo superlativo + Sustantivos ó complemento</p>
+                            </div>
+                            
+                            <Separator />
+                            
+                            <div>
+                                <h3 className="text-xl font-bold text-primary">TOPICS</h3>
+                                <ul className="mt-2 list-disc list-inside space-y-2 text-base">
+                                    <li><span className="font-semibold">1- Monosilabos:</span> Adjetivos Cortos (Adjective + EST)</li>
+                                    <li><span className="font-semibold">2- Bisilabos:</span> Adjetivos con 2 silabas (Adjective + EST)</li>
+                                    <li><span className="font-semibold">3- Adjetivos Largos:</span> Tienen mas de 2 silabas (The Most + adjetivos largo)</li>
+                                    <li><span className="font-semibold">4- Adjetivos Irregulares:</span> Cambian en todas sus formas</li>
+                                </ul>
+                            </div>
+                        </CardContent>
+                    </Card>
+                );
+            case 'ejercicio-superlativo':
+                return <SuperlativeExercise onComplete={() => setTopicToComplete('ejercicio-superlativo')} />;
+            case 'grammar-mixto':
+                return (
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                        <CardHeader>
+                            <CardTitle>Grammar Mixto: Reglas de Ortografía</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-6 text-lg">
+                            <p className='text-base text-muted-foreground'>PARA LA FORMACION DE LOS GRADOS COMPARATIVOS Y SUPERLATIVO  DE LOS ADJETIVOS  ‘’CORTOS’’, DEBEN TENERSE EN CUENTA LAS SIGUIENTES CONSIDERACIONES:</p>
+                            <ol className="list-decimal list-inside space-y-4">
+                                <li>
+                                    <span className='font-semibold'>LOS QUE TERMINAN EN ‘’-E’’ SOLO AÑADEN ‘’-R’’ Y ‘’-ST’’.</span>
+                                    <div className="mt-2 space-y-1 font-mono bg-muted p-4 rounded-lg text-base">
+                                        <p>NICE - NICER – THE NICEST</p>
                                     </div>
-                                </React.Fragment>
-                            ))}
-                        </div>
-                    </CardContent>
-                    <CardFooter className="flex justify-between">
-                        <Button onClick={handleCheckVocab}>Verificar Vocabulario</Button>
-                        <Button 
-                            onClick={() => {
-                                handleTopicComplete('vocabulario');
-                                setSelectedTopic('comparativos');
-                            }} 
-                            disabled={!canAdvanceFromVocab}
-                        >
-                            Avanzar
-                        </Button>
-                    </CardFooter>
-                </Card>
-            );
+                                </li>
+                                <li>
+                                    <span className='font-semibold'>LOS QUE TERMINAN EN ‘’-Y’’ PRECEDIDA DE CONSONANTE, CAMBIAN LA ‘’Y’’ POR ‘’I’’-</span>
+                                    <div className="mt-2 space-y-1 font-mono bg-muted p-4 rounded-lg text-base">
+                                        <p>EASY-EASIER- THE EASIEST</p>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span className='font-semibold'>LOS QUE TERMINAN EN ‘’-Y’’ PRECEDIDA POR VOCAL, MANTIENEN LA REGLA GENERAL-</span>
+                                    <div className="mt-2 space-y-1 font-mono bg-muted p-4 rounded-lg text-base">
+                                        <p>GRAY- GRAYER- THE GRAYEST</p>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span className='font-semibold'>LOS TERMINADOS EN UNA SOLA CONSONANTE PRECEDIDA DE VOCAL, DOBLAN LA CONSONANTE ANTES DE LAS TERMINACIONES:</span>
+                                    <div className="mt-2 space-y-1 font-mono bg-muted p-4 rounded-lg text-base">
+                                        <p>BIG- BIGGER- THE BIGGEST</p>
+                                        <p>HOT- HOTTER- THE HOTTEST</p>
+                                    </div>
+                                    <p className="text-sm text-muted-foreground italic mt-2">– excepción: new</p>
+                                </li>
+                            </ol>
+                        </CardContent>
+                    </Card>
+                );
+            case 'monosilabos':
+                return <SyllableExercise data={monosyllabicData} title="Monosilabos" description="Completa la tabla con las formas correctas de los adjetivos monosilábicos." onComplete={() => setTopicToComplete('monosilabos')} columnHeaders={{adjective: 'MONOSILABOS (ADJETIVO)', comparative: 'COMPARATIVO (ADJETIVO + ER)', superlative: 'SUPERLATIVO (ADJETIVO + EST)'}} />;
+            case 'ejercicio-monosilabos':
+                return <MonosyllabicExercise onComplete={() => setTopicToComplete('ejercicio-monosilabos')} />;
+            case 'bisilabos':
+                return <SyllableExercise data={bisyllabicData} title="Bisílabos" description="Completa la tabla con las formas correctas de los adjetivos bisilábicos." onComplete={() => setTopicToComplete('bisilabos')} columnHeaders={{ adjective: "BISILABOS (ADJETIVO)", comparative: "COMPARATIVO", superlative: "SUPERLATIVO" }} />;
+            case 'ejercicio-bisilabos':
+                return <BisyllabicExercise onComplete={() => setTopicToComplete('ejercicio-bisilabos')} />;
+            case 'largos':
+                return <SyllableExercise data={longAdjectivesData} title="Adjetivos Largos" description="Completa la tabla con las formas correctas de los adjetivos largos." onComplete={() => setTopicToComplete('largos')} columnHeaders={{ adjective: 'ADJETIVOS LARGOS.', comparative: 'COMPARATIVO (MORE + ADJETIVO + THAN)', superlative: 'SUPERLATIVO (THE MOST + ADJETIVO)' }} />;
+            case 'irregulares':
+                return <SyllableExercise data={irregularAdjectivesData} title="Adjetivos Irregulares" description="Completa la tabla con las formas correctas de los adjetivos irregulares." onComplete={() => setTopicToComplete('irregulares')} columnHeaders={{ adjective: 'ADJETIVOS IRREGULARES.', comparative: 'COMPARATIVO', superlative: 'SUPERLATIVO' }} />;
+            default:
+                const isExercise = ['mixtos', 'sopa_letras', 'mixtos2', 'ejercicio-largos', 'ejercicio-irregulares'].includes(selectedTopic);
+                if (isExercise) {
+                    return (
+                        <Card>
+                            <CardHeader><CardTitle>{topic?.name}</CardTitle></CardHeader>
+                            <CardContent>
+                                <p>Contenido para {topic?.name} estará disponible pronto.</p>
+                                <Button className="mt-4" onClick={() => setTopicToComplete(selectedTopic)}>Completar Ejercicio</Button>
+                            </CardContent>
+                        </Card>
+                    );
+                }
+                return (
+                    <Card>
+                        <CardHeader><CardTitle>{topic?.name}</CardTitle></CardHeader>
+                        <CardContent>
+                            <p>Contenido para {topic?.name} estará disponible pronto.</p>
+                        </CardContent>
+                    </Card>
+                );
         }
-
-        if (selectedTopic === 'comparativos') {
-            return (
-                <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-                    <CardHeader>
-                        <CardTitle>LOS ADJETIVOS EN GRADO COMPARATIVO: (ADJETIVO + ER)</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-6 text-lg">
-                        <div>
-                            <h3 className="text-xl font-bold text-primary">USO</h3>
-                            <p className="mt-2 text-muted-foreground">se usa en inglés para comparar diferencias entre los dos sustantivos a los que modifica.</p>
-                        </div>
-
-                        <Separator />
-
-                        <div>
-                            <h3 className="text-xl font-bold text-primary">Modificación del Adjetivo</h3>
-                            <div className="mt-2 space-y-1 font-mono bg-muted p-4 rounded-lg">
-                                <p>small =&gt; <span className="font-bold">SMALLER</span> (más pequeño que )</p>
-                                <p>high =&gt; <span className="font-bold">HIGHER</span> (más alto que )</p>
-                            </div>
-                        </div>
-
-                        <Separator />
-
-                        <div>
-                            <h3 className="text-xl font-bold text-primary">Estructura</h3>
-                            <p className="mt-2 font-mono bg-muted p-4 rounded-lg">sustantivo + verbo + adjetivo comparativo + than + sustantivo</p>
-                        </div>
-                        
-                        <Separator />
-                        
-                        <div>
-                            <h3 className="text-xl font-bold text-primary">TOPICS</h3>
-                            <ul className="mt-2 list-disc list-inside space-y-2 text-base">
-                                <li><span className="font-semibold">Monosilabos:</span> Adjetivos Cortos (Adjective + ER)</li>
-                                <li><span className="font-semibold">Bisilabos:</span> Adjetivos con 2 silabas (Adjective + ER)</li>
-                                <li><span className="font-semibold">Adjetivos Largos:</span> Tienen mas de 2 silabas (more + adjetivos largo + than)</li>
-                                <li><span className="font-semibold">Adjetivos Irregulares:</span> Cambian en todas sus formas</li>
-                            </ul>
-                        </div>
-                    </CardContent>
-                </Card>
-            );
-        }
-        
-        if (selectedTopic === 'ejercicio-comparativo') {
-            return <ComparativeExercise onComplete={() => setTopicToComplete('ejercicio-comparativo')} />;
-        }
-        
-        if (selectedTopic === 'superlativos') {
-            return (
-                <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-                    <CardHeader>
-                        <CardTitle>SUPERLATIVOS (Adjective+ EST)</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-6 text-lg">
-                        <div>
-                            <h3 className="text-xl font-bold text-primary">USO</h3>
-                            <p className="mt-2 text-muted-foreground">se emplea para describir un sustantivo que se encuentra en el extremo superior (el mas) ó el inferior (el menos )</p>
-                        </div>
-
-                        <Separator />
-
-                        <div>
-                            <h3 className="text-xl font-bold text-primary">Modificacíon del Adjetivo</h3>
-                            <div className="mt-2 space-y-1 font-mono bg-muted p-4 rounded-lg">
-                                <p>Tall =&gt; The <span className="font-bold">TALLEST</span> (el más alto)</p>
-                                <p>Fast =&gt; The <span className="font-bold">FASTEST</span> (el más rapido)</p>
-                            </div>
-                        </div>
-
-                        <Separator />
-
-                        <div>
-                            <h3 className="text-xl font-bold text-primary">ESTRUCTURA</h3>
-                            <p className="mt-2 font-mono bg-muted p-4 rounded-lg">sustantivo + verbo + THE + Adjetivo superlativo + Sustantivos ó complemento</p>
-                        </div>
-                        
-                        <Separator />
-                        
-                        <div>
-                            <h3 className="text-xl font-bold text-primary">TOPICS</h3>
-                            <ul className="mt-2 list-disc list-inside space-y-2 text-base">
-                                <li><span className="font-semibold">1- Monosilabos:</span> Adjetivos Cortos (Adjective + EST)</li>
-                                <li><span className="font-semibold">2- Bisilabos:</span> Adjetivos con 2 silabas (Adjective + EST)</li>
-                                <li><span className="font-semibold">3- Adjetivos Largos:</span> Tienen mas de 2 silabas (The Most + adjetivos largo)</li>
-                                <li><span className="font-semibold">4- Adjetivos Irregulares:</span> Cambian en todas sus formas</li>
-                            </ul>
-                        </div>
-                    </CardContent>
-                </Card>
-            );
-        }
-
-        if (selectedTopic === 'ejercicio-superlativo') {
-            return <SuperlativeExercise onComplete={() => setTopicToComplete('ejercicio-superlativo')} />;
-        }
-
-        if (selectedTopic === 'grammar-mixto') {
-            return (
-                <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-                    <CardHeader>
-                        <CardTitle>Grammar Mixto: Reglas de Ortografía</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-6 text-lg">
-                        <p className='text-base text-muted-foreground'>PARA LA FORMACION DE LOS GRADOS COMPARATIVOS Y SUPERLATIVO  DE LOS ADJETIVOS  ‘’CORTOS’’, DEBEN TENERSE EN CUENTA LAS SIGUIENTES CONSIDERACIONES:</p>
-                        <ol className="list-decimal list-inside space-y-4">
-                            <li>
-                                <span className='font-semibold'>LOS QUE TERMINAN EN ‘’-E’’ SOLO AÑADEN ‘’-R’’ Y ‘’-ST’’.</span>
-                                <div className="mt-2 space-y-1 font-mono bg-muted p-4 rounded-lg text-base">
-                                    <p>NICE - NICER – THE NICEST</p>
-                                </div>
-                            </li>
-                             <li>
-                                <span className='font-semibold'>LOS QUE TERMINAN EN ‘’-Y’’ PRECEDIDA DE CONSONANTE, CAMBIAN LA ‘’Y’’ POR ‘’I’’-</span>
-                                <div className="mt-2 space-y-1 font-mono bg-muted p-4 rounded-lg text-base">
-                                    <p>EASY-EASIER- THE EASIEST</p>
-                                </div>
-                            </li>
-                             <li>
-                                <span className='font-semibold'>LOS QUE TERMINAN EN ‘’-Y’’ PRECEDIDA POR VOCAL, MANTIENEN LA REGLA GENERAL-</span>
-                                 <div className="mt-2 space-y-1 font-mono bg-muted p-4 rounded-lg text-base">
-                                    <p>GRAY- GRAYER- THE GRAYEST</p>
-                                </div>
-                            </li>
-                             <li>
-                                <span className='font-semibold'>LOS TERMINADOS EN UNA SOLA CONSONANTE PRECEDIDA DE VOCAL, DOBLAN LA CONSONANTE ANTES DE LAS TERMINACIONES:</span>
-                                <div className="mt-2 space-y-1 font-mono bg-muted p-4 rounded-lg text-base">
-                                    <p>BIG- BIGGER- THE BIGGEST</p>
-                                    <p>HOT- HOTTER- THE HOTTEST</p>
-                                </div>
-                                <p className="text-sm text-muted-foreground italic mt-2">– excepción: new</p>
-                            </li>
-                        </ol>
-                    </CardContent>
-                </Card>
-            );
-        }
-
-        if (selectedTopic === 'monosilabos') {
-            return (
-                <SyllableExercise
-                    data={monosyllabicData}
-                    title="Monosilabos"
-                    description="Completa la tabla con las formas correctas de los adjetivos monosilábicos."
-                    onComplete={() => setTopicToComplete('monosilabos')}
-                    columnHeaders={{
-                        adjective: "MONOSILABOS (ADJETIVO)",
-                        comparative: "COMPARATIVO (ADJETIVO + ER)",
-                        superlative: "SUPERLATIVO (ADJETIVO + EST)",
-                    }}
-                />
-            );
-        }
-        
-        if (selectedTopic === 'ejercicio-monosilabos') {
-            return <MonosyllabicExercise onComplete={() => setTopicToComplete('ejercicio-monosilabos')} />;
-        }
-
-        if (selectedTopic === 'bisilabos') {
-            return (
-                <SyllableExercise
-                    data={bisyllabicData}
-                    title="Bisílabos"
-                    description="Completa la tabla con las formas correctas de los adjetivos bisilábicos."
-                    onComplete={() => setTopicToComplete('bisilabos')}
-                     columnHeaders={{
-                        adjective: "BISILABOS (ADJETIVO)",
-                        comparative: "COMPARATIVO",
-                        superlative: "SUPERLATIVO",
-                    }}
-                />
-            );
-        }
-        
-        if (selectedTopic === 'largos') {
-            return (
-                <SyllableExercise
-                    data={longAdjectivesData}
-                    title="Adjetivos Largos"
-                    description="Completa la tabla con las formas correctas de los adjetivos largos."
-                    onComplete={() => setTopicToComplete('largos')}
-                    columnHeaders={{
-                        adjective: "ADJETIVOS LARGOS.",
-                        comparative: "COMPARATIVO (MORE + ADJETIVO + THAN)",
-                        superlative: "SUPERLATIVO (THE MOST + ADJETIVO)",
-                    }}
-                />
-            );
-        }
-        
-        if (selectedTopic === 'irregulares') {
-            return (
-                <SyllableExercise
-                    data={irregularAdjectivesData}
-                    title="Adjetivos Irregulares"
-                    description="Completa la tabla con las formas correctas de los adjetivos irregulares."
-                    onComplete={() => setTopicToComplete('irregulares')}
-                    columnHeaders={{
-                        adjective: "ADJETIVOS IRREGULARES.",
-                        comparative: "COMPARATIVO",
-                        superlative: "SUPERLATIVO",
-                    }}
-                />
-            );
-        }
-
-        const isExercise = ['mixtos', 'sopa_letras', 'mixtos2', 'ejercicio-monosilabos', 'ejercicio-bisilabos', 'ejercicio-largos', 'ejercicio-irregulares'].includes(selectedTopic);
-        if (isExercise) {
-            return (
-                <Card>
-                    <CardHeader><CardTitle>{topic?.name}</CardTitle></CardHeader>
-                    <CardContent>
-                        <p>Contenido para {topic?.name} estará disponible pronto.</p>
-                        <Button className="mt-4" onClick={() => setTopicToComplete(selectedTopic)}>Completar Ejercicio</Button>
-                    </CardContent>
-                </Card>
-            );
-        }
-        
-        return (
-            <Card>
-                <CardHeader><CardTitle>{topic?.name}</CardTitle></CardHeader>
-                <CardContent>
-                    <p>Contenido para {topic?.name} estará disponible pronto.</p>
-                </CardContent>
-            </Card>
-        );
     };
 
     return (
