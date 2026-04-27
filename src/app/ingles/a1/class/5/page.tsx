@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Input } from '@/components/ui/input';
 import { ErrorCorrectionExercise, type ErrorCorrectionPrompt } from '@/components/kids/exercises/error-correction-exercise';
+import { PresentSimpleExercise, type ExercisePrompt } from '@/components/kids/exercises/present-simple';
 
 type Topic = {
   key: string;
@@ -78,6 +79,121 @@ const exercise1Data: ErrorCorrectionPrompt[] = [
     { incorrect: "SHE STUDYS ITALIANO END ESPANISH.", translationHint: "(ELLA ESTUDIA ITALIANO Y ESPAÑOL)", correctAnswers: ["she studies italian and spanish"] },
     { incorrect: "THEY DON’T ARE OUR TEACHERS", translationHint: "(ELLOS NO SON NUESTROS PROFESORES)", correctAnswers: ["they are not our teachers", "they aren't our teachers"] },
     { incorrect: "DO YOU WORK ARE IN JON COMPANY?", translationHint: "(¿TRABAJAS EN LA EMPRESA DE JON?)", correctAnswers: ["do you work in jon's company?"] }
+];
+
+const class5Exercise2Data: ExercisePrompt[] = [
+    {
+        spanish: "EL BEBE LECHE",
+        answers: {
+            affirmative: ["he drinks milk"],
+            negative: ["he does not drink milk", "he doesn't drink milk"],
+            interrogative: ["does he drink milk?"],
+        }
+    },
+    {
+        spanish: "EL JUEGA FUTBOL CON SU HERMANO",
+        answers: {
+            affirmative: ["he plays soccer with his brother", "he plays football with his brother"],
+            negative: ["he does not play soccer with his brother", "he doesn't play soccer with his brother", "he does not play football with his brother", "he doesn't play football with his brother"],
+            interrogative: ["does he play soccer with his brother?", "does he play football with his brother?"],
+        }
+    },
+    {
+        spanish: "YO NADO LOS DOMINGOS",
+        answers: {
+            affirmative: ["i swim on sundays"],
+            negative: ["i do not swim on sundays", "i don't swim on sundays"],
+            interrogative: ["do i swim on sundays?"],
+        }
+    },
+    {
+        spanish: "TU TRABAJAS LOS SABADOS",
+        answers: {
+            affirmative: ["you work on saturdays"],
+            negative: ["you do not work on saturdays", "you don't work on saturdays"],
+            interrogative: ["do you work on saturdays?"],
+        }
+    },
+    {
+        spanish: "ELLA VE PELICULAS CON SU FAMILIA",
+        answers: {
+            affirmative: ["she watches movies with her family"],
+            negative: ["she does not watch movies with her family", "she doesn't watch movies with her family"],
+            interrogative: ["does she watch movies with her family?"],
+        }
+    },
+    {
+        spanish: "EL COME PIZZA CON SU NOVIA",
+        answers: {
+            affirmative: ["he eats pizza with his girlfriend"],
+            negative: ["he does not eat pizza with his girlfriend", "he doesn't eat pizza with his girlfriend"],
+            interrogative: ["does he eat pizza with his girlfriend?"],
+        }
+    },
+    {
+        spanish: "YO ESTUDIO INGLES DURANTE LA SEMANA",
+        answers: {
+            affirmative: ["i study english during the week"],
+            negative: ["i do not study english during the week", "i don't study english during the week"],
+            interrogative: ["do i study english during the week?"],
+        }
+    },
+    {
+        spanish: "A ELLA LE GUSTA VIAJAR",
+        answers: {
+            affirmative: ["she likes to travel"],
+            negative: ["she does not like to travel", "she doesn't like to travel"],
+            interrogative: ["does she like to travel?"],
+        }
+    },
+    {
+        spanish: "NOSOTROS COMPRAMOS UNA CASA",
+        answers: {
+            affirmative: ["we buy a house"],
+            negative: ["we do not buy a house", "we don't buy a house"],
+            interrogative: ["do we buy a house?"],
+        }
+    },
+    {
+        spanish: "ELLA COCINA PASTA",
+        answers: {
+            affirmative: ["she cooks pasta"],
+            negative: ["she does not cook pasta", "she doesn't cook pasta"],
+            interrogative: ["does she cook pasta?"],
+        }
+    },
+    {
+        spanish: "ELLOS SON TUS PRIMOS",
+        answers: {
+            affirmative: ["they are your cousins"],
+            negative: ["they are not your cousins", "they aren't your cousins"],
+            interrogative: ["are they your cousins?"],
+        }
+    },
+    {
+        spanish: "NOSOTROS VAMOS A LA ESCUELA",
+        answers: {
+            affirmative: ["we go to school"],
+            negative: ["we do not go to school", "we don't go to school"],
+            interrogative: ["do we go to school?"],
+        }
+    },
+    {
+        spanish: "ELLA ES SU ESPOSA (de él)",
+        answers: {
+            affirmative: ["she is his wife"],
+            negative: ["she is not his wife", "she isn't his wife"],
+            interrogative: ["is she his wife?"],
+        }
+    },
+    {
+        spanish: "ELLOS TRABAJAN EN LA MAÑANA",
+        answers: {
+            affirmative: ["they work in the morning"],
+            negative: ["they do not work in the morning", "they don't work in the morning"],
+            interrogative: ["do they work in the morning?"],
+        }
+    }
 ];
 
 export default function EngA1Class5Page() {
@@ -503,6 +619,17 @@ export default function EngA1Class5Page() {
                     exerciseData={exercise1Data}
                     onComplete={() => handleTopicComplete('ejercicio-1')}
                     title="Ejercicio 1: Encuentra el error"
+                />
+            );
+        }
+
+        if (selectedTopic === 'ejercicio-2') {
+            return (
+                <PresentSimpleExercise
+                    exerciseData={class5Exercise2Data}
+                    onComplete={() => handleTopicComplete('ejercicio-2')}
+                    title="Ejercicio 2: Transforma"
+                    showShortAnswers={false}
                 />
             );
         }
