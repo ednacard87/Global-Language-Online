@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { DashboardHeader } from '@/components/dashboard/header';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { BookOpen, PenSquare, Lock, CheckCircle, Info } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
@@ -12,6 +12,7 @@ import { Progress } from '@/components/ui/progress';
 import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 type Topic = {
   key: string;
@@ -22,6 +23,42 @@ type Topic = {
 
 const progressStorageVersion = 'progress_a1_eng_unit_1_class_5_v1';
 const mainProgressKey = 'progress_a1_eng_unit_1_class_5';
+
+const vocabularyData = {
+    verbos: [
+        { spanish: 'SALTAR', english: 'JUMP' },
+        { spanish: 'QUERER', english: 'WANT' },
+        { spanish: 'PODER', english: 'CAN' },
+        { spanish: 'DEBER', english: 'SHOULD' },
+        { spanish: 'VIAJAR', english: 'TRAVEL' },
+        { spanish: 'LLAMAR', english: 'CALL' },
+        { spanish: 'MANEJAR', english: 'DRIVE' },
+        { spanish: 'COCINAR', english: 'COOK' },
+        { spanish: 'LEVANTARSE', english: 'GET UP' },
+        { spanish: 'ESTAR DE PIE', english: 'STAND UP' },
+        { spanish: 'DESPERTARSE', english: 'WAKE UP' },
+        { spanish: 'RECIBIR', english: 'RECEIVE' },
+        { spanish: 'ENVIAR', english: 'SEND' },
+        { spanish: 'VIVIR', english: 'LIVE' },
+        { spanish: 'TOMAR- AGARRAR', english: 'TAKE' },
+        { spanish: 'ABRIR', english: 'OPEN' },
+        { spanish: 'CERRAR', english: 'CLOSE' },
+        { spanish: 'VENIR', english: 'COME' },
+        { spanish: 'LLEGAR', english: 'ARRIVE' },
+    ],
+    adjetivos: [
+        { spanish: 'ABURRIDO', english: 'BORED' },
+        { spanish: 'CANSADO', english: 'TIRED' },
+        { spanish: 'HAMBRIENTO', english: 'HUNGRY' },
+        { spanish: 'ENOJADO', english: 'ANGRY' },
+        { spanish: 'PREOCUPADO', english: 'WORRIED' },
+        { spanish: 'SEDIENTO-CON SED', english: 'THIRSTY' },
+        { spanish: 'PESADO', english: 'HEAVY' },
+        { spanish: 'LIVIANO', english: 'LIGHT' },
+        { spanish: 'TRISTE', english: 'SAD' },
+        { spanish: 'OCUPADO', english: 'BUSY' },
+    ]
+};
 
 export default function EngA1Class5Page() {
     const { t } = useTranslation();
@@ -141,6 +178,57 @@ export default function EngA1Class5Page() {
     
     const renderContent = () => {
         const topic = learningPath.find(t => t.key === selectedTopic);
+
+        if (selectedTopic === 'vocabulary') {
+            return (
+                <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                    <CardHeader>
+                        <CardTitle>Vocabulario</CardTitle>
+                        <CardDescription>Verbos y Adjetivos Básicos</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <Accordion type="multiple" defaultValue={['verbos', 'adjetivos']} className="w-full">
+                            <AccordionItem value="verbos">
+                                <AccordionTrigger className="text-lg font-semibold">Verbos</AccordionTrigger>
+                                <AccordionContent>
+                                    <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-base">
+                                        <div className="font-bold p-3 bg-muted rounded-lg">Español</div>
+                                        <div className="font-bold p-3 bg-muted rounded-lg">Inglés</div>
+                                        {vocabularyData.verbos.map((word, index) => (
+                                            <React.Fragment key={`verbo-${index}`}>
+                                                <div className="p-3 bg-card border rounded-lg flex items-center">{word.spanish}</div>
+                                                <div className="p-3 bg-card border rounded-lg flex items-center font-semibold">{word.english}</div>
+                                            </React.Fragment>
+                                        ))}
+                                    </div>
+                                </AccordionContent>
+                            </AccordionItem>
+                            <AccordionItem value="adjetivos">
+                                <AccordionTrigger className="text-lg font-semibold">Adjetivos Básicos</AccordionTrigger>
+                                <AccordionContent>
+                                    <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-base">
+                                        <div className="font-bold p-3 bg-muted rounded-lg">Español</div>
+                                        <div className="font-bold p-3 bg-muted rounded-lg">Inglés</div>
+                                        {vocabularyData.adjetivos.map((word, index) => (
+                                            <React.Fragment key={`adj-${index}`}>
+                                                <div className="p-3 bg-card border rounded-lg flex items-center">{word.spanish}</div>
+                                                <div className="p-3 bg-card border rounded-lg flex items-center font-semibold">{word.english}</div>
+                                            </React.Fragment>
+                                        ))}
+                                    </div>
+                                </AccordionContent>
+                            </AccordionItem>
+                        </Accordion>
+                    </CardContent>
+                    <CardFooter>
+                       <Button onClick={() => handleTopicComplete('vocabulary')}>
+                           Continuar
+                       </Button>
+                   </CardFooter>
+                </Card>
+            );
+        }
+
         return (
             <Card className="shadow-soft rounded-lg border-2 border-brand-purple min-h-[500px]">
               <CardHeader>
