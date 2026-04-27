@@ -13,6 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
+import { ComparativeExercise } from '@/components/kids/exercises/comparative-exercise';
 
 type Topic = {
   key: string;
@@ -280,6 +281,10 @@ export default function ComparativosSuperlativosPage() {
             );
         }
         
+        if (selectedTopic === 'ejercicio-comparativo') {
+            return <ComparativeExercise onComplete={() => setTopicToComplete('ejercicio-comparativo')} />;
+        }
+        
         if (selectedTopic === 'superlativos') {
             return (
                 <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
@@ -366,7 +371,7 @@ export default function ComparativosSuperlativosPage() {
             );
         }
 
-        const isExercise = ['mixtos', 'sopa_letras', 'mixtos2', 'ejercicio-comparativo', 'ejercicio-superlativo'].includes(selectedTopic);
+        const isExercise = ['mixtos', 'sopa_letras', 'mixtos2', 'ejercicio-superlativo'].includes(selectedTopic);
         return (
             <Card>
                 <CardHeader><CardTitle>{topic?.name}</CardTitle></CardHeader>
