@@ -14,6 +14,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { ComparativeExercise } from '@/components/kids/exercises/comparative-exercise';
+import { SuperlativeExercise } from '@/components/kids/exercises/superlative-exercise';
 
 type Topic = {
   key: string;
@@ -330,6 +331,10 @@ export default function ComparativosSuperlativosPage() {
             );
         }
 
+        if (selectedTopic === 'ejercicio-superlativo') {
+            return <SuperlativeExercise onComplete={() => setTopicToComplete('ejercicio-superlativo')} />;
+        }
+
         if (selectedTopic === 'grammar-mixto') {
             return (
                 <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
@@ -358,7 +363,7 @@ export default function ComparativosSuperlativosPage() {
                                 </div>
                             </li>
                              <li>
-                                <span className='font-semibold'>LOS TERMINADOS EN UNA SOLA CONSONANTE PRECEDIDA DE VOCAL, DOBLAN LA CONSONANTE ANTES DE LAS TERMINACIONES</span>
+                                <span className='font-semibold'>LOS TERMINADOS EN UNA SOLA CONSONANTE PRECEDIDA DE VOCAL, DOBLAN LA CONSONANTE ANTES DE LAS TERMINACIONES:</span>
                                 <div className="mt-2 space-y-1 font-mono bg-muted p-4 rounded-lg text-base">
                                     <p>BIG - BIGGER – THE BIGGEST</p>
                                     <p>HOT - HOTTER – THE HOTTEST</p>
@@ -371,7 +376,7 @@ export default function ComparativosSuperlativosPage() {
             );
         }
 
-        const isExercise = ['mixtos', 'sopa_letras', 'mixtos2', 'ejercicio-superlativo'].includes(selectedTopic);
+        const isExercise = ['mixtos', 'sopa_letras', 'mixtos2', 'ejercicio-comparativo', 'ejercicio-superlativo'].includes(selectedTopic);
         return (
             <Card>
                 <CardHeader><CardTitle>{topic?.name}</CardTitle></CardHeader>
