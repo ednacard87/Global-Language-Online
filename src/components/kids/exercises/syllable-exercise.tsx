@@ -22,6 +22,11 @@ interface SyllableExerciseProps {
     title: string;
     description: string;
     onComplete: () => void;
+    columnHeaders: {
+        adjective: string;
+        comparative: string;
+        superlative: string;
+    };
 }
 
 type UserAnswers = {
@@ -34,7 +39,7 @@ type ValidationStatus = 'correct' | 'incorrect' | 'unchecked';
 
 type ValidationState = Record<keyof UserAnswers, ValidationStatus>;
 
-export function SyllableExercise({ data, title, description, onComplete }: SyllableExerciseProps) {
+export function SyllableExercise({ data, title, description, onComplete, columnHeaders }: SyllableExerciseProps) {
     const { toast } = useToast();
     const [userAnswers, setUserAnswers] = useState<UserAnswers[]>(Array(data.length).fill({ adjective: '', comparative: '', superlative: '' }));
     const [validationStatus, setValidationStatus] = useState<ValidationState[]>(Array(data.length).fill({ adjective: 'unchecked', comparative: 'unchecked', superlative: 'unchecked' }));
@@ -119,9 +124,9 @@ export function SyllableExercise({ data, title, description, onComplete }: Sylla
                         <thead>
                             <tr className="border-b">
                                 <th className="p-2 text-left font-semibold text-muted-foreground">ADJETIVO (Español)</th>
-                                <th className="p-2 text-left font-semibold text-muted-foreground">MONOSILABOS (ADJETIVO)</th>
-                                <th className="p-2 text-left font-semibold text-muted-foreground">COMPARATIVO (ADJETIVO + ER)</th>
-                                <th className="p-2 text-left font-semibold text-muted-foreground">SUPERLATIVO (ADJETIVO + EST)</th>
+                                <th className="p-2 text-left font-semibold text-muted-foreground">{columnHeaders.adjective}</th>
+                                <th className="p-2 text-left font-semibold text-muted-foreground">{columnHeaders.comparative}</th>
+                                <th className="p-2 text-left font-semibold text-muted-foreground">{columnHeaders.superlative}</th>
                             </tr>
                         </thead>
                         <tbody>

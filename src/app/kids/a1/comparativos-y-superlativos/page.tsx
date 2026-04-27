@@ -63,6 +63,15 @@ const monosyllabicData: SyllableExerciseData = [
     { spanish: 'CALIDO', answers: { adjective: 'warm', comparative: 'warmer', superlative: 'the warmest' } },
 ];
 
+const bisyllabicData: SyllableExerciseData = [
+    { spanish: 'FACIL', answers: { adjective: 'easy', comparative: 'easier', superlative: 'the easiest' } },
+    { spanish: 'FELIZ', answers: { adjective: 'happy', comparative: 'happier', superlative: 'the happiest' } },
+    { spanish: 'LOCO', answers: { adjective: 'crazy', comparative: 'crazier', superlative: 'the craziest' } },
+    { spanish: 'PESADO', answers: { adjective: 'heavy', comparative: 'heavier', superlative: 'the heaviest' } },
+    { spanish: 'TIERNO', answers: { adjective: 'tender', comparative: 'tenderer', superlative: 'the tenderest' } },
+    { spanish: 'ESTRECHO', answers: { adjective: 'narrow', comparative: 'narrower', superlative: 'the narrowest' } },
+];
+
 export default function ComparativosSuperlativosPage() {
     const { toast } = useToast();
     const { user, isUserLoading } = useUser();
@@ -294,7 +303,7 @@ export default function ComparativosSuperlativosPage() {
                             <ul className="mt-2 list-disc list-inside space-y-2 text-base">
                                 <li><span className="font-semibold">Monosilabos:</span> Adjetivos Cortos (Adjective + ER)</li>
                                 <li><span className="font-semibold">Bisilabos:</span> Adjetivos con 2 sílabas (Adjective + ER)</li>
-                                <li><span className="font-semibold">Adjetivos Largos:</span> Tienen más de 2 sílabas (more + adjetivo largo + than)</li>
+                                <li><span className="font-semibold">Adjetivos Largos:</span> Tienen más de 2 sílabas (more + adjetivos largo + than)</li>
                                 <li><span className="font-semibold">Adjetivos Irregulares:</span> Cambian en todas sus formas</li>
                             </ul>
                         </div>
@@ -404,6 +413,11 @@ export default function ComparativosSuperlativosPage() {
                     title="Monosílabos"
                     description="Completa la tabla con las formas correctas de los adjetivos monosilábicos."
                     onComplete={() => setTopicToComplete('monosilabos')}
+                    columnHeaders={{
+                        adjective: "MONOSILABOS (ADJETIVO)",
+                        comparative: "COMPARATIVO (ADJETIVO + ER)",
+                        superlative: "SUPERLATIVO (ADJETIVO + EST)",
+                    }}
                 />
             );
         }
@@ -411,10 +425,15 @@ export default function ComparativosSuperlativosPage() {
         if (selectedTopic === 'bisilabos') {
             return (
                 <SyllableExercise
-                    data={monosyllabicData}
+                    data={bisyllabicData}
                     title="Bisílabos"
                     description="Completa la tabla con las formas correctas de los adjetivos bisilábicos."
                     onComplete={() => setTopicToComplete('bisilabos')}
+                     columnHeaders={{
+                        adjective: "BISILABOS (ADJETIVO)",
+                        comparative: "COMPARATIVO",
+                        superlative: "SUPERLATIVO",
+                    }}
                 />
             );
         }
