@@ -43,12 +43,12 @@ export function SyllableExercise({ data, title, description, onComplete, columnH
     const { toast } = useToast();
     const [userAnswers, setUserAnswers] = useState<UserAnswers[]>([]);
     const [validationStatus, setValidationStatus] = useState<ValidationState[]>([]);
-    const [showCompletionMessage, setShowCompletionMessage] = useState(false);
+    const [canAdvance, setCanAdvance] = useState(false);
 
     useEffect(() => {
         setUserAnswers(Array(data.length).fill({ adjective: '', comparative: '', superlative: '' }));
         setValidationStatus(Array(data.length).fill({ adjective: 'unchecked', comparative: 'unchecked', superlative: 'unchecked' }));
-        setShowCompletionMessage(false);
+        setCanAdvance(false);
     }, [data]);
 
     const handleInputChange = (index: number, field: keyof UserAnswers, value: string) => {
@@ -64,14 +64,14 @@ export function SyllableExercise({ data, title, description, onComplete, columnH
             newValidation[index] = { ...newValidation[index], [field]: 'unchecked' };
             setValidationStatus(newValidation);
         }
+        setCanAdvance(false);
     };
 
     const handleCheckAnswers = () => {
-        let allCorrect = true;
+        let atLeastOneCorrect = false;
         const newValidationStatus: ValidationState[] = userAnswers.map((answer, index) => {
             const correctData = data[index].answers;
             const newRowStatus: ValidationState = { adjective: 'unchecked', comparative: 'unchecked', superlative: 'unchecked' };
-            let rowCorrect = true;
 
             (Object.keys(correctData) as (keyof UserAnswers)[]).forEach(field => {
                 const userAnswer = (answer ? answer[field] : '').trim().toLowerCase();
@@ -85,30 +85,26 @@ export function SyllableExercise({ data, title, description, onComplete, columnH
 
                 if (isCorrect) {
                     newRowStatus[field] = 'correct';
+                    atLeastOneCorrect = true;
                 } else {
                     newRowStatus[field] = 'incorrect';
-                    rowCorrect = false;
                 }
             });
-
-            if (!rowCorrect) {
-                allCorrect = false;
-            }
             return newRowStatus;
         });
 
         setValidationStatus(newValidationStatus);
 
-        if (allCorrect) {
-            toast({ title: "¡Excelente!", description: "Has completado el ejercicio." });
-            setShowCompletionMessage(true);
-            onComplete();
+        if (atLeastOneCorrect) {
+            toast({ title: "¡Bien hecho!", description: "Has acertado al menos una. ¡Ya puedes avanzar!" });
+            setCanAdvance(true);
         } else {
             toast({
                 variant: 'destructive',
-                title: "Algunas respuestas son incorrectas",
-                description: "Revisa los campos marcados en rojo.",
+                title: "Sigue intentando",
+                description: "Revisa tus respuestas. ¡Necesitas al menos una correcta para avanzar!",
             });
+            setCanAdvance(false);
         }
     };
 
@@ -117,18 +113,6 @@ export function SyllableExercise({ data, title, description, onComplete, columnH
         if (status === 'incorrect') return 'border-destructive focus-visible:ring-destructive';
         return '';
     };
-
-    if (showCompletionMessage) {
-        return (
-            <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-                <CardContent className="p-6 text-center flex flex-col items-center justify-center min-h-[300px]">
-                    <Trophy className="h-16 w-16 text-yellow-400 mb-4" />
-                    <h2 className="text-3xl font-bold">¡Ejercicio Completado!</h2>
-                    <p className="text-muted-foreground mt-2">Has dominado los adjetivos.</p>
-                </CardContent>
-            </Card>
-        );
-    }
 
     return (
         <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
@@ -178,8 +162,9 @@ export function SyllableExercise({ data, title, description, onComplete, columnH
                     </table>
                 </div>
             </CardContent>
-            <CardFooter>
+            <CardFooter className="flex justify-between">
                 <Button onClick={handleCheckAnswers}>Verificar Respuestas</Button>
+                <Button onClick={onComplete} disabled={!canAdvance}>Avanzar</Button>
             </CardFooter>
         </Card>
     );
