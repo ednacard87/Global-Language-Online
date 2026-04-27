@@ -11,9 +11,9 @@ import { Trophy } from 'lucide-react';
 export type SyllableExerciseData = {
     spanish: string;
     answers: {
-        adjective: string;
-        comparative: string;
-        superlative: string;
+        adjective: string | string[];
+        comparative: string | string[];
+        superlative: string | string[];
     };
 }[];
 
@@ -53,6 +53,9 @@ export function SyllableExercise({ data, title, description, onComplete, columnH
 
     const handleInputChange = (index: number, field: keyof UserAnswers, value: string) => {
         const newAnswers = [...userAnswers];
+        if (!newAnswers[index]) {
+            newAnswers[index] = { adjective: '', comparative: '', superlative: '' };
+        }
         newAnswers[index] = { ...newAnswers[index], [field]: value };
         setUserAnswers(newAnswers);
 
@@ -71,7 +74,16 @@ export function SyllableExercise({ data, title, description, onComplete, columnH
             let rowCorrect = true;
 
             (Object.keys(correctData) as (keyof UserAnswers)[]).forEach(field => {
-                if (answer[field].trim().toLowerCase() === correctData[field].toLowerCase()) {
+                const userAnswer = (answer ? answer[field] : '').trim().toLowerCase();
+                const correctValue = correctData[field];
+                let isCorrect = false;
+                if (Array.isArray(correctValue)) {
+                    isCorrect = correctValue.map(v => v.toLowerCase()).includes(userAnswer);
+                } else {
+                    isCorrect = userAnswer === correctValue.toLowerCase();
+                }
+
+                if (isCorrect) {
                     newRowStatus[field] = 'correct';
                 } else {
                     newRowStatus[field] = 'incorrect';
