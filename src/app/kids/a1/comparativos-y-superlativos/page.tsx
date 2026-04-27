@@ -12,6 +12,7 @@ import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Separator } from '@/components/ui/separator';
 
 type Topic = {
   key: string;
@@ -228,6 +229,51 @@ export default function ComparativosSuperlativosPage() {
                             Avanzar
                         </Button>
                     </CardFooter>
+                </Card>
+            );
+        }
+
+        if (selectedTopic === 'gramatica') {
+            return (
+                <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                    <CardHeader>
+                        <CardTitle>LOS ADJETIVOS EN GRADO SUPERLATIVO: (ADJETIVO + EST)</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-6 text-lg">
+                        <div>
+                            <h3 className="text-xl font-bold text-primary">SUPERLATIVOS (Adjective + EST)</h3>
+                            <p className="mt-2 text-muted-foreground"><span className="font-semibold">USO:</span> se emplea para describir un sustantivo que se encuentra en el extremo superior (el más) o el inferior (el menos).</p>
+                        </div>
+
+                        <Separator />
+
+                        <div>
+                            <h3 className="text-xl font-bold text-primary">Modificación del Adjetivo</h3>
+                            <div className="mt-2 space-y-1 font-mono bg-muted p-4 rounded-lg">
+                                <p>Tall =&gt; The <span className="font-bold">TALLEST</span> (el más alto)</p>
+                                <p>Fast =&gt; The <span className="font-bold">FASTEST</span> (el más rápido)</p>
+                            </div>
+                        </div>
+
+                        <Separator />
+
+                        <div>
+                            <h3 className="text-xl font-bold text-primary">ESTRUCTURA</h3>
+                            <p className="mt-2 font-mono bg-muted p-4 rounded-lg">sustantivo + verbo + THE + Adjetivo superlativo + Sustantivos o complemento</p>
+                        </div>
+                        
+                        <Separator />
+                        
+                        <div>
+                            <h3 className="text-xl font-bold text-primary">TOPICS</h3>
+                            <ul className="mt-2 list-disc list-inside space-y-2 text-base">
+                                <li><span className="font-semibold">Monosílabos:</span> Adjetivos Cortos (Adjective + EST)</li>
+                                <li><span className="font-semibold">Bisílabos:</span> Adjetivos con 2 sílabas (Adjective + EST)</li>
+                                <li><span className="font-semibold">Adjetivos Largos:</span> Tienen más de 2 sílabas (The Most + adjetivo largo)</li>
+                                <li><span className="font-semibold">Adjetivos Irregulares:</span> Cambian en todas sus formas</li>
+                            </ul>
+                        </div>
+                    </CardContent>
                 </Card>
             );
         }
