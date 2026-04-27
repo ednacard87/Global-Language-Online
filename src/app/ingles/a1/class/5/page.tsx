@@ -16,6 +16,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Input } from '@/components/ui/input';
 import { ErrorCorrectionExercise, type ErrorCorrectionPrompt } from '@/components/kids/exercises/error-correction-exercise';
 import { PresentSimpleExercise, type ExercisePrompt } from '@/components/kids/exercises/present-simple';
+import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
 
 type Topic = {
   key: string;
@@ -630,6 +631,17 @@ export default function EngA1Class5Page() {
                     onComplete={() => handleTopicComplete('ejercicio-2')}
                     title="Ejercicio 2: Transforma"
                     showShortAnswers={false}
+                />
+            );
+        }
+
+        if (selectedTopic === 'ejercicio-3') {
+             return (
+                 <SimpleTranslationExercise
+                    course="a1"
+                    exerciseKey="c5_mixed3" 
+                    onComplete={() => handleTopicComplete('ejercicio-3')}
+                    title="Ejercicio 3: Adjetivos Posesivos"
                 />
             );
         }

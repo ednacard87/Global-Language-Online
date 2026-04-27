@@ -116,6 +116,17 @@ const exercises = {
             { spanish: 'Placeholder 2 para Clase 2 - Ej 2', english: ['...'] },
         ],
     },
+    c5_mixed3: {
+        title: 'a1class1.exercise',
+        prompts: [
+            { spanish: '¿ELLOS SON SUS PARIENTES? (RELATIVES) (DE ELLA)', english: ["are they her relatives?"] },
+            { spanish: 'ESTA (THIS) NO ES MI CASA', english: ["this is not my house", "this isn't my house"] },
+            { spanish: 'EL GATO ESTA EN SU CASA PEQUEÑA', english: ["the cat is in its small house"] },
+            { spanish: '¿ESTE ES TU CARRO?', english: ["is this your car?"] },
+            { spanish: '¿ERES SU TÍO (UNCLE)? (DE EL)', english: ["are you his uncle?"] },
+            { spanish: 'ELLOS NO SON NUESTROS ABUELOS (GRANDPARENTS)', english: ["they are not our grandparents", "they aren't our grandparents"] },
+        ]
+    }
 };
 
 const guideFishImage = PlaceHolderImages.find(p => p.id === 'guide-fish');
