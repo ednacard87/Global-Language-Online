@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
-import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, Gamepad2, Feather, FileText, Bot } from 'lucide-react';
+import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, Gamepad2, Feather, FileText, Bot, Trophy } from 'lucide-react';
 import { DashboardHeader } from "@/components/dashboard/header";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
@@ -21,6 +21,7 @@ import { BisyllabicExercise } from '@/components/kids/exercises/bisyllabic-exerc
 import { LongAdjectivesExercise } from '@/components/kids/exercises/long-adjectives-exercise';
 import { IrregularAdjectivesExercise } from '@/components/kids/exercises/irregular-adjectives-exercise';
 import { MixedComparativeSuperlativeExercise } from '@/components/kids/exercises/mixed-comparative-superlative-exercise';
+import { useTranslation } from '@/context/language-context';
 
 
 type Topic = {
@@ -100,6 +101,164 @@ const irregularAdjectivesData: SyllableExerciseData = [
     { spanish: 'POCO', answers: { adjective: 'little', comparative: 'less', superlative: 'the least' } },
     { spanish: 'LEJOS', answers: { adjective: 'far', comparative: ['farther', 'further'], superlative: ['the farthest', 'the furthest'] } },
 ];
+
+const WordSearchGame = ({ onComplete }: { onComplete: () => void }) => {
+    const { t } = useTranslation();
+    const { toast } = useToast();
+    
+    const words = useMemo(() => [
+        "TALL", "SHORT", "BIG", "SMALL", "YOUNG", "OLD", "NEW", "LONG",
+        "HAPPY", "EASY", "NARROW", "BEAUTIFUL", "MODERN", "EXPENSIVE",
+        "FAMOUS", "GOOD", "BAD", "FAR"
+    ].sort((a, b) => b.length - a.length), []);
+
+    const [grid, setGrid] = useState<string[][]>([]);
+    const [foundWords, setFoundWords] = useState<{ word: string, cells: { row: number, col: number }[] }[]>([]);
+    const [selection, setSelection] = useState<{row: number, col: number}[]>([]);
+    const [isSelecting, setIsSelecting] = useState(false);
+    const [gameIsFinished, setGameIsFinished] = useState(false);
+
+    useEffect(() => {
+        const gridSize = 20;
+        const newGrid: (string | null)[][] = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null));
+        const directions = [
+            { dr: 0, dc: 1 },  // Horizontal (right)
+            { dr: 1, dc: 0 },  // Vertical (down)
+            { dr: 1, dc: 1 },  // Diagonal (down-right)
+            { dr: 0, dc: -1 }, // Horizontal (left)
+            { dr: -1, dc: 0 }, // Vertical (up)
+            { dr: 1, dc: -1 }, // Diagonal (down-left)
+            { dr: -1, dc: 1 }, // Diagonal (up-right)
+            { dr: -1, dc: -1 },// Diagonal (up-left)
+        ];
+
+        words.forEach(originalWord => {
+            let placed = false;
+            let attempts = 0;
+            while (!placed && attempts < 2000) {
+                attempts++;
+                
+                const wordToPlace = Math.random() > 0.5 ? originalWord.split('').reverse().join('') : originalWord;
+                const dir = directions[Math.floor(Math.random() * directions.length)];
+                
+                const startRow = Math.floor(Math.random() * gridSize);
+                const startCol = Math.floor(Math.random() * gridSize);
+
+                let canPlace = true;
+                
+                for (let i = 0; i < wordToPlace.length; i++) {
+                    const newRow = startRow + i * dir.dr;
+                    const newCol = startCol + i * dir.dc;
+
+                    if (newRow < 0 || newRow >= gridSize || newCol < 0 || newCol >= gridSize) {
+                        canPlace = false;
+                        break;
+                    }
+                    
+                    if (newGrid[newRow][newCol] && newGrid[newRow][newCol] !== wordToPlace[i]) {
+                        canPlace = false;
+                        break;
+                    }
+                }
+
+                if (canPlace) {
+                    for (let i = 0; i < wordToPlace.length; i++) {
+                        const newRow = startRow + i * dir.dr;
+                        const newCol = startCol + i * dir.dc;
+                        newGrid[newRow][newCol] = wordToPlace[i];
+                    }
+                    placed = true;
+                }
+            }
+            if (!placed) {
+                console.warn(`Could not place word: ${originalWord}`);
+            }
+        });
+        
+        const finalGrid = newGrid.map(row => row.map(cell => cell || 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[Math.floor(Math.random() * 26)]));
+        setGrid(finalGrid);
+        setFoundWords([]);
+        setGameIsFinished(false);
+    }, [words]);
+
+    const handleMouseUp = () => {
+        if (!isSelecting || grid.length === 0) return;
+        setIsSelecting(false);
+
+        const selectedWord = selection.map(({ row, col }) => grid[row][col]).join('');
+        const reversedSelectedWord = selectedWord.split('').reverse().join('');
+        
+        const wordFound = words.find(w => !foundWords.some(fw => fw.word === w) && (w === selectedWord || w === reversedSelectedWord));
+
+        if (wordFound) {
+            setFoundWords(prev => [...prev, { word: wordFound, cells: selection }]);
+            toast({ title: "¡Palabra encontrada!", description: `Has encontrado "${wordFound}".` });
+        }
+        
+        setSelection([]);
+    };
+    
+    useEffect(() => {
+        if (words && foundWords.length === words.length && words.length > 0 && !gameIsFinished) {
+            setGameIsFinished(true);
+            toast({
+                title: "¡Felicidades!",
+                description: "Has encontrado todas las palabras. Ahora puedes continuar."
+            });
+        }
+    }, [foundWords, words, gameIsFinished, toast]);
+
+    return (
+         <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+            <CardHeader>
+                <CardTitle>Sopa de Letras (Adjetivos)</CardTitle>
+                <CardDescription>Encuentra los adjetivos en la sopa de letras.</CardDescription>
+            </CardHeader>
+            <CardContent className="grid md:grid-cols-3 gap-8 items-start">
+                <div onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp} className="bg-muted p-2 rounded-lg md:col-span-2">
+                    <div className="grid gap-1" style={{ gridTemplateColumns: `repeat(${grid.length > 0 ? grid.length : 1}, minmax(0, 1fr))` }}>
+                        {grid.map((row, rowIndex) => (
+                            row.map((cell, colIndex) => {
+                                const isSelected = selection.some(s => s.row === rowIndex && s.col === colIndex);
+                                const isFound = foundWords.some(fw => fw.cells.some(c => c.row === rowIndex && c.col === colIndex));
+                                return (
+                                <div key={`${rowIndex}-${colIndex}`}
+                                    onMouseDown={() => { setIsSelecting(true); setSelection([{row: rowIndex, col: colIndex}]); }}
+                                    onMouseEnter={() => { if(isSelecting) setSelection(s => [...s, {row: rowIndex, col: colIndex}])}}
+                                    className={cn("flex items-center justify-center aspect-square select-none cursor-pointer rounded bg-background text-[10px] sm:text-xs font-bold", 
+                                        isFound ? "bg-primary text-primary-foreground" : (isSelected ? "bg-primary/50" : "")
+                                    )}
+                                >
+                                    {cell}
+                                </div>
+                                )
+                            })
+                        ))}
+                    </div>
+                </div>
+                 <div className="md:col-span-1">
+                    <h3 className="font-semibold mb-2">Palabras a Encontrar</h3>
+                    <ul className="space-y-1 text-sm columns-2">
+                        {words.map(word => (
+                            <li key={word} className={cn("transition-all", foundWords.some(fw => fw.word === word) && "line-through text-muted-foreground opacity-70")}>
+                                {word}
+                            </li>
+                        ))}
+                    </ul>
+                 </div>
+            </CardContent>
+            <CardFooter className="justify-end">
+                <Button 
+                    onClick={onComplete}
+                    disabled={!gameIsFinished}
+                    className="bg-green-600 hover:bg-green-700"
+                >
+                    Continuar
+                </Button>
+            </CardFooter>
+        </Card>
+    );
+};
 
 
 export default function ComparativosSuperlativosPage() {
@@ -450,8 +609,10 @@ export default function ComparativosSuperlativosPage() {
                 return <IrregularAdjectivesExercise onComplete={() => setTopicToComplete('ejercicio-irregulares')} />;
             case 'mixtos':
                 return <MixedComparativeSuperlativeExercise onComplete={() => setTopicToComplete('mixtos')} />;
+            case 'sopa_letras':
+                return <WordSearchGame onComplete={() => setTopicToComplete('sopa_letras')} />;
             default:
-                const isExercise = ['sopa_letras', 'mixtos2'].includes(selectedTopic);
+                const isExercise = ['mixtos2'].includes(selectedTopic);
                 if (isExercise) {
                     return (
                         <Card>
