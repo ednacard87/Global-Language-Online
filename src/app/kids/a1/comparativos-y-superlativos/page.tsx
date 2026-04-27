@@ -387,7 +387,7 @@ export default function ComparativosSuperlativosPage() {
                 <div className="max-w-7xl mx-auto">
                     <div className="mb-8">
                         <Link href="/kids/a1" className="hover:underline text-sm text-muted-foreground">Volver al curso A1 de Niños</Link>
-                        <h1 className="text-4xl font-bold dark:text-primary">Comparativos y Superlativos</h1>
+                        <h1 className="text-4xl font-bold text-white dark:text-primary">Comparativos y Superlativos</h1>
                     </div>
                     <div className="grid gap-8 md:grid-cols-12">
                         <div className="md:col-span-8">{renderContent()}</div>
