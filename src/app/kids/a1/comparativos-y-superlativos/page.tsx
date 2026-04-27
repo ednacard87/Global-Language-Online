@@ -233,7 +233,52 @@ export default function ComparativosSuperlativosPage() {
             );
         }
 
-        if (selectedTopic === 'gramatica' || selectedTopic === 'superlativos') {
+        if (selectedTopic === 'gramatica') {
+            return (
+                <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                    <CardHeader>
+                        <CardTitle>LOS ADJETIVOS EN GRADO COMPARATIVO: (ADJETIVO + ER)</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-6 text-lg">
+                        <div>
+                            <h3 className="text-xl font-bold text-primary">COMPARATIVOS (Adjective+ ER)</h3>
+                            <p className="mt-2 text-muted-foreground"><span className="font-semibold">USO:</span> se usa en inglés para comparar diferencias entre los dos sustantivos a los que modifica.</p>
+                        </div>
+
+                        <Separator />
+
+                        <div>
+                            <h3 className="text-xl font-bold text-primary">Modificación del Adjetivo</h3>
+                            <div className="mt-2 space-y-1 font-mono bg-muted p-4 rounded-lg">
+                                <p>small =&gt; <span className="font-bold">SMALLER</span> (más pequeño que)</p>
+                                <p>high =&gt; <span className="font-bold">HIGHER</span> (más alto que)</p>
+                            </div>
+                        </div>
+
+                        <Separator />
+
+                        <div>
+                            <h3 className="text-xl font-bold text-primary">Estructura</h3>
+                            <p className="mt-2 font-mono bg-muted p-4 rounded-lg">sustantivo + verbo + adjetivo comparativo + than + sustantivo</p>
+                        </div>
+                        
+                        <Separator />
+                        
+                        <div>
+                            <h3 className="text-xl font-bold text-primary">TOPICS</h3>
+                            <ul className="mt-2 list-disc list-inside space-y-2 text-base">
+                                <li><span className="font-semibold">Monosilabos:</span> Adjetivos Cortos (Adjective + ER)</li>
+                                <li><span className="font-semibold">Bisilabos:</span> Adjetivos con 2 sílabas (Adjective + ER)</li>
+                                <li><span className="font-semibold">Adjetivos Largos:</span> Tienen más de 2 sílabas (more + adjetivo largo + than)</li>
+                                <li><span className="font-semibold">Adjetivos Irregulares:</span> Cambian en todas sus formas</li>
+                            </ul>
+                        </div>
+                    </CardContent>
+                </Card>
+            );
+        }
+        
+        if (selectedTopic === 'superlativos') {
             return (
                 <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
                     <CardHeader>
