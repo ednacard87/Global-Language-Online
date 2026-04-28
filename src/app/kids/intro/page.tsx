@@ -85,7 +85,11 @@ export default function KidsIntroductoryCoursePage() {
               if (previousItem.type === 'start') {
                 finalItem.locked = false;
               } else {
-                finalItem.locked = (previousItem.progress ?? 0) < 100;
+                let isLocked = (previousItem.progress ?? 0) < 100;
+                if (item.label === 'kidsPage.quiz1') {
+                    isLocked = (previousItem.progress ?? 0) < 90;
+                }
+                finalItem.locked = isLocked;
               }
           }
           return finalItem;
