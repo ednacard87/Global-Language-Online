@@ -85,7 +85,13 @@ export default function EnglishIntroPage() {
               if (previousItem.type === 'start') {
                 finalItem.locked = false;
               } else {
-                finalItem.locked = (previousItem.progress ?? 0) < 100;
+                let isLocked = (previousItem.progress ?? 0) < 100;
+                if (item.label === 'introCoursePage.quiz1') {
+                    isLocked = (previousItem.progress ?? 0) < 90;
+                } else if (item.label === 'introCoursePage.quiz2') {
+                    isLocked = (previousItem.progress ?? 0) < 90;
+                }
+                finalItem.locked = isLocked;
               }
           }
           return finalItem;
@@ -114,7 +120,7 @@ export default function EnglishIntroPage() {
       window.removeEventListener('focus', eventListener);
       window.removeEventListener('progressUpdated', eventListener);
     };
-  }, [t, isAdmin, studentProfile, isProfileLoading, isUserLoading]); // Dependencies
+  }, [t, isAdmin, studentProfile, isProfileLoading, isUserLoading]);
 
   return (
     <div className="ingles-dashboard-bg flex w-full flex-col min-h-screen">
@@ -125,7 +131,7 @@ export default function EnglishIntroPage() {
               {t('dashboard.introductoryCourse')}
             </h1>
         </div>
-        <div className="w-full max-w-5xl">
+        <div className="w-full max-w-3xl">
             <MazeGame 
                 pathItems={pathItems} 
                 title="THE LEARNING ADVENTURE"
