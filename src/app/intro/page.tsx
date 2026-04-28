@@ -3,10 +3,13 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { DashboardHeader } from "@/components/dashboard/header";
 import { MazeGame } from "@/components/dashboard/maze-game";
-import { englishIntroPathData, PathItem } from "@/lib/course-data";
+import { introPathItemsData, PathItem } from "@/lib/course-data";
 import { useTranslation } from "@/context/language-context";
 import { useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
+import Image from "next/image";
+import { PlaceHolderImages } from "@/lib/placeholder-images";
+import { Loader2 } from 'lucide-react';
 
 interface StudentProfile {
     role?: 'admin' | 'student';
@@ -21,6 +24,7 @@ interface StudentProfile {
 export default function EnglishIntroPage() {
   const { t } = useTranslation();
   const [pathItems, setPathItems] = useState<PathItem[]>([]);
+  const guideFishImage = PlaceHolderImages.find(p => p.id === 'guide-fish');
 
   const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
@@ -40,7 +44,7 @@ export default function EnglishIntroPage() {
     const updatePath = () => {
       if (!studentProfile && !isAdmin) return;
 
-      const initialPath = englishIntroPathData.map(i => ({...i}));
+      const initialPath = introPathItemsData.map(i => ({...i}));
 
       const itemsWithProgress = initialPath.map(item => {
         const newItem = { ...item };
@@ -81,16 +85,7 @@ export default function EnglishIntroPage() {
               if (previousItem.type === 'start') {
                 finalItem.locked = false;
               } else {
-                let isLocked = true;
-                // Custom logic for quiz unlocking at 90%
-                if (item.label === 'introCoursePage.quiz1' && previousItem.label === 'intro1Page.title') {
-                    isLocked = (previousItem.progress ?? 0) < 90;
-                } else if (item.label === 'introCoursePage.quiz2' && previousItem.label === 'introCoursePage.intro2') {
-                    isLocked = (previousItem.progress ?? 0) < 90;
-                } else {
-                    isLocked = (previousItem.progress ?? 0) < 100;
-                }
-                finalItem.locked = isLocked;
+                finalItem.locked = (previousItem.progress ?? 0) < 100;
               }
           }
           return finalItem;
@@ -112,8 +107,8 @@ export default function EnglishIntroPage() {
     
     // Add event listeners to re-run the logic when data might have changed
     const eventListener = () => updatePath();
-    window.addEventListener('focus', eventListener); // Re-check when tab is focused
-    window.addEventListener('progressUpdated', eventListener); // Listen for custom progress events
+    window.addEventListener('focus', eventListener);
+    window.addEventListener('progressUpdated', eventListener);
 
     return () => {
       window.removeEventListener('focus', eventListener);
