@@ -13,6 +13,16 @@ export interface PathItem {
     storageKey?: string;
 }
 
+export const englishIntroPathData: PathItem[] = [
+    { type: 'start', icon: Footprints, label: 'dashboard.start' },
+    { type: 'class', icon: BookOpen, label: 'intro1Page.title', href: '/intro/1', storageKey: 'intro1Progress' },
+    { type: 'practice', icon: Puzzle, label: 'introCoursePage.quiz1', href: '/quiz-payment/1', storageKey: 'quiz1Progress' },
+    { type: 'class', icon: BookOpen, label: 'introCoursePage.intro2', href: '/intro/2', storageKey: 'intro2Progress' },
+    { type: 'practice', icon: Puzzle, label: 'introCoursePage.quiz2', href: '/quiz-payment/2', storageKey: 'quiz2Progress' },
+    { type: 'practice', icon: Puzzle, label: 'kidsPage.finalTest', href: '/quiz-payment/final', storageKey: 'quizfinalProgress' },
+    { type: 'end', icon: Flag, label: 'dashboard.finish' }
+];
+
 export const kidsIntroPathData: PathItem[] = [
     { type: 'start', icon: Footprints, label: 'dashboard.start' },
     { type: 'class', icon: Smile, label: 'kidsPage.intro1', href: '/kids/intro1', storageKey: 'kidsIntro1Progress' },
@@ -559,7 +569,7 @@ export const getB1UnitPath = (unitId: string | number, t: (key: string) => strin
         ]
     };
     return unitPaths[String(unitId)] || [];
-};
+}
 
 export const getB2MainPath = (t: (key: string) => string): PathItem[] => [
     { type: 'start', icon: Footprints, label: 'dashboard.start' },
