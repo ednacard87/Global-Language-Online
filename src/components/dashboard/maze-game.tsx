@@ -49,6 +49,7 @@ interface MazeGameProps {
     description?: string;
     isLoading?: boolean;
     children?: React.ReactNode;
+    isIntro?: boolean;
 }
 
 const PathItemComponent = ({ item, isClient, t, isIntro }: { item: PathItem, isClient: boolean, t: (key: string) => string, isIntro: boolean }) => {
@@ -81,7 +82,7 @@ const PathItemComponent = ({ item, isClient, t, isIntro }: { item: PathItem, isC
     );
 };
 
-export function MazeGame({ pathItems = defaultPathItems, title, description, isLoading = false, children }: MazeGameProps) {
+export function MazeGame({ pathItems = defaultPathItems, title, description, isLoading = false, children, isIntro = false }: MazeGameProps) {
   const { t } = useTranslation();
   const [isClient, setIsClient] = React.useState(false);
 
@@ -93,7 +94,7 @@ export function MazeGame({ pathItems = defaultPathItems, title, description, isL
   const finalDescription = description !== undefined ? description : (isClient ? t('dashboard.learningPathDescription') : '');
 
   // Special layout for intro page
-  if (pathItems.length === 8 && finalTitle === t('introCoursePage.mazeTitle')) {
+  if (isIntro) {
       const row1 = pathItems.slice(0, 4); // Items 0, 1, 2, 3
       const row2 = pathItems.slice(4, 6).reverse(); // Items 5, 4 (reversed)
       const row3 = pathItems.slice(6, 8); // Items 6, 7
