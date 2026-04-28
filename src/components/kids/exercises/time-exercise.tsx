@@ -16,6 +16,10 @@ const timePrompts = [
   { time: '11:00', answers: ["it's eleven o'clock", "it is eleven o'clock"] },
   { time: '3:05', answers: ["it's five past three", "it is five past three"] },
   { time: '7:50', answers: ["it's ten to eight", "it is ten to eight"] },
+  { time: '8:20', answers: ["it's twenty past eight", "it is twenty past eight"] },
+  { time: '4:35', answers: ["it's twenty-five to five", "it is twenty five to five"] },
+  { time: '1:55', answers: ["it's five to two", "it is five to two"] },
+  { time: '6:00', answers: ["it's six o'clock", "it is six o'clock"] },
 ];
 
 type ValidationStatus = 'correct' | 'incorrect' | 'unchecked';
