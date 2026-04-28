@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { BookOpen, CheckCircle, Lock, ArrowRight, Swords, Hand, MessageSquare, BrainCircuit, PenSquare, Lightbulb, Clock } from 'lucide-react';
+import { BookOpen, CheckCircle, Lock, Lightbulb, PenSquare, Hand, MessageSquare, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTranslation } from '@/context/language-context';
 import { getIntro2PathData, type Intro2PathItem } from '@/lib/course-data';
@@ -21,11 +21,8 @@ import { useToast } from "@/hooks/use-toast";
 import { Separator } from "@/components/ui/separator";
 import { TimeExercise } from '@/components/kids/exercises/time-exercise';
 
-const ICONS = {
-    locked: Lock,
-    active: BookOpen,
-    completed: CheckCircle,
-};
+
+const ICONS = { locked: Lock, active: BookOpen, completed: CheckCircle };
 
 const countriesExerciseData = [
     { pais: 'Estados Unidos', country: 'United States', nationality: 'American', language: 'English' },
@@ -240,10 +237,10 @@ export default function Intro2Page() {
     }, [user, studentProfile]);
 
 
+    const initialLearningPath = useMemo(() => getIntro2PathData(t), [t]);
+
     useEffect(() => {
         if (isProfileLoading) return;
-        const initialIntroPath = getIntro2PathData(t);
-    
         const loadPath = (storageKey: string, defaultPath: any[]) => {
             if (isAdmin) {
                 return defaultPath.map(item => ({ ...item, status: 'active' }));
@@ -273,9 +270,9 @@ export default function Intro2Page() {
             return defaultPath;
         };
     
-        setIntro2Path(loadPath('intro2Path', initialIntroPath));
+        setIntro2Path(loadPath('intro2Path', initialLearningPath));
 
-    }, [t, isAdmin, isProfileLoading, studentProfile]);
+    }, [t, isAdmin, isProfileLoading, studentProfile, initialLearningPath]);
 
     const completeTopic = (topicKey: string) => {
         setIntro2Path(currentPath => {
@@ -488,7 +485,7 @@ export default function Intro2Page() {
                             ))}
                         </div>
                     </CardContent>
-                    <CardFooter className="justify-end">
+                     <CardFooter className="justify-end">
                         <Button onClick={() => completeTopic('farewells')}>Avanzar</Button>
                     </CardFooter>
                 </Card>
@@ -512,7 +509,7 @@ export default function Intro2Page() {
                             data-ai-hint={timeImage.imageHint}
                         />}
                     </CardContent>
-                    <CardFooter className="justify-end">
+                     <CardFooter className="justify-end">
                         <Button onClick={() => completeTopic('time')}>Avanzar</Button>
                     </CardFooter>
                 </Card>
