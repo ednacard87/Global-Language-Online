@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -6,7 +7,7 @@ import Image from 'next/image';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { BookOpen, CheckCircle, Lock, ArrowRight, Swords, Hand, MessageSquare, BrainCircuit, PenSquare, Lightbulb, Clock } from 'lucide-react';
+import { BookOpen, CheckCircle, Lock, Lightbulb, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTranslation } from '@/context/language-context';
 import { getIntro2PathData, type Intro2PathItem } from '@/lib/course-data';
@@ -14,13 +15,10 @@ import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocki
 import { doc } from 'firebase/firestore';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
-import { Separator } from "@/components/ui/separator";
+import { CountriesExercise } from '@/components/kids/exercises/countries-exercise';
 import { TimeExercise } from '@/components/kids/exercises/time-exercise';
-
+import { useToast } from '@/hooks/use-toast';
+import { Button } from '@/components/ui/button';
 
 const ICONS = { locked: Lock, active: BookOpen, completed: CheckCircle };
 
@@ -34,172 +32,24 @@ interface Student {
     progress?: Record<string, number>;
 }
 
-const countriesExerciseData = [
-    { pais: 'Estados Unidos', country: 'United States', nationality: 'American', language: 'English' },
-    { pais: 'Canadá', country: 'Canada', nationality: 'Canadian', language: ['English', 'French'] },
-    { pais: 'México', country: 'Mexico', nationality: 'Mexican', language: 'Spanish' },
-    { pais: 'Brasil', country: 'Brazil', nationality: 'Brazilian', language: 'Portuguese' },
-    { pais: 'Inglaterra', country: 'England', nationality: 'English', language: 'English' },
-    { pais: 'Reino Unido', country: 'United Kingdom', nationality: 'British', language: 'English' },
-    { pais: 'Francia', country: 'France', nationality: 'French', language: 'French' },
-    { pais: 'Alemania', country: 'Germany', nationality: 'German', language: 'German' },
-    { pais: 'Italia', country: 'Italy', nationality: 'Italian', language: 'Italian' },
-    { pais: 'España', country: 'Spain', nationality: 'Spanish', language: 'Spanish' },
-    { pais: 'Portugal', country: 'Portugal', nationality: 'Portuguese', language: 'Portuguese' },
-    { pais: 'China', country: 'China', nationality: 'Chinese', language: 'Mandarin' },
-    { pais: 'Japón', country: 'Japan', nationality: 'Japanese', language: 'Japanese' },
-    { pais: 'Corea del Sur', country: 'South Korea', nationality: 'South Korean', language: 'Korean' },
-    { pais: 'India', country: 'India', nationality: 'Indian', language: ['Hindi', 'English'] },
-    { pais: 'Rusia', country: 'Russia', nationality: 'Russian', language: 'Russian' },
-    { pais: 'Australia', country: 'Australia', nationality: 'Australian', language: 'English' },
-    { pais: 'Colombia', country: 'Colombia', nationality: 'Colombian', language: 'Spanish' },
+const greetingsData = [
+    { spanish: 'Hola', english: 'Hello' }, { spanish: 'Buenos días', english: 'Good morning' },
+    { spanish: 'Buenas tardes', english: 'Good afternoon' }, { spanish: 'Buenas noches (saludo)', english: 'Good evening' },
+    { spanish: '¿Cómo estás?', english: 'How are you?' }, { spanish: '¿Qué tal?', english: "What's up?" }, { spanish: '¿Cómo vas?', english: 'How is it going?' },
 ];
 
-type ValidationStatus = 'correct' | 'incorrect' | 'unchecked';
-
-const CountriesExercise = ({ onComplete }: { onComplete: () => void }) => {
-    const { t } = useTranslation();
-    const { toast } = useToast();
-    
-    type CountryAnswers = { country: string; nationality: string; language: string; };
-    type UserAnswers = Record<number, Partial<CountryAnswers>>;
-    type ValidationState = Record<number, Record<keyof Omit<CountryAnswers, 'pais'>, ValidationStatus>>;
-
-    const [userAnswers, setUserAnswers] = useState<UserAnswers>({});
-    const [validationStatus, setValidationStatus] = useState<ValidationState>({});
-    const [isCompleted, setIsCompleted] = useState(false);
-
-    const handleInputChange = (index: number, field: keyof Omit<CountryAnswers, 'pais'>, value: string) => {
-        setUserAnswers(prev => ({
-            ...prev,
-            [index]: {
-                ...prev[index],
-                [field]: value
-            }
-        }));
-         // Reset validation on change
-        setValidationStatus(prev => {
-            const newStatus = { ...prev };
-            if (newStatus[index]) {
-                delete newStatus[index][field];
-            }
-            return newStatus;
-        });
-        setIsCompleted(false);
-    };
-
-    const handleCheckAnswers = () => {
-        let allCorrect = true;
-        const newValidationStatus: ValidationState = {};
-
-        countriesExerciseData.forEach((correctAnswer, index) => {
-            const userAnswer = userAnswers[index] || {};
-            newValidationStatus[index] = { country: 'unchecked', nationality: 'unchecked', language: 'unchecked' };
-
-            const checkField = (field: keyof Omit<CountryAnswers, 'pais'>) => {
-                const correctValue = correctAnswer[field];
-                const userValue = (userAnswer[field] || '').trim().toLowerCase();
-
-                let isCorrect = false;
-                if (Array.isArray(correctValue)) {
-                    isCorrect = correctValue.some(val => val.toLowerCase() === userValue) || 
-                                correctValue.join(' / ').toLowerCase() === userValue;
-                } else {
-                    isCorrect = correctValue.toLowerCase() === userValue;
-                }
-
-                if (isCorrect) {
-                    newValidationStatus[index][field] = 'correct';
-                } else {
-                    newValidationStatus[index][field] = 'incorrect';
-                    allCorrect = false;
-                }
-            };
-
-            checkField('country');
-            checkField('nationality');
-            checkField('language');
-        });
-
-        setValidationStatus(newValidationStatus);
-
-        if (allCorrect) {
-            toast({ title: t('countries.allCorrect') });
-            setIsCompleted(true);
-        } else {
-            toast({ variant: 'destructive', title: t('countries.someIncorrect') });
-            setIsCompleted(false);
-        }
-    };
-
-    const getInputClass = (index: number, field: keyof Omit<CountryAnswers, 'pais'>) => {
-        const status = validationStatus[index]?.[field];
-        if (status === 'correct') return 'border-green-500 focus-visible:ring-green-500';
-        if (status === 'incorrect') return 'border-destructive focus-visible:ring-destructive';
-        return '';
-    };
-
-    return (
-        <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-            <CardHeader>
-                <CardTitle>{t('intro2Page.countries')}</CardTitle>
-                <CardDescription>{t('intro2Page.countriesDescription')}</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>{t('intro2Page.tableCountry')}</TableHead>
-                            <TableHead>{t('intro2Page.tableCountries')}</TableHead>
-                            <TableHead>{t('intro2Page.tableNationalities')}</TableHead>
-                            <TableHead>{t('intro2Page.tableLanguage')}</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {countriesExerciseData.map((data, index) => (
-                            <TableRow key={index}>
-                                <TableCell className="font-medium">{data.pais}</TableCell>
-                                <TableCell>
-                                    <Input
-                                        value={userAnswers[index]?.country || ''}
-                                        onChange={(e) => handleInputChange(index, 'country', e.target.value)}
-                                        className={cn(getInputClass(index, 'country'))}
-                                    />
-                                </TableCell>
-                                <TableCell>
-                                    <Input
-                                        value={userAnswers[index]?.nationality || ''}
-                                        onChange={(e) => handleInputChange(index, 'nationality', e.target.value)}
-                                        className={cn(getInputClass(index, 'nationality'))}
-                                    />
-                                </TableCell>
-                                <TableCell>
-                                    <Input
-                                        value={userAnswers[index]?.language || ''}
-                                        onChange={(e) => handleInputChange(index, 'language', e.target.value)}
-                                        className={cn(getInputClass(index, 'language'))}
-                                    />
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </CardContent>
-            <CardFooter>
-                 {isCompleted ? (
-                    <Button onClick={onComplete}>Terminar Intro 2</Button>
-                ) : (
-                    <Button onClick={handleCheckAnswers}>{t('countries.checkAnswers')}</Button>
-                )}
-            </CardFooter>
-        </Card>
-    );
-};
+const farewellsData = [
+    { spanish: 'Adiós', english: 'Goodbye' }, { spanish: 'Chao', english: 'Bye' },
+    { spanish: 'Hasta luego', english: 'See you later' }, { spanish: 'Hasta pronto', english: 'See you soon' },
+    { spanish: 'Buenas noches (despedida)', english: 'Good night' }, { spanish: 'Cuídate', english: 'Take care' },
+    { spanish: 'Nos vemos mañana', english: 'See you tomorrow' }, { spanish: 'Que tengas un buen día', english: 'Have a nice day' },
+];
 
 
 export default function Intro2Page() {
     const { t } = useTranslation();
-    const [intro2Path, setIntro2Path] = useState<Intro2PathItem[]>([]);
+    const initialLearningPath = useMemo(() => getIntro2PathData(t), [t]);
+    const [intro2Path, setIntro2Path] = useState<Intro2PathItem[]>(initialLearningPath);
     const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
     const [selectedTopicKey, setSelectedTopicKey] = useState<string | null>(null);
     const [isClient, setIsClient] = useState(false);
@@ -215,34 +65,10 @@ export default function Intro2Page() {
     const guideFishImage = PlaceHolderImages.find(p => p.id === 'guide-fish');
     const timeImage = PlaceHolderImages.find(p => p.id === 'telling-time');
 
-    const greetingsData = [
-        { spanish: 'Hola', english: 'Hello' },
-        { spanish: 'Buenos días', english: 'Good morning' },
-        { spanish: 'Buenas tardes', english: 'Good afternoon' },
-        { spanish: 'Buenas noches (saludo)', english: 'Good evening' },
-        { spanish: '¿Cómo estás?', english: 'How are you?' },
-        { spanish: '¿Qué tal?', english: "What's up?" },
-        { spanish: '¿Cómo vas?', english: 'How is it going?' },
-    ];
-    
-    const farewellsData = [
-        { spanish: 'Adiós', english: 'Goodbye' },
-        { spanish: 'Chao', english: 'Bye' },
-        { spanish: 'Hasta luego', english: 'See you later' },
-        { spanish: 'Hasta pronto', english: 'See you soon' },
-        { spanish: 'Buenas noches (despedida)', english: 'Good night' },
-        { spanish: 'Cuídate', english: 'Take care' },
-        { spanish: 'Nos vemos mañana', english: 'See you tomorrow' },
-        { spanish: 'Que tengas un buen día', english: 'Have a nice day' },
-    ];
-
     const isAdmin = useMemo(() => {
         if (!user) return false;
         return studentProfile?.role === 'admin' || user.email === 'ednacard87@gmail.com';
     }, [user, studentProfile]);
-
-
-    const initialLearningPath = useMemo(() => getIntro2PathData(t), [t]);
     
     useEffect(() => {
         setIsClient(true);
@@ -322,7 +148,7 @@ export default function Intro2Page() {
         setSelectedTopic(topicName);
         setSelectedTopicKey(currentItem!.key);
         
-        const viewOnlyTopics = ['tip', 'greetings', 'farewells', 'time'];
+        const viewOnlyTopics = ['tip', 'greetings', 'farewells'];
         if (viewOnlyTopics.includes(currentItem!.key)) {
             completeTopic(currentItem!.key);
         }
@@ -340,114 +166,26 @@ export default function Intro2Page() {
   const renderContent = () => {
         if (selectedTopicKey === 'tip') {
             return (
-                <div>
-                <div className="mb-6">
-                    <h2 className="text-3xl font-bold">{t('intro2Page.tip')}</h2>
-                    <p className="text-muted-foreground">INTRODUCTORY COURSE</p>
-                </div>
-                <div className="space-y-6">
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-                        <CardHeader>
-                            <CardTitle className="text-2xl text-primary">Sustantivo : Noun</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-2 text-base md:text-lg">
-                            <ul className="list-disc list-inside space-y-1 text-muted-foreground">
-                                <li>personas</li>
-                                <li>animales</li>
-                                <li>cosas</li>
-                            </ul>
-                            <p className="pt-4 font-medium">singular y plural (s)</p>
-                            <div className="mt-2 p-4 bg-muted rounded-lg font-mono text-base">
-                                <p>car <span className="mx-4">→</span> cars</p>
-                                <p>house <span className="mx-4">→</span> houses</p>
-                            </div>
-                        </CardContent>
-                    </Card>
-        
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-                        <CardHeader>
-                            <CardTitle className="text-2xl text-primary">Adjetivo : Adjective</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-2 text-base md:text-lg">
-                            <p>Describe el sustantivo</p>
-                            <ul className="list-disc list-inside space-y-1 text-muted-foreground">
-                                <li>Color</li>
-                                <li>cualidad</li>
-                                <li>caracteristica fisica</li>
-                            </ul>
-                            <p className="pt-4 font-semibold">los adjetivos siempre son singular.</p>
-                            <p className="text-sm text-muted-foreground">example :</p>
-                            <div className="mt-2 p-4 bg-muted rounded-lg font-mono text-base space-y-2">
-                                <p>él es inteligente <span className="mx-4">→</span> he is intelligent</p>
-                                <p>ellos son inteligentes <span className="mx-4">→</span> they are intelligent</p>
-                            </div>
-                        </CardContent>
-                    </Card>
-        
-                    <Card className="shadow-soft rounded-lg border-2 border-destructive">
-                        <CardHeader>
-                            <CardTitle className="text-2xl text-destructive">NOTA IMPORTANTE</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-4 text-base md:text-lg">
-                            <div>
-                                <p className="mb-2">en español primero se habla del sustantivo y luego del adjetivo.</p>
-                                <p className="text-sm text-muted-foreground">Ejemplos :</p>
-                                <div className="p-4 bg-muted rounded-lg font-mono text-base space-y-1 mt-2">
-                                    <p>el carro blanco</p>
-                                    <p>el celular morado</p>
-                                    <p>el computador gris</p>
-                                </div>
-                            </div>
-                            <p className="my-2 font-bold text-center">PERO</p>
-                            <div>
-                                <p className="mb-2">en ingles primero se habla del adjetivo y luego del sustantivo.</p>
-                                <p className="text-sm text-muted-foreground">Example:</p>
-                                <div className="p-4 bg-muted rounded-lg font-mono text-base space-y-1 mt-2">
-                                    <p>the white car</p>
-                                    <p>the purple cellphone</p>
-                                    <p>the grey computer</p>
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-        
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-                        <CardHeader>
-                            <CardTitle className="text-2xl text-primary">Verbo = VERB</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-4 text-base md:text-lg">
-                            <div>
-                                <p>Acción.</p>
-                            </div>
-                            <div>
-                                <p className="font-semibold">INFINITIVO.</p>
-                                <p>Verbos en infinitivo. = "TO"</p>
-                                <p>es un verbo que NO esta conjugado.</p>
-                                <div className="mt-2 p-4 bg-muted rounded-lg font-mono text-base space-y-2">
-                                    <div>
-                                        <p className="font-semibold">ESPAÑOL <span className="mx-4">→</span> ENGLISH</p>
-                                        <p>AR = Hablar = TO speak</p>
-                                        <p>ER = Comer = TO eat</p>
-                                        <p>IR = Vivir = TO live</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div>
-                                <p className="mt-4 font-semibold">CONJUGACION.</p>
-                                <p>cuando tenemos un pronombre al lado de un verbo.</p>
-                                <p>cuando estamos utilizando la conjungacion el verbo pierde la palabra = "TO"</p>
-                                <div className="mt-2 p-4 bg-muted rounded-lg font-mono text-base space-y-2">
-                                    <p>Pronombre + verbo</p>
-                                    <p>yo hablo <span className="mx-4">→</span> i speak</p>
-                                    <p className="text-destructive">i to speak = yo hablar</p>
-                                </div>
-                            </div>
-                        </CardContent>
-                        <CardFooter className="justify-end">
-                            <Button onClick={() => completeTopic('tip')}>Avanzar</Button>
-                        </CardFooter>
-                    </Card>
-                </div>
+                <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                    <CardHeader>
+                        <CardTitle className="text-2xl text-primary">Sustantivo : Noun</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-2 text-lg">
+                        <ul className="list-disc list-inside space-y-1 text-muted-foreground">
+                            <li>personas</li>
+                            <li>animales</li>
+                            <li>cosas</li>
+                        </ul>
+                        <p className="pt-4 font-medium">singular y plural (s)</p>
+                        <div className="mt-2 p-4 bg-muted rounded-lg font-mono text-base">
+                            <p>car <span className="mx-4">→</span> cars</p>
+                            <p>house <span className="mx-4">→</span> houses</p>
+                        </div>
+                    </CardContent>
+                    <CardFooter className="justify-end">
+                        <Button onClick={() => completeTopic('tip')}>Avanzar</Button>
+                    </CardFooter>
+                </Card>
             );
         }
 
