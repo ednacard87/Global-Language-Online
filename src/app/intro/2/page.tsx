@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import {
   BookOpen,
@@ -121,7 +122,7 @@ export default function Intro2Page() {
     const { toast } = useToast();
     const router = useRouter();
     
-    const initialLearningPath = useMemo(() => getIntro2PathData(t), [t]);
+    const [initialLearningPath, setInitialLearningPath] = useState<Intro2PathItem[]>([]);
     const [intro2Path, setIntro2Path] = useState<Intro2PathItem[]>([]);
     const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
     const [selectedTopicKey, setSelectedTopicKey] = useState<string | null>(null);
@@ -145,7 +146,8 @@ export default function Intro2Page() {
 
     useEffect(() => {
         setIsClient(true);
-    }, []);
+        setInitialLearningPath(getIntro2PathData(t));
+    }, [t]);
     
     useEffect(() => {
         if (isProfileLoading || !isClient) return;
@@ -159,15 +161,6 @@ export default function Intro2Page() {
             let savedStatuses: Record<string, 'completed' | 'active' | 'locked'> | null = null;
             if (studentProfile?.lessonProgress?.[versionedKey]) {
                 savedStatuses = studentProfile.lessonProgress[versionedKey];
-            } else {
-                try {
-                    const savedStatusJSON = localStorage.getItem(versionedKey);
-                    if (savedStatusJSON) {
-                        savedStatuses = JSON.parse(savedStatusJSON);
-                    }
-                } catch (e) {
-                    console.error(`Failed to load path from ${versionedKey}`, e);
-                }
             }
 
             if (savedStatuses) {
@@ -179,16 +172,18 @@ export default function Intro2Page() {
         }
 
         setIntro2Path(path);
-
-        const firstActive = path.find(p => p.status === 'active');
-        if (firstActive) {
-            setSelectedTopic(firstActive.name);
-            setSelectedTopicKey(firstActive.key);
-        } else {
-            setSelectedTopic(path[0].name);
-            setSelectedTopicKey(path[0].key);
+        
+        if (!selectedTopicKey) {
+            const firstActive = path.find(p => p.status === 'active');
+            if (firstActive) {
+                setSelectedTopic(firstActive.name);
+                setSelectedTopicKey(firstActive.key);
+            } else if (path.length > 0) {
+                setSelectedTopic(path[0].name);
+                setSelectedTopicKey(path[0].key);
+            }
         }
-    }, [isClient, isProfileLoading, isAdmin, studentProfile, initialLearningPath]);
+    }, [isClient, isProfileLoading, isAdmin, studentProfile, initialLearningPath, selectedTopicKey]);
 
     const completeTopic = (topicKey: string) => {
         setIntro2Path(currentPath => {
@@ -228,7 +223,7 @@ export default function Intro2Page() {
         setSelectedTopic(topicName);
         setSelectedTopicKey(currentItem!.key);
         
-        const viewOnlyTopics = ['tip', 'greetings', 'farewells'];
+        const viewOnlyTopics = ['tip', 'greetings', 'farewells', 'time'];
         if (viewOnlyTopics.includes(currentItem!.key)) {
             completeTopic(currentItem!.key);
         }
@@ -415,11 +410,8 @@ export default function Intro2Page() {
                         <nav>
                             <ul className="space-y-1">
                             {intro2Path.map((item, index) => {
-                                const Icon = item.icon;
                                 const isLocked = item.status === 'locked';
                                 const isSelected = selectedTopic === item.name;
-                                const isActive = item.status === 'active';
-                                
                                 return (
                                     <li key={index} onClick={() => handleTopicSelect(item.name)} className={cn(!isLocked || isAdmin ? "cursor-pointer" : "cursor-not-allowed")}>
                                         <div className={cn(
@@ -431,7 +423,7 @@ export default function Intro2Page() {
                                                 {item.status === 'completed' ? (
                                                     <CheckCircle className="h-5 w-5 text-green-500" />
                                                 ) : (
-                                                    <Icon className={cn("h-5 w-5", isLocked && !isAdmin ? "text-muted-foreground" : "text-primary")} />
+                                                    <item.icon className={cn("h-5 w-5", isLocked && !isAdmin ? "text-muted-foreground" : "text-primary")} />
                                                 )}
                                                 <span>{item.name}</span>
                                             </div>
