@@ -1,4 +1,4 @@
-import { BookOpen, Flag, Footprints, Puzzle, Mic, Ear, Smile, GraduationCap, Star, Hand, MessageSquare, BrainCircuit, PenSquare } from 'lucide-react';
+import { BookOpen, Flag, Footprints, Puzzle, Mic, Ear, Smile, GraduationCap, Star, Hand, MessageSquare, BrainCircuit, PenSquare, Lightbulb, Clock } from 'lucide-react';
 import type { ComponentType } from 'react';
 
 export interface PathItem {
@@ -19,8 +19,9 @@ export const englishIntroPathData: PathItem[] = [
     { type: 'practice', icon: Puzzle, label: 'introCoursePage.quiz1', href: '/quiz-payment/1', storageKey: 'quiz1Progress' },
     { type: 'class', icon: BookOpen, label: 'introCoursePage.intro2', href: '/intro/2', storageKey: 'intro2Progress' },
     { type: 'practice', icon: Puzzle, label: 'introCoursePage.quiz2', href: '/quiz-payment/2', storageKey: 'quiz2Progress' },
-    { type: 'practice', icon: Puzzle, label: 'kidsPage.finalTest', href: '/quiz-payment/final', storageKey: 'quizfinalProgress' },
-    { type: 'end', icon: Flag, label: 'dashboard.finish' }
+    { type: 'practice', icon: Ear, label: 'introCoursePage.listening', href: '/listening-practice', progress: 0, points: 20, storageKey: 'listeningProgress'},
+    { type: 'practice', icon: Mic, label: 'introCoursePage.speaking', href: '#', progress: 0, points: 20, storageKey: 'speakingProgress'},
+    { type: 'end', icon: Flag, label: 'dashboard.end', href: '/pricing' },
 ];
 
 export const kidsIntroPathData: PathItem[] = [
@@ -64,9 +65,9 @@ export const calculateEspanolIntroProgress = (progress: Record<string, number> |
 export const introPathItemsData: PathItem[] = [
     {type: 'start', icon: Footprints, label: 'dashboard.start', points: 0},
     {type: 'class', icon: BookOpen, label: 'intro1Page.title', href: '/intro/1', progress: 0, points: 20, storageKey: 'intro1Progress'},
-    {type: 'practice', icon: Puzzle, label: 'introCoursePage.quiz1', href: '/quiz-payment/1', progress: 0, points: 10, className: 'animate-pulse-glow', storageKey: 'quiz1Progress'},
+    {type: 'practice', icon: Puzzle, label: 'introCoursePage.quiz1', href: '/quiz/1', progress: 0, points: 10, className: 'animate-pulse-glow', storageKey: 'quiz1Progress'},
     {type: 'class', icon: BookOpen, label: 'introCoursePage.intro2', href: '/intro/2', storageKey: 'intro2Progress', points: 20},
-    {type: 'practice', icon: Puzzle, label: 'introCoursePage.quiz2', href: '/quiz-payment/2', progress: 0, points: 10, storageKey: 'quiz2Progress'},
+    {type: 'practice', icon: Puzzle, label: 'introCoursePage.quiz2', href: '/quiz/2', progress: 0, points: 10, storageKey: 'quiz2Progress'},
     {type: 'practice', icon: Ear, label: 'introCoursePage.listening', href: '/listening-practice', progress: 0, points: 20, storageKey: 'listeningProgress'},
     {type: 'practice', icon: Mic, label: 'introCoursePage.speaking', href: '#', progress: 0, points: 20, storageKey: 'speakingProgress'},
     {type: 'end', icon: Flag, label: 'dashboard.end', href: '/pricing', points: 0},
@@ -148,6 +149,7 @@ export type Intro2PathKey =
   | 'farewells'
   | 'mixed2'
   | 'time'
+  | 'time-exercise'
   | 'countries';
 
 export interface Intro2PathItem {
@@ -157,13 +159,14 @@ export interface Intro2PathItem {
 }
 
 export const getIntro2PathData = (t: (key: string, values?: { [key: string]: string | number }) => string): Intro2PathItem[] => [
-    { key: 'tip', name: t('intro2Page.tip'), status: 'active' },
-    { key: 'mixed1', name: t('intro2Page.mixed1'), status: 'locked' },
-    { key: 'greetings', name: t('intro2Page.greetings'), status: 'locked' },
-    { key: 'farewells', name: t('intro2Page.farewells'), status: 'locked' },
-    { key: 'mixed2', name: t('intro2Page.mixed2'), status: 'locked' },
-    { key: 'time', name: t('intro2Page.time'), status: 'locked' },
-    { key: 'countries', name: t('intro2Page.countries'), status: 'locked' },
+    { key: 'tip', name: t('intro2Page.tip'), icon: Lightbulb },
+    { key: 'mixed1', name: t('intro2Page.mixed1'), icon: PenSquare },
+    { key: 'greetings', name: t('intro2Page.greetings'), icon: Hand },
+    { key: 'farewells', name: t('intro2Page.farewells'), icon: MessageSquare },
+    { key: 'mixed2', name: t('intro2Page.mixed2'), icon: PenSquare },
+    { key: 'time', name: t('intro2Page.time'), icon: Clock },
+    { key: 'time-exercise', name: t('intro2Page.timeExercise'), icon: PenSquare },
+    { key: 'countries', name: t('intro2Page.countries'), icon: BookOpen },
 ];
 
 export interface Exercise {
