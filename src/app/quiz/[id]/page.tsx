@@ -162,6 +162,44 @@ export default function QuizPage() {
     }
   };
 
+  const handleUnlockListeningPractice = async () => {
+    if (!studentDocRef) {
+      toast({
+        variant: "destructive",
+        title: "Error de autenticación",
+        description: "No se pudo guardar el progreso. Asegúrate de haber iniciado sesión.",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+        const progressKey = `quiz2Progress`; // Hardcoding for quiz 2
+        updateDocumentNonBlocking(studentDocRef, {
+            [`progress.${progressKey}`]: 100,
+        });
+        
+        window.dispatchEvent(new CustomEvent('progressUpdated'));
+        
+        toast({
+            title: "¡Éxito!",
+            description: "Has desbloqueado la Práctica de Escucha y Escritura.",
+        });
+
+        router.push('/intro');
+
+    } catch (error) {
+        console.error("Error unlocking listening practice:", error);
+        toast({
+            variant: "destructive",
+            title: "Error",
+            description: "No se pudo desbloquear la siguiente lección.",
+        });
+    } finally {
+        setIsLoading(false);
+    }
+  };
+
   return (
     <>
       <div className="flex w-full flex-col ingles-dashboard-bg min-h-screen">
@@ -187,6 +225,12 @@ export default function QuizPage() {
                 <CardFooter className="flex flex-col items-center justify-center gap-2 pt-6 border-t">
                     <Button onClick={handleUnlockNext} disabled={isLoading} className="w-full max-w-sm mx-auto">
                         {isLoading ? <Loader2 className="animate-spin" /> : "Desbloquear Intro 2"}
+                    </Button>
+                </CardFooter>
+            ) : quizId === '2' ? (
+                <CardFooter className="flex flex-col items-center justify-center gap-2 pt-6 border-t">
+                    <Button onClick={handleUnlockListeningPractice} disabled={isLoading} className="w-full max-w-sm mx-auto">
+                        {isLoading ? <Loader2 className="animate-spin" /> : "Desbloquear Practica de Escucha y Escritura"}
                     </Button>
                 </CardFooter>
             ) : (
