@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { BookOpen, CheckCircle, Lock, Lightbulb, PenSquare, Hand, MessageSquare, Clock } from 'lucide-react';
+import { BookOpen, CheckCircle, Lock, ArrowRight, Swords, Hand, MessageSquare, BrainCircuit, PenSquare, Lightbulb, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTranslation } from '@/context/language-context';
 import { getIntro2PathData, type Intro2PathItem } from '@/lib/course-data';
@@ -23,6 +23,16 @@ import { TimeExercise } from '@/components/kids/exercises/time-exercise';
 
 
 const ICONS = { locked: Lock, active: BookOpen, completed: CheckCircle };
+
+// By changing this version, we can force a progress reset for all users
+// if there's a breaking change in the path structure.
+const progressStorageVersion = "_v1_sequential_intro2";
+
+interface Student {
+    role?: 'admin' | 'student';
+    lessonProgress?: any;
+    progress?: Record<string, number>;
+}
 
 const countriesExerciseData = [
     { pais: 'Estados Unidos', country: 'United States', nationality: 'American', language: 'English' },
@@ -45,15 +55,16 @@ const countriesExerciseData = [
     { pais: 'Colombia', country: 'Colombia', nationality: 'Colombian', language: 'Spanish' },
 ];
 
-type CountryAnswers = { country: string; nationality: string; language: string; };
-type UserAnswers = Record<number, Partial<CountryAnswers>>;
 type ValidationStatus = 'correct' | 'incorrect' | 'unchecked';
-type ValidationState = Record<number, Record<keyof Omit<CountryAnswers, 'pais'>, ValidationStatus>>;
-
 
 const CountriesExercise = ({ onComplete }: { onComplete: () => void }) => {
     const { t } = useTranslation();
     const { toast } = useToast();
+    
+    type CountryAnswers = { country: string; nationality: string; language: string; };
+    type UserAnswers = Record<number, Partial<CountryAnswers>>;
+    type ValidationState = Record<number, Record<keyof Omit<CountryAnswers, 'pais'>, ValidationStatus>>;
+
     const [userAnswers, setUserAnswers] = useState<UserAnswers>({});
     const [validationStatus, setValidationStatus] = useState<ValidationState>({});
     const [isCompleted, setIsCompleted] = useState(false);
@@ -186,22 +197,15 @@ const CountriesExercise = ({ onComplete }: { onComplete: () => void }) => {
 };
 
 
-// By changing this version, we can force a progress reset for all users
-// if there's a breaking change in the path structure.
-const progressStorageVersion = "_v1_sequential_intro2";
-interface Student {
-    role?: 'admin' | 'student';
-    lessonProgress?: any;
-    progress?: Record<string, number>;
-}
 export default function Intro2Page() {
     const { t } = useTranslation();
     const [intro2Path, setIntro2Path] = useState<Intro2PathItem[]>([]);
     const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
     const [selectedTopicKey, setSelectedTopicKey] = useState<string | null>(null);
 
-    const { user } = useUser();
+    const { user, isUserLoading } = useUser();
     const firestore = useFirestore();
+    const { toast } = useToast();
     const studentDocRef = useMemoFirebase(
         () => (user ? doc(firestore, 'students', user.uid) : null),
         [firestore, user]
@@ -287,6 +291,20 @@ export default function Intro2Page() {
                     newPath[nextItemIndex] = { ...newPath[nextItemIndex], status: 'active' };
                 }
             }
+
+            // Save progress
+            if (!isAdmin && studentDocRef) {
+                const versionedKey = 'intro2Path' + progressStorageVersion;
+                const statusOnly = newPath.reduce((acc, item) => ({...acc, [item.key]: item.status}), {});
+                const completedItems = newPath.filter(item => item.status === 'completed').length;
+                const newProgress = Math.round((completedItems / newPath.length) * 100);
+                 updateDocumentNonBlocking(studentDocRef, {
+                    [`lessonProgress.${versionedKey}`]: statusOnly,
+                    'progress.intro2Progress': newProgress,
+                });
+                window.dispatchEvent(new CustomEvent('progressUpdated'));
+            }
+
             return newPath;
         });
     };
@@ -298,7 +316,7 @@ export default function Intro2Page() {
         setSelectedTopic(topicName);
         setSelectedTopicKey(currentItem!.key);
         
-        const viewOnlyTopics = ['tip', 'greetings', 'farewells'];
+        const viewOnlyTopics = ['tip', 'greetings', 'farewells', 'time'];
         if (viewOnlyTopics.includes(currentItem!.key)) {
             completeTopic(currentItem!.key);
         }
@@ -312,20 +330,6 @@ export default function Intro2Page() {
 
     const completedItems = useMemo(() => intro2Path.filter(item => item.status === 'completed').length, [intro2Path]);
     const progress = useMemo(() => intro2Path.length > 0 ? Math.round((completedItems / intro2Path.length) * 100) : 0, [completedItems, intro2Path.length]);
-
-    useEffect(() => {
-        if (isProfileLoading) return;
-        if (!isAdmin && studentDocRef) {
-            if (intro2Path.length > 0) {
-                const versionedKey = 'intro2Path' + progressStorageVersion;
-                const statusOnly = intro2Path.reduce((acc, item) => ({...acc, [item.key]: item.status}), {});
-                 updateDocumentNonBlocking(studentDocRef, {
-                    [`lessonProgress.${versionedKey}`]: statusOnly,
-                    'progress.intro2Progress': progress,
-                });
-            }
-        }
-    }, [intro2Path, progress, isAdmin, isProfileLoading, studentDocRef]);
     
   const renderContent = () => {
         if (selectedTopicKey === 'tip') {
