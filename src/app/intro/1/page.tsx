@@ -368,8 +368,14 @@ export default function Intro1Page() {
         { english: 'Those', spanish: 'Esos - Esas', usage: 'Plural, lejos' },
     ];
 
+    const [isClient, setIsClient] = useState(false);
+
     useEffect(() => {
-        if (isProfileLoading) return;
+        setIsClient(true);
+    }, []);
+
+    useEffect(() => {
+        if (isProfileLoading || !isClient) return;
 
         const initialIntroPath = getIntro1PathData(t);
         const initialAbcPath = getAbcSpellingPathData(t);
@@ -407,7 +413,7 @@ export default function Intro1Page() {
             return;
         }
 
-    }, [t, isAdmin, studentProfile, isProfileLoading]);
+    }, [t, isAdmin, studentProfile, isProfileLoading, isClient]);
 
     useEffect(() => {
         setHighlightedLetter(null);
@@ -564,7 +570,7 @@ export default function Intro1Page() {
     const progress = useMemo(() => intro1Path.length > 0 ? Math.round((completedItems / intro1Path.length) * 100) : 0, [completedItems, intro1Path.length]);
 
     useEffect(() => {
-        if (isProfileLoading || isAdmin || !studentDocRef) return;
+        if (isProfileLoading || isAdmin || !studentDocRef || !isClient) return;
 
         const dataToSave: Record<string, any> = {
             'progress.intro1Progress': progress
@@ -585,7 +591,7 @@ export default function Intro1Page() {
         
         updateDocumentNonBlocking(studentDocRef, dataToSave);
         
-    }, [intro1Path, abcSpellingPath, numbersSpellingPath, progress, isAdmin, studentDocRef, isProfileLoading]);
+    }, [intro1Path, abcSpellingPath, numbersSpellingPath, progress, isAdmin, studentDocRef, isProfileLoading, isClient]);
 
   return (
     <div className="flex w-full flex-col ingles-dashboard-bg min-h-screen">
