@@ -13,13 +13,13 @@ export default function EspanolIntroPage() {
   const { t } = useTranslation();
   const [pathItems, setPathItems] = useState<PathItem[]>([]);
 
-  const { user } = useUser();
+  const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
   const studentDocRef = useMemoFirebase(
     () => (user ? doc(firestore, 'students', user.uid) : null),
     [firestore, user]
   );
-  const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{role?: 'admin' | 'student', progress?: Record<string, number>}>(studentDocRef);
+  const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{role?: 'admin' | 'student', progress?: Record<string, number>, unlockedQuizzes?: { quiz1?: boolean, quiz2?: boolean, finalQuiz?: boolean} }>(studentDocRef);
 
   const isAdmin = useMemo(() => {
       if (!user) return false;
@@ -27,7 +27,7 @@ export default function EspanolIntroPage() {
   }, [user, studentProfile]);
   
   useEffect(() => {
-    if (isProfileLoading) return;
+    if (isProfileLoading || isUserLoading) return;
 
     const updatePath = () => {
         const initialPath = espanolIntroPathData;
@@ -44,6 +44,17 @@ export default function EspanolIntroPage() {
             if (isAdmin) {
                 return { ...item, locked: false };
             }
+
+            if (item.label === 'introCoursePage.quiz1' && studentProfile?.unlockedQuizzes?.quiz1) {
+                return { ...item, locked: false };
+            }
+            if (item.label === 'introCoursePage.quiz2' && studentProfile?.unlockedQuizzes?.quiz2) {
+                return { ...item, locked: false };
+            }
+            if (item.label === 'kidsPage.finalTest' && studentProfile?.unlockedQuizzes?.finalQuiz) {
+                return { ...item, locked: false };
+            }
+
             if (index === 0) { // Start is always unlocked
                 return { ...item, locked: false };
             }
@@ -69,7 +80,7 @@ export default function EspanolIntroPage() {
     return () => {
       window.removeEventListener('progressUpdated', updatePath);
     };
-  }, [t, isAdmin, studentProfile, isProfileLoading]);
+  }, [t, isAdmin, studentProfile, isProfileLoading, isUserLoading]);
 
 
   return (

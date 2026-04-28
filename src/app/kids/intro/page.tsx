@@ -1,18 +1,24 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from "react";
-import Image from "next/image";
 import { DashboardHeader } from "@/components/dashboard/header";
 import { MazeGame } from "@/components/dashboard/maze-game";
-import { kidsIntroPathData, PathItem } from "@/lib/course-data";
+import { kidsIntroPathData, PathItem, calculateIntroCourseProgress } from "@/lib/course-data";
 import { useTranslation } from "@/context/language-context";
-import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
+import Link from 'next/link';
+import Image from "next/image";
+import { PlaceHolderImages } from "@/lib/placeholder-images";
 
 interface StudentProfile {
     role?: 'admin' | 'student';
     progress?: Record<string, number>;
+    unlockedQuizzes?: {
+        quiz1?: boolean;
+        quiz2?: boolean;
+        finalQuiz?: boolean;
+    };
 }
 
 export default function KidsIntroductoryCoursePage() {
@@ -56,16 +62,30 @@ export default function KidsIntroductoryCoursePage() {
 
           if (isAdmin) {
               finalItem.locked = false;
+              return finalItem;
+          }
+
+          if (item.label === 'kidsPage.quiz1' && studentProfile?.unlockedQuizzes?.quiz1) {
+              finalItem.locked = false;
+              return finalItem;
+          }
+          if (item.label === 'kidsPage.quiz2' && studentProfile?.unlockedQuizzes?.quiz2) {
+              finalItem.locked = false;
+              return finalItem;
+          }
+          if (item.label === 'kidsPage.finalTest' && studentProfile?.unlockedQuizzes?.finalQuiz) {
+              finalItem.locked = false;
+              return finalItem;
+          }
+
+          if (index === 0) {
+              finalItem.locked = false; // Start is always unlocked
           } else {
-              if (index === 0) {
-                  finalItem.locked = false; // Start is always unlocked
+              const previousItem = arr[index - 1];
+              if (previousItem.type === 'start') {
+                finalItem.locked = false;
               } else {
-                  const previousItem = arr[index - 1];
-                  if (previousItem.type === 'start') {
-                    finalItem.locked = false;
-                  } else {
-                    finalItem.locked = (previousItem.progress ?? 0) < 100;
-                  }
+                finalItem.locked = (previousItem.progress ?? 0) < 100;
               }
           }
           return finalItem;
