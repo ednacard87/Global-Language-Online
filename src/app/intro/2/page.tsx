@@ -17,21 +17,20 @@ import {
   Lightbulb
 } from 'lucide-react';
 import { DashboardHeader } from '@/components/dashboard/header';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
 import { useTranslation } from '@/context/language-context';
+import { getIntro2PathData, type Intro2PathItem } from '@/lib/course-data';
 import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
 import { doc } from 'firebase/firestore';
-import { Progress } from "@/components/ui/progress";
-import { useToast } from "@/hooks/use-toast";
-import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
-import { getIntro2PathData, type Intro2PathItem } from '@/lib/course-data';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
+import { Separator } from "@/components/ui/separator";
 import { TimeExercise } from '@/components/kids/exercises/time-exercise';
 import { Loader2 } from 'lucide-react';
 
@@ -122,8 +121,8 @@ export default function Intro2Page() {
     const { toast } = useToast();
     const router = useRouter();
     
-    const [initialLearningPath, setInitialLearningPath] = useState<Intro2PathItem[]>([]);
-    const [intro2Path, setIntro2Path] = useState<Intro2PathItem[]>([]);
+    const initialLearningPath = useMemo(() => getIntro2PathData(t), [t]);
+    const [intro2Path, setIntro2Path] = useState<Intro2PathItem[]>(initialLearningPath.map(item => ({...item, status: 'locked'})));
     const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
     const [selectedTopicKey, setSelectedTopicKey] = useState<string | null>(null);
     const [isClient, setIsClient] = useState(false);
@@ -146,8 +145,7 @@ export default function Intro2Page() {
 
     useEffect(() => {
         setIsClient(true);
-        setInitialLearningPath(getIntro2PathData(t));
-    }, [t]);
+    }, []);
     
     useEffect(() => {
         if (isProfileLoading || !isClient) return;
@@ -183,7 +181,7 @@ export default function Intro2Page() {
                 setSelectedTopicKey(path[0].key);
             }
         }
-    }, [isClient, isProfileLoading, isAdmin, studentProfile, initialLearningPath, selectedTopicKey]);
+    }, [isClient, isProfileLoading, isAdmin, studentProfile, initialLearningPath]);
 
     const completeTopic = (topicKey: string) => {
         setIntro2Path(currentPath => {
@@ -197,21 +195,26 @@ export default function Intro2Page() {
                 if (nextItemIndex < newPath.length && newPath[nextItemIndex].status === 'locked') {
                     newPath[nextItemIndex] = { ...newPath[nextItemIndex], status: 'active' };
                 }
-            }
 
-            // Save progress
-            if (!isAdmin && studentDocRef) {
-                const versionedKey = 'intro2Path' + progressStorageVersion;
-                const statusOnly = newPath.reduce((acc, item) => ({...acc, [item.key]: item.status}), {});
-                const completedItems = newPath.filter(item => item.status === 'completed').length;
-                const newProgress = Math.round((completedItems / newPath.length) * 100);
-                 updateDocumentNonBlocking(studentDocRef, {
-                    [`lessonProgress.${versionedKey}`]: statusOnly,
-                    'progress.kidsIntro2Progress': newProgress,
-                });
-                window.dispatchEvent(new CustomEvent('progressUpdated'));
+                // Save progress right after state update logic
+                if (!isAdmin && studentDocRef) {
+                    const versionedKey = 'intro2Path' + progressStorageVersion;
+                    const statusOnly = newPath.reduce((acc, item) => {
+                        if (item.status) { // Safeguard against undefined status
+                            acc[item.key] = item.status;
+                        }
+                        return acc;
+                    }, {} as Record<string, Intro2PathItem['status']>);
+                    
+                    const completedItems = newPath.filter(item => item.status === 'completed').length;
+                    const newProgress = Math.round((completedItems / newPath.length) * 100);
+                     updateDocumentNonBlocking(studentDocRef, {
+                        [`lessonProgress.${versionedKey}`]: statusOnly,
+                        'progress.kidsIntro2Progress': newProgress,
+                    });
+                    window.dispatchEvent(new CustomEvent('progressUpdated'));
+                }
             }
-
             return newPath;
         });
     };
@@ -257,9 +260,6 @@ export default function Intro2Page() {
                             <p>house <span className="mx-4">→</span> houses</p>
                         </div>
                     </CardContent>
-                    <CardFooter className="justify-end">
-                        <Button onClick={() => handleExerciseComplete()}>Avanzar</Button>
-                    </CardFooter>
                 </Card>
             );
         }
@@ -284,9 +284,6 @@ export default function Intro2Page() {
                             ))}
                         </div>
                     </CardContent>
-                    <CardFooter className="justify-end">
-                        <Button onClick={() => handleExerciseComplete()}>Avanzar</Button>
-                    </CardFooter>
                 </Card>
             );
         }
@@ -307,9 +304,6 @@ export default function Intro2Page() {
                             ))}
                         </div>
                     </CardContent>
-                     <CardFooter className="justify-end">
-                        <Button onClick={() => handleExerciseComplete()}>Avanzar</Button>
-                    </CardFooter>
                 </Card>
             );
         }
@@ -331,9 +325,6 @@ export default function Intro2Page() {
                             data-ai-hint={timeImage.imageHint}
                         />}
                     </CardContent>
-                     <CardFooter className="justify-end">
-                        <Button onClick={() => handleExerciseComplete()}>Avanzar</Button>
-                    </CardFooter>
                 </Card>
             );
         }
@@ -396,7 +387,7 @@ export default function Intro2Page() {
             <div className="max-w-7xl mx-auto">
                 <div className="grid gap-8 md:grid-cols-12">
                 <div className="md:col-span-9">
-                    <Link href="/intro" className="hover:underline">
+                    <Link href="/kids/intro" className="hover:underline">
                         <h1 className="text-4xl font-bold mb-8 dark:text-primary">{t('introCoursePage.intro2')}</h1>
                     </Link>
                     {renderContent()}
@@ -410,8 +401,10 @@ export default function Intro2Page() {
                         <nav>
                             <ul className="space-y-1">
                             {intro2Path.map((item, index) => {
+                                const Icon = ICONS[item.status as keyof typeof ICONS];
                                 const isLocked = item.status === 'locked';
                                 const isSelected = selectedTopic === item.name;
+                                
                                 return (
                                     <li key={index} onClick={() => handleTopicSelect(item.name)} className={cn(!isLocked || isAdmin ? "cursor-pointer" : "cursor-not-allowed")}>
                                         <div className={cn(
