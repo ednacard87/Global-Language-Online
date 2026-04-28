@@ -887,7 +887,17 @@ export default function Intro1Page() {
                         />;
                     }
                     if (selectedTopicKey === 'exercises3') {
-                        return <TranslationExercise exerciseKey={'exercises3'} onComplete={() => handleTopicComplete(selectedTopicKey!)} />;
+                        const vocab = {
+                            'enfermera': 'nurse',
+                            'abuelos': 'grandparents',
+                            'pensionado': 'retired'
+                        };
+                        return <TranslationExercise 
+                            exerciseKey={'exercises3'} 
+                            onComplete={() => handleTopicComplete(selectedTopicKey!)} 
+                            vocabulary={vocab}
+                            highlightVocabulary={true}
+                        />;
                     }
                     if (selectedTopicKey === 'abcspelling' || selectedTopicKey === 'numbersspelling') {
                         const isNumbersExercise = selectedTopicKey === 'numbersspelling';

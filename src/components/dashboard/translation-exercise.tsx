@@ -399,12 +399,12 @@ export function TranslationExercise({
         <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
             <CardHeader>
                 <div className="flex justify-between items-center">
-                    <CardTitle>{t(exerciseData.title, {number: 2})}</CardTitle>
+                    <CardTitle>{t(exerciseData.title, {number: exerciseKey.replace('exercises', '')})}</CardTitle>
                     <span className="text-sm font-medium text-muted-foreground">
                         {currentPromptIndex + 1} / {exerciseData.prompts.length}
                     </span>
                 </div>
-                 {vocabulary && (
+                {vocabulary && (
                     <div className="flex justify-center mt-2">
                         <Popover>
                             <PopoverTrigger asChild>
