@@ -58,6 +58,7 @@ const CountriesExercise = ({ onComplete }: { onComplete: () => void }) => {
     const { toast } = useToast();
     const [userAnswers, setUserAnswers] = useState<UserAnswers>({});
     const [validationStatus, setValidationStatus] = useState<ValidationState>({});
+    const [isCompleted, setIsCompleted] = useState(false);
 
     const handleInputChange = (index: number, field: keyof Omit<CountryAnswers, 'pais'>, value: string) => {
         setUserAnswers(prev => ({
@@ -75,6 +76,7 @@ const CountriesExercise = ({ onComplete }: { onComplete: () => void }) => {
             }
             return newStatus;
         });
+        setIsCompleted(false);
     };
 
     const handleCheckAnswers = () => {
@@ -114,9 +116,10 @@ const CountriesExercise = ({ onComplete }: { onComplete: () => void }) => {
 
         if (allCorrect) {
             toast({ title: t('countries.allCorrect') });
-            onComplete();
+            setIsCompleted(true);
         } else {
             toast({ variant: 'destructive', title: t('countries.someIncorrect') });
+            setIsCompleted(false);
         }
     };
 
@@ -174,7 +177,11 @@ const CountriesExercise = ({ onComplete }: { onComplete: () => void }) => {
                 </Table>
             </CardContent>
             <CardFooter>
-                <Button onClick={handleCheckAnswers}>{t('countries.checkAnswers')}</Button>
+                 {isCompleted ? (
+                    <Button onClick={onComplete}>Terminar Intro 2</Button>
+                ) : (
+                    <Button onClick={handleCheckAnswers}>{t('countries.checkAnswers')}</Button>
+                )}
             </CardFooter>
         </Card>
     );
@@ -211,7 +218,7 @@ export default function Intro2Page() {
         { spanish: 'Buenas tardes', english: 'Good afternoon' },
         { spanish: 'Buenas noches (saludo)', english: 'Good evening' },
         { spanish: '¿Cómo estás?', english: 'How are you?' },
-        { spanish: '¿Qué tal?', english: 'What\'s up?' },
+        { spanish: '¿Qué tal?', english: "What's up?" },
         { spanish: '¿Cómo vas?', english: 'How is it going?' },
     ];
     
@@ -292,10 +299,6 @@ export default function Intro2Page() {
 
         setSelectedTopic(topicName);
         setSelectedTopicKey(currentItem!.key);
-
-        if (currentItem?.status === 'active' && !['mixed1', 'mixed2', 'countries', 'greetings', 'farewells'].includes(currentItem.key)) {
-            completeTopic(currentItem.key);
-        }
     };
 
     const handleExerciseComplete = () => {
@@ -454,9 +457,7 @@ export default function Intro2Page() {
                     if (selectedTopicKey === 'greetings') {
                         return (
                             <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-                                <CardHeader>
-                                    <CardTitle>{t('intro2Page.greetings')}</CardTitle>
-                                </CardHeader>
+                                <CardHeader><CardTitle>{t('intro2Page.greetings')}</CardTitle></CardHeader>
                                 <CardContent>
                                     <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-lg">
                                         <div className="font-bold p-3 bg-muted rounded-lg text-center">{t('common.spanish')}</div>
@@ -479,9 +480,7 @@ export default function Intro2Page() {
                     if (selectedTopicKey === 'farewells') {
                         return (
                             <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-                                <CardHeader>
-                                    <CardTitle>{t('intro2Page.farewells')}</CardTitle>
-                                </CardHeader>
+                                <CardHeader><CardTitle>{t('intro2Page.farewells')}</CardTitle></CardHeader>
                                 <CardContent>
                                     <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-lg">
                                         <div className="font-bold p-3 bg-muted rounded-lg text-center">{t('common.spanish')}</div>
