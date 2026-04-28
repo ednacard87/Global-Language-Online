@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useMemo, useEffect } from "react";
@@ -519,6 +518,9 @@ export default function Intro2Page() {
                                         data-ai-hint={timeImage.imageHint}
                                     />}
                                 </CardContent>
+                                <CardFooter className="justify-end">
+                                    <Button onClick={() => completeTopic('time')}>Avanzar</Button>
+                                </CardFooter>
                             </Card>
                         );
                     }
