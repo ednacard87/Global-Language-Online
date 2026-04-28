@@ -202,6 +202,7 @@ export default function Intro2Page() {
     const [intro2Path, setIntro2Path] = useState<Intro2PathItem[]>([]);
     const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
     const [selectedTopicKey, setSelectedTopicKey] = useState<string | null>(null);
+    const [isClient, setIsClient] = useState(false);
 
     const { user, isUserLoading } = useUser();
     const firestore = useFirestore();
@@ -242,9 +243,14 @@ export default function Intro2Page() {
 
 
     const initialLearningPath = useMemo(() => getIntro2PathData(t), [t]);
+    
+    useEffect(() => {
+        setIsClient(true);
+    }, []);
 
     useEffect(() => {
-        if (isProfileLoading) return;
+        if (isProfileLoading || !isClient) return;
+        
         const loadPath = (storageKey: string, defaultPath: any[]) => {
             if (isAdmin) {
                 return defaultPath.map(item => ({ ...item, status: 'active' }));
@@ -276,7 +282,7 @@ export default function Intro2Page() {
     
         setIntro2Path(loadPath('intro2Path', initialLearningPath));
 
-    }, [t, isAdmin, isProfileLoading, studentProfile, initialLearningPath]);
+    }, [t, isAdmin, isProfileLoading, studentProfile, initialLearningPath, isClient]);
 
     const completeTopic = (topicKey: string) => {
         setIntro2Path(currentPath => {
@@ -442,7 +448,6 @@ export default function Intro2Page() {
                         </CardFooter>
                     </Card>
                 </div>
-            </div>
             );
         }
 
