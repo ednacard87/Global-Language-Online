@@ -39,13 +39,12 @@ import {
 import { doc } from 'firebase/firestore';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
+import { TimeExercise } from '@/components/kids/exercises/time-exercise';
+import { useToast } from '@/hooks/use-toast';
+import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
 import { Separator } from "@/components/ui/separator";
-import { TimeExercise } from '@/components/kids/exercises/time-exercise';
-
 
 const ICONS = { locked: Lock, active: BookOpen, completed: CheckCircle };
 
@@ -140,7 +139,7 @@ export default function Intro2Page() {
     const router = useRouter();
     
     const initialLearningPath = useMemo(() => getIntro2PathData(t), [t]);
-    const [intro2Path, setIntro2Path] = useState<Intro2PathItem[]>(initialLearningPath);
+    const [intro2Path, setIntro2Path] = useState<Intro2PathItem[]>([]);
     const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
     const [selectedTopicKey, setSelectedTopicKey] = useState<string | null>(null);
     const [isClient, setIsClient] = useState(false);
@@ -246,7 +245,7 @@ export default function Intro2Page() {
         setSelectedTopic(topicName);
         setSelectedTopicKey(currentItem!.key);
         
-        const viewOnlyTopics = ['tip', 'greetings', 'farewells'];
+        const viewOnlyTopics = ['tip', 'greetings', 'farewells', 'time'];
         if (viewOnlyTopics.includes(currentItem!.key)) {
             completeTopic(currentItem!.key);
         }
