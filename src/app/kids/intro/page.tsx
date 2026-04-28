@@ -88,6 +88,8 @@ export default function KidsIntroductoryCoursePage() {
                 let isLocked = (previousItem.progress ?? 0) < 100;
                 if (item.label === 'kidsPage.quiz1') {
                     isLocked = (previousItem.progress ?? 0) < 90;
+                } else if (item.label === 'kidsPage.quiz2') {
+                    isLocked = (previousItem.progress ?? 0) < 90;
                 }
                 finalItem.locked = isLocked;
               }
