@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { useRouter, useParams } from 'next/navigation';
 import { DashboardHeader } from '@/components/dashboard/header';
 import {
@@ -125,6 +124,44 @@ export default function QuizPage() {
     }
   };
 
+  const handleUnlockNext = async () => {
+    if (!studentDocRef) {
+      toast({
+        variant: "destructive",
+        title: "Error de autenticación",
+        description: "No se pudo guardar el progreso. Asegúrate de haber iniciado sesión.",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+        const progressKey = `quiz1Progress`; // Hardcoding for quiz 1
+        updateDocumentNonBlocking(studentDocRef, {
+            [`progress.${progressKey}`]: 100,
+        });
+        
+        window.dispatchEvent(new CustomEvent('progressUpdated'));
+        
+        toast({
+            title: "¡Éxito!",
+            description: "Has desbloqueado Intro 2.",
+        });
+
+        router.push('/intro');
+
+    } catch (error) {
+        console.error("Error unlocking next lesson:", error);
+        toast({
+            variant: "destructive",
+            title: "Error",
+            description: "No se pudo desbloquear la siguiente lección.",
+        });
+    } finally {
+        setIsLoading(false);
+    }
+  };
+
   return (
     <>
       <div className="flex w-full flex-col ingles-dashboard-bg min-h-screen">
@@ -145,36 +182,47 @@ export default function QuizPage() {
                     </Link>
                 </Button>
             </CardContent>
-            <CardContent className="border-t pt-6 px-8">
-              <div className="grid gap-4">
-                <div className="text-center">
-                  <p className="font-semibold text-lg">Sube tus resultados</p>
-                  <p className="text-sm text-muted-foreground">
-                    Toma una captura de pantalla de tu resultado y súbela aquí.
-                  </p>
-                </div>
-                <div className="grid w-full max-w-sm items-center gap-2 mx-auto">
-                  <Label htmlFor="quiz-result" className="cursor-pointer border-2 border-dashed border-muted-foreground/50 rounded-lg p-6 flex flex-col items-center justify-center text-center hover:bg-muted/50 transition-colors">
-                    <Upload className="h-10 w-10 text-muted-foreground" />
-                    <span className="mt-2 text-sm text-muted-foreground">
-                      {selectedFile ? "Cambiar imagen" : "Haz clic para subir imagen"}
-                      </span>
-                  </Label>
-                  <Input id="quiz-result" type="file" className="hidden" onChange={handleFileChange} accept="image/*" />
-                </div>
-                {selectedFile && (
-                  <div className="text-center text-sm text-muted-foreground flex items-center justify-center gap-2">
-                    <Paperclip className="h-4 w-4" />
-                    <span className="truncate">{selectedFile.name}</span>
-                  </div>
-                )}
-              </div>
-            </CardContent>
-            <CardFooter className="flex flex-col items-center justify-center gap-2 pt-6">
-               <Button onClick={handleSend} disabled={!selectedFile || isLoading} className="w-full max-w-sm mx-auto">
-                  {isLoading ? <Loader2 className="animate-spin" /> : "Enviar"}
-                </Button>
-            </CardFooter>
+            
+            {quizId === '1' ? (
+                <CardFooter className="flex flex-col items-center justify-center gap-2 pt-6 border-t">
+                    <Button onClick={handleUnlockNext} disabled={isLoading} className="w-full max-w-sm mx-auto">
+                        {isLoading ? <Loader2 className="animate-spin" /> : "Desbloquear Intro 2"}
+                    </Button>
+                </CardFooter>
+            ) : (
+                <>
+                    <CardContent className="border-t pt-6 px-8">
+                      <div className="grid gap-4">
+                        <div className="text-center">
+                          <p className="font-semibold text-lg">Sube tus resultados</p>
+                          <p className="text-sm text-muted-foreground">
+                            Toma una captura de pantalla de tu resultado y súbela aquí.
+                          </p>
+                        </div>
+                        <div className="grid w-full max-w-sm items-center gap-2 mx-auto">
+                          <Label htmlFor="quiz-result" className="cursor-pointer border-2 border-dashed border-muted-foreground/50 rounded-lg p-6 flex flex-col items-center justify-center text-center hover:bg-muted/50 transition-colors">
+                            <Upload className="h-10 w-10 text-muted-foreground" />
+                            <span className="mt-2 text-sm text-muted-foreground">
+                              {selectedFile ? "Cambiar imagen" : "Haz clic para subir imagen"}
+                              </span>
+                          </Label>
+                          <Input id="quiz-result" type="file" className="hidden" onChange={handleFileChange} accept="image/*" />
+                        </div>
+                        {selectedFile && (
+                          <div className="text-center text-sm text-muted-foreground flex items-center justify-center gap-2">
+                            <Paperclip className="h-4 w-4" />
+                            <span className="truncate">{selectedFile.name}</span>
+                          </div>
+                        )}
+                      </div>
+                    </CardContent>
+                    <CardFooter className="flex flex-col items-center justify-center gap-2 pt-6">
+                       <Button onClick={handleSend} disabled={!selectedFile || isLoading} className="w-full max-w-sm mx-auto">
+                          {isLoading ? <Loader2 className="animate-spin" /> : "Enviar"}
+                        </Button>
+                    </CardFooter>
+                </>
+            )}
           </Card>
         </main>
       </div>
