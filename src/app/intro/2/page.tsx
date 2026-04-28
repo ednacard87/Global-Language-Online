@@ -2,63 +2,57 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { DashboardHeader } from '@/components/dashboard/header';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  CardFooter,
-} from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
 import {
   BookOpen,
-  CheckCircle,
+  PenSquare,
   Lock,
-  ArrowRight,
-  Swords,
+  GraduationCap,
+  BrainCircuit,
   Hand,
   MessageSquare,
-  BrainCircuit,
-  PenSquare,
-  Lightbulb,
   Clock,
+  CheckCircle,
+  Lightbulb
 } from 'lucide-react';
+import { DashboardHeader } from '@/components/dashboard/header';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { cn } from '@/lib/utils';
 import { useTranslation } from '@/context/language-context';
-import { getIntro2PathData, type Intro2PathItem } from '@/lib/course-data';
-import {
-  useUser,
-  useFirestore,
-  useDoc,
-  useMemoFirebase,
-  updateDocumentNonBlocking,
-} from '@/firebase';
+import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
 import { doc } from 'firebase/firestore';
+import { Progress } from "@/components/ui/progress";
+import { useToast } from "@/hooks/use-toast";
+import { Label } from '@/components/ui/label';
+import { Separator } from '@/components/ui/separator';
+import { getIntro2PathData, type Intro2PathItem } from '@/lib/course-data';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
-import { Separator } from "@/components/ui/separator";
 import { TimeExercise } from '@/components/kids/exercises/time-exercise';
+import { Loader2 } from 'lucide-react';
 
+const greetingsData = [
+    { spanish: 'Hola', english: 'Hello' }, { spanish: 'Buenos días', english: 'Good morning' },
+    { spanish: 'Buenas tardes', english: 'Good afternoon' }, { spanish: 'Buenas noches (saludo)', english: 'Good evening' },
+    { spanish: '¿Cómo estás?', english: 'How are you?' }, { spanish: '¿Qué tal?', english: "What's up?" }, { spanish: '¿Cómo vas?', english: 'How is it going?' },
+];
 
-const ICONS = { locked: Lock, active: BookOpen, completed: CheckCircle };
-
-// By changing this version, we can force a progress reset for all users
-// if there's a breaking change in the path structure.
-const progressStorageVersion = "_v1_sequential_intro2";
+const farewellsData = [
+    { spanish: 'Adiós', english: 'Goodbye' }, { spanish: 'Chao', english: 'Bye' },
+    { spanish: 'Hasta luego', english: 'See you later' }, { spanish: 'Hasta pronto', english: 'See you soon' },
+    { spanish: 'Buenas noches (despedida)', english: 'Good night' }, { spanish: 'Cuídate', english: 'Take care' },
+    { spanish: 'Nos vemos mañana', english: 'See you tomorrow' }, { spanish: 'Que tengas un buen día', english: 'Have a nice day' },
+];
 
 interface Student {
     role?: 'admin' | 'student';
     lessonProgress?: any;
     progress?: Record<string, number>;
 }
+
 const CountriesExercise = ({ onComplete }: { onComplete: () => void }) => {
     const { t } = useTranslation();
     const { toast } = useToast();
@@ -89,6 +83,7 @@ const CountriesExercise = ({ onComplete }: { onComplete: () => void }) => {
         const allCorrect = userAnswers.every((answer, index) => answer.toLowerCase() === countriesData[index].englishCountry.toLowerCase());
         if (allCorrect) {
             toast({ title: t('countries.allCorrect') });
+            onComplete();
         } else {
             toast({ variant: 'destructive', title: t('countries.someIncorrect') });
         }
@@ -114,24 +109,12 @@ const CountriesExercise = ({ onComplete }: { onComplete: () => void }) => {
             </CardContent>
             <CardFooter>
                 <Button onClick={handleCheckAnswers}>{t('countries.checkAnswers')}</Button>
-                <Button onClick={onComplete} className="ml-4">Terminar Intro 2</Button>
             </CardFooter>
         </Card>
     );
 };
 
-const greetingsData = [
-    { spanish: 'Hola', english: 'Hello' }, { spanish: 'Buenos días', english: 'Good morning' },
-    { spanish: 'Buenas tardes', english: 'Good afternoon' }, { spanish: 'Buenas noches (saludo)', english: 'Good evening' },
-    { spanish: '¿Cómo estás?', english: 'How are you?' }, { spanish: '¿Qué tal?', english: "What's up?" }, { spanish: '¿Cómo vas?', english: 'How is it going?' },
-];
-
-const farewellsData = [
-    { spanish: 'Adiós', english: 'Goodbye' }, { spanish: 'Chao', english: 'Bye' },
-    { spanish: 'Hasta luego', english: 'See you later' }, { spanish: 'Hasta pronto', english: 'See you soon' },
-    { spanish: 'Buenas noches (despedida)', english: 'Good night' }, { spanish: 'Cuídate', english: 'Take care' },
-    { spanish: 'Nos vemos mañana', english: 'See you tomorrow' }, { spanish: 'Que tengas un buen día', english: 'Have a nice day' },
-];
+const progressStorageVersion = "_v1_sequential_intro2";
 
 export default function Intro2Page() {
     const { t } = useTranslation();
@@ -139,7 +122,7 @@ export default function Intro2Page() {
     const router = useRouter();
     
     const initialLearningPath = useMemo(() => getIntro2PathData(t), [t]);
-    const [intro2Path, setIntro2Path] = useState<Intro2PathItem[]>(initialLearningPath);
+    const [intro2Path, setIntro2Path] = useState<Intro2PathItem[]>([]);
     const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
     const [selectedTopicKey, setSelectedTopicKey] = useState<string | null>(null);
     const [isClient, setIsClient] = useState(false);
@@ -432,25 +415,28 @@ export default function Intro2Page() {
                         <nav>
                             <ul className="space-y-1">
                             {intro2Path.map((item, index) => {
-                                const Icon = ICONS[item.status as keyof typeof ICONS];
+                                const Icon = item.icon;
                                 const isLocked = item.status === 'locked';
                                 const isSelected = selectedTopic === item.name;
                                 const isActive = item.status === 'active';
                                 
-                                const itemContent = (
-                                    <div className={cn(
-                                        "flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors",
-                                        !isLocked && "hover:bg-muted",
-                                        isSelected ? "bg-muted text-primary font-semibold" : (isActive ? "text-foreground" : "text-muted-foreground")
-                                    )}>
-                                        <Icon className={cn("h-5 w-5", isLocked ? "text-yellow-500" : (item.status === 'completed' || isSelected || isActive) ? "text-primary" : "text-muted-foreground")} />
-                                        <span>{item.name}</span>
-                                    </div>
-                                );
-
                                 return (
-                                    <li key={index} onClick={() => handleTopicSelect(item.name)} className={cn(!isLocked ? "cursor-pointer" : "cursor-not-allowed")}>
-                                        {itemContent}
+                                    <li key={index} onClick={() => handleTopicSelect(item.name)} className={cn(!isLocked || isAdmin ? "cursor-pointer" : "cursor-not-allowed")}>
+                                        <div className={cn(
+                                            "flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors",
+                                            !isLocked || isAdmin ? "hover:bg-muted" : "text-muted-foreground/50",
+                                            isSelected && (!isLocked || isAdmin) && "bg-muted text-primary font-semibold"
+                                        )}>
+                                            <div className="flex items-center gap-3">
+                                                {item.status === 'completed' ? (
+                                                    <CheckCircle className="h-5 w-5 text-green-500" />
+                                                ) : (
+                                                    <Icon className={cn("h-5 w-5", isLocked && !isAdmin ? "text-muted-foreground" : "text-primary")} />
+                                                )}
+                                                <span>{item.name}</span>
+                                            </div>
+                                            {isLocked && !isAdmin && <Lock className="h-4 w-4 text-yellow-500" />}
+                                        </div>
                                     </li>
                                 );
                             })}
