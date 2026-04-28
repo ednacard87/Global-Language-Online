@@ -3,6 +3,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { DashboardHeader } from '@/components/dashboard/header';
 import {
   Card,
@@ -39,12 +40,13 @@ import {
 import { doc } from 'firebase/firestore';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
-import { TimeExercise } from '@/components/kids/exercises/time-exercise';
-import { useToast } from '@/hooks/use-toast';
-import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 import { Separator } from "@/components/ui/separator";
+import { TimeExercise } from '@/components/kids/exercises/time-exercise';
+
 
 const ICONS = { locked: Lock, active: BookOpen, completed: CheckCircle };
 
@@ -57,20 +59,6 @@ interface Student {
     lessonProgress?: any;
     progress?: Record<string, number>;
 }
-
-const greetingsData = [
-    { spanish: 'Hola', english: 'Hello' }, { spanish: 'Buenos días', english: 'Good morning' },
-    { spanish: 'Buenas tardes', english: 'Good afternoon' }, { spanish: 'Buenas noches (saludo)', english: 'Good evening' },
-    { spanish: '¿Cómo estás?', english: 'How are you?' }, { spanish: '¿Qué tal?', english: "What's up?" }, { spanish: '¿Cómo vas?', english: 'How is it going?' },
-];
-
-const farewellsData = [
-    { spanish: 'Adiós', english: 'Goodbye' }, { spanish: 'Chao', english: 'Bye' },
-    { spanish: 'Hasta luego', english: 'See you later' }, { spanish: 'Hasta pronto', english: 'See you soon' },
-    { spanish: 'Buenas noches (despedida)', english: 'Good night' }, { spanish: 'Cuídate', english: 'Take care' },
-    { spanish: 'Nos vemos mañana', english: 'See you tomorrow' }, { spanish: 'Que tengas un buen día', english: 'Have a nice day' },
-];
-
 const CountriesExercise = ({ onComplete }: { onComplete: () => void }) => {
     const { t } = useTranslation();
     const { toast } = useToast();
@@ -132,6 +120,18 @@ const CountriesExercise = ({ onComplete }: { onComplete: () => void }) => {
     );
 };
 
+const greetingsData = [
+    { spanish: 'Hola', english: 'Hello' }, { spanish: 'Buenos días', english: 'Good morning' },
+    { spanish: 'Buenas tardes', english: 'Good afternoon' }, { spanish: 'Buenas noches (saludo)', english: 'Good evening' },
+    { spanish: '¿Cómo estás?', english: 'How are you?' }, { spanish: '¿Qué tal?', english: "What's up?" }, { spanish: '¿Cómo vas?', english: 'How is it going?' },
+];
+
+const farewellsData = [
+    { spanish: 'Adiós', english: 'Goodbye' }, { spanish: 'Chao', english: 'Bye' },
+    { spanish: 'Hasta luego', english: 'See you later' }, { spanish: 'Hasta pronto', english: 'See you soon' },
+    { spanish: 'Buenas noches (despedida)', english: 'Good night' }, { spanish: 'Cuídate', english: 'Take care' },
+    { spanish: 'Nos vemos mañana', english: 'See you tomorrow' }, { spanish: 'Que tengas un buen día', english: 'Have a nice day' },
+];
 
 export default function Intro2Page() {
     const { t } = useTranslation();
@@ -139,7 +139,7 @@ export default function Intro2Page() {
     const router = useRouter();
     
     const initialLearningPath = useMemo(() => getIntro2PathData(t), [t]);
-    const [intro2Path, setIntro2Path] = useState<Intro2PathItem[]>([]);
+    const [intro2Path, setIntro2Path] = useState<Intro2PathItem[]>(initialLearningPath);
     const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
     const [selectedTopicKey, setSelectedTopicKey] = useState<string | null>(null);
     const [isClient, setIsClient] = useState(false);
@@ -245,7 +245,7 @@ export default function Intro2Page() {
         setSelectedTopic(topicName);
         setSelectedTopicKey(currentItem!.key);
         
-        const viewOnlyTopics = ['tip', 'greetings', 'farewells', 'time'];
+        const viewOnlyTopics = ['tip', 'greetings', 'farewells'];
         if (viewOnlyTopics.includes(currentItem!.key)) {
             completeTopic(currentItem!.key);
         }
