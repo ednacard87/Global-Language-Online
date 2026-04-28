@@ -95,76 +95,25 @@ export function MazeGame({ pathItems = defaultPathItems, title, description, isL
 
   // Special layout for intro page
   if (isIntro) {
-      const row1 = pathItems.slice(0, 4); // Items 0, 1, 2, 3
-      const row2 = pathItems.slice(4, 6).reverse(); // Items 5, 4 (reversed)
-      const row3 = pathItems.slice(6, 8); // Items 6, 7
-
       return (
         <div className="p-4 md:p-8 bg-gray-900/50 text-white rounded-2xl border border-gray-700/50 backdrop-blur-sm">
             <h2 className="text-2xl font-bold">{finalTitle}</h2>
             <p className="text-gray-400 mt-1">{finalDescription}</p>
             {isLoading ? (
-                 <div className="flex flex-1 justify-center items-center p-8 min-h-[450px]">
+                 <div className="flex flex-1 justify-center items-center p-8 min-h-[150px]">
                     <Loader2 className="h-10 w-10 animate-spin text-white" />
                 </div>
             ) : (
-                <>
-                <div className="mt-8 relative hidden md:block">
-                    {/* Row 1 */}
-                    <div className="flex items-start justify-between">
-                        {row1.map((item, index) => (
-                            <React.Fragment key={`${item.label}-1`}>
-                                <PathItemComponent item={item} isClient={isClient} t={t} isIntro={true} />
-                                {index < row1.length - 1 && (
-                                    <ArrowRight className="h-8 w-8 text-gray-500 mt-10" />
-                                )}
-                            </React.Fragment>
-                        ))}
-                    </div>
-                    {/* Arrow to Row 2 */}
-                    <ArrowDown className="h-8 w-8 text-gray-500 absolute top-[120px] right-[50px]"/>
-                    {/* Row 2 */}
-                    <div className="flex items-start justify-end mt-4">
-                        <div className="flex items-center gap-8 mr-[120px]">
-                            {row2.map((item, index) => (
-                                <React.Fragment key={`${item.label}-2`}>
-                                    {index > 0 && (
-                                        <ArrowRight className="h-8 w-8 text-gray-500 rotate-180" />
-                                    )}
-                                    <PathItemComponent item={item} isClient={isClient} t={t} isIntro={true}/>
-                                </React.Fragment>
-                            ))}
-                        </div>
-                    </div>
-                     {/* Arrow to Row 3 */}
-                    <ArrowDown className="h-8 w-8 text-gray-500 absolute top-[260px] right-1/2 -translate-x-[20px]"/>
-                     {/* Row 3 */}
-                    <div className="flex items-start justify-center mt-4 ml-[-15%]">
-                        <div className="flex items-center gap-8">
-                             {row3.map((item, index) => (
-                                <React.Fragment key={`${item.label}-3`}>
-                                    <PathItemComponent item={item} isClient={isClient} t={t} isIntro={true} />
-                                    {index < row3.length - 1 && (
-                                        <ArrowRight className="h-8 w-8 text-gray-500 mt-10" />
-                                    )}
-                                </React.Fragment>
-                             ))}
-                        </div>
-                    </div>
-                </div>
-
-                {/* Mobile View - Fallback to simple wrap */}
-                <div className="mt-8 md:hidden flex flex-wrap items-center justify-center gap-4">
+                <div className="mt-8 flex flex-wrap items-center justify-center gap-x-4 gap-y-8">
                     {pathItems.map((item, index) => (
                         <React.Fragment key={item.label}>
                             <PathItemComponent item={item} isClient={isClient} t={t} isIntro={true} />
                             {index < pathItems.length - 1 && (
-                                <ArrowDown className="h-6 w-6 text-gray-500 shrink-0" />
+                                <ArrowRight className="h-8 w-8 text-gray-500 hidden md:block" />
                             )}
                         </React.Fragment>
                     ))}
                 </div>
-                </>
             )}
             {children}
         </div>

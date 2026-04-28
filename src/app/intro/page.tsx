@@ -86,11 +86,15 @@ export default function EnglishIntroPage() {
                 finalItem.locked = false;
               } else {
                 let isLocked = (previousItem.progress ?? 0) < 100;
-                if (item.label === 'introCoursePage.quiz1') {
-                    isLocked = (previousItem.progress ?? 0) < 90;
-                } else if (item.label === 'introCoursePage.quiz2') {
-                    isLocked = (previousItem.progress ?? 0) < 90;
+                
+                if (item.label === 'introCoursePage.quiz1' && (previousItem.progress ?? 0) >= 90) {
+                    isLocked = false;
                 }
+                
+                if (item.label === 'introCoursePage.quiz2' && (previousItem.progress ?? 0) >= 90) {
+                    isLocked = false;
+                }
+
                 finalItem.locked = isLocked;
               }
           }
@@ -131,11 +135,11 @@ export default function EnglishIntroPage() {
               {t('dashboard.introductoryCourse')}
             </h1>
         </div>
-        <div className="w-full max-w-3xl">
+        <div className="w-full max-w-5xl">
             <MazeGame 
                 pathItems={pathItems} 
-                title="THE LEARNING ADVENTURE"
-                description="Sigue la ruta para dominar nuevas habilidades."
+                title={t('introCoursePage.mazeTitle')} 
+                description={t('introCoursePage.mazeDescription')}
                 isLoading={isUserLoading || isProfileLoading}
                 isIntro={true}
             />
