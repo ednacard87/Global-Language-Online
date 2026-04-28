@@ -1,13 +1,12 @@
-
 'use client';
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { DashboardHeader } from "@/components/dashboard/header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { BookOpen, CheckCircle, Lock } from "lucide-react";
+import { BookOpen, CheckCircle, Lock, ArrowRight, Swords } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/context/language-context";
 import { getIntro2PathData, type Intro2PathItem } from "@/lib/course-data";
@@ -439,6 +438,9 @@ export default function Intro2Page() {
                                             </div>
                                         </div>
                                     </CardContent>
+                                    <CardFooter>
+                                        <Button onClick={() => completeTopic('tip')}>Avanzar</Button>
+                                    </CardFooter>
                                 </Card>
                             </div>
                         </div>
