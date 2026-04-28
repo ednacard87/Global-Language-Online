@@ -873,8 +873,21 @@ export default function Intro1Page() {
                             highlightVocabulary={true}
                         />;
                     }
-                     if (selectedTopicKey === 'exercises2' || selectedTopicKey === 'exercises3') {
-                        return <TranslationExercise exerciseKey={selectedTopicKey as 'exercises2' | 'exercises3'} onComplete={() => handleTopicComplete(selectedTopicKey!)} />;
+                    if (selectedTopicKey === 'exercises2') {
+                        const vocab = {
+                            'amigo': 'friend',
+                            'hijo': 'son',
+                            'perro': 'dog'
+                        };
+                        return <TranslationExercise 
+                            exerciseKey="exercises2" 
+                            onComplete={() => handleTopicComplete(selectedTopicKey!)} 
+                            vocabulary={vocab}
+                            highlightVocabulary={true}
+                        />;
+                    }
+                    if (selectedTopicKey === 'exercises3') {
+                        return <TranslationExercise exerciseKey={'exercises3'} onComplete={() => handleTopicComplete(selectedTopicKey!)} />;
                     }
                     if (selectedTopicKey === 'abcspelling' || selectedTopicKey === 'numbersspelling') {
                         const isNumbersExercise = selectedTopicKey === 'numbersspelling';
