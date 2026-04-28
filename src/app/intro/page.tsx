@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { DashboardHeader } from "@/components/dashboard/header";
 import { MazeGame } from "@/components/dashboard/maze-game";
-import { introPathItemsData, PathItem } from "@/lib/course-data";
+import { introPathItemsData, PathItem, calculateIntroCourseProgress } from "@/lib/course-data";
 import { useTranslation } from "@/context/language-context";
 import { useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
@@ -135,7 +135,7 @@ export default function EnglishIntroPage() {
               {t('dashboard.introductoryCourse')}
             </h1>
         </div>
-        <div className="w-full max-w-5xl">
+        <div className="w-full max-w-4xl">
             <MazeGame 
                 pathItems={pathItems} 
                 title={t('introCoursePage.mazeTitle')} 
