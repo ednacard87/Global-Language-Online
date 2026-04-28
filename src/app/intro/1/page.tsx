@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo } from "react";
@@ -856,6 +857,9 @@ export default function Intro1Page() {
                                         ))}
                                     </div>
                                 </CardContent>
+                                <CardFooter>
+                                    <Button onClick={() => handleTopicComplete('demonstratives')}>Terminar Intro 1</Button>
+                                </CardFooter>
                             </Card>
                         );
                     }
