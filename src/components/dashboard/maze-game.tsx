@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { BookOpen, Flag, Footprints, ArrowRight, Puzzle, Ear, Mic, Lock, Loader2, ArrowDown } from "lucide-react";
+import { BookOpen, Flag, Footprints, Puzzle, Mic, Ear, Lock, Loader2, ArrowRight } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -15,7 +15,7 @@ import { A1Icon, A2Icon, B1Icon, B2Icon } from "@/components/icons";
 import { useTranslation } from "@/context/language-context";
 
 
-interface PathItem {
+export interface PathItem {
     type: string;
     icon: React.ComponentType<{ className?: string }>;
     label: string;
@@ -95,9 +95,6 @@ export function MazeGame({ pathItems = defaultPathItems, title, description, isL
 
   // Special layout for intro page
   if (isIntro) {
-      const topRowItems = pathItems.slice(0, 5);
-      const bottomRowItems = pathItems.slice(5, 8);
-
       return (
         <div className="p-4 md:p-8 bg-gray-900/50 text-white rounded-2xl border border-gray-700/50 backdrop-blur-sm">
             <h2 className="text-2xl font-bold">{finalTitle}</h2>
@@ -108,34 +105,16 @@ export function MazeGame({ pathItems = defaultPathItems, title, description, isL
                 </div>
             ) : (
                 <div className="mt-8 flex flex-col items-center gap-4">
-                    {/* Top Row */}
                     <div className="flex flex-wrap items-start justify-center gap-x-4 gap-y-8">
-                        {topRowItems.map((item, index) => (
+                        {pathItems.map((item, index) => (
                             <React.Fragment key={item.label}>
                                 <PathItemComponent item={item} isClient={isClient} t={t} isIntro={true} />
-                                {index < topRowItems.length - 1 && (
+                                {index < pathItems.length - 1 && (
                                     <ArrowRight className="h-8 w-8 text-gray-500 hidden md:block self-center" />
                                 )}
                             </React.Fragment>
                         ))}
                     </div>
-
-                    {/* Arrow Down */}
-                    {bottomRowItems.length > 0 && <ArrowDown className="h-8 w-8 text-gray-500" />}
-                    
-                    {/* Bottom Row */}
-                    {bottomRowItems.length > 0 && (
-                        <div className="flex flex-wrap items-start justify-center gap-x-4 gap-y-8">
-                            {bottomRowItems.map((item, index) => (
-                                <React.Fragment key={item.label}>
-                                    <PathItemComponent item={item} isClient={isClient} t={t} isIntro={true} />
-                                    {index < bottomRowItems.length - 1 && (
-                                        <ArrowRight className="h-8 w-8 text-gray-500 hidden md:block self-center" />
-                                    )}
-                                </React.Fragment>
-                            ))}
-                        </div>
-                    )}
                 </div>
             )}
             {children}
