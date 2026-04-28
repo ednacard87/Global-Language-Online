@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useMemo, useEffect } from "react";
@@ -293,7 +294,7 @@ export default function Intro2Page() {
         setSelectedTopic(topicName);
         setSelectedTopicKey(currentItem!.key);
 
-        if (currentItem?.status === 'active' && !['mixed1', 'mixed2', 'countries', 'tip'].includes(currentItem.key)) {
+        if (currentItem?.status === 'active' && !['mixed1', 'mixed2', 'countries', 'tip', 'greetings'].includes(currentItem.key)) {
             completeTopic(currentItem.key);
         }
     };
@@ -469,6 +470,9 @@ export default function Intro2Page() {
                                         ))}
                                     </div>
                                 </CardContent>
+                                <CardFooter>
+                                    <Button onClick={() => completeTopic('greetings')}>Avanzar</Button>
+                                </CardFooter>
                             </Card>
                         );
                     }
@@ -623,3 +627,4 @@ export default function Intro2Page() {
     </div>
   );
 }
+    
