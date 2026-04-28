@@ -1,24 +1,51 @@
-
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { DashboardHeader } from '@/components/dashboard/header';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  CardFooter,
+} from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { BookOpen, CheckCircle, Lock, Lightbulb, Clock } from 'lucide-react';
+import {
+  BookOpen,
+  CheckCircle,
+  Lock,
+  ArrowRight,
+  Swords,
+  Hand,
+  MessageSquare,
+  BrainCircuit,
+  PenSquare,
+  Lightbulb,
+  Clock,
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTranslation } from '@/context/language-context';
 import { getIntro2PathData, type Intro2PathItem } from '@/lib/course-data';
-import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
+import {
+  useUser,
+  useFirestore,
+  useDoc,
+  useMemoFirebase,
+  updateDocumentNonBlocking,
+} from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
-import { CountriesExercise } from '@/components/kids/exercises/countries-exercise';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
+import { Separator } from "@/components/ui/separator";
 import { TimeExercise } from '@/components/kids/exercises/time-exercise';
-import { useToast } from '@/hooks/use-toast';
-import { Button } from '@/components/ui/button';
+
 
 const ICONS = { locked: Lock, active: BookOpen, completed: CheckCircle };
 
@@ -45,9 +72,73 @@ const farewellsData = [
     { spanish: 'Nos vemos mañana', english: 'See you tomorrow' }, { spanish: 'Que tengas un buen día', english: 'Have a nice day' },
 ];
 
+const CountriesExercise = ({ onComplete }: { onComplete: () => void }) => {
+    const { t } = useTranslation();
+    const { toast } = useToast();
+    const countriesData = [
+        { country: "ESTADOS UNIDOS", nationality: "ESTADOUNIDENSE", language: "INGLÉS", englishCountry: "UNITED STATES" },
+        { country: "CANADA", nationality: "CANADIENSE", language: "INGLÉS / FRANCÉS", englishCountry: "CANADA" },
+        { country: "MÉXICO", nationality: "MEXICANO", language: "ESPAÑOL", englishCountry: "MEXICO" },
+        { country: "BRASIL", nationality: "BRASILERO", language: "PORTUGUÉS", englishCountry: "BRAZIL" },
+        { country: "INGLATERRA", nationality: "INGLÉS", language: "INGLÉS", englishCountry: "ENGLAND" },
+        { country: "FRANCIA", nationality: "FRANCÉS", language: "FRANCÉS", englishCountry: "FRANCE" },
+        { country: "ALEMANIA", nationality: "ALEMÁN", language: "ALEMÁN", englishCountry: "GERMANY" },
+        { country: "ITALIA", nationality: "ITALIANO", language: "ITALIANO", englishCountry: "ITALY" },
+        { country: "JAPÓN", nationality: "JAPONÉS", language: "JAPONÉS", englishCountry: "JAPAN" },
+        { country: "CHINA", nationality: "CHINO", language: "CHINO", englishCountry: "CHINA" },
+        { country: "AUSTRALIA", nationality: "AUSTRALIANO", language: "INGLÉS", englishCountry: "AUSTRALIA" },
+        { country: "COLOMBIA", nationality: "COLOMBIANO", language: "ESPAÑOL", englishCountry: "COLOMBIA" },
+    ];
+    
+    const [userAnswers, setUserAnswers] = useState<string[]>(Array(countriesData.length).fill(''));
+
+    const handleInputChange = (index: number, value: string) => {
+        const newAnswers = [...userAnswers];
+        newAnswers[index] = value;
+        setUserAnswers(newAnswers);
+    };
+
+    const handleCheckAnswers = () => {
+        const allCorrect = userAnswers.every((answer, index) => answer.toLowerCase() === countriesData[index].englishCountry.toLowerCase());
+        if (allCorrect) {
+            toast({ title: t('countries.allCorrect') });
+        } else {
+            toast({ variant: 'destructive', title: t('countries.someIncorrect') });
+        }
+    };
+
+    return (
+        <Card>
+            <CardHeader><CardTitle>{t('intro2Page.countries')}</CardTitle><CardDescription>{t('intro2Page.countriesDescription')}</CardDescription></CardHeader>
+            <CardContent>
+                <div className="grid grid-cols-4 gap-2 text-center text-sm font-semibold text-muted-foreground p-2 bg-muted rounded-t-lg">
+                    <span>{t('intro2Page.tableCountry')}</span><span>{t('intro2Page.tableNationalities')}</span><span>{t('intro2Page.tableLanguage')}</span><span>{t('intro2Page.tableCountries')} (inglés)</span>
+                </div>
+                <div className="grid grid-cols-4 gap-2 text-center border rounded-b-lg p-2">
+                    {countriesData.map((c, i) => (
+                        <React.Fragment key={i}>
+                            <span>{c.country}</span>
+                            <span>{c.nationality}</span>
+                            <span>{c.language}</span>
+                            <Input value={userAnswers[i] || ''} onChange={e => handleInputChange(i, e.target.value)} />
+                        </React.Fragment>
+                    ))}
+                </div>
+            </CardContent>
+            <CardFooter>
+                <Button onClick={handleCheckAnswers}>{t('countries.checkAnswers')}</Button>
+                <Button onClick={onComplete} className="ml-4">Terminar Intro 2</Button>
+            </CardFooter>
+        </Card>
+    );
+};
+
 
 export default function Intro2Page() {
     const { t } = useTranslation();
+    const { toast } = useToast();
+    const router = useRouter();
+    
     const initialLearningPath = useMemo(() => getIntro2PathData(t), [t]);
     const [intro2Path, setIntro2Path] = useState<Intro2PathItem[]>(initialLearningPath);
     const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
@@ -56,7 +147,7 @@ export default function Intro2Page() {
 
     const { user, isUserLoading } = useUser();
     const firestore = useFirestore();
-    const { toast } = useToast();
+
     const studentDocRef = useMemoFirebase(
         () => (user ? doc(firestore, 'students', user.uid) : null),
         [firestore, user]
@@ -69,46 +160,53 @@ export default function Intro2Page() {
         if (!user) return false;
         return studentProfile?.role === 'admin' || user.email === 'ednacard87@gmail.com';
     }, [user, studentProfile]);
-    
+
     useEffect(() => {
         setIsClient(true);
     }, []);
-
+    
     useEffect(() => {
         if (isProfileLoading || !isClient) return;
-        
-        const loadPath = (storageKey: string, defaultPath: any[]) => {
-            if (isAdmin) {
-                return defaultPath.map(item => ({ ...item, status: 'active' }));
-            }
-            const versionedKey = storageKey + progressStorageVersion;
-            
+
+        let path = [...initialLearningPath];
+
+        if (isAdmin) {
+            path.forEach(item => (item.status = 'active'));
+        } else {
+            const versionedKey = 'intro2Path' + progressStorageVersion;
+            let savedStatuses: Record<string, 'completed' | 'active' | 'locked'> | null = null;
             if (studentProfile?.lessonProgress?.[versionedKey]) {
-                const savedStatuses = studentProfile.lessonProgress[versionedKey];
-                return defaultPath.map(item => ({
+                savedStatuses = studentProfile.lessonProgress[versionedKey];
+            } else {
+                try {
+                    const savedStatusJSON = localStorage.getItem(versionedKey);
+                    if (savedStatusJSON) {
+                        savedStatuses = JSON.parse(savedStatusJSON);
+                    }
+                } catch (e) {
+                    console.error(`Failed to load path from ${versionedKey}`, e);
+                }
+            }
+
+            if (savedStatuses) {
+                path = path.map(item => ({
                     ...item,
-                    status: savedStatuses[item.key] || item.status
+                    status: savedStatuses[item.key] || item.status,
                 }));
             }
+        }
 
-            try {
-                const savedStatusJSON = localStorage.getItem(versionedKey);
-                if (savedStatusJSON) {
-                    const savedStatuses = JSON.parse(savedStatusJSON);
-                    return defaultPath.map(item => ({
-                        ...item,
-                        status: savedStatuses[item.key] || item.status
-                    }));
-                }
-            } catch (e) {
-                console.error(`Failed to load path from ${versionedKey}`, e);
-            }
-            return defaultPath;
-        };
-    
-        setIntro2Path(loadPath('intro2Path', initialLearningPath));
+        setIntro2Path(path);
 
-    }, [t, isAdmin, isProfileLoading, studentProfile, initialLearningPath, isClient]);
+        const firstActive = path.find(p => p.status === 'active');
+        if (firstActive) {
+            setSelectedTopic(firstActive.name);
+            setSelectedTopicKey(firstActive.key);
+        } else {
+            setSelectedTopic(path[0].name);
+            setSelectedTopicKey(path[0].key);
+        }
+    }, [isClient, isProfileLoading, isAdmin, studentProfile, initialLearningPath]);
 
     const completeTopic = (topicKey: string) => {
         setIntro2Path(currentPath => {
@@ -132,7 +230,7 @@ export default function Intro2Page() {
                 const newProgress = Math.round((completedItems / newPath.length) * 100);
                  updateDocumentNonBlocking(studentDocRef, {
                     [`lessonProgress.${versionedKey}`]: statusOnly,
-                    'progress.intro2Progress': newProgress,
+                    'progress.kidsIntro2Progress': newProgress,
                 });
                 window.dispatchEvent(new CustomEvent('progressUpdated'));
             }
@@ -183,7 +281,7 @@ export default function Intro2Page() {
                         </div>
                     </CardContent>
                     <CardFooter className="justify-end">
-                        <Button onClick={() => completeTopic('tip')}>Avanzar</Button>
+                        <Button onClick={() => handleExerciseComplete()}>Avanzar</Button>
                     </CardFooter>
                 </Card>
             );
@@ -210,7 +308,7 @@ export default function Intro2Page() {
                         </div>
                     </CardContent>
                     <CardFooter className="justify-end">
-                        <Button onClick={() => completeTopic('greetings')}>Avanzar</Button>
+                        <Button onClick={() => handleExerciseComplete()}>Avanzar</Button>
                     </CardFooter>
                 </Card>
             );
@@ -233,7 +331,7 @@ export default function Intro2Page() {
                         </div>
                     </CardContent>
                      <CardFooter className="justify-end">
-                        <Button onClick={() => completeTopic('farewells')}>Avanzar</Button>
+                        <Button onClick={() => handleExerciseComplete()}>Avanzar</Button>
                     </CardFooter>
                 </Card>
             );
@@ -257,7 +355,7 @@ export default function Intro2Page() {
                         />}
                     </CardContent>
                      <CardFooter className="justify-end">
-                        <Button onClick={() => completeTopic('time')}>Avanzar</Button>
+                        <Button onClick={() => handleExerciseComplete()}>Avanzar</Button>
                     </CardFooter>
                 </Card>
             );
