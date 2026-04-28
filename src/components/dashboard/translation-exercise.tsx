@@ -11,7 +11,9 @@ import { Progress } from '@/components/ui/progress';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, BookText } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+
 
 const exercises = {
     exercises1: {
@@ -205,7 +207,19 @@ type ValidationStatus = 'correct' | 'incorrect' | 'unchecked';
 const nemoImage = PlaceHolderImages.find(p => p.id === 'nemo-icon');
 const clownFishImage = PlaceHolderImages.find(p => p.id === 'clown-fish-guide');
 
-export function TranslationExercise({ exerciseKey, onComplete, formType = 'full' }: { exerciseKey: 'exercises1' | 'exercises2' | 'exercises3' | 'qna2', onComplete?: () => void, formType?: 'full' | 'qna' }) {
+export function TranslationExercise({
+    exerciseKey,
+    onComplete,
+    formType = 'full',
+    vocabulary,
+    highlightVocabulary = false,
+}: {
+    exerciseKey: 'exercises1' | 'exercises2' | 'exercises3' | 'qna2';
+    onComplete?: () => void;
+    formType?: 'full' | 'qna';
+    vocabulary?: Record<string, string>;
+    highlightVocabulary?: boolean;
+}) {
     const { t } = useTranslation();
     const { toast } = useToast();
     const isQnaMode = formType === 'qna';
@@ -383,11 +397,41 @@ export function TranslationExercise({ exerciseKey, onComplete, formType = 'full'
 
     return (
         <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-            <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle>{t(exerciseData.title, {number: 2})}</CardTitle>
-                <span className="text-sm font-medium text-muted-foreground">
-                    {currentPromptIndex + 1} / {exerciseData.prompts.length}
-                </span>
+            <CardHeader>
+                <div className="flex justify-between items-center">
+                    <CardTitle>{t(exerciseData.title, {number: 2})}</CardTitle>
+                    <span className="text-sm font-medium text-muted-foreground">
+                        {currentPromptIndex + 1} / {exerciseData.prompts.length}
+                    </span>
+                </div>
+                 {vocabulary && (
+                    <Popover>
+                        <PopoverTrigger asChild>
+                            <Button variant="outline" size="sm" className={cn("mt-2 w-fit", highlightVocabulary && "border-2 border-brand-blue animate-border-pulse")}>
+                                <BookText className="mr-2 h-4 w-4" />
+                                Vocabulario
+                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent>
+                            <div className="grid gap-4">
+                                <div className="space-y-2">
+                                    <h4 className="font-medium leading-none">Vocabulario Clave</h4>
+                                    <p className="text-sm text-muted-foreground">
+                                        Palabras importantes para este ejercicio.
+                                    </p>
+                                </div>
+                                <div className="grid gap-2 text-sm">
+                                    {Object.entries(vocabulary).map(([spanish, english]) => (
+                                        <div key={spanish} className="grid grid-cols-2 items-center gap-4">
+                                            <span className="text-muted-foreground capitalize">{spanish}</span>
+                                            <span className="font-semibold text-right">{english}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </PopoverContent>
+                    </Popover>
+                )}
             </CardHeader>
             <CardContent className="space-y-6">
                 

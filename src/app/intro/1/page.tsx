@@ -859,8 +859,22 @@ export default function Intro1Page() {
                             </Card>
                         );
                     }
-                     if (selectedTopicKey === 'exercises1' || selectedTopicKey === 'exercises2' || selectedTopicKey === 'exercises3') {
-                        return <TranslationExercise exerciseKey={selectedTopicKey as 'exercises1' | 'exercises2' | 'exercises3'} onComplete={() => handleTopicComplete(selectedTopicKey)} />;
+                    if (selectedTopicKey === 'exercises1') {
+                        const vocab = {
+                            'un- una': 'a / an',
+                            'abogado': 'lawyer',
+                            'enfermo': 'sick',
+                            'enfermero': 'nurse'
+                        };
+                        return <TranslationExercise 
+                            exerciseKey="exercises1" 
+                            onComplete={() => handleTopicComplete(selectedTopicKey!)} 
+                            vocabulary={vocab}
+                            highlightVocabulary={true}
+                        />;
+                    }
+                     if (selectedTopicKey === 'exercises2' || selectedTopicKey === 'exercises3') {
+                        return <TranslationExercise exerciseKey={selectedTopicKey as 'exercises2' | 'exercises3'} onComplete={() => handleTopicComplete(selectedTopicKey!)} />;
                     }
                     if (selectedTopicKey === 'abcspelling' || selectedTopicKey === 'numbersspelling') {
                         const isNumbersExercise = selectedTopicKey === 'numbersspelling';
