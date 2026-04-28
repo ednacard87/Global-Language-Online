@@ -361,10 +361,10 @@ export default function Intro1Page() {
     ];
 
     const demonstrativesData = [
-        { english: 'This', spanish: 'Este / Esta / Esto', usage: 'Singular, cerca' },
-        { english: 'That', spanish: 'Ese / Esa / Eso / Aquel / Aquella', usage: 'Singular, lejos' },
-        { english: 'These', spanish: 'Estos / Estas', usage: 'Plural, cerca' },
-        { english: 'Those', spanish: 'Esos / Esas / Aquellos / Aquellas', usage: 'Plural, lejos' },
+        { english: 'This', spanish: 'Este - Esta', usage: 'Singular, cerca' },
+        { english: 'These', spanish: 'Estos - Estas', usage: 'Plural, cerca' },
+        { english: 'That', spanish: 'Ese - Esa', usage: 'Singular, lejos' },
+        { english: 'Those', spanish: 'Esos - Esas', usage: 'Plural, lejos' },
     ];
 
     useEffect(() => {
@@ -1076,3 +1076,4 @@ export default function Intro1Page() {
     </div>
   );
 }
+    
