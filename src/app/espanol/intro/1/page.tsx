@@ -103,8 +103,7 @@ export default function EspanolIntro1Page() {
     const initialLearningPath = useMemo((): Topic[] => [
         { key: 'saludos', name: 'Saludos y Despedidas', icon: Hand, status: 'active' },
         { key: 'vocabulario', name: 'Vocabulario Básico', icon: BookOpen, status: 'locked' },
-        { key: 'lectura', name: 'Lectura', icon: BookOpen, status: 'locked' },
-        { key: 'ejercicioLectura', name: 'Ejercicio de Lectura', icon: PenSquare, status: 'locked' },
+        { key: 'lectura', name: 'Lectura y Comprensión', icon: BookOpen, status: 'locked' },
     ], []);
 
     useEffect(() => {
@@ -160,7 +159,7 @@ export default function EspanolIntro1Page() {
             });
             window.dispatchEvent(new CustomEvent('progressUpdated'));
         }
-    }, [learningPath, progress, isAdmin, studentDocRef, isProfileLoading, isUserLoading]);
+    }, [learningPath, progress, isAdmin, studentDocRef, isProfileLoading, isUserLoading, mainProgressKey]);
 
     useEffect(() => {
         if (!topicToComplete) return;
@@ -198,7 +197,7 @@ export default function EspanolIntro1Page() {
             return;
         }
         setSelectedTopic(key);
-        if (['saludos', 'lectura'].includes(key)) {
+        if (['saludos'].includes(key)) {
             handleTopicComplete(key);
         }
     };
@@ -245,7 +244,7 @@ export default function EspanolIntro1Page() {
         setReadingValidation(newValidation);
         if(allCorrect) {
             toast({ title: '¡Muy bien!', description: 'Has respondido todo correctamente.' });
-            handleTopicComplete('ejercicioLectura');
+            handleTopicComplete('lectura');
         } else {
             toast({ variant: 'destructive', title: 'Algunas respuestas son incorrectas.' });
         }
@@ -304,26 +303,24 @@ export default function EspanolIntro1Page() {
                 </Card>
             );
             case 'lectura': return (
-                <Card>
-                    <CardHeader><CardTitle>{lecturaData.title}</CardTitle></CardHeader>
-                    <CardContent><p className="text-lg leading-relaxed">{lecturaData.content}</p></CardContent>
-                </Card>
-            );
-            case 'ejercicioLectura': return (
                  <Card>
-                    <CardHeader><CardTitle>Comprensión de Lectura</CardTitle></CardHeader>
-                    <CardContent className="space-y-4">
-                        {lecturaData.questions.map(q => (
-                            <div key={q.id}>
-                                <Label htmlFor={q.id} className="text-base">{q.question}</Label>
-                                <Input 
-                                    id={q.id} 
-                                    value={readingAnswers[q.id] || ''}
-                                    onChange={e => handleReadingInputChange(q.id, e.target.value)}
-                                    className={cn('mt-1', readingValidation[q.id] === 'correct' && 'border-green-500', readingValidation[q.id] === 'incorrect' && 'border-destructive')}
-                                />
-                            </div>
-                        ))}
+                    <CardHeader><CardTitle>{lecturaData.title}</CardTitle></CardHeader>
+                    <CardContent>
+                        <p className="text-lg leading-relaxed mb-6 border-b pb-6">{lecturaData.content}</p>
+                        <h3 className="text-xl font-semibold mb-4">Comprensión de Lectura</h3>
+                        <div className="space-y-4">
+                            {lecturaData.questions.map(q => (
+                                <div key={q.id}>
+                                    <Label htmlFor={q.id} className="text-base">{q.question}</Label>
+                                    <Input 
+                                        id={q.id} 
+                                        value={readingAnswers[q.id] || ''}
+                                        onChange={e => handleReadingInputChange(q.id, e.target.value)}
+                                        className={cn('mt-1', readingValidation[q.id] === 'correct' && 'border-green-500', readingValidation[q.id] === 'incorrect' && 'border-destructive')}
+                                    />
+                                </div>
+                            ))}
+                        </div>
                     </CardContent>
                     <CardFooter><Button onClick={handleCheckReading}>Verificar</Button></CardFooter>
                  </Card>
