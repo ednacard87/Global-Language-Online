@@ -12,9 +12,12 @@ import {
   BrainCircuit,
   Hand,
   MessageSquare,
-  Clock,
+  RefreshCw,
+  Flame,
+  Trophy,
   CheckCircle,
-  Lightbulb
+  Lightbulb,
+  Clock,
 } from 'lucide-react';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -34,19 +37,12 @@ import { Separator } from "@/components/ui/separator";
 import { TimeExercise } from '@/components/kids/exercises/time-exercise';
 import { Loader2 } from 'lucide-react';
 
-const greetingsData = [
-    { spanish: 'Hola', english: 'Hello' }, { spanish: 'Buenos días', english: 'Good morning' },
-    { spanish: 'Buenas tardes', english: 'Good afternoon' }, { spanish: 'Buenas noches (saludo)', english: 'Good evening' },
-    { spanish: '¿Cómo estás?', english: 'How are you?' }, { spanish: '¿Qué tal?', english: "What's up?" }, { spanish: '¿Cómo vas?', english: 'How is it going?' },
-];
 
-const farewellsData = [
-    { spanish: 'Adiós', english: 'Goodbye' }, { spanish: 'Chao', english: 'Bye' },
-    { spanish: 'Hasta luego', english: 'See you later' }, { spanish: 'Hasta pronto', english: 'See you soon' },
-    { spanish: 'Buenas noches (despedida)', english: 'Good night' }, { spanish: 'Cuídate', english: 'Take care' },
-    { spanish: 'Nos vemos mañana', english: 'See you tomorrow' }, { spanish: 'Que tengas un buen día', english: 'Have a nice day' },
-];
+const ICONS = { locked: Lock, active: BookOpen, completed: CheckCircle };
 
+// By changing this version, we can force a progress reset for all users
+// if there's a breaking change in the path structure.
+const progressStorageVersion = "_v1_sequential_intro2";
 interface Student {
     role?: 'admin' | 'student';
     lessonProgress?: any;
@@ -114,15 +110,26 @@ const CountriesExercise = ({ onComplete }: { onComplete: () => void }) => {
     );
 };
 
-const progressStorageVersion = "_v1_sequential_intro2";
+const greetingsData = [
+    { spanish: 'Hola', english: 'Hello' }, { spanish: 'Buenos días', english: 'Good morning' },
+    { spanish: 'Buenas tardes', english: 'Good afternoon' }, { spanish: 'Buenas noches (saludo)', english: 'Good evening' },
+    { spanish: '¿Cómo estás?', english: 'How are you?' }, { spanish: '¿Qué tal?', english: "What's up?" }, { spanish: '¿Cómo vas?', english: 'How is it going?' },
+];
 
-export default function Intro2Page() {
+const farewellsData = [
+    { spanish: 'Adiós', english: 'Goodbye' }, { spanish: 'Chao', english: 'Bye' },
+    { spanish: 'Hasta luego', english: 'See you later' }, { spanish: 'Hasta pronto', english: 'See you soon' },
+    { spanish: 'Buenas noches (despedida)', english: 'Good night' }, { spanish: 'Cuídate', english: 'Take care' },
+    { spanish: 'Nos vemos mañana', english: 'See you tomorrow' }, { spanish: 'Que tengas un buen día', english: 'Have a nice day' },
+];
+
+export default function KidsIntro2Page() {
     const { t } = useTranslation();
     const { toast } = useToast();
     const router = useRouter();
     
-    const initialLearningPath = useMemo(() => getIntro2PathData(t), [t]);
-    const [intro2Path, setIntro2Path] = useState<Intro2PathItem[]>(initialLearningPath.map(item => ({...item, status: 'locked'})));
+    const [initialLearningPath, setInitialLearningPath] = useState<Intro2PathItem[]>([]);
+    const [intro2Path, setIntro2Path] = useState<Intro2PathItem[]>([]);
     const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
     const [selectedTopicKey, setSelectedTopicKey] = useState<string | null>(null);
     const [isClient, setIsClient] = useState(false);
@@ -145,12 +152,14 @@ export default function Intro2Page() {
 
     useEffect(() => {
         setIsClient(true);
-    }, []);
+        setInitialLearningPath(getIntro2PathData(t));
+    }, [t]);
     
     useEffect(() => {
         if (isProfileLoading || !isClient) return;
 
-        let path = [...initialLearningPath];
+        let path = initialLearningPath.map(item => ({...item, status: 'locked'}));
+        path[0].status = 'active';
 
         if (isAdmin) {
             path.forEach(item => (item.status = 'active'));
@@ -196,11 +205,11 @@ export default function Intro2Page() {
                     newPath[nextItemIndex] = { ...newPath[nextItemIndex], status: 'active' };
                 }
 
-                // Save progress right after state update logic
+                // Save progress
                 if (!isAdmin && studentDocRef) {
                     const versionedKey = 'intro2Path' + progressStorageVersion;
                     const statusOnly = newPath.reduce((acc, item) => {
-                        if (item.status) { // Safeguard against undefined status
+                        if (item.status) {
                             acc[item.key] = item.status;
                         }
                         return acc;
@@ -404,23 +413,17 @@ export default function Intro2Page() {
                                 const Icon = ICONS[item.status as keyof typeof ICONS];
                                 const isLocked = item.status === 'locked';
                                 const isSelected = selectedTopic === item.name;
+                                const isActive = item.status === 'active';
                                 
                                 return (
                                     <li key={index} onClick={() => handleTopicSelect(item.name)} className={cn(!isLocked || isAdmin ? "cursor-pointer" : "cursor-not-allowed")}>
                                         <div className={cn(
-                                            "flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors",
-                                            !isLocked || isAdmin ? "hover:bg-muted" : "text-muted-foreground/50",
-                                            isSelected && (!isLocked || isAdmin) && "bg-muted text-primary font-semibold"
+                                            "flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors",
+                                            !isLocked && "hover:bg-muted",
+                                            isSelected ? "bg-muted text-primary font-semibold" : (isActive ? "text-foreground" : "text-muted-foreground")
                                         )}>
-                                            <div className="flex items-center gap-3">
-                                                {item.status === 'completed' ? (
-                                                    <CheckCircle className="h-5 w-5 text-green-500" />
-                                                ) : (
-                                                    <item.icon className={cn("h-5 w-5", isLocked && !isAdmin ? "text-muted-foreground" : "text-primary")} />
-                                                )}
-                                                <span>{item.name}</span>
-                                            </div>
-                                            {isLocked && !isAdmin && <Lock className="h-4 w-4 text-yellow-500" />}
+                                            <Icon className={cn("h-5 w-5", isLocked ? "text-yellow-500" : (item.status === 'completed' || isSelected || isActive) ? "text-primary" : "text-muted-foreground")} />
+                                            <span>{item.name}</span>
                                         </div>
                                     </li>
                                 );
