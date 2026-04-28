@@ -890,7 +890,8 @@ export default function Intro1Page() {
                         const vocab = {
                             'enfermera': 'nurse',
                             'abuelos': 'grandparents',
-                            'pensionado': 'retired'
+                            'pensionado': 'retired',
+                            'juguete': 'toy'
                         };
                         return <TranslationExercise 
                             exerciseKey={'exercises3'} 
