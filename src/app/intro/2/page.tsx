@@ -294,7 +294,7 @@ export default function Intro2Page() {
         setSelectedTopic(topicName);
         setSelectedTopicKey(currentItem!.key);
 
-        if (currentItem?.status === 'active' && !['mixed1', 'mixed2', 'countries', 'tip', 'greetings'].includes(currentItem.key)) {
+        if (currentItem?.status === 'active' && !['mixed1', 'mixed2', 'countries', 'greetings', 'farewells'].includes(currentItem.key)) {
             completeTopic(currentItem.key);
         }
     };
@@ -439,7 +439,7 @@ export default function Intro2Page() {
                                             </div>
                                         </div>
                                     </CardContent>
-                                    <CardFooter>
+                                    <CardFooter className="justify-end">
                                         <Button onClick={() => completeTopic('tip')}>Avanzar</Button>
                                     </CardFooter>
                                 </Card>
@@ -470,7 +470,7 @@ export default function Intro2Page() {
                                         ))}
                                     </div>
                                 </CardContent>
-                                <CardFooter>
+                                <CardFooter className="justify-end">
                                     <Button onClick={() => completeTopic('greetings')}>Avanzar</Button>
                                 </CardFooter>
                             </Card>
@@ -495,6 +495,9 @@ export default function Intro2Page() {
                                         ))}
                                     </div>
                                 </CardContent>
+                                <CardFooter className="justify-end">
+                                    <Button onClick={() => completeTopic('farewells')}>Avanzar</Button>
+                                </CardFooter>
                             </Card>
                         );
                     }
