@@ -15,6 +15,7 @@ import {
   CheckCircle,
   RefreshCw,
   Flame,
+  Loader2,
 } from 'lucide-react';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -73,6 +74,11 @@ const MemoryGame = ({ data, onComplete }: { data: { spanish: string; english: st
     const [matchedPairIds, setMatchedPairIds] = useState<number[]>([]);
     const [isChecking, setIsChecking] = useState(false);
     const [streak, setStreak] = useState(0);
+    const [isClient, setIsClient] = useState(false);
+
+    useEffect(() => {
+        setIsClient(true);
+    }, []);
 
     const initializeGame = React.useCallback(() => {
         const gameCards = data.flatMap((pair, index) => [
@@ -88,8 +94,10 @@ const MemoryGame = ({ data, onComplete }: { data: { spanish: string; english: st
     }, [data]);
 
     useEffect(() => {
-        initializeGame();
-    }, [initializeGame]);
+        if (isClient) {
+            initializeGame();
+        }
+    }, [isClient, initializeGame]);
     
     useEffect(() => {
         if (flippedIndices.length === 2) {
@@ -126,6 +134,19 @@ const MemoryGame = ({ data, onComplete }: { data: { spanish: string; english: st
         }
         setFlippedIndices(prev => [...prev, index]);
     };
+
+    if (!isClient) {
+        return (
+            <Card>
+                <CardHeader>
+                    <CardTitle>Juego de Memoria: Saludos y Despedidas</CardTitle>
+                </CardHeader>
+                <CardContent className="flex justify-center items-center h-48">
+                    <Loader2 className="h-8 w-8 animate-spin" />
+                </CardContent>
+            </Card>
+        );
+    }
 
     return (
         <Card>
@@ -484,7 +505,8 @@ export default function EspanolIntro2Page() {
                                                         className={cn('flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer',
                                                             item.status === 'locked' && !isAdmin ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted',
                                                             selectedTopic === item.key && 'bg-muted text-primary font-semibold'
-                                                        )}>
+                                                        )}
+                                                    >
                                                         {item.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500"/> : <Icon className="h-5 w-5" />}
                                                         <span>{item.name}</span>
                                                         {item.status === 'locked' && !isAdmin && <Lock className="h-4 w-4 text-yellow-500 ml-auto" />}
