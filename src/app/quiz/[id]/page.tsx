@@ -125,41 +125,13 @@ export default function QuizPage() {
   };
 
   const handleUnlockNext = async () => {
-    if (!studentDocRef) {
-      toast({
-        variant: "destructive",
-        title: "Error de autenticación",
-        description: "No se pudo guardar el progreso. Asegúrate de haber iniciado sesión.",
-      });
-      return;
-    }
-
+    if (!studentDocRef) return;
     setIsLoading(true);
-    try {
-        const progressKey = `quiz1Progress`; // Hardcoding for quiz 1
-        updateDocumentNonBlocking(studentDocRef, {
-            [`progress.${progressKey}`]: 100,
-        });
-        
-        window.dispatchEvent(new CustomEvent('progressUpdated'));
-        
-        toast({
-            title: "¡Éxito!",
-            description: "Has desbloqueado Intro 2.",
-        });
-
-        router.push('/intro/2');
-
-    } catch (error) {
-        console.error("Error unlocking next lesson:", error);
-        toast({
-            variant: "destructive",
-            title: "Error",
-            description: "No se pudo desbloquear la siguiente lección.",
-        });
-    } finally {
-        setIsLoading(false);
-    }
+    const progressKey = `quiz1Progress`;
+    await updateDocumentNonBlocking(studentDocRef, { [`progress.${progressKey}`]: 100 });
+    window.dispatchEvent(new CustomEvent('progressUpdated'));
+    router.push('/intro/2');
+    setIsLoading(false);
   };
 
   const handleUnlockListeningPractice = async () => {
@@ -174,7 +146,7 @@ export default function QuizPage() {
 
     setIsLoading(true);
     try {
-        const progressKey = `quiz2Progress`; // Hardcoding for quiz 2
+        const progressKey = `quiz2Progress`;
         updateDocumentNonBlocking(studentDocRef, {
             [`progress.${progressKey}`]: 100,
         });
@@ -200,6 +172,79 @@ export default function QuizPage() {
     }
   };
 
+  const renderContent = () => {
+    if (quizId === '1' || quizId === '2') {
+      return (
+        <CardContent className="flex flex-col items-center justify-center gap-4 text-center">
+            <p>Haz clic en el enlace para realizar tu quiz.</p>
+            <Button asChild>
+                <Link href="https://wayground.com/admin" target="_blank" rel="noopener noreferrer">
+                    Ir a Wayground
+                </Link>
+            </Button>
+        </CardContent>
+      );
+    }
+    // Default content is the upload form
+    return (
+      <CardContent className="border-t pt-6 px-8">
+          <div className="grid gap-4">
+            <div className="text-center">
+              <p className="font-semibold text-lg">Sube tus resultados</p>
+              <p className="text-sm text-muted-foreground">
+                Toma una captura de pantalla de tu resultado y súbela aquí.
+              </p>
+            </div>
+            <div className="grid w-full max-w-sm items-center gap-2 mx-auto">
+              <Label htmlFor="quiz-result" className="cursor-pointer border-2 border-dashed border-muted-foreground/50 rounded-lg p-6 flex flex-col items-center justify-center text-center hover:bg-muted/50 transition-colors">
+                <Upload className="h-10 w-10 text-muted-foreground" />
+                <span className="mt-2 text-sm text-muted-foreground">
+                  {selectedFile ? "Cambiar imagen" : "Haz clic para subir imagen"}
+                </span>
+              </Label>
+              <Input id="quiz-result" type="file" className="hidden" onChange={handleFileChange} accept="image/*" />
+            </div>
+            {selectedFile && (
+              <div className="text-center text-sm text-muted-foreground flex items-center justify-center gap-2">
+                <Paperclip className="h-4 w-4" />
+                <span className="truncate">{selectedFile.name}</span>
+              </div>
+            )}
+          </div>
+        </CardContent>
+    );
+  };
+
+  const renderFooter = () => {
+    if (quizId === '1') {
+      return (
+        <CardFooter className="flex flex-col items-center justify-center gap-4 pt-6 border-t">
+          <Button onClick={handleUnlockNext} disabled={isLoading} className="w-full max-w-sm mx-auto">
+            {isLoading ? <Loader2 className="animate-spin" /> : "Desbloquear Intro 2"}
+          </Button>
+          <Button variant="ghost" onClick={() => router.push('/intro')}>Volver al Laberinto</Button>
+        </CardFooter>
+      );
+    }
+    if (quizId === '2') {
+      return (
+        <CardFooter className="flex flex-col items-center justify-center gap-4 pt-6 border-t">
+          <Button onClick={handleUnlockListeningPractice} disabled={isLoading} className="w-full max-w-sm mx-auto">
+            {isLoading ? <Loader2 className="animate-spin" /> : "Desbloquear Practica de Escucha y Escritura"}
+          </Button>
+          <Button variant="ghost" onClick={() => router.push('/intro')}>Volver al Laberinto</Button>
+        </CardFooter>
+      );
+    }
+    return (
+      <CardFooter className="flex flex-col items-center justify-center gap-2 pt-6">
+         <Button onClick={handleSend} disabled={!selectedFile || isLoading} className="w-full max-w-sm mx-auto">
+            {isLoading ? <Loader2 className="animate-spin" /> : "Enviar"}
+          </Button>
+      </CardFooter>
+    );
+  };
+
   return (
     <>
       <div className="flex w-full flex-col ingles-dashboard-bg min-h-screen">
@@ -208,65 +253,10 @@ export default function QuizPage() {
           <Card className="w-full max-w-lg shadow-soft rounded-lg border-2 border-brand-purple">
             <CardHeader className="text-center">
               <CardTitle className="text-3xl font-bold">Wayground</CardTitle>
-              <CardDescription className='pt-2'>
-                Preparado para tu quiz
-              </CardDescription>
+              <CardDescription className='pt-2'>Preparado para tu quiz</CardDescription>
             </CardHeader>
-            <CardContent className="flex flex-col items-center justify-center gap-4 text-center">
-                <p>Haz clic en el enlace para realizar tu quiz.</p>
-                <Button asChild>
-                    <Link href="https://wayground.com/admin" target="_blank" rel="noopener noreferrer">
-                        Ir a Wayground
-                    </Link>
-                </Button>
-            </CardContent>
-            
-            {quizId === '1' ? (
-                <CardFooter className="flex flex-col items-center justify-center gap-2 pt-6 border-t">
-                    <Button onClick={handleUnlockNext} disabled={isLoading} className="w-full max-w-sm mx-auto">
-                        {isLoading ? <Loader2 className="animate-spin" /> : "Desbloquear Intro 2"}
-                    </Button>
-                </CardFooter>
-            ) : quizId === '2' ? (
-                <CardFooter className="flex flex-col items-center justify-center gap-2 pt-6 border-t">
-                    <Button onClick={handleUnlockListeningPractice} disabled={isLoading} className="w-full max-w-sm mx-auto">
-                        {isLoading ? <Loader2 className="animate-spin" /> : "Desbloquear Practica de Escucha y Escritura"}
-                    </Button>
-                </CardFooter>
-            ) : (
-                <>
-                    <CardContent className="border-t pt-6 px-8">
-                      <div className="grid gap-4">
-                        <div className="text-center">
-                          <p className="font-semibold text-lg">Sube tus resultados</p>
-                          <p className="text-sm text-muted-foreground">
-                            Toma una captura de pantalla de tu resultado y súbela aquí.
-                          </p>
-                        </div>
-                        <div className="grid w-full max-w-sm items-center gap-2 mx-auto">
-                          <Label htmlFor="quiz-result" className="cursor-pointer border-2 border-dashed border-muted-foreground/50 rounded-lg p-6 flex flex-col items-center justify-center text-center hover:bg-muted/50 transition-colors">
-                            <Upload className="h-10 w-10 text-muted-foreground" />
-                            <span className="mt-2 text-sm text-muted-foreground">
-                              {selectedFile ? "Cambiar imagen" : "Haz clic para subir imagen"}
-                              </span>
-                          </Label>
-                          <Input id="quiz-result" type="file" className="hidden" onChange={handleFileChange} accept="image/*" />
-                        </div>
-                        {selectedFile && (
-                          <div className="text-center text-sm text-muted-foreground flex items-center justify-center gap-2">
-                            <Paperclip className="h-4 w-4" />
-                            <span className="truncate">{selectedFile.name}</span>
-                          </div>
-                        )}
-                      </div>
-                    </CardContent>
-                    <CardFooter className="flex flex-col items-center justify-center gap-2 pt-6">
-                       <Button onClick={handleSend} disabled={!selectedFile || isLoading} className="w-full max-w-sm mx-auto">
-                          {isLoading ? <Loader2 className="animate-spin" /> : "Enviar"}
-                        </Button>
-                    </CardFooter>
-                </>
-            )}
+            {renderContent()}
+            {renderFooter()}
           </Card>
         </main>
       </div>
