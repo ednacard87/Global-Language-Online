@@ -36,7 +36,8 @@ import { useToast } from "@/hooks/use-toast";
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { getEnglishIntro2PathData } from '@/lib/course-data';
+import { getEnglishIntro2PathData, type EnglishIntro2PathItem } from '@/lib/course-data';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 // --- Constants & Data ---
 
@@ -46,7 +47,7 @@ const ICONS = {
   completed: CheckCircle,
 };
 
-const progressStorageVersion = "english_intro2_path_v6";
+const progressStorageVersion = "english_intro2_path_v7";
 
 const greetingsData = [
     { spanish: 'Hola', english: 'Hello' },
@@ -115,7 +116,7 @@ const mixedExercise1Data = [
     { spanish: '¿ELLA ES TU PRIMA? (COUSIN)', english: ['is she your cousin?'] },
     { spanish: '¿ELLOS ESTÁN CASADOS? (MARRIED)', english: ['are they married?'] },
     { spanish: 'ELLOS ESTÁN EN EL TRABAJO (AT WORK)', english: ['they are at work', "they're at work"] },
-    { spanish: 'NOSOTROS NO SOMOS ESTUDIANTES (STUDENTS)', english: ['we are not students', "we aren't students", "we're not students"] },
+    { spanish: 'NOSOTROS NO SOMOS ESTUDIANTES: (STUDENTS)', english: ['we are not students', "we aren't students", "we're not students"] },
     { spanish: '¿ELLOS SON TUS PRIMOS? (COUSINS)', english: ['are they your cousins?'] },
     { spanish: '¿TU MAMA ES ENFERMERA? (NURSE)', english: ['is your mother a nurse?', 'is your mom a nurse?'] },
 ];
