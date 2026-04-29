@@ -15,7 +15,7 @@ import {
   Clock,
 } from 'lucide-react';
 import { DashboardHeader } from '@/components/dashboard/header';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
 import { SpellingExercise, type SpellingExerciseKey } from '@/components/dashboard/spelling-exercise';
@@ -25,7 +25,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useUser, useFirestore, addDocumentNonBlocking, updateDocumentNonBlocking, useDoc, useMemoFirebase } from '@/firebase';
 import { collection, doc } from 'firebase/firestore';
 import { useTranslation } from '@/context/language-context';
-import { getIntro1PathData, getAbcSpellingPathData, getNumbersSpellingPathData, type SpellingPathItem } from '@/lib/course-data';
+import { getIntro1PathData, getNumbersSpellingPathData, type SpellingPathItem } from '@/lib/course-data';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { AlphabetGrid } from '@/components/kids/alphabet-grid';
 import { NumbersGrid } from '@/components/kids/numbers-grid';
@@ -34,6 +34,12 @@ import { NumbersMemoryGame } from '@/components/kids/exercises/numbers-memory-ga
 import { ToBeMemoryGame } from '@/components/kids/exercises/tobe-memory-game';
 import { AbcPronunciationExercise } from '@/components/kids/exercises/abc-pronunciation-exercise';
 import { PossessivesMemoryGame } from '@/components/kids/exercises/possessives-memory-game';
+
+const ICONS = {
+    locked: Lock,
+    active: BookOpen,
+    completed: CheckCircle,
+};
 
 const verbToBeData = [
     { ser: 'Yo soy', tobe: 'I am', estar: 'Yo estoy' },
@@ -67,11 +73,9 @@ const demonstrativesData = [
 type Topic = {
     key: string;
     name: string;
-    icon: React.ElementType;
     status: 'locked' | 'active' | 'completed';
 };
 
-const ICONS = { locked: Lock, active: BookOpen, completed: CheckCircle };
 const progressStorageVersion = "kids_intro1_path_v2";
 
 interface Student {
@@ -384,34 +388,9 @@ export default function KidsIntro1Page() {
         case 'memory2':
             return <ToBeMemoryGame onGameComplete={() => setTopicToComplete('memory2')} />;
         case 'tobe-exercise':
-            return (
-                <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-                    <CardHeader>
-                        <CardTitle>{t('intro1Page.verbtobe1')}</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-6">
-                         <div>
-                            <h3 className="text-xl font-semibold mb-2">{t('intro1Page.verbtobeStructureTitle')}</h3>
-                            <div className="space-y-2 p-4 bg-muted rounded-lg font-mono text-base">
-                                <p><span className="font-bold text-lg text-green-500 mr-2">(+)</span> pronoun + to be + complement</p>
-                                <p><span className="font-bold text-lg text-red-500 mr-2">(-)</span> pronoun + to be + not + complement</p>
-                                <p><span className="font-bold text-lg text-blue-500 mr-2">(?)</span> to be + pronoun + complement ?</p>
-                            </div>
-                        </div>
-                        <div>
-                            <h3 className="text-xl font-semibold mb-2">{t('intro1Page.exampleTitle')}</h3>
-                            <p className="text-lg italic text-muted-foreground mb-2">"ellos son estudiantes"</p>
-                            <div className="space-y-2 p-4 bg-muted rounded-lg font-mono text-base">
-                                <p><span className="font-bold text-lg text-green-500 mr-2">(+)</span> They are students</p>
-                                <p><span className="font-bold text-lg text-red-500 mr-2">(-)</span> They are not students</p>
-                                <p><span className="font-bold text-lg text-blue-500 mr-2">(?)</span> are they students?</p>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-            );
+            return <TranslationExercise exerciseKey="exercises1" onComplete={() => setTopicToComplete('tobe-exercise')} formType="full" />;
         case 'tobe-exercise-1':
-            return <TranslationExercise exerciseKey="exercises1" onComplete={() => setTopicToComplete('tobe-exercise-1')} formType="full" />;
+             return <TranslationExercise exerciseKey="exercises1" onComplete={() => setTopicToComplete('tobe-exercise-1')} formType="full" />;
         case 'possessives':
             return (
                 <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
@@ -434,6 +413,37 @@ export default function KidsIntro1Page() {
             );
         case 'memory-possessives':
             return <PossessivesMemoryGame onGameComplete={() => setTopicToComplete('memory-possessives')} />;
+        case 'demonstratives':
+            return (
+                <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                    <CardHeader>
+                        <CardTitle>{t('intro1Page.demonstratives')}</CardTitle>
+                        <CardDescription className="pt-2 text-lg font-semibold flex items-center gap-2">
+                            <Lightbulb className="h-5 w-5 text-yellow-400 animate-pulse" />
+                            <span className="bg-gradient-to-r from-brand-purple to-brand-teal text-transparent bg-clip-text">
+                                {t('intro1Page.demonstrativesStudyHint')}
+                            </span>
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="grid grid-cols-3 gap-x-4 gap-y-2 text-lg">
+                            <div className="font-bold p-3 bg-muted rounded-lg text-center">{t('common.english')}</div>
+                            <div className="font-bold p-3 bg-muted rounded-lg text-center">{t('common.spanish')}</div>
+                            <div className="font-bold p-3 bg-muted rounded-lg text-center">{t('intro1Page.usage')}</div>
+                            {demonstrativesData.map((item, index) => (
+                                <React.Fragment key={index}>
+                                    <div className="p-3 bg-card border rounded-lg font-medium text-center">{item.english}</div>
+                                    <div className="p-3 bg-card border rounded-lg text-center">{item.spanish}</div>
+                                    <div className="p-3 bg-card border rounded-lg text-center">{item.usage}</div>
+                                </React.Fragment>
+                            ))}
+                        </div>
+                    </CardContent>
+                    <CardFooter>
+                        <Button onClick={() => setTopicToComplete('demonstratives')}>Terminar Intro 1</Button>
+                    </CardFooter>
+                </Card>
+            );
         default:
             return (
                 <div className="flex flex-col items-center">
@@ -489,7 +499,7 @@ export default function KidsIntro1Page() {
                     <nav>
                         <ul className="space-y-1">
                         {learningPath.map((item) => {
-                            const Icon = item.icon;
+                            const Icon = ICONS[item.status];
                             const isLocked = item.status === 'locked';
                             const isSelected = selectedTopic === item.name;
                             const isActive = item.status === 'active';
