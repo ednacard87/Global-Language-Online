@@ -45,22 +45,30 @@ const ICONS = {
 };
 
 // Data
-const greetingsAndFarewellsData = [
+const greetingsData = [
     { spanish: 'Hola', english: 'Hello' },
+    { spanish: 'Hola (informal)', english: 'Hi' },
     { spanish: 'Buenos días', english: 'Good morning' },
     { spanish: 'Buenas tardes', english: 'Good afternoon' },
-    { spanish: 'Buenas noches', english: 'Good night' },
-    { spanish: 'Adiós', english: 'Goodbye' },
-    { spanish: 'Hasta luego', english: 'See you later' },
+    { spanish: 'Buenas noches (al llegar)', english: 'Good evening' },
+    { spanish: '¿Cómo estás?', english: 'How are you?' },
+    { spanish: '¿Cómo te va?', english: "How's it going?" },
+    { spanish: 'Mucho gusto', english: 'Nice to meet you' },
+    { spanish: 'Es un placer conocerte', english: 'Pleased to meet you' },
+    { spanish: '¿Qué tal?', english: "What's up?" },
 ];
 
-const countriesExerciseData = [
-    { pais: 'Estados Unidos', country: 'United States', nationality: 'American' },
-    { pais: 'Canadá', country: 'Canada', nationality: 'Canadian' },
-    { pais: 'México', country: 'Mexico', nationality: 'Mexican' },
-    { pais: 'Brasil', country: 'Brazil', nationality: 'Brazilian' },
-    { pais: 'Inglaterra', country: 'England', nationality: 'English' },
-    { pais: 'Francia', country: 'France', nationality: 'French' },
+const farewellsData = [
+    { spanish: 'Adiós', english: 'Goodbye' },
+    { spanish: 'Chao', english: 'Bye / Bye-bye' },
+    { spanish: 'Hasta luego', english: 'See you later' },
+    { spanish: 'Hasta pronto', english: 'See you soon' },
+    { spanish: 'Buenas noches (al irse/dormir)', english: 'Good night' },
+    { spanish: 'Cuídate', english: 'Take care' },
+    { spanish: 'Que tengas un buen día', english: 'Have a nice day' },
+    { spanish: 'Nos vemos mañana', english: 'See you tomorrow' },
+    { spanish: 'Hablamos luego', english: 'Talk to you later' },
+    { spanish: 'Te veo después', english: 'Catch you later' },
 ];
 
 const timeExerciseData = [
@@ -88,6 +96,15 @@ const mixedExercise2Data = [
     { spanish: 'Hasta mañana, profesor', english: ['see you tomorrow, teacher'] },
     { spanish: 'Mi amigo es de Canadá', english: ['my friend is from canada'] },
     { spanish: 'Son las diez y cuarto', english: ["it's a quarter past ten", "it is a quarter past ten"] },
+];
+
+const countriesExerciseData = [
+    { pais: 'Estados Unidos', country: 'United States', nationality: 'American' },
+    { pais: 'Canadá', country: 'Canada', nationality: 'Canadian' },
+    { pais: 'México', country: 'Mexico', nationality: 'Mexican' },
+    { pais: 'Brasil', country: 'Brazil', nationality: 'Brazilian' },
+    { pais: 'Inglaterra', country: 'England', nationality: 'English' },
+    { pais: 'Francia', country: 'France', nationality: 'French' },
 ];
 
 // Components inside the page file
@@ -469,15 +486,15 @@ export default function EnglishIntro2Page() {
     }, [learningPath]);
 
     useEffect(() => {
-        if (learningPath.length > 0 && !isAdmin && studentDocRef) {
-            const statuses = learningPath.reduce((acc, item) => ({ ...acc, [item.key]: item.status }), {});
-            updateDocumentNonBlocking(studentDocRef, {
-                [`lessonProgress.${progressStorageVersion}`]: statuses,
-                'progress.intro2Progress': progress
-            });
-            window.dispatchEvent(new CustomEvent('progressUpdated'));
-        }
-    }, [learningPath, progress, isAdmin, studentDocRef]);
+        if (!isClient || isProfileLoading || !learningPath.length || isAdmin || !studentDocRef) return;
+
+        const statuses = learningPath.reduce((acc, item) => ({ ...acc, [item.key]: item.status }), {});
+        updateDocumentNonBlocking(studentDocRef, {
+            [`lessonProgress.${progressStorageVersion}`]: statuses,
+            'progress.intro2Progress': progress
+        });
+        window.dispatchEvent(new CustomEvent('progressUpdated'));
+    }, [learningPath, progress, isAdmin, isClient, studentDocRef, isProfileLoading]);
 
     useEffect(() => {
         if (!topicToComplete) return;
@@ -560,7 +577,7 @@ export default function EnglishIntro2Page() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {greetingsAndFarewellsData.slice(0, 4).map((item, index) => (
+                      {greetingsData.map((item, index) => (
                         <TableRow key={index}>
                           <TableCell className="font-medium">{item.spanish}</TableCell>
                           <TableCell>{item.english}</TableCell>
@@ -587,7 +604,7 @@ export default function EnglishIntro2Page() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {greetingsAndFarewellsData.slice(4).map((item, index) => (
+                      {farewellsData.map((item, index) => (
                         <TableRow key={index}>
                           <TableCell className="font-medium">{item.spanish}</TableCell>
                           <TableCell>{item.english}</TableCell>
@@ -607,9 +624,9 @@ export default function EnglishIntro2Page() {
                   <CardTitle>{t('intro2Page.time')}</CardTitle>
                   <CardDescription>Estudia cómo decir la hora en inglés.</CardDescription>
                 </CardHeader>
-                <CardContent className="flex flex-col items-center gap-6">
+                <CardContent className="space-y-6">
                   {timeImage && (
-                    <div className="relative w-full max-w-2xl aspect-video rounded-xl overflow-hidden border shadow-lg">
+                    <div className="relative w-full max-w-2xl mx-auto aspect-video rounded-xl overflow-hidden border shadow-lg">
                       <Image 
                         src={timeImage.imageUrl} 
                         alt={timeImage.description} 
@@ -619,6 +636,44 @@ export default function EnglishIntro2Page() {
                       />
                     </div>
                   )}
+                  <div className="space-y-4 pt-4 border-t text-left">
+                      <h3 className="text-xl font-bold text-primary">Explicación del Sistema Horario:</h3>
+                      <div className="grid gap-4 md:grid-cols-2">
+                          <div className="bg-muted p-4 rounded-lg">
+                              <p className="font-bold text-foreground">Estructura Principal</p>
+                              <p className="text-sm mt-1">Para decir la hora siempre empezamos con <strong>"It is"</strong> o <strong>"It's"</strong>.</p>
+                              <p className="font-mono text-sm mt-2 p-1 bg-background rounded">Ej: It is 8:00 (Son las ocho).</p>
+                          </div>
+                          <div className="bg-muted p-4 rounded-lg">
+                              <p className="font-bold text-foreground">Minutos y Preposiciones</p>
+                              <ul className="text-sm list-disc pl-5 mt-1 space-y-1">
+                                  <li><strong>PAST:</strong> Se usa para los minutos del 1 al 30. Significa "pasadas las". <br/><span className="text-xs italic">(Ej: Ten past two - 2:10)</span></li>
+                                  <li><strong>TO:</strong> Se usa para los minutos del 31 al 59. Significa "para las". <br/><span className="text-xs italic">(Ej: Ten to three - 2:50)</span></li>
+                              </ul>
+                          </div>
+                          <div className="bg-muted p-4 rounded-lg md:col-span-2">
+                              <p className="font-bold text-foreground">Palabras Clave</p>
+                              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-2">
+                                  <div className="text-center p-2 border rounded bg-background">
+                                      <p className="font-bold text-primary">O'clock</p>
+                                      <p className="text-xs">En punto</p>
+                                  </div>
+                                  <div className="text-center p-2 border rounded bg-background">
+                                      <p className="font-bold text-primary">Quarter past</p>
+                                      <p className="text-xs">Y cuarto</p>
+                                  </div>
+                                  <div className="text-center p-2 border rounded bg-background">
+                                      <p className="font-bold text-primary">Half past</p>
+                                      <p className="text-xs">Y media</p>
+                                  </div>
+                                  <div className="text-center p-2 border rounded bg-background">
+                                      <p className="font-bold text-primary">Quarter to</p>
+                                      <p className="text-xs">Menos cuarto</p>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
                 </CardContent>
               </Card>
             );
