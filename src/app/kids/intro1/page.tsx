@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -249,7 +248,7 @@ export default function KidsIntro1Page() {
                                             "flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors",
                                             (!isLocked || isAdmin) && "hover:bg-muted",
                                             isSelected ? "bg-muted text-primary font-semibold" : (item.status === 'active' ? "text-foreground" : "text-muted-foreground"),
-                                            item.status === 'completed' && "text-green-500 line-through"
+                                            item.status === 'completed' && "text-green-500"
                                         )}>
                                             {item.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500" /> : isLocked && !isAdmin ? <Lock className="h-5 w-5 text-yellow-500" /> : <Icon className="h-5 w-5" />}
                                             <span>{item.name}</span>
@@ -275,5 +274,3 @@ export default function KidsIntro1Page() {
         </div>
       );
 }
-      
-    
