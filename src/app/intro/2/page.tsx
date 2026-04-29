@@ -13,6 +13,9 @@ import {
   MessageSquare,
   Clock,
   CheckCircle,
+  Trophy,
+  ArrowLeft,
+  ArrowRight,
 } from 'lucide-react';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -26,6 +29,7 @@ import { Button } from '@/components/ui/button';
 import { getEnglishIntro2PathData, EnglishIntro2PathItem } from '@/lib/course-data';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { Input } from '@/components/ui/input';
 
 const ICONS = { locked: Lock, active: BookOpen, completed: CheckCircle };
 const progressStorageVersion = "english_intro2_path_v1";
@@ -55,6 +59,144 @@ const farewellsData = [
   { english: 'Take care', spanish: 'Cuídate' },
   { english: 'Have a nice day', spanish: 'Que tengas un buen día' },
 ];
+
+const timeExerciseData = [
+  { time: '2:00', answers: ["it's two o'clock", "it is two o'clock"] },
+  { time: '2:30', answers: ["it's half past two", "it is half past two"] },
+  { time: '5:15', answers: ["it's a quarter past five", "it is a quarter past five"] },
+  { time: '9:45', answers: ["it's a quarter to ten", "it is a quarter to ten"] },
+  { time: '11:00', answers: ["it's eleven o'clock", "it is eleven o'clock"] },
+  { time: '3:05', answers: ["it's five past three", "it is five past three"] },
+  { time: '7:50', answers: ["it's ten to eight", "it is ten to eight"] },
+  { time: '8:20', answers: ["it's twenty past eight", "it is twenty past eight"] },
+  { time: '4:35', answers: ["it's twenty-five to five", "it is twenty five to five"] },
+  { time: '1:55', answers: ["it's five to two", "it is five to two"] },
+];
+
+type ValidationStatus = 'correct' | 'incorrect' | 'unchecked';
+
+const TimeExercise = ({ onComplete }: { onComplete: () => void }) => {
+    const { t } = useTranslation();
+    const { toast } = useToast();
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [userAnswers, setUserAnswers] = useState<string[]>(Array(timeExerciseData.length).fill(''));
+    const [validationStates, setValidationStates] = useState<ValidationStatus[]>(Array(timeExerciseData.length).fill('unchecked'));
+    const [showCompletionMessage, setShowCompletionMessage] = useState(false);
+
+    const currentPrompt = timeExerciseData[currentIndex];
+
+    const handleAnswerChange = (value: string) => {
+        const newAnswers = [...userAnswers];
+        newAnswers[currentIndex] = value;
+        setUserAnswers(newAnswers);
+
+        if (validationStates[currentIndex] !== 'unchecked') {
+            const newValidationStates = [...validationStates];
+            newValidationStates[currentIndex] = 'unchecked';
+            setValidationStates(newValidationStates);
+        }
+    };
+    
+    const handleCheck = () => {
+        const userAnswer = userAnswers[currentIndex].trim().toLowerCase().replace(/[.?,]/g, '');
+        const isCorrect = currentPrompt.answers.some(ans => ans.toLowerCase().replace(/[.?,]/g, '') === userAnswer);
+
+        const newValidationStates = [...validationStates];
+        newValidationStates[currentIndex] = isCorrect ? 'correct' : 'incorrect';
+        setValidationStates(newValidationStates);
+
+        if (isCorrect) {
+            toast({ title: '¡Correcto!', description: 'Puedes pasar al siguiente.' });
+        } else {
+            toast({ variant: 'destructive', title: 'Incorrecto', description: 'Inténtalo de nuevo.' });
+        }
+    };
+    
+    const handleNext = () => {
+        if (currentIndex < timeExerciseData.length - 1) {
+            setCurrentIndex(prev => prev + 1);
+        } else {
+            const allCorrect = validationStates.every(s => s === 'correct');
+            if (allCorrect) {
+                setShowCompletionMessage(true);
+                onComplete();
+            } else {
+                toast({ variant: 'destructive', title: 'Revisa tus respuestas', description: 'Debes completar todos los ejercicios correctamente.' });
+            }
+        }
+    };
+
+    if (showCompletionMessage) {
+        return (
+            <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                <CardContent className="p-6 text-center flex flex-col items-center justify-center min-h-[400px]">
+                    <Trophy className="h-16 w-16 text-yellow-400 mb-4" />
+                    <h2 className="text-3xl font-bold">¡Ejercicio Completado!</h2>
+                    <p className="text-muted-foreground mt-2">Has dominado los ejercicios de la hora.</p>
+                </CardContent>
+            </Card>
+        );
+    }
+
+    return (
+        <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+            <CardHeader>
+                <CardTitle>Ejercicios: ¿Qué hora es?</CardTitle>
+                <CardDescription>Escribe la hora en inglés.</CardDescription>
+                <div className="flex items-center justify-start flex-wrap gap-2 pt-4">
+                    {timeExerciseData.map((_, index) => (
+                        <button
+                            key={index}
+                            onClick={() => setCurrentIndex(index)}
+                            className={cn(
+                                "h-8 w-8 rounded-full flex items-center justify-center font-bold border-2 transition-all",
+                                currentIndex === index ? "border-primary ring-2 ring-primary" : "border-muted-foreground/50",
+                                validationStates[index] === 'correct' && 'bg-green-500/20 border-green-500 text-green-700',
+                                validationStates[index] === 'incorrect' && 'bg-red-500/20 border-destructive text-destructive',
+                            )}
+                            aria-label={`Ir al ejercicio ${index + 1}`}
+                        >
+                            {index + 1}
+                        </button>
+                    ))}
+                </div>
+            </CardHeader>
+            <CardContent className="space-y-6">
+                <div className="text-center py-8 bg-muted rounded-lg border">
+                    <p className="text-sm text-muted-foreground mb-2">Escribe en inglés:</p>
+                    <p className="text-5xl font-mono font-bold tracking-tighter">{currentPrompt.time}</p>
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="answer">Tu traducción:</Label>
+                    <Input
+                        id="answer"
+                        value={userAnswers[currentIndex]}
+                        onChange={(e) => handleAnswerChange(e.target.value)}
+                        placeholder="Ej: It's two o'clock"
+                        className={cn(
+                            "text-lg h-12",
+                            validationStates[currentIndex] === 'correct' && "border-green-500 focus-visible:ring-green-500",
+                            validationStates[currentIndex] === 'incorrect' && "border-destructive focus-visible:ring-destructive"
+                        )}
+                        autoComplete="off"
+                    />
+                </div>
+            </CardContent>
+            <CardFooter className="flex justify-between">
+                <Button variant="outline" onClick={() => setCurrentIndex(prev => Math.max(0, prev - 1))} disabled={currentIndex === 0}>
+                    <ArrowLeft className="mr-2 h-4 w-4" /> Anterior
+                </Button>
+                <div className="flex gap-2">
+                    <Button onClick={handleCheck}>Verificar</Button>
+                    <Button onClick={handleNext} disabled={validationStates[currentIndex] !== 'correct'}>
+                        {currentIndex === timeExerciseData.length - 1 ? 'Finalizar' : 'Siguiente'}
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                </div>
+            </CardFooter>
+        </Card>
+    );
+};
 
 export default function EnglishIntro2Page() {
     const { t } = useTranslation();
@@ -92,10 +234,12 @@ export default function EnglishIntro2Page() {
         }
         
         setLearningPath(path);
-        const firstActive = path.find(p => p.status === 'active');
-        setSelectedTopic(firstActive?.key || path[0].key);
+        if (!selectedTopic) {
+            const firstActive = path.find(p => p.status === 'active');
+            setSelectedTopic(firstActive?.key || path[0].key);
+        }
 
-    }, [isAdmin, initialLearningPath, studentProfile, isUserLoading, isProfileLoading, t]);
+    }, [isAdmin, initialLearningPath, studentProfile, isUserLoading, isProfileLoading, t, selectedTopic]);
 
     const progress = useMemo(() => {
         const completedTopics = learningPath.filter(t => t.status === 'completed').length;
@@ -154,8 +298,8 @@ export default function EnglishIntro2Page() {
         }
         setSelectedTopic(topicKey);
 
-        const exerciseKeys = ['mixed1', 'mixed2', 'time-exercise', 'countries'];
-        if (!exerciseKeys.includes(topicKey)) {
+        const viewOnlyTopics = ['tip', 'greetings', 'farewells', 'time'];
+        if (viewOnlyTopics.includes(topicKey)) {
             setTopicToComplete(topicKey);
         }
     };
@@ -175,15 +319,15 @@ export default function EnglishIntro2Page() {
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead className="font-bold">English</TableHead>
                         <TableHead className="font-bold">Español</TableHead>
+                        <TableHead className="font-bold">English</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {greetingsData.map((item, index) => (
                         <TableRow key={index}>
-                          <TableCell className="font-medium">{item.english}</TableCell>
-                          <TableCell>{item.spanish}</TableCell>
+                          <TableCell className="font-medium">{item.spanish}</TableCell>
+                          <TableCell>{item.english}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
@@ -202,15 +346,15 @@ export default function EnglishIntro2Page() {
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead className="font-bold">English</TableHead>
                         <TableHead className="font-bold">Español</TableHead>
+                        <TableHead className="font-bold">English</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {farewellsData.map((item, index) => (
                         <TableRow key={index}>
-                          <TableCell className="font-medium">{item.english}</TableCell>
-                          <TableCell>{item.spanish}</TableCell>
+                          <TableCell className="font-medium">{item.spanish}</TableCell>
+                          <TableCell>{item.english}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
@@ -250,6 +394,8 @@ export default function EnglishIntro2Page() {
                 </CardContent>
               </Card>
             );
+          case 'time-exercise':
+            return <TimeExercise onComplete={() => setTopicToComplete('time-exercise')} />;
           default:
             return (
                 <Card className="shadow-soft rounded-lg border-2 border-brand-purple min-h-[500px]">
