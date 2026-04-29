@@ -20,6 +20,7 @@ import {
   ArrowLeft,
   ArrowRight,
   X,
+  MessageSquare,
 } from 'lucide-react';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -34,6 +35,7 @@ import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { getEnglishIntro2PathData } from '@/lib/course-data';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 
@@ -45,7 +47,7 @@ const ICONS = {
   completed: CheckCircle,
 };
 
-const progressStorageVersion = "english_intro2_path_v4";
+const progressStorageVersion = "english_intro2_path_v5";
 
 const greetingsData = [
     { spanish: 'Hola', english: 'Hello' },
@@ -516,7 +518,7 @@ export default function EnglishIntro2Page() {
     const { user, isUserLoading } = useUser();
     const firestore = useFirestore();
 
-    const [learningPath, setLearningPath] = useState<KidsIntro2PathItem[]>([]);
+    const [learningPath, setLearningPath] = useState<EnglishIntro2PathItem[]>([]);
     const [selectedTopic, setSelectedTopic] = useState<string>('');
     const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
     const [isClient, setIsClient] = useState(false);
@@ -526,7 +528,7 @@ export default function EnglishIntro2Page() {
     }, []);
 
     const studentDocRef = useMemoFirebase(() => (user ? doc(firestore, 'students', user.uid) : null), [firestore, user]);
-    const { data: studentProfile, isLoading: isProfileLoading } = useDoc<Student>(studentDocRef);
+    const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{ role?: string; lessonProgress?: any; progress?: any }>(studentDocRef);
 
     const isAdmin = useMemo(() => (user && (studentProfile?.role === 'admin' || user.email === 'ednacard87@gmail.com')), [user, studentProfile]);
     
@@ -767,7 +769,7 @@ export default function EnglishIntro2Page() {
                       <nav>
                         <ul className="space-y-1">
                           {learningPath.map((item) => {
-                               const StatusIcon = ICONS[item.status];
+                               const StatusIcon = ICONS[item.status as keyof typeof ICONS];
                                return (
                                 <li
                                   key={item.key}
