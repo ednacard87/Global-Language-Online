@@ -19,6 +19,7 @@ import {
   RefreshCw,
   Flame,
   Loader2,
+  X,
 } from 'lucide-react';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -35,6 +36,7 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { getEnglishIntro2PathData, EnglishIntro2PathItem } from '@/lib/course-data';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 // Icons mapping for the learning path
 const ICONS = {
@@ -115,7 +117,111 @@ const countriesExerciseData = [
     { pais: 'Venezuela', country: 'Venezuela', nationality: 'Venezuelan', language: 'Spanish' },
 ];
 
-// Components inside the page file
+const progressStorageVersion = "_v2_sequential";
+
+interface Student {
+    role?: 'admin' | 'student';
+    lessonProgress?: any;
+    progress?: Record<string, number>;
+}
+
+const TipContent = () => (
+    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+        <CardHeader>
+            <CardTitle>Tip Importante</CardTitle>
+            <CardDescription>Conceptos clave de gramática.</CardDescription>
+        </CardHeader>
+        <CardContent>
+             <Accordion type="multiple" className="w-full space-y-4" defaultValue={['sustantivo', 'adjetivo', 'verbo', 'pronombres']}>
+                <AccordionItem value="sustantivo">
+                    <AccordionTrigger className="text-xl font-bold">SUSTANTIVO (NOUN)</AccordionTrigger>
+                    <AccordionContent className="space-y-4 pt-2">
+                        <p className="font-semibold">PERSONA, ANIMAL O COSA (singular- plural)</p>
+                        <div>
+                            <h4 className="font-medium text-primary">REGULAR: noun+ s</h4>
+                            <p className="font-mono text-sm bg-muted p-2 rounded-md mt-1">computer: computers // house: houses // car: cars</p>
+                        </div>
+                        <div>
+                            <h4 className="font-medium text-primary">IRREGULAR: noun+es</h4>
+                            <ul className="list-disc pl-5 mt-1 space-y-2 text-sm">
+                                <li>For nouns ending {`=>`} s, z, sh, ch, x (bus) = “ES”<br/><span className="font-mono bg-muted px-2 py-1 rounded">Ex: address: Addresses // beach: beaches // bus: buses</span></li>
+                                <li>For nouns ending {`=>`} “Y” cancelamos la “Y” agregamos “ies”<br/><span className="font-mono bg-muted px-2 py-1 rounded">Ex: country: countries // university: universities</span></li>
+                                <li>Completamente irregular:<br/><span className="font-mono bg-muted px-2 py-1 rounded">Man: men // woman: women // child: children // person: people</span></li>
+                            </ul>
+                        </div>
+                    </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="adjetivo">
+                    <AccordionTrigger className="text-xl font-bold">ADJETIVO (ADJECTIVE)</AccordionTrigger>
+                    <AccordionContent className="space-y-4 pt-2">
+                         <p className="font-semibold">DESCRIBE EL SUSTANTIVO (COLOR, CUALIDAD, CARACTERISTICA.) –(los adjetivos siempre van en singular es decir en su forma original)</p>
+                         <Card className="bg-yellow-100 dark:bg-yellow-900/30 border-yellow-500">
+                             <CardHeader>
+                                 <CardTitle className="text-yellow-800 dark:text-yellow-300 text-lg">NOTAS IMPORTANTES</CardTitle>
+                             </CardHeader>
+                             <CardContent className="text-sm space-y-3">
+                                 <p><strong className="text-foreground">En español:</strong> sustantivo + adjetivo.<br/><span className="font-mono text-muted-foreground">Ejemplo: El carro blanco, el lapicero azul, el computador gris</span></p>
+                                 <p><strong className="text-foreground">En INGLÉS:</strong> adjetivo + sustantivo.<br/><span className="font-mono text-muted-foreground">Examples: El carro blanco : the white car, El lapicero rojo : The red pen, el computador gris : the grey computer</span></p>
+                             </CardContent>
+                         </Card>
+                    </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="verbo">
+                    <AccordionTrigger className="text-xl font-bold">VERBO (VERB)</AccordionTrigger>
+                    <AccordionContent className="space-y-4 pt-2">
+                        <p className="font-semibold">VERB: ACCIÓN.</p>
+                        <div>
+                            <h4 className="font-medium text-primary">VERBOS INFINITIVO = "TO"</h4>
+                            <p className="text-sm text-muted-foreground">Un verbo en infinitivo es un verbo que no está conjugado.</p>
+                            <p className="font-mono text-sm bg-muted p-2 rounded-md mt-1">
+                                {'ESPAÑOL => ENGLISH'}<br/>
+                                {'AR = Hablar = TO speak'}<br/>
+                                {'ER = Comer = TO eat'}<br/>
+                                {'IR = Vivir = TO Live'}
+                            </p>
+                        </div>
+                         <div>
+                            <h4 className="font-medium text-primary">CONJUGACIÓN</h4>
+                            <p className="text-sm text-muted-foreground">Cuando estamos utilizando la conjugación el verbo pierde la palabra = "To"</p>
+                            <p className="font-mono bg-muted p-2 rounded-md mt-1 text-sm">
+                              pronombre + verbo (yo hablo) {'=>'} i + speak<br/>
+                              i to speak = yo hablar
+                            </p>
+                        </div>
+                    </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="pronombres">
+                    <AccordionTrigger className="text-xl font-bold">PRONOMBRES (PRONOUNS)</AccordionTrigger>
+                    <AccordionContent className="space-y-4 pt-2">
+                         <p className="font-semibold">Muchas frases no tienen pronombres, entonces las frases pueden TENER:</p>
+                         <ul className="list-disc pl-5 text-sm space-y-1">
+                             <li><strong>Nombre propio:</strong> Viviana, Edna, Ana, Cristal</li>
+                             <li><strong>Sustantivo:</strong> (persona, animal, cosa) {`=>`} carro, casa, finca</li>
+                             <li><strong>Demostrativos:</strong> This – these – that – those</li>
+                         </ul>
+                         <p className="font-mono bg-muted p-2 rounded-md mt-1 text-sm">
+                            {'he is at home => pronoun'}<br/>
+                            {'Thomas is at home => Nombre propio'}<br/>
+                            {'my father is at home => Sustantivo'}<br/>
+                            esta es mi casa  = this is my house {'=>'} Demostrativo
+                        </p>
+                          <div className="flex items-start gap-2 p-2 bg-destructive/10 border-l-4 border-destructive text-destructive-foreground/80 rounded-r-md">
+                            <X className="h-5 w-5 mt-0.5 flex-shrink-0"/>
+                            <div>
+                                <h4 className="font-bold">¡NUNCA!</h4>
+                                <p className="text-sm">Nunca se pueden utilizar un pronombre con un sustantivo o un pronombre con un nombre propio al mismo tiempo.</p>
+                                <p className="font-mono text-xs mt-1">Incorrecto: Thomas he is at home (Thomas él está en la casa)<br/>Incorrecto: he my father is at home (él mi padre está en la casa)</p>
+                            </div>
+                        </div>
+                    </AccordionContent>
+                </AccordionItem>
+            </Accordion>
+        </CardContent>
+    </Card>
+);
 
 const MemoryGame = ({ data, onComplete }: { data: { spanish: string; english: string; }[], onComplete: () => void }) => {
     const [cards, setCards] = useState<any[]>([]);
@@ -354,14 +460,14 @@ const TimeExercise = ({ onComplete }: { onComplete: () => void }) => {
     );
 };
 
-const MixedExercise = ({ title, data, onComplete }: { title: string, data: { spanish: string, english: string[] }[], onComplete: () => void }) => {
+const MixedExercise = ({ title, data, onComplete }: { title: string, data: { spanish: string, answer: string[] }[], onComplete: () => void }) => {
     const { toast } = useToast();
     const [currentIndex, setCurrentIndex] = useState(0);
     const [userAnswer, setUserAnswer] = useState('');
     const [validation, setValidation] = useState<ValidationStatus>('unchecked');
 
     const handleCheck = () => {
-        const correctAnswers = data[currentIndex].english.map(ans => ans.toLowerCase().replace(/[.?,]/g, ''));
+        const correctAnswers = data[currentIndex].answer.map(ans => ans.toLowerCase().replace(/[.?,]/g, ''));
         const input = userAnswer.trim().toLowerCase().replace(/[.?,]/g, '');
         const isCorrect = correctAnswers.includes(input);
         setValidation(isCorrect ? 'correct' : 'incorrect');
@@ -511,7 +617,7 @@ const CountriesExercise = ({ onComplete }: { onComplete: () => void }) => {
                 </div>
             </CardContent>
             <CardFooter className="flex justify-between items-center mt-4">
-                <Button onClick={handleCheck} variant="outline">Verificar Tabla</Button>
+                <Button onClick={handleCheck} className="bg-green-600 hover:bg-green-700 text-white">Verificar Tabla</Button>
                 {isTableFilled && (
                     <Button onClick={onComplete} className="bg-primary hover:bg-primary/90 text-primary-foreground">
                         Terminar Intro 2
@@ -629,27 +735,9 @@ export default function EnglishIntro2Page() {
     };
     
     const renderContent = () => {
-        const topic = learningPath.find((t) => t.key === selectedTopic);
-        
         switch (selectedTopic) {
-          case 'tip':
-            return (
-                <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-                    <CardHeader>
-                        <CardTitle>Tip Importante: Gramática Básica</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <p className="text-lg">Para dominar el inglés, es fundamental entender la estructura básica:</p>
-                        <ul className="list-disc pl-6 space-y-2">
-                            <li><strong>Sujeto + Verbo + Complemento:</strong> La base de la mayoría de oraciones.</li>
-                            <li><strong>Adjetivo + Sustantivo:</strong> A diferencia del español, el color o descripción va antes. (The <em>blue</em> car).</li>
-                            <li><strong>To + Infinitivo:</strong> Usamos "to" para verbos sin conjugar. (To speak, to eat).</li>
-                        </ul>
-                    </CardContent>
-                </Card>
-            );
-          case 'mixed1':
-            return <MixedExercise title="Ejercicios Mixtos 1" data={mixedExercise1Data} onComplete={() => setTopicToComplete('mixed1')} />;
+          case 'tip': return <TipContent />;
+          case 'mixed1': return <SimpleExercise title="Ejercicios Mixtos 1" exerciseData={mixedExercise1Data} onComplete={() => setTopicToComplete('mixed1')} />;
           case 'greetings':
             return (
               <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
@@ -704,8 +792,7 @@ export default function EnglishIntro2Page() {
                 </CardContent>
               </Card>
             );
-          case 'mixed2':
-            return <MixedExercise title="Ejercicios Mixtos 2" data={mixedExercise2Data} onComplete={() => setTopicToComplete('mixed2')} />;
+          case 'mixed2': return <SimpleExercise title="Ejercicios Mixtos 2" exerciseData={mixedExercise2Data} onComplete={() => setTopicToComplete('mixed2')} />;
           case 'time':
             return (
               <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
@@ -766,11 +853,10 @@ export default function EnglishIntro2Page() {
                 </CardContent>
               </Card>
             );
-          case 'time-exercise':
-            return <TimeExercise onComplete={() => setTopicToComplete('time-exercise')} />;
-          case 'countries':
-            return <CountriesExercise onComplete={() => setTopicToComplete('countries')} />;
+          case 'time-exercise': return <TimeExercise onComplete={() => setTopicToComplete('time-exercise')} />;
+          case 'countries': return <CountriesExercise onComplete={() => setTopicToComplete('countries')} />;
           default:
+            const topic = learningPath.find((t) => t.key === selectedTopic);
             return (
                 <Card className="shadow-soft rounded-lg border-2 border-brand-purple min-h-[500px]">
                   <CardHeader>
@@ -782,11 +868,6 @@ export default function EnglishIntro2Page() {
                 </Card>
             );
         }
-    };
-
-    const StatusIcon = ({ status }: { status: 'completed' | 'active' | 'locked' }) => {
-        const Icon = ICONS[status];
-        return <Icon className={cn("h-5 w-5", status === 'completed' && "text-green-500", status === 'locked' && "text-yellow-500")} />;
     };
 
     if (!isClient) return <div className="flex h-screen items-center justify-center"><Loader2 className="h-16 w-16 animate-spin text-primary" /></div>;
@@ -810,22 +891,25 @@ export default function EnglishIntro2Page() {
                     <CardContent>
                       <nav>
                         <ul className="space-y-1">
-                          {learningPath.map((item) => (
-                            <li
-                              key={item.key}
-                              onClick={() => handleTopicSelect(item.key)}
-                              className={cn(
-                                'flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors',
-                                item.status === 'locked' && !isAdmin ? 'cursor-not-allowed text-muted-foreground/50' : 'cursor-pointer hover:bg-muted',
-                                selectedTopic === item.key && 'bg-muted text-primary font-semibold'
-                              )}
-                            >
-                              <div className="flex items-center gap-3">
-                                <StatusIcon status={item.status} />
-                                <span>{item.name}</span>
-                              </div>
-                            </li>
-                          ))}
+                          {learningPath.map((item) => {
+                               const StatusIcon = ICONS[item.status];
+                               return (
+                                <li
+                                  key={item.key}
+                                  onClick={() => handleTopicSelect(item.key)}
+                                  className={cn(
+                                    'flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors',
+                                    item.status === 'locked' && !isAdmin ? 'cursor-not-allowed text-muted-foreground/50' : 'cursor-pointer hover:bg-muted',
+                                    selectedTopic === item.key && 'bg-muted text-primary font-semibold'
+                                  )}
+                                >
+                                  <div className="flex items-center gap-3">
+                                    <StatusIcon className={cn("h-5 w-5", item.status === 'completed' && "text-green-500", item.status === 'locked' && "text-yellow-500")} />
+                                    <span>{item.name}</span>
+                                  </div>
+                                </li>
+                              );
+                          })}
                         </ul>
                       </nav>
                       <div className="mt-6 pt-6 border-t">
@@ -843,12 +927,4 @@ export default function EnglishIntro2Page() {
           </main>
         </div>
     );
-}
-
-const progressStorageVersion = "_v2_sequential";
-
-interface Student {
-    role?: 'admin' | 'student';
-    lessonProgress?: any;
-    progress?: Record<string, number>;
 }
