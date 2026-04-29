@@ -3,6 +3,7 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import {
   BookOpen,
   PenSquare,
@@ -37,8 +38,6 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { getIntro2PathData, type Intro2PathItem } from '@/lib/course-data';
 import { useRouter } from 'next/navigation';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
-import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
-import Image from 'next/image';
 
 const TipContent = () => (
     <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
@@ -90,12 +89,20 @@ const TipContent = () => (
                         <div>
                             <h4 className="font-medium text-primary">VERBOS INFINITIVO = "TO"</h4>
                             <p className="text-sm text-muted-foreground">Un verbo en infinitivo es un verbo que no está conjugado.</p>
-                            <p className="font-mono text-sm bg-muted p-2 rounded-md mt-1">{'ESPAÑOL => ENGLISH'}<br/>{'AR = Hablar = TO speak'}<br/>{'ER = Comer = TO eat'}<br/>{'IR = Vivir = TO Live'}</p>
+                            <p className="font-mono text-sm bg-muted p-2 rounded-md mt-1">
+                                {'ESPAÑOL => ENGLISH'}<br/>
+                                {'AR = Hablar = TO speak'}<br/>
+                                {'ER = Comer = TO eat'}<br/>
+                                {'IR = Vivir = TO Live'}
+                            </p>
                         </div>
                          <div>
                             <h4 className="font-medium text-primary">CONJUGACIÓN</h4>
                             <p className="text-sm text-muted-foreground">Cuando estamos utilizando la conjugación el verbo pierde la palabra = "To"</p>
-                            <p className="font-mono bg-muted p-2 rounded-md mt-1 text-sm">{`pronombre + verbo (yo hablo) => i + speak`}<br/>{`i to speak = yo hablar`}</p>
+                            <p className="font-mono bg-muted p-2 rounded-md mt-1 text-sm">
+                              pronombre + verbo (yo hablo) {'=>'} i + speak<br/>
+                              i to speak = yo hablar
+                            </p>
                         </div>
                     </AccordionContent>
                 </AccordionItem>
@@ -112,7 +119,8 @@ const TipContent = () => (
                          <p className="font-mono bg-muted p-2 rounded-md mt-1 text-sm">
                             {'he is at home => pronoun'}<br/>
                             {'Thomas is at home => Nombre propio'}<br/>
-                            {'my father is at home => Sustantivo'}
+                            {'my father is at home => Sustantivo'}<br/>
+                            esta es mi casa  = this is my house {'=>'} Demostrativo
                         </p>
                           <div className="flex items-start gap-2 p-2 bg-destructive/10 border-l-4 border-destructive text-destructive-foreground/80 rounded-r-md">
                             <X className="h-5 w-5 mt-0.5 flex-shrink-0"/>
@@ -129,14 +137,10 @@ const TipContent = () => (
     </Card>
 );
 
-const greetingsAndFarewellsData = [
-    { spanish: 'Hola', english: 'Hello' },
-    { spanish: 'Buenos días', english: 'Good morning' },
-    { spanish: 'Buenas tardes', english: 'Good afternoon' },
-    { spanish: 'Buenas noches (saludo)', english: 'Good evening' },
-    { spanish: '¿Cómo estás?', english: 'How are you?' },
-    { spanish: '¿Qué tal?', english: "What's up?" },
-    { spanish: '¿Cómo vas?', english: 'How is it going?' },
+const greetingsData = [
+    { spanish: 'Hola', english: 'Hello' }, { spanish: 'Buenos días', english: 'Good morning' },
+    { spanish: 'Buenas tardes', english: 'Good afternoon' }, { spanish: 'Buenas noches (saludo)', english: 'Good evening' },
+    { spanish: '¿Cómo estás?', english: 'How are you?' }, { spanish: '¿Qué tal?', english: "What's up?" }, { spanish: '¿Cómo vas?', english: 'How is it going?' },
 ];
 
 const farewellsData = [
@@ -249,6 +253,20 @@ const SimpleExercise = ({ title, onComplete, exerciseData }: { title: string; on
         </Card>
     );
 };
+
+function CountriesExercise({ onComplete }: { onComplete: () => void }) {
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle>Countries & Nationalities</CardTitle>
+            </CardHeader>
+            <CardContent>
+                <p>This is a placeholder for the countries exercise.</p>
+                <Button onClick={onComplete} className="mt-4">Mark as Complete</Button>
+            </CardContent>
+        </Card>
+    );
+}
 
 const ICONS = { locked: Lock, active: BookOpen, completed: CheckCircle };
 const progressStorageVersion = "kids_intro2_path_v2";
@@ -404,7 +422,7 @@ export default function Intro2Page() {
             case 'mixed2': return <SimpleExercise title="Ejercicios Mixtos 2" exerciseData={mixedExercise2Data} onComplete={() => setTopicToComplete('mixed2')} />;
             case 'time': return <TimeContent />;
             case 'time-exercise': return <div><p>Time exercise placeholder.</p><Button onClick={() => setTopicToComplete('time-exercise')}>Complete</Button></div>;
-            case 'countries': return <div><p>Countries exercise placeholder.</p><Button onClick={() => setTopicToComplete('countries')}>Complete</Button></div>;
+            case 'countries': return <CountriesExercise onComplete={() => setTopicToComplete('countries')} />;
             default:
                 return (
                     <Card className="h-full">
