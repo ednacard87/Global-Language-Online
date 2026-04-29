@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import {
   BookOpen,
   PenSquare,
@@ -14,7 +15,7 @@ import {
   CheckCircle,
 } from 'lucide-react';
 import { DashboardHeader } from '@/components/dashboard/header';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { useTranslation } from '@/context/language-context';
 import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
@@ -23,6 +24,8 @@ import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from '@/components/ui/button';
 import { getEnglishIntro2PathData, EnglishIntro2PathItem } from '@/lib/course-data';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 const ICONS = { locked: Lock, active: BookOpen, completed: CheckCircle };
 const progressStorageVersion = "english_intro2_path_v1";
@@ -32,6 +35,26 @@ interface Student {
     lessonProgress?: any;
     progress?: Record<string, number>;
 }
+
+const greetingsData = [
+  { english: 'Hello', spanish: 'Hola' },
+  { english: 'Good morning', spanish: 'Buenos días' },
+  { english: 'Good afternoon', spanish: 'Buenas tardes' },
+  { english: 'Good evening', spanish: 'Buenas noches (saludo)' },
+  { english: 'How are you?', spanish: '¿Cómo estás?' },
+  { english: "What's up?", spanish: '¿Qué tal?' },
+  { english: 'Nice to meet you', spanish: 'Mucho gusto' },
+];
+
+const farewellsData = [
+  { english: 'Goodbye', spanish: 'Adiós' },
+  { english: 'Bye', spanish: 'Chao' },
+  { english: 'See you later', spanish: 'Hasta luego' },
+  { english: 'See you soon', spanish: 'Hasta pronto' },
+  { english: 'Good night', spanish: 'Buenas noches (despedida)' },
+  { english: 'Take care', spanish: 'Cuídate' },
+  { english: 'Have a nice day', spanish: 'Que tengas un buen día' },
+];
 
 export default function EnglishIntro2Page() {
     const { t } = useTranslation();
@@ -49,6 +72,8 @@ export default function EnglishIntro2Page() {
     const isAdmin = useMemo(() => (user && (studentProfile?.role === 'admin' || user.email === 'ednacard87@gmail.com')), [user, studentProfile]);
     
     const initialLearningPath = useMemo(() => getEnglishIntro2PathData(t), [t]);
+
+    const timeImage = PlaceHolderImages.find(p => p.id === 'telling-time');
 
     useEffect(() => {
         if (isUserLoading || isProfileLoading) return;
@@ -137,23 +162,113 @@ export default function EnglishIntro2Page() {
     
     const renderContent = () => {
         const topic = learningPath.find((t) => t.key === selectedTopic);
-        return (
-            <Card className="shadow-soft rounded-lg border-2 border-brand-purple min-h-[500px]">
-              <CardHeader>
-                <CardTitle>{topic?.name || 'Cargando...'}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p>Contenido para {topic?.name} vendrá aquí.</p>
-                 {topic && (topic.key.includes('exercise') || topic.key.includes('mixed')) && (
-                    <Button className="mt-4" onClick={() => setTopicToComplete(topic.key)}>Completar Ejercicio (Placeholder)</Button>
-                )}
-              </CardContent>
-            </Card>
-        );
+        
+        switch (selectedTopic) {
+          case 'greetings':
+            return (
+              <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                <CardHeader>
+                  <CardTitle>{t('intro2Page.greetings')}</CardTitle>
+                  <CardDescription>Los saludos más comunes para iniciar una conversación.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="font-bold">English</TableHead>
+                        <TableHead className="font-bold">Español</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {greetingsData.map((item, index) => (
+                        <TableRow key={index}>
+                          <TableCell className="font-medium">{item.english}</TableCell>
+                          <TableCell>{item.spanish}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+            );
+          case 'farewells':
+            return (
+              <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                <CardHeader>
+                  <CardTitle>{t('intro2Page.farewells')}</CardTitle>
+                  <CardDescription>Formas comunes de despedirse en diferentes situaciones.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="font-bold">English</TableHead>
+                        <TableHead className="font-bold">Español</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {farewellsData.map((item, index) => (
+                        <TableRow key={index}>
+                          <TableCell className="font-medium">{item.english}</TableCell>
+                          <TableCell>{item.spanish}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+            );
+          case 'time':
+            return (
+              <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                <CardHeader>
+                  <CardTitle>{t('intro2Page.time')}</CardTitle>
+                  <CardDescription>Estudia cómo decir la hora en inglés con esta guía visual.</CardDescription>
+                </CardHeader>
+                <CardContent className="flex flex-col items-center gap-6">
+                  {timeImage && (
+                    <div className="relative w-full max-w-2xl aspect-video rounded-xl overflow-hidden border shadow-lg">
+                      <Image 
+                        src={timeImage.imageUrl} 
+                        alt={timeImage.description} 
+                        fill
+                        className="object-contain bg-white"
+                        data-ai-hint={timeImage.imageHint}
+                      />
+                    </div>
+                  )}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full text-sm">
+                    <div className="p-4 bg-muted rounded-lg">
+                      <h4 className="font-bold mb-2">O'clock</h4>
+                      <p>Se usa para las horas en punto. Ej: 3:00 - It's three o'clock.</p>
+                    </div>
+                    <div className="p-4 bg-muted rounded-lg">
+                      <h4 className="font-bold mb-2">Past / To</h4>
+                      <p>Usamos "past" para los minutos 1-30 y "to" para los minutos 31-59.</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          default:
+            return (
+                <Card className="shadow-soft rounded-lg border-2 border-brand-purple min-h-[500px]">
+                  <CardHeader>
+                    <CardTitle>{topic?.name || 'Cargando...'}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p>Contenido para {topic?.name} vendrá aquí.</p>
+                     {topic && (topic.key.includes('exercise') || topic.key.includes('mixed')) && (
+                        <Button className="mt-4" onClick={() => setTopicToComplete(topic.key)}>Completar Ejercicio (Placeholder)</Button>
+                    )}
+                  </CardContent>
+                </Card>
+            );
+        }
     };
 
     return (
-        <div className="flex w-full flex-col ingles-dashboard-bg min-h-screen">
+        <div className="flex w-full flex-col min-h-screen ingles-dashboard-bg">
           <DashboardHeader />
           <main className="flex-1 p-4 md:p-8">
             <div className="max-w-7xl mx-auto">
