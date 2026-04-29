@@ -704,6 +704,3 @@ export const getKidsB1MainPath = (t: (key: string) => string): PathItem[] => [
     { type: 'class', icon: GraduationCap, label: 'kidsB1.connectors', href: '/kids/b1/connectors', storageKey: 'progress_kids_b1_connectors' },
     { type: 'end', icon: Flag, label: 'dashboard.finish' }
 ];
-
-
-
