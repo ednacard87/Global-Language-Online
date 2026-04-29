@@ -226,7 +226,7 @@ export default function KidsIntro1Page() {
                         <Link href="/kids/intro" className="hover:underline text-sm text-muted-foreground">
                             {t('kidsPage.backToKidsCourse')}
                         </Link>
-                        <h1 className="text-4xl font-bold text-white dark:text-primary">{t('kidsPage.intro1AdventureTitle')}</h1>
+                        <h1 className="text-4xl font-bold text-white">{t('kidsPage.intro1AdventureTitle')}</h1>
                     </div>
                     {renderContent()}
                 </div>
@@ -239,18 +239,22 @@ export default function KidsIntro1Page() {
                         <nav>
                             <ul className="space-y-1">
                             {learningPath.map((item) => {
-                                const Icon = item.icon;
-                                const isLocked = item.status === 'locked';
+                                const isLocked = item.status === 'locked' && !isAdmin;
                                 const isSelected = selectedTopic === item.key;
+                                const isActive = item.status === 'active';
+                                const isCompleted = item.status === 'completed';
+                                
+                                const Icon = isCompleted ? CheckCircle : (isLocked ? Lock : item.icon);
+
                                 return (
                                     <li key={item.key} onClick={() => handleTopicSelect(item.key)} className={cn(!isLocked || isAdmin ? "cursor-pointer" : "cursor-not-allowed")}>
                                         <div className={cn(
                                             "flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors",
                                             (!isLocked || isAdmin) && "hover:bg-muted",
-                                            isSelected ? "bg-muted text-primary font-semibold" : (item.status === 'active' ? "text-foreground" : "text-muted-foreground"),
-                                            item.status === 'completed' && "text-green-500"
+                                            isSelected ? "bg-muted text-primary font-semibold" : (isActive ? "text-foreground" : "text-muted-foreground"),
+                                            isCompleted && "text-green-500"
                                         )}>
-                                            {item.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500" /> : isLocked && !isAdmin ? <Lock className="h-5 w-5 text-yellow-500" /> : <Icon className="h-5 w-5" />}
+                                            <Icon className={cn("h-5 w-5", isLocked && !isAdmin ? "text-yellow-500" : (isCompleted) ? "text-green-500" : "text-primary" )} />
                                             <span>{item.name}</span>
                                         </div>
                                     </li>
