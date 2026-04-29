@@ -19,8 +19,7 @@ import {
   CheckCircle,
   Lightbulb,
   Clock,
-  X,
-  Check,
+  X
 } from 'lucide-react';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -38,21 +37,12 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Separator } from "@/components/ui/separator";
 import { TimeExercise } from '@/components/kids/exercises/time-exercise';
-import { Loader2 } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
+const ICONS: { [key: string]: React.ElementType } = { locked: Lock, active: BookOpen, completed: CheckCircle };
 
-const ICONS: { [key: string]: React.ElementType } = {
-  tip: Lightbulb,
-  mixed1: PenSquare,
-  greetings: Hand,
-  farewells: MessageSquare,
-  mixed2: PenSquare,
-  time: Clock,
-  'time-exercise': PenSquare,
-  countries: BookOpen,
-};
-
+// By changing this version, we can force a progress reset for all users
+// if there's a breaking change in the path structure.
 const progressStorageVersion = "_v1_sequential_intro2";
 interface Student {
     role?: 'admin' | 'student';
@@ -199,7 +189,7 @@ export default function Intro2Page() {
                 setSelectedTopicKey(path[0].key);
             }
         }
-    }, [isClient, isProfileLoading, isAdmin, studentProfile, initialLearningPath]);
+    }, [isClient, isProfileLoading, isAdmin, studentProfile, initialLearningPath, selectedTopicKey]);
 
     const completedItems = useMemo(() => intro2Path.filter(item => item.status === 'completed').length, [intro2Path]);
     const progress = useMemo(() => intro2Path.length > 0 ? Math.round((completedItems / intro2Path.length) * 100) : 0, [completedItems, intro2Path.length]);
@@ -269,9 +259,7 @@ export default function Intro2Page() {
             return (
                 <div className="space-y-4">
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-                        <CardHeader>
-                            <CardTitle>SUSTANTIVO: NOUN</CardTitle>
-                        </CardHeader>
+                        <CardHeader><CardTitle>SUSTANTIVO: NOUN</CardTitle></CardHeader>
                         <CardContent className="space-y-4">
                             <p className="text-muted-foreground">PERSONA, ANIMAL O COSA (singular- plural)</p>
                             <Accordion type="multiple" className="w-full">
@@ -472,7 +460,7 @@ export default function Intro2Page() {
                         <nav>
                             <ul className="space-y-1">
                             {intro2Path.map((item, index) => {
-                                const Icon = ICONS[item.key] || BookOpen;
+                                const Icon = item.icon || BookOpen;
                                 const isLocked = item.status === 'locked';
                                 const isSelected = selectedTopic === item.name;
                                 const isActive = item.status === 'active';
@@ -519,5 +507,3 @@ export default function Intro2Page() {
         </div>
       );
 }
-
-    
