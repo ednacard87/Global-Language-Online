@@ -255,7 +255,7 @@ const TimeExercise = ({ onComplete }: { onComplete: () => void }) => {
     
     const handleCheck = () => {
         const userAnswer = userAnswers[currentIndex].trim().toLowerCase().replace(/[.?,]/g, '');
-        const isCorrect = currentPrompt.answers.some(ans => ans.toLowerCase().replace(/[.?,]/g, '') === userAnswer);
+        const isCorrect = currentPrompt.answers.some(ans => ans.toLowerCase().replace(/[.?]/g, '') === userAnswer);
 
         const newValidationStates = [...validationStates];
         newValidationStates[currentIndex] = isCorrect ? 'correct' : 'incorrect';
@@ -420,38 +420,44 @@ const CountriesExercise = ({ onComplete }: { onComplete: () => void }) => {
 
     const handleCheck = () => {
         let allCorrect = true;
-        const newValidation = countriesExerciseData.map((correctData, index) => {
-            const userAnswer = userAnswers[index];
+        const newValidationStatus: ValidationRow[] = [];
+        countriesExerciseData.forEach((correctAnswer, index) => {
+            const userAnswer = userAnswers[index] || {};
+            const isCountryCorrect = (userAnswer.country || '').trim().toLowerCase() === correctAnswer.country.toLowerCase();
+            const isNationalityCorrect = (userAnswer.nationality || '').trim().toLowerCase() === correctAnswer.nationality.toLowerCase();
+            const isLanguageCorrect = (userAnswer.language || '').trim().toLowerCase() === correctAnswer.language.toLowerCase();
             
-            const isCountryCorrect = userAnswer.country.trim().toLowerCase() === correctData.country.toLowerCase();
-            const isNationalityCorrect = userAnswer.nationality.trim().toLowerCase() === correctData.nationality.toLowerCase();
-            const isLanguageCorrect = userAnswer.language.trim().toLowerCase() === correctData.language.toLowerCase();
-
-            if (!isCountryCorrect || !isNationalityCorrect || !isLanguageCorrect) {
-                allCorrect = false;
-            }
-
-            return {
+            newValidationStatus[index] = {
                 country: isCountryCorrect ? 'correct' : 'incorrect',
                 nationality: isNationalityCorrect ? 'correct' : 'incorrect',
                 language: isLanguageCorrect ? 'correct' : 'incorrect',
-            } as ValidationRow;
+            };
+
+            if (!isCountryCorrect || !isNationalityCorrect || !isLanguageCorrect) allCorrect = false;
         });
 
-        setValidation(newValidation);
+        setValidation(newValidationStatus);
+
         if (allCorrect) {
-            toast({ title: '¡Excelente!', description: 'Has completado la tabla correctamente.' });
-            onComplete();
+            toast({ title: "¡Excelente!", description: "Todas tus respuestas son correctas." });
         } else {
-            toast({ variant: 'destructive', title: 'Algunas respuestas son incorrectas', description: 'Revisa los campos en rojo.' });
+            toast({ variant: 'destructive', title: "Algunas respuestas son incorrectas" });
         }
     };
-
-    const getInputClass = (status: ValidationStatus) => {
+    
+    const getInputClass = (status?: ValidationStatus) => {
         if (status === 'correct') return 'border-green-500 focus-visible:ring-green-500';
         if (status === 'incorrect') return 'border-destructive focus-visible:ring-destructive';
         return '';
     };
+
+    const isTableFilled = useMemo(() => {
+        return userAnswers.every(row => 
+            row.country.trim() !== '' && 
+            row.nationality.trim() !== '' && 
+            row.language.trim() !== ''
+        );
+    }, [userAnswers]);
 
     return (
         <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
@@ -504,21 +510,17 @@ const CountriesExercise = ({ onComplete }: { onComplete: () => void }) => {
                     </Table>
                 </div>
             </CardContent>
-            <CardFooter>
-                <Button onClick={handleCheck} className="w-full">Verificar Tabla</Button>
+            <CardFooter className="flex justify-between items-center mt-4">
+                <Button onClick={handleCheck} variant="outline">Verificar Tabla</Button>
+                {isTableFilled && (
+                    <Button onClick={onComplete} className="bg-primary hover:bg-primary/90 text-primary-foreground">
+                        Terminar Intro 2
+                    </Button>
+                )}
             </CardFooter>
         </Card>
     );
 };
-
-const progressStorageKey = 'progress_english_intro_2';
-const progressStorageVersion = "_v2_sequential";
-
-interface Student {
-    role?: 'admin' | 'student';
-    lessonProgress?: any;
-    progress?: Record<string, number>;
-}
 
 export default function EnglishIntro2Page() {
     const { t } = useTranslation();
@@ -782,6 +784,11 @@ export default function EnglishIntro2Page() {
         }
     };
 
+    const StatusIcon = ({ status }: { status: 'completed' | 'active' | 'locked' }) => {
+        const Icon = ICONS[status];
+        return <Icon className={cn("h-5 w-5", status === 'completed' && "text-green-500", status === 'locked' && "text-yellow-500")} />;
+    };
+
     if (!isClient) return <div className="flex h-screen items-center justify-center"><Loader2 className="h-16 w-16 animate-spin text-primary" /></div>;
 
     return (
@@ -803,25 +810,22 @@ export default function EnglishIntro2Page() {
                     <CardContent>
                       <nav>
                         <ul className="space-y-1">
-                          {learningPath.map((item) => {
-                              const StatusIcon = ICONS[item.status];
-                              return (
-                                <li
-                                  key={item.key}
-                                  onClick={() => handleTopicSelect(item.key)}
-                                  className={cn(
-                                    'flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors',
-                                    item.status === 'locked' && !isAdmin ? 'cursor-not-allowed text-muted-foreground/50' : 'cursor-pointer hover:bg-muted',
-                                    selectedTopic === item.key && 'bg-muted text-primary font-semibold'
-                                  )}
-                                >
-                                  <div className="flex items-center gap-3">
-                                    <StatusIcon className="h-5 w-5" />
-                                    <span>{item.name}</span>
-                                  </div>
-                                </li>
-                              )
-                          })}
+                          {learningPath.map((item) => (
+                            <li
+                              key={item.key}
+                              onClick={() => handleTopicSelect(item.key)}
+                              className={cn(
+                                'flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors',
+                                item.status === 'locked' && !isAdmin ? 'cursor-not-allowed text-muted-foreground/50' : 'cursor-pointer hover:bg-muted',
+                                selectedTopic === item.key && 'bg-muted text-primary font-semibold'
+                              )}
+                            >
+                              <div className="flex items-center gap-3">
+                                <StatusIcon status={item.status} />
+                                <span>{item.name}</span>
+                              </div>
+                            </li>
+                          ))}
                         </ul>
                       </nav>
                       <div className="mt-6 pt-6 border-t">
@@ -839,4 +843,12 @@ export default function EnglishIntro2Page() {
           </main>
         </div>
     );
+}
+
+const progressStorageVersion = "_v2_sequential";
+
+interface Student {
+    role?: 'admin' | 'student';
+    lessonProgress?: any;
+    progress?: Record<string, number>;
 }
