@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -30,12 +31,6 @@ import { NumbersMemoryGame } from '@/components/kids/exercises/numbers-memory-ga
 import { ToBeMemoryGame } from '@/components/kids/exercises/tobe-memory-game';
 import { TranslationExercise } from '@/components/dashboard/translation-exercise';
 import { PossessivesMemoryGame } from '@/components/kids/exercises/possessives-memory-game';
-
-const ICONS = {
-    locked: Lock,
-    active: BookOpen,
-    completed: CheckCircle,
-};
 
 const verbToBeData = [
     { ser: 'Yo soy', tobe: 'I am', estar: 'Yo estoy' },
@@ -222,7 +217,7 @@ export default function KidsIntro1Page() {
     };
     
     return (
-        <div className="flex w-full flex-col min-h-screen kids-page-container">
+        <div className="flex w-full flex-col kids-page-container min-h-screen">
           <DashboardHeader />
           <main className="flex-1 p-4 md:p-8">
             <div className="max-w-7xl mx-auto">
@@ -245,7 +240,7 @@ export default function KidsIntro1Page() {
                         <nav>
                             <ul className="space-y-1">
                             {learningPath.map((item) => {
-                                const Icon = ICONS[item.status] || item.icon;
+                                const Icon = item.icon;
                                 const isLocked = item.status === 'locked';
                                 const isSelected = selectedTopic === item.key;
                                 return (
@@ -254,8 +249,9 @@ export default function KidsIntro1Page() {
                                             "flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors",
                                             (!isLocked || isAdmin) && "hover:bg-muted",
                                             isSelected ? "bg-muted text-primary font-semibold" : (item.status === 'active' ? "text-foreground" : "text-muted-foreground"),
+                                            item.status === 'completed' && "text-green-500 line-through"
                                         )}>
-                                            <Icon className={cn("h-5 w-5", isLocked && !isAdmin ? "text-yellow-500" : (item.status !== 'locked' || isSelected) ? "text-primary" : "text-muted-foreground")} />
+                                            {item.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500" /> : isLocked && !isAdmin ? <Lock className="h-5 w-5 text-yellow-500" /> : <Icon className="h-5 w-5" />}
                                             <span>{item.name}</span>
                                         </div>
                                     </li>
@@ -279,3 +275,5 @@ export default function KidsIntro1Page() {
         </div>
       );
 }
+      
+    
