@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
@@ -18,8 +17,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { SingleFormExercise } from '@/components/kids/exercises/single-form';
 import { PresentSimpleExercise } from '@/components/kids/exercises/present-simple';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
+// --- Data & Constants ---
 
 const lifeGoalsVocab = [
     { spanish: "Solicitar una beca.", english: "Apply for a scholarship" },
@@ -35,7 +34,6 @@ const lifeGoalsVocab = [
     { spanish: "Jubilarse joven.", english: "Retire early" },
     { spanish: "Montar un negocio.", english: "Set up a business" },
 ];
-
 
 const readingTextData = {
     title: "Life is Full of Choices",
@@ -169,7 +167,7 @@ const ReadingExercise = ({ onComplete }: { onComplete: () => void }) => {
         setValidationStatus(newValidationStatus);
 
         if (allCorrect) {
-            toast({ title: "Correcto!", description: "¡Todas las respuestas son correctas!" });
+            toast({ title: "¡Correcto!", description: "¡Todas las respuestas son correctas!" });
             onComplete();
         } else {
             toast({
@@ -456,7 +454,7 @@ const WordSearchGame = ({ onComplete }: { onComplete: () => void }) => {
     );
 };
 
-
+// --- Page Component ---
 
 const ICONS = {
     locked: Lock,
@@ -464,7 +462,7 @@ const ICONS = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_kids_b1_may_v3';
+const progressStorageVersion = 'progress_kids_b1_may_v4'; // Actualizado para incluir posición
 const mainProgressKey = 'progress_kids_b1_may';
 
 export default function MayPage() {
@@ -509,6 +507,7 @@ export default function MayPage() {
         { key: 'finalVocabulary', name: 'Vocabulario Final', icon: BookOpen, status: 'locked' },
     ], []);
     
+    // Effect to LOAD progress and last position
     useEffect(() => {
         if (isUserLoading || isProfileLoading || !initialLearningPath.length) return;
 
@@ -517,7 +516,7 @@ export default function MayPage() {
             subItems: topic.subItems ? topic.subItems.map(sub => ({ ...sub })) : undefined,
         }));
         
-        let pathIsLoadedFromProfile = false;
+        let savedSelectedTopic = '';
 
         if (isAdmin) {
             newPath.forEach(item => {
@@ -526,32 +525,36 @@ export default function MayPage() {
                     item.subItems.forEach(sub => sub.status = 'completed');
                 }
             });
-            pathIsLoadedFromProfile = true;
         } else if (studentProfile?.lessonProgress?.[progressStorageVersion]) {
-            const savedStatuses = studentProfile.lessonProgress[progressStorageVersion];
+            const savedData = studentProfile.lessonProgress[progressStorageVersion];
             newPath.forEach(item => {
-                if (savedStatuses[item.key]) item.status = savedStatuses[item.key];
-                if (item.subItems && savedStatuses.subItems?.[item.key]) {
+                if (savedData[item.key]) item.status = savedData[item.key];
+                if (item.subItems && savedData.subItems?.[item.key]) {
                     item.subItems.forEach(subItem => {
-                        if (savedStatuses.subItems[item.key][subItem.key]) {
-                            subItem.status = savedStatuses.subItems[item.key][subItem.key];
+                        if (savedData.subItems[item.key][subItem.key]) {
+                            subItem.status = savedData.subItems[item.key][subItem.key];
                         }
                     });
                 }
             });
-            pathIsLoadedFromProfile = true;
+            savedSelectedTopic = savedData.lastSelectedTopic || '';
         }
 
         setLearningPath(newPath);
 
         if (!initialLoadComplete) {
-            const firstActiveItem = newPath.find(p => p.status === 'active' && !p.subItems) || newPath.find(p => p.subItems?.some(sp => sp.status === 'active'));
-
-            if (firstActiveItem?.subItems) {
-                const firstActiveSubItem = firstActiveItem.subItems.find(sp => sp.status === 'active');
-                setSelectedTopic(firstActiveSubItem?.key || firstActiveItem.key);
+            // Priority: savedSelectedTopic > first active subitem > first active main item > first item
+            if (savedSelectedTopic) {
+                setSelectedTopic(savedSelectedTopic);
             } else {
-                setSelectedTopic(firstActiveItem?.key || newPath[0]?.key || '');
+                const firstActiveItem = newPath.find(p => p.status === 'active' && !p.subItems) || newPath.find(p => p.subItems?.some(sp => sp.status === 'active'));
+
+                if (firstActiveItem?.subItems) {
+                    const firstActiveSubItem = firstActiveItem.subItems.find(sp => sp.status === 'active');
+                    setSelectedTopic(firstActiveSubItem?.key || firstActiveItem.key);
+                } else {
+                    setSelectedTopic(firstActiveItem?.key || newPath[0]?.key || '');
+                }
             }
             setInitialLoadComplete(true);
         }
@@ -559,7 +562,7 @@ export default function MayPage() {
     }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading, isUserLoading, initialLoadComplete]);
 
     
-    const progress = useMemo(() => {
+    const progressPercent = useMemo(() => {
         if (!initialLoadComplete) return 0;
         let totalTopics = 0;
         let completedTopics = 0;
@@ -575,26 +578,35 @@ export default function MayPage() {
         return totalTopics > 0 ? (completedTopics / totalTopics) * 100 : 0;
     }, [learningPath, initialLoadComplete]);
 
+    // Effect to SAVE progress and current position
     useEffect(() => {
-        if (!initialLoadComplete || isUserLoading || isProfileLoading || learningPath.length === 0 || isAdmin) return;
+        if (!initialLoadComplete || isUserLoading || isProfileLoading || learningPath.length === 0 || isAdmin || !studentDocRef) return;
 
-        if (studentDocRef) {
-            const statusesToSave: Record<string, any> = {};
-            learningPath.forEach(item => {
-                statusesToSave[item.key] = item.status;
-                if (item.subItems) {
-                    if (!statusesToSave.subItems) statusesToSave.subItems = {};
-                    statusesToSave.subItems[item.key] = {};
-                    item.subItems.forEach(sub => { statusesToSave.subItems[item.key][sub.key] = sub.status; });
-                }
-            });
-            updateDocumentNonBlocking(studentDocRef, { [`lessonProgress.${progressStorageVersion}`]: statusesToSave });
-            updateDocumentNonBlocking(studentDocRef, { [`progress.${mainProgressKey}`]: Math.round(progress) });
-        }
-        if (progress >= 100) {
+        const statusesToSave: Record<string, any> = {
+            lastSelectedTopic: selectedTopic
+        };
+
+        learningPath.forEach(item => {
+            statusesToSave[item.key] = item.status;
+            if (item.subItems) {
+                if (!statusesToSave.subItems) statusesToSave.subItems = {};
+                statusesToSave.subItems[item.key] = {};
+                item.subItems.forEach(sub => { 
+                    statusesToSave.subItems[item.key][sub.key] = sub.status; 
+                });
+            }
+        });
+
+        // Batch update to ensure consistency
+        updateDocumentNonBlocking(studentDocRef, { 
+            [`lessonProgress.${progressStorageVersion}`]: statusesToSave,
+            [`progress.${mainProgressKey}`]: Math.round(progressPercent)
+        });
+
+        if (progressPercent >= 100) {
           window.dispatchEvent(new CustomEvent('progressUpdated'));
         }
-    }, [learningPath, isAdmin, progress, studentDocRef, isUserLoading, isProfileLoading, initialLoadComplete]);
+    }, [learningPath, progressPercent, selectedTopic, isAdmin, studentDocRef, isUserLoading, isProfileLoading, initialLoadComplete]);
 
     useEffect(() => {
         if (!topicToComplete) return;
@@ -862,8 +874,8 @@ export default function MayPage() {
                                         </ul>
                                     </nav>
                                     <div className="mt-6 pt-6 border-t">
-                                        <div className="flex justify-between items-center text-sm font-medium text-muted-foreground mb-2"><span>Progreso</span><span className="font-bold text-foreground">{Math.round(progress)}%</span></div>
-                                        <Progress value={progress} className="h-2" />
+                                        <div className="flex justify-between items-center text-sm font-medium text-muted-foreground mb-2"><span>Progreso</span><span className="font-bold text-foreground">{Math.round(progressPercent)}%</span></div>
+                                        <Progress value={progressPercent} className="h-2" />
                                     </div>
                                 </CardContent>
                             </Card>
