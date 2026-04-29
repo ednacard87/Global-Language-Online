@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -27,6 +28,12 @@ import { getEnglishIntro2PathData, EnglishIntro2PathItem } from '@/lib/course-da
 const ICONS = { locked: Lock, active: BookOpen, completed: CheckCircle };
 const progressStorageVersion = "english_intro2_path_v1";
 
+interface Student {
+    role?: 'admin' | 'student';
+    lessonProgress?: any;
+    progress?: Record<string, number>;
+}
+
 export default function EnglishIntro2Page() {
     const { t } = useTranslation();
     const { toast } = useToast();
@@ -38,11 +45,11 @@ export default function EnglishIntro2Page() {
     const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
 
     const studentDocRef = useMemoFirebase(() => (user ? doc(firestore, 'students', user.uid) : null), [firestore, user]);
-    const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{ role?: string; lessonProgress?: any }>(studentDocRef);
+    const { data: studentProfile, isLoading: isProfileLoading } = useDoc<Student>(studentDocRef);
 
     const isAdmin = useMemo(() => (user && (studentProfile?.role === 'admin' || user.email === 'ednacard87@gmail.com')), [user, studentProfile]);
-
-    const initialLearningPath = useMemo(() => getEnglishIntro2PathData(), []);
+    
+    const initialLearningPath = useMemo(() => getEnglishIntro2PathData(t), [t]);
 
     useEffect(() => {
         if (isProfileLoading) return;
@@ -192,3 +199,4 @@ export default function EnglishIntro2Page() {
         </div>
     );
 }
+    
