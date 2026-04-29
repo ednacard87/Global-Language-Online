@@ -17,6 +17,7 @@ export const englishIntroPathData: PathItem[] = [
     { type: 'start', icon: Footprints, label: 'dashboard.start' },
     { type: 'class', icon: BookOpen, label: 'intro1Page.title', href: '/intro/1', storageKey: 'intro1Progress' },
     { type: 'practice', icon: Puzzle, label: 'introCoursePage.quiz1', href: '/quiz-payment/1', storageKey: 'quiz1Progress' },
+    { type: 'class', icon: BookOpen, label: 'introCoursePage.intro2', href: '/intro/2', storageKey: 'intro2Progress' },
     { type: 'practice', icon: Puzzle, label: 'introCoursePage.quiz2', href: '/quiz-payment/2', storageKey: 'quiz2Progress' },
     { type: 'practice', icon: Ear, label: 'introCoursePage.listening', href: '/listening-practice', progress: 0, points: 20, storageKey: 'listeningProgress'},
     { type: 'practice', icon: Mic, label: 'introCoursePage.speaking', href: '#', progress: 0, points: 20, storageKey: 'speakingProgress'},
@@ -36,10 +37,10 @@ export const kidsIntroPathData: PathItem[] = [
 export const espanolIntroPathData: PathItem[] = [
     { type: 'start', icon: Footprints, label: 'dashboard.start' },
     { type: 'class', icon: BookOpen, label: 'intro1Page.title', href: '/espanol/intro/1', storageKey: 'progress_espanol_intro_1' },
-    { type: 'practice', icon: Puzzle, label: 'introCoursePage.quiz1', href: '/quiz-payment/1', storageKey: 'progress_es_quiz_1' },
+    { type: 'practice', icon: Puzzle, label: 'introCoursePage.quiz1', href: '#', storageKey: 'progress_es_quiz_1' },
     { type: 'class', icon: BookOpen, label: 'introCoursePage.intro2', href: '/espanol/intro/2', storageKey: 'progress_espanol_intro_2' },
-    { type: 'practice', icon: Puzzle, label: 'introCoursePage.quiz2', href: '/quiz-payment/2', storageKey: 'progress_es_quiz_2' },
-    { type: 'practice', icon: Puzzle, label: 'espanolIntroPage.finalTest', href: '/quiz-payment/final', storageKey: 'progress_es_quiz_final' },
+    { type: 'practice', icon: Puzzle, label: 'introCoursePage.quiz2', href: '#', storageKey: 'progress_es_quiz_2' },
+    { type: 'practice', icon: Puzzle, label: 'espanolIntroPage.finalTest', href: '#', storageKey: 'progress_es_quiz_final' },
     { type: 'end', icon: Flag, label: 'dashboard.finish' }
 ];
 
@@ -105,7 +106,7 @@ export const getKidsIntro1PathData = (t: (key: string) => string): Topic[] => [
     { key: "numbers", name: t('intro1Page.numbers'), icon: BookOpen, status: 'locked' },
     { key: "numbers-memory", name: "Memory (Numbers)", icon: BrainCircuit, status: 'locked' },
     { key: "tobe", name: "To Be", icon: GraduationCap, status: 'locked' },
-    { key: "tobe-memory", name: "Memory (To Be)", icon: BrainCircuit, status: 'locked' },
+    { key: "tobe-memory", name: "Memory (To be)", icon: BrainCircuit, status: 'locked' },
     { key: "possessives", name: t('intro1Page.possessives'), icon: GraduationCap, status: 'locked' },
     { key: "possessives-memory", name: "Memory (Possessives)", icon: BrainCircuit, status: 'locked' },
 ];
