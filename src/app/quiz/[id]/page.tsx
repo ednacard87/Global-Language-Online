@@ -148,7 +148,7 @@ export default function QuizPage() {
             description: "Has desbloqueado Intro 2.",
         });
 
-        router.push('/intro');
+        router.push('/intro/2');
 
     } catch (error) {
         console.error("Error unlocking next lesson:", error);
