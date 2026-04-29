@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -239,7 +240,7 @@ export default function KidsIntro1Page() {
                         <nav>
                             <ul className="space-y-1">
                             {learningPath.map((item) => {
-                                const isLocked = item.status === 'locked' && !isAdmin;
+                                const isLocked = item.status === 'locked';
                                 const isSelected = selectedTopic === item.key;
                                 const isActive = item.status === 'active';
                                 const isCompleted = item.status === 'completed';
@@ -251,10 +252,9 @@ export default function KidsIntro1Page() {
                                         <div className={cn(
                                             "flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors",
                                             (!isLocked || isAdmin) && "hover:bg-muted",
-                                            isSelected ? "bg-muted text-primary font-semibold" : (isActive ? "text-foreground" : "text-muted-foreground"),
-                                            isCompleted && "text-green-500"
+                                            isSelected ? "bg-muted text-primary font-semibold" : (isActive ? "text-foreground" : "text-muted-foreground")
                                         )}>
-                                            <Icon className={cn("h-5 w-5", isLocked && !isAdmin ? "text-yellow-500" : (isCompleted) ? "text-green-500" : "text-primary" )} />
+                                            <Icon className={cn("h-5 w-5", isLocked && !isAdmin ? "text-yellow-500" : "text-primary" )} />
                                             <span>{item.name}</span>
                                         </div>
                                     </li>
@@ -278,3 +278,5 @@ export default function KidsIntro1Page() {
         </div>
       );
 }
+
+    
