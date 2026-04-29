@@ -43,7 +43,7 @@
     "thisWeek": "+{{hours}}h esta semana",
     "courses": "Cursos de Inglés",
     "activeCoursesDescription": "Tu progreso en los cursos actuales.",
-    "introductoryCourse": "Curso Introductorio",
+    "introductoryCourse": "Curso Intro Ingles",
     "courseA1": "A1 Curso - Eng",
     "courseA2": "A2 Curso - Eng",
     "courseB1": "B1 Curso - Eng",
@@ -163,14 +163,14 @@
     "paymentVerification": "Tu acceso se activará una vez verificado el pago."
   },
   "introCoursePage": {
-    "title": "Vamos a Aprender",
-    "mazeTitle": "Laberinto del Saber",
+    "title": "Let's Learn",
+    "mazeTitle": "THE LEARNING ADVENTURE",
     "mazeDescription": "Completa cada paso del laberinto para desbloquear el siguiente nivel y convertirte en un maestro del inglés.",
     "penguinHint": "¡El conocimiento es poder! Continúa avanzando para desbloquear nuevas habilidades.",
-    "quiz1": "Quiz 1E",
-    "intro2": "Intro 2E",
+    "quiz1": "Quiz 1",
+    "intro2": "Intro 2",
     "intro3": "Intro 3",
-    "quiz2": "Quiz 2E",
+    "quiz2": "Quiz 2",
     "listening": "Práctica de Escucha y Escritura",
     "speaking": "Práctica de Habla"
   },
@@ -178,7 +178,7 @@
     "finalTest": "Prueba Final Español"
   },
   "intro1Page": {
-    "title": "Intro 1E",
+    "title": "Intro 1",
     "learningPath": "Ruta de Aprendizaje",
     "progress": "Progreso",
     "abc": "ABC",
@@ -756,3 +756,5 @@
     "tryAgain": "Intentar de Nuevo"
   }
 }
+
+    
