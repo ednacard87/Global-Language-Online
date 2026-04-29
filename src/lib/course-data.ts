@@ -16,7 +16,7 @@ export interface PathItem {
 export const englishIntroPathData: PathItem[] = [
     { type: 'start', icon: Footprints, label: 'dashboard.start', points: 0 },
     { type: 'class', icon: BookOpen, label: 'englishIntro.intro1', href: '/intro/1', progress: 0, points: 20, storageKey: 'intro1Progress' },
-    { type: 'practice', icon: Puzzle, label: 'englishIntro.quiz1', href: '/quiz-payment/1', progress: 0, points: 10, className: 'animate-pulse-glow', storageKey: 'quiz1Progress' },
+    { type: 'practice', icon: Puzzle, label: 'englishIntro.quiz1', href: '/quiz/1', progress: 0, points: 10, className: 'animate-pulse-glow', storageKey: 'quiz1Progress' },
     { type: 'class', icon: BookOpen, label: 'englishIntro.intro2', href: '/intro/2', storageKey: 'intro2Progress' },
     { type: 'practice', icon: Puzzle, label: 'englishIntro.quiz2', href: '/quiz-payment/2', progress: 0, points: 10, storageKey: 'quiz2Progress' },
     { type: 'practice', icon: Ear, label: 'englishIntro.listening', href: '/listening-practice', progress: 0, points: 20, storageKey: 'listeningProgress'},
@@ -40,7 +40,7 @@ export const espanolIntroPathData: PathItem[] = [
     { type: 'practice', icon: Puzzle, label: 'espanolIntroCourse.quiz1', href: '#', storageKey: 'progress_es_quiz_1' },
     { type: 'class', icon: BookOpen, label: 'espanolIntroCourse.intro2', href: '/espanol/intro/2', storageKey: 'progress_espanol_intro_2' },
     { type: 'practice', icon: Puzzle, label: 'espanolIntroCourse.quiz2', href: '#', storageKey: 'progress_es_quiz_2' },
-    { type: 'practice', icon: Puzzle, label: 'espanolIntroCourse.finalTest', href: '#', storageKey: 'progress_espanol_quiz_final' },
+    { type: 'practice', icon: Puzzle, label: 'espanolIntroCourse.finalTest', href: 'espanolIntroCourse.finalTestSpanish', storageKey: 'progress_espanol_quiz_final' },
     { type: 'end', icon: Flag, label: 'dashboard.finish' }
 ];
 
