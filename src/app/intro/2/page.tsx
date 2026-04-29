@@ -205,7 +205,7 @@ const TipContent = () => (
                             {'my father is at home => Sustantivo'}<br/>
                             esta es mi casa  = this is my house {'=>'} Demostrativo
                         </p>
-                          <div className="flex items-start gap-2 p-2 bg-destructive/10 border-l-4 border-destructive text-destructive-foreground/80 rounded-r-md">
+                          <div className="flex items-start gap-2 p-2 bg-destructive/10 border-l-4 border-destructive text-foreground rounded-r-md">
                             <X className="h-5 w-5 mt-0.5 flex-shrink-0"/>
                             <div>
                                 <h4 className="font-bold">¡NUNCA!</h4>
@@ -219,6 +219,121 @@ const TipContent = () => (
         </CardContent>
     </Card>
 );
+
+const MemoryGame = ({ data, onComplete }: { data: { spanish: string; english: string; }[], onComplete: () => void }) => {
+    const [cards, setCards] = useState<any[]>([]);
+    const [flippedIndices, setFlippedIndices] = useState<number[]>([]);
+    const [matchedPairIds, setMatchedPairIds] = useState<number[]>([]);
+    const [isChecking, setIsChecking] = useState(false);
+    const [streak, setStreak] = useState(0);
+    const [isClient, setIsClient] = useState(false);
+
+    useEffect(() => {
+        setIsClient(true);
+    }, []);
+
+    const initializeGame = React.useCallback(() => {
+        const gameCards = data.flatMap((pair, index) => [
+            { id: index * 2, pairId: index, text: pair.english },
+            { id: index * 2 + 1, pairId: index, text: pair.spanish },
+        ]).sort(() => Math.random() - 0.5);
+        
+        setCards(gameCards);
+        setFlippedIndices([]);
+        setMatchedPairIds([]);
+        setIsChecking(false);
+        setStreak(0);
+    }, [data]);
+
+    useEffect(() => {
+        if (isClient) {
+            initializeGame();
+        }
+    }, [isClient, initializeGame]);
+    
+    useEffect(() => {
+        if (flippedIndices.length === 2) {
+            setIsChecking(true);
+            const [firstIndex, secondIndex] = flippedIndices;
+            const isMatch = cards[firstIndex].pairId === cards[secondIndex].pairId;
+
+            if (isMatch) {
+                setMatchedPairIds(prev => [...prev, cards[firstIndex].pairId]);
+                setStreak(prev => prev + 1);
+                setFlippedIndices([]);
+                setIsChecking(false);
+            } else {
+                setStreak(0);
+                setTimeout(() => {
+                    setFlippedIndices([]);
+                    setIsChecking(false);
+                }, 800);
+            }
+        }
+    }, [flippedIndices, cards]);
+
+    const isGameComplete = matchedPairIds.length === data.length;
+
+    useEffect(() => {
+        if (isGameComplete) {
+            onComplete();
+        }
+    }, [isGameComplete, onComplete]);
+
+    const handleCardClick = (index: number) => {
+        if (isChecking || flippedIndices.length >= 2 || flippedIndices.includes(index) || matchedPairIds.includes(cards[index].pairId)) {
+            return;
+        }
+        setFlippedIndices(prev => [...prev, index]);
+    };
+
+    if (!isClient) {
+        return (
+            <Card>
+                <CardHeader>
+                    <CardTitle>Juego de Memoria: Saludos y Despedidas</CardTitle>
+                </CardHeader>
+                <CardContent className="flex justify-center items-center h-48">
+                    <Loader2 className="h-8 w-8 animate-spin" />
+                </CardContent>
+            </Card>
+        );
+    }
+
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle>Juego de Memoria: Saludos y Despedidas</CardTitle>
+                <div className="flex justify-between items-center pt-2">
+                    <Button size="icon" variant="ghost" onClick={initializeGame}><RefreshCw className="h-5 w-5" /></Button>
+                    <div className="flex items-center gap-2 text-orange-500 font-bold"><Flame className="h-5 w-5" /><span>{streak}</span></div>
+                </div>
+            </CardHeader>
+            <CardContent>
+                {isGameComplete ? (
+                     <div className="text-center p-8 flex flex-col items-center"><Trophy className="h-16 w-16 text-yellow-400 mb-4" /><h2 className="text-2xl font-bold">¡Juego Completado!</h2></div>
+                ) : (
+                    <div className="grid grid-cols-4 gap-2">
+                        {cards.map((card, index) => {
+                            const isFlipped = flippedIndices.includes(index);
+                            const isMatched = matchedPairIds.includes(card.pairId);
+                            return (
+                                <Card key={card.id} onClick={() => handleCardClick(index)}
+                                    className={cn("flex items-center justify-center aspect-square cursor-pointer", isFlipped || isMatched ? "bg-card border-primary" : "bg-secondary", isMatched && "border-green-500")}>
+                                    <CardContent className="p-1 text-center">
+                                        {isFlipped || isMatched ? <span className="text-sm font-bold">{card.text}</span> : <BrainCircuit className="h-5 w-5 text-primary/50" />}
+                                    </CardContent>
+                                </Card>
+                            )
+                        })}
+                    </div>
+                )}
+            </CardContent>
+        </Card>
+    );
+};
+
+type ValidationStatus = 'correct' | 'incorrect' | 'unchecked';
 
 const SimpleExercise = ({ title, exerciseData, onComplete }: { title: string; exerciseData: { spanish: string, english: string[] }[], onComplete: () => void }) => {
     const { toast } = useToast();
