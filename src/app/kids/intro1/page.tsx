@@ -25,7 +25,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useUser, useFirestore, addDocumentNonBlocking, updateDocumentNonBlocking, useDoc, useMemoFirebase } from '@/firebase';
 import { collection, doc } from 'firebase/firestore';
 import { useTranslation } from '@/context/language-context';
-import { getIntro1PathData, getNumbersSpellingPathData, type SpellingPathItem } from '@/lib/course-data';
+import { getIntro1PathData, getAbcSpellingPathData, getNumbersSpellingPathData, type SpellingPathItem } from '@/lib/course-data';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { AlphabetGrid } from '@/components/kids/alphabet-grid';
 import { NumbersGrid } from '@/components/kids/numbers-grid';
@@ -333,6 +333,12 @@ export default function KidsIntro1Page() {
                                     </nav>
                                 </CardContent>
                             </Card>
+                            <Card className="shadow-soft rounded-lg flex items-center gap-2 cursor-pointer hover:opacity-80 animate-pulse-glow border-2 border-brand-purple p-4 mt-4" onClick={() => handleTopicSelect(t('intro1Page.numbers'))}>
+                                <Lightbulb className="h-5 w-5 text-yellow-400 animate-pulse flex-shrink-0" />
+                                <p className="text-base font-semibold bg-gradient-to-r from-brand-purple to-brand-teal text-transparent bg-clip-text">
+                                    {t('intro1Page.backToNumbersHint')}
+                                </p>
+                            </Card>
                         </div>
                     </div>
                     <div className="md:col-span-8">
@@ -460,7 +466,7 @@ export default function KidsIntro1Page() {
   };
 
   return (
-    <div className="flex w-full flex-col min-h-screen kids-page-container">
+    <div className="flex w-full flex-col min-h-screen">
       <DashboardHeader />
       <main className="flex-1 p-4 md:p-8">
         <div className="max-w-7xl mx-auto">
@@ -483,7 +489,7 @@ export default function KidsIntro1Page() {
                     <nav>
                         <ul className="space-y-1">
                         {learningPath.map((item) => {
-                            const Icon = ICONS[item.status as keyof typeof ICONS];
+                            const Icon = item.icon;
                             const isLocked = item.status === 'locked';
                             const isSelected = selectedTopic === item.name;
                             const isActive = item.status === 'active';
