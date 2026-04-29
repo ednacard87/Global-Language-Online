@@ -15,7 +15,7 @@ import { Progress } from "@/components/ui/progress";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
-import { calculateIntroCourseProgress } from "@/lib/course-data";
+import { calculateKidsIntroCourseProgress } from "@/lib/course-data";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -111,7 +111,7 @@ export default function KidsCoursePage() {
       return studentProfile?.role === 'admin' || user.email === 'ednacard87@gmail.com';
   }, [user, studentProfile]);
   
-  const introProgress = useMemo(() => calculateIntroCourseProgress(studentProfile?.progress), [studentProfile]);
+  const introProgress = useMemo(() => calculateKidsIntroCourseProgress(studentProfile?.progress), [studentProfile]);
   const canPlayIntroGames = introProgress >= 30 || isAdmin;
 
   const handleLockedGamesClick = () => {
