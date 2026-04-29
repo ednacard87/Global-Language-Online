@@ -1,4 +1,4 @@
-import { BookOpen, Flag, Footprints, Puzzle, Mic, Ear, Smile, GraduationCap, Star, Hand, MessageSquare, BrainCircuit, PenSquare, Lightbulb, Clock } from 'lucide-react';
+import { BookOpen, Flag, Footprints, Puzzle, Mic, Ear, Smile, GraduationCap, Star, Hand, MessageSquare, BrainCircuit, PenSquare, Lightbulb, Clock, Languages } from 'lucide-react';
 import type { ComponentType } from 'react';
 
 export interface PathItem {
@@ -26,10 +26,10 @@ export const englishIntroPathData: PathItem[] = [
 export const kidsIntroPathData: PathItem[] = [
     { type: 'start', icon: Footprints, label: 'dashboard.start' },
     { type: 'class', icon: Smile, label: 'kidsPage.intro1', href: '/kids/intro1', storageKey: 'kidsIntro1Progress' },
-    { type: 'practice', icon: Puzzle, label: 'kidsPage.quiz1', href: '/kids/quiz/1', storageKey: 'kidsQuiz1Progress' },
-    { type: 'class', icon: Smile, label: 'kidsPage.intro2', href: '/kids/intro2', storageKey: 'kidsIntro2Progress' },
-    { type: 'practice', icon: Puzzle, label: 'kidsPage.quiz2', href: '/kids/quiz/2', storageKey: 'kidsQuiz2Progress' },
-    { type: 'practice', icon: Puzzle, label: 'kidsPage.finalTest', href: '/kids/quiz/final', storageKey: 'kidsFinalTestProgress' },
+    { type: 'practice', icon: Puzzle, label: 'kidsPage.quiz1k', href: '/kids/quiz/1', storageKey: 'kidsQuiz1Progress' },
+    { type: 'class', icon: Smile, label: 'kidsPage.intro2k', href: '/kids/intro2', storageKey: 'kidsIntro2Progress' },
+    { type: 'practice', icon: Puzzle, label: 'kidsPage.quiz2k', href: '/kids/quiz/2', storageKey: 'kidsQuiz2Progress' },
+    { type: 'practice', icon: Puzzle, label: 'kidsPage.finalTestKids', href: '/kids/quiz/final', storageKey: 'kidsFinalTestProgress' },
     { type: 'end', icon: Flag, label: 'dashboard.finish' }
 ];
 
@@ -73,27 +73,44 @@ export const introPathItemsData: PathItem[] = [
 
 export type Intro1PathKey = 
   | "abc"
+  | "abc-memory"
+  | "numbers"
+  | "numbers-memory"
+  | "tobe"
+  | "tobe-memory"
+  | "possessives"
+  | "possessives-memory"
   | "abcExercise"
   | "abcspelling"
-  | "numbers"
   | "numbersspelling"
   | "pronouns"
   | "verbtobe1"
   | "exercises1"
-  | "possessives"
   | "verbtobe2"
   | "exercises2"
   | "verbtobe3"
   | "exercises3"
   | "demonstratives";
 
-export interface Intro1PathItem {
-    key: Intro1PathKey;
+export interface Topic {
+    key: string;
     name: string;
+    icon: React.ElementType;
     status: 'completed' | 'active' | 'locked';
 }
+
+export const getKidsIntro1PathData = (t: (key: string) => string): Topic[] => [
+    { key: "abc", name: t('intro1Page.abc'), icon: Languages, status: 'active' },
+    { key: "abc-memory", name: "Memory (ABC)", icon: BrainCircuit, status: 'locked' },
+    { key: "numbers", name: t('intro1Page.numbers'), icon: BookOpen, status: 'locked' },
+    { key: "numbers-memory", name: "Memory (Numbers)", icon: BrainCircuit, status: 'locked' },
+    { key: "tobe", name: "To Be", icon: GraduationCap, status: 'locked' },
+    { key: "tobe-memory", name: "Memory (To Be)", icon: BrainCircuit, status: 'locked' },
+    { key: "possessives", name: t('intro1Page.possessives'), icon: GraduationCap, status: 'locked' },
+    { key: "possessives-memory", name: "Memory (Possessives)", icon: BrainCircuit, status: 'locked' },
+];
   
-export const getIntro1PathData = (t: (key: string, values?: { [key: string]: string | number }) => string): Intro1PathItem[] => [
+export const getIntro1PathData = (t: (key: string, values?: { [key: string]: string | number }) => string): Omit<Topic, 'icon'>[] => [
     { key: "abc", name: t('intro1Page.abc'), status: "active" },
     { key: "abcExercise", name: t('intro1Page.abcExercise'), status: "locked" },
     { key: "abcspelling", name: t('spellingExercise.abcspelling'), status: "locked" },
