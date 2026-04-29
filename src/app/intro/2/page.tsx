@@ -20,6 +20,7 @@ import {
   Clock,
   X,
   Loader2,
+  Globe,
 } from 'lucide-react';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -35,6 +36,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 // Data
 const greetingsAndFarewellsData = [
@@ -359,6 +361,7 @@ const progressStorageKey = 'progress_espanol_intro_2_v1';
 const mainProgressKey = 'progress_espanol_intro_2';
 
 const ICONS = { locked: Lock, active: BookOpen, completed: CheckCircle };
+const guideFishImage = PlaceHolderImages.find(p => p.id === 'guide-fish');
 
 export default function EspanolIntro2Page() {
     const { t } = useTranslation();
@@ -367,33 +370,28 @@ export default function EspanolIntro2Page() {
     const { user, isUserLoading } = useUser();
     const firestore = useFirestore();
 
-    const [learningPath, setLearningPath] = useState<Topic[]>([]);
-    const [selectedTopic, setSelectedTopic] = useState('memory_game');
+    const initialLearningPath = useMemo((): Topic[] => [
+        { key: 'tip', name: 'Tip Importante', icon: Lightbulb, status: 'active' },
+        { key: 'memory_game', name: 'Juego de Memoria', icon: BrainCircuit, status: 'locked' },
+        { key: 'time', name: 'La Hora', icon: Clock, status: 'locked' },
+        { key: 'countries', name: 'Países y Nacionalidades', icon: Globe, status: 'locked' },
+        { key: 'reading', name: 'Lectura y Comprensión', icon: BookOpen, status: 'locked' },
+        { key: 'mixed_exercises', name: 'Ejercicios Mixtos', icon: PenSquare, status: 'locked' },
+    ], []);
+
+    const [learningPath, setLearningPath] = useState<Topic[]>(initialLearningPath);
+    const [selectedTopic, setSelectedTopic] = useState('tip');
     const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
+    const [previousPath, setPreviousPath] = useState<Topic[] | null>(null);
 
     const studentDocRef = useMemoFirebase(() => (user ? doc(firestore, 'students', user.uid) : null), [firestore, user]);
     const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{ role?: string; lessonProgress?: any; progress?: any }>(studentDocRef);
-    const [initialLearningPath, setInitialLearningPath] = useState<Topic[]>([]);
-    const [previousPath, setPreviousPath] = useState<Topic[] | null>(null);
-    const [isClient, setIsClient] = useState(false);
-
-    useEffect(() => {
-        setIsClient(true);
-        setInitialLearningPath([
-            { key: 'tip', name: 'Tip Importante', icon: Lightbulb, status: 'active' },
-            { key: 'memory_game', name: 'Juego de Memoria', icon: BrainCircuit, status: 'locked' },
-            { key: 'time', name: 'La Hora', icon: Clock, status: 'locked' },
-            { key: 'countries', name: 'Países y Nacionalidades', icon: Globe, status: 'locked' },
-            { key: 'reading', name: 'Lectura y Comprensión', icon: BookOpen, status: 'locked' },
-            { key: 'mixed_exercises', name: 'Ejercicios Mixtos', icon: PenSquare, status: 'locked' },
-        ]);
-    }, [t]);
-
-
+    
     const isAdmin = useMemo(() => (user && (studentProfile?.role === 'admin' || user.email === 'ednacard87@gmail.com')), [user, studentProfile]);
     
     useEffect(() => {
-        if (!isClient || isUserLoading || isProfileLoading || initialLearningPath.length === 0) return;
+        if (isUserLoading || isProfileLoading) return;
+        
         let newPath = initialLearningPath.map(item => ({...item}));
         
         if (isAdmin) {
@@ -405,8 +403,8 @@ export default function EspanolIntro2Page() {
         
         setLearningPath(newPath);
         const firstActive = newPath.find(p => p.status === 'active');
-        setSelectedTopic(firstActive?.key || 'memory_game');
-    }, [isAdmin, initialLearningPath, studentProfile, isUserLoading, isProfileLoading, isClient]);
+        setSelectedTopic(firstActive?.key || 'tip');
+    }, [isAdmin, initialLearningPath, studentProfile, isUserLoading, isProfileLoading]);
 
     const progress = useMemo(() => {
         if (learningPath.length === 0) return 0;
@@ -415,7 +413,7 @@ export default function EspanolIntro2Page() {
     }, [learningPath]);
 
     useEffect(() => {
-        if (!isClient || isUserLoading || isProfileLoading || isAdmin) return;
+        if (isUserLoading || isProfileLoading || isAdmin) return;
     
         const newPathString = JSON.stringify(learningPath.map(p => ({ key: p.key, status: p.status })));
         const prevPathString = JSON.stringify(previousPath?.map(p => ({ key: p.key, status: p.status })));
@@ -430,7 +428,7 @@ export default function EspanolIntro2Page() {
             window.dispatchEvent(new CustomEvent('progressUpdated'));
         }
         setPreviousPath(learningPath);
-    }, [learningPath, progress, isAdmin, studentDocRef, isProfileLoading, isUserLoading, previousPath, isClient]);
+    }, [learningPath, progress, isAdmin, studentDocRef, isProfileLoading, isUserLoading, previousPath]);
 
 
     useEffect(() => {
@@ -485,7 +483,7 @@ export default function EspanolIntro2Page() {
                                         <AccordionContent><code className="block bg-muted p-2 rounded-md font-mono">computer: computers // house: houses // car: cars</code></AccordionContent>
                                     </AccordionItem>
                                     <AccordionItem value="irregular">
-                                        <AccordionTrigger>IRREGULAR</AccordionTrigger>
+                                        <AccordionTrigger>IRREGULAR: noun+es</AccordionTrigger>
                                         <AccordionContent className="space-y-2">
                                             <p>Para sustantivos que terminan en: <strong>s, z, sh, ch, x</strong> (e.g., bus), se agrega “ES”.</p>
                                             <code className="block bg-muted p-2 rounded-md font-mono">address: Addresses // beach: beaches // bus: buses</code>
@@ -508,25 +506,39 @@ export default function EspanolIntro2Page() {
                                     <CardHeader><CardTitle className="text-yellow-800 dark:text-yellow-300">NOTICAS IMPORTANTES</CardTitle></CardHeader>
                                     <CardContent>
                                         <p>En español primero se habla del sustantivo y luego del adjetivo:</p>
-                                        <code className="block bg-background p-2 rounded-md font-mono my-2 text-sm">El carro blanco<br/>el lapicero azul<br/>el computador gris</code>
+                                        <div className="bg-background p-2 rounded-md font-mono my-2 text-sm">
+                                            <p>El carro blanco</p>
+                                            <p>el lapicero azul</p>
+                                            <p>el computador gris</p>
+                                        </div>
                                         <p>Pero en INGLES primero se habla del adjetivo y luego del sustantivo:</p>
-                                        <code className="block bg-background p-2 rounded-md font-mono mt-2 text-sm">the white car<br/>The red pen<br/>the grey computer</code>
+                                        <div className="bg-background p-2 rounded-md font-mono mt-2 text-sm">
+                                            <p>El carro blanco : the white car</p>
+                                            <p>El lapicero rojo : The red pen</p>
+                                            <p>El computador gris : the grey computer</p>
+                                        </div>
                                     </CardContent>
                                 </Card>
                             </CardContent>
                         </Card>
             
                         <Card>
-                            <CardHeader><CardTitle>VERBO: VERB</CardTitle><CardDescription>ACCIÓN. VERBOS INFINITIVO = " TO "</CardDescription></CardHeader>
+                            <CardHeader><CardTitle>VERBO.</CardTitle><CardDescription>VERB: ACCIÓN.</CardDescription></CardHeader>
                             <CardContent>
-                                <p>Un verbo en infinitivo es un verbo que no está conjugado.</p>
+                                <h4 className="font-semibold">VERBOS INFINITIVO = " TO "</h4>
+                                <p>un verbo en infinitivo es un verbo que no está conjugado.</p>
                                 <div className="grid grid-cols-2 gap-4 my-4">
                                     <code className="block bg-muted p-2 rounded-md font-mono text-center">ESPAÑOL<br/>AR = Hablar<br/>ER = Comer<br/>IR = Vivir</code>
                                     <code className="block bg-muted p-2 rounded-md font-mono text-center">ENGLISH<br/>= TO speak<br/>= TO eat<br/>= TO Live</code>
                                 </div>
                                 <h4 className="font-semibold pt-4 border-t">CONJUGACION</h4>
                                 <p>Cuando estamos utilizando la conjugación el verbo pierde la palabra "To".</p>
-                                <code className="block bg-muted p-2 rounded-md font-mono">pronombre + verbo<br/>i speak (yo hablo)<br/><span className="text-destructive">i to speak (incorrecto - "yo hablar")</span></code>
+                                <div className="bg-muted p-2 rounded-md font-mono mt-2 text-sm">
+                                    <p>pronombre + verbo</p>
+                                    <p>yo hablo</p>
+                                    <p>i speak</p>
+                                    <p><span className="text-destructive">i to speak = yo hablar</span></p>
+                                </div>
                             </CardContent>
                         </Card>
             
@@ -544,8 +556,8 @@ export default function EspanolIntro2Page() {
                                     <CardHeader><CardTitle className="text-destructive">NOTA:</CardTitle></CardHeader>
                                     <CardContent>
                                         <p>Nunca se pueden utilizar un pronombre con un sustantivo o un pronombre con un nombre propio al mismo tiempo.</p>
-                                        <code className="block bg-background p-2 rounded-md font-mono mt-2 text-sm flex items-center gap-2"><X className="text-destructive h-4 w-4"/> Thomas he is at home (Thomas él está en la casa)</code>
-                                        <code className="block bg-background p-2 rounded-md font-mono mt-2 text-sm flex items-center gap-2"><X className="text-destructive h-4 w-4"/> he my father is at home (él mi padre está en la casa)</code>
+                                        <div className="bg-background p-2 rounded-md font-mono mt-2 text-sm flex items-center gap-2"><X className="text-destructive h-4 w-4"/> Thomas he is at home (Thomas él está en la casa)</div>
+                                        <div className="bg-background p-2 rounded-md font-mono mt-2 text-sm flex items-center gap-2"><X className="text-destructive h-4 w-4"/> he my father is at home (él mi padre está en la casa)</div>
                                     </CardContent>
                                 </Card>
                             </CardContent>
@@ -581,6 +593,35 @@ export default function EspanolIntro2Page() {
             case 'reading': return <ReadingExercise onComplete={() => handleTopicComplete('reading')} />;
             case 'mixed_exercises': return <MixedExercise onComplete={() => handleTopicComplete('mixed_exercises')} />;
             default:
+                 if (!selectedTopic) {
+                    return (
+                        <div className="flex flex-col items-center scale-110">
+                            <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                                <CardHeader className="text-center">
+                                    <CardTitle className="text-3xl">{t('intro2Page.welcomeTitle')}</CardTitle>
+                                    <CardDescription className="text-base">{t('intro2Page.welcomeDescription')}</CardDescription>
+                                </CardHeader>
+                                <CardContent className="text-center px-6 pb-6">
+                                    <p className="pt-4 text-lg">{t('intro2Page.welcomeHint')}</p>
+                                </CardContent>
+                            </Card>
+                            <div className="flex items-center justify-center pt-8 gap-2">
+                                <div className="relative bg-card p-4 rounded-lg shadow-soft text-center text-base max-w-[220px] border-2 border-brand-purple">
+                                    <p className="font-bold text-lg bg-gradient-to-r from-brand-purple to-brand-teal text-transparent bg-clip-text">{t('intro1Page.penguinHint')}</p>
+                                    <div className="absolute left-full top-1/2 -translate-y-1/2 w-0 h-0 border-t-8 border-t-transparent border-b-8 border-b-transparent border-l-8 border-l-card" />
+                                </div>
+                                {guideFishImage && <Image
+                                    src={guideFishImage.imageUrl}
+                                    alt={guideFishImage.description}
+                                    width={191}
+                                    height={191}
+                                    className="rounded-lg object-cover"
+                                    data-ai-hint={guideFishImage.imageHint}
+                                />}
+                            </div>
+                        </div>
+                    );
+                }
                  const topic = learningPath.find(t => t.key === selectedTopic);
                  return <p>Selecciona un tema para empezar. Contenido para {topic?.name} no está implementado.</p>;
         }
@@ -606,6 +647,7 @@ export default function EspanolIntro2Page() {
                                                 const Icon = item.icon;
                                                 const isLocked = item.status === 'locked' && !isAdmin;
                                                 const isSelected = selectedTopic === item.key;
+                                                const isActive = item.status === 'active';
 
                                                 return (
                                                     <li key={item.key} onClick={() => handleTopicSelect(item.key)}
@@ -615,7 +657,7 @@ export default function EspanolIntro2Page() {
                                                         )}
                                                     >
                                                          <div className='flex items-center gap-3'>
-                                                            {item.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500"/> : <Icon className="h-5 w-5" />}
+                                                            {item.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500"/> : <Icon className={cn("h-5 w-5", isActive && !isSelected && "text-primary")} />}
                                                             <span>{item.name}</span>
                                                         </div>
                                                         {isLocked && <Lock className="h-4 w-4 text-yellow-500 ml-auto" />}
@@ -640,4 +682,3 @@ export default function EspanolIntro2Page() {
         </div>
     );
 }
-    
