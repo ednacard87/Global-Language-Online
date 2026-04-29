@@ -37,7 +37,6 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { getEnglishIntro2PathData } from '@/lib/course-data';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 // --- Constants & Data ---
 
@@ -47,7 +46,7 @@ const ICONS = {
   completed: CheckCircle,
 };
 
-const progressStorageVersion = "english_intro2_path_v5";
+const progressStorageVersion = "english_intro2_path_v6";
 
 const greetingsData = [
     { spanish: 'Hola', english: 'Hello' },
@@ -107,10 +106,18 @@ const countriesExerciseData = [
 ];
 
 const mixedExercise1Data = [
-    { spanish: 'Este es un buen libro', english: ['this is a good book'] },
-    { spanish: 'Esa es mi casa', english: ['that is my house'] },
-    { spanish: 'Estos son tus zapatos', english: ['these are your shoes'] },
-    { spanish: 'Esos son nuestros amigos', english: ['those are our friends'] },
+    { spanish: 'ELLOS NO SON TUS PADRES', english: ['they are not your parents', "they aren't your parents", "they're not your parents"] },
+    { spanish: 'ELLA NO ES ALTA (TALL)', english: ['she is not tall', "she isn't tall", "she's not tall"] },
+    { spanish: 'ÉL ES JHON', english: ['he is john', "he's john", 'he is jhon', "he's jhon"] },
+    { spanish: 'NOSOTROS NO ESTAMOS OCUPADOS (BUSY)', english: ['we are not busy', "we aren't busy", "we're not busy"] },
+    { spanish: '¿ESTÁS LIBRE? (FREE)', english: ['are you free?'] },
+    { spanish: 'ELLOS NO ESTÁN EN CASA (AT HOME)', english: ['they are not at home', "they aren't at home", "they're not at home"] },
+    { spanish: '¿ELLA ES TU PRIMA? (COUSIN)', english: ['is she your cousin?'] },
+    { spanish: '¿ELLOS ESTÁN CASADOS? (MARRIED)', english: ['are they married?'] },
+    { spanish: 'ELLOS ESTÁN EN EL TRABAJO (AT WORK)', english: ['they are at work', "they're at work"] },
+    { spanish: 'NOSOTROS NO SOMOS ESTUDIANTES (STUDENTS)', english: ['we are not students', "we aren't students", "we're not students"] },
+    { spanish: '¿ELLOS SON TUS PRIMOS? (COUSINS)', english: ['are they your cousins?'] },
+    { spanish: '¿TU MAMA ES ENFERMERA? (NURSE)', english: ['is your mother a nurse?', 'is your mom a nurse?'] },
 ];
 
 const mixedExercise2Data = [
@@ -220,156 +227,113 @@ const TipContent = () => (
     </Card>
 );
 
-const MemoryGame = ({ data, onComplete }: { data: { spanish: string; english: string; }[], onComplete: () => void }) => {
-    const [cards, setCards] = useState<any[]>([]);
-    const [flippedIndices, setFlippedIndices] = useState<number[]>([]);
-    const [matchedPairIds, setMatchedPairIds] = useState<number[]>([]);
-    const [isChecking, setIsChecking] = useState(false);
-    const [streak, setStreak] = useState(0);
-    const [isClient, setIsClient] = useState(false);
+const SimpleExercise = ({ title, exerciseData, onComplete }: { title: string; exerciseData: { spanish: string, english: string[] }[], onComplete: () => void }) => {
+    const { toast } = useToast();
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [userAnswers, setUserAnswers] = useState<string[]>(Array(exerciseData.length).fill(''));
+    const [validationStates, setValidationStates] = useState<('correct' | 'incorrect' | 'unchecked')[]>(Array(exerciseData.length).fill('unchecked'));
+    const [showCompletionMessage, setShowCompletionMessage] = useState(false);
 
     useEffect(() => {
-        setIsClient(true);
-    }, []);
+        setUserAnswers(Array(exerciseData.length).fill(''));
+        setValidationStates(Array(exerciseData.length).fill('unchecked'));
+        setCurrentIndex(0);
+        setShowCompletionMessage(false);
+    }, [exerciseData]);
 
-    const initializeGame = React.useCallback(() => {
-        const gameCards = data.flatMap((pair, index) => [
-            { id: index * 2, pairId: index, text: pair.english },
-            { id: index * 2 + 1, pairId: index, text: pair.spanish },
-        ]).sort(() => Math.random() - 0.5);
-        
-        setCards(gameCards);
-        setFlippedIndices([]);
-        setMatchedPairIds([]);
-        setIsChecking(false);
-        setStreak(0);
-    }, [data]);
+    const currentPrompt = exerciseData[currentIndex];
 
-    useEffect(() => {
-        if (isClient) {
-            initializeGame();
+    const handleAnswerChange = (value: string) => {
+        const newAnswers = [...userAnswers];
+        newAnswers[currentIndex] = value;
+        setUserAnswers(newAnswers);
+
+        if (validationStates[currentIndex] !== 'unchecked') {
+            const newValidationStates = [...validationStates];
+            newValidationStates[currentIndex] = 'unchecked';
+            setValidationStates(newValidationStates);
         }
-    }, [isClient, initializeGame]);
+    };
     
-    useEffect(() => {
-        if (flippedIndices.length === 2) {
-            setIsChecking(true);
-            const [firstIndex, secondIndex] = flippedIndices;
-            const isMatch = cards[firstIndex].pairId === cards[secondIndex].pairId;
+    const handleCheck = () => {
+        const userAnswer = userAnswers[currentIndex].trim().toLowerCase().replace(/[.?,]/g, '');
+        const isCorrect = currentPrompt.english.some(ans => ans.toLowerCase().replace(/[.?,]/g, '') === userAnswer);
 
-            if (isMatch) {
-                setMatchedPairIds(prev => [...prev, cards[firstIndex].pairId]);
-                setStreak(prev => prev + 1);
-                setFlippedIndices([]);
-                setIsChecking(false);
+        const newValidationStates = [...validationStates];
+        newValidationStates[currentIndex] = isCorrect ? 'correct' : 'incorrect';
+        setValidationStates(newValidationStates);
+
+        if (isCorrect) {
+            toast({ title: '¡Correcto!' });
+        } else {
+            toast({ variant: 'destructive', title: 'Incorrecto' });
+        }
+    };
+    
+    const handleNext = () => {
+        if (currentIndex < exerciseData.length - 1) {
+            setCurrentIndex(prev => prev + 1);
+        } else {
+            const allCorrect = validationStates.every(s => s === 'correct');
+            if (allCorrect) {
+                setShowCompletionMessage(true);
+                onComplete();
             } else {
-                setStreak(0);
-                setTimeout(() => {
-                    setFlippedIndices([]);
-                    setIsChecking(false);
-                }, 800);
+                toast({ variant: 'destructive', title: 'Revisa tus respuestas', description: 'Debes completar todos los ejercicios correctamente.' });
             }
         }
-    }, [flippedIndices, cards]);
-
-    const isGameComplete = matchedPairIds.length === data.length;
-
-    useEffect(() => {
-        if (isGameComplete) {
-            onComplete();
-        }
-    }, [isGameComplete, onComplete]);
-
-    const handleCardClick = (index: number) => {
-        if (isChecking || flippedIndices.length >= 2 || flippedIndices.includes(index) || matchedPairIds.includes(cards[index].pairId)) {
-            return;
-        }
-        setFlippedIndices(prev => [...prev, index]);
     };
 
-    if (!isClient) {
+    if (showCompletionMessage) {
         return (
-            <Card>
-                <CardHeader>
-                    <CardTitle>Juego de Memoria: Saludos y Despedidas</CardTitle>
-                </CardHeader>
-                <CardContent className="flex justify-center items-center h-48">
-                    <Loader2 className="h-8 w-8 animate-spin" />
+            <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                <CardContent className="p-6 text-center flex flex-col items-center justify-center min-h-[300px]">
+                    <Trophy className="h-16 w-16 text-yellow-400 mb-4" />
+                    <h2 className="text-3xl font-bold">¡Ejercicio Completado!</h2>
                 </CardContent>
             </Card>
         );
     }
 
     return (
-        <Card>
+        <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
             <CardHeader>
-                <CardTitle>Juego de Memoria: Saludos y Despedidas</CardTitle>
-                <div className="flex justify-between items-center pt-2">
-                    <Button size="icon" variant="ghost" onClick={initializeGame}><RefreshCw className="h-5 w-5" /></Button>
-                    <div className="flex items-center gap-2 text-orange-500 font-bold"><Flame className="h-5 w-5" /><span>{streak}</span></div>
+                <CardTitle>{title}</CardTitle>
+                <div className="flex items-center justify-start flex-wrap gap-2 pt-4">
+                    {exerciseData.map((_, index) => (
+                        <button
+                            key={index}
+                            onClick={() => setCurrentIndex(index)}
+                            className={cn(
+                                "h-8 w-8 rounded-full flex items-center justify-center font-bold border-2 transition-all",
+                                currentIndex === index ? "border-primary ring-2 ring-primary" : "border-muted-foreground/50",
+                                validationStates[index] === 'correct' && 'bg-green-500/20 border-green-500 text-green-700',
+                                validationStates[index] === 'incorrect' && 'bg-red-500/20 border-destructive text-destructive',
+                            )}
+                        >
+                            {index + 1}
+                        </button>
+                    ))}
                 </div>
             </CardHeader>
-            <CardContent>
-                {isGameComplete ? (
-                     <div className="text-center p-8 flex flex-col items-center"><Trophy className="h-16 w-16 text-yellow-400 mb-4" /><h2 className="text-2xl font-bold">¡Juego Completado!</h2></div>
-                ) : (
-                    <div className="grid grid-cols-4 gap-2">
-                        {cards.map((card, index) => {
-                            const isFlipped = flippedIndices.includes(index);
-                            const isMatched = matchedPairIds.includes(card.pairId);
-                            return (
-                                <Card key={card.id} onClick={() => handleCardClick(index)}
-                                    className={cn("flex items-center justify-center aspect-square cursor-pointer", isFlipped || isMatched ? "bg-card border-primary" : "bg-secondary", isMatched && "border-green-500")}>
-                                    <CardContent className="p-1 text-center">
-                                        {isFlipped || isMatched ? <span className="text-sm font-bold">{card.text}</span> : <BrainCircuit className="h-5 w-5 text-primary/50" />}
-                                    </CardContent>
-                                </Card>
-                            )
-                        })}
-                    </div>
-                )}
-            </CardContent>
-        </Card>
-    );
-};
-
-type ValidationStatus = 'correct' | 'incorrect' | 'unchecked';
-
-const SimpleExercise = ({ title, exerciseData, onComplete }: { title: string; exerciseData: { spanish: string, english: string[] }[], onComplete: () => void }) => {
-    const { toast } = useToast();
-    const [currentIndex, setCurrentIndex] = useState(0);
-    const [userAnswer, setUserAnswer] = useState('');
-    const [validation, setValidation] = useState<'correct' | 'incorrect' | 'unchecked'>('unchecked');
-
-    const handleCheck = () => {
-        const correctAnswers = exerciseData[currentIndex].english.map(ans => ans.toLowerCase().replace(/[.?,]/g, ''));
-        const input = userAnswer.trim().toLowerCase().replace(/[.?,]/g, '');
-        const isCorrect = correctAnswers.includes(input);
-        setValidation(isCorrect ? 'correct' : 'incorrect');
-        if (isCorrect) toast({ title: '¡Correcto!' });
-        else toast({ variant: 'destructive', title: 'Incorrecto' });
-    };
-
-    const handleNext = () => {
-        if (currentIndex < exerciseData.length - 1) {
-            setCurrentIndex(prev => prev + 1);
-            setUserAnswer('');
-            setValidation('unchecked');
-        } else {
-            onComplete();
-        }
-    };
-
-    return (
-        <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-            <CardHeader><CardTitle>{title}</CardTitle></CardHeader>
             <CardContent className="space-y-4">
-                <p className="text-lg font-medium">Traduce: "{exerciseData[currentIndex].spanish}"</p>
-                <Input value={userAnswer} onChange={e => setUserAnswer(e.target.value)} className={cn(validation === 'correct' && 'border-green-500', validation === 'incorrect' && 'border-destructive')} />
+                <p className="text-lg font-medium">Traduce: "{currentPrompt?.spanish}"</p>
+                <Input 
+                    value={userAnswers[currentIndex]} 
+                    onChange={e => handleAnswerChange(e.target.value)} 
+                    className={cn(
+                        validationStates[currentIndex] === 'correct' && 'border-green-500 focus-visible:ring-green-500', 
+                        validationStates[currentIndex] === 'incorrect' && 'border-destructive focus-visible:ring-destructive'
+                    )} 
+                    autoComplete="off"
+                />
             </CardContent>
             <CardFooter className="justify-between">
                 <Button onClick={handleCheck}>Verificar</Button>
-                <Button onClick={handleNext} disabled={validation !== 'correct'}>Siguiente</Button>
+                <Button onClick={handleNext} disabled={validationStates[currentIndex] !== 'correct'}>
+                    {currentIndex === exerciseData.length - 1 ? 'Finalizar' : 'Siguiente'}
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
             </CardFooter>
         </Card>
     );
@@ -589,6 +553,7 @@ const CountriesExercise = ({ onComplete }: { onComplete: () => void }) => {
                                             onChange={e => handleInputChange(index, 'country', e.target.value)} 
                                             className={cn(getInputClass(validation[index].country))} 
                                             placeholder="..."
+                                            autoComplete="off"
                                         />
                                     </TableCell>
                                     <TableCell>
@@ -597,6 +562,7 @@ const CountriesExercise = ({ onComplete }: { onComplete: () => void }) => {
                                             onChange={e => handleInputChange(index, 'nationality', e.target.value)} 
                                             className={cn(getInputClass(validation[index].nationality))} 
                                             placeholder="..."
+                                            autoComplete="off"
                                         />
                                     </TableCell>
                                     <TableCell>
@@ -605,6 +571,7 @@ const CountriesExercise = ({ onComplete }: { onComplete: () => void }) => {
                                             onChange={e => handleInputChange(index, 'language', e.target.value)} 
                                             className={cn(getInputClass(validation[index].language))} 
                                             placeholder="..."
+                                            autoComplete="off"
                                         />
                                     </TableCell>
                                 </TableRow>
