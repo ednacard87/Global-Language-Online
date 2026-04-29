@@ -2,17 +2,31 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import Image from 'next/image';
+import {
+  BookOpen,
+  PenSquare,
+  Lock,
+  GraduationCap,
+  Languages,
+  BrainCircuit,
+  CheckCircle,
+  Lightbulb,
+  Clock,
+} from 'lucide-react';
+import { DashboardHeader } from '@/components/dashboard/header';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
-import { BookOpen, PenSquare, Lock, Star, GraduationCap, Languages, BrainCircuit, CheckCircle, Lightbulb } from 'lucide-react';
-import { useTranslation } from '@/context/language-context';
-import { useToast } from "@/hooks/use-toast";
-import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
-import { doc } from 'firebase/firestore';
 import { SpellingExercise, type SpellingExerciseKey } from '@/components/dashboard/spelling-exercise';
-import { getNumbersSpellingPathData, type SpellingPathItem } from '@/lib/course-data';
-import { Progress } from "@/components/ui/progress";
 import { TranslationExercise } from '@/components/dashboard/translation-exercise';
+import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/use-toast';
+import { useUser, useFirestore, addDocumentNonBlocking, updateDocumentNonBlocking, useDoc, useMemoFirebase } from '@/firebase';
+import { collection, doc } from 'firebase/firestore';
+import { useTranslation } from '@/context/language-context';
+import { getIntro1PathData, getNumbersSpellingPathData, type SpellingPathItem } from '@/lib/course-data';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { AlphabetGrid } from '@/components/kids/alphabet-grid';
 import { NumbersGrid } from '@/components/kids/numbers-grid';
 import { AbcMemoryGame } from '@/components/kids/exercises/abc-memory-game';
@@ -20,7 +34,6 @@ import { NumbersMemoryGame } from '@/components/kids/exercises/numbers-memory-ga
 import { ToBeMemoryGame } from '@/components/kids/exercises/tobe-memory-game';
 import { AbcPronunciationExercise } from '@/components/kids/exercises/abc-pronunciation-exercise';
 import { PossessivesMemoryGame } from '@/components/kids/exercises/possessives-memory-game';
-import { DashboardHeader } from '@/components/dashboard/header';
 
 const verbToBeData = [
     { ser: 'Yo soy', tobe: 'I am', estar: 'Yo estoy' },
@@ -44,30 +57,22 @@ const possessivesData = [
     { english: 'Their', spanish: 'Su / Sus (de ellos/as)' },
 ];
 
+const demonstrativesData = [
+    { english: 'This', spanish: 'Este - Esta', usage: 'Singular, cerca' },
+    { english: 'These', spanish: 'Estos - Estas', usage: 'Plural, cerca' },
+    { english: 'That', spanish: 'Ese - Esa', usage: 'Singular, lejos' },
+    { english: 'Those', spanish: 'Esos - Esas', usage: 'Plural, lejos' },
+];
+
 type Topic = {
-  key: string;
-  name: string;
-  icon: React.ElementType;
-  status: 'locked' | 'active' | 'completed';
+    key: string;
+    name: string;
+    icon: React.ElementType;
+    status: 'locked' | 'active' | 'completed';
 };
 
 const ICONS = { locked: Lock, active: BookOpen, completed: CheckCircle };
 const progressStorageVersion = "kids_intro1_path_v2";
-
-const initialLearningPathData: Omit<Topic, 'status'>[] = [
-    { key: 'abc', name: 'ABC', icon: BookOpen },
-    { key: 'abc-exercise', name: 'Ejercicio de ABC', icon: PenSquare },
-    { key: 'abc-memory', name: 'Memory (ABC)', icon: BrainCircuit },
-    { key: 'numbers', name: 'Numeros', icon: GraduationCap },
-    { key: 'memory1', name: 'Memory (Numeros)', icon: BrainCircuit },
-    { key: 'numbers-exercise', name: 'Ejercicios de Numeros', icon: PenSquare },
-    { key: 'tobe', name: 'Pronombres + To be', icon: Languages },
-    { key: 'memory2', name: 'Memory (To be)', icon: BrainCircuit },
-    { key: 'tobe-exercise', name: 'To be 1', icon: PenSquare },
-    { key: 'tobe-exercise-1', name: 'Ejercicio To be 1', icon: PenSquare },
-    { key: 'possessives', name: 'Posesivos', icon: Star },
-    { key: 'memory-possessives', name: 'Memory (posesivos)', icon: BrainCircuit },
-];
 
 interface Student {
     role?: 'admin' | 'student';
@@ -80,6 +85,7 @@ export default function KidsIntro1Page() {
   const { t } = useTranslation();
   const { toast } = useToast();
   const [selectedTopic, setSelectedTopic] = useState<string>('abc');
+  const [selectedTopicKey, setSelectedTopicKey] = useState<string | null>(null);
   const [highlightedLetter, setHighlightedLetter] = useState<string | null>(null);
   const [highlightedNumber, setHighlightedNumber] = useState<string | null>(null);
 
@@ -91,7 +97,8 @@ export default function KidsIntro1Page() {
 
   const { user } = useUser();
   const firestore = useFirestore();
-
+  const guideFishImage = PlaceHolderImages.find(p => p.id === 'guide-fish');
+  
   const studentDocRef = useMemoFirebase(
     () => (user ? doc(firestore, 'students', user.uid) : null),
     [firestore, user]
@@ -103,12 +110,9 @@ export default function KidsIntro1Page() {
     return studentProfile?.role === 'admin' || user.email === 'ednacard87@gmail.com';
   }, [user, studentProfile]);
 
-  const [learningPath, setLearningPath] = useState<Topic[]>(
-    initialLearningPathData.map((item, index) => ({
-      ...item,
-      status: index === 0 ? 'active' : 'locked',
-    }))
-  );
+  const [learningPath, setLearningPath] = useState<Topic[]>([]);
+
+  const initialLearningPathData = useMemo(() => getIntro1PathData(t), [t]);
 
   const [previousPath, setPreviousPath] = useState<Topic[] | null>(null);
 
@@ -122,7 +126,7 @@ export default function KidsIntro1Page() {
     let path = initialLearningPathData.map((item, index) => ({
       ...item,
       status: index === 0 ? 'active' : 'locked',
-    }));
+    })) as Topic[];
 
     if (isAdmin) {
       path.forEach(topic => { topic.status = 'completed' });
@@ -136,14 +140,15 @@ export default function KidsIntro1Page() {
     }
     setLearningPath(path);
     const firstActive = path.find(p => p.status === 'active');
-    setSelectedTopic(firstActive?.key || path[0].key);
+    setSelectedTopic(firstActive?.name || path[0].name);
+    setSelectedTopicKey(firstActive?.key || path[0].key);
 
     const fullNumbersPath = getNumbersSpellingPathData(t);
     const simplifiedNumbersPath = fullNumbersPath.filter(
         item => item.key === 'numbers1' || item.key === 'numbers2'
     );
     setNumbersSpellingPath(isAdmin ? simplifiedNumbersPath.map(i => ({...i, status: 'active'})) : simplifiedNumbersPath);
-  }, [isAdmin, t, isClient, studentProfile, isProfileLoading]);
+  }, [isAdmin, t, isClient, studentProfile, isProfileLoading, initialLearningPathData]);
   
   const progress = useMemo(() => {
     const completedCount = learningPath.filter(t => t.status === 'completed').length;
@@ -173,7 +178,7 @@ export default function KidsIntro1Page() {
   }, [learningPath, progress, isAdmin, isClient, studentDocRef, isProfileLoading]);
 
   useEffect(() => {
-    if (previousPath) {
+    if (previousPath && !isAdmin) {
       const newlyUnlocked = learningPath.find((newItem, index) => {
         const oldItem = previousPath[index];
         return oldItem && oldItem.status === 'locked' && newItem.status === 'active';
@@ -187,7 +192,7 @@ export default function KidsIntro1Page() {
       }
     }
     setPreviousPath(learningPath);
-  }, [learningPath, previousPath, toast]);
+  }, [learningPath, previousPath, toast, isAdmin]);
 
   useEffect(() => {
     if (!topicToComplete) return;
@@ -244,35 +249,30 @@ export default function KidsIntro1Page() {
       }
   };
 
-  const handleTopicSelect = (topicKey: string) => {
-    const topic = learningPath.find(t => t.key === topicKey);
-    if (topic?.status === 'locked' && !isAdmin) {
-        return;
-    }
-    
-    setSelectedTopic(topicKey);
+  const handleTopicSelect = (topicName: string) => {
+    const currentItem = learningPath.find(item => item.name === topicName);
+    if (!isAdmin && (!currentItem || currentItem.status === 'locked')) return;
+
+    setSelectedTopic(topicName);
+    setSelectedTopicKey(currentItem!.key);
     setShowCongratulations(false);
 
-    if(topicKey === 'numbers-exercise' && !selectedSpellingTopic) {
+    if (currentItem!.key === 'numbers-exercise' && !selectedSpellingTopic) {
         setSelectedSpellingTopic('numbers1');
     }
 
-    const isSimpleView = ['abc', 'numbers', 'tobe', 'possessives', 'tobe-exercise'].includes(topicKey);
-    if (isSimpleView) {
-        setTopicToComplete(topicKey);
+    const viewOnlyTopics = ['abc', 'numbers', 'tobe', 'possessives', 'tobe-exercise', 'demonstratives'];
+    if (viewOnlyTopics.includes(currentItem!.key)) {
+        setTopicToComplete(currentItem!.key);
     }
   };
 
   const renderContent = () => {
-    const topic = learningPath.find(t => t.key === selectedTopic);
-    
-    switch (selectedTopic) {
+    switch (selectedTopicKey) {
         case 'abc':
             return (
                 <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-                    <CardHeader>
-                        <CardTitle>ABC</CardTitle>
-                    </CardHeader>
+                    <CardHeader><CardTitle>{t('intro1Page.abc')}</CardTitle></CardHeader>
                     <CardContent>
                         <AlphabetGrid 
                             highlightedItem={highlightedLetter}
@@ -281,12 +281,24 @@ export default function KidsIntro1Page() {
                     </CardContent>
                 </Card>
             );
-        case 'abc-memory':
-            return <AbcMemoryGame onGameComplete={() => setTopicToComplete('abc-memory')} />;
         case 'abc-exercise':
             return <AbcPronunciationExercise onGameComplete={() => setTopicToComplete('abc-exercise')} />;
+        case 'abc-memory':
+            return <AbcMemoryGame onGameComplete={() => setTopicToComplete('abc-memory')} />;
+        case 'numbers':
+            return (
+                <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                    <CardHeader><CardTitle>{t('intro1Page.numbers')}</CardTitle></CardHeader>
+                    <CardContent>
+                        <NumbersGrid 
+                            highlightedItem={highlightedNumber}
+                            onHighlight={setHighlightedNumber}
+                        />
+                    </CardContent>
+                </Card>
+            );
         case 'memory1':
-            return <NumbersMemoryGame onGameComplete={() => setTopicToComplete('memory1')} />;
+             return <NumbersMemoryGame onGameComplete={() => setTopicToComplete('memory1')} />;
         case 'numbers-exercise':
             return (
                 <div className="grid gap-8 md:grid-cols-12">
@@ -299,13 +311,13 @@ export default function KidsIntro1Page() {
                                 <CardContent>
                                     <nav>
                                         <ul className="space-y-1">
-                                            {numbersSpellingPath.map((item) => {
+                                            {numbersSpellingPath.map((item, index) => {
                                                 const Icon = ICONS[item.status as keyof typeof ICONS];
                                                 const isLocked = item.status === 'locked';
                                                 const isSelected = selectedSpellingTopic === item.key;
                                                 const isActive = item.status === 'active';
                                                 return (
-                                                    <li key={item.key} onClick={() => handleSpellingTopicSelect(item.key as SpellingExerciseKey)} className={cn(!isLocked || isAdmin ? "cursor-pointer" : "cursor-not-allowed")}>
+                                                    <li key={index} onClick={() => handleSpellingTopicSelect(item.key as SpellingExerciseKey)} className={cn(!isLocked || isAdmin ? "cursor-pointer" : "cursor-not-allowed")}>
                                                         <div className={cn(
                                                             "flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors",
                                                             (!isLocked || isAdmin) && "hover:bg-muted",
@@ -341,25 +353,11 @@ export default function KidsIntro1Page() {
                     </div>
                 </div>
             );
-        case 'numbers':
-            return (
-                <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-                    <CardHeader>
-                        <CardTitle>Numeros</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <NumbersGrid 
-                            highlightedItem={highlightedNumber}
-                            onHighlight={setHighlightedNumber}
-                        />
-                    </CardContent>
-                </Card>
-            );
         case 'tobe':
             return (
                 <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
                     <CardHeader>
-                        <CardTitle>Pronombres + To be</CardTitle>
+                        <CardTitle>{t('intro1Page.pronouns')}</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="grid grid-cols-3 gap-x-4 gap-y-2 text-lg">
@@ -380,31 +378,18 @@ export default function KidsIntro1Page() {
         case 'memory2':
             return <ToBeMemoryGame onGameComplete={() => setTopicToComplete('memory2')} />;
         case 'tobe-exercise':
-             return (
+            return (
                 <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
                     <CardHeader>
-                        <CardTitle>To be 1</CardTitle>
-                        <CardDescription className="pt-2 text-lg font-semibold flex items-center gap-2">
-                            <Lightbulb className="h-5 w-5 text-yellow-400 animate-pulse" />
-                            <span className="bg-gradient-to-r from-brand-purple to-brand-teal text-transparent bg-clip-text">
-                                {t('intro1Page.verbtobeStructureHint')}
-                            </span>
-                        </CardDescription>
+                        <CardTitle>{t('intro1Page.verbtobe1')}</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-6">
-                        <div>
+                         <div>
                             <h3 className="text-xl font-semibold mb-2">{t('intro1Page.verbtobeStructureTitle')}</h3>
                             <div className="space-y-2 p-4 bg-muted rounded-lg font-mono text-base">
                                 <p><span className="font-bold text-lg text-green-500 mr-2">(+)</span> pronoun + to be + complement</p>
                                 <p><span className="font-bold text-lg text-red-500 mr-2">(-)</span> pronoun + to be + not + complement</p>
                                 <p><span className="font-bold text-lg text-blue-500 mr-2">(?)</span> to be + pronoun + complement ?</p>
-                            </div>
-                        </div>
-                        <div>
-                            <h3 className="text-xl font-semibold mb-2">{t('intro1Page.shortAnswersTitle')}</h3>
-                            <div className="space-y-2 p-4 bg-muted rounded-lg font-mono text-base">
-                                <p><span className="font-bold text-lg text-green-500 mr-2">(+A)</span> Yes, pronoun + to be</p>
-                                <p><span className="font-bold text-lg text-red-500 mr-2">(-A)</span> No, pronoun + to be + not</p>
                             </div>
                         </div>
                         <div>
@@ -414,21 +399,18 @@ export default function KidsIntro1Page() {
                                 <p><span className="font-bold text-lg text-green-500 mr-2">(+)</span> They are students</p>
                                 <p><span className="font-bold text-lg text-red-500 mr-2">(-)</span> They are not students</p>
                                 <p><span className="font-bold text-lg text-blue-500 mr-2">(?)</span> are they students?</p>
-                                <div className="border-t my-2 border-border/50" />
-                                <p><span className="font-bold text-lg text-green-500 mr-2">(+A)</span> Yes, they are</p>
-                                <p><span className="font-bold text-lg text-red-500 mr-2">(-A)</span> No, they are not</p>
                             </div>
                         </div>
                     </CardContent>
                 </Card>
             );
         case 'tobe-exercise-1':
-            return <TranslationExercise exerciseKey="exercises1" onComplete={() => setTopicToComplete('tobe-exercise-1')} />;
+            return <TranslationExercise exerciseKey="exercises1" onComplete={() => setTopicToComplete('tobe-exercise-1')} formType="full" />;
         case 'possessives':
             return (
                 <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
                     <CardHeader>
-                        <CardTitle>Posesivos</CardTitle>
+                        <CardTitle>{t('intro1Page.possessives')}</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-lg">
@@ -448,71 +430,90 @@ export default function KidsIntro1Page() {
             return <PossessivesMemoryGame onGameComplete={() => setTopicToComplete('memory-possessives')} />;
         default:
             return (
-              <Card className="shadow-soft rounded-lg border-2 border-brand-purple min-h-[500px]">
-                <CardHeader>
-                  <CardTitle>{topic?.name}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p>Contenido para {topic?.name} vendrá aquí.</p>
-                </CardContent>
-              </Card>
+                <div className="flex flex-col items-center">
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                        <CardHeader className="text-center">
+                            <CardTitle className="text-3xl">{t('intro1Page.welcomeTitle')}</CardTitle>
+                            <CardDescription className="text-base">{t('intro1Page.welcomeDescription')}</CardDescription>
+                        </CardHeader>
+                        <CardContent className="text-center px-6 pb-6">
+                            <p className="pt-4 text-lg">{t('intro1Page.welcomeHint')}</p>
+                        </CardContent>
+                    </Card>
+                    <div className="flex items-center justify-center pt-8 gap-2">
+                        <div className="relative bg-card p-4 rounded-lg shadow-soft text-center text-base max-w-[220px] border-2 border-brand-purple">
+                            <p className="font-bold text-lg bg-gradient-to-r from-brand-purple to-brand-teal text-transparent bg-clip-text">{t('intro1Page.penguinHint')}</p>
+                            <div className="absolute left-full top-1/2 -translate-y-1/2 w-0 h-0 border-t-8 border-t-transparent border-b-8 border-b-transparent border-l-8 border-l-card" />
+                        </div>
+                        {guideFishImage && <Image
+                            src={guideFishImage.imageUrl}
+                            alt={guideFishImage.description}
+                            width={191}
+                            height={191}
+                            className="rounded-lg object-cover"
+                            data-ai-hint={guideFishImage.imageHint}
+                        />}
+                    </div>
+                </div>
             );
     }
   };
 
   return (
-    <div className="flex w-full flex-col min-h-screen">
+    <div className="flex w-full flex-col min-h-screen kids-page-container">
       <DashboardHeader />
       <main className="flex-1 p-4 md:p-8">
         <div className="max-w-7xl mx-auto">
-          <div className="mb-8">
-            <Link href="/intro" className="hover:underline text-sm text-muted-foreground">
-              {t('kidsPage.backToKidsCourse')}
-            </Link>
-            <h1 className="text-4xl font-bold dark:text-primary">{t('kidsPage.intro1AdventureTitle')}</h1>
-          </div>
-          <div className="grid gap-8 md:grid-cols-12">
-            <div className="md:col-span-3">
-              <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple">
-                <CardHeader><CardTitle>Aventura</CardTitle></CardHeader>
-                <CardContent>
-                  <nav>
-                    <ul className="space-y-1">
-                      {learningPath.map((item) => {
-                        const isLocked = item.status === 'locked';
-                        const isSelected = selectedTopic === item.key;
-                        const StatusIcon = ICONS[item.status];
-                        return(
-                            <li key={item.key} onClick={() => handleTopicSelect(item.key)}
-                              className={cn(
-                                'flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors',
-                                isLocked && !isAdmin ? 'cursor-not-allowed text-muted-foreground/50' : 'cursor-pointer hover:bg-muted',
-                                isSelected && (!isLocked || isAdmin) && 'bg-muted text-primary font-semibold'
-                              )}
-                            >
-                                <div className="flex items-center gap-3">
-                                    <StatusIcon className="h-5 w-5" />
-                                    <span>{item.name}</span>
-                                </div>
-                            </li>
-                        );
-                      })}
-                    </ul>
-                  </nav>
-                  <div className="mt-6 pt-6 border-t">
-                      <div className="flex justify-between items-center text-sm font-medium text-muted-foreground mb-2">
-                          <span>Progreso de la Aventura</span>
-                          <span className="font-bold text-foreground">{progress}%</span>
-                      </div>
-                      <Progress value={progress} className="h-4" />
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+            <div className="grid gap-8 md:grid-cols-12">
             <div className="md:col-span-9">
-              {renderContent()}
+                <div className="mb-8">
+                    <Link href="/kids/intro" className="hover:underline text-sm text-muted-foreground">
+                        {t('kidsPage.backToKidsCourse')}
+                    </Link>
+                    <h1 className="text-4xl font-bold dark:text-primary">{t('kidsPage.intro1AdventureTitle')}</h1>
+                </div>
+                {renderContent()}
             </div>
-          </div>
+            <div className="md:col-span-3">
+                <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple">
+                <CardHeader>
+                    <CardTitle>{t('intro1Page.learningPath')}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <nav>
+                        <ul className="space-y-1">
+                        {learningPath.map((item) => {
+                            const Icon = ICONS[item.status as keyof typeof ICONS];
+                            const isLocked = item.status === 'locked';
+                            const isSelected = selectedTopic === item.name;
+                            const isActive = item.status === 'active';
+                            
+                            return (
+                                <li key={item.key} onClick={() => handleTopicSelect(item.name)} className={cn(!isLocked || isAdmin ? "cursor-pointer" : "cursor-not-allowed")}>
+                                    <div className={cn(
+                                        "flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors",
+                                        (!isLocked || isAdmin) && "hover:bg-muted",
+                                        isSelected ? "bg-muted text-primary font-semibold" : (isActive ? "text-foreground" : "text-muted-foreground"),
+                                    )}>
+                                        <Icon className={cn("h-5 w-5", isLocked && !isAdmin ? "text-yellow-500" : (item.status === 'completed' || isSelected || isActive) ? "text-primary" : "text-muted-foreground")} />
+                                        <span>{item.name}</span>
+                                    </div>
+                                </li>
+                            );
+                        })}
+                        </ul>
+                    </nav>
+                    <div className="mt-6">
+                        <div className="flex justify-between items-center text-sm font-medium text-muted-foreground mb-2">
+                            <span>{t('intro1Page.progress')}</span>
+                            <span className="font-bold text-foreground">{progress}%</span>
+                        </div>
+                        <Progress value={progress} className="h-4" />
+                    </div>
+                </CardContent>
+                </Card>
+            </div>
+            </div>
         </div>
       </main>
     </div>
