@@ -8,7 +8,7 @@ import {
   PenSquare,
   Lock,
   GraduationCap,
-  Lightbulb,
+  BrainCircuit,
   Hand,
   MessageSquare,
   Clock,
@@ -16,7 +16,6 @@ import {
   Trophy,
   ArrowLeft,
   ArrowRight,
-  BrainCircuit,
   RefreshCw,
   Flame,
   Loader2,
@@ -99,12 +98,21 @@ const mixedExercise2Data = [
 ];
 
 const countriesExerciseData = [
-    { pais: 'Estados Unidos', country: 'United States', nationality: 'American' },
-    { pais: 'Canadá', country: 'Canada', nationality: 'Canadian' },
-    { pais: 'México', country: 'Mexico', nationality: 'Mexican' },
-    { pais: 'Brasil', country: 'Brazil', nationality: 'Brazilian' },
-    { pais: 'Inglaterra', country: 'England', nationality: 'English' },
-    { pais: 'Francia', country: 'France', nationality: 'French' },
+    { pais: 'Canadá', country: 'Canada', nationality: 'Canadian', language: 'English' },
+    { pais: 'Estados Unidos', country: 'United States', nationality: 'American', language: 'English' },
+    { pais: 'México', country: 'Mexico', nationality: 'Mexican', language: 'Spanish' },
+    { pais: 'Colombia', country: 'Colombia', nationality: 'Colombian', language: 'Spanish' },
+    { pais: 'Perú', country: 'Peru', nationality: 'Peruvian', language: 'Spanish' },
+    { pais: 'Brasil', country: 'Brazil', nationality: 'Brazilian', language: 'Portuguese' },
+    { pais: 'Portugal', country: 'Portugal', nationality: 'Portuguese', language: 'Portuguese' },
+    { pais: 'España', country: 'Spain', nationality: 'Spanish', language: 'Spanish' },
+    { pais: 'Francia', country: 'France', nationality: 'French', language: 'French' },
+    { pais: 'Italia', country: 'Italy', nationality: 'Italian', language: 'Italian' },
+    { pais: 'Rusia', country: 'Russia', nationality: 'Russian', language: 'Russian' },
+    { pais: 'China', country: 'China', nationality: 'Chinese', language: 'Chinese' },
+    { pais: 'Australia', country: 'Australia', nationality: 'Australian', language: 'English' },
+    { pais: 'Holanda', country: 'Netherlands', nationality: 'Dutch', language: 'Dutch' },
+    { pais: 'Venezuela', country: 'Venezuela', nationality: 'Venezuelan', language: 'Spanish' },
 ];
 
 // Components inside the page file
@@ -388,38 +396,117 @@ const MixedExercise = ({ title, data, onComplete }: { title: string, data: { spa
 
 const CountriesExercise = ({ onComplete }: { onComplete: () => void }) => {
     const { toast } = useToast();
-    const [userAnswers, setUserAnswers] = useState<string[]>(Array(countriesExerciseData.length).fill(''));
-    const [validation, setValidation] = useState<ValidationStatus[]>(Array(countriesExerciseData.length).fill('unchecked'));
+    type UserAnswerRow = { country: string; nationality: string; language: string };
+    type ValidationRow = { country: ValidationStatus; nationality: ValidationStatus; language: ValidationStatus };
+
+    const [userAnswers, setUserAnswers] = useState<UserAnswerRow[]>(
+        Array(countriesExerciseData.length).fill({ country: '', nationality: '', language: '' })
+    );
+    const [validation, setValidation] = useState<ValidationRow[]>(
+        Array(countriesExerciseData.length).fill({ country: 'unchecked', nationality: 'unchecked', language: 'unchecked' })
+    );
+
+    const handleInputChange = (index: number, field: keyof UserAnswerRow, value: string) => {
+        const newAnswers = [...userAnswers];
+        newAnswers[index] = { ...newAnswers[index], [field]: value };
+        setUserAnswers(newAnswers);
+
+        if (validation[index][field] !== 'unchecked') {
+            const newValidation = [...validation];
+            newValidation[index] = { ...newValidation[index], [field]: 'unchecked' };
+            setValidation(newValidation);
+        }
+    };
 
     const handleCheck = () => {
         let allCorrect = true;
-        const newValidation = countriesExerciseData.map((item, index) => {
-            const isCorrect = userAnswers[index].trim().toLowerCase() === item.country.toLowerCase();
-            if (!isCorrect) allCorrect = false;
-            return isCorrect ? 'correct' : 'incorrect';
+        const newValidation = countriesExerciseData.map((correctData, index) => {
+            const userAnswer = userAnswers[index];
+            
+            const isCountryCorrect = userAnswer.country.trim().toLowerCase() === correctData.country.toLowerCase();
+            const isNationalityCorrect = userAnswer.nationality.trim().toLowerCase() === correctData.nationality.toLowerCase();
+            const isLanguageCorrect = userAnswer.language.trim().toLowerCase() === correctData.language.toLowerCase();
+
+            if (!isCountryCorrect || !isNationalityCorrect || !isLanguageCorrect) {
+                allCorrect = false;
+            }
+
+            return {
+                country: isCountryCorrect ? 'correct' : 'incorrect',
+                nationality: isNationalityCorrect ? 'correct' : 'incorrect',
+                language: isLanguageCorrect ? 'correct' : 'incorrect',
+            } as ValidationRow;
         });
-        setValidation(newValidation as any);
-        if (allCorrect) onComplete();
-        else toast({ variant: 'destructive', title: 'Algunas respuestas son incorrectas' });
+
+        setValidation(newValidation);
+        if (allCorrect) {
+            toast({ title: '¡Excelente!', description: 'Has completado la tabla correctamente.' });
+            onComplete();
+        } else {
+            toast({ variant: 'destructive', title: 'Algunas respuestas son incorrectas', description: 'Revisa los campos en rojo.' });
+        }
+    };
+
+    const getInputClass = (status: ValidationStatus) => {
+        if (status === 'correct') return 'border-green-500 focus-visible:ring-green-500';
+        if (status === 'incorrect') return 'border-destructive focus-visible:ring-destructive';
+        return '';
     };
 
     return (
         <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-            <CardHeader><CardTitle>Países y Nacionalidades</CardTitle></CardHeader>
+            <CardHeader>
+                <CardTitle>Países y Nacionalidades</CardTitle>
+                <CardDescription>Completa la tabla traduciendo la información al inglés.</CardDescription>
+            </CardHeader>
             <CardContent>
-                <Table>
-                    <TableHeader><TableRow><TableHead>Español</TableHead><TableHead>Inglés (País)</TableHead></TableRow></TableHeader>
-                    <TableBody>
-                        {countriesExerciseData.map((item, index) => (
-                            <TableRow key={index}>
-                                <TableCell>{item.pais}</TableCell>
-                                <TableCell><Input value={userAnswers[index]} onChange={e => { const a = [...userAnswers]; a[index] = e.target.value; setUserAnswers(a); }} className={cn(validation[index] === 'correct' && 'border-green-500', validation[index] === 'incorrect' && 'border-destructive')} /></TableCell>
+                <div className="overflow-x-auto">
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead className="font-bold">PAISES</TableHead>
+                                <TableHead className="font-bold">COUNTRY</TableHead>
+                                <TableHead className="font-bold">NATIONALITY</TableHead>
+                                <TableHead className="font-bold">LANGUAGE</TableHead>
                             </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
+                        </TableHeader>
+                        <TableBody>
+                            {countriesExerciseData.map((item, index) => (
+                                <TableRow key={index}>
+                                    <TableCell className="font-medium">{item.pais}</TableCell>
+                                    <TableCell>
+                                        <Input 
+                                            value={userAnswers[index].country} 
+                                            onChange={e => handleInputChange(index, 'country', e.target.value)} 
+                                            className={cn(getInputClass(validation[index].country))} 
+                                            placeholder="..."
+                                        />
+                                    </TableCell>
+                                    <TableCell>
+                                        <Input 
+                                            value={userAnswers[index].nationality} 
+                                            onChange={e => handleInputChange(index, 'nationality', e.target.value)} 
+                                            className={cn(getInputClass(validation[index].nationality))} 
+                                            placeholder="..."
+                                        />
+                                    </TableCell>
+                                    <TableCell>
+                                        <Input 
+                                            value={userAnswers[index].language} 
+                                            onChange={e => handleInputChange(index, 'language', e.target.value)} 
+                                            className={cn(getInputClass(validation[index].language))} 
+                                            placeholder="..."
+                                        />
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </div>
             </CardContent>
-            <CardFooter><Button onClick={handleCheck}>Verificar</Button></CardFooter>
+            <CardFooter>
+                <Button onClick={handleCheck} className="w-full">Verificar Tabla</Button>
+            </CardFooter>
         </Card>
     );
 };
