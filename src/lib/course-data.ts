@@ -14,14 +14,14 @@ export interface PathItem {
 }
 
 export const englishIntroPathData: PathItem[] = [
-    { type: 'start', icon: Footprints, label: 'dashboard.start' },
-    { type: 'class', icon: BookOpen, label: 'intro1Page.title', href: '/intro/1', storageKey: 'intro1Progress' },
-    { type: 'practice', icon: Puzzle, label: 'introCoursePage.quiz1', href: '/quiz-payment/1', storageKey: 'quiz1Progress' },
-    { type: 'class', icon: BookOpen, label: 'introCoursePage.intro2', href: '/intro/2', storageKey: 'intro2Progress' },
-    { type: 'practice', icon: Puzzle, label: 'introCoursePage.quiz2', href: '/quiz-payment/2', storageKey: 'quiz2Progress' },
-    { type: 'practice', icon: Ear, label: 'introCoursePage.listening', href: '/listening-practice', progress: 0, points: 20, storageKey: 'listeningProgress'},
-    { type: 'practice', icon: Mic, label: 'introCoursePage.speaking', href: '#', progress: 0, points: 20, storageKey: 'speakingProgress'},
-    { type: 'end', icon: Flag, label: 'dashboard.end', href: '/pricing' },
+    { type: 'start', icon: Footprints, label: 'dashboard.start', points: 0 },
+    { type: 'class', icon: BookOpen, label: 'englishIntro.intro1', href: '/intro/1', progress: 0, points: 20, storageKey: 'intro1Progress' },
+    { type: 'practice', icon: Puzzle, label: 'englishIntro.quiz1', href: '/quiz-payment/1', progress: 0, points: 10, className: 'animate-pulse-glow', storageKey: 'quiz1Progress' },
+    { type: 'class', icon: BookOpen, label: 'englishIntro.intro2', href: '/intro/2', storageKey: 'intro2Progress' },
+    { type: 'practice', icon: Puzzle, label: 'englishIntro.quiz2', href: '/quiz-payment/2', progress: 0, points: 10, storageKey: 'quiz2Progress' },
+    { type: 'practice', icon: Ear, label: 'englishIntro.listening', href: '/listening-practice', progress: 0, points: 20, storageKey: 'listeningProgress'},
+    { type: 'practice', icon: Mic, label: 'englishIntro.speaking', href: '#', progress: 0, points: 20, storageKey: 'speakingProgress'},
+    { type: 'end', icon: Flag, label: 'dashboard.end', href: '/pricing', points: 0 },
 ];
 
 export const kidsIntroPathData: PathItem[] = [
@@ -36,13 +36,30 @@ export const kidsIntroPathData: PathItem[] = [
 
 export const espanolIntroPathData: PathItem[] = [
     { type: 'start', icon: Footprints, label: 'dashboard.start' },
-    { type: 'class', icon: BookOpen, label: 'intro1Page.title', href: '/espanol/intro/1', storageKey: 'progress_espanol_intro_1' },
-    { type: 'practice', icon: Puzzle, label: 'introCoursePage.quiz1', href: '#', storageKey: 'progress_es_quiz_1' },
-    { type: 'class', icon: BookOpen, label: 'introCoursePage.intro2', href: '/espanol/intro/2', storageKey: 'progress_espanol_intro_2' },
-    { type: 'practice', icon: Puzzle, label: 'introCoursePage.quiz2', href: '#', storageKey: 'progress_es_quiz_2' },
-    { type: 'practice', icon: Puzzle, label: 'espanolIntroPage.finalTest', href: '#', storageKey: 'progress_es_quiz_final' },
+    { type: 'class', icon: BookOpen, label: 'espanolIntroCourse.intro1', href: '/espanol/intro/1', storageKey: 'progress_espanol_intro_1' },
+    { type: 'practice', icon: Puzzle, label: 'espanolIntroCourse.quiz1', href: '#', storageKey: 'progress_es_quiz_1' },
+    { type: 'class', icon: BookOpen, label: 'espanolIntroCourse.intro2', href: '/espanol/intro/2', storageKey: 'progress_espanol_intro_2' },
+    { type: 'practice', icon: Puzzle, label: 'espanolIntroCourse.quiz2', href: '#', storageKey: 'progress_es_quiz_2' },
+    { type: 'practice', icon: Puzzle, label: 'espanolIntroCourse.finalTest', href: '#', storageKey: 'progress_es_quiz_final' },
     { type: 'end', icon: Flag, label: 'dashboard.finish' }
 ];
+
+export const calculateKidsIntroCourseProgress = (progress: Record<string, number> | undefined) => {
+    if (!progress) return 0;
+    const courseItemsWithPoints = kidsIntroPathData.filter(item => item.storageKey);
+    const totalItems = courseItemsWithPoints.length;
+
+    if (totalItems === 0) {
+        return 0;
+    }
+
+    const completedItems = courseItemsWithPoints.reduce((sum, item) => {
+        const itemProgress = progress[item.storageKey!] || 0;
+        return sum + (itemProgress >= 100 ? 1 : 0);
+    }, 0);
+    
+    return Math.round((completedItems / totalItems) * 100);
+};
 
 export const calculateEspanolIntroProgress = (progress: Record<string, number> | undefined) => {
     if (!progress) return 0;
@@ -61,16 +78,24 @@ export const calculateEspanolIntroProgress = (progress: Record<string, number> |
     return Math.round((completedItems / totalItems) * 100);
 };
 
+export const calculateEnglishIntroCourseProgress = (progress: Record<string, number> | undefined) => {
+    if (!progress) return 0;
+    const courseItemsWithPoints = englishIntroPathData.filter(item => item.points && item.points > 0);
+    const totalPossiblePoints = courseItemsWithPoints.reduce((sum, item) => sum + (item.points || 0), 0);
+    
+    if (totalPossiblePoints === 0) return 0;
 
-export const introPathItemsData: PathItem[] = [
-    {type: 'start', icon: Footprints, label: 'dashboard.start', points: 0},
-    {type: 'class', icon: BookOpen, label: 'intro1Page.title', href: '/intro/1', progress: 0, points: 20, storageKey: 'intro1Progress'},
-    {type: 'practice', icon: Puzzle, label: 'introCoursePage.quiz1', href: '/quiz/1', progress: 0, points: 10, className: 'animate-pulse-glow', storageKey: 'quiz1Progress'},
-    {type: 'practice', icon: Puzzle, label: 'introCoursePage.quiz2', href: '/quiz/2', progress: 0, points: 10, storageKey: 'quiz2Progress'},
-    {type: 'practice', icon: Ear, label: 'introCoursePage.listening', href: '/listening-practice', progress: 0, points: 20, storageKey: 'listeningProgress'},
-    {type: 'practice', icon: Mic, label: 'introCoursePage.speaking', href: '#', progress: 0, points: 20, storageKey: 'speakingProgress'},
-    {type: 'end', icon: Flag, label: 'dashboard.end', href: '/pricing', points: 0},
-];
+    const earnedPoints = courseItemsWithPoints.reduce((sum, item) => {
+        if (item.storageKey && progress[item.storageKey]) {
+            const itemProgress = progress[item.storageKey] || 0;
+            return sum + (itemProgress / 100) * (item.points || 0);
+        }
+        return sum;
+    }, 0);
+    
+    return Math.round(earnedPoints);
+};
+
 
 export type Intro1PathKey = 
   | "abc"
@@ -327,42 +352,6 @@ export const spellingExercisesData: Record<SpellingExerciseKey, SpellingExercise
         ]
     },
 };
-
-
-export const calculateIntroCourseProgress = (progress: Record<string, number> | undefined) => {
-    if (!progress) return 0;
-    const courseItemsWithPoints = kidsIntroPathData.filter(item => item.storageKey);
-    const totalItems = courseItemsWithPoints.length;
-
-    if (totalItems === 0) {
-        return 0;
-    }
-
-    const completedItems = courseItemsWithPoints.reduce((sum, item) => {
-        const itemProgress = progress[item.storageKey!] || 0;
-        return sum + (itemProgress >= 100 ? 1 : 0);
-    }, 0);
-    
-    return Math.round((completedItems / totalItems) * 100);
-};
-
-export const generateStandardCoursePath = (classCount: number, coursePrefix?: string): PathItem[] => {
-    const path: PathItem[] = [
-        { type: 'start', icon: Footprints, label: 'dashboard.start' }
-    ];
-    for (let i = 1; i <= classCount; i++) {
-        path.push({
-            type: 'class',
-            icon: BookOpen,
-            label: `Class ${i}`,
-            href: coursePrefix ? `/${coursePrefix}/${i}` : '#',
-            progress: 0,
-        });
-    }
-    path.push({ type: 'end', icon: Flag, label: 'dashboard.end', href: '/pricing' });
-    return path;
-};
-
 
 export const getA1MainPath = (t: (key: string) => string): PathItem[] => [
     { type: 'start', icon: Footprints, label: 'dashboard.start' },

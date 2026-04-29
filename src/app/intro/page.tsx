@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { DashboardHeader } from "@/components/dashboard/header";
 import { MazeGame } from "@/components/dashboard/maze-game";
-import { introPathItemsData, PathItem, calculateIntroCourseProgress } from "@/lib/course-data";
+import { englishIntroPathData, PathItem, calculateEnglishIntroCourseProgress } from "@/lib/course-data";
 import { useTranslation } from "@/context/language-context";
 import { useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
@@ -44,7 +44,7 @@ export default function EnglishIntroPage() {
     const updatePath = () => {
       if (!studentProfile && !isAdmin) return;
 
-      const initialPath = introPathItemsData.map(i => ({...i}));
+      const initialPath = englishIntroPathData.map(i => ({...i}));
 
       const itemsWithProgress = initialPath.map(item => {
         const newItem = { ...item };
@@ -65,15 +65,15 @@ export default function EnglishIntroPage() {
           }
 
           // Special unlocking for quizzes via admin panel
-          if (item.label === 'introCoursePage.quiz1' && studentProfile?.unlockedQuizzes?.quiz1) {
+          if (item.label === 'englishIntro.quiz1' && studentProfile?.unlockedQuizzes?.quiz1) {
               finalItem.locked = false;
               return finalItem;
           }
-          if (item.label === 'introCoursePage.quiz2' && studentProfile?.unlockedQuizzes?.quiz2) {
+          if (item.label === 'englishIntro.quiz2' && studentProfile?.unlockedQuizzes?.quiz2) {
               finalItem.locked = false;
               return finalItem;
           }
-           if (item.label === 'kidsPage.finalTest' && studentProfile?.unlockedQuizzes?.finalQuiz) {
+           if (item.label === 'englishIntro.finalTest' && studentProfile?.unlockedQuizzes?.finalQuiz) {
               finalItem.locked = false;
               return finalItem;
           }
@@ -87,11 +87,9 @@ export default function EnglishIntroPage() {
               } else {
                 let isLocked = (previousItem.progress ?? 0) < 100;
                 
-                if (item.label === 'introCoursePage.quiz1' && (previousItem.progress ?? 0) >= 90) {
+                if (item.label === 'englishIntro.quiz1' && (previousItem.progress ?? 0) >= 90) {
                     isLocked = false;
-                }
-                
-                if (item.label === 'introCoursePage.quiz2' && (previousItem.progress ?? 0) >= 90) {
+                } else if (item.label === 'englishIntro.quiz2' && (previousItem.progress ?? 0) >= 90) {
                     isLocked = false;
                 }
 
@@ -132,13 +130,13 @@ export default function EnglishIntroPage() {
       <main className="flex flex-1 flex-col items-center gap-8 p-4 md:py-12">
         <div className="text-center">
             <h1 className="text-4xl font-bold text-white [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">
-              {t('dashboard.introductoryCourse')}
+              {t('englishIntro.title')}
             </h1>
         </div>
         <div className="w-full max-w-4xl">
             <MazeGame 
                 pathItems={pathItems} 
-                title={t('introCoursePage.mazeTitle')} 
+                title={t('englishIntro.mazeTitle')} 
                 description={t('introCoursePage.mazeDescription')}
                 isLoading={isUserLoading || isProfileLoading}
                 isIntro={true}

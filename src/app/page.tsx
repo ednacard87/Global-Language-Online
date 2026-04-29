@@ -41,7 +41,7 @@ import { A1Icon, A2Icon, B1Icon, B2Icon } from "@/components/icons";
 import { useUser, useFirestore, useDoc, useCollection, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
 import { useTranslation } from "@/context/language-context";
 import { useToast } from "@/hooks/use-toast";
-import { introPathItemsData } from "@/lib/course-data";
+import { calculateEnglishIntroCourseProgress } from "@/lib/course-data";
 import LandingPage from "./landing/page";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -162,26 +162,6 @@ const courseClassCounts = {
     b2: 20,
 };
 
-function calculateIntroCourseProgress(progress: Record<string, number> | undefined) {
-    if (!progress) return 0;
-    const courseItemsWithPoints = introPathItemsData.filter(item => item.points && item.points > 0);
-    const totalPossiblePoints = courseItemsWithPoints.reduce((sum, item) => sum + (item.points || 0), 0);
-    
-    if (totalPossiblePoints === 0) return 0;
-
-    const earnedPoints = courseItemsWithPoints.reduce((sum, item) => {
-        if (item.storageKey && progress[item.storageKey]) {
-            const itemProgress = progress[item.storageKey] || 0;
-            return sum + (itemProgress / 100) * (item.points || 0);
-        }
-        return sum;
-    }, 0);
-    
-    // The points are configured to sum up to 100, so earnedPoints is the percentage.
-    return Math.round(earnedPoints);
-};
-
-
 function DashboardPage() {
   const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
@@ -204,39 +184,8 @@ function DashboardPage() {
     return studentProfile.role === 'admin' || user.email === 'ednacard87@gmail.com';
   }, [user, studentProfile]);
 
-  const [introProgress, setIntroProgress] = React.useState(0);
+  const introProgress = useMemo(() => calculateEnglishIntroCourseProgress(studentProfile?.progress), [studentProfile]);
 
-  const calculateIntroProgress = React.useCallback(() => {
-    if (!user || !studentProfile) {
-      setIntroProgress(0);
-      return;
-    }
-    const courseItemsWithPoints = introPathItemsData.filter(item => item.points && item.points > 0);
-    const totalPossiblePoints = courseItemsWithPoints.reduce((sum, item) => sum + (item.points || 0), 0);
-    if (totalPossiblePoints > 0 && studentProfile?.progress) {
-        const earnedPoints = courseItemsWithPoints.reduce((sum, item) => {
-            if (item.storageKey && studentProfile.progress) {
-                const itemProgress = studentProfile.progress[item.storageKey] || 0;
-                return sum + (itemProgress / 100) * (item.points || 0);
-            }
-            return sum;
-        }, 0);
-        setIntroProgress(Math.round(earnedPoints));
-    } else {
-        setIntroProgress(0);
-    }
-  }, [user, studentProfile]);
-  
-  useEffect(() => {
-    calculateIntroProgress();
-    window.addEventListener('storage', calculateIntroProgress);
-    window.addEventListener('progressUpdated', calculateIntroProgress);
-    return () => {
-      window.removeEventListener('storage', calculateIntroProgress);
-      window.removeEventListener('progressUpdated', calculateIntroProgress);
-    };
-  }, [calculateIntroProgress]);
-  
   useEffect(() => {
     if (isUserLoading || isProfileLoading) return;
 
@@ -327,7 +276,7 @@ function DashboardPage() {
             let finalProgress = 0;
             if (!isLocked && studentProfile.progress) {
                  if (course.href === "/intro") {
-                    finalProgress = calculateIntroCourseProgress(studentProfile.progress);
+                    finalProgress = introProgress;
                 } else if (courseCode in courseClassCounts) {
                     const classCount = courseClassCounts[courseCode as keyof typeof courseClassCounts];
                     let totalClassProgress = 0;
@@ -358,7 +307,7 @@ function DashboardPage() {
     return () => {
       window.removeEventListener('progressUpdated', updateCourseData);
     };
-  }, [user, t, isAdmin, studentProfile]);
+  }, [user, t, isAdmin, studentProfile, introProgress]);
 
   const introCourse = useMemo(() => courses.find(c => c.href === "/intro"), [courses]);
   const otherCourses = useMemo(() => courses.filter(c => c.href !== "/intro"), [courses]);

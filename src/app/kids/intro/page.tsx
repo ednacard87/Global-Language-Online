@@ -4,13 +4,14 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { DashboardHeader } from "@/components/dashboard/header";
 import { MazeGame } from "@/components/dashboard/maze-game";
-import { kidsIntroPathData, PathItem, calculateIntroCourseProgress } from "@/lib/course-data";
+import { kidsIntroPathData, PathItem, calculateKidsIntroCourseProgress } from "@/lib/course-data";
 import { useTranslation } from "@/context/language-context";
 import { useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import Link from 'next/link';
 import Image from "next/image";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
+import { Loader2 } from 'lucide-react';
 
 interface StudentProfile {
     role?: 'admin' | 'student';

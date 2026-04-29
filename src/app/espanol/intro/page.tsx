@@ -45,13 +45,13 @@ export default function EspanolIntroPage() {
                 return { ...item, locked: false };
             }
 
-            if (item.label === 'introCoursePage.quiz1' && studentProfile?.unlockedQuizzes?.quiz1) {
+            if (item.label === 'espanolIntroCourse.quiz1' && studentProfile?.unlockedQuizzes?.quiz1) {
                 return { ...item, locked: false };
             }
-            if (item.label === 'introCoursePage.quiz2' && studentProfile?.unlockedQuizzes?.quiz2) {
+            if (item.label === 'espanolIntroCourse.quiz2' && studentProfile?.unlockedQuizzes?.quiz2) {
                 return { ...item, locked: false };
             }
-            if (item.label === 'kidsPage.finalTest' && studentProfile?.unlockedQuizzes?.finalQuiz) {
+            if (item.label === 'espanolIntroCourse.finalTest' && studentProfile?.unlockedQuizzes?.finalQuiz) {
                 return { ...item, locked: false };
             }
 
@@ -96,7 +96,7 @@ export default function EspanolIntroPage() {
         <div className="w-full max-w-3xl">
             <MazeGame 
                 pathItems={pathItems} 
-                title={t('dashboard.learningPath')} 
+                title={t('espanolIntroCourse.mazeTitle')} 
                 description={t('dashboard.learningPathDescription')}
                 isLoading={isProfileLoading}
             />

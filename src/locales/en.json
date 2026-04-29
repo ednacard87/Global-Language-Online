@@ -65,6 +65,24 @@
     "startHere": "Start Here",
     "unlockGames": "You must complete 30% of the introductory course to unlock the games"
   },
+  "englishIntro": {
+    "title": "English Intro Course",
+    "mazeTitle": "THE LEARNING ADVENTURE",
+    "intro1": "Intro 1",
+    "quiz1": "Quiz 1",
+    "intro2": "Intro 2",
+    "quiz2": "Quiz 2",
+    "listening": "Listening and Writing Practice",
+    "speaking": "Speaking Practice"
+  },
+  "espanolIntroCourse": {
+    "mazeTitle": "Learning Path",
+    "intro1": "Intro 1S",
+    "quiz1": "Quiz 1S",
+    "intro2": "Intro 2S",
+    "quiz2": "Quiz 2S",
+    "finalTest": "Final Test Spanish"
+  },
   "b1Espanol": {
     "title": "B1 Course - Spanish",
     "pronombres": "Pronouns",

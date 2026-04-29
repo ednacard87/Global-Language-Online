@@ -55,7 +55,7 @@
     "studyCalendarDescription": "Accede al Horario de tu Profesor",
     "bookClass": "Reservar Clase",
     "recentAchievements": "Logros Recientes",
-    "learningPath": "Ruta de Aprendizaje",
+    "learningPath": "THE LEARNING ADVENTURE",
     "learningPathDescription": "Sigue la ruta para dominar nuevas habilidades.",
     "start": "Inicio",
     "end": "¡Final!",
@@ -64,6 +64,24 @@
     "finish": "Finalizar",
     "startHere": "Comienza por aquí",
     "unlockGames": "Debes completar el 30% del curso de introduccion para desbloquear los juegos"
+  },
+  "englishIntro": {
+    "title": "Curso Intro Ingles",
+    "mazeTitle": "THE LEARNING ADVENTURE",
+    "intro1": "Intro 1",
+    "quiz1": "Quiz 1",
+    "intro2": "Intro 2",
+    "quiz2": "Quiz 2",
+    "listening": "Práctica de Escucha y Escritura",
+    "speaking": "Práctica de Habla"
+  },
+  "espanolIntroCourse": {
+    "mazeTitle": "Ruta de Aprendizaje",
+    "intro1": "Intro 1E",
+    "quiz1": "Quiz 1E",
+    "intro2": "Intro 2E",
+    "quiz2": "Quiz 2E",
+    "finalTest": "Prueba Final Español"
   },
   "b1Espanol": {
     "title": "Curso B1 - Español",
@@ -164,7 +182,7 @@
   },
   "introCoursePage": {
     "title": "Let's Learn",
-    "mazeTitle": "THE LEARNING ADVENTURE",
+    "mazeTitle": "Laberinto del Saber",
     "mazeDescription": "Completa cada paso del laberinto para desbloquear el siguiente nivel y convertirte en un maestro del inglés.",
     "penguinHint": "¡El conocimiento es poder! Continúa avanzando para desbloquear nuevas habilidades.",
     "quiz1": "Quiz 1",

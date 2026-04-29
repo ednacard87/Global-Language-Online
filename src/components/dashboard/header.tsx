@@ -43,8 +43,6 @@ import { Skeleton } from "../ui/skeleton";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/context/language-context";
-import { useToast } from "@/hooks/use-toast";
-import { introPathItemsData } from "@/lib/course-data";
 
 function UserNav() {
   const auth = useAuth();
@@ -106,7 +104,6 @@ function UserNav() {
 export function DashboardHeader() {
   const { user, isUserLoading } = useUser();
   const { t, setLanguage } = useTranslation();
-  const { toast } = useToast();
   const router = useRouter();
   const firestore = useFirestore();
 
@@ -116,51 +113,7 @@ export function DashboardHeader() {
   );
   const { data: studentProfile } = useDoc<{role?: string, selectedCourse?: 'ingles' | 'espanol' | 'kids'}>(studentDocRef);
   
-  const [introProgress, setIntroProgress] = React.useState(0);
   const isAdmin = studentProfile?.role === 'admin' || user?.email === 'ednacard87@gmail.com';
-
-  const calculateIntroProgress = React.useCallback(() => {
-    if (!user || !studentProfile) {
-      setIntroProgress(0);
-      return;
-    }
-    const courseItemsWithPoints = introPathItemsData.filter(item => item.points && item.points > 0);
-    const totalPossiblePoints = courseItemsWithPoints.reduce((sum, item) => sum + (item.points || 0), 0);
-    if (totalPossiblePoints > 0 && studentProfile?.progress) {
-        const earnedPoints = courseItemsWithPoints.reduce((sum, item) => {
-            if (item.storageKey && studentProfile.progress) {
-                const itemProgress = studentProfile.progress[item.storageKey] || 0;
-                return sum + (itemProgress / 100) * (item.points || 0);
-            }
-            return sum;
-        }, 0);
-        setIntroProgress(Math.round(earnedPoints));
-    } else {
-        setIntroProgress(0);
-    }
-  }, [user, studentProfile]);
-
-  React.useEffect(() => {
-    calculateIntroProgress();
-
-    window.addEventListener('storage', calculateIntroProgress);
-    window.addEventListener('progressUpdated', calculateIntroProgress);
-    
-    return () => {
-      window.removeEventListener('storage', calculateIntroProgress);
-      window.removeEventListener('progressUpdated', calculateIntroProgress);
-    };
-  }, [calculateIntroProgress]);
-
-  const canPlayIntroGames = introProgress >= 30 || isAdmin;
-
-  const handleLockedGamesClick = () => {
-    toast({
-        title: 'Juegos Bloqueados',
-        description: t('dashboard.unlockGames'),
-        variant: "default",
-    });
-  };
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center justify-between gap-2 border-b bg-brand-lilac px-4 md:px-6">
