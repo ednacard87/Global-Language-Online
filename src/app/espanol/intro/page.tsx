@@ -88,7 +88,7 @@ export default function EspanolIntroPage() {
       <DashboardHeader />
       <main className="flex flex-1 flex-col items-center gap-8 p-4 md:py-12">
         <div className="text-center">
-            <h1 className="text-4xl font-bold text-brand-purple dark:text-primary [text-shadow:1px_1px_1.5px_hsl(var(--accent)/0.8)]">{t('dashboard.introductoryCourse')}</h1>
+            <h1 className="text-4xl font-bold text-brand-purple dark:text-primary [text-shadow:1px_1px_1.5px_hsl(var(--accent)/0.8)]">Curso Intro Español</h1>
             <Link href="/espanol" className="text-sm text-muted-foreground hover:underline mt-2 inline-block">
                 &larr; Volver a Español
             </Link>
