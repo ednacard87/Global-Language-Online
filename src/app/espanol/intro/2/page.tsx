@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -361,6 +362,11 @@ export default function EspanolIntro2Page() {
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
     const [selectedTopic, setSelectedTopic] = useState('memory_game');
     const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
+    const [isClient, setIsClient] = useState(false);
+
+    useEffect(() => {
+        setIsClient(true);
+    }, []);
 
     const studentDocRef = useMemoFirebase(() => (user ? doc(firestore, 'students', user.uid) : null), [firestore, user]);
     const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{ role?: string; lessonProgress?: any; progress?: any }>(studentDocRef);
@@ -376,7 +382,7 @@ export default function EspanolIntro2Page() {
     ], []);
 
     useEffect(() => {
-        if (isUserLoading || isProfileLoading) return;
+        if (!isClient || isUserLoading || isProfileLoading) return;
         const newPath = initialLearningPath.map(item => ({...item}));
         
         if (isAdmin) {
@@ -389,7 +395,7 @@ export default function EspanolIntro2Page() {
         setLearningPath(newPath);
         const firstActive = newPath.find(p => p.status === 'active');
         setSelectedTopic(firstActive?.key || 'memory_game');
-    }, [isAdmin, initialLearningPath, studentProfile, isUserLoading, isProfileLoading]);
+    }, [isAdmin, initialLearningPath, studentProfile, isUserLoading, isProfileLoading, isClient]);
 
     const progress = useMemo(() => {
         if (learningPath.length === 0) return 0;
@@ -524,10 +530,13 @@ export default function EspanolIntro2Page() {
                                 </CardContent>
                             </Card>
                         </div>
-                        <div className="md:col-span-8">{renderContent()}</div>
+                        <div className="md:col-span-8">
+                           {renderContent()}
+                        </div>
                     </div>
                 </div>
             </main>
         </div>
     );
 }
+
