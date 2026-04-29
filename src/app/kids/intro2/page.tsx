@@ -18,6 +18,7 @@ import {
   Lightbulb,
   Clock,
   X,
+  Loader2,
 } from 'lucide-react';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -58,8 +59,8 @@ const TipContent = () => (
                         <div>
                             <h4 className="font-medium text-primary">IRREGULAR: noun+es</h4>
                             <ul className="list-disc pl-5 mt-1 space-y-2 text-sm">
-                                <li>For nouns ending {'=>'} s, z, sh, ch, x (bus) = “ES”<br/><span className="font-mono bg-muted px-2 py-1 rounded">Ex: address: Addresses // beach: beaches // bus: buses</span></li>
-                                <li>For nouns ending {'=>'} “Y” cancelamos la “Y” agregamos “ies”<br/><span className="font-mono bg-muted px-2 py-1 rounded">Ex: country: countries // university: universities</span></li>
+                                <li>For nouns ending {`=>`} s, z, sh, ch, x (bus) = “ES”<br/><span className="font-mono bg-muted px-2 py-1 rounded">Ex: address: Addresses // beach: beaches // bus: buses</span></li>
+                                <li>For nouns ending {`=>`} “Y” cancelamos la “Y” agregamos “ies”<br/><span className="font-mono bg-muted px-2 py-1 rounded">Ex: country: countries // university: universities</span></li>
                                 <li>Completamente irregular:<br/><span className="font-mono bg-muted px-2 py-1 rounded">Man: men // woman: women // child: children // person: people</span></li>
                             </ul>
                         </div>
@@ -93,8 +94,8 @@ const TipContent = () => (
                         </div>
                          <div>
                             <h4 className="font-medium text-primary">CONJUGACIÓN</h4>
-                            <p className="text-sm text-muted-foreground">Cuando estamos utilizando la conjugación el verbo pierde la palabra = "To".</p>
-                            <p className="font-mono bg-muted p-2 rounded-md mt-1 text-sm">{'pronombre + verbo (yo hablo) => i + speak'}<br/>{'i to speak = yo hablar'}</p>
+                            <p className="text-sm text-muted-foreground">Cuando estamos utilizando la conjugación el verbo pierde la palabra = "To"</p>
+                            <p className="font-mono bg-muted p-2 rounded-md mt-1 text-sm">{`pronombre + verbo (yo hablo) => i + speak`}<br/>{`i to speak = yo hablar`}</p>
                         </div>
                     </AccordionContent>
                 </AccordionItem>
@@ -105,7 +106,7 @@ const TipContent = () => (
                          <p className="font-semibold">Muchas frases no tienen pronombres, entonces las frases pueden TENER:</p>
                          <ul className="list-disc pl-5 text-sm space-y-1">
                              <li><strong>Nombre propio:</strong> Viviana, Edna, Ana, Cristal</li>
-                             <li><strong>Sustantivo:</strong> (persona, animal, cosa) {'=>'} carro, casa, finca</li>
+                             <li><strong>Sustantivo:</strong> (persona, animal, cosa) {`=>`} carro, casa, finca</li>
                              <li><strong>Demostrativos:</strong> This – these – that – those</li>
                          </ul>
                          <p className="font-mono bg-muted p-2 rounded-md mt-1 text-sm">
@@ -250,7 +251,7 @@ const SimpleExercise = ({ title, onComplete, exerciseData }: { title: string; on
 };
 
 const ICONS = { locked: Lock, active: BookOpen, completed: CheckCircle };
-const progressStorageVersion = "_v1_sequential_intro2_kids";
+const progressStorageVersion = "kids_intro2_path_v2";
 
 interface Student {
     role?: 'admin' | 'student';
@@ -283,38 +284,41 @@ export default function Intro2Page() {
     }, [user, studentProfile]);
     
     const initialLearningPath = useMemo(() => getIntro2PathData(t), [t]);
-
+    
     useEffect(() => {
         setIsClient(true);
     }, []);
 
     useEffect(() => {
         if (!isClient || isProfileLoading || !initialLearningPath.length) return;
-
-        let path: Intro2PathItem[] = initialLearningPath.map((item, index) => ({
-            ...item,
-            status: index === 0 ? 'active' : 'locked',
-        }));
-
+        
+        let path: Intro2PathItem[];
+        
         if (isAdmin) {
-            path.forEach(topic => { topic.status = 'completed'; });
-        } else if (studentProfile?.lessonProgress?.[progressStorageVersion]) {
-            const savedStatuses = studentProfile.lessonProgress[progressStorageVersion];
-            path.forEach(item => {
-                if (savedStatuses[item.key]) {
-                    item.status = savedStatuses[item.key];
-                }
-            });
+          path = initialLearningPath.map(item => ({ ...item, status: 'completed' }));
+        } else {
+            path = initialLearningPath.map((item, index) => ({
+                ...item,
+                status: index === 0 ? 'active' : 'locked',
+            }));
+            const savedStatuses = studentProfile?.lessonProgress?.[progressStorageVersion];
+            if (savedStatuses) {
+                path.forEach(item => {
+                    if (savedStatuses[item.key]) {
+                        item.status = savedStatuses[item.key];
+                    }
+                });
+            }
         }
         
         setIntro2Path(path);
         
         if (!initialLoadComplete) {
             const firstActive = path.find(p => p.status === 'active');
-            if(firstActive) {
+            if (firstActive) {
                 setSelectedTopic(firstActive.name);
                 setSelectedTopicKey(firstActive.key);
-            } else if(path.length > 0) {
+            } else if (path.length > 0) {
                 setSelectedTopic(path[0].name);
                 setSelectedTopicKey(path[0].key);
             }
