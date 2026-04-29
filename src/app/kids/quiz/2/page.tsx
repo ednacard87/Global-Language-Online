@@ -127,7 +127,7 @@ export default function KidsQuiz2Page() {
     if (quizFinished) {
         const finalScore = (score / quizQuestions.length) * 100;
         return (
-             <div className="flex w-full flex-col min-h-screen">
+             <div className="flex w-full flex-col min-h-screen kids-page-container">
                 <DashboardHeader />
                 <main className="flex-1 flex items-center justify-center p-4">
                     <Card className="w-full max-w-md text-center shadow-soft rounded-lg border-2 border-brand-purple">
@@ -150,7 +150,7 @@ export default function KidsQuiz2Page() {
     }
 
     return (
-        <div className="flex w-full flex-col min-h-screen">
+        <div className="flex w-full flex-col min-h-screen kids-page-container">
             <DashboardHeader />
             <main className="flex-1 flex items-center justify-center p-4">
                 <Card className="w-full max-w-xl shadow-soft rounded-lg border-2 border-brand-purple">
