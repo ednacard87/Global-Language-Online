@@ -441,7 +441,7 @@ export default function Intro2Page() {
     };
     
     return (
-        <div className="flex w-full flex-col ingles-dashboard-bg min-h-screen">
+        <div className="flex w-full flex-col kids-page-container min-h-screen">
           <DashboardHeader />
           <main className="flex-1 p-4 md:p-8">
             <div className="max-w-7xl mx-auto">
@@ -495,3 +495,5 @@ export default function Intro2Page() {
         </div>
       );
 }
+
+    
