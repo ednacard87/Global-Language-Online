@@ -31,7 +31,7 @@ import { useTranslation } from '@/context/language-context';
 import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Progress } from "@/components/ui/progress";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from '@/hooks/use-toast';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -448,7 +448,7 @@ export default function Intro2Page() {
                 <div className="grid gap-8 md:grid-cols-12">
                 <div className="md:col-span-9">
                     <Link href="/kids/intro" className="hover:underline">
-                        <h1 className="text-4xl font-bold mb-8 dark:text-primary">{t('introCoursePage.intro2')}</h1>
+                        <h1 className="text-4xl font-bold text-white dark:text-primary mb-8">{t('introCoursePage.intro2')}</h1>
                     </Link>
                     {isClient ? renderContent() : <div className="flex h-[500px] w-full items-center justify-center"><Loader2 className="h-16 w-16 animate-spin"/></div>}
                 </div>
