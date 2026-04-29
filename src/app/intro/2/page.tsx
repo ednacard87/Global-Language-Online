@@ -37,6 +37,13 @@ import { Separator } from '@/components/ui/separator';
 import { getEnglishIntro2PathData, EnglishIntro2PathItem } from '@/lib/course-data';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 
+// Icons mapping for the learning path
+const ICONS = {
+  locked: Lock,
+  active: BookOpen,
+  completed: CheckCircle,
+};
+
 // Data
 const greetingsAndFarewellsData = [
     { spanish: 'Hola', english: 'Hello' },
@@ -399,6 +406,15 @@ const CountriesExercise = ({ onComplete }: { onComplete: () => void }) => {
         </Card>
     );
 };
+
+const progressStorageKey = 'progress_english_intro_2';
+const progressStorageVersion = "_v2_sequential";
+
+interface Student {
+    role?: 'admin' | 'student';
+    lessonProgress?: any;
+    progress?: Record<string, number>;
+}
 
 export default function EnglishIntro2Page() {
     const { t } = useTranslation();
