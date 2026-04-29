@@ -216,6 +216,7 @@ export type EnglishIntro2PathKey =
   | 'mixed1'
   | 'greetings'
   | 'farewells'
+  | 'memory'
   | 'mixed2'
   | 'time'
   | 'time-exercise'
@@ -233,6 +234,7 @@ export const getEnglishIntro2PathData = (t: (key: string) => string): EnglishInt
     { key: 'mixed1', name: t('intro2Page.mixed1'), icon: PenSquare, status: 'locked' },
     { key: 'greetings', name: t('intro2Page.greetings'), icon: Hand, status: 'locked' },
     { key: 'farewells', name: t('intro2Page.farewells'), icon: MessageSquare, status: 'locked' },
+    { key: 'memory', name: 'Memory', icon: BrainCircuit, status: 'locked' },
     { key: 'mixed2', name: t('intro2Page.mixed2'), icon: PenSquare, status: 'locked' },
     { key: 'time', name: t('intro2Page.time'), icon: Clock, status: 'locked' },
     { key: 'time-exercise', name: t('intro2Page.timeExercise'), icon: PenSquare, status: 'locked' },
