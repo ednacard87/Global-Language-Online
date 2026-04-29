@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo } from "react";
@@ -38,7 +39,7 @@ export default function KidsIntroductoryCoursePage() {
       if (!user) return false;
       return studentProfile?.role === 'admin' || user.email === 'ednacard87@gmail.com';
   }, [user, studentProfile]);
-
+  
   useEffect(() => {
     document.title = t('introCoursePage.mazeTitle');
 
@@ -65,15 +66,15 @@ export default function KidsIntroductoryCoursePage() {
               return finalItem;
           }
 
-          if (item.label === 'kidsPage.quiz1' && studentProfile?.unlockedQuizzes?.quiz1) {
+          if (item.label === 'kidsPage.quiz1k' && studentProfile?.unlockedQuizzes?.quiz1) {
               finalItem.locked = false;
               return finalItem;
           }
-          if (item.label === 'kidsPage.quiz2' && studentProfile?.unlockedQuizzes?.quiz2) {
+          if (item.label === 'kidsPage.quiz2k' && studentProfile?.unlockedQuizzes?.quiz2) {
               finalItem.locked = false;
               return finalItem;
           }
-          if (item.label === 'kidsPage.finalTest' && studentProfile?.unlockedQuizzes?.finalQuiz) {
+           if (item.label === 'kidsPage.finalTestKids' && studentProfile?.unlockedQuizzes?.finalQuiz) {
               finalItem.locked = false;
               return finalItem;
           }
@@ -86,11 +87,13 @@ export default function KidsIntroductoryCoursePage() {
                 finalItem.locked = false;
               } else {
                 let isLocked = (previousItem.progress ?? 0) < 100;
-                if (item.label === 'kidsPage.quiz1') {
-                    isLocked = (previousItem.progress ?? 0) < 90;
-                } else if (item.label === 'kidsPage.quiz2') {
-                    isLocked = (previousItem.progress ?? 0) < 90;
+                
+                if (item.label === 'kidsPage.quiz1k' && (previousItem.progress ?? 0) >= 90) {
+                    isLocked = false;
+                } else if (item.label === 'kidsPage.quiz2k' && (previousItem.progress ?? 0) >= 90) {
+                    isLocked = false;
                 }
+
                 finalItem.locked = isLocked;
               }
           }
@@ -118,10 +121,10 @@ export default function KidsIntroductoryCoursePage() {
       window.removeEventListener('focus', eventListener);
       window.removeEventListener('progressUpdated', eventListener);
     };
-  }, [t, isAdmin, studentProfile, isProfileLoading]);
+  }, [t, isAdmin, studentProfile, isProfileLoading, isUserLoading]);
 
   return (
-    <div className="intro-adventure-container flex w-full flex-col min-h-screen">
+    <div className="kids-page-container flex w-full flex-col min-h-screen">
       <DashboardHeader />
       <main className="flex flex-1 flex-col items-center gap-8 p-4 md:py-12">
         <div className="text-center">
