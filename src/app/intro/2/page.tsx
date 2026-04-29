@@ -16,48 +16,44 @@ import {
   Trophy,
   ArrowLeft,
   ArrowRight,
+  BrainCircuit,
+  RefreshCw,
+  Flame,
+  Loader2,
 } from 'lucide-react';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { cn } from '@/lib/utils';
 import { useTranslation } from '@/context/language-context';
 import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
-import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { Separator } from '@/components/ui/separator';
 import { getEnglishIntro2PathData, EnglishIntro2PathItem } from '@/lib/course-data';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { PlaceHolderImages } from '@/lib/placeholder-images';
-import { Input } from '@/components/ui/input';
 
-const ICONS = { locked: Lock, active: BookOpen, completed: CheckCircle };
-const progressStorageVersion = "english_intro2_path_v1";
-
-interface Student {
-    role?: 'admin' | 'student';
-    lessonProgress?: any;
-    progress?: Record<string, number>;
-}
-
-const greetingsData = [
-  { english: 'Hello', spanish: 'Hola' },
-  { english: 'Good morning', spanish: 'Buenos días' },
-  { english: 'Good afternoon', spanish: 'Buenas tardes' },
-  { english: 'Good evening', spanish: 'Buenas noches (saludo)' },
-  { english: 'How are you?', spanish: '¿Cómo estás?' },
-  { english: "What's up?", spanish: '¿Qué tal?' },
-  { english: 'Nice to meet you', spanish: 'Mucho gusto' },
+// Data
+const greetingsAndFarewellsData = [
+    { spanish: 'Hola', english: 'Hello' },
+    { spanish: 'Buenos días', english: 'Good morning' },
+    { spanish: 'Buenas tardes', english: 'Good afternoon' },
+    { spanish: 'Buenas noches', english: 'Good night' },
+    { spanish: 'Adiós', english: 'Goodbye' },
+    { spanish: 'Hasta luego', english: 'See you later' },
 ];
 
-const farewellsData = [
-  { english: 'Goodbye', spanish: 'Adiós' },
-  { english: 'Bye', spanish: 'Chao' },
-  { english: 'See you later', spanish: 'Hasta luego' },
-  { english: 'See you soon', spanish: 'Hasta pronto' },
-  { english: 'Good night', spanish: 'Buenas noches (despedida)' },
-  { english: 'Take care', spanish: 'Cuídate' },
-  { english: 'Have a nice day', spanish: 'Que tengas un buen día' },
+const countriesExerciseData = [
+    { pais: 'Estados Unidos', country: 'United States', nationality: 'American' },
+    { pais: 'Canadá', country: 'Canada', nationality: 'Canadian' },
+    { pais: 'México', country: 'Mexico', nationality: 'Mexican' },
+    { pais: 'Brasil', country: 'Brazil', nationality: 'Brazilian' },
+    { pais: 'Inglaterra', country: 'England', nationality: 'English' },
+    { pais: 'Francia', country: 'France', nationality: 'French' },
 ];
 
 const timeExerciseData = [
@@ -73,10 +69,138 @@ const timeExerciseData = [
   { time: '1:55', answers: ["it's five to two", "it is five to two"] },
 ];
 
+const mixedExercise1Data = [
+    { spanish: 'Este es un buen libro', english: ['this is a good book'] },
+    { spanish: 'Esa es mi casa', english: ['that is my house'] },
+    { spanish: 'Estos son tus zapatos', english: ['these are your shoes'] },
+    { spanish: 'Esos son nuestros amigos', english: ['those are our friends'] },
+];
+
+const mixedExercise2Data = [
+    { spanish: '¿Cómo estás hoy?', english: ['how are you today?'] },
+    { spanish: 'Hasta mañana, profesor', english: ['see you tomorrow, teacher'] },
+    { spanish: 'Mi amigo es de Canadá', english: ['my friend is from canada'] },
+    { spanish: 'Son las diez y cuarto', english: ["it's a quarter past ten", "it is a quarter past ten"] },
+];
+
+// Components inside the page file
+
+const MemoryGame = ({ data, onComplete }: { data: { spanish: string; english: string; }[], onComplete: () => void }) => {
+    const [cards, setCards] = useState<any[]>([]);
+    const [flippedIndices, setFlippedIndices] = useState<number[]>([]);
+    const [matchedPairIds, setMatchedPairIds] = useState<number[]>([]);
+    const [isChecking, setIsChecking] = useState(false);
+    const [streak, setStreak] = useState(0);
+    const [isClient, setIsClient] = useState(false);
+
+    useEffect(() => {
+        setIsClient(true);
+    }, []);
+
+    const initializeGame = React.useCallback(() => {
+        const gameCards = data.flatMap((pair, index) => [
+            { id: index * 2, pairId: index, text: pair.english },
+            { id: index * 2 + 1, pairId: index, text: pair.spanish },
+        ]).sort(() => Math.random() - 0.5);
+        
+        setCards(gameCards);
+        setFlippedIndices([]);
+        setMatchedPairIds([]);
+        setIsChecking(false);
+        setStreak(0);
+    }, [data]);
+
+    useEffect(() => {
+        if (isClient) {
+            initializeGame();
+        }
+    }, [isClient, initializeGame]);
+    
+    useEffect(() => {
+        if (flippedIndices.length === 2) {
+            setIsChecking(true);
+            const [firstIndex, secondIndex] = flippedIndices;
+            const isMatch = cards[firstIndex].pairId === cards[secondIndex].pairId;
+
+            if (isMatch) {
+                setMatchedPairIds(prev => [...prev, cards[firstIndex].pairId]);
+                setStreak(prev => prev + 1);
+                setFlippedIndices([]);
+                setIsChecking(false);
+            } else {
+                setStreak(0);
+                setTimeout(() => {
+                    setFlippedIndices([]);
+                    setIsChecking(false);
+                }, 800);
+            }
+        }
+    }, [flippedIndices, cards]);
+
+    const isGameComplete = matchedPairIds.length === data.length;
+
+    useEffect(() => {
+        if (isGameComplete) {
+            onComplete();
+        }
+    }, [isGameComplete, onComplete]);
+
+    const handleCardClick = (index: number) => {
+        if (isChecking || flippedIndices.length >= 2 || flippedIndices.includes(index) || matchedPairIds.includes(cards[index].pairId)) {
+            return;
+        }
+        setFlippedIndices(prev => [...prev, index]);
+    };
+
+    if (!isClient) {
+        return (
+            <Card>
+                <CardHeader>
+                    <CardTitle>Juego de Memoria: Saludos y Despedidas</CardTitle>
+                </CardHeader>
+                <CardContent className="flex justify-center items-center h-48">
+                    <Loader2 className="h-8 w-8 animate-spin" />
+                </CardContent>
+            </Card>
+        );
+    }
+
+    return (
+        <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+            <CardHeader>
+                <CardTitle>Juego de Memoria: Saludos y Despedidas</CardTitle>
+                <div className="flex justify-between items-center pt-2">
+                    <Button size="icon" variant="ghost" onClick={initializeGame}><RefreshCw className="h-5 w-5" /></Button>
+                    <div className="flex items-center gap-2 text-orange-500 font-bold"><Flame className="h-5 w-5" /><span>{streak}</span></div>
+                </div>
+            </CardHeader>
+            <CardContent>
+                {isGameComplete ? (
+                     <div className="text-center p-8 flex flex-col items-center"><Trophy className="h-16 w-16 text-yellow-400 mb-4" /><h2 className="text-2xl font-bold">¡Juego Completado!</h2></div>
+                ) : (
+                    <div className="grid grid-cols-4 gap-2">
+                        {cards.map((card, index) => {
+                            const isFlipped = flippedIndices.includes(index);
+                            const isMatched = matchedPairIds.includes(card.pairId);
+                            return (
+                                <Card key={card.id} onClick={() => handleCardClick(index)}
+                                    className={cn("flex items-center justify-center aspect-square cursor-pointer", isFlipped || isMatched ? "bg-card border-primary" : "bg-secondary", isMatched && "border-green-500")}>
+                                    <CardContent className="p-1 text-center">
+                                        {isFlipped || isMatched ? <span className="text-sm font-bold">{card.text}</span> : <BrainCircuit className="h-5 w-5 text-primary/50" />}
+                                    </CardContent>
+                                </Card>
+                            )
+                        })}
+                    </div>
+                )}
+            </CardContent>
+        </Card>
+    );
+};
+
 type ValidationStatus = 'correct' | 'incorrect' | 'unchecked';
 
 const TimeExercise = ({ onComplete }: { onComplete: () => void }) => {
-    const { t } = useTranslation();
     const { toast } = useToast();
     const [currentIndex, setCurrentIndex] = useState(0);
     const [userAnswers, setUserAnswers] = useState<string[]>(Array(timeExerciseData.length).fill(''));
@@ -198,6 +322,84 @@ const TimeExercise = ({ onComplete }: { onComplete: () => void }) => {
     );
 };
 
+const MixedExercise = ({ title, data, onComplete }: { title: string, data: { spanish: string, english: string[] }[], onComplete: () => void }) => {
+    const { toast } = useToast();
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [userAnswer, setUserAnswer] = useState('');
+    const [validation, setValidation] = useState<ValidationStatus>('unchecked');
+
+    const handleCheck = () => {
+        const correctAnswers = data[currentIndex].english.map(ans => ans.toLowerCase().replace(/[.?,]/g, ''));
+        const input = userAnswer.trim().toLowerCase().replace(/[.?,]/g, '');
+        const isCorrect = correctAnswers.includes(input);
+        setValidation(isCorrect ? 'correct' : 'incorrect');
+        if (isCorrect) toast({ title: '¡Correcto!' });
+        else toast({ variant: 'destructive', title: 'Incorrecto' });
+    };
+
+    const handleNext = () => {
+        if (currentIndex < data.length - 1) {
+            setCurrentIndex(prev => prev + 1);
+            setUserAnswer('');
+            setValidation('unchecked');
+        } else {
+            onComplete();
+        }
+    };
+
+    return (
+        <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+            <CardHeader><CardTitle>{title}</CardTitle></CardHeader>
+            <CardContent className="space-y-4">
+                <p className="text-lg font-medium">Traduce: "{data[currentIndex].spanish}"</p>
+                <Input value={userAnswer} onChange={e => setUserAnswer(e.target.value)} className={cn(validation === 'correct' && 'border-green-500', validation === 'incorrect' && 'border-destructive')} />
+            </CardContent>
+            <CardFooter className="justify-between">
+                <Button onClick={handleCheck}>Verificar</Button>
+                <Button onClick={handleNext} disabled={validation !== 'correct'}>Siguiente</Button>
+            </CardFooter>
+        </Card>
+    );
+};
+
+const CountriesExercise = ({ onComplete }: { onComplete: () => void }) => {
+    const { toast } = useToast();
+    const [userAnswers, setUserAnswers] = useState<string[]>(Array(countriesExerciseData.length).fill(''));
+    const [validation, setValidation] = useState<ValidationStatus[]>(Array(countriesExerciseData.length).fill('unchecked'));
+
+    const handleCheck = () => {
+        let allCorrect = true;
+        const newValidation = countriesExerciseData.map((item, index) => {
+            const isCorrect = userAnswers[index].trim().toLowerCase() === item.country.toLowerCase();
+            if (!isCorrect) allCorrect = false;
+            return isCorrect ? 'correct' : 'incorrect';
+        });
+        setValidation(newValidation as any);
+        if (allCorrect) onComplete();
+        else toast({ variant: 'destructive', title: 'Algunas respuestas son incorrectas' });
+    };
+
+    return (
+        <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+            <CardHeader><CardTitle>Países y Nacionalidades</CardTitle></CardHeader>
+            <CardContent>
+                <Table>
+                    <TableHeader><TableRow><TableHead>Español</TableHead><TableHead>Inglés (País)</TableHead></TableRow></TableHeader>
+                    <TableBody>
+                        {countriesExerciseData.map((item, index) => (
+                            <TableRow key={index}>
+                                <TableCell>{item.pais}</TableCell>
+                                <TableCell><Input value={userAnswers[index]} onChange={e => { const a = [...userAnswers]; a[index] = e.target.value; setUserAnswers(a); }} className={cn(validation[index] === 'correct' && 'border-green-500', validation[index] === 'incorrect' && 'border-destructive')} /></TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </CardContent>
+            <CardFooter><Button onClick={handleCheck}>Verificar</Button></CardFooter>
+        </Card>
+    );
+};
+
 export default function EnglishIntro2Page() {
     const { t } = useTranslation();
     const { toast } = useToast();
@@ -207,6 +409,11 @@ export default function EnglishIntro2Page() {
     const [learningPath, setLearningPath] = useState<EnglishIntro2PathItem[]>([]);
     const [selectedTopic, setSelectedTopic] = useState<string>('');
     const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
+    const [isClient, setIsClient] = useState(false);
+
+    useEffect(() => {
+        setIsClient(true);
+    }, []);
 
     const studentDocRef = useMemoFirebase(() => (user ? doc(firestore, 'students', user.uid) : null), [firestore, user]);
     const { data: studentProfile, isLoading: isProfileLoading } = useDoc<Student>(studentDocRef);
@@ -214,11 +421,10 @@ export default function EnglishIntro2Page() {
     const isAdmin = useMemo(() => (user && (studentProfile?.role === 'admin' || user.email === 'ednacard87@gmail.com')), [user, studentProfile]);
     
     const initialLearningPath = useMemo(() => getEnglishIntro2PathData(t), [t]);
-
     const timeImage = PlaceHolderImages.find(p => p.id === 'telling-time');
 
     useEffect(() => {
-        if (isUserLoading || isProfileLoading) return;
+        if (!isClient || isUserLoading || isProfileLoading) return;
         
         let path = initialLearningPath.map(item => ({...item}));
 
@@ -239,7 +445,7 @@ export default function EnglishIntro2Page() {
             setSelectedTopic(firstActive?.key || path[0].key);
         }
 
-    }, [isAdmin, initialLearningPath, studentProfile, isUserLoading, isProfileLoading, t, selectedTopic]);
+    }, [isAdmin, initialLearningPath, studentProfile, isUserLoading, isProfileLoading, t, selectedTopic, isClient]);
 
     const progress = useMemo(() => {
         const completedTopics = learningPath.filter(t => t.status === 'completed').length;
@@ -280,15 +486,11 @@ export default function EnglishIntro2Page() {
             setLearningPath(newPath);
             if (unlockedTopic) {
                 setSelectedTopic(unlockedTopic.key);
-                toast({
-                    title: '¡Siguiente tema desbloqueado!',
-                    description: `Ahora puedes continuar con ${unlockedTopic.name}`,
-                });
             }
         }
         
         setTopicToComplete(null);
-    }, [topicToComplete, toast, learningPath]);
+    }, [topicToComplete, learningPath]);
 
     const handleTopicSelect = (topicKey: string) => {
         const topic = learningPath.find((t) => t.key === topicKey);
@@ -308,6 +510,24 @@ export default function EnglishIntro2Page() {
         const topic = learningPath.find((t) => t.key === selectedTopic);
         
         switch (selectedTopic) {
+          case 'tip':
+            return (
+                <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                    <CardHeader>
+                        <CardTitle>Tip Importante: Gramática Básica</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <p className="text-lg">Para dominar el inglés, es fundamental entender la estructura básica:</p>
+                        <ul className="list-disc pl-6 space-y-2">
+                            <li><strong>Sujeto + Verbo + Complemento:</strong> La base de la mayoría de oraciones.</li>
+                            <li><strong>Adjetivo + Sustantivo:</strong> A diferencia del español, el color o descripción va antes. (The <em>blue</em> car).</li>
+                            <li><strong>To + Infinitivo:</strong> Usamos "to" para verbos sin conjugar. (To speak, to eat).</li>
+                        </ul>
+                    </CardContent>
+                </Card>
+            );
+          case 'mixed1':
+            return <MixedExercise title="Ejercicios Mixtos 1" data={mixedExercise1Data} onComplete={() => setTopicToComplete('mixed1')} />;
           case 'greetings':
             return (
               <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
@@ -324,7 +544,7 @@ export default function EnglishIntro2Page() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {greetingsData.map((item, index) => (
+                      {greetingsAndFarewellsData.slice(0, 4).map((item, index) => (
                         <TableRow key={index}>
                           <TableCell className="font-medium">{item.spanish}</TableCell>
                           <TableCell>{item.english}</TableCell>
@@ -340,7 +560,7 @@ export default function EnglishIntro2Page() {
               <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
                 <CardHeader>
                   <CardTitle>{t('intro2Page.farewells')}</CardTitle>
-                  <CardDescription>Formas comunes de despedirse en diferentes situaciones.</CardDescription>
+                  <CardDescription>Formas comunes de despedirse.</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <Table>
@@ -351,7 +571,7 @@ export default function EnglishIntro2Page() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {farewellsData.map((item, index) => (
+                      {greetingsAndFarewellsData.slice(4).map((item, index) => (
                         <TableRow key={index}>
                           <TableCell className="font-medium">{item.spanish}</TableCell>
                           <TableCell>{item.english}</TableCell>
@@ -362,12 +582,14 @@ export default function EnglishIntro2Page() {
                 </CardContent>
               </Card>
             );
+          case 'mixed2':
+            return <MixedExercise title="Ejercicios Mixtos 2" data={mixedExercise2Data} onComplete={() => setTopicToComplete('mixed2')} />;
           case 'time':
             return (
               <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
                 <CardHeader>
                   <CardTitle>{t('intro2Page.time')}</CardTitle>
-                  <CardDescription>Estudia cómo decir la hora en inglés con esta guía visual.</CardDescription>
+                  <CardDescription>Estudia cómo decir la hora en inglés.</CardDescription>
                 </CardHeader>
                 <CardContent className="flex flex-col items-center gap-6">
                   {timeImage && (
@@ -381,21 +603,13 @@ export default function EnglishIntro2Page() {
                       />
                     </div>
                   )}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full text-sm">
-                    <div className="p-4 bg-muted rounded-lg">
-                      <h4 className="font-bold mb-2">O'clock</h4>
-                      <p>Se usa para las horas en punto. Ej: 3:00 - It's three o'clock.</p>
-                    </div>
-                    <div className="p-4 bg-muted rounded-lg">
-                      <h4 className="font-bold mb-2">Past / To</h4>
-                      <p>Usamos "past" para los minutos 1-30 y "to" para los minutos 31-59.</p>
-                    </div>
-                  </div>
                 </CardContent>
               </Card>
             );
           case 'time-exercise':
             return <TimeExercise onComplete={() => setTopicToComplete('time-exercise')} />;
+          case 'countries':
+            return <CountriesExercise onComplete={() => setTopicToComplete('countries')} />;
           default:
             return (
                 <Card className="shadow-soft rounded-lg border-2 border-brand-purple min-h-[500px]">
@@ -404,14 +618,13 @@ export default function EnglishIntro2Page() {
                   </CardHeader>
                   <CardContent>
                     <p>Contenido para {topic?.name} vendrá aquí.</p>
-                     {topic && (topic.key.includes('exercise') || topic.key.includes('mixed')) && (
-                        <Button className="mt-4" onClick={() => setTopicToComplete(topic.key)}>Completar Ejercicio (Placeholder)</Button>
-                    )}
                   </CardContent>
                 </Card>
             );
         }
     };
+
+    if (!isClient) return <div className="flex h-screen items-center justify-center"><Loader2 className="h-16 w-16 animate-spin text-primary" /></div>;
 
     return (
         <div className="flex w-full flex-col min-h-screen ingles-dashboard-bg">
@@ -432,7 +645,7 @@ export default function EnglishIntro2Page() {
                     <CardContent>
                       <nav>
                         <ul className="space-y-1">
-                          {learningPath.map((item, index) => {
+                          {learningPath.map((item) => {
                               const StatusIcon = ICONS[item.status];
                               return (
                                 <li
