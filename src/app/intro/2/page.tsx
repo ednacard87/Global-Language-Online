@@ -38,7 +38,6 @@ import { getEnglishIntro2PathData, EnglishIntro2PathItem } from '@/lib/course-da
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
-// Icons mapping for the learning path
 const ICONS = {
   locked: Lock,
   active: BookOpen,
@@ -116,14 +115,6 @@ const countriesExerciseData = [
     { pais: 'Holanda', country: 'Netherlands', nationality: 'Dutch', language: 'Dutch' },
     { pais: 'Venezuela', country: 'Venezuela', nationality: 'Venezuelan', language: 'Spanish' },
 ];
-
-const progressStorageVersion = "_v2_sequential";
-
-interface Student {
-    role?: 'admin' | 'student';
-    lessonProgress?: any;
-    progress?: Record<string, number>;
-}
 
 const TipContent = () => (
     <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
@@ -460,14 +451,14 @@ const TimeExercise = ({ onComplete }: { onComplete: () => void }) => {
     );
 };
 
-const MixedExercise = ({ title, data, onComplete }: { title: string, data: { spanish: string, answer: string[] }[], onComplete: () => void }) => {
+const SimpleExercise = ({ title, exerciseData, onComplete }: { title: string; exerciseData: { spanish: string, english: string[] }[], onComplete: () => void }) => {
     const { toast } = useToast();
     const [currentIndex, setCurrentIndex] = useState(0);
     const [userAnswer, setUserAnswer] = useState('');
     const [validation, setValidation] = useState<ValidationStatus>('unchecked');
 
     const handleCheck = () => {
-        const correctAnswers = data[currentIndex].answer.map(ans => ans.toLowerCase().replace(/[.?,]/g, ''));
+        const correctAnswers = exerciseData[currentIndex].english.map(ans => ans.toLowerCase().replace(/[.?,]/g, ''));
         const input = userAnswer.trim().toLowerCase().replace(/[.?,]/g, '');
         const isCorrect = correctAnswers.includes(input);
         setValidation(isCorrect ? 'correct' : 'incorrect');
@@ -476,7 +467,7 @@ const MixedExercise = ({ title, data, onComplete }: { title: string, data: { spa
     };
 
     const handleNext = () => {
-        if (currentIndex < data.length - 1) {
+        if (currentIndex < exerciseData.length - 1) {
             setCurrentIndex(prev => prev + 1);
             setUserAnswer('');
             setValidation('unchecked');
@@ -489,7 +480,7 @@ const MixedExercise = ({ title, data, onComplete }: { title: string, data: { spa
         <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
             <CardHeader><CardTitle>{title}</CardTitle></CardHeader>
             <CardContent className="space-y-4">
-                <p className="text-lg font-medium">Traduce: "{data[currentIndex].spanish}"</p>
+                <p className="text-lg font-medium">Traduce: "{exerciseData[currentIndex].spanish}"</p>
                 <Input value={userAnswer} onChange={e => setUserAnswer(e.target.value)} className={cn(validation === 'correct' && 'border-green-500', validation === 'incorrect' && 'border-destructive')} />
             </CardContent>
             <CardFooter className="justify-between">
@@ -628,6 +619,63 @@ const CountriesExercise = ({ onComplete }: { onComplete: () => void }) => {
     );
 };
 
+const ReadingExercise = ({ onComplete }: { onComplete: () => void }) => {
+    const [userAnswers, setUserAnswers] = useState<Record<string, string>>({});
+    const [validationStatus, setValidationStatus] = useState<Record<string, ValidationStatus>>({});
+    const { toast } = useToast();
+
+    const handleInputChange = (id: string, value: string) => setUserAnswers(prev => ({ ...prev, [id]: value }));
+
+    const handleCheckReading = () => {
+        const newValidation: Record<string, ValidationStatus> = {};
+        let allCorrect = true;
+        readingData.questions.forEach(q => {
+            const isCorrect = (userAnswers[q.id] || '').trim().toLowerCase() === q.answer.toLowerCase();
+            if (!isCorrect) allCorrect = false;
+            newValidation[q.id] = isCorrect ? 'correct' : 'incorrect';
+        });
+        setValidationStatus(newValidation);
+        if (allCorrect) {
+            toast({ title: '¡Muy bien!', description: 'Has respondido todo correctamente.' });
+            onComplete();
+        } else {
+            toast({ variant: 'destructive', title: 'Algunas respuestas son incorrectas.' });
+        }
+    };
+    
+    return (
+        <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+            <CardHeader><CardTitle>Lectura: {readingData.title}</CardTitle></CardHeader>
+            <CardContent className="space-y-4">
+                <p className="text-lg leading-relaxed bg-muted p-4 rounded-md">{readingData.content}</p>
+                <div className="space-y-4 border-t pt-4">
+                {readingData.questions.map(q => (
+                    <div key={q.id}>
+                        <Label htmlFor={q.id} className="text-base">{q.question}</Label>
+                        <Input id={q.id} value={userAnswers[q.id] || ''} onChange={e => handleInputChange(q.id, e.target.value)}
+                            className={cn('mt-1', validationStatus[q.id] === 'correct' && 'border-green-500', validationStatus[q.id] === 'incorrect' && 'border-destructive')} />
+                    </div>
+                ))}
+                </div>
+            </CardContent>
+            <CardFooter><Button onClick={handleCheckReading}>Verificar Lectura</Button></CardFooter>
+        </Card>
+    );
+};
+
+const readingData = {
+    title: 'Mi Rutina Diaria',
+    content: "Hola, me llamo Carlos. Cada mañana, me levanto a las siete. Bebo café y leo las noticias. Trabajo en una oficina. Por la tarde, me gusta caminar en el parque. Por la noche, ceno con mi familia y vemos la televisión. A las diez de la noche, me voy a dormir. ¡Buenas noches!",
+    questions: [
+        { id: 'q1', question: '¿A qué hora se levanta Carlos?', answer: 'a las siete' },
+        { id: 'q2', question: '¿Qué bebe por la mañana?', answer: 'café' },
+        { id: 'q3', question: '¿Qué hace por la tarde?', answer: 'caminar en el parque' },
+    ]
+};
+
+const progressStorageKey = 'progress_espanol_intro_2_v1';
+const mainProgressKey = 'progress_espanol_intro_2';
+
 export default function EnglishIntro2Page() {
     const { t } = useTranslation();
     const { toast } = useToast();
@@ -673,7 +721,7 @@ export default function EnglishIntro2Page() {
             setSelectedTopic(firstActive?.key || path[0].key);
         }
 
-    }, [isAdmin, initialLearningPath, studentProfile, isUserLoading, isProfileLoading, t, selectedTopic, isClient]);
+    }, [isAdmin, initialLearningPath, studentProfile, isUserLoading, isProfileLoading, t, isClient, selectedTopic]);
 
     const progress = useMemo(() => {
         const completedTopics = learningPath.filter(t => t.status === 'completed').length;
@@ -694,31 +742,23 @@ export default function EnglishIntro2Page() {
     useEffect(() => {
         if (!topicToComplete) return;
 
-        let unlockedTopic: EnglishIntro2PathItem | null = null;
-        let pathWasUpdated = false;
+        setLearningPath(prevPath => {
+            const newPath = [...prevPath];
+            const currentIndex = newPath.findIndex((t) => t.key === topicToComplete);
 
-        const newPath = [...learningPath];
-        const currentIndex = newPath.findIndex((t) => t.key === topicToComplete);
+            if (currentIndex !== -1 && newPath[currentIndex].status !== 'completed') {
+                newPath[currentIndex].status = 'completed';
 
-        if (currentIndex !== -1 && newPath[currentIndex].status !== 'completed') {
-            newPath[currentIndex].status = 'completed';
-            pathWasUpdated = true;
-
-            if (currentIndex + 1 < newPath.length && newPath[currentIndex + 1].status === 'locked') {
-                newPath[currentIndex + 1].status = 'active';
-                unlockedTopic = newPath[currentIndex + 1];
+                if (currentIndex + 1 < newPath.length && newPath[currentIndex + 1].status === 'locked') {
+                    newPath[currentIndex + 1].status = 'active';
+                    setSelectedTopic(newPath[currentIndex + 1].key);
+                }
             }
-        }
-        
-        if (pathWasUpdated) {
-            setLearningPath(newPath);
-            if (unlockedTopic) {
-                setSelectedTopic(unlockedTopic.key);
-            }
-        }
+            return newPath;
+        });
         
         setTopicToComplete(null);
-    }, [topicToComplete, learningPath]);
+    }, [topicToComplete]);
 
     const handleTopicSelect = (topicKey: string) => {
         const topic = learningPath.find((t) => t.key === topicKey);
@@ -856,14 +896,15 @@ export default function EnglishIntro2Page() {
           case 'time-exercise': return <TimeExercise onComplete={() => setTopicToComplete('time-exercise')} />;
           case 'countries': return <CountriesExercise onComplete={() => setTopicToComplete('countries')} />;
           default:
-            const topic = learningPath.find((t) => t.key === selectedTopic);
             return (
                 <Card className="shadow-soft rounded-lg border-2 border-brand-purple min-h-[500px]">
                   <CardHeader>
-                    <CardTitle>{topic?.name || 'Cargando...'}</CardTitle>
+                    <CardTitle>Cargando...</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p>Contenido para {topic?.name} vendrá aquí.</p>
+                    <div className="flex justify-center items-center h-48">
+                        <Loader2 className="animate-spin h-10 w-10 text-primary" />
+                    </div>
                   </CardContent>
                 </Card>
             );
