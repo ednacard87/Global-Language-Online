@@ -40,7 +40,7 @@ export const espanolIntroPathData: PathItem[] = [
     { type: 'practice', icon: Puzzle, label: 'espanolIntroCourse.quiz1', href: '#', storageKey: 'progress_es_quiz_1' },
     { type: 'class', icon: BookOpen, label: 'espanolIntroCourse.intro2', href: '/espanol/intro/2', storageKey: 'progress_espanol_intro_2' },
     { type: 'practice', icon: Puzzle, label: 'espanolIntroCourse.quiz2', href: '#', storageKey: 'progress_es_quiz_2' },
-    { type: 'practice', icon: Puzzle, label: 'espanolIntroCourse.finalTestSpanish', href: '#', storageKey: 'progress_espanol_quiz_final' },
+    { type: 'practice', icon: Puzzle, label: 'espanolIntroCourse.finalTest', href: '#', storageKey: 'progress_espanol_quiz_final' },
     { type: 'end', icon: Flag, label: 'dashboard.finish' }
 ];
 
@@ -228,15 +228,15 @@ export interface EnglishIntro2PathItem {
     status: 'completed' | 'active' | 'locked';
 }
 
-export const getEnglishIntro2PathData = (): EnglishIntro2PathItem[] => [
-    { key: 'tip', name: 'Tip Importante', icon: Lightbulb, status: 'active' },
-    { key: 'mixed1', name: 'Ejercicios Mixtos 1', icon: PenSquare, status: 'locked' },
-    { key: 'greetings', name: 'Saludos', icon: Hand, status: 'locked' },
-    { key: 'farewells', name: 'Despedidas', icon: MessageSquare, status: 'locked' },
-    { key: 'mixed2', name: 'Ejercicios Mixtos 2', icon: PenSquare, status: 'locked' },
-    { key: 'time', name: 'La Hora', icon: Clock, status: 'locked' },
-    { key: 'time-exercise', name: 'Ejercicios Hora', icon: PenSquare, status: 'locked' },
-    { key: 'countries', name: 'Paises y Nacionalidades', icon: BookOpen, status: 'locked' },
+export const getEnglishIntro2PathData = (t: (key: string) => string): EnglishIntro2PathItem[] => [
+    { key: 'tip', name: t('intro2Page.tip'), icon: Lightbulb, status: 'active' },
+    { key: 'mixed1', name: t('intro2Page.mixed1'), icon: PenSquare, status: 'locked' },
+    { key: 'greetings', name: t('intro2Page.greetings'), icon: Hand, status: 'locked' },
+    { key: 'farewells', name: t('intro2Page.farewells'), icon: MessageSquare, status: 'locked' },
+    { key: 'mixed2', name: t('intro2Page.mixed2'), icon: PenSquare, status: 'locked' },
+    { key: 'time', name: t('intro2Page.time'), icon: Clock, status: 'locked' },
+    { key: 'time-exercise', name: t('intro2Page.timeExercise'), icon: PenSquare, status: 'locked' },
+    { key: 'countries', name: t('intro2Page.countries'), icon: BookOpen, status: 'locked' },
 ];
 
 export interface Exercise {
@@ -704,4 +704,5 @@ export const getKidsB1MainPath = (t: (key: string) => string): PathItem[] => [
     { type: 'class', icon: GraduationCap, label: 'kidsB1.connectors', href: '/kids/b1/connectors', storageKey: 'progress_kids_b1_connectors' },
     { type: 'end', icon: Flag, label: 'dashboard.finish' }
 ];
+
 
