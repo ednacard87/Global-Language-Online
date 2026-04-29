@@ -30,7 +30,7 @@ export const kidsIntroPathData: PathItem[] = [
     { type: 'practice', icon: Puzzle, label: 'kidsPage.quiz1k', href: '/kids/quiz/1', storageKey: 'kidsQuiz1Progress' },
     { type: 'class', icon: Smile, label: 'kidsPage.intro2', href: '/kids/intro2', storageKey: 'kidsIntro2Progress' },
     { type: 'practice', icon: Puzzle, label: 'kidsPage.quiz2k', href: '/kids/quiz/2', storageKey: 'kidsQuiz2Progress' },
-    { type: 'practice', icon: Puzzle, label: 'kidsPage.finalTestKids', href: '/kids/quiz/final', storageKey: 'kidsFinalTestProgress' },
+    { type: 'practice', icon: Puzzle, label: 'espanolIntroCourse.finalTestKids', href: '/kids/quiz/final', storageKey: 'kidsFinalTestProgress' },
     { type: 'end', icon: Flag, label: 'dashboard.finish' }
 ];
 
@@ -40,7 +40,7 @@ export const espanolIntroPathData: PathItem[] = [
     { type: 'practice', icon: Puzzle, label: 'espanolIntroCourse.quiz1', href: '#', storageKey: 'progress_es_quiz_1' },
     { type: 'class', icon: BookOpen, label: 'espanolIntroCourse.intro2', href: '/espanol/intro/2', storageKey: 'progress_espanol_intro_2' },
     { type: 'practice', icon: Puzzle, label: 'espanolIntroCourse.quiz2', href: '#', storageKey: 'progress_es_quiz_2' },
-    { type: 'practice', icon: Puzzle, label: 'espanolIntroCourse.finalTest', href: '#', storageKey: 'progress_espanol_quiz_final' },
+    { type: 'practice', icon: Puzzle, label: 'espanolIntroCourse.finalTestSpanish', href: '#', storageKey: 'progress_espanol_quiz_final' },
     { type: 'end', icon: Flag, label: 'dashboard.finish' }
 ];
 
@@ -201,6 +201,34 @@ export interface KidsIntro2PathItem {
 }
 
 export const getKidsIntro2PathData = (): KidsIntro2PathItem[] => [
+    { key: 'tip', name: 'Tip Importante', icon: Lightbulb, status: 'active' },
+    { key: 'mixed1', name: 'Ejercicios Mixtos 1', icon: PenSquare, status: 'locked' },
+    { key: 'greetings', name: 'Saludos', icon: Hand, status: 'locked' },
+    { key: 'farewells', name: 'Despedidas', icon: MessageSquare, status: 'locked' },
+    { key: 'mixed2', name: 'Ejercicios Mixtos 2', icon: PenSquare, status: 'locked' },
+    { key: 'time', name: 'La Hora', icon: Clock, status: 'locked' },
+    { key: 'time-exercise', name: 'Ejercicios Hora', icon: PenSquare, status: 'locked' },
+    { key: 'countries', name: 'Paises y Nacionalidades', icon: BookOpen, status: 'locked' },
+];
+
+export type EnglishIntro2PathKey =
+  | 'tip'
+  | 'mixed1'
+  | 'greetings'
+  | 'farewells'
+  | 'mixed2'
+  | 'time'
+  | 'time-exercise'
+  | 'countries';
+
+export interface EnglishIntro2PathItem {
+    key: EnglishIntro2PathKey;
+    name: string;
+    icon: React.ElementType,
+    status: 'completed' | 'active' | 'locked';
+}
+
+export const getEnglishIntro2PathData = (): EnglishIntro2PathItem[] => [
     { key: 'tip', name: 'Tip Importante', icon: Lightbulb, status: 'active' },
     { key: 'mixed1', name: 'Ejercicios Mixtos 1', icon: PenSquare, status: 'locked' },
     { key: 'greetings', name: 'Saludos', icon: Hand, status: 'locked' },
