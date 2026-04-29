@@ -28,6 +28,7 @@ import { NumbersGrid } from '@/components/kids/numbers-grid';
 import { AbcMemoryGame } from '@/components/kids/exercises/abc-memory-game';
 import { NumbersMemoryGame } from '@/components/kids/exercises/numbers-memory-game';
 import { ToBeMemoryGame } from '@/components/kids/exercises/tobe-memory-game';
+import { TranslationExercise } from '@/components/dashboard/translation-exercise';
 import { PossessivesMemoryGame } from '@/components/kids/exercises/possessives-memory-game';
 
 const ICONS = {
@@ -203,10 +204,11 @@ export default function KidsIntro1Page() {
             case 'possessives-memory':
                 return <PossessivesMemoryGame onGameComplete={() => setTopicToComplete('possessives-memory')} />;
             default:
+                const topic = learningPath.find(t => t.key === selectedTopic);
                 return (
                     <Card className="h-full">
                         <CardHeader className="text-center">
-                            <CardTitle className="text-3xl">¡Bienvenido a la Aventura Intro 1!</CardTitle>
+                            <CardTitle className="text-3xl">{topic?.name || '¡Bienvenido a la Aventura Intro 1!'}</CardTitle>
                         </CardHeader>
                         <CardContent className="text-center px-6 pb-6">
                             <p className="pt-4 text-lg">Selecciona un tema de la ruta de aprendizaje para comenzar.</p>
@@ -220,7 +222,7 @@ export default function KidsIntro1Page() {
     };
     
     return (
-        <div className="flex w-full flex-col min-h-screen">
+        <div className="flex w-full flex-col min-h-screen kids-page-container">
           <DashboardHeader />
           <main className="flex-1 p-4 md:p-8">
             <div className="max-w-7xl mx-auto">
