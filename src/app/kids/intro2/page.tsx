@@ -52,11 +52,11 @@ const TipContent = () => (
                     <AccordionContent className="space-y-4 pt-2">
                         <p className="font-semibold">PERSONA, ANIMAL O COSA (singular- plural)</p>
                         <div>
-                            <h4 className="font-medium text-primary">REGULAR: noun + s</h4>
+                            <h4 className="font-medium text-primary">REGULAR: noun+ s</h4>
                             <p className="font-mono text-sm bg-muted p-2 rounded-md mt-1">computer: computers // house: houses // car: cars</p>
                         </div>
                         <div>
-                            <h4 className="font-medium text-primary">IRREGULAR: noun + es</h4>
+                            <h4 className="font-medium text-primary">IRREGULAR: noun+es</h4>
                             <ul className="list-disc pl-5 mt-1 space-y-2 text-sm">
                                 <li>For nouns ending {'=>'} s, z, sh, ch, x (bus) = “ES”<br/><span className="font-mono bg-muted px-2 py-1 rounded">Ex: address: Addresses // beach: beaches // bus: buses</span></li>
                                 <li>For nouns ending {'=>'} “Y” cancelamos la “Y” agregamos “ies”<br/><span className="font-mono bg-muted px-2 py-1 rounded">Ex: country: countries // university: universities</span></li>
@@ -76,7 +76,7 @@ const TipContent = () => (
                              </CardHeader>
                              <CardContent className="text-sm space-y-3">
                                  <p><strong className="text-foreground">En español:</strong> sustantivo + adjetivo.<br/><span className="font-mono text-muted-foreground">Ejemplo: El carro blanco, el lapicero azul, el computador gris</span></p>
-                                 <p><strong className="text-foreground">En INGLÉS:</strong> adjetivo + sustantivo.<br/><span className="font-mono text-muted-foreground">Examples: The white car, The red pen, the grey computer</span></p>
+                                 <p><strong className="text-foreground">En INGLÉS:</strong> adjetivo + sustantivo.<br/><span className="font-mono text-muted-foreground">Examples: El carro blanco : the white car, El lapicero rojo : The red pen, el computador gris : the grey computer</span></p>
                              </CardContent>
                          </Card>
                     </AccordionContent>
@@ -89,12 +89,12 @@ const TipContent = () => (
                         <div>
                             <h4 className="font-medium text-primary">VERBOS INFINITIVO = "TO"</h4>
                             <p className="text-sm text-muted-foreground">Un verbo en infinitivo es un verbo que no está conjugado.</p>
-                            <p className="font-mono bg-muted p-2 rounded-md mt-1 text-sm">ESPAÑOL {'=>'} ENGLISH<br/>AR = Hablar = TO speak<br/>ER = Comer = TO eat<br/>IR = Vivir = TO Live</p>
+                            <p className="font-mono text-sm bg-muted p-2 rounded-md mt-1">{'ESPAÑOL => ENGLISH'}<br/>{'AR = Hablar = TO speak'}<br/>{'ER = Comer = TO eat'}<br/>{'IR = Vivir = TO Live'}</p>
                         </div>
                          <div>
                             <h4 className="font-medium text-primary">CONJUGACIÓN</h4>
                             <p className="text-sm text-muted-foreground">Cuando estamos utilizando la conjugación el verbo pierde la palabra = "To".</p>
-                            <p className="font-mono bg-muted p-2 rounded-md mt-1 text-sm">pronombre + verbo (yo hablo) {'=>'} i + speak<br/>i to speak = yo hablar</p>
+                            <p className="font-mono bg-muted p-2 rounded-md mt-1 text-sm">{'pronombre + verbo (yo hablo) => i + speak'}<br/>{'i to speak = yo hablar'}</p>
                         </div>
                     </AccordionContent>
                 </AccordionItem>
@@ -109,10 +109,9 @@ const TipContent = () => (
                              <li><strong>Demostrativos:</strong> This – these – that – those</li>
                          </ul>
                          <p className="font-mono bg-muted p-2 rounded-md mt-1 text-sm">
-                            he is at home {'=>'} pronoun<br/>
-                            Thomas is at home {'=>'} Nombre propio<br/>
-                            my father is at home {'=>'} Sustantivo<br/>
-                            esta es mi casa = this is my house {'=>'} Demostrativo
+                            {'he is at home => pronoun'}<br/>
+                            {'Thomas is at home => Nombre propio'}<br/>
+                            {'my father is at home => Sustantivo'}
                         </p>
                           <div className="flex items-start gap-2 p-2 bg-destructive/10 border-l-4 border-destructive text-destructive-foreground/80 rounded-r-md">
                             <X className="h-5 w-5 mt-0.5 flex-shrink-0"/>
@@ -438,7 +437,7 @@ export default function Intro2Page() {
                             <nav>
                                 <ul className="space-y-1">
                                 {intro2Path.map((item, index) => {
-                                    const Icon = ICONS[item.status];
+                                    const Icon = item.icon;
                                     const isLocked = item.status === 'locked';
                                     const isSelected = selectedTopic === item.name;
                                     const isActive = item.status === 'active';
@@ -450,7 +449,7 @@ export default function Intro2Page() {
                                                 (!isLocked || isAdmin) && "hover:bg-muted",
                                                 isSelected ? "bg-muted text-primary font-semibold" : (isActive ? "text-foreground" : "text-muted-foreground")
                                             )}>
-                                                <item.icon className={cn("h-5 w-5", isLocked && !isAdmin ? "text-yellow-500" : (item.status === 'completed' || isSelected || isActive) ? "text-primary" : "text-muted-foreground")} />
+                                                <Icon className={cn("h-5 w-5", isLocked && !isAdmin ? "text-yellow-500" : (item.status === 'completed' || isSelected || isActive) ? "text-primary" : "text-muted-foreground")} />
                                                 <span>{item.name}</span>
                                             </div>
                                         </li>
