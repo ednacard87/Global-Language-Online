@@ -17,7 +17,6 @@ export const englishIntroPathData: PathItem[] = [
     { type: 'start', icon: Footprints, label: 'dashboard.start' },
     { type: 'class', icon: BookOpen, label: 'intro1Page.title', href: '/intro/1', storageKey: 'intro1Progress' },
     { type: 'practice', icon: Puzzle, label: 'introCoursePage.quiz1', href: '/quiz-payment/1', storageKey: 'quiz1Progress' },
-    { type: 'class', icon: BookOpen, label: 'introCoursePage.intro2', href: '/intro/2', storageKey: 'intro2Progress' },
     { type: 'practice', icon: Puzzle, label: 'introCoursePage.quiz2', href: '/quiz-payment/2', storageKey: 'quiz2Progress' },
     { type: 'practice', icon: Ear, label: 'introCoursePage.listening', href: '/listening-practice', progress: 0, points: 20, storageKey: 'listeningProgress'},
     { type: 'practice', icon: Mic, label: 'introCoursePage.speaking', href: '#', progress: 0, points: 20, storageKey: 'speakingProgress'},
@@ -66,7 +65,6 @@ export const introPathItemsData: PathItem[] = [
     {type: 'start', icon: Footprints, label: 'dashboard.start', points: 0},
     {type: 'class', icon: BookOpen, label: 'intro1Page.title', href: '/intro/1', progress: 0, points: 20, storageKey: 'intro1Progress'},
     {type: 'practice', icon: Puzzle, label: 'introCoursePage.quiz1', href: '/quiz/1', progress: 0, points: 10, className: 'animate-pulse-glow', storageKey: 'quiz1Progress'},
-    {type: 'class', icon: BookOpen, label: 'introCoursePage.intro2', href: '/intro/2', storageKey: 'intro2Progress', points: 20},
     {type: 'practice', icon: Puzzle, label: 'introCoursePage.quiz2', href: '/quiz/2', progress: 0, points: 10, storageKey: 'quiz2Progress'},
     {type: 'practice', icon: Ear, label: 'introCoursePage.listening', href: '/listening-practice', progress: 0, points: 20, storageKey: 'listeningProgress'},
     {type: 'practice', icon: Mic, label: 'introCoursePage.speaking', href: '#', progress: 0, points: 20, storageKey: 'speakingProgress'},
@@ -155,18 +153,19 @@ export type Intro2PathKey =
 export interface Intro2PathItem {
     key: Intro2PathKey;
     name: string;
+    icon: React.ElementType,
     status: 'completed' | 'active' | 'locked';
 }
 
 export const getIntro2PathData = (t: (key: string, values?: { [key: string]: string | number }) => string): Intro2PathItem[] => [
-    { key: 'tip', name: t('intro2Page.tip'), icon: Lightbulb },
-    { key: 'mixed1', name: t('intro2Page.mixed1'), icon: PenSquare },
-    { key: 'greetings', name: t('intro2Page.greetings'), icon: Hand },
-    { key: 'farewells', name: t('intro2Page.farewells'), icon: MessageSquare },
-    { key: 'mixed2', name: t('intro2Page.mixed2'), icon: PenSquare },
-    { key: 'time', name: t('intro2Page.time'), icon: Clock },
-    { key: 'time-exercise', name: t('intro2Page.timeExercise'), icon: PenSquare },
-    { key: 'countries', name: t('intro2Page.countries'), icon: BookOpen },
+    { key: 'tip', name: t('intro2Page.tip'), icon: Lightbulb, status: 'active' },
+    { key: 'mixed1', name: t('intro2Page.mixed1'), icon: PenSquare, status: 'locked' },
+    { key: 'greetings', name: t('intro2Page.greetings'), icon: Hand, status: 'locked' },
+    { key: 'farewells', name: t('intro2Page.farewells'), icon: MessageSquare, status: 'locked' },
+    { key: 'mixed2', name: t('intro2Page.mixed2'), icon: PenSquare, status: 'locked' },
+    { key: 'time', name: t('intro2Page.time'), icon: Clock, status: 'locked' },
+    { key: 'time-exercise', name: t('intro2Page.timeExercise'), icon: PenSquare, status: 'locked' },
+    { key: 'countries', name: t('intro2Page.countries'), icon: BookOpen, status: 'locked' },
 ];
 
 export interface Exercise {
