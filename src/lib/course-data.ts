@@ -26,10 +26,10 @@ export const englishIntroPathData: PathItem[] = [
 export const kidsIntroPathData: PathItem[] = [
     { type: 'start', icon: Footprints, label: 'dashboard.start' },
     { type: 'class', icon: Smile, label: 'kidsPage.intro1', href: '/kids/intro1', storageKey: 'kidsIntro1Progress' },
-    { type: 'practice', icon: Puzzle, label: 'kidsPage.quiz1', href: '/kids/quiz/1', storageKey: 'kidsQuiz1Progress' },
+    { type: 'practice', icon: Puzzle, label: 'kidsPage.quiz1k', href: '/kids/quiz/1', storageKey: 'kidsQuiz1Progress' },
     { type: 'class', icon: Smile, label: 'kidsPage.intro2', href: '/kids/intro2', storageKey: 'kidsIntro2Progress' },
-    { type: 'practice', icon: Puzzle, label: 'kidsPage.quiz2', href: '/kids/quiz/2', storageKey: 'kidsQuiz2Progress' },
-    { type: 'practice', icon: Puzzle, label: 'kidsPage.finalTest', href: '/kids/quiz/final', storageKey: 'kidsFinalTestProgress' },
+    { type: 'practice', icon: Puzzle, label: 'kidsPage.quiz2k', href: '/kids/quiz/2', storageKey: 'kidsQuiz2Progress' },
+    { type: 'practice', icon: Puzzle, label: 'kidsPage.finalTestKids', href: '/kids/quiz/final', storageKey: 'kidsFinalTestProgress' },
     { type: 'end', icon: Flag, label: 'dashboard.finish' }
 ];
 
@@ -39,7 +39,7 @@ export const espanolIntroPathData: PathItem[] = [
     { type: 'practice', icon: Puzzle, label: 'introCoursePage.quiz1', href: '/quiz-payment/1', storageKey: 'progress_es_quiz_1' },
     { type: 'class', icon: BookOpen, label: 'introCoursePage.intro2', href: '/espanol/intro/2', storageKey: 'progress_espanol_intro_2' },
     { type: 'practice', icon: Puzzle, label: 'introCoursePage.quiz2', href: '/quiz-payment/2', storageKey: 'progress_es_quiz_2' },
-    { type: 'practice', icon: Puzzle, label: 'kidsPage.finalTest', href: '/quiz-payment/final', storageKey: 'progress_es_quiz_final' },
+    { type: 'practice', icon: Puzzle, label: 'espanolIntroPage.finalTest', href: '/quiz-payment/final', storageKey: 'progress_es_quiz_final' },
     { type: 'end', icon: Flag, label: 'dashboard.finish' }
 ];
 
