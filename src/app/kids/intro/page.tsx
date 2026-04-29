@@ -67,15 +67,16 @@ export default function KidsIntroductoryCoursePage() {
               return finalItem;
           }
 
-          if (item.label === 'kidsPage.quiz1k' && studentProfile?.unlockedQuizzes?.quiz1) {
+          // Special unlocking for quizzes via admin panel
+          if (item.label === 'kidsPage.quiz1' && studentProfile?.unlockedQuizzes?.quiz1) {
               finalItem.locked = false;
               return finalItem;
           }
-          if (item.label === 'kidsPage.quiz2k' && studentProfile?.unlockedQuizzes?.quiz2) {
+          if (item.label === 'kidsPage.quiz2' && studentProfile?.unlockedQuizzes?.quiz2) {
               finalItem.locked = false;
               return finalItem;
           }
-           if (item.label === 'kidsPage.finalTestKids' && studentProfile?.unlockedQuizzes?.finalQuiz) {
+           if (item.label === 'kidsPage.finalTest' && studentProfile?.unlockedQuizzes?.finalQuiz) {
               finalItem.locked = false;
               return finalItem;
           }
@@ -89,9 +90,9 @@ export default function KidsIntroductoryCoursePage() {
               } else {
                 let isLocked = (previousItem.progress ?? 0) < 100;
                 
-                if (item.label === 'kidsPage.quiz1k' && (previousItem.progress ?? 0) >= 90) {
+                if (item.label === 'kidsPage.quiz1' && (previousItem.progress ?? 0) >= 90) {
                     isLocked = false;
-                } else if (item.label === 'kidsPage.quiz2k' && (previousItem.progress ?? 0) >= 90) {
+                } else if (item.label === 'kidsPage.quiz2' && (previousItem.progress ?? 0) >= 90) {
                     isLocked = false;
                 }
 
