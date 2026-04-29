@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -52,8 +51,8 @@ export default function EnglishIntro2Page() {
     const initialLearningPath = useMemo(() => getEnglishIntro2PathData(t), [t]);
 
     useEffect(() => {
-        if (isProfileLoading) return;
-
+        if (isUserLoading || isProfileLoading) return;
+        
         let path = initialLearningPath.map(item => ({...item}));
 
         if (isAdmin) {
@@ -71,7 +70,7 @@ export default function EnglishIntro2Page() {
         const firstActive = path.find(p => p.status === 'active');
         setSelectedTopic(firstActive?.key || path[0].key);
 
-    }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading]);
+    }, [isAdmin, initialLearningPath, studentProfile, isUserLoading, isProfileLoading, t]);
 
     const progress = useMemo(() => {
         const completedTopics = learningPath.filter(t => t.status === 'completed').length;
@@ -91,26 +90,36 @@ export default function EnglishIntro2Page() {
 
     useEffect(() => {
         if (!topicToComplete) return;
-        setLearningPath(currentPath => {
-            const newPath = [...currentPath];
-            const currentIndex = newPath.findIndex((t) => t.key === topicToComplete);
 
-            if (currentIndex !== -1 && newPath[currentIndex].status !== 'completed') {
-                newPath[currentIndex].status = 'completed';
+        let unlockedTopic: EnglishIntro2PathItem | null = null;
+        let pathWasUpdated = false;
 
-                if (currentIndex + 1 < newPath.length && newPath[currentIndex + 1].status === 'locked') {
-                    newPath[currentIndex + 1].status = 'active';
-                    setSelectedTopic(newPath[currentIndex + 1].key);
-                    toast({
-                        title: '¡Siguiente tema desbloqueado!',
-                        description: `Ahora puedes continuar con ${newPath[currentIndex + 1].name}`,
-                    });
-                }
+        const newPath = [...learningPath];
+        const currentIndex = newPath.findIndex((t) => t.key === topicToComplete);
+
+        if (currentIndex !== -1 && newPath[currentIndex].status !== 'completed') {
+            newPath[currentIndex].status = 'completed';
+            pathWasUpdated = true;
+
+            if (currentIndex + 1 < newPath.length && newPath[currentIndex + 1].status === 'locked') {
+                newPath[currentIndex + 1].status = 'active';
+                unlockedTopic = newPath[currentIndex + 1];
             }
-            return newPath;
-        });
+        }
+        
+        if (pathWasUpdated) {
+            setLearningPath(newPath);
+            if (unlockedTopic) {
+                setSelectedTopic(unlockedTopic.key);
+                toast({
+                    title: '¡Siguiente tema desbloqueado!',
+                    description: `Ahora puedes continuar con ${unlockedTopic.name}`,
+                });
+            }
+        }
+        
         setTopicToComplete(null);
-    }, [topicToComplete, toast]);
+    }, [topicToComplete, toast, learningPath]);
 
     const handleTopicSelect = (topicKey: string) => {
         const topic = learningPath.find((t) => t.key === topicKey);
@@ -162,7 +171,7 @@ export default function EnglishIntro2Page() {
                     <CardContent>
                       <nav>
                         <ul className="space-y-1">
-                          {learningPath.map((item) => {
+                          {learningPath.map((item, index) => {
                               const StatusIcon = ICONS[item.status];
                               return (
                                 <li
@@ -199,4 +208,3 @@ export default function EnglishIntro2Page() {
         </div>
     );
 }
-    
