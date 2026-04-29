@@ -200,15 +200,15 @@ export interface Intro2PathItem {
     status: 'completed' | 'active' | 'locked';
 }
 
-export const getIntro2PathData = (t: (key: string, values?: { [key: string]: string | number }) => string): Intro2PathItem[] => [
-    { key: 'tip', name: t('intro2Page.tip'), icon: Lightbulb, status: 'active' },
-    { key: 'mixed1', name: t('intro2Page.mixed1'), icon: PenSquare, status: 'locked' },
-    { key: 'greetings', name: t('intro2Page.greetings'), icon: Hand, status: 'locked' },
-    { key: 'farewells', name: t('intro2Page.farewells'), icon: MessageSquare, status: 'locked' },
-    { key: 'mixed2', name: t('intro2Page.mixed2'), icon: PenSquare, status: 'locked' },
-    { key: 'time', name: t('intro2Page.time'), icon: Clock, status: 'locked' },
-    { key: 'time-exercise', name: t('intro2Page.timeExercise'), icon: PenSquare, status: 'locked' },
-    { key: 'countries', name: t('intro2Page.countries'), icon: BookOpen, status: 'locked' },
+export const getIntro2PathData = (): Intro2PathItem[] => [
+    { key: 'tip', name: 'Tip Importante', icon: Lightbulb, status: 'active' },
+    { key: 'mixed1', name: 'Ejercicios Mixtos 1', icon: PenSquare, status: 'locked' },
+    { key: 'greetings', name: 'Saludos', icon: Hand, status: 'locked' },
+    { key: 'farewells', name: 'Despedidas', icon: MessageSquare, status: 'locked' },
+    { key: 'mixed2', name: 'Ejercicios Mixtos 2', icon: PenSquare, status: 'locked' },
+    { key: 'time', name: 'La Hora', icon: Clock, status: 'locked' },
+    { key: 'time-exercise', name: 'Ejercicios Hora', icon: PenSquare, status: 'locked' },
+    { key: 'countries', name: 'Paises y Nacionalidades', icon: BookOpen, status: 'locked' },
 ];
 
 export interface Exercise {

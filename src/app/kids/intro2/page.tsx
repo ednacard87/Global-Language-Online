@@ -3,7 +3,6 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import {
   BookOpen,
   PenSquare,
@@ -31,7 +30,7 @@ import { useTranslation } from '@/context/language-context';
 import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Progress } from "@/components/ui/progress";
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from "@/hooks/use-toast";
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -301,7 +300,7 @@ export default function Intro2Page() {
         return studentProfile?.role === 'admin' || user.email === 'ednacard87@gmail.com';
     }, [user, studentProfile]);
     
-    const initialLearningPath = useMemo(() => getIntro2PathData(t), [t]);
+    const initialLearningPath = useMemo(() => getIntro2PathData(), []);
     
     useEffect(() => {
         setIsClient(true);
@@ -463,6 +462,7 @@ export default function Intro2Page() {
                                     const isLocked = item.status === 'locked';
                                     const isSelected = selectedTopic === item.name;
                                     const isActive = item.status === 'active';
+                                    const isCompleted = item.status === 'completed';
                                     
                                     return(
                                         <li key={item.key} onClick={() => handleTopicSelect(item.name)} className={cn(!isLocked || isAdmin ? "cursor-pointer" : "cursor-not-allowed")}>
@@ -471,7 +471,7 @@ export default function Intro2Page() {
                                                 (!isLocked || isAdmin) && "hover:bg-muted",
                                                 isSelected ? "bg-muted text-primary font-semibold" : (isActive ? "text-foreground" : "text-muted-foreground")
                                             )}>
-                                                <Icon className={cn("h-5 w-5", isLocked && !isAdmin ? "text-yellow-500" : (item.status === 'completed' || isSelected || isActive) ? "text-primary" : "text-muted-foreground")} />
+                                                {isCompleted ? <CheckCircle className="h-5 w-5 text-green-500" /> : (isLocked && !isAdmin ? <Lock className="h-5 w-5 text-yellow-500" /> : <Icon className="h-5 w-5 text-primary" />)}
                                                 <span>{item.name}</span>
                                             </div>
                                         </li>
