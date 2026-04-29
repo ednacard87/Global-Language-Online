@@ -116,7 +116,7 @@ export default function KidsIntro1Page() {
         }
         setLearningPath(path);
         const firstActive = path.find(p => p.status === 'active');
-        setSelectedTopic(firstActive?.key || path[0]?.key);
+        setSelectedTopic(firstActive?.key || path[0].key);
     }, [isAdmin, t, isClient, studentProfile, isProfileLoading, initialLearningPathData]);
     
     const progress = useMemo(() => {
@@ -232,7 +232,7 @@ export default function KidsIntro1Page() {
                         <Link href="/kids/intro" className="hover:underline text-sm text-muted-foreground">
                             {t('kidsPage.backToKidsCourse')}
                         </Link>
-                        <h1 className="text-4xl font-bold dark:text-primary">{t('kidsPage.intro1AdventureTitle')}</h1>
+                        <h1 className="text-4xl font-bold text-white dark:text-primary">{t('kidsPage.intro1AdventureTitle')}</h1>
                     </div>
                     {renderContent()}
                 </div>
@@ -245,7 +245,7 @@ export default function KidsIntro1Page() {
                         <nav>
                             <ul className="space-y-1">
                             {learningPath.map((item) => {
-                                const Icon = ICONS[item.status as keyof typeof ICONS] || item.icon;
+                                const Icon = ICONS[item.status] || item.icon;
                                 const isLocked = item.status === 'locked';
                                 const isSelected = selectedTopic === item.key;
                                 return (
