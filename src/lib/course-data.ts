@@ -27,10 +27,10 @@ export const englishIntroPathData: PathItem[] = [
 export const kidsIntroPathData: PathItem[] = [
     { type: 'start', icon: Footprints, label: 'dashboard.start' },
     { type: 'class', icon: Smile, label: 'kidsPage.intro1', href: '/kids/intro1', storageKey: 'kidsIntro1Progress' },
-    { type: 'practice', icon: Puzzle, label: 'kidsPage.quiz1', href: '/kids/quiz/1', storageKey: 'kidsQuiz1Progress' },
+    { type: 'practice', icon: Puzzle, label: 'kidsPage.quiz1k', href: '/kids/quiz/1', storageKey: 'kidsQuiz1Progress' },
     { type: 'class', icon: Smile, label: 'kidsPage.intro2', href: '/kids/intro2', storageKey: 'kidsIntro2Progress' },
-    { type: 'practice', icon: Puzzle, label: 'kidsPage.quiz2', href: '/kids/quiz/2', storageKey: 'kidsQuiz2Progress' },
-    { type: 'practice', icon: Puzzle, label: 'kidsPage.finalTest', href: '/kids/quiz/final', storageKey: 'kidsFinalTestProgress' },
+    { type: 'practice', icon: Puzzle, label: 'kidsPage.quiz2k', href: '/kids/quiz/2', storageKey: 'kidsQuiz2Progress' },
+    { type: 'practice', icon: Puzzle, label: 'kidsPage.finalTestKids', href: '/kids/quiz/final', storageKey: 'kidsFinalTestProgress' },
     { type: 'end', icon: Flag, label: 'dashboard.finish' }
 ];
 
@@ -40,7 +40,7 @@ export const espanolIntroPathData: PathItem[] = [
     { type: 'practice', icon: Puzzle, label: 'espanolIntroCourse.quiz1', href: '#', storageKey: 'progress_es_quiz_1' },
     { type: 'class', icon: BookOpen, label: 'espanolIntroCourse.intro2', href: '/espanol/intro/2', storageKey: 'progress_espanol_intro_2' },
     { type: 'practice', icon: Puzzle, label: 'espanolIntroCourse.quiz2', href: '#', storageKey: 'progress_es_quiz_2' },
-    { type: 'practice', icon: Puzzle, label: 'espanolIntroCourse.finalTest', href: '#', storageKey: 'progress_es_quiz_final' },
+    { type: 'practice', icon: Puzzle, label: 'espanolIntroCourse.finalTest', href: '#', storageKey: 'progress_espanol_quiz_final' },
     { type: 'end', icon: Flag, label: 'dashboard.finish' }
 ];
 
@@ -183,7 +183,7 @@ export const getNumbersSpellingPathData = (t: (key: string) => string): Spelling
     { key: "phoneNumbers", name: t('spellingExercise.phoneNumbers'), status: "locked" },
 ];
 
-export type Intro2PathKey =
+export type KidsIntro2PathKey =
   | 'tip'
   | 'mixed1'
   | 'greetings'
@@ -193,14 +193,14 @@ export type Intro2PathKey =
   | 'time-exercise'
   | 'countries';
 
-export interface Intro2PathItem {
-    key: Intro2PathKey;
+export interface KidsIntro2PathItem {
+    key: KidsIntro2PathKey;
     name: string;
     icon: React.ElementType,
     status: 'completed' | 'active' | 'locked';
 }
 
-export const getIntro2PathData = (): Intro2PathItem[] => [
+export const getKidsIntro2PathData = (): KidsIntro2PathItem[] => [
     { key: 'tip', name: 'Tip Importante', icon: Lightbulb, status: 'active' },
     { key: 'mixed1', name: 'Ejercicios Mixtos 1', icon: PenSquare, status: 'locked' },
     { key: 'greetings', name: 'Saludos', icon: Hand, status: 'locked' },

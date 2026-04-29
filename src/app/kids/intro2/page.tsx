@@ -35,7 +35,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { getIntro2PathData, type Intro2PathItem } from '@/lib/course-data';
+import { getKidsIntro2PathData, type KidsIntro2PathItem } from '@/lib/course-data';
 import { useRouter } from 'next/navigation';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 
@@ -277,18 +277,18 @@ interface Student {
     progress?: Record<string, number>;
 }
 
-export default function Intro2Page() {
+export default function KidsIntro2Page() {
     const { t } = useTranslation();
     const { toast } = useToast();
     const router = useRouter();
 
     const [isClient, setIsClient] = useState(false);
-    const [intro2Path, setIntro2Path] = useState<Intro2PathItem[]>([]);
+    const [intro2Path, setIntro2Path] = useState<KidsIntro2PathItem[]>([]);
     const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
     const [selectedTopicKey, setSelectedTopicKey] = useState<string | null>(null);
     const [initialLoadComplete, setInitialLoadComplete] = useState(false);
     const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
-    const [previousPath, setPreviousPath] = useState<Intro2PathItem[] | null>(null);
+    const [previousPath, setPreviousPath] = useState<KidsIntro2PathItem[] | null>(null);
     
     const { user, isUserLoading } = useUser();
     const firestore = useFirestore();
@@ -301,7 +301,7 @@ export default function Intro2Page() {
         return studentProfile?.role === 'admin' || user.email === 'ednacard87@gmail.com';
     }, [user, studentProfile]);
     
-    const initialLearningPath = useMemo(() => getIntro2PathData(), []);
+    const initialLearningPath = useMemo(() => getKidsIntro2PathData(), []);
     
     useEffect(() => {
         setIsClient(true);
@@ -310,7 +310,7 @@ export default function Intro2Page() {
     useEffect(() => {
         if (!isClient || isProfileLoading || !initialLearningPath.length) return;
         
-        let path: Intro2PathItem[];
+        let path: KidsIntro2PathItem[];
         
         if (isAdmin) {
           path = initialLearningPath.map(item => ({ ...item, status: 'completed' }));
@@ -497,4 +497,3 @@ export default function Intro2Page() {
       );
 }
 
-    
