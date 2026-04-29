@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -18,6 +19,8 @@ import {
   CheckCircle,
   Lightbulb,
   Clock,
+  X,
+  Check,
 } from 'lucide-react';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -36,12 +39,20 @@ import { useToast } from "@/hooks/use-toast";
 import { Separator } from "@/components/ui/separator";
 import { TimeExercise } from '@/components/kids/exercises/time-exercise';
 import { Loader2 } from 'lucide-react';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 
-const ICONS = { locked: Lock, active: BookOpen, completed: CheckCircle };
+const ICONS: { [key: string]: React.ElementType } = {
+  tip: Lightbulb,
+  mixed1: PenSquare,
+  greetings: Hand,
+  farewells: MessageSquare,
+  mixed2: PenSquare,
+  time: Clock,
+  'time-exercise': PenSquare,
+  countries: BookOpen,
+};
 
-// By changing this version, we can force a progress reset for all users
-// if there's a breaking change in the path structure.
 const progressStorageVersion = "_v1_sequential_intro2";
 interface Student {
     role?: 'admin' | 'student';
@@ -123,7 +134,7 @@ const farewellsData = [
     { spanish: 'Nos vemos mañana', english: 'See you tomorrow' }, { spanish: 'Que tengas un buen día', english: 'Have a nice day' },
 ];
 
-export default function KidsIntro2Page() {
+export default function Intro2Page() {
     const { t } = useTranslation();
     const { toast } = useToast();
     const router = useRouter();
@@ -133,6 +144,8 @@ export default function KidsIntro2Page() {
     const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
     const [selectedTopicKey, setSelectedTopicKey] = useState<string | null>(null);
     const [isClient, setIsClient] = useState(false);
+    const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
+    const [previousPath, setPreviousPath] = useState<Intro2PathItem[] | null>(null);
 
     const { user, isUserLoading } = useUser();
     const firestore = useFirestore();
@@ -156,28 +169,24 @@ export default function KidsIntro2Page() {
     }, [t]);
     
     useEffect(() => {
-        if (isProfileLoading || !isClient) return;
-
+        if (isProfileLoading || !isClient || initialLearningPath.length === 0) return;
+    
         let path = initialLearningPath.map(item => ({...item, status: 'locked'}));
         path[0].status = 'active';
-
+    
         if (isAdmin) {
             path.forEach(item => (item.status = 'active'));
         } else {
             const versionedKey = 'intro2Path' + progressStorageVersion;
-            let savedStatuses: Record<string, 'completed' | 'active' | 'locked'> | null = null;
             if (studentProfile?.lessonProgress?.[versionedKey]) {
-                savedStatuses = studentProfile.lessonProgress[versionedKey];
-            }
-
-            if (savedStatuses) {
+                const savedStatuses = studentProfile.lessonProgress[versionedKey];
                 path = path.map(item => ({
                     ...item,
                     status: savedStatuses[item.key] || item.status,
                 }));
             }
         }
-
+        
         setIntro2Path(path);
         
         if (!selectedTopicKey) {
@@ -192,10 +201,33 @@ export default function KidsIntro2Page() {
         }
     }, [isClient, isProfileLoading, isAdmin, studentProfile, initialLearningPath]);
 
-    const completeTopic = (topicKey: string) => {
+    const completedItems = useMemo(() => intro2Path.filter(item => item.status === 'completed').length, [intro2Path]);
+    const progress = useMemo(() => intro2Path.length > 0 ? Math.round((completedItems / intro2Path.length) * 100) : 0, [completedItems, intro2Path.length]);
+
+    useEffect(() => {
+        if (!isClient || isProfileLoading || isAdmin) return;
+    
+        const newPathString = JSON.stringify(intro2Path.map(p => ({ key: p.key, status: p.status })));
+        const prevPathString = JSON.stringify(previousPath?.map(p => ({ key: p.key, status: p.status })));
+    
+        if (newPathString !== prevPathString && studentDocRef) {
+            const statuses = intro2Path.reduce((acc, item) => ({ ...acc, [item.key]: item.status }), {});
+            updateDocumentNonBlocking(studentDocRef, {
+                [`lessonProgress.${'intro2Path' + progressStorageVersion}`]: statuses,
+                'progress.kidsIntro2Progress': progress,
+            });
+            window.dispatchEvent(new CustomEvent('progressUpdated'));
+        }
+        setPreviousPath(intro2Path);
+    }, [intro2Path, progress, isAdmin, isClient, studentDocRef, isProfileLoading, previousPath]);
+
+
+    useEffect(() => {
+        if (!topicToComplete) return;
+
         setIntro2Path(currentPath => {
             const newPath = [...currentPath];
-            const currentItemIndex = newPath.findIndex(item => item.key === topicKey);
+            const currentItemIndex = newPath.findIndex(item => item.key === topicToComplete);
             
             if (currentItemIndex !== -1 && newPath[currentItemIndex].status !== 'completed') {
                 newPath[currentItemIndex] = { ...newPath[currentItemIndex], status: 'completed' };
@@ -204,29 +236,12 @@ export default function KidsIntro2Page() {
                 if (nextItemIndex < newPath.length && newPath[nextItemIndex].status === 'locked') {
                     newPath[nextItemIndex] = { ...newPath[nextItemIndex], status: 'active' };
                 }
-
-                // Save progress
-                if (!isAdmin && studentDocRef) {
-                    const versionedKey = 'intro2Path' + progressStorageVersion;
-                    const statusOnly = newPath.reduce((acc, item) => {
-                        if (item.status) {
-                            acc[item.key] = item.status;
-                        }
-                        return acc;
-                    }, {} as Record<string, Intro2PathItem['status']>);
-                    
-                    const completedItems = newPath.filter(item => item.status === 'completed').length;
-                    const newProgress = Math.round((completedItems / newPath.length) * 100);
-                     updateDocumentNonBlocking(studentDocRef, {
-                        [`lessonProgress.${versionedKey}`]: statusOnly,
-                        'progress.kidsIntro2Progress': newProgress,
-                    });
-                    window.dispatchEvent(new CustomEvent('progressUpdated'));
-                }
             }
             return newPath;
         });
-    };
+        setTopicToComplete(null);
+    }, [topicToComplete]);
+
 
     const handleTopicSelect = (topicName: string) => {
         const currentItem = intro2Path.find(item => item.name === topicName);
@@ -237,47 +252,104 @@ export default function KidsIntro2Page() {
         
         const viewOnlyTopics = ['tip', 'greetings', 'farewells', 'time'];
         if (viewOnlyTopics.includes(currentItem!.key)) {
-            completeTopic(currentItem!.key);
+            setTopicToComplete(currentItem!.key);
         }
     };
 
     const handleExerciseComplete = () => {
         if(selectedTopicKey) {
-            completeTopic(selectedTopicKey);
+            setTopicToComplete(selectedTopicKey);
         }
     }
 
-    const completedItems = useMemo(() => intro2Path.filter(item => item.status === 'completed').length, [intro2Path]);
-    const progress = useMemo(() => intro2Path.length > 0 ? Math.round((completedItems / intro2Path.length) * 100) : 0, [completedItems, intro2Path.length]);
     
   const renderContent = () => {
-        if (selectedTopicKey === 'tip') {
+    switch (selectedTopicKey) {
+        case 'tip':
             return (
-                <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-                    <CardHeader>
-                        <CardTitle className="text-2xl text-primary">Sustantivo : Noun</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-2 text-lg">
-                        <ul className="list-disc list-inside space-y-1 text-muted-foreground">
-                            <li>personas</li>
-                            <li>animales</li>
-                            <li>cosas</li>
-                        </ul>
-                        <p className="pt-4 font-medium">singular y plural (s)</p>
-                        <div className="mt-2 p-4 bg-muted rounded-lg font-mono text-base">
-                            <p>car <span className="mx-4">→</span> cars</p>
-                            <p>house <span className="mx-4">→</span> houses</p>
-                        </div>
-                    </CardContent>
-                </Card>
-            );
-        }
-
-        if (selectedTopicKey === 'mixed1' || selectedTopicKey === 'mixed2') {
-            return <SimpleTranslationExercise course="intro" exerciseKey={selectedTopicKey} onComplete={handleExerciseComplete} />;
-        }
-
-        if (selectedTopicKey === 'greetings') {
+                <div className="space-y-4">
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                        <CardHeader>
+                            <CardTitle>SUSTANTIVO: NOUN</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <p className="text-muted-foreground">PERSONA, ANIMAL O COSA (singular- plural)</p>
+                            <Accordion type="multiple" className="w-full">
+                                <AccordionItem value="regular">
+                                    <AccordionTrigger>REGULAR: noun+ s</AccordionTrigger>
+                                    <AccordionContent>
+                                        <code className="block bg-muted p-2 rounded-md font-mono">computer: computers // house: houses // car: cars</code>
+                                    </AccordionContent>
+                                </AccordionItem>
+                                <AccordionItem value="irregular">
+                                    <AccordionTrigger>IRREGULAR: noun+es</AccordionTrigger>
+                                    <AccordionContent className="space-y-2">
+                                        <p>Para sustantivos que terminan en: s, z, sh, ch, x (bus) se agrega “ES”</p>
+                                        <code className="block bg-muted p-2 rounded-md font-mono">address: Addresses // beach: beaches // bus: buses</code>
+                                        <p>Para sustantivos que terminan en “Y” se cancela la “Y” y se agrega “ies”</p>
+                                        <code className="block bg-muted p-2 rounded-md font-mono">country: countries // university: universities</code>
+                                        <p>Completamente irregular:</p>
+                                        <code className="block bg-muted p-2 rounded-md font-mono">Man: men // woman: women // child: children // person: people</code>
+                                    </AccordionContent>
+                                </AccordionItem>
+                            </Accordion>
+                        </CardContent>
+                    </Card>
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                         <CardHeader><CardTitle>ADJETIVO: ADJECTIVE</CardTitle></CardHeader>
+                         <CardContent className="space-y-2">
+                             <p>DESCRIBE EL SUSTANTIVO (COLOR, CUALIDAD, CARACTERISTICA.) – (los adjetivos siempre van en singular es decir en su forma original)</p>
+                            <Card className="bg-yellow-100 dark:bg-yellow-900/20 border-yellow-500">
+                                <CardHeader><CardTitle className="text-yellow-800 dark:text-yellow-300">NOTICAS IMPORTANTES</CardTitle></CardHeader>
+                                <CardContent>
+                                    <p>En español primero se habla del sustantivo y luego del adjetivo:</p>
+                                    <code className="block bg-background p-2 rounded-md font-mono my-2 text-sm">El carro blanco<br/>el lapicero azul<br/>el computador gris</code>
+                                    <p>Pero en INGLES primero se habla del adjetivo y luego del sustantivo:</p>
+                                    <code className="block bg-background p-2 rounded-md font-mono mt-2 text-sm">the white car<br/>The red pen<br/>the grey computer</code>
+                                </CardContent>
+                            </Card>
+                         </CardContent>
+                    </Card>
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                        <CardHeader><CardTitle>VERBO: VERB</CardTitle></CardHeader>
+                        <CardContent className="space-y-2">
+                            <p>ACCIÓN. VERBOS INFINITIVO = " TO ". Un verbo en infinitivo es un verbo que no está conjugado.</p>
+                            <div className="grid grid-cols-2 gap-4">
+                                <code className="block bg-muted p-2 rounded-md font-mono text-center">ESPAÑOL<br/>AR = Hablar<br/>ER = Comer<br/>IR = Vivir<br/>SER<br/>ESTAR</code>
+                                <code className="block bg-muted p-2 rounded-md font-mono text-center">ENGLISH<br/>= TO speak<br/>= TO eat<br/>= TO Live<br/>= To Be<br/>= To be</code>
+                            </div>
+                            <h4 className="font-semibold pt-4">CONJUGACION</h4>
+                            <p>Cuando estamos utilizando la conjugación el verbo pierde la palabra = To</p>
+                            <code className="block bg-muted p-2 rounded-md font-mono">pronombre + verbo<br/>i speak<br/><span className="text-destructive">i to speak (yo hablar)</span></code>
+                        </CardContent>
+                    </Card>
+                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                        <CardHeader><CardTitle>PRONOUNS</CardTitle></CardHeader>
+                        <CardContent className="space-y-2">
+                            <p>Muchas frases no tienen pronombres, entonces las frases pueden TENER:</p>
+                            <ul className="list-disc list-inside pl-4">
+                                <li>Nombre propio: Viviana, Edna, Ana, Cristal</li>
+                                <li>Sustantivo: (persona, animal, cosa) - carro, casa, finca</li>
+                                <li>Demostrativos: This – these – that – those</li>
+                            </ul>
+                            <code className="block bg-muted p-2 rounded-md font-mono">he is at home = pronoun<br/>Thomas is at home = Nombre propio<br/>my father is at home = Sustantivo<br/>this is my house = Demostrativo</code>
+                             <Card className="bg-destructive/10 border-destructive">
+                                <CardHeader><CardTitle className="text-destructive">NOTA:</CardTitle></CardHeader>
+                                <CardContent>
+                                    <p>Nunca se pueden utilizar un pronombre con un sustantivo o un pronombre con un nombre propio al mismo tiempo.</p>
+                                    <code className="block bg-background p-2 rounded-md font-mono mt-2 text-sm flex items-center gap-2"><X className="text-destructive h-4 w-4"/> Thomas he is at home (Thomas él está en la casa)</code>
+                                    <code className="block bg-background p-2 rounded-md font-mono mt-2 text-sm flex items-center gap-2"><X className="text-destructive h-4 w-4"/> he my father is at home (él mi padre está en la casa)</code>
+                                </CardContent>
+                            </Card>
+                        </CardContent>
+                    </Card>
+                </div>
+            )
+        case 'mixed1':
+            return <SimpleTranslationExercise course="intro" exerciseKey="mixed1" onComplete={handleExerciseComplete} />;
+        case 'mixed2':
+            return <SimpleTranslationExercise course="intro" exerciseKey="mixed2" onComplete={handleExerciseComplete} />;
+        case 'greetings':
             return (
                 <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
                     <CardHeader><CardTitle>{t('intro2Page.greetings')}</CardTitle></CardHeader>
@@ -295,9 +367,7 @@ export default function KidsIntro2Page() {
                     </CardContent>
                 </Card>
             );
-        }
-
-        if (selectedTopicKey === 'farewells') {
+        case 'farewells':
             return (
                 <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
                     <CardHeader><CardTitle>{t('intro2Page.farewells')}</CardTitle></CardHeader>
@@ -315,9 +385,7 @@ export default function KidsIntro2Page() {
                     </CardContent>
                 </Card>
             );
-        }
-
-        if (selectedTopicKey === 'time') {
+        case 'time':
             return (
                 <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
                     <CardHeader>
@@ -336,58 +404,52 @@ export default function KidsIntro2Page() {
                     </CardContent>
                 </Card>
             );
-        }
-
-        if (selectedTopicKey === 'time-exercise') {
-            return <TimeExercise onComplete={() => completeTopic('time-exercise')} />;
-        }
-
-        if (selectedTopicKey === 'countries') {
+        case 'time-exercise':
+            return <TimeExercise onComplete={() => setTopicToComplete('time-exercise')} />;
+        case 'countries':
             return <CountriesExercise onComplete={handleExerciseComplete} />;
-        }
-
-
-        if (selectedTopic) {
+        default:
+            if (selectedTopic) {
+                return (
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                        <CardHeader>
+                            <CardTitle>{selectedTopic}</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <p>{t('intro1Page.mainContentPlaceholder', { topic: selectedTopic })}</p>
+                        </CardContent>
+                    </Card>
+                );
+            }
             return (
-                <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-                    <CardHeader>
-                        <CardTitle>{selectedTopic}</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <p>{t('intro1Page.mainContentPlaceholder', { topic: selectedTopic })}</p>
-                    </CardContent>
-                </Card>
-            );
-        }
-        
-        return (
-            <div className="flex flex-col items-center scale-110">
-                <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-                    <CardHeader className="text-center">
-                        <CardTitle className="text-3xl">{t('intro2Page.welcomeTitle')}</CardTitle>
-                        <CardDescription className="text-base">{t('intro1Page.welcomeDescription')}</CardDescription>
-                    </CardHeader>
-                    <CardContent className="text-center px-6 pb-6">
-                        <p className="pt-4 text-lg">{t('intro2Page.welcomeHint')}</p>
-                    </CardContent>
-                </Card>
-                <div className="flex items-center justify-center pt-8 gap-2">
-                    <div className="relative bg-card p-4 rounded-lg shadow-soft text-center text-base max-w-[220px] border-2 border-brand-purple">
-                        <p className="font-bold text-lg bg-gradient-to-r from-brand-purple to-brand-teal text-transparent bg-clip-text">{t('introCoursePage.penguinHint')}</p>
-                        <div className="absolute left-full top-1/2 -translate-y-1/2 w-0 h-0 border-t-8 border-t-transparent border-b-8 border-b-transparent border-l-8 border-l-card" />
+                <div className="flex flex-col items-center scale-110">
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                        <CardHeader className="text-center">
+                            <CardTitle className="text-3xl">{t('intro2Page.welcomeTitle')}</CardTitle>
+                            <CardDescription className="text-base">{t('intro1Page.welcomeDescription')}</CardDescription>
+                        </CardHeader>
+                        <CardContent className="text-center px-6 pb-6">
+                            <p className="pt-4 text-lg">{t('intro2Page.welcomeHint')}</p>
+                        </CardContent>
+                    </Card>
+                    <div className="flex items-center justify-center pt-8 gap-2">
+                        <div className="relative bg-card p-4 rounded-lg shadow-soft text-center text-base max-w-[220px] border-2 border-brand-purple">
+                            <p className="font-bold text-lg bg-gradient-to-r from-brand-purple to-brand-teal text-transparent bg-clip-text">{t('introCoursePage.penguinHint')}</p>
+                            <div className="absolute left-full top-1/2 -translate-y-1/2 w-0 h-0 border-t-8 border-t-transparent border-b-8 border-b-transparent border-l-8 border-l-card" />
+                        </div>
+                        {guideFishImage && <Image
+                            src={guideFishImage.imageUrl}
+                            alt={guideFishImage.description}
+                            width={191}
+                            height={191}
+                            className="rounded-lg object-cover"
+                            data-ai-hint={guideFishImage.imageHint}
+                        />}
                     </div>
-                    {guideFishImage && <Image
-                        src={guideFishImage.imageUrl}
-                        alt={guideFishImage.description}
-                        width={191}
-                        height={191}
-                        className="rounded-lg object-cover"
-                        data-ai-hint={guideFishImage.imageHint}
-                    />}
                 </div>
-            </div>
-        );
-    };
+            );
+    }
+  };
     
     return (
         <div className="flex w-full flex-col ingles-dashboard-bg min-h-screen">
@@ -410,21 +472,25 @@ export default function KidsIntro2Page() {
                         <nav>
                             <ul className="space-y-1">
                             {intro2Path.map((item, index) => {
-                                const Icon = ICONS[item.status as keyof typeof ICONS];
+                                const Icon = ICONS[item.key] || BookOpen;
                                 const isLocked = item.status === 'locked';
                                 const isSelected = selectedTopic === item.name;
                                 const isActive = item.status === 'active';
                                 
+                                const itemContent = (
+                                    <div className={cn(
+                                        "flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors",
+                                        !isLocked && "hover:bg-muted",
+                                        isSelected ? "bg-muted text-primary font-semibold" : (isActive ? "text-foreground" : "text-muted-foreground")
+                                    )}>
+                                        <Icon className={cn("h-5 w-5", isLocked ? "text-yellow-500" : (item.status === 'completed' || isSelected || isActive) ? "text-primary" : "text-muted-foreground")} />
+                                        <span>{item.name}</span>
+                                    </div>
+                                );
+
                                 return (
                                     <li key={index} onClick={() => handleTopicSelect(item.name)} className={cn(!isLocked || isAdmin ? "cursor-pointer" : "cursor-not-allowed")}>
-                                        <div className={cn(
-                                            "flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors",
-                                            !isLocked && "hover:bg-muted",
-                                            isSelected ? "bg-muted text-primary font-semibold" : (isActive ? "text-foreground" : "text-muted-foreground")
-                                        )}>
-                                            <Icon className={cn("h-5 w-5", isLocked ? "text-yellow-500" : (item.status === 'completed' || isSelected || isActive) ? "text-primary" : "text-muted-foreground")} />
-                                            <span>{item.name}</span>
-                                        </div>
+                                        {itemContent}
                                     </li>
                                 );
                             })}
@@ -453,3 +519,5 @@ export default function KidsIntro2Page() {
         </div>
       );
 }
+
+    
