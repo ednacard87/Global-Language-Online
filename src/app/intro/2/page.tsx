@@ -47,7 +47,7 @@ const ICONS = {
   completed: CheckCircle,
 };
 
-const progressStorageVersion = "english_intro2_path_v7";
+const progressStorageVersion = "english_intro2_path_v8";
 
 const greetingsData = [
     { spanish: 'Hola', english: 'Hello' },
@@ -122,10 +122,19 @@ const mixedExercise1Data = [
 ];
 
 const mixedExercise2Data = [
-    { spanish: '¿Cómo estás hoy?', english: ['how are you today?'] },
-    { spanish: 'Hasta mañana, profesor', english: ['see you tomorrow, teacher'] },
-    { spanish: 'Mi amigo es de Canadá', english: ['my friend is from canada'] },
-    { spanish: 'Son las diez y cuarto', english: ["it's a quarter past ten", "it is a quarter past ten"] },
+    { spanish: '¿ellos son tus profesores?', english: ['are they your teachers?'] },
+    { spanish: '¿él está en su carro? (de él)', english: ['is he in his car?'] },
+    { spanish: '¿eres su amiga? (de ella)', english: ['are you her friend?'] },
+    { spanish: 'esta (this) no es su universidad (de ellos)', english: ['this is not their university', "this isn't their university"] },
+    { spanish: '¿estás con su tio? (de él) (uncle)', english: ['are you with his uncle?'] },
+    { spanish: '¿ella es tu novia? (girlfriend)', english: ['is she your girlfriend?'] },
+    { spanish: 'nosotros somos tus amigos', english: ['we are your friends', "we're your friends"] },
+    { spanish: 'mi madre es vendedora (seller)', english: ['my mother is a seller', 'my mom is a seller', "my mother's a seller", "my mom's a seller"] },
+    { spanish: 'los hombres están en el restaurante', english: ['the men are in the restaurant', "the men're in the restaurant"] },
+    { spanish: 'mi hermana es profesora de alemán', english: ['my sister is a German teacher', "my sister's a German teacher"] },
+    { spanish: 'su novio no está en el trabajo (su: de ella)', english: ['her boyfriend is not at work', "her boyfriend isn't at work"] },
+    { spanish: 'nuestros padres son amables (kind)', english: ['our parents are kind', 'our parents are nice'] },
+    { spanish: 'tu hijo es un hombre de negocios (businessman)', english: ['your son is a businessman', "your son's a businessman"] },
 ];
 
 // --- Auxiliary Components ---
@@ -582,7 +591,7 @@ const CountriesExercise = ({ onComplete }: { onComplete: () => void }) => {
                 </div>
             </CardContent>
             <CardFooter className="flex justify-between items-center mt-4">
-                <Button onClick={handleCheck}>Verificar Tabla</Button>
+                <Button onClick={handleCheck} className="bg-primary hover:bg-primary/90 text-primary-foreground">Verificar Tabla</Button>
                 {isTableFilled && (
                     <Button onClick={onComplete} className="bg-primary hover:bg-primary/90 text-primary-foreground">
                         Terminar Intro 2
