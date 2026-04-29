@@ -1,8 +1,8 @@
+
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import {
   BookOpen,
   PenSquare,
@@ -17,7 +17,7 @@ import {
   CheckCircle,
   Lightbulb,
   Clock,
-  XCircle,
+  X,
 } from 'lucide-react';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -34,13 +34,109 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { getIntro2PathData, type Intro2PathItem } from '@/lib/course-data';
+import { useRouter } from 'next/navigation';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
+import Image from 'next/image';
 
-// Data for lesson components
-const greetingsData = [
-    { spanish: 'Hola', english: 'Hello' }, { spanish: 'Buenos días', english: 'Good morning' },
-    { spanish: 'Buenas tardes', english: 'Good afternoon' }, { spanish: 'Buenas noches (saludo)', english: 'Good evening' },
-    { spanish: '¿Cómo estás?', english: 'How are you?' }, { spanish: '¿Qué tal?', english: "What's up?" }, { spanish: '¿Cómo vas?', english: 'How is it going?' },
+const TipContent = () => (
+    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+        <CardHeader>
+            <CardTitle>Tip Importante</CardTitle>
+            <CardDescription>Conceptos clave de gramática.</CardDescription>
+        </CardHeader>
+        <CardContent>
+             <Accordion type="multiple" className="w-full space-y-4" defaultValue={['sustantivo', 'adjetivo', 'verbo', 'pronombres']}>
+                <AccordionItem value="sustantivo">
+                    <AccordionTrigger className="text-xl font-bold">SUSTANTIVO (NOUN)</AccordionTrigger>
+                    <AccordionContent className="space-y-4 pt-2">
+                        <p className="font-semibold">PERSONA, ANIMAL O COSA (singular- plural)</p>
+                        <div>
+                            <h4 className="font-medium text-primary">REGULAR: noun + s</h4>
+                            <p className="font-mono text-sm bg-muted p-2 rounded-md mt-1">computer: computers // house: houses // car: cars</p>
+                        </div>
+                        <div>
+                            <h4 className="font-medium text-primary">IRREGULAR: noun + es</h4>
+                            <ul className="list-disc pl-5 mt-1 space-y-2 text-sm">
+                                <li>For nouns ending {'=>'} s, z, sh, ch, x (bus) = “ES”<br/><span className="font-mono bg-muted px-2 py-1 rounded">Ex: address: Addresses // beach: beaches // bus: buses</span></li>
+                                <li>For nouns ending {'=>'} “Y” cancelamos la “Y” agregamos “ies”<br/><span className="font-mono bg-muted px-2 py-1 rounded">Ex: country: countries // university: universities</span></li>
+                                <li>Completamente irregular:<br/><span className="font-mono bg-muted px-2 py-1 rounded">Man: men // woman: women // child: children // person: people</span></li>
+                            </ul>
+                        </div>
+                    </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="adjetivo">
+                    <AccordionTrigger className="text-xl font-bold">ADJETIVO (ADJECTIVE)</AccordionTrigger>
+                    <AccordionContent className="space-y-4 pt-2">
+                         <p className="font-semibold">DESCRIBE EL SUSTANTIVO (COLOR, CUALIDAD, CARACTERISTICA.) –(los adjetivos siempre van en singular es decir en su forma original)</p>
+                         <Card className="bg-yellow-100 dark:bg-yellow-900/30 border-yellow-500">
+                             <CardHeader>
+                                 <CardTitle className="text-yellow-800 dark:text-yellow-300 text-lg">NOTAS IMPORTANTES</CardTitle>
+                             </CardHeader>
+                             <CardContent className="text-sm space-y-3">
+                                 <p><strong className="text-foreground">En español:</strong> sustantivo + adjetivo.<br/><span className="font-mono text-muted-foreground">Ejemplo: El carro blanco, el lapicero azul, el computador gris</span></p>
+                                 <p><strong className="text-foreground">En INGLÉS:</strong> adjetivo + sustantivo.<br/><span className="font-mono text-muted-foreground">Examples: The white car, The red pen, the grey computer</span></p>
+                             </CardContent>
+                         </Card>
+                    </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="verbo">
+                    <AccordionTrigger className="text-xl font-bold">VERBO (VERB)</AccordionTrigger>
+                    <AccordionContent className="space-y-4 pt-2">
+                        <p className="font-semibold">VERB: ACCIÓN.</p>
+                        <div>
+                            <h4 className="font-medium text-primary">VERBOS INFINITIVO = "TO"</h4>
+                            <p className="text-sm text-muted-foreground">Un verbo en infinitivo es un verbo que no está conjugado.</p>
+                            <p className="font-mono bg-muted p-2 rounded-md mt-1 text-sm">ESPAÑOL {'=>'} ENGLISH<br/>AR = Hablar = TO speak<br/>ER = Comer = TO eat<br/>IR = Vivir = TO Live</p>
+                        </div>
+                         <div>
+                            <h4 className="font-medium text-primary">CONJUGACIÓN</h4>
+                            <p className="text-sm text-muted-foreground">Cuando estamos utilizando la conjugación el verbo pierde la palabra = "To".</p>
+                            <p className="font-mono bg-muted p-2 rounded-md mt-1 text-sm">pronombre + verbo (yo hablo) {'=>'} i + speak<br/>i to speak = yo hablar</p>
+                        </div>
+                    </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="pronombres">
+                    <AccordionTrigger className="text-xl font-bold">PRONOMBRES (PRONOUNS)</AccordionTrigger>
+                    <AccordionContent className="space-y-4 pt-2">
+                         <p className="font-semibold">Muchas frases no tienen pronombres, entonces las frases pueden TENER:</p>
+                         <ul className="list-disc pl-5 text-sm space-y-1">
+                             <li><strong>Nombre propio:</strong> Viviana, Edna, Ana, Cristal</li>
+                             <li><strong>Sustantivo:</strong> (persona, animal, cosa) {'=>'} carro, casa, finca</li>
+                             <li><strong>Demostrativos:</strong> This – these – that – those</li>
+                         </ul>
+                         <p className="font-mono bg-muted p-2 rounded-md mt-1 text-sm">
+                            he is at home {'=>'} pronoun<br/>
+                            Thomas is at home {'=>'} Nombre propio<br/>
+                            my father is at home {'=>'} Sustantivo<br/>
+                            esta es mi casa = this is my house {'=>'} Demostrativo
+                        </p>
+                          <div className="flex items-start gap-2 p-2 bg-destructive/10 border-l-4 border-destructive text-destructive-foreground/80 rounded-r-md">
+                            <X className="h-5 w-5 mt-0.5 flex-shrink-0"/>
+                            <div>
+                                <h4 className="font-bold">¡NUNCA!</h4>
+                                <p className="text-sm">Nunca se pueden utilizar un pronombre con un sustantivo o un pronombre con un nombre propio al mismo tiempo.</p>
+                                <p className="font-mono text-xs mt-1">Incorrecto: Thomas he is at home (Thomas él está en la casa)<br/>Incorrecto: he my father is at home (él mi padre está en la casa)</p>
+                            </div>
+                        </div>
+                    </AccordionContent>
+                </AccordionItem>
+            </Accordion>
+        </CardContent>
+    </Card>
+);
+
+const greetingsAndFarewellsData = [
+    { spanish: 'Hola', english: 'Hello' },
+    { spanish: 'Buenos días', english: 'Good morning' },
+    { spanish: 'Buenas tardes', english: 'Good afternoon' },
+    { spanish: 'Buenas noches (saludo)', english: 'Good evening' },
+    { spanish: '¿Cómo estás?', english: 'How are you?' },
+    { spanish: '¿Qué tal?', english: "What's up?" },
+    { spanish: '¿Cómo vas?', english: 'How is it going?' },
 ];
 
 const farewellsData = [
@@ -72,94 +168,6 @@ const countriesExerciseData = [
     { pais: 'Inglaterra', country: 'England', nationality: 'English' },
     { pais: 'Francia', country: 'France', nationality: 'French' },
 ];
-
-// Reusable components for this lesson
-
-const TipContent = () => (
-    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-        <CardHeader>
-            <CardTitle>Tip Importante</CardTitle>
-            <CardDescription>Conceptos clave de gramática.</CardDescription>
-        </CardHeader>
-        <CardContent>
-             <Accordion type="multiple" className="w-full space-y-4">
-                <AccordionItem value="sustantivo">
-                    <AccordionTrigger className="text-xl font-bold">SUSTANTIVO (NOUN)</AccordionTrigger>
-                    <AccordionContent className="space-y-4 pt-2">
-                        <p className="font-semibold">PERSONA, ANIMAL O COSA (singular- plural)</p>
-                        <div>
-                            <h4 className="font-medium text-primary">REGULAR: noun + s</h4>
-                            <p className="font-mono text-sm bg-muted p-2 rounded-md mt-1">computer: computers // house: houses // car: cars</p>
-                        </div>
-                        <div>
-                            <h4 className="font-medium text-primary">IRREGULAR</h4>
-                            <ul className="list-disc pl-5 mt-1 space-y-2 text-sm">
-                                <li>Para sustantivos terminados en <strong>s, z, sh, ch, x</strong>, se añade "ES".<br/><span className="font-mono bg-muted px-2 py-1 rounded">address: addresses, bus: buses</span></li>
-                                <li>Para sustantivos terminados en "Y" precedida de consonante, se cambia la "Y" por "ies".<br/><span className="font-mono bg-muted px-2 py-1 rounded">country: countries, university: universities</span></li>
-                                <li>Completamente irregular:<br/><span className="font-mono bg-muted px-2 py-1 rounded">man: men, woman: women, child: children, person: people</span></li>
-                            </ul>
-                        </div>
-                    </AccordionContent>
-                </AccordionItem>
-
-                <AccordionItem value="adjetivo">
-                    <AccordionTrigger className="text-xl font-bold">ADJETIVO (ADJECTIVE)</AccordionTrigger>
-                    <AccordionContent className="space-y-4 pt-2">
-                         <p className="font-semibold">DESCRIBE EL SUSTANTIVO (COLOR, CUALIDAD, CARACTERÍSTICA)</p>
-                         <p className="text-sm text-muted-foreground">(los adjetivos siempre van en singular, es decir, en su forma original)</p>
-                         <Card className="bg-yellow-100 dark:bg-yellow-900/30 border-yellow-500">
-                             <CardHeader>
-                                 <CardTitle className="text-yellow-800 dark:text-yellow-300 text-lg">NOTAS IMPORTANTES</CardTitle>
-                             </CardHeader>
-                             <CardContent className="text-sm space-y-3">
-                                 <p><strong className="text-foreground">En español:</strong> sustantivo + adjetivo.<br/><span className="font-mono text-muted-foreground">Ej: El carro blanco</span></p>
-                                 <p><strong className="text-foreground">En INGLÉS:</strong> adjetivo + sustantivo.<br/><span className="font-mono text-muted-foreground">Ej: The white car</span></p>
-                             </CardContent>
-                         </Card>
-                    </AccordionContent>
-                </AccordionItem>
-
-                <AccordionItem value="verbo">
-                    <AccordionTrigger className="text-xl font-bold">VERBO (VERB)</AccordionTrigger>
-                    <AccordionContent className="space-y-4 pt-2">
-                        <p className="font-semibold">ACCIÓN.</p>
-                        <div>
-                            <h4 className="font-medium text-primary">VERBOS INFINITIVO = "TO"</h4>
-                            <p className="text-sm text-muted-foreground">Un verbo en infinitivo es un verbo que no está conjugado.</p>
-                            <p className="font-mono bg-muted p-2 rounded-md mt-1 text-sm">Hablar = TO speak, Comer = TO eat, Vivir = TO Live</p>
-                        </div>
-                         <div>
-                            <h4 className="font-medium text-primary">CONJUGACIÓN</h4>
-                            <p className="text-sm text-muted-foreground">Cuando estamos utilizando la conjugación el verbo pierde la palabra = "To"</p>
-                            <p className="font-mono bg-muted p-2 rounded-md mt-1 text-sm">pronombre + verbo (yo hablo) => i + speak</p>
-                        </div>
-                    </AccordionContent>
-                </AccordionItem>
-
-                <AccordionItem value="pronombres">
-                    <AccordionTrigger className="text-xl font-bold">PRONOMBRES (PRONOUNS)</AccordionTrigger>
-                    <AccordionContent className="space-y-4 pt-2">
-                         <p className="font-semibold">Muchas frases no tienen pronombres, entonces las frases pueden TENER:</p>
-                         <ul className="list-disc pl-5 text-sm space-y-1">
-                             <li><strong>Nombre propio:</strong> Viviana, Edna, Ana</li>
-                             <li><strong>Sustantivo:</strong> carro, casa, finca</li>
-                             <li><strong>Demostrativos:</strong> This, these, that, those</li>
-                         </ul>
-                         <p className="font-mono bg-muted p-2 rounded-md mt-1 text-sm">he is at home (pronoun)<br/>Thomas is at home (nombre propio)<br/>this is my house (demostrativo)</p>
-                          <div className="flex items-start gap-2 p-2 bg-destructive/10 border-l-4 border-destructive text-destructive-foreground/80 rounded-r-md">
-                            <XCircle className="h-5 w-5 mt-0.5 flex-shrink-0"/>
-                            <div>
-                                <h4 className="font-bold">¡NUNCA!</h4>
-                                <p className="text-sm">Nunca se pueden utilizar un pronombre con un sustantivo o un pronombre con un nombre propio al mismo tiempo.</p>
-                                <p className="font-mono text-xs mt-1">Incorrecto: Thomas he is at home</p>
-                            </div>
-                        </div>
-                    </AccordionContent>
-                </AccordionItem>
-            </Accordion>
-        </CardContent>
-    </Card>
-);
 
 const GreetingsFarewellsContent = ({ title, data }: { title: string; data: { spanish: string, english: string }[] }) => (
     <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
@@ -245,30 +253,44 @@ const SimpleExercise = ({ title, onComplete, exerciseData }: { title: string; on
 const ICONS = { locked: Lock, active: BookOpen, completed: CheckCircle };
 const progressStorageVersion = "_v1_sequential_intro2_kids";
 
-export default function KidsIntro2Page() {
+interface Student {
+    role?: 'admin' | 'student';
+    lessonProgress?: any;
+    progress?: Record<string, number>;
+}
+
+export default function Intro2Page() {
     const { t } = useTranslation();
     const { toast } = useToast();
     const router = useRouter();
 
+    const [isClient, setIsClient] = useState(false);
     const [intro2Path, setIntro2Path] = useState<Intro2PathItem[]>([]);
     const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
     const [selectedTopicKey, setSelectedTopicKey] = useState<string | null>(null);
-
+    const [initialLoadComplete, setInitialLoadComplete] = useState(false);
+    const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
+    const [previousPath, setPreviousPath] = useState<Intro2PathItem[] | null>(null);
+    
     const { user, isUserLoading } = useUser();
     const firestore = useFirestore();
     const studentDocRef = useMemoFirebase(() => (user ? doc(firestore, 'students', user.uid) : null), [firestore, user]);
     const { data: studentProfile, isLoading: isProfileLoading } = useDoc<Student>(studentDocRef);
     const guideFishImage = PlaceHolderImages.find(p => p.id === 'guide-fish');
-
+    
     const isAdmin = useMemo(() => {
         if (!user) return false;
         return studentProfile?.role === 'admin' || user.email === 'ednacard87@gmail.com';
     }, [user, studentProfile]);
-
+    
     const initialLearningPath = useMemo(() => getIntro2PathData(t), [t]);
 
     useEffect(() => {
-        if (isProfileLoading) return;
+        setIsClient(true);
+    }, []);
+
+    useEffect(() => {
+        if (!isClient || isProfileLoading || !initialLearningPath.length) return;
 
         let path: Intro2PathItem[] = initialLearningPath.map((item, index) => ({
             ...item,
@@ -287,45 +309,75 @@ export default function KidsIntro2Page() {
         }
         
         setIntro2Path(path);
-        const firstActive = path.find(p => p.status === 'active');
-        if(firstActive) {
-            setSelectedTopic(firstActive.name);
-            setSelectedTopicKey(firstActive.key);
-        } else if(path.length > 0) {
-            setSelectedTopic(path[0].name);
-            setSelectedTopicKey(path[0].key);
+        
+        if (!initialLoadComplete) {
+            const firstActive = path.find(p => p.status === 'active');
+            if(firstActive) {
+                setSelectedTopic(firstActive.name);
+                setSelectedTopicKey(firstActive.key);
+            } else if(path.length > 0) {
+                setSelectedTopic(path[0].name);
+                setSelectedTopicKey(path[0].key);
+            }
+            setInitialLoadComplete(true);
         }
-    }, [t, isAdmin, isProfileLoading, studentProfile, initialLearningPath]);
+    }, [t, isAdmin, isClient, isProfileLoading, studentProfile, initialLearningPath, initialLoadComplete]);
 
-    const completeTopic = (topicKey: string) => {
+    const progress = useMemo(() => {
+        const completedItems = intro2Path.filter(item => item.status === 'completed').length;
+        return intro2Path.length > 0 ? Math.round((completedItems / intro2Path.length) * 100) : 0;
+    }, [intro2Path]);
+    
+    useEffect(() => {
+        if (!isClient || isProfileLoading || !initialLoadComplete || intro2Path.length === 0) return;
+
+        if (!isAdmin && studentDocRef) {
+            const statusOnly = intro2Path.reduce((acc, item) => ({...acc, [item.key]: item.status}), {});
+            updateDocumentNonBlocking(studentDocRef, {
+                [`lessonProgress.${progressStorageVersion}`]: statusOnly,
+                'progress.kidsIntro2Progress': progress,
+            });
+            window.dispatchEvent(new CustomEvent('progressUpdated'));
+        }
+    }, [intro2Path, progress, isAdmin, isClient, studentDocRef, isProfileLoading, initialLoadComplete]);
+
+    useEffect(() => {
+        if (previousPath && !isAdmin) {
+            const newlyUnlocked = intro2Path.find((newItem, index) => {
+                const oldItem = previousPath?.[index];
+                return oldItem && oldItem.status === 'locked' && newItem.status === 'active';
+            });
+        
+            if (newlyUnlocked) {
+                toast({
+                    title: '¡Siguiente tema desbloqueado!',
+                    description: `Ahora puedes continuar con ${newlyUnlocked.name}`,
+                });
+            }
+        }
+        setPreviousPath(intro2Path);
+    }, [intro2Path, previousPath, toast, isAdmin]);
+    
+    useEffect(() => {
+        if (!topicToComplete) return;
+
         setIntro2Path(currentPath => {
-            const newPath = [...currentPath];
-            const currentItemIndex = newPath.findIndex(item => item.key === topicKey);
+            const newPath = currentPath.map(item => ({ ...item }));
+            const currentIndex = newPath.findIndex(item => item.key === topicToComplete);
             
-            if (currentItemIndex !== -1 && newPath[currentItemIndex].status !== 'completed') {
-                newPath[currentItemIndex] = { ...newPath[currentItemIndex], status: 'completed' };
+            if (currentIndex !== -1 && newPath[currentIndex].status !== 'completed') {
+                newPath[currentIndex].status = 'completed';
 
-                const nextItemIndex = currentItemIndex + 1;
-                if (nextItemIndex < newPath.length && newPath[nextItemIndex].status === 'locked') {
-                    newPath[nextItemIndex] = { ...newPath[nextItemIndex], status: 'active' };
-                    toast({ title: '¡Tema desbloqueado!', description: `Ahora puedes continuar con ${newPath[nextItemIndex].name}` });
+                const nextIndex = currentIndex + 1;
+                if (nextIndex < newPath.length && newPath[nextIndex].status === 'locked') {
+                    newPath[nextIndex].status = 'active';
                 }
             }
-
-            if (!isAdmin && studentDocRef) {
-                const statusOnly = newPath.reduce((acc, item) => ({...acc, [item.key]: item.status}), {});
-                const completedItems = newPath.filter(item => item.status === 'completed').length;
-                const newProgress = Math.round((completedItems / newPath.length) * 100);
-                 updateDocumentNonBlocking(studentDocRef, {
-                    [`lessonProgress.${progressStorageVersion}`]: statusOnly,
-                    'progress.kidsIntro2Progress': newProgress,
-                });
-                window.dispatchEvent(new CustomEvent('progressUpdated'));
-            }
-
             return newPath;
         });
-    };
+
+        setTopicToComplete(null);
+    }, [topicToComplete]);
 
     const handleTopicSelect = (topicName: string) => {
         const currentItem = intro2Path.find(item => item.name === topicName);
@@ -336,25 +388,20 @@ export default function KidsIntro2Page() {
         
         const viewOnlyTopics = ['tip', 'greetings', 'farewells', 'time'];
         if (viewOnlyTopics.includes(currentItem!.key)) {
-            completeTopic(currentItem!.key);
+            setTopicToComplete(currentItem!.key);
         }
     };
-    
-    const progress = useMemo(() => {
-        const completedItems = intro2Path.filter(item => item.status === 'completed').length;
-        return intro2Path.length > 0 ? Math.round((completedItems / intro2Path.length) * 100) : 0;
-    }, [intro2Path]);
   
     const renderContent = () => {
         switch(selectedTopicKey) {
             case 'tip': return <TipContent />;
-            case 'mixed1': return <SimpleExercise title="Ejercicios Mixtos 1" exerciseData={mixedExercise1Data} onComplete={() => completeTopic('mixed1')} />;
+            case 'mixed1': return <SimpleExercise title="Ejercicios Mixtos 1" exerciseData={mixedExercise1Data} onComplete={() => setTopicToComplete('mixed1')} />;
             case 'greetings': return <GreetingsFarewellsContent title="Saludos" data={greetingsData} />;
             case 'farewells': return <GreetingsFarewellsContent title="Despedidas" data={farewellsData} />;
-            case 'mixed2': return <SimpleExercise title="Ejercicios Mixtos 2" exerciseData={mixedExercise2Data} onComplete={() => completeTopic('mixed2')} />;
+            case 'mixed2': return <SimpleExercise title="Ejercicios Mixtos 2" exerciseData={mixedExercise2Data} onComplete={() => setTopicToComplete('mixed2')} />;
             case 'time': return <TimeContent />;
-            case 'time-exercise': return <div><p>Time exercise placeholder.</p><Button onClick={() => completeTopic('time-exercise')}>Complete</Button></div>;
-            case 'countries': return <div><p>Countries exercise placeholder.</p><Button onClick={() => completeTopic('countries')}>Complete</Button></div>;
+            case 'time-exercise': return <div><p>Time exercise placeholder.</p><Button onClick={() => setTopicToComplete('time-exercise')}>Complete</Button></div>;
+            case 'countries': return <div><p>Countries exercise placeholder.</p><Button onClick={() => setTopicToComplete('countries')}>Complete</Button></div>;
             default:
                 return (
                     <Card className="h-full">
@@ -382,7 +429,7 @@ export default function KidsIntro2Page() {
                     <Link href="/kids/intro" className="hover:underline">
                         <h1 className="text-4xl font-bold mb-8 dark:text-primary">{t('introCoursePage.intro2')}</h1>
                     </Link>
-                    {renderContent()}
+                    {isClient ? renderContent() : <div className="flex h-[500px] w-full items-center justify-center"><Loader2 className="h-16 w-16 animate-spin"/></div>}
                 </div>
                 <div className="md:col-span-3">
                     <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple">
@@ -390,14 +437,20 @@ export default function KidsIntro2Page() {
                         <CardContent>
                             <nav>
                                 <ul className="space-y-1">
-                                {intro2Path.map((item) => {
+                                {intro2Path.map((item, index) => {
+                                    const Icon = ICONS[item.status];
                                     const isLocked = item.status === 'locked';
                                     const isSelected = selectedTopic === item.name;
-                                    const StatusIcon = ICONS[item.status as keyof typeof ICONS];
+                                    const isActive = item.status === 'active';
+                                    
                                     return(
                                         <li key={item.key} onClick={() => handleTopicSelect(item.name)} className={cn(!isLocked || isAdmin ? "cursor-pointer" : "cursor-not-allowed")}>
-                                            <div className={cn("flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors", (!isLocked || isAdmin) && "hover:bg-muted", isSelected && (!isLocked || isAdmin) && "bg-muted text-primary font-semibold")}>
-                                                <StatusIcon className={cn("h-5 w-5", isLocked && !isAdmin ? "text-yellow-500" : (item.status === 'completed' || isSelected) ? "text-primary" : "text-muted-foreground")} />
+                                            <div className={cn(
+                                                "flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors",
+                                                (!isLocked || isAdmin) && "hover:bg-muted",
+                                                isSelected ? "bg-muted text-primary font-semibold" : (isActive ? "text-foreground" : "text-muted-foreground")
+                                            )}>
+                                                <item.icon className={cn("h-5 w-5", isLocked && !isAdmin ? "text-yellow-500" : (item.status === 'completed' || isSelected || isActive) ? "text-primary" : "text-muted-foreground")} />
                                                 <span>{item.name}</span>
                                             </div>
                                         </li>
