@@ -1,3 +1,4 @@
+
 {
   "header": {
     "courses": "Spanish",
@@ -229,14 +230,14 @@
     "welcomeDescription": "Select a topic from the learning path to begin.",
     "timeDescription": "Study this image to learn how to tell the time.",
     "countriesDescription": "Complete the table with the correct information.",
-    "tableCountry": "Country (Spanish)",
+    "tableCountry": "País",
     "tableCountries": "Countries",
     "tableNationalities": "Nationalities",
     "tableLanguage": "Language"
   },
   "spellingExercise": {
-    "abcspelling": "Spelling ABC",
-    "numbersspelling": "Spelling Numbers",
+    "abcspelling": "ABC Spelling",
+    "numbersspelling": "Numbers Spelling",
     "femaleNames": "Female Names",
     "maleNames": "Male Names",
     "animalNames": "Animal Names",
@@ -526,7 +527,7 @@
     "intro3": "Intro 3",
     "quiz2": "Quiz 2k",
     "finalTest": "Final Test Kids",
-    "intro1AdventureTitle": "Intro 1 Adventure",
+    "intro1AdventureTitle": "Kids Intro Course +12",
     "backToKidsCourse": "Kids Course",
     "intro2AdventureTitle": "Intro 2 Adventure",
     "intro3AdventureTitle": "Intro 3 Adventure",
