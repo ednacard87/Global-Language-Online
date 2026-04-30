@@ -68,6 +68,7 @@ const mayInterrogativeExercises = [
 const mayPositiveVocab = {
     "conseguir": "to get",
     "un/ una": "a - an",
+    "el, la, los, las": "the",
     "empleo": "job",
     "mañana": "tomorrow",
     "por": "for",
@@ -768,18 +769,18 @@ export default function MayPage() {
                                 <p><span className="font-bold text-lg text-green-500 mr-2">(+A)</span> Yes, pronoun + may/might.</p>
                                 <p><span className="font-bold text-lg text-red-500 mr-2">(-A)</span> No, pronoun + may/might not.</p>
                             </CardContent>
-                        </Card>
-                        
-                        <Card className="shadow-soft rounded-lg border-2 border-destructive bg-white dark:bg-card">
-                            <CardHeader>
-                                <CardTitle className="text-destructive dark:text-destructive">Nota Importante</CardTitle>
-                            </CardHeader>
-                            <CardContent className="text-center font-mono text-xl p-6 bg-brand-lilac dark:bg-muted rounded-b-lg">
-                                <p>No se suelen usar contracciones (como <code className="p-1 rounded bg-background">mightn't</code>) en el inglés moderno; es mejor decir <code className="p-1 rounded bg-background">might not</code>.</p>
-                            </CardContent>
+                            
+                            <Card className="shadow-soft rounded-lg border-2 border-destructive bg-white dark:bg-card">
+                                <CardHeader>
+                                    <CardTitle className="text-destructive dark:text-destructive">Nota Importante</CardTitle>
+                                </CardHeader>
+                                <CardContent className="text-center font-mono text-xl p-6 bg-brand-lilac dark:bg-muted rounded-b-lg">
+                                    <p>No se suelen usar contracciones (como <code className="p-1 rounded bg-background">mightn't</code>) en el inglés moderno; es mejor decir <code className="p-1 rounded bg-background">might not</code>.</p>
+                                </CardContent>
+                            </Card>
                         </Card>
                     </div>
-                );
+                 );
             case 'positive-ex':
                 return <SingleFormExercise key="positive" onComplete={() => handleTopicComplete('positive-ex')} exerciseData={mayPositiveExercises} title="Ejercicios: Forma Positiva" description="Traduce las frases a su forma afirmativa usando 'will'." formType="affirmative" vocabulary={mayPositiveVocab} highlightVocabulary={true} />;
             case 'negative-ex':
