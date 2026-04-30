@@ -39,10 +39,10 @@ const readingTextData = {
     title: "Life is Full of Choices",
     content: "Next year, I might take a gap year to travel. I may study abroad in Spain. It's a big decision! My friend, Sarah, will set up a business. She thinks she may get a promotion first. I will not start a family soon, but I might join a charity to help animals. We all have big dreams for the future.",
     questions: [
-        { id: 'q1', question: "What have I eaten with my family?", answers: ["pizza", "i have eaten pizza"] },
-        { id: 'q2', question: "What has my brother drunk?", answers: ["all the juice", "juice"] },
-        { id: 'q3', question: "What have I written?", answers: ["a story", "i have written a story"] },
-        { id: 'q4', question: "What has my sister studied for?", answers: ["her exam", "for her exam"] },
+        { id: 'q1', question: "What does the narrator might do next year?", answers: ["take a gap year to travel", "take a gap year"] },
+        { id: 'q2', question: "Where may the narrator study abroad?", answers: ["spain", "in spain"] },
+        { id: 'q3', question: "What will Sarah set up?", answers: ["a business", "business"] },
+        { id: 'q4', question: "What might the narrator join to help animals?", answers: ["a charity", "charity"] },
     ]
 };
 
@@ -230,7 +230,7 @@ const FinalVocabularyExercise = ({ onComplete }: { onComplete: () => void }) => 
         setValidationStatus(prev => {
             const newStatus = { ...prev };
             if (newStatus[index] && newStatus[index] !== 'unchecked') {
-                newValidationStatus[index] = 'unchecked';
+                newStatus[index] = 'unchecked';
             }
             return newStatus;
         });
@@ -464,7 +464,7 @@ const ICONS = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_kids_b1_may_v4'; // Actualizado para incluir posición
+const progressStorageVersion = 'progress_kids_b1_may_v4'; 
 const mainProgressKey = 'progress_kids_b1_may';
 
 export default function MayPage() {
@@ -505,11 +505,10 @@ export default function MayPage() {
         },
         { key: 'mixedExercises', name: 'Ejercicios Mixtos', icon: PenSquare, status: 'locked' },
         { key: 'game', name: 'Sopa de Letras (Life Goals)', icon: Gamepad2, status: 'locked' },
-        { key: 'reading', name: 'Lectura', icon: BookText, status: 'locked' },
+        { key: 'reading', name: 'Lectura', icon: CheckCircle, status: 'locked' },
         { key: 'finalVocabulary', name: 'Vocabulario Final', icon: BookOpen, status: 'locked' },
     ], []);
     
-    // Effect to LOAD progress and last position
     useEffect(() => {
         if (isUserLoading || isProfileLoading || !initialLearningPath.length) return;
 
@@ -545,7 +544,6 @@ export default function MayPage() {
         setLearningPath(newPath);
 
         if (!initialLoadComplete) {
-            // Priority: savedSelectedTopic > first active subitem > first active main item > first item
             if (savedSelectedTopic) {
                 setSelectedTopic(savedSelectedTopic);
             } else {
@@ -580,7 +578,6 @@ export default function MayPage() {
         return totalTopics > 0 ? (completedTopics / totalTopics) * 100 : 0;
     }, [learningPath, initialLoadComplete]);
 
-    // Effect to SAVE progress and current position
     useEffect(() => {
         if (!initialLoadComplete || isUserLoading || isProfileLoading || learningPath.length === 0 || isAdmin || !studentDocRef) return;
 
@@ -599,7 +596,6 @@ export default function MayPage() {
             }
         });
 
-        // Batch update to ensure consistency
         updateDocumentNonBlocking(studentDocRef, { 
             [`lessonProgress.${progressStorageVersion}`]: statusesToSave,
             [`progress.${mainProgressKey}`]: Math.round(progressPercent)
@@ -779,7 +775,8 @@ export default function MayPage() {
                                     <p>No se suelen usar contracciones (como <code className="p-1 rounded bg-background">mightn't</code>) en el inglés moderno; es mejor decir <code className="p-1 rounded bg-background">might not</code>.</p>
                                 </CardContent>
                             </Card>
-                        </div>
+                        </Card>
+                    </div>
                  );
             case 'positive-ex':
                 return <SingleFormExercise key="positive" onComplete={() => handleTopicComplete('positive-ex')} exerciseData={mayPositiveExercises} title="Ejercicios: Forma Positiva" description="Traduce las frases a su forma afirmativa usando 'May y Might'." formType="affirmative" vocabulary={mayPositiveVocab} highlightVocabulary={true} />;
