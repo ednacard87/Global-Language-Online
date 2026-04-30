@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -135,36 +136,40 @@ export const SingleFormExercise = ({
     return (
         <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
             <CardHeader>
-                <CardTitle>{title}</CardTitle>
-                <CardDescription>{description}</CardDescription>
-                {vocabulary && (
-                    <Popover>
-                        <PopoverTrigger asChild>
-                            <Button variant="outline" size="sm" className={cn("mt-2 w-fit", highlightVocabulary && "border-2 border-brand-blue animate-pulse")}>
-                                <BookText className="mr-2 h-4 w-4" />
-                                Vocabulario
-                            </Button>
-                        </PopoverTrigger>
-                        <PopoverContent>
-                            <div className="grid gap-4">
-                                <div className="space-y-2">
-                                    <h4 className="font-medium leading-none">Vocabulario Clave</h4>
-                                    <p className="text-sm text-muted-foreground">
-                                        Palabras importantes para este ejercicio.
-                                    </p>
+                <div className="flex justify-between items-start">
+                    <div className="space-y-1">
+                        <CardTitle>{title}</CardTitle>
+                        <CardDescription>{description}</CardDescription>
+                    </div>
+                    {vocabulary && (
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button variant="outline" size="sm" className={cn(highlightVocabulary && "border-2 border-brand-blue animate-border-pulse")}>
+                                    <BookText className="mr-2 h-4 w-4" />
+                                    Vocabulary
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent>
+                                <div className="grid gap-4">
+                                    <div className="space-y-2">
+                                        <h4 className="font-medium leading-none">Vocabulario Clave</h4>
+                                        <p className="text-sm text-muted-foreground">
+                                            Palabras importantes para este ejercicio.
+                                        </p>
+                                    </div>
+                                    <div className="grid gap-2 text-sm">
+                                        {Object.entries(vocabulary).map(([spanish, english]) => (
+                                            <div key={spanish} className="grid grid-cols-2 items-center gap-4">
+                                                <span className="text-muted-foreground capitalize">{spanish}</span>
+                                                <span className="font-semibold text-right">{english}</span>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
-                                <div className="grid gap-2 text-sm">
-                                    {Object.entries(vocabulary).map(([spanish, english]) => (
-                                        <div key={spanish} className="grid grid-cols-2 items-center gap-4">
-                                            <span className="text-muted-foreground capitalize">{spanish}</span>
-                                            <span className="font-semibold text-right">{english}</span>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        </PopoverContent>
-                    </Popover>
-                )}
+                            </PopoverContent>
+                        </Popover>
+                    )}
+                </div>
             </CardHeader>
             <CardContent className="space-y-6">
                 <div>
