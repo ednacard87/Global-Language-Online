@@ -85,6 +85,7 @@ const mayPositiveVocab = {
 const mayNegativeVocab = {
     "graduarse": "to graduate",
     "este": "this",
+    "semestre": "semester",
     "solicitar": "to apply",
     "beca": "scholarship",
     "cambiar": "to change",
@@ -778,11 +779,10 @@ export default function MayPage() {
                                     <p>No se suelen usar contracciones (como <code className="p-1 rounded bg-background">mightn't</code>) en el inglés moderno; es mejor decir <code className="p-1 rounded bg-background">might not</code>.</p>
                                 </CardContent>
                             </Card>
-                        </Card>
-                    </div>
+                        </div>
                  );
             case 'positive-ex':
-                return <SingleFormExercise key="positive" onComplete={() => handleTopicComplete('positive-ex')} exerciseData={mayPositiveExercises} title="Ejercicios: Forma Positiva" description="Traduce las frases a su forma afirmativa usando 'May y MIght'." formType="affirmative" vocabulary={mayPositiveVocab} highlightVocabulary={true} />;
+                return <SingleFormExercise key="positive" onComplete={() => handleTopicComplete('positive-ex')} exerciseData={mayPositiveExercises} title="Ejercicios: Forma Positiva" description="Traduce las frases a su forma afirmativa usando 'May y Might'." formType="affirmative" vocabulary={mayPositiveVocab} highlightVocabulary={true} />;
             case 'negative-ex':
                 return <SingleFormExercise key="negative" onComplete={() => handleTopicComplete('negative-ex')} exerciseData={mayNegativeExercises} title="Ejercicios: Forma Negativa" description="Traduce las frases a su forma negativa usando 'May y Might'." formType="negative" vocabulary={mayNegativeVocab} highlightVocabulary={true} />;
             case 'interrogative-ex':
