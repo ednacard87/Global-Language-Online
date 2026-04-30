@@ -229,7 +229,7 @@ const FinalVocabularyExercise = ({ onComplete }: { onComplete: () => void }) => 
         setValidationStatus(prev => {
             const newStatus = { ...prev };
             if (newStatus[index] && newStatus[index] !== 'unchecked') {
-                newStatus[index] = 'unchecked';
+                newValidationStatus[index] = 'unchecked';
             }
             return newStatus;
         });
@@ -782,9 +782,9 @@ export default function MayPage() {
                     </div>
                  );
             case 'positive-ex':
-                return <SingleFormExercise key="positive" onComplete={() => handleTopicComplete('positive-ex')} exerciseData={mayPositiveExercises} title="Ejercicios: Forma Positiva" description="Traduce las frases a su forma afirmativa usando 'May y Might'." formType="affirmative" vocabulary={mayPositiveVocab} highlightVocabulary={true} />;
+                return <SingleFormExercise key="positive" onComplete={() => handleTopicComplete('positive-ex')} exerciseData={mayPositiveExercises} title="Ejercicios: Forma Positiva" description="Traduce las frases a su forma afirmativa usando 'May y MIght'." formType="affirmative" vocabulary={mayPositiveVocab} highlightVocabulary={true} />;
             case 'negative-ex':
-                return <SingleFormExercise key="negative" onComplete={() => handleTopicComplete('negative-ex')} exerciseData={mayNegativeExercises} title="Ejercicios: Forma Negativa" description="Traduce las frases a su forma negativa usando 'will not' o 'won't'." formType="negative" vocabulary={mayNegativeVocab} highlightVocabulary={true} />;
+                return <SingleFormExercise key="negative" onComplete={() => handleTopicComplete('negative-ex')} exerciseData={mayNegativeExercises} title="Ejercicios: Forma Negativa" description="Traduce las frases a su forma negativa usando 'May y Might'." formType="negative" vocabulary={mayNegativeVocab} highlightVocabulary={true} />;
             case 'interrogative-ex':
                 return <SingleFormExercise key="interrogative" onComplete={() => handleTopicComplete('interrogative-ex')} exerciseData={mayInterrogativeExercises} title="Ejercicios: Forma Interrogativa" description="Convierte las frases en preguntas usando 'will'." formType="interrogative" vocabulary={mayInterrogativeVocab} highlightVocabulary={true} />;
             case 'mixedExercises':
