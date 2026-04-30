@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
@@ -86,6 +87,7 @@ const mayNegativeVocab = {
     "graduarse": "to graduate",
     "este": "this",
     "semestre": "semester",
+    "Semestre": "Semester",
     "solicitar": "to apply",
     "beca": "scholarship",
     "cambiar": "to change",
@@ -304,160 +306,6 @@ type Topic = {
   subItems?: { key: string; name: string; status: 'locked' | 'active' | 'completed', icon?: React.ElementType }[];
 };
 
-const WordSearchGame = ({ onComplete }: { onComplete: () => void }) => {
-    const { t } = useTranslation();
-    const { toast } = useToast();
-
-    const words = useMemo(() => lifeGoalsVocab.map(v => v.english.replace(/ /g, '').toUpperCase()), []);
-    const [grid, setGrid] = useState<string[][]>([]);
-    const [foundWords, setFoundWords] = useState<{ word: string, cells: { row: number, col: number }[] }[]>([]);
-    const [selection, setSelection] = useState<{ row: number, col: number }[]>([]);
-    const [isSelecting, setIsSelecting] = useState(false);
-    const [gameIsFinished, setGameIsFinished] = useState(false);
-
-    useEffect(() => {
-        const gridSize = 22;
-        const newGrid: (string | null)[][] = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null));
-        const directions = [
-            { dr: 0, dc: 1 },  // Horizontal (right)
-            { dr: 1, dc: 0 },  // Vertical (down)
-            { dr: 1, dc: 1 },  // Diagonal (down-right)
-            { dr: 0, dc: -1 }, // Horizontal (left)
-            { dr: -1, dc: 0 }, // Vertical (up)
-            { dr: 1, dc: -1 }, // Diagonal (down-left)
-            { dr: -1, dc: 1 }, // Diagonal (up-right)
-            { dr: -1, dc: -1 },// Diagonal (up-left)
-        ];
-
-        words.forEach(originalWord => {
-            let placed = false;
-            let attempts = 0;
-            while (!placed && attempts < 2000) {
-                attempts++;
-
-                const wordToPlace = Math.random() > 0.5 ? originalWord.split('').reverse().join('') : originalWord;
-                const dir = directions[Math.floor(Math.random() * directions.length)];
-
-                const startRow = Math.floor(Math.random() * gridSize);
-                const startCol = Math.floor(Math.random() * gridSize);
-
-                let canPlace = true;
-
-                for (let i = 0; i < wordToPlace.length; i++) {
-                    const newRow = startRow + i * dir.dr;
-                    const newCol = startCol + i * dir.dc;
-
-                    if (newRow < 0 || newRow >= gridSize || newCol < 0 || newCol >= gridSize) {
-                        canPlace = false;
-                        break;
-                    }
-
-                    if (newGrid[newRow][newCol] && newGrid[newRow][newCol] !== wordToPlace[i]) {
-                        canPlace = false;
-                        break;
-                    }
-                }
-
-                if (canPlace) {
-                    for (let i = 0; i < wordToPlace.length; i++) {
-                        const newRow = startRow + i * dir.dr;
-                        const newCol = startCol + i * dir.dc;
-                        newGrid[newRow][newCol] = wordToPlace[i];
-                    }
-                    placed = true;
-                }
-            }
-            if (!placed) {
-                console.warn(`Could not place word: ${originalWord}`);
-            }
-        });
-
-        const finalGrid = newGrid.map(row => row.map(cell => cell || 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[Math.floor(Math.random() * 26)]));
-        setGrid(finalGrid);
-        setFoundWords([]);
-    }, [words]);
-
-    const handleMouseUp = () => {
-        if (!isSelecting || grid.length === 0) return;
-        setIsSelecting(false);
-
-        const selectedWord = selection.map(({ row, col }) => grid[row][col]).join('');
-        const reversedSelectedWord = selectedWord.split('').reverse().join('');
-
-        const wordFound = words.find(w => !foundWords.some(fw => fw.word === w) && (w === selectedWord || w === reversedSelectedWord));
-
-        if (wordFound) {
-            setFoundWords(prev => [...prev, { word: wordFound, cells: selection }]);
-            toast({ title: "¡Palabra encontrada!", description: `Has encontrado "${wordFound}".` });
-        }
-
-        setSelection([]);
-    };
-
-    useEffect(() => {
-        if (words && foundWords.length === words.length && words.length > 0 && !gameIsFinished) {
-            setGameIsFinished(true);
-            toast({
-                title: "¡Felicidades!",
-                description: "Has encontrado todas las palabras. Ahora puedes continuar."
-            });
-        }
-    }, [foundWords, words, gameIsFinished, toast]);
-
-    return (
-        <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-            <CardHeader>
-                <CardTitle>{t('wordSearch.title')}</CardTitle>
-                <CardDescription>{t('wordSearch.description')}</CardDescription>
-            </CardHeader>
-            <CardContent className="grid md:grid-cols-3 gap-8 items-start">
-                <div onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp} className="bg-muted p-2 rounded-lg md:col-span-2">
-                    <div className="grid gap-1" style={{ gridTemplateColumns: `repeat(${grid.length > 0 ? grid.length : 1}, minmax(0, 1fr))` }}>
-                        {grid.map((row, rowIndex) => (
-                            row.map((cell, colIndex) => {
-                                const isSelected = selection.some(s => s.row === rowIndex && s.col === colIndex);
-                                const isFound = foundWords.some(fw => fw.cells.some(c => c.row === rowIndex && c.col === colIndex));
-                                return (
-                                    <div key={`${rowIndex}-${colIndex}`}
-                                        onMouseDown={() => { setIsSelecting(true); setSelection([{ row: rowIndex, col: colIndex }]); }}
-                                        onMouseEnter={() => { if (isSelecting) setSelection(s => [...s, { row: rowIndex, col: colIndex }]) }}
-                                        className={cn("flex items-center justify-center aspect-square select-none cursor-pointer rounded bg-background text-sm sm:text-base font-bold",
-                                            isFound ? "bg-primary text-primary-foreground" : (isSelected ? "bg-primary/50" : "")
-                                        )}
-                                    >
-                                        {cell}
-                                    </div>
-                                )
-                            })
-                        ))}
-                    </div>
-                </div>
-                <div className="md:col-span-1">
-                    <h3 className="font-semibold mb-2">{t('wordSearch.wordsToFind')}</h3>
-                    <ul className="space-y-1 text-sm">
-                        {words.map(word => (
-                            <li key={word} className={cn("transition-all", foundWords.some(fw => fw.word === word) && "line-through text-muted-foreground opacity-70")}>
-                                {word}
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-            </CardContent>
-            <CardFooter className="justify-end">
-                <Button
-                    onClick={onComplete}
-                    disabled={!gameIsFinished}
-                    className="bg-green-600 hover:bg-green-700"
-                >
-                    Continuar con Lectura
-                </Button>
-            </CardFooter>
-        </Card>
-    );
-};
-
-// --- Page Component ---
-
 const ICONS = {
     locked: Lock,
     active: BookOpen,
@@ -504,7 +352,6 @@ export default function MayPage() {
             ]
         },
         { key: 'mixedExercises', name: 'Ejercicios Mixtos', icon: PenSquare, status: 'locked' },
-        { key: 'game', name: 'Sopa de Letras (Life Goals)', icon: Gamepad2, status: 'locked' },
         { key: 'reading', name: 'Lectura', icon: CheckCircle, status: 'locked' },
         { key: 'finalVocabulary', name: 'Vocabulario Final', icon: BookOpen, status: 'locked' },
     ], []);
@@ -608,45 +455,60 @@ export default function MayPage() {
     useEffect(() => {
         if (!topicToComplete) return;
 
-        setLearningPath(currentPath => {
-            const newPath = currentPath.map(t => ({
+        // Perform computation first to avoid triggering side effects during render
+        const { updatedPath, newlyUnlockedTopic, nextTopicToSelect } = (() => {
+            let wasTopicUnlocked = false;
+            let nextSelectedTopic: string | null = null;
+            let topicFound = false;
+
+            const newPath = learningPath.map(t => ({
                 ...t,
                 subItems: t.subItems ? t.subItems.map(s => ({ ...s })) : undefined,
             }));
-
-            let nextSelectedTopic: string | null = null;
-            let topicFound = false;
-            let wasTopicUnlocked = false;
 
             for (let i = 0; i < newPath.length && !topicFound; i++) {
                 const currentTopic = newPath[i];
 
                 if (currentTopic.key === topicToComplete) {
-                    if (currentTopic.status !== 'completed') { currentTopic.status = 'completed'; }
+                    if (currentTopic.status !== 'completed') {
+                        currentTopic.status = 'completed';
+                    }
                     if (i + 1 < newPath.length && newPath[i + 1].status === 'locked') {
                         const next = newPath[i + 1];
                         next.status = 'active';
-                        if (next.subItems?.[0]) { next.subItems[0].status = 'active'; nextSelectedTopic = next.subItems[0].key; }
-                        else { nextSelectedTopic = next.key; }
+                        if (next.subItems?.[0]) {
+                            next.subItems[0].status = 'active';
+                            nextSelectedTopic = next.subItems[0].key;
+                        } else {
+                            nextSelectedTopic = next.key;
+                        }
                         wasTopicUnlocked = true;
                     }
                     topicFound = true;
                 } else if (currentTopic.subItems) {
                     const subIndex = currentTopic.subItems.findIndex(s => s.key === topicToComplete);
                     if (subIndex !== -1) {
-                        if (currentTopic.subItems[subIndex].status !== 'completed') { currentTopic.subItems[subIndex].status = 'completed'; }
+                        if (currentTopic.subItems[subIndex].status !== 'completed') {
+                            currentTopic.subItems[subIndex].status = 'completed';
+                        }
                         const nextSubIndex = subIndex + 1;
                         if (nextSubIndex < currentTopic.subItems.length && currentTopic.subItems[nextSubIndex].status === 'locked') {
                             currentTopic.subItems[nextSubIndex].status = 'active';
                             nextSelectedTopic = currentTopic.subItems[nextSubIndex].key;
                             wasTopicUnlocked = true;
                         } else if (currentTopic.subItems.every(s => s.status === 'completed')) {
-                            if (currentTopic.status !== 'completed') { currentTopic.status = 'completed'; }
+                            if (currentTopic.status !== 'completed') {
+                                currentTopic.status = 'completed';
+                            }
                             if (i + 1 < newPath.length && newPath[i + 1].status === 'locked') {
                                 const next = newPath[i + 1];
                                 next.status = 'active';
-                                if (next.subItems?.[0]) { next.subItems[0].status = 'active'; nextSelectedTopic = next.subItems[0].key; }
-                                else { nextSelectedTopic = next.key; }
+                                if (next.subItems?.[0]) {
+                                    next.subItems[0].status = 'active';
+                                    nextSelectedTopic = next.subItems[0].key;
+                                } else {
+                                    nextSelectedTopic = next.key;
+                                }
                                 wasTopicUnlocked = true;
                             }
                         }
@@ -654,13 +516,19 @@ export default function MayPage() {
                     }
                 }
             }
+            return { updatedPath: newPath, newlyUnlockedTopic: wasTopicUnlocked, nextTopicToSelect: nextSelectedTopic };
+        })();
 
-            if (nextSelectedTopic) { setSelectedTopic(nextSelectedTopic); }
-            if (wasTopicUnlocked) { toast({ title: "¡Siguiente tema desbloqueado!" }); }
-            return newPath;
-        });
+        // Apply state updates and side effects outside of the calculation block
+        setLearningPath(updatedPath);
+        if (nextTopicToSelect) {
+            setSelectedTopic(nextTopicToSelect);
+        }
+        if (newlyUnlockedTopic) {
+            toast({ title: "¡Siguiente tema desbloqueado!" });
+        }
         setTopicToComplete(null);
-    }, [topicToComplete, toast]);
+    }, [topicToComplete, learningPath, toast]);
 
     const handleTopicComplete = (completedKey: string) => {
         setTopicToComplete(completedKey);
@@ -681,7 +549,7 @@ export default function MayPage() {
         }
         setSelectedTopic(topicKey);
 
-        const exerciseKeys = ['positive-ex', 'negative-ex', 'interrogative-ex', 'mixedExercises', 'finalVocabulary', 'reading', 'game'];
+        const exerciseKeys = ['positive-ex', 'negative-ex', 'interrogative-ex', 'mixedExercises', 'finalVocabulary', 'reading'];
         if (!exerciseKeys.includes(topicKey)) {
             handleTopicComplete(topicKey);
         }
@@ -784,12 +652,7 @@ export default function MayPage() {
             case 'interrogative-ex':
                 return <SingleFormExercise key="interrogative" onComplete={() => handleTopicComplete('interrogative-ex')} exerciseData={mayInterrogativeExercises} title="Ejercicios: Forma Interrogativa" description="Convierte las frases en preguntas usando 'May y Might'." formType="interrogative" vocabulary={mayInterrogativeVocab} highlightVocabulary={true} />;
             case 'mixedExercises':
-                return <PresentSimpleExercise onComplete={() => {
-                    handleTopicComplete('mixedExercises');
-                    handleTopicComplete('exercise1'); // Also complete parent
-                }} exerciseData={mayMixedExercises} title="Ejercicios Mixtos" showShortAnswers={true} />;
-            case 'game':
-                return <WordSearchGame onComplete={() => handleTopicComplete('game')} />;
+                return <PresentSimpleExercise onComplete={() => handleTopicComplete('mixedExercises')} exerciseData={mayMixedExercises} title="Ejercicios Mixtos" showShortAnswers={true} />;
             case 'reading':
                 return <ReadingExercise onComplete={() => handleTopicComplete('reading')} />;
             case 'finalVocabulary':
@@ -883,3 +746,4 @@ export default function MayPage() {
         </div>
     );
 }
+    
