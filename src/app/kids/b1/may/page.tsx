@@ -786,7 +786,7 @@ export default function MayPage() {
             case 'negative-ex':
                 return <SingleFormExercise key="negative" onComplete={() => handleTopicComplete('negative-ex')} exerciseData={mayNegativeExercises} title="Ejercicios: Forma Negativa" description="Traduce las frases a su forma negativa usando 'May y Might'." formType="negative" vocabulary={mayNegativeVocab} highlightVocabulary={true} />;
             case 'interrogative-ex':
-                return <SingleFormExercise key="interrogative" onComplete={() => handleTopicComplete('interrogative-ex')} exerciseData={mayInterrogativeExercises} title="Ejercicios: Forma Interrogativa" description="Convierte las frases en preguntas usando 'will'." formType="interrogative" vocabulary={mayInterrogativeVocab} highlightVocabulary={true} />;
+                return <SingleFormExercise key="interrogative" onComplete={() => handleTopicComplete('interrogative-ex')} exerciseData={mayInterrogativeExercises} title="Ejercicios: Forma Interrogativa" description="Convierte las frases en preguntas usando 'May y Might'." formType="interrogative" vocabulary={mayInterrogativeVocab} highlightVocabulary={true} />;
             case 'mixedExercises':
                 return <PresentSimpleExercise onComplete={() => {
                   handleTopicComplete('mixedExercises');
