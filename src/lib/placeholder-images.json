@@ -113,6 +113,12 @@
       "description": "Cartoon illustration of two boys DJing with futuristic elements.",
       "imageUrl": "https://img.freepik.com/free-vector/hand-drawn-anime-style-boy-band_52683-111162.jpg?w=1380&t=st=1716309859~exp=1716310459~hmac=a1f11e9a31a50a3c26786c310c85c276e0d37e2467576594b4e9f7e53f191b2c",
       "imageHint": "cartoon djs"
+    },
+    {
+      "id": "bear-guide",
+      "description": "Oso de dibujos animados para guiar a los niños",
+      "imageUrl": "https://img.freepik.com/free-vector/hand-drawn-anime-style-boy-band_52683-111162.jpg?w=1380",
+      "imageHint": "bear cartoon"
     }
   ]
 }

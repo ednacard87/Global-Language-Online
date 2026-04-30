@@ -49,12 +49,12 @@ const readingTextData = {
 const mayPositiveExercises = [
     { spanish: "Puede que yo consiga un empleo mañana. (50% probabilidad).", answer: ["I may get a job tomorrow."] },
     { spanish: "ella tal vez se mude al extranjero. (30% probabilidad).", answer: ["She might move abroad."] },
-    { spanish: "Nosotros podríamos viajar por el mundo el próximo año. (50% probabilidad).", answer: ["we may travel for the world next year"] },
+    { spanish: "Nosotros podrían viajar por el mundo el próximo año. (50% probabilidad).", answer: ["we may travel for the world next year"] },
     { spanish: "Él tal vez aprenda un idioma nuevo. (30% probabilidad).", answer: ["He might learn a new language."] }
 ];
 const mayNegativeExercises = [
     { spanish: "Puede que ellos no se gradúen este semestre. (50% probabilidad).", answer: ["They may not graduate this semester."] },
-    { spanish: "Tal vez yo no solicite la beca. (30% probabilidad).", answer: ["I might not apply for the scholarship."] },
+    { spanish: "Tal vez yo no solicite la beca. (30% probabilidad).", answer: ["I might not apply for the scholarship.", "i might not apply the scholarship"] },
     { spanish: "Ella podría no cambiar de carrera. (50% probabilidad).", answer: ["She may not change career."] },
     { spanish: "Nosotros tal vez no ahorremos suficiente dinero. (30% probabilidad).", answer: ["We might not save enough money."] }
 ];
@@ -108,27 +108,27 @@ const mayInterrogativeVocab = {
 
 const mayMixedExercises = [
     {
-        spanish: "ella puede que consiga un empleo -\"MAY\" (Posibilidad probable - 50%)",
+        spanish: "ella puede que consiga un empleo -\"MAY\" (Posibilidad probable - 50 %)",
         answers: {
             affirmative: ["She may get a job."],
             negative: ["She may not get a job."],
             interrogative: ["May she get a job?"],
             shortAffirmative: ["Yes, she may."],
             shortNegative: ["No, she may not."]
-        }
+         }
     },
     {
-        spanish: "tal vez nosotros nos mudemos al extranjero - \"MIGHT\" (Posibilidad remota - 30%)",
+        spanish: "tal vez nosotros nos mudemos al extranjero - \"MIGHT \" (Posibilidad remota - 30%)",
         answers: {
             affirmative: ["We might move abroad."],
             negative: ["We might not move abroad."],
             interrogative: ["Might we move abroad?"],
             shortAffirmative: ["Yes, we might."],
             shortNegative: ["No, we might not."]
-        }
+         }
     },
     {
-        spanish: "yo puede que solicite por una beca- \"MAY\" (Uso de permiso o posibilidad)",
+        spanish: "yo puede que solicite por una beca- \"MAY \" (Uso de permiso o posibilidad)",
         answers: {
             affirmative: ["I may apply for a scholarship."],
             negative: ["I may not apply for a scholarship."],
@@ -157,7 +157,7 @@ const ReadingExercise = ({ onComplete }: { onComplete: () => void }) => {
         readingTextData.questions.forEach(q => {
             const userAnswer = userAnswers[q.id]?.trim().toLowerCase().replace(/[.?]/g, '') || '';
             const correctAnswers = q.answers.map(a => a.toLowerCase().replace(/[.?]/g, ''));
-            
+
             if (correctAnswers.includes(userAnswer)) {
                 newValidationStatus[q.id] = 'correct';
             } else {
@@ -179,7 +179,7 @@ const ReadingExercise = ({ onComplete }: { onComplete: () => void }) => {
             });
         }
     };
-    
+
     const getInputClass = (questionId: string) => {
         const status = validationStatus[questionId];
         if (status === 'correct') return 'border-green-500 focus-visible:ring-green-500';
@@ -258,7 +258,7 @@ const FinalVocabularyExercise = ({ onComplete }: { onComplete: () => void }) => 
             toast({ variant: "destructive", title: "Sigue intentando", description: "Algunas respuestas son incorrectas." });
         }
     };
-    
+
     const getInputClass = (status: 'correct' | 'incorrect' | 'unchecked') => {
         if (status === 'correct') return 'border-green-500 focus-visible:ring-green-500';
         if (status === 'incorrect') return 'border-destructive focus-visible:ring-destructive';
@@ -307,11 +307,11 @@ type Topic = {
 const WordSearchGame = ({ onComplete }: { onComplete: () => void }) => {
     const { t } = useTranslation();
     const { toast } = useToast();
-    
+
     const words = useMemo(() => lifeGoalsVocab.map(v => v.english.replace(/ /g, '').toUpperCase()), []);
     const [grid, setGrid] = useState<string[][]>([]);
     const [foundWords, setFoundWords] = useState<{ word: string, cells: { row: number, col: number }[] }[]>([]);
-    const [selection, setSelection] = useState<{row: number, col: number}[]>([]);
+    const [selection, setSelection] = useState<{ row: number, col: number }[]>([]);
     const [isSelecting, setIsSelecting] = useState(false);
     const [gameIsFinished, setGameIsFinished] = useState(false);
 
@@ -334,15 +334,15 @@ const WordSearchGame = ({ onComplete }: { onComplete: () => void }) => {
             let attempts = 0;
             while (!placed && attempts < 2000) {
                 attempts++;
-                
+
                 const wordToPlace = Math.random() > 0.5 ? originalWord.split('').reverse().join('') : originalWord;
                 const dir = directions[Math.floor(Math.random() * directions.length)];
-                
+
                 const startRow = Math.floor(Math.random() * gridSize);
                 const startCol = Math.floor(Math.random() * gridSize);
 
                 let canPlace = true;
-                
+
                 for (let i = 0; i < wordToPlace.length; i++) {
                     const newRow = startRow + i * dir.dr;
                     const newCol = startCol + i * dir.dc;
@@ -351,7 +351,7 @@ const WordSearchGame = ({ onComplete }: { onComplete: () => void }) => {
                         canPlace = false;
                         break;
                     }
-                    
+
                     if (newGrid[newRow][newCol] && newGrid[newRow][newCol] !== wordToPlace[i]) {
                         canPlace = false;
                         break;
@@ -371,7 +371,7 @@ const WordSearchGame = ({ onComplete }: { onComplete: () => void }) => {
                 console.warn(`Could not place word: ${originalWord}`);
             }
         });
-        
+
         const finalGrid = newGrid.map(row => row.map(cell => cell || 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[Math.floor(Math.random() * 26)]));
         setGrid(finalGrid);
         setFoundWords([]);
@@ -383,17 +383,17 @@ const WordSearchGame = ({ onComplete }: { onComplete: () => void }) => {
 
         const selectedWord = selection.map(({ row, col }) => grid[row][col]).join('');
         const reversedSelectedWord = selectedWord.split('').reverse().join('');
-        
+
         const wordFound = words.find(w => !foundWords.some(fw => fw.word === w) && (w === selectedWord || w === reversedSelectedWord));
 
         if (wordFound) {
             setFoundWords(prev => [...prev, { word: wordFound, cells: selection }]);
             toast({ title: "¡Palabra encontrada!", description: `Has encontrado "${wordFound}".` });
         }
-        
+
         setSelection([]);
     };
-    
+
     useEffect(() => {
         if (words && foundWords.length === words.length && words.length > 0 && !gameIsFinished) {
             setGameIsFinished(true);
@@ -405,7 +405,7 @@ const WordSearchGame = ({ onComplete }: { onComplete: () => void }) => {
     }, [foundWords, words, gameIsFinished, toast]);
 
     return (
-         <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+        <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
             <CardHeader>
                 <CardTitle>{t('wordSearch.title')}</CardTitle>
                 <CardDescription>{t('wordSearch.description')}</CardDescription>
@@ -418,21 +418,21 @@ const WordSearchGame = ({ onComplete }: { onComplete: () => void }) => {
                                 const isSelected = selection.some(s => s.row === rowIndex && s.col === colIndex);
                                 const isFound = foundWords.some(fw => fw.cells.some(c => c.row === rowIndex && c.col === colIndex));
                                 return (
-                                <div key={`${rowIndex}-${colIndex}`}
-                                    onMouseDown={() => { setIsSelecting(true); setSelection([{row: rowIndex, col: colIndex}]); }}
-                                    onMouseEnter={() => { if(isSelecting) setSelection(s => [...s, {row: rowIndex, col: colIndex}])}}
-                                    className={cn("flex items-center justify-center aspect-square select-none cursor-pointer rounded bg-background text-sm sm:text-base font-bold", 
-                                        isFound ? "bg-primary text-primary-foreground" : (isSelected ? "bg-primary/50" : "")
-                                    )}
-                                >
-                                    {cell}
-                                </div>
+                                    <div key={`${rowIndex}-${colIndex}`}
+                                        onMouseDown={() => { setIsSelecting(true); setSelection([{ row: rowIndex, col: colIndex }]); }}
+                                        onMouseEnter={() => { if (isSelecting) setSelection(s => [...s, { row: rowIndex, col: colIndex }]) }}
+                                        className={cn("flex items-center justify-center aspect-square select-none cursor-pointer rounded bg-background text-sm sm:text-base font-bold",
+                                            isFound ? "bg-primary text-primary-foreground" : (isSelected ? "bg-primary/50" : "")
+                                        )}
+                                    >
+                                        {cell}
+                                    </div>
                                 )
                             })
                         ))}
                     </div>
                 </div>
-                 <div className="md:col-span-1">
+                <div className="md:col-span-1">
                     <h3 className="font-semibold mb-2">{t('wordSearch.wordsToFind')}</h3>
                     <ul className="space-y-1 text-sm">
                         {words.map(word => (
@@ -441,10 +441,10 @@ const WordSearchGame = ({ onComplete }: { onComplete: () => void }) => {
                             </li>
                         ))}
                     </ul>
-                 </div>
+                </div>
             </CardContent>
             <CardFooter className="justify-end">
-                <Button 
+                <Button
                     onClick={onComplete}
                     disabled={!gameIsFinished}
                     className="bg-green-600 hover:bg-green-700"
@@ -464,7 +464,7 @@ const ICONS = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_kids_b1_may_v4'; 
+const progressStorageVersion = 'progress_kids_b1_may_v4';
 const mainProgressKey = 'progress_kids_b1_may';
 
 export default function MayPage() {
@@ -477,13 +477,13 @@ export default function MayPage() {
         () => (user ? doc(firestore, 'students', user.uid) : null),
         [firestore, user]
     );
-    const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{role?: string, lessonProgress?: any, progress?: any}>(studentDocRef);
+    const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{ role?: string, lessonProgress?: any, progress?: any }>(studentDocRef);
 
     const isAdmin = useMemo(() => {
         if (!user) return false;
         return studentProfile?.role === 'admin' || user.email === 'ednacard87@gmail.com';
     }, [user, studentProfile]);
-    
+
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
     const [selectedTopic, setSelectedTopic] = useState<string>('');
     const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
@@ -508,7 +508,7 @@ export default function MayPage() {
         { key: 'reading', name: 'Lectura', icon: CheckCircle, status: 'locked' },
         { key: 'finalVocabulary', name: 'Vocabulario Final', icon: BookOpen, status: 'locked' },
     ], []);
-    
+
     useEffect(() => {
         if (isUserLoading || isProfileLoading || !initialLearningPath.length) return;
 
@@ -516,13 +516,13 @@ export default function MayPage() {
             ...topic,
             subItems: topic.subItems ? topic.subItems.map(sub => ({ ...sub })) : undefined,
         }));
-        
+
         let savedSelectedTopic = '';
 
         if (isAdmin) {
             newPath.forEach(item => {
                 item.status = 'completed';
-                if(item.subItems) {
+                if (item.subItems) {
                     item.subItems.forEach(sub => sub.status = 'completed');
                 }
             });
@@ -558,16 +558,15 @@ export default function MayPage() {
             }
             setInitialLoadComplete(true);
         }
-    
+
     }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading, isUserLoading, initialLoadComplete]);
 
-    
     const progressPercent = useMemo(() => {
         if (!initialLoadComplete) return 0;
         let totalTopics = 0;
         let completedTopics = 0;
         learningPath.forEach(t => {
-            if(t.subItems) {
+            if (t.subItems) {
                 totalTopics += t.subItems.length;
                 completedTopics += t.subItems.filter(st => st.status === 'completed').length;
             } else {
@@ -590,44 +589,44 @@ export default function MayPage() {
             if (item.subItems) {
                 if (!statusesToSave.subItems) statusesToSave.subItems = {};
                 statusesToSave.subItems[item.key] = {};
-                item.subItems.forEach(sub => { 
-                    statusesToSave.subItems[item.key][sub.key] = sub.status; 
+                item.subItems.forEach(sub => {
+                    statusesToSave.subItems[item.key][sub.key] = sub.status;
                 });
             }
         });
 
-        updateDocumentNonBlocking(studentDocRef, { 
+        updateDocumentNonBlocking(studentDocRef, {
             [`lessonProgress.${progressStorageVersion}`]: statusesToSave,
             [`progress.${mainProgressKey}`]: Math.round(progressPercent)
         });
 
         if (progressPercent >= 100) {
-          window.dispatchEvent(new CustomEvent('progressUpdated'));
+            window.dispatchEvent(new CustomEvent('progressUpdated'));
         }
     }, [learningPath, progressPercent, selectedTopic, isAdmin, studentDocRef, isUserLoading, isProfileLoading, initialLoadComplete]);
 
     useEffect(() => {
         if (!topicToComplete) return;
-    
+
         setLearningPath(currentPath => {
             const newPath = currentPath.map(t => ({
                 ...t,
                 subItems: t.subItems ? t.subItems.map(s => ({ ...s })) : undefined,
             }));
-          
+
             let nextSelectedTopic: string | null = null;
             let topicFound = false;
             let wasTopicUnlocked = false;
 
             for (let i = 0; i < newPath.length && !topicFound; i++) {
                 const currentTopic = newPath[i];
-          
+
                 if (currentTopic.key === topicToComplete) {
                     if (currentTopic.status !== 'completed') { currentTopic.status = 'completed'; }
                     if (i + 1 < newPath.length && newPath[i + 1].status === 'locked') {
                         const next = newPath[i + 1];
                         next.status = 'active';
-                        if (next.subItems?.[0]) { next.subItems[0].status = 'active'; nextSelectedTopic = next.subItems[0].key; } 
+                        if (next.subItems?.[0]) { next.subItems[0].status = 'active'; nextSelectedTopic = next.subItems[0].key; }
                         else { nextSelectedTopic = next.key; }
                         wasTopicUnlocked = true;
                     }
@@ -646,7 +645,7 @@ export default function MayPage() {
                             if (i + 1 < newPath.length && newPath[i + 1].status === 'locked') {
                                 const next = newPath[i + 1];
                                 next.status = 'active';
-                                if (next.subItems?.[0]) { next.subItems[0].status = 'active'; nextSelectedTopic = next.subItems[0].key; } 
+                                if (next.subItems?.[0]) { next.subItems[0].status = 'active'; nextSelectedTopic = next.subItems[0].key; }
                                 else { nextSelectedTopic = next.key; }
                                 wasTopicUnlocked = true;
                             }
@@ -655,9 +654,9 @@ export default function MayPage() {
                     }
                 }
             }
-        
+
             if (nextSelectedTopic) { setSelectedTopic(nextSelectedTopic); }
-            if(wasTopicUnlocked) { toast({ title: "¡Siguiente tema desbloqueado!" }); }
+            if (wasTopicUnlocked) { toast({ title: "¡Siguiente tema desbloqueado!" }); }
             return newPath;
         });
         setTopicToComplete(null);
@@ -675,7 +674,7 @@ export default function MayPage() {
     const handleTopicSelect = (topicKey: string) => {
         const mainTopic = learningPath.find(t => t.key === topicKey || t.subItems?.some(st => st.key === topicKey));
         const subTopic = mainTopic?.subItems?.find(st => st.key === topicKey);
-        
+
         if (!isAdmin && ((subTopic && subTopic.status === 'locked') || (!subTopic && mainTopic?.status === 'locked'))) {
             toast({ variant: "destructive", title: "Contenido Bloqueado" });
             return;
@@ -684,14 +683,14 @@ export default function MayPage() {
 
         const exerciseKeys = ['positive-ex', 'negative-ex', 'interrogative-ex', 'mixedExercises', 'finalVocabulary', 'reading', 'game'];
         if (!exerciseKeys.includes(topicKey)) {
-             handleTopicComplete(topicKey);
+            handleTopicComplete(topicKey);
         }
     };
-    
+
     const renderContent = () => {
         const topic = learningPath.find(t => t.key === selectedTopic) || learningPath.flatMap(t => t.subItems || []).find(st => st?.key === selectedTopic);
 
-        switch(selectedTopic) {
+        switch (selectedTopic) {
             case 'vocabulary':
                 return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
@@ -718,7 +717,7 @@ export default function MayPage() {
                     </Card>
                 );
             case 'grammar':
-                 return (
+                return (
                     <div className="space-y-6">
                         <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
                             <CardHeader>
@@ -728,7 +727,7 @@ export default function MayPage() {
                                 <p>Ambos se usan para hablar de posibilidades en el futuro, pero hay un matiz de probabilidad:</p>
                                 <div className="space-y-2">
                                     <h4 className="font-bold text-primary">MAY (50% de probabilidad)</h4>
-                                     <ul className="list-disc list-inside text-base text-muted-foreground pl-4 space-y-1">
+                                    <ul className="list-disc list-inside text-base text-muted-foreground pl-4 space-y-1">
                                         <li>Significa: Puede que / Podría.</li>
                                         <li>Indica que la acción está más cerca de ser real.</li>
                                         <li>Es más formal y educado.</li>
@@ -738,7 +737,7 @@ export default function MayPage() {
                                 </div>
                                 <div className="space-y-2">
                                     <h4 className="font-bold text-primary">MIGHT (30% de probabilidad)</h4>
-                                     <ul className="list-disc list-inside text-base text-muted-foreground pl-4 space-y-1">
+                                    <ul className="list-disc list-inside text-base text-muted-foreground pl-4 space-y-1">
                                         <li>Significa: Podría / Tal vez (pero con menos probabilidad).</li>
                                         <li>Indica que la acción es más un "sueño" o algo difícil.</li>
                                         <li>Es un poco más informal/común en conversación.</li>
@@ -752,7 +751,7 @@ export default function MayPage() {
                                 </div>
                             </CardContent>
                         </Card>
-            
+
                         <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
                             <CardHeader>
                                 <CardTitle>Estructura Gramatical</CardTitle>
@@ -766,7 +765,7 @@ export default function MayPage() {
                                 <p><span className="font-bold text-lg text-green-500 mr-2">(+A)</span> Yes, pronoun + may/might.</p>
                                 <p><span className="font-bold text-lg text-red-500 mr-2">(-A)</span> No, pronoun + may/might not.</p>
                             </CardContent>
-                            
+
                             <Card className="shadow-soft rounded-lg border-2 border-destructive bg-white dark:bg-card">
                                 <CardHeader>
                                     <CardTitle className="text-destructive dark:text-destructive">Nota Importante</CardTitle>
@@ -777,7 +776,7 @@ export default function MayPage() {
                             </Card>
                         </Card>
                     </div>
-                 );
+                );
             case 'positive-ex':
                 return <SingleFormExercise key="positive" onComplete={() => handleTopicComplete('positive-ex')} exerciseData={mayPositiveExercises} title="Ejercicios: Forma Positiva" description="Traduce las frases a su forma afirmativa usando 'May y Might'." formType="affirmative" vocabulary={mayPositiveVocab} highlightVocabulary={true} />;
             case 'negative-ex':
@@ -786,11 +785,11 @@ export default function MayPage() {
                 return <SingleFormExercise key="interrogative" onComplete={() => handleTopicComplete('interrogative-ex')} exerciseData={mayInterrogativeExercises} title="Ejercicios: Forma Interrogativa" description="Convierte las frases en preguntas usando 'May y Might'." formType="interrogative" vocabulary={mayInterrogativeVocab} highlightVocabulary={true} />;
             case 'mixedExercises':
                 return <PresentSimpleExercise onComplete={() => {
-                  handleTopicComplete('mixedExercises');
-                  handleTopicComplete('exercise1'); // Also complete parent
+                    handleTopicComplete('mixedExercises');
+                    handleTopicComplete('exercise1'); // Also complete parent
                 }} exerciseData={mayMixedExercises} title="Ejercicios Mixtos" showShortAnswers={true} />;
             case 'game':
-                 return <WordSearchGame onComplete={() => handleTopicComplete('game')} />;
+                return <WordSearchGame onComplete={() => handleTopicComplete('game')} />;
             case 'reading':
                 return <ReadingExercise onComplete={() => handleTopicComplete('reading')} />;
             case 'finalVocabulary':
