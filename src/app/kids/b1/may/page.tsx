@@ -39,10 +39,10 @@ const readingTextData = {
     title: "Life is Full of Choices",
     content: "Next year, I might take a gap year to travel. I may study abroad in Spain. It's a big decision! My friend, Sarah, will set up a business. She thinks she may get a promotion first. I will not start a family soon, but I might join a charity to help animals. We all have big dreams for the future.",
     questions: [
-        { id: 'q1', question: "What might the narrator do next year?", answers: ["take a gap year", "take a gap year to travel"] },
-        { id: 'q2', question: "Where may the narrator study?", answers: ["in spain", "spain"] },
-        { id: 'q3', question: "What will Sarah do?", answers: ["set up a business"] },
-        { id: 'q4', question: "What might the narrator join?", answers: ["a charity", "a charity to help animals"] }
+        { id: 'q1', question: "What have I eaten with my family?", answers: ["pizza", "i have eaten pizza"] },
+        { id: 'q2', question: "What has my brother drunk?", answers: ["all the juice", "juice"] },
+        { id: 'q3', question: "What have I written?", answers: ["a story", "i have written a story"] },
+        { id: 'q4', question: "What has my sister studied for?", answers: ["her exam", "for her exam"] },
     ]
 };
 
@@ -782,7 +782,7 @@ export default function MayPage() {
                     </div>
                  );
             case 'positive-ex':
-                return <SingleFormExercise key="positive" onComplete={() => handleTopicComplete('positive-ex')} exerciseData={mayPositiveExercises} title="Ejercicios: Forma Positiva" description="Traduce las frases a su forma afirmativa usando 'will'." formType="affirmative" vocabulary={mayPositiveVocab} highlightVocabulary={true} />;
+                return <SingleFormExercise key="positive" onComplete={() => handleTopicComplete('positive-ex')} exerciseData={mayPositiveExercises} title="Ejercicios: Forma Positiva" description="Traduce las frases a su forma afirmativa usando 'May y MIght'." formType="affirmative" vocabulary={mayPositiveVocab} highlightVocabulary={true} />;
             case 'negative-ex':
                 return <SingleFormExercise key="negative" onComplete={() => handleTopicComplete('negative-ex')} exerciseData={mayNegativeExercises} title="Ejercicios: Forma Negativa" description="Traduce las frases a su forma negativa usando 'will not' o 'won't'." formType="negative" vocabulary={mayNegativeVocab} highlightVocabulary={true} />;
             case 'interrogative-ex':
