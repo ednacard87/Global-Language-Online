@@ -21,6 +21,7 @@ import {
   ArrowRight,
   X,
   MessageSquare,
+  Lightbulb,
 } from 'lucide-react';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -39,9 +40,15 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { getKidsIntro2PathData, type KidsIntro2PathItem } from '@/lib/course-data';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 
-// --- Data ---
+// --- Constants & Data ---
 
-const progressStorageVersion = "kids_intro2_path_v13_stable";
+const ICONS = {
+  locked: Lock,
+  active: BookOpen,
+  completed: CheckCircle,
+};
+
+const progressStorageVersion = "kids_intro2_path_v14_stable";
 
 const greetingsData = [
     { spanish: 'Hola', english: 'Hello' },
@@ -331,7 +338,7 @@ const MemoryGame = ({ data, onComplete }: { data: { spanish: string; english: st
                                     className={cn(
                                         "flex items-center justify-center aspect-square cursor-pointer transition-all",
                                         isFlipped || isMatched ? "bg-card border-primary" : "bg-secondary hover:bg-secondary/80",
-                                        isMatched && "border-green-500 border-2"
+                                        isMatched && "border-green-500 border-2 shadow-lg shadow-green-500/20"
                                     )}
                                 >
                                     <CardContent className="p-1 flex items-center justify-center">
@@ -350,6 +357,8 @@ const MemoryGame = ({ data, onComplete }: { data: { spanish: string; english: st
         </Card>
     );
 };
+
+type ValidationStatus = 'correct' | 'incorrect' | 'unchecked';
 
 const TimeContent = ({ onComplete }: { onComplete: () => void }) => {
     const timeImage = PlaceHolderImages.find(p => p.id === 'telling-time');
