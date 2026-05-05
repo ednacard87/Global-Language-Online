@@ -48,7 +48,7 @@ const ICONS = {
   completed: CheckCircle,
 };
 
-const progressStorageVersion = "kids_intro2_path_v2_stable";
+const progressStorageVersion = "kids_intro2_path_v3_stable";
 
 const greetingsData = [
     { spanish: 'Hola', english: 'Hello' }, { spanish: 'Buenos días', english: 'Good morning' },
@@ -77,12 +77,16 @@ const timeExerciseData = [
 ];
 
 const countriesExerciseData = [
-    { spanish: 'Estados Unidos', country: 'United States', nationality: 'American' },
-    { spanish: 'Canadá', country: 'Canada', nationality: 'Canadian' },
-    { spanish: 'México', country: 'Mexico', nationality: 'Mexican' },
-    { spanish: 'Brasil', country: 'Brazil', nationality: 'Brazilian' },
-    { spanish: 'Inglaterra', country: 'England', nationality: 'English' },
-    { spanish: 'Francia', country: 'France', nationality: 'French' },
+    { spanish: 'Colombia', country: 'Colombia', nationality: 'Colombian', language: 'Spanish' },
+    { spanish: 'Estados Unidos', country: 'United States', nationality: 'American', language: 'English' },
+    { spanish: 'Canadá', country: 'Canada', nationality: 'Canadian', language: 'English' },
+    { spanish: 'México', country: 'Mexico', nationality: 'Mexican', language: 'Spanish' },
+    { spanish: 'Francia', country: 'France', nationality: 'French', language: 'French' },
+    { spanish: 'Italia', country: 'Italy', nationality: 'Italian', language: 'Italian' },
+    { spanish: 'España', country: 'Spain', nationality: 'Spanish', language: 'Spanish' },
+    { spanish: 'Rusia', country: 'Russia', nationality: 'Russian', language: 'Russian' },
+    { spanish: 'China', country: 'China', nationality: 'Chinese', language: 'Chinese' },
+    { spanish: 'Japón', country: 'Japan', nationality: 'Japanese', language: 'Japanese' },
 ];
 
 const mixedExercise1Data = [
@@ -480,122 +484,127 @@ const TimeExercise = ({ onComplete }: { onComplete: () => void }) => {
     );
 };
 
-const MemoryGame = ({ data, onComplete }: { data: { spanish: string; english: string; }[], onComplete: () => void }) => {
-    const [cards, setCards] = useState<any[]>([]);
-    const [flippedIndices, setFlippedIndices] = useState<number[]>([]);
-    const [matchedPairIds, setMatchedPairIds] = useState<number[]>([]);
-    const [isChecking, setIsChecking] = useState(false);
-    const [streak, setStreak] = useState(0);
-    const [isClient, setIsClient] = useState(false);
-    const [hasNotifiedComplete, setHasNotifiedComplete] = useState(false);
-
-    useEffect(() => {
-        setIsClient(true);
-    }, []);
-
-    const initializeGame = useCallback(() => {
-        const gameCards = data.flatMap((pair, index) => [
-            { id: index * 2, pairId: index, text: pair.english },
-            { id: index * 2 + 1, pairId: index, text: pair.spanish },
-        ]).sort(() => Math.random() - 0.5);
-        
-        setCards(gameCards);
-        setFlippedIndices([]);
-        setMatchedPairIds([]);
-        setIsChecking(false);
-        setStreak(0);
-        setHasNotifiedComplete(false);
-    }, [data]);
-
-    useEffect(() => {
-        if (isClient) {
-            initializeGame();
-        }
-    }, [isClient, initializeGame]);
+const CountriesExercise = ({ onComplete }: { onComplete: () => void }) => {
+    const { t } = useTranslation();
+    const { toast } = useToast();
     
-    useEffect(() => {
-        if (flippedIndices.length === 2) {
-            setIsChecking(true);
-            const [firstIndex, secondIndex] = flippedIndices;
-            const isMatch = cards[firstIndex].pairId === cards[secondIndex].pairId;
+    type CountryAnswers = { country: string; nationality: string; language: string; };
+    type UserAnswers = Record<number, CountryAnswers>;
+    type ValidationState = Record<number, Record<keyof CountryAnswers, ValidationStatus>>;
 
-            if (isMatch) {
-                setMatchedPairIds(prev => [...prev, cards[firstIndex].pairId]);
-                setStreak(prev => prev + 1);
-                setFlippedIndices([]);
-                setIsChecking(false);
-            } else {
-                setStreak(0);
-                setTimeout(() => {
-                    setFlippedIndices([]);
-                    setIsChecking(false);
-                }, 800);
+    const [userAnswers, setUserAnswers] = useState<UserAnswers>({});
+    const [validationStatus, setValidationStatus] = useState<ValidationState>({});
+
+    const handleInputChange = (index: number, field: keyof CountryAnswers, value: string) => {
+        setUserAnswers(prev => ({ ...prev, [index]: { ...prev[index], [field]: value } }));
+        setValidationStatus(prev => {
+            const newStatus = { ...prev };
+            if (!newStatus[index]) {
+                newStatus[index] = { country: 'unchecked', nationality: 'unchecked', language: 'unchecked' };
             }
-        }
-    }, [flippedIndices, cards]);
-
-    const isGameComplete = matchedPairIds.length === data.length && data.length > 0;
-
-    useEffect(() => {
-        if (isGameComplete && !hasNotifiedComplete) {
-            onComplete();
-            setHasNotifiedComplete(true);
-        }
-    }, [isGameComplete, onComplete, hasNotifiedComplete]);
-
-    const handleCardClick = (index: number) => {
-        if (isChecking || flippedIndices.length >= 2 || flippedIndices.includes(index) || matchedPairIds.includes(cards[index].pairId)) {
-            return;
-        }
-        setFlippedIndices(prev => [...prev, index]);
+            newStatus[index][field] = 'unchecked';
+            return newStatus;
+        });
     };
 
-    if (!isClient) {
-        return (
-            <Card>
-                <CardHeader>
-                    <CardTitle>Juego de Memoria: Saludos y Despedidas</CardTitle>
-                </CardHeader>
-                <CardContent className="flex justify-center items-center h-48">
-                    <Loader2 className="h-8 w-8 animate-spin" />
-                </CardContent>
-            </Card>
-        );
-    }
+    const handleCheckAnswers = () => {
+        let allCorrect = true;
+        const newValidationStatus: ValidationState = {};
+        
+        countriesExerciseData.forEach((correctData, index) => {
+            const userAnswer = userAnswers[index] || { country: '', nationality: '', language: '' };
+            
+            const isCountryCorrect = userAnswer.country.trim().toLowerCase() === correctData.country.toLowerCase();
+            const isNationalityCorrect = userAnswer.nationality.trim().toLowerCase() === correctData.nationality.toLowerCase();
+            const isLanguageCorrect = userAnswer.language.trim().toLowerCase() === correctData.language.toLowerCase();
+            
+            newValidationStatus[index] = {
+                country: isCountryCorrect ? 'correct' : 'incorrect',
+                nationality: isNationalityCorrect ? 'correct' : 'incorrect',
+                language: isLanguageCorrect ? 'correct' : 'incorrect'
+            };
+
+            if (!isCountryCorrect || !isNationalityCorrect || !isLanguageCorrect) {
+                allCorrect = false;
+            }
+        });
+
+        setValidationStatus(newValidationStatus);
+
+        if (allCorrect) {
+            toast({ title: "¡Excelente!", description: "Todas tus respuestas son correctas." });
+            onComplete();
+        } else {
+            toast({ 
+                variant: 'destructive', 
+                title: "Algunas respuestas son incorrectas", 
+                description: "Revisa los campos en rojo e inténtalo de nuevo." 
+            });
+        }
+    };
+    
+    const getInputClass = (status?: ValidationStatus) => {
+        if (status === 'correct') return 'border-green-500 bg-green-50 dark:bg-green-900/10';
+        if (status === 'incorrect') return 'border-destructive bg-destructive/5';
+        return '';
+    };
 
     return (
-        <Card>
+        <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
             <CardHeader>
-                <CardTitle>Juego de Memoria: Saludos y Despedidas</CardTitle>
-                <div className="flex justify-between items-center pt-2">
-                    <Button size="icon" variant="ghost" onClick={initializeGame}><RefreshCw className="h-5 w-5" /></Button>
-                    <div className="flex items-center gap-2 text-orange-500 font-bold"><Flame className="h-5 w-5" /><span>{streak}</span></div>
-                </div>
+                <CardTitle>Países y Nacionalidades</CardTitle>
+                <CardDescription>Escribe la traducción correcta para el país, la nacionalidad y el idioma al inglés.</CardDescription>
             </CardHeader>
-            <CardContent>
-                {isGameComplete ? (
-                     <div className="text-center p-8 flex flex-col items-center">
-                        <Trophy className="h-16 w-16 text-yellow-400 mb-4" />
-                        <h2 className="text-2xl font-bold">Felicitaciones - completaste este ejercicio</h2>
-                        <p className="text-muted-foreground mt-2">Ahora has desbloqueado la siguiente sección de la aventura.</p>
-                     </div>
-                ) : (
-                    <div className="grid grid-cols-4 gap-2">
-                        {cards.map((card, index) => {
-                            const isFlipped = flippedIndices.includes(index);
-                            const isMatched = matchedPairIds.includes(card.pairId);
-                            return (
-                                <Card key={card.id} onClick={() => handleCardClick(index)}
-                                    className={cn("flex items-center justify-center aspect-square cursor-pointer", isFlipped || isMatched ? "bg-card border-primary" : "bg-secondary", isMatched && "border-green-500")}>
-                                    <CardContent className="p-1 text-center">
-                                        {isFlipped || isMatched ? <span className="text-sm font-bold">{card.text}</span> : <BrainCircuit className="h-5 w-5 text-primary/50" />}
-                                    </CardContent>
-                                </Card>
-                            )
-                        })}
-                    </div>
-                )}
+            <CardContent className="overflow-x-auto">
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead className="w-[150px] font-bold">Países (Español)</TableHead>
+                            <TableHead className="font-bold">Country (Inglés)</TableHead>
+                            <TableHead className="font-bold">Nationality</TableHead>
+                            <TableHead className="font-bold">Language</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {countriesExerciseData.map((data, index) => (
+                            <TableRow key={index}>
+                                <TableCell className="font-medium">{data.spanish}</TableCell>
+                                <TableCell>
+                                    <Input 
+                                        placeholder="Country..."
+                                        value={userAnswers[index]?.country || ''} 
+                                        onChange={(e) => handleInputChange(index, 'country', e.target.value)} 
+                                        className={cn("h-8 text-xs", getInputClass(validationStatus[index]?.country))} 
+                                        autoComplete="off"
+                                    />
+                                </TableCell>
+                                <TableCell>
+                                    <Input 
+                                        placeholder="Nationality..."
+                                        value={userAnswers[index]?.nationality || ''} 
+                                        onChange={(e) => handleInputChange(index, 'nationality', e.target.value)} 
+                                        className={cn("h-8 text-xs", getInputClass(validationStatus[index]?.nationality))} 
+                                        autoComplete="off"
+                                    />
+                                </TableCell>
+                                <TableCell>
+                                    <Input 
+                                        placeholder="Language..."
+                                        value={userAnswers[index]?.language || ''} 
+                                        onChange={(e) => handleInputChange(index, 'language', e.target.value)} 
+                                        className={cn("h-8 text-xs", getInputClass(validationStatus[index]?.language))} 
+                                        autoComplete="off"
+                                    />
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
             </CardContent>
+            <CardFooter className="justify-between">
+                <p className="text-xs text-muted-foreground italic">* Nota: No olvides las mayúsculas en los nombres de países, nacionalidades e idiomas.</p>
+                <Button onClick={handleCheckAnswers}>Verificar</Button>
+            </CardFooter>
         </Card>
     );
 };
@@ -619,12 +628,11 @@ export default function KidsIntro2Page() {
     }, []);
 
     const studentDocRef = useMemoFirebase(() => (user ? doc(firestore, 'students', user.uid) : null), [firestore, user]);
-    const { data: studentProfile, isLoading: isProfileLoading } = useDoc<Student>(studentDocRef);
+    const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{ role?: string; lessonProgress?: any; progress?: any }>(studentDocRef);
 
     const isAdmin = useMemo(() => (user && (studentProfile?.role === 'admin' || user.email === 'ednacard87@gmail.com')), [user, studentProfile]);
     
     const initialLearningPath = useMemo(() => getKidsIntro2PathData(), []);
-    const memoryGameData = useMemo(() => [...greetingsData.slice(0, 4), ...farewellsData.slice(0, 4)], []);
 
     useEffect(() => {
         if (!isClient || isUserLoading || isProfileLoading || initialLoadComplete) return;
@@ -684,11 +692,7 @@ export default function KidsIntro2Page() {
 
                 if (currentIndex + 1 < newPath.length && newPath[currentIndex + 1].status === 'locked') {
                     newPath[currentIndex + 1].status = 'active';
-                    
-                    // Do not auto-jump if it's the memory game
-                    if (topicToComplete !== 'memory') {
-                        setSelectedTopic(newPath[currentIndex + 1].key);
-                    }
+                    setSelectedTopic(newPath[currentIndex + 1].key);
                     
                     toast({
                         title: "¡Tema desbloqueado!",
@@ -791,16 +795,3 @@ export default function KidsIntro2Page() {
     );
 }
 
-function CountriesExercise({ onComplete }: { onComplete: () => void }) {
-    return (
-        <Card>
-            <CardHeader>
-                <CardTitle>Countries & Nationalities</CardTitle>
-            </CardHeader>
-            <CardContent>
-                <p>This is a placeholder for the countries exercise.</p>
-                <Button onClick={onComplete} className="mt-4">Mark as Complete</Button>
-            </CardContent>
-        </Card>
-    );
-}
