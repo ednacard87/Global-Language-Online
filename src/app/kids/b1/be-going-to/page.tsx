@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import {
@@ -270,6 +270,39 @@ export default function BeGoingToPage() {
         window.dispatchEvent(new CustomEvent('progressUpdated'));
     }, [learningPath, progressPercent, selectedTopic, isAdmin, studentDocRef, isUserLoading, isProfileLoading, initialLoadComplete]);
 
+    const handleTopicComplete = useCallback((key: string) => {
+        setTopicToComplete(key);
+    }, []);
+
+    const handleTopicSelect = (topicKey: string) => {
+        const mainTopic = learningPath.find(t => t.key === topicKey || t.subItems?.some(st => st.key === topicKey));
+        const subTopic = mainTopic?.subItems?.find(st => st.key === topicKey);
+
+        if (!isAdmin && ((subTopic && subTopic.status === 'locked') || (!subTopic && mainTopic?.status === 'locked'))) {
+            toast({ variant: 'destructive', title: 'Contenido Bloqueado' });
+            return;
+        }
+
+        if (topicKey === 'exercise1') {
+            const firstSub = mainTopic?.subItems?.[0];
+            if (firstSub && firstSub.status === 'locked' && !isAdmin) {
+                 toast({ variant: 'destructive', title: 'Contenido Bloqueado' });
+                 return;
+            }
+            if (firstSub) {
+                setSelectedTopic(firstSub.key);
+            }
+            return;
+        }
+
+        setSelectedTopic(topicKey);
+
+        const autoViewTopics = ['vocabulary', 'grammar'];
+        if (autoViewTopics.includes(topicKey)) {
+            handleTopicComplete(topicKey);
+        }
+    };
+
     useEffect(() => {
         if (!topicToComplete) return;
 
@@ -344,34 +377,6 @@ export default function BeGoingToPage() {
         setTopicToComplete(null);
     }, [topicToComplete, toast]);
 
-    const handleTopicSelect = (topicKey: string) => {
-        const mainTopic = learningPath.find(t => t.key === topicKey || t.subItems?.some(st => st.key === topicKey));
-        const subTopic = mainTopic?.subItems?.find(st => st.key === topicKey);
-
-        if (!isAdmin && ((subTopic && subTopic.status === 'locked') || (!subTopic && mainTopic?.status === 'locked'))) {
-            toast({ variant: 'destructive', title: 'Contenido Bloqueado' });
-            return;
-        }
-
-        if (topicKey === 'exercise1') {
-            const firstSub = mainTopic?.subItems?.[0];
-            if (firstSub && firstSub.status === 'locked' && !isAdmin) {
-                 toast({ variant: 'destructive', title: 'Contenido Bloqueado' });
-                 return;
-            }
-            if (firstSub) {
-                setSelectedTopic(firstSub.key);
-            }
-            return;
-        }
-
-        setSelectedTopic(topicKey);
-
-        const autoViewTopics = ['vocabulary', 'grammar'];
-        if (autoViewTopics.includes(topicKey)) {
-            handleTopicComplete(topicKey);
-        }
-    };
 
     // Final Vocab Logic
     const handleFinalVocabInputChange = (index: number, value: string) => {
