@@ -47,7 +47,7 @@ const ICONS = {
   completed: CheckCircle,
 };
 
-const progressStorageVersion = "english_intro2_path_v10_stable";
+const progressStorageVersion = "english_intro2_path_v11_stable";
 
 const greetingsData = [
     { spanish: 'Hola', english: 'Hello' },
@@ -296,7 +296,11 @@ const MemoryGame = ({ data, onComplete }: { data: { spanish: string; english: st
 
     useEffect(() => {
         if (isGameComplete) {
-            onComplete();
+            // Give the UI a moment to show the last match
+            const timer = setTimeout(() => {
+                onComplete();
+            }, 500);
+            return () => clearTimeout(timer);
         }
     }, [isGameComplete, onComplete]);
 
@@ -331,7 +335,11 @@ const MemoryGame = ({ data, onComplete }: { data: { spanish: string; english: st
             </CardHeader>
             <CardContent>
                 {isGameComplete ? (
-                     <div className="text-center p-8 flex flex-col items-center"><Trophy className="h-16 w-16 text-yellow-400 mb-4" /><h2 className="text-2xl font-bold">¡Juego Completado!</h2></div>
+                     <div className="text-center p-8 flex flex-col items-center">
+                        <Trophy className="h-16 w-16 text-yellow-400 mb-4" />
+                        <h2 className="text-2xl font-bold">Felicitaciones - completaste este ejercicio</h2>
+                        <p className="text-muted-foreground mt-2">Ahora has desbloqueado Ejercicios Mixtos 2.</p>
+                     </div>
                 ) : (
                     <div className="grid grid-cols-4 gap-2">
                         {cards.map((card, index) => {
@@ -352,8 +360,6 @@ const MemoryGame = ({ data, onComplete }: { data: { spanish: string; english: st
         </Card>
     );
 };
-
-type ValidationStatus = 'correct' | 'incorrect' | 'unchecked';
 
 const CountriesExercise = ({ onComplete }: { onComplete: () => void }) => {
     const { toast } = useToast();
