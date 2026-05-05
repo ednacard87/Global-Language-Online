@@ -8,7 +8,6 @@ import {
   PenSquare,
   Lock,
   GraduationCap,
-  Gamepad2,
   CheckCircle,
   Trophy,
   Loader2,
@@ -458,7 +457,7 @@ export default function BeGoingToPage() {
                                 <div className="p-3 bg-muted rounded-lg">He/She/It <strong>is</strong></div>
                             </CardContent>
                             <CardFooter><Button onClick={() => handleTopicComplete('grammar')}>Entendido</Button></CardFooter>
-                        </Card>
+                        </div>
                     </div>
                 );
             case 'positive-ex1':
