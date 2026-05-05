@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import {
@@ -47,7 +47,7 @@ const ICONS = {
   completed: CheckCircle,
 };
 
-const progressStorageVersion = "english_intro2_path_v11_stable";
+const progressStorageVersion = "english_intro2_path_v12_stable";
 
 const greetingsData = [
     { spanish: 'Hola', english: 'Hello' },
@@ -247,12 +247,13 @@ const MemoryGame = ({ data, onComplete }: { data: { spanish: string; english: st
     const [isChecking, setIsChecking] = useState(false);
     const [streak, setStreak] = useState(0);
     const [isClient, setIsClient] = useState(false);
+    const [hasNotifiedComplete, setHasNotifiedComplete] = useState(false);
 
     useEffect(() => {
         setIsClient(true);
     }, []);
 
-    const initializeGame = React.useCallback(() => {
+    const initializeGame = useCallback(() => {
         const gameCards = data.flatMap((pair, index) => [
             { id: index * 2, pairId: index, text: pair.english },
             { id: index * 2 + 1, pairId: index, text: pair.spanish },
@@ -263,6 +264,7 @@ const MemoryGame = ({ data, onComplete }: { data: { spanish: string; english: st
         setMatchedPairIds([]);
         setIsChecking(false);
         setStreak(0);
+        setHasNotifiedComplete(false);
     }, [data]);
 
     useEffect(() => {
@@ -292,13 +294,14 @@ const MemoryGame = ({ data, onComplete }: { data: { spanish: string; english: st
         }
     }, [flippedIndices, cards]);
 
-    const isGameComplete = matchedPairIds.length === data.length;
+    const isGameComplete = matchedPairIds.length === data.length && data.length > 0;
 
     useEffect(() => {
-        if (isGameComplete) {
+        if (isGameComplete && !hasNotifiedComplete) {
             onComplete();
+            setHasNotifiedComplete(true);
         }
-    }, [isGameComplete, onComplete]);
+    }, [isGameComplete, onComplete, hasNotifiedComplete]);
 
     const handleCardClick = (index: number) => {
         if (isChecking || flippedIndices.length >= 2 || flippedIndices.includes(index) || matchedPairIds.includes(cards[index].pairId)) {
@@ -832,7 +835,7 @@ export default function EnglishIntro2Page() {
                 if (currentIndex + 1 < newPath.length && newPath[currentIndex + 1].status === 'locked') {
                     newPath[currentIndex + 1].status = 'active';
                     
-                    // No saltar automáticamente si es el juego de memoria
+                    // Do not auto-jump if it's the memory game
                     if (topicToComplete !== 'memory') {
                         setSelectedTopic(newPath[currentIndex + 1].key);
                     }
@@ -858,9 +861,9 @@ export default function EnglishIntro2Page() {
         setSelectedTopic(topicKey);
     };
 
-    const handleTopicComplete = (key: string) => {
+    const handleTopicComplete = useCallback((key: string) => {
         setTopicToComplete(key);
-    };
+    }, []);
     
     const renderContent = () => {
         switch (selectedTopic) {
