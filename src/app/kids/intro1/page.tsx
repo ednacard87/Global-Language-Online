@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -12,6 +11,7 @@ import {
   CheckCircle,
   Lightbulb,
   Languages,
+  PenSquare,
 } from 'lucide-react';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -31,6 +31,7 @@ import { NumbersMemoryGame } from '@/components/kids/exercises/numbers-memory-ga
 import { ToBeMemoryGame } from '@/components/kids/exercises/tobe-memory-game';
 import { TranslationExercise } from '@/components/dashboard/translation-exercise';
 import { PossessivesMemoryGame } from '@/components/kids/exercises/possessives-memory-game';
+import { Separator } from '@/components/ui/separator';
 
 const verbToBeData = [
     { ser: 'Yo soy', tobe: 'I am', estar: 'Yo estoy' },
@@ -60,7 +61,7 @@ interface Student {
     progress?: Record<string, number>;
 }
 
-const progressStorageVersion = "kids_intro1_path_v3";
+const progressStorageVersion = "kids_intro1_path_v4";
 
 export default function KidsIntro1Page() {
     const { t } = useTranslation();
@@ -134,7 +135,7 @@ export default function KidsIntro1Page() {
     useEffect(() => {
         if (previousPath && !isAdmin) {
           const newlyUnlocked = learningPath.find((newItem, index) => {
-            const oldItem = previousPath[index];
+            const oldItem = previousPath![index];
             return oldItem && oldItem.status === 'locked' && newItem.status === 'active';
           });
       
@@ -154,7 +155,7 @@ export default function KidsIntro1Page() {
         setLearningPath(currentPath => {
             const newPath = currentPath.map(item => ({ ...item }));
             const currentIndex = newPath.findIndex((t) => t.key === topicToComplete);
-
+            
             if (currentIndex !== -1 && newPath[currentIndex].status !== 'completed') {
                 newPath[currentIndex].status = 'completed';
 
@@ -174,7 +175,7 @@ export default function KidsIntro1Page() {
         
         setSelectedTopic(topicKey);
 
-        const viewOnlyTopics = ['abc', 'numbers', 'tobe', 'possessives'];
+        const viewOnlyTopics = ['abc', 'numbers', 'tobe', 'possessives', 'tobe-1-grammar', 'tobe-2-grammar', 'tobe-3-grammar'];
         if (viewOnlyTopics.includes(topicKey)) {
             setTopicToComplete(topicKey);
         }
@@ -194,10 +195,111 @@ export default function KidsIntro1Page() {
                 return <Card className="shadow-soft rounded-lg border-2 border-brand-purple"><CardHeader><CardTitle>{t('intro1Page.pronouns')}</CardTitle></CardHeader><CardContent><div className="grid grid-cols-3 gap-x-4 gap-y-2 text-lg"><div className="font-bold p-3 bg-muted rounded-lg text-center">{t('common.ser')}</div><div className="font-bold p-3 bg-muted rounded-lg text-center">{t('common.tobe')}</div><div className="font-bold p-3 bg-muted rounded-lg text-center">{t('common.estar')}</div>{verbToBeData.map((item, index) => (<React.Fragment key={index}><div className="p-3 bg-card border rounded-lg text-center">{item.ser}</div><div className="p-3 bg-card border rounded-lg font-medium text-center">{item.tobe}</div><div className="p-3 bg-card border rounded-lg text-center">{item.estar}</div></React.Fragment>))}</div></CardContent></Card>;
             case 'tobe-memory':
                 return <ToBeMemoryGame onGameComplete={() => setTopicToComplete('tobe-memory')} />;
+            case 'tobe-1-grammar':
+                return (
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                        <CardHeader>
+                            <CardTitle>To be 1</CardTitle>
+                            <CardDescription>Aprende la estructura básica del verbo To be.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                            <div>
+                                <h3 className="text-xl font-semibold mb-2">{t('intro1Page.verbtobeStructureTitle')}</h3>
+                                <div className="space-y-2 p-4 bg-muted rounded-lg font-mono text-base">
+                                    <p><span className="font-bold text-lg text-green-500 mr-2">(+)</span> pronoun + to be + complement</p>
+                                    <p><span className="font-bold text-lg text-red-500 mr-2">(-)</span> pronoun + to be + not + complement</p>
+                                    <p><span className="font-bold text-lg text-blue-500 mr-2">(?)</span> to be + pronoun + complement ?</p>
+                                </div>
+                            </div>
+                            <Separator />
+                            <div>
+                                <h3 className="text-xl font-semibold mb-2">{t('intro1Page.shortAnswersTitle')}</h3>
+                                <div className="space-y-2 p-4 bg-muted rounded-lg font-mono text-base">
+                                    <p><span className="font-bold text-lg text-green-500 mr-2">(+A)</span> Yes, pronoun + to be</p>
+                                    <p><span className="font-bold text-lg text-red-500 mr-2">(-A)</span> No, pronoun + to be + not</p>
+                                </div>
+                            </div>
+                            <Separator />
+                            <div>
+                                <h3 className="text-xl font-semibold mb-2">{t('intro1Page.exampleTitle')}</h3>
+                                <p className="text-lg italic text-muted-foreground mb-2">"ellos son estudiantes"</p>
+                                <div className="space-y-2 p-4 bg-muted rounded-lg font-mono text-base">
+                                    <p><span className="font-bold text-lg text-green-500 mr-2">(+)</span> They are students</p>
+                                    <p><span className="font-bold text-lg text-red-500 mr-2">(-)</span> They are not students</p>
+                                    <p><span className="font-bold text-lg text-blue-500 mr-2">(?)</span> Are they students?</p>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                );
+            case 'tobe-1-exercise':
+                return <TranslationExercise exerciseKey="exercises1" onComplete={() => setTopicToComplete('tobe-1-exercise')} />;
             case 'possessives':
                 return <Card className="shadow-soft rounded-lg border-2 border-brand-purple"><CardHeader><CardTitle>{t('intro1Page.possessives')}</CardTitle></CardHeader><CardContent><div className="grid grid-cols-2 gap-x-4 gap-y-2 text-lg"><div className="font-bold p-3 bg-muted rounded-lg text-center">{t('common.english')}</div><div className="font-bold p-3 bg-muted rounded-lg text-center">{t('common.spanish')}</div>{possessivesData.map((item, index) => (<React.Fragment key={index}><div className="p-3 bg-card border rounded-lg font-medium text-center">{item.english}</div><div className="p-3 bg-card border rounded-lg text-center">{item.spanish}</div></React.Fragment>))}</div></CardContent></Card>;
             case 'possessives-memory':
                 return <PossessivesMemoryGame onGameComplete={() => setTopicToComplete('possessives-memory')} />;
+            case 'tobe-2-grammar':
+                return (
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                        <CardHeader>
+                            <CardTitle>To be 2</CardTitle>
+                            <CardDescription>Estructura con adjetivos posesivos.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                            <div>
+                                <h3 className="text-xl font-semibold mb-2">{t('intro1Page.verbtobeStructureTitle')}</h3>
+                                <div className="space-y-2 p-4 bg-muted rounded-lg font-mono text-base">
+                                    <p><span className="font-bold text-lg text-green-500 mr-2">(+)</span> pronoun + to be + possessive + noun + complement</p>
+                                    <p><span className="font-bold text-lg text-red-500 mr-2">(-)</span> pronoun + to be + not + possessive + noun + complement</p>
+                                    <p><span className="font-bold text-lg text-blue-500 mr-2">(?)</span> to be + pronoun + possessive + noun + complement ?</p>
+                                </div>
+                            </div>
+                            <Separator />
+                            <div>
+                                <h3 className="text-xl font-semibold mb-2">{t('intro1Page.exampleTitle')}</h3>
+                                <p className="text-lg italic text-muted-foreground mb-2">"Ellos son mis amigos"</p>
+                                <div className="space-y-2 p-4 bg-muted rounded-lg font-mono text-base">
+                                    <p><span className="font-bold text-lg text-green-500 mr-2">(+)</span> They are my friends</p>
+                                    <p><span className="font-bold text-lg text-red-500 mr-2">(-)</span> They are not my friends</p>
+                                    <p><span className="font-bold text-lg text-blue-500 mr-2">(?)</span> Are they my friends?</p>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                );
+            case 'tobe-2-exercise':
+                return <TranslationExercise exerciseKey="exercises2" onComplete={() => setTopicToComplete('tobe-2-exercise')} />;
+            case 'tobe-3-grammar':
+                return (
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                        <CardHeader>
+                            <CardTitle>To be 3</CardTitle>
+                            <CardDescription>Estructura iniciando con adjetivos posesivos.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                            <div>
+                                <h3 className="text-xl font-semibold mb-2">{t('intro1Page.verbtobeStructureTitle')}</h3>
+                                <div className="space-y-2 p-4 bg-muted rounded-lg font-mono text-base">
+                                    <p><span className="font-bold text-lg text-green-500 mr-2">(+)</span> possessive + noun + to be + complement</p>
+                                    <p><span className="font-bold text-lg text-red-500 mr-2">(-)</span> possessive + noun + to be + not + complement</p>
+                                    <p><span className="font-bold text-lg text-blue-500 mr-2">(?)</span> to be + possessive + noun + complement ?</p>
+                                </div>
+                            </div>
+                            <Separator />
+                            <div>
+                                <h3 className="text-xl font-semibold mb-2">{t('intro1Page.exampleTitle')}</h3>
+                                <p className="text-lg italic text-muted-foreground mb-2">"Mi mamá es una enfermera"</p>
+                                <div className="space-y-2 p-4 bg-muted rounded-lg font-mono text-base">
+                                    <p><span className="font-bold text-lg text-green-500 mr-2">(+)</span> My mother is a nurse</p>
+                                    <p><span className="font-bold text-lg text-red-500 mr-2">(-)</span> My mother is not a nurse</p>
+                                    <p><span className="font-bold text-lg text-blue-500 mr-2">(?)</span> Is my mother a nurse?</p>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                );
+            case 'tobe-3-exercise':
+                return <TranslationExercise exerciseKey="exercises3" onComplete={() => setTopicToComplete('tobe-3-exercise')} />;
             default:
                 const topic = learningPath.find(t => t.key === selectedTopic);
                 return (
@@ -245,7 +347,7 @@ export default function KidsIntro1Page() {
                                 const isActive = item.status === 'active';
                                 const isCompleted = item.status === 'completed';
                                 
-                                const Icon = isCompleted ? CheckCircle : (isLocked ? Lock : item.icon);
+                                const Icon = isCompleted ? CheckCircle : (isLocked && !isAdmin ? Lock : item.icon);
 
                                 return (
                                     <li key={item.key} onClick={() => handleTopicSelect(item.key)} className={cn(!isLocked || isAdmin ? "cursor-pointer" : "cursor-not-allowed")}>
@@ -278,5 +380,3 @@ export default function KidsIntro1Page() {
         </div>
       );
 }
-
-    

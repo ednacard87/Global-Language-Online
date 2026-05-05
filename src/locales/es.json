@@ -1,4 +1,3 @@
-
 {
   "header": {
     "courses": "Español",
@@ -590,12 +589,12 @@
     "frequencyAdverbs": "Adverbios de Frecuencia",
     "can": "Can",
     "memoryToBe": "Memoria (To be)",
-    "toBe1Grammar": "To be 1 (Gramática)",
+    "toBe1Grammar": "To be 1",
     "toBe1Exercise": "Ejercicios To be 1",
     "memoryPossessives": "Memoria (Posesivos)",
-    "toBe2Grammar": "To be 2 (Gramática)",
+    "toBe2Grammar": "To be 2",
     "toBe2Exercise": "Ejercicios To be 2",
-    "toBe3Grammar": "To be 3 (Gramática)",
+    "toBe3Grammar": "To be 3",
     "toBe3Exercise": "Ejercicios To be 3",
     "finalMixed": "Mixtos Finales"
   },
@@ -774,5 +773,3 @@
     "tryAgain": "Intentar de Nuevo"
   }
 }
-
-    

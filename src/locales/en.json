@@ -1,4 +1,3 @@
-
 {
   "header": {
     "courses": "Spanish",
@@ -590,12 +589,12 @@
     "frequencyAdverbs": "Frequency Adverbs",
     "can": "Can",
     "memoryToBe": "Memory (To be)",
-    "toBe1Grammar": "To be 1 (Grammar)",
+    "toBe1Grammar": "To be 1",
     "toBe1Exercise": "Exercises To be 1",
     "memoryPossessives": "Memory (Possessives)",
-    "toBe2Grammar": "To be 2 (Grammar)",
+    "toBe2Grammar": "To be 2",
     "toBe2Exercise": "Exercises To be 2",
-    "toBe3Grammar": "To be 3 (Grammar)",
+    "toBe3Grammar": "To be 3",
     "toBe3Exercise": "Exercises To be 3",
     "finalMixed": "Final Mixed"
   },

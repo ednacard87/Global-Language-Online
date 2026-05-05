@@ -132,8 +132,14 @@ export const getKidsIntro1PathData = (t: (key: string) => string): Topic[] => [
     { key: "numbers-memory", name: "Memory (Numbers)", icon: BrainCircuit, status: 'locked' },
     { key: "tobe", name: "To Be", icon: GraduationCap, status: 'locked' },
     { key: "tobe-memory", name: "Memory (To be)", icon: BrainCircuit, status: 'locked' },
+    { key: "tobe-1-grammar", name: t('kidsA1.toBe1Grammar'), icon: GraduationCap, status: 'locked' },
+    { key: "tobe-1-exercise", name: t('kidsA1.toBe1Exercise'), icon: PenSquare, status: 'locked' },
     { key: "possessives", name: t('intro1Page.possessives'), icon: GraduationCap, status: 'locked' },
     { key: "possessives-memory", name: "Memory (Possessives)", icon: BrainCircuit, status: 'locked' },
+    { key: "tobe-2-grammar", name: t('kidsA1.toBe2Grammar'), icon: GraduationCap, status: 'locked' },
+    { key: "tobe-2-exercise", name: t('kidsA1.toBe2Exercise'), icon: PenSquare, status: 'locked' },
+    { key: "tobe-3-grammar", name: t('kidsA1.toBe3Grammar'), icon: GraduationCap, status: 'locked' },
+    { key: "tobe-3-exercise", name: t('kidsA1.toBe3Exercise'), icon: PenSquare, status: 'locked' },
 ];
   
 export const getIntro1PathData = (t: (key: string, values?: { [key: string]: string | number }) => string): Omit<Topic, 'icon'>[] => [
@@ -545,7 +551,7 @@ export const getB1EspanolPath = (): PathItem[] => [
     { type: 'class', icon: BookOpen, label: 'b1Espanol.futuro', href: '#', storageKey: 'progress_b1_es_4' },
     { type: 'class', icon: BookOpen, label: 'b1Espanol.imperativo', href: '#', storageKey: 'progress_b1_es_5' },
     { type: 'class', icon: BookOpen, label: 'b1Espanol.presenteSubjuntivo', href: '#', storageKey: 'progress_b1_es_6' },
-    { type: 'end', icon: Flag, label: 'dashboard.finish' },
+    { type: 'end', icon: Flag, label: 'dashboard.finish' }
 ];
 
 export const getA2UnitPath = (unitId: string | number, t: (key: string) => string): PathItem[] => {
