@@ -194,6 +194,7 @@ export type KidsIntro2PathKey =
   | 'mixed1'
   | 'greetings'
   | 'farewells'
+  | 'memory'
   | 'mixed2'
   | 'time'
   | 'time-exercise'
@@ -211,6 +212,7 @@ export const getKidsIntro2PathData = (): KidsIntro2PathItem[] => [
     { key: 'mixed1', name: 'Ejercicios Mixtos 1', icon: PenSquare, status: 'locked' },
     { key: 'greetings', name: 'Saludos', icon: Hand, status: 'locked' },
     { key: 'farewells', name: 'Despedidas', icon: MessageSquare, status: 'locked' },
+    { key: 'memory', name: 'Memory', icon: BrainCircuit, status: 'locked' },
     { key: 'mixed2', name: 'Ejercicios Mixtos 2', icon: PenSquare, status: 'locked' },
     { key: 'time', name: 'La Hora', icon: Clock, status: 'locked' },
     { key: 'time-exercise', name: 'Ejercicios Hora', icon: PenSquare, status: 'locked' },

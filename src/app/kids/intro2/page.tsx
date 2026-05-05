@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
@@ -36,7 +35,6 @@ import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { getKidsIntro2PathData, type KidsIntro2PathItem } from '@/lib/course-data';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 
@@ -48,7 +46,7 @@ const ICONS = {
   completed: CheckCircle,
 };
 
-const progressStorageVersion = "kids_intro2_path_v3_stable";
+const progressStorageVersion = "kids_intro2_path_v4_memory";
 
 const greetingsData = [
     { spanish: 'Hola', english: 'Hello' }, { spanish: 'Buenos días', english: 'Good morning' },
@@ -227,6 +225,131 @@ const GreetingsFarewellsContent = ({ title, data, onComplete }: { title: string;
         </CardFooter>
     </Card>
 );
+
+const MemoryGame = ({ data, onComplete }: { data: { spanish: string; english: string; }[], onComplete: () => void }) => {
+    const [cards, setCards] = useState<any[]>([]);
+    const [flippedIndices, setFlippedIndices] = useState<number[]>([]);
+    const [matchedPairIds, setMatchedPairIds] = useState<number[]>([]);
+    const [isChecking, setIsChecking] = useState(false);
+    const [streak, setStreak] = useState(0);
+    const [isClient, setIsClient] = useState(false);
+    const [hasNotifiedComplete, setHasNotifiedComplete] = useState(false);
+
+    useEffect(() => {
+        setIsClient(true);
+    }, []);
+
+    const initializeGame = useCallback(() => {
+        const gameCards = data.flatMap((pair, index) => [
+            { id: index * 2, pairId: index, text: pair.english },
+            { id: index * 2 + 1, pairId: index, text: pair.spanish },
+        ]).sort(() => Math.random() - 0.5);
+        
+        setCards(gameCards);
+        setFlippedIndices([]);
+        setMatchedPairIds([]);
+        setIsChecking(false);
+        setStreak(0);
+        setHasNotifiedComplete(false);
+    }, [data]);
+
+    useEffect(() => {
+        if (isClient) {
+            initializeGame();
+        }
+    }, [isClient, initializeGame]);
+    
+    useEffect(() => {
+        if (flippedIndices.length === 2) {
+            setIsChecking(true);
+            const [firstIndex, secondIndex] = flippedIndices;
+            const isMatch = cards[firstIndex].pairId === cards[secondIndex].pairId;
+
+            if (isMatch) {
+                setMatchedPairIds(prev => [...prev, cards[firstIndex].pairId]);
+                setStreak(prev => prev + 1);
+                setFlippedIndices([]);
+                setIsChecking(false);
+            } else {
+                setStreak(0);
+                setTimeout(() => {
+                    setFlippedIndices([]);
+                    setIsChecking(false);
+                }, 800);
+            }
+        }
+    }, [flippedIndices, cards]);
+
+    const isGameComplete = matchedPairIds.length === data.length && data.length > 0;
+
+    useEffect(() => {
+        if (isGameComplete && !hasNotifiedComplete) {
+            onComplete();
+            setHasNotifiedComplete(true);
+        }
+    }, [isGameComplete, onComplete, hasNotifiedComplete]);
+
+    const handleCardClick = (index: number) => {
+        if (isChecking || flippedIndices.length >= 2 || flippedIndices.includes(index) || matchedPairIds.includes(cards[index].pairId)) {
+            return;
+        }
+        setFlippedIndices(prev => [...prev, index]);
+    };
+
+    if (!isClient) return null;
+
+    return (
+        <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+            <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                    <CardTitle>Memory (Greetings & Farewells)</CardTitle>
+                    <CardDescription>Match Spanish and English pairs.</CardDescription>
+                </div>
+                <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2 text-orange-500 font-bold">
+                        <Flame className="h-5 w-5" />
+                        <span>{streak}</span>
+                    </div>
+                    <Button size="icon" variant="ghost" onClick={initializeGame}><RefreshCw className="h-5 w-5" /></Button>
+                </div>
+            </CardHeader>
+            <CardContent>
+                {isGameComplete ? (
+                     <div className="text-center p-8 flex flex-col items-center">
+                        <Trophy className="h-16 w-16 text-yellow-400 mb-4" />
+                        <h2 className="text-2xl font-bold">Felicitaciones - completaste este ejercicio</h2>
+                     </div>
+                ) : (
+                    <div className="grid grid-cols-4 gap-2">
+                        {cards.map((card, index) => {
+                            const isFlipped = flippedIndices.includes(index);
+                            const isMatched = matchedPairIds.includes(card.pairId);
+                            return (
+                                <Card 
+                                    key={card.id}
+                                    onClick={() => handleCardClick(index)}
+                                    className={cn(
+                                        "flex items-center justify-center aspect-square cursor-pointer transition-all",
+                                        isFlipped || isMatched ? "bg-card border-primary" : "bg-secondary hover:bg-secondary/80",
+                                        isMatched && "border-green-500 border-2"
+                                    )}
+                                >
+                                    <CardContent className="p-1 flex items-center justify-center">
+                                        {isFlipped || isMatched ? (
+                                            <span className="text-xs font-bold text-center">{card.text}</span>
+                                        ) : (
+                                            <BrainCircuit className="h-5 w-5 text-primary/50" />
+                                        )}
+                                    </CardContent>
+                                </Card>
+                            )
+                        })}
+                    </div>
+                )}
+            </CardContent>
+        </Card>
+    );
+};
 
 const TimeContent = ({ onComplete }: { onComplete: () => void }) => {
     const timeImage = PlaceHolderImages.find(p => p.id === 'telling-time');
@@ -633,6 +756,7 @@ export default function KidsIntro2Page() {
     const isAdmin = useMemo(() => (user && (studentProfile?.role === 'admin' || user.email === 'ednacard87@gmail.com')), [user, studentProfile]);
     
     const initialLearningPath = useMemo(() => getKidsIntro2PathData(), []);
+    const memoryGameData = useMemo(() => [...greetingsData.slice(0, 5), ...farewellsData.slice(0, 5)], []);
 
     useEffect(() => {
         if (!isClient || isUserLoading || isProfileLoading || initialLoadComplete) return;
@@ -721,6 +845,7 @@ export default function KidsIntro2Page() {
           case 'mixed1': return <SimpleExercise title="Ejercicios Mixtos 1" exerciseData={mixedExercise1Data} onComplete={() => handleTopicComplete('mixed1')} />;
           case 'greetings': return <GreetingsFarewellsContent title="Saludos" data={greetingsData} onComplete={() => handleTopicComplete('greetings')} />;
           case 'farewells': return <GreetingsFarewellsContent title="Despedidas" data={farewellsData} onComplete={() => handleTopicComplete('farewells')} />;
+          case 'memory': return <MemoryGame data={memoryGameData} onComplete={() => handleTopicComplete('memory')} />;
           case 'mixed2': return <SimpleExercise title="Ejercicios Mixtos 2" exerciseData={mixedExercise2Data} onComplete={() => handleTopicComplete('mixed2')} />;
           case 'time': return <TimeContent onComplete={() => handleTopicComplete('time')} />;
           case 'time-exercise': return <TimeExercise onComplete={() => handleTopicComplete('time-exercise')} />;
@@ -794,4 +919,3 @@ export default function KidsIntro2Page() {
         </div>
     );
 }
-
