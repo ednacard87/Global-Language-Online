@@ -14,6 +14,7 @@ import {
   Loader2,
   ArrowRight,
   Lightbulb,
+  ChevronDown,
 } from 'lucide-react';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -29,10 +30,11 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { SingleFormExercise } from '@/components/kids/exercises/single-form';
 import { PresentSimpleExercise } from '@/components/kids/exercises/present-simple';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 // --- Data ---
 
-const progressStorageKey = 'progress_kids_b1_be_going_to_v1';
+const progressStorageKey = 'progress_kids_b1_be_going_to_v2';
 const mainProgressKey = 'progress_kids_b1_be_going_to';
 
 const plansVocab = [
@@ -48,11 +50,25 @@ const plansVocab = [
     { spanish: "Llamar a mi amigo.", english: "Call my friend" },
 ];
 
-const exercise1Data = [
-    { spanish: "Yo voy a viajar mañana.", answer: ["I am going to travel tomorrow", "I'm going to travel tomorrow"] },
-    { spanish: "Ella va a comprar un carro.", answer: ["She is going to buy a car", "She's going to buy a car"] },
-    { spanish: "Nosotros vamos a estudiar juntos.", answer: ["We are going to study together", "We're going to study together"] },
-    { spanish: "Ellos van a visitar el museo.", answer: ["They are going to visit the museum", "They're going to visit the museum"] },
+const exercise1PositiveData = [
+    { spanish: "Yo voy a aprender a cocinar.", answer: ["I am going to learn to cook", "I'm going to learn to cook"] },
+    { spanish: "Tú vas a ver una película.", answer: ["You are going to watch a movie", "You're going to watch a movie"] },
+    { spanish: "Él va a hacer ejercicio.", answer: ["He is going to do exercise", "He's going to do exercise"] },
+    { spanish: "Nosotros vamos a limpiar la habitación.", answer: ["We are going to clean the room", "We're going to clean the room", "We are going to clean the bedroom", "We're going to clean the bedroom"] },
+];
+
+const exercise1NegativeData = [
+    { spanish: "Yo no voy a aprender a cocinar.", answer: ["I am not going to learn to cook", "I'm not going to learn to cook"] },
+    { spanish: "Tú no vas a ver una película.", answer: ["You are not going to watch a movie", "You're not going to watch a movie", "You aren't going to watch a movie"] },
+    { spanish: "Él no va a hacer ejercicio.", answer: ["He is not going to do exercise", "He's not going to do exercise", "He isn't going to do exercise"] },
+    { spanish: "Nosotros no vamos a limpiar la habitación.", answer: ["We are not going to clean the room", "We're not going to clean the room", "We aren't going to clean the room"] },
+];
+
+const exercise1InterrogativeData = [
+    { spanish: "¿Voy yo a aprender a cocinar?", answer: ["Am I going to learn to cook?"] },
+    { spanish: "¿Vas tú a ver una película?", answer: ["Are you going to watch a movie?"] },
+    { spanish: "¿Va él a hacer ejercicio?", answer: ["Is he going to do exercise?"] },
+    { spanish: "¿Vamos nosotros a limpiar la habitación?", answer: ["Are we going to clean the room?"] },
 ];
 
 const mixedExercisesData = [
@@ -136,6 +152,7 @@ type Topic = {
   name: string;
   icon: React.ElementType;
   status: 'locked' | 'active' | 'completed';
+  subItems?: { key: string; name: string; status: 'locked' | 'active' | 'completed'; icon: React.ElementType }[];
 };
 
 const ICONS = { locked: Lock, active: BookOpen, completed: CheckCircle };
@@ -162,7 +179,17 @@ export default function BeGoingToPage() {
     const initialLearningPath = useMemo((): Topic[] => [
         { key: 'vocabulary', name: 'Vocabulario', icon: BookOpen, status: 'active' },
         { key: 'grammar', name: 'Gramatica', icon: GraduationCap, status: 'locked' },
-        { key: 'exercise1', name: 'Ejercicio 1', icon: PenSquare, status: 'locked' },
+        {
+            key: 'exercise1',
+            name: 'Ejercicio 1',
+            icon: PenSquare,
+            status: 'locked',
+            subItems: [
+                { key: 'positive-ex1', name: 'Positiva', icon: PenSquare, status: 'locked' },
+                { key: 'negative-ex1', name: 'Negativa', icon: PenSquare, status: 'locked' },
+                { key: 'interrogative-ex1', name: 'Interrogativa', icon: PenSquare, status: 'locked' },
+            ]
+        },
         { key: 'mixed', name: 'Ejercicios Mixtos', icon: PenSquare, status: 'locked' },
         { key: 'reading', name: 'Lectura', icon: BookOpen, status: 'locked' },
         { key: 'final_vocab', name: 'Vocabulario Final', icon: BookOpen, status: 'locked' },
@@ -171,36 +198,71 @@ export default function BeGoingToPage() {
     useEffect(() => {
         if (isUserLoading || isProfileLoading || !initialLearningPath.length) return;
 
-        let newPath = initialLearningPath.map(item => ({...item}));
+        let newPath = initialLearningPath.map(item => ({
+            ...item,
+            subItems: item.subItems ? item.subItems.map(sub => ({ ...sub })) : undefined
+        }));
         let savedSelectedTopic = '';
 
         if (isAdmin) {
-            newPath.forEach(item => { item.status = 'completed'; });
+            newPath.forEach(item => {
+                item.status = 'completed';
+                if (item.subItems) {
+                    item.subItems.forEach(sub => sub.status = 'completed');
+                }
+            });
         } else if (studentProfile?.lessonProgress?.[progressStorageKey]) {
             const savedData = studentProfile.lessonProgress[progressStorageKey];
             newPath.forEach(item => {
                 if (savedData[item.key]) item.status = savedData[item.key];
+                if (item.subItems && savedData.subItems?.[item.key]) {
+                    item.subItems.forEach(subItem => {
+                        if (savedData.subItems[item.key][subItem.key]) {
+                            subItem.status = savedData.subItems[item.key][subItem.key];
+                        }
+                    });
+                }
             });
             savedSelectedTopic = savedData.lastSelectedTopic || '';
         }
         
         setLearningPath(newPath);
         if (!initialLoadComplete) {
-            setSelectedTopic(savedSelectedTopic || newPath.find(p => p.status === 'active')?.key || 'vocabulary');
+            const firstActive = newPath.find(p => p.status === 'active') || newPath.flatMap(p => p.subItems || []).find(sp => sp?.status === 'active');
+            setSelectedTopic(savedSelectedTopic || firstActive?.key || 'vocabulary');
             setInitialLoadComplete(true);
         }
     }, [isAdmin, initialLearningPath, studentProfile, isUserLoading, isProfileLoading, initialLoadComplete]);
 
     const progressPercent = useMemo(() => {
-        const completedCount = learningPath.filter(t => t.status === 'completed').length;
-        return learningPath.length > 0 ? Math.round((completedCount / learningPath.length) * 100) : 0;
+        let totalTopics = 0;
+        let completedTopics = 0;
+        learningPath.forEach(t => {
+            if (t.subItems) {
+                totalTopics += t.subItems.length;
+                completedTopics += t.subItems.filter(st => st.status === 'completed').length;
+            } else {
+                totalTopics++;
+                if (t.status === 'completed') completedTopics++;
+            }
+        });
+        return totalTopics > 0 ? Math.round((completedTopics / totalTopics) * 100) : 0;
     }, [learningPath]);
 
     useEffect(() => {
         if (!initialLoadComplete || isUserLoading || isProfileLoading || learningPath.length === 0 || isAdmin || !studentDocRef) return;
 
         const statusesToSave: Record<string, any> = { lastSelectedTopic: selectedTopic };
-        learningPath.forEach(item => { statusesToSave[item.key] = item.status; });
+        learningPath.forEach(item => {
+            statusesToSave[item.key] = item.status;
+            if (item.subItems) {
+                if (!statusesToSave.subItems) statusesToSave.subItems = {};
+                statusesToSave.subItems[item.key] = {};
+                item.subItems.forEach(sub => {
+                    statusesToSave.subItems[item.key][sub.key] = sub.status;
+                });
+            }
+        });
 
         updateDocumentNonBlocking(studentDocRef, { 
             [`lessonProgress.${progressStorageKey}`]: statusesToSave,
@@ -209,39 +271,106 @@ export default function BeGoingToPage() {
         window.dispatchEvent(new CustomEvent('progressUpdated'));
     }, [learningPath, progressPercent, selectedTopic, isAdmin, studentDocRef, isUserLoading, isProfileLoading, initialLoadComplete]);
 
-    const handleTopicComplete = (key: string) => {
-        setTopicToComplete(key);
-    };
-
     useEffect(() => {
         if (!topicToComplete) return;
+
         setLearningPath(currentPath => {
-            const newPath = currentPath.map(item => ({...item}));
-            const currentIndex = newPath.findIndex(item => item.key === topicToComplete);
-            
-            if (currentIndex !== -1 && newPath[currentIndex].status !== 'completed') {
-                newPath[currentIndex].status = 'completed';
-                const nextIndex = currentIndex + 1;
-                if (nextIndex < newPath.length && newPath[nextIndex].status === 'locked') {
-                    newPath[nextIndex].status = 'active';
-                    setSelectedTopic(newPath[nextIndex].key);
-                    toast({ title: "¡Tema desbloqueado!", description: `Ahora puedes continuar con ${newPath[nextIndex].name}` });
+            const newPath = currentPath.map(t => ({
+                ...t,
+                subItems: t.subItems ? t.subItems.map(s => ({ ...s })) : undefined,
+            }));
+          
+            let nextSelectedTopic: string | null = null;
+            let topicFound = false;
+            let wasTopicUnlocked = false;
+
+            for (let i = 0; i < newPath.length && !topicFound; i++) {
+                const currentTopic = newPath[i];
+
+                if (currentTopic.key === topicToComplete) {
+                    if (currentTopic.status !== 'completed') {
+                        currentTopic.status = 'completed';
+                    }
+                    if (i + 1 < newPath.length && newPath[i + 1].status === 'locked') {
+                        const next = newPath[i + 1];
+                        next.status = 'active';
+                        if (next.subItems?.[0]) {
+                            next.subItems[0].status = 'active';
+                            nextSelectedTopic = next.subItems[0].key;
+                        } else {
+                            nextSelectedTopic = next.key;
+                        }
+                        wasTopicUnlocked = true;
+                    }
+                    topicFound = true;
+                } else if (currentTopic.subItems) {
+                    const subIndex = currentTopic.subItems.findIndex(s => s.key === topicToComplete);
+                    if (subIndex !== -1) {
+                        if (currentTopic.subItems[subIndex].status !== 'completed') {
+                            currentTopic.subItems[subIndex].status = 'completed';
+                        }
+                        const nextSubIndex = subIndex + 1;
+                        if (nextSubIndex < currentTopic.subItems.length && currentTopic.subItems[nextSubIndex].status === 'locked') {
+                            currentTopic.subItems[nextSubIndex].status = 'active';
+                            nextSelectedTopic = currentTopic.subItems[nextSubIndex].key;
+                            wasTopicUnlocked = true;
+                        } else if (currentTopic.subItems.every(s => s.status === 'completed')) {
+                            if (currentTopic.status !== 'completed') {
+                                currentTopic.status = 'completed';
+                            }
+                            if (i + 1 < newPath.length && newPath[i + 1].status === 'locked') {
+                                const next = newPath[i + 1];
+                                next.status = 'active';
+                                if (next.subItems?.[0]) {
+                                    next.subItems[0].status = 'active';
+                                    nextSelectedTopic = next.subItems[0].key;
+                                } else {
+                                    nextSelectedTopic = next.key;
+                                }
+                                wasTopicUnlocked = true;
+                            }
+                        }
+                        topicFound = true;
+                    }
                 }
+            }
+            if (nextSelectedTopic) {
+                setSelectedTopic(nextSelectedTopic);
+            }
+            if (wasTopicUnlocked) {
+                toast({ title: "¡Siguiente tema desbloqueado!", description: "Puedes continuar con la aventura." });
             }
             return newPath;
         });
         setTopicToComplete(null);
     }, [topicToComplete, toast]);
 
-    const handleTopicSelect = (key: string) => {
-        const topic = learningPath.find(t => t.key === key);
-        if (topic?.status === 'locked' && !isAdmin) {
-            toast({ variant: 'destructive', title: 'Tema Bloqueado' });
+    const handleTopicSelect = (topicKey: string) => {
+        const mainTopic = learningPath.find(t => t.key === topicKey || t.subItems?.some(st => st.key === topicKey));
+        const subTopic = mainTopic?.subItems?.find(st => st.key === topicKey);
+
+        if (!isAdmin && ((subTopic && subTopic.status === 'locked') || (!subTopic && mainTopic?.status === 'locked'))) {
+            toast({ variant: 'destructive', title: 'Contenido Bloqueado' });
             return;
         }
-        setSelectedTopic(key);
-        if (['vocabulary', 'grammar'].includes(key)) {
-            handleTopicComplete(key);
+
+        if (topicKey === 'exercise1') {
+            const firstSub = mainTopic?.subItems?.[0];
+            if (firstSub && firstSub.status === 'locked' && !isAdmin) {
+                 toast({ variant: 'destructive', title: 'Contenido Bloqueado' });
+                 return;
+            }
+            if (firstSub) {
+                setSelectedTopic(firstSub.key);
+            }
+            return;
+        }
+
+        setSelectedTopic(topicKey);
+
+        const autoViewTopics = ['vocabulary', 'grammar'];
+        if (autoViewTopics.includes(topicKey)) {
+            handleTopicComplete(topicKey);
         }
     };
 
@@ -332,8 +461,12 @@ export default function BeGoingToPage() {
                         </Card>
                     </div>
                 );
-            case 'exercise1':
-                return <SingleFormExercise key="ex1" onComplete={() => handleTopicComplete('exercise1')} exerciseData={exercise1Data} title="Ejercicio 1" description="Traduce las frases usando 'be going to'." formType="affirmative" />;
+            case 'positive-ex1':
+                return <SingleFormExercise key="ex1-pos" onComplete={() => handleTopicComplete('positive-ex1')} exerciseData={exercise1PositiveData} title="Ejercicio 1: Forma Positiva" description="Traduce las frases a su forma afirmativa usando 'be going to'." formType="affirmative" />;
+            case 'negative-ex1':
+                return <SingleFormExercise key="ex1-neg" onComplete={() => handleTopicComplete('negative-ex1')} exerciseData={exercise1NegativeData} title="Ejercicio 1: Forma Negativa" description="Traduce las frases a su forma negativa usando 'be going to'." formType="negative" />;
+            case 'interrogative-ex1':
+                return <SingleFormExercise key="ex1-int" onComplete={() => handleTopicComplete('interrogative-ex1')} exerciseData={exercise1InterrogativeData} title="Ejercicio 1: Forma Interrogativa" description="Traduce las frases a su forma interrogativa usando 'be going to'." formType="interrogative" />;
             case 'mixed':
                 return <PresentSimpleExercise key="mixed" onComplete={() => handleTopicComplete('mixed')} exerciseData={mixedExercisesData} title="Ejercicios Mixtos" />;
             case 'reading':
@@ -401,24 +534,75 @@ export default function BeGoingToPage() {
                         <h1 className="text-4xl font-bold text-white dark:text-primary">Be Going To</h1>
                     </div>
                     <div className="grid gap-8 md:grid-cols-12">
-                        <div className="md:col-span-8">{renderContent()}</div>
-                        <div className="md:col-span-4">
+                        <div className="md:col-span-9">{renderContent()}</div>
+                        <div className="md:col-span-3">
                             <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple">
                                 <CardHeader><CardTitle>Ruta de Aprendizaje</CardTitle></CardHeader>
                                 <CardContent>
                                     <nav>
                                         <ul className="space-y-1">
-                                            {learningPath.map(item => (
-                                                <li key={item.key} onClick={() => handleTopicSelect(item.key)}
-                                                    className={cn('flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer',
-                                                        item.status === 'locked' && !isAdmin ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted',
-                                                        selectedTopic === item.key && 'bg-muted text-primary font-semibold'
-                                                    )}>
-                                                    {item.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500"/> : <item.icon className="h-5 w-5" />}
-                                                    <span>{item.name}</span>
-                                                    {item.status === 'locked' && !isAdmin && <Lock className="h-4 w-4 text-yellow-500 ml-auto" />}
-                                                </li>
-                                            ))}
+                                            {learningPath.map((item) => {
+                                                const Icon = item.icon;
+                                                const isLocked = item.status === 'locked' && !isAdmin;
+                                                const isSelected = selectedTopic === item.key || item.subItems?.some(si => si.key === selectedTopic);
+
+                                                return (
+                                                    <li key={item.key}>
+                                                        {!item.subItems ? (
+                                                            <div onClick={() => handleTopicSelect(item.key)}
+                                                                className={cn(
+                                                                    'flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors',
+                                                                    isLocked ? 'cursor-not-allowed text-muted-foreground/50' : 'cursor-pointer hover:bg-muted',
+                                                                    selectedTopic === item.key && 'bg-muted text-primary font-semibold'
+                                                                )}>
+                                                                <div className="flex items-center gap-3">
+                                                                    <Icon className={cn("h-5 w-5", item.status === 'completed' ? 'text-green-500' : '')} />
+                                                                    <span>{item.name}</span>
+                                                                </div>
+                                                                {isLocked && <Lock className="h-4 w-4 text-yellow-500" />}
+                                                            </div>
+                                                        ) : (
+                                                            <Collapsible defaultOpen={isSelected || item.subItems.some(si => si.status !== 'locked')} disabled={isLocked}>
+                                                                <CollapsibleTrigger className="w-full">
+                                                                    <div className={cn(
+                                                                        'flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors w-full',
+                                                                        isLocked ? 'cursor-not-allowed text-muted-foreground/50' : 'cursor-pointer hover:bg-muted',
+                                                                        isSelected && 'bg-muted text-primary font-semibold'
+                                                                    )}>
+                                                                        <div className="flex items-center gap-3">
+                                                                            <Icon className={cn("h-5 w-5", item.status === 'completed' ? 'text-green-500' : '')} />
+                                                                            <span>{item.name}</span>
+                                                                        </div>
+                                                                        {isLocked ? <Lock className="h-4 w-4 text-yellow-500" /> : <ChevronDown className="h-4 w-4 transition-transform [&[data-state=open]]:rotate-180" />}
+                                                                    </div>
+                                                                </CollapsibleTrigger>
+                                                                <CollapsibleContent>
+                                                                    <ul className="pl-8 pt-1 space-y-1">
+                                                                        {item.subItems.map((subItem) => {
+                                                                            const SubIcon = subItem.status === 'completed' ? CheckCircle : subItem.icon;
+                                                                            const isSubLocked = subItem.status === 'locked' && !isAdmin;
+                                                                            return (
+                                                                                <li key={subItem.key} onClick={() => handleTopicSelect(subItem.key)}
+                                                                                    className={cn(
+                                                                                        'flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors',
+                                                                                        isSubLocked ? 'cursor-not-allowed text-muted-foreground/50' : 'cursor-pointer hover:bg-muted',
+                                                                                        selectedTopic === subItem.key && 'bg-muted text-primary font-semibold'
+                                                                                    )}>
+                                                                                    <div className='flex items-center gap-3'>
+                                                                                        <SubIcon className={cn("h-5 w-5", subItem.status === 'completed' ? 'text-green-500' : '')} />
+                                                                                        <span>{subItem.name}</span>
+                                                                                    </div>
+                                                                                    {isSubLocked && <Lock className="h-4 w-4 text-yellow-500" />}
+                                                                                </li>
+                                                                            )
+                                                                        })}
+                                                                    </ul>
+                                                                </CollapsibleContent>
+                                                            </Collapsible>
+                                                        )}
+                                                    </li>
+                                                );
+                                            })}
                                         </ul>
                                     </nav>
                                      <div className="mt-6 pt-6 border-t">
