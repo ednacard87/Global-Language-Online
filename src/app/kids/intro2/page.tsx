@@ -35,30 +35,30 @@ import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { getKidsIntro2PathData, type KidsIntro2PathItem } from '@/lib/course-data';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 
-// --- Constants & Data ---
+// --- Data ---
 
-const ICONS = {
-  locked: Lock,
-  active: BookOpen,
-  completed: CheckCircle,
-};
-
-const progressStorageVersion = "kids_intro2_path_v4_memory";
+const progressStorageVersion = "kids_intro2_path_v13_stable";
 
 const greetingsData = [
-    { spanish: 'Hola', english: 'Hello' }, { spanish: 'Buenos días', english: 'Good morning' },
-    { spanish: 'Buenas tardes', english: 'Good afternoon' }, { spanish: 'Buenas noches (saludo)', english: 'Good evening' },
-    { spanish: '¿Cómo estás?', english: 'How are you?' }, { spanish: '¿Qué tal?', english: "What's up?" }, { spanish: '¿Cómo vas?', english: 'How is it going?' },
+    { spanish: 'Hola', english: 'Hello' },
+    { spanish: 'Buenos días', english: 'Good morning' },
+    { spanish: 'Buenas tardes', english: 'Good afternoon' },
+    { spanish: 'Buenas noches (al llegar)', english: 'Good evening' },
+    { spanish: '¿Cómo estás?', english: 'How are you?' },
+    { spanish: '¿Qué tal?', english: "What's up?" },
 ];
 
 const farewellsData = [
-    { spanish: 'Adiós', english: 'Goodbye' }, { spanish: 'Chao', english: 'Bye' },
-    { spanish: 'Hasta luego', english: 'See you later' }, { spanish: 'Hasta pronto', english: 'See you soon' },
-    { spanish: 'Buenas noches (despedida)', english: 'Good night' }, { spanish: 'Cuídate', english: 'Take care' },
-    { spanish: 'Nos vemos mañana', english: 'See you tomorrow' }, { spanish: 'Que tengas un buen día', english: 'Have a nice day' },
+    { spanish: 'Adiós', english: 'Goodbye' },
+    { spanish: 'Chao', english: 'Bye' },
+    { spanish: 'Hasta luego', english: 'See you later' },
+    { spanish: 'Hasta pronto', english: 'See you soon' },
+    { spanish: 'Buenas noches (al irse)', english: 'Good night' },
+    { spanish: 'Cuídate', english: 'Take care' },
 ];
 
 const timeExerciseData = [
@@ -77,14 +77,14 @@ const timeExerciseData = [
 const countriesExerciseData = [
     { spanish: 'Colombia', country: 'Colombia', nationality: 'Colombian', language: 'Spanish' },
     { spanish: 'Estados Unidos', country: 'United States', nationality: 'American', language: 'English' },
-    { spanish: 'Canadá', country: 'Canada', nationality: 'Canadian', language: 'English' },
-    { spanish: 'México', country: 'Mexico', nationality: 'Mexican', language: 'Spanish' },
+    { spanish: 'Canada', country: 'Canada', nationality: 'Canadian', language: 'English' },
+    { spanish: 'Mexico', country: 'Mexico', nationality: 'Mexican', language: 'Spanish' },
     { spanish: 'Francia', country: 'France', nationality: 'French', language: 'French' },
     { spanish: 'Italia', country: 'Italy', nationality: 'Italian', language: 'Italian' },
     { spanish: 'España', country: 'Spain', nationality: 'Spanish', language: 'Spanish' },
     { spanish: 'Rusia', country: 'Russia', nationality: 'Russian', language: 'Russian' },
     { spanish: 'China', country: 'China', nationality: 'Chinese', language: 'Chinese' },
-    { spanish: 'Japón', country: 'Japan', nationality: 'Japanese', language: 'Japanese' },
+    { spanish: 'Japon', country: 'Japan', nationality: 'Japanese', language: 'Japanese' },
 ];
 
 const mixedExercise1Data = [
@@ -186,7 +186,7 @@ const TipContent = ({ onComplete }: { onComplete: () => void }) => (
                             {'my father is at home => Sustantivo'}<br/>
                             esta es mi casa  = this is my house {'=>'} Demostrativo
                         </p>
-                          <div className="flex items-start gap-2 p-2 bg-destructive/10 border-l-4 border-destructive text-destructive-foreground/80 rounded-r-md">
+                          <div className="flex items-start gap-2 p-2 bg-destructive/10 border-l-4 border-destructive text-foreground rounded-r-md">
                             <X className="h-5 w-5 mt-0.5 flex-shrink-0"/>
                             <div>
                                 <h4 className="font-bold">¡NUNCA!</h4>
@@ -303,7 +303,7 @@ const MemoryGame = ({ data, onComplete }: { data: { spanish: string; english: st
             <CardHeader className="flex flex-row items-center justify-between">
                 <div>
                     <CardTitle>Memory (Greetings & Farewells)</CardTitle>
-                    <CardDescription>Match Spanish and English pairs.</CardDescription>
+                    <CardDescription>Empareja el saludo en español con su traducción.</CardDescription>
                 </div>
                 <div className="flex items-center gap-4">
                     <div className="flex items-center gap-2 text-orange-500 font-bold">
@@ -336,7 +336,7 @@ const MemoryGame = ({ data, onComplete }: { data: { spanish: string; english: st
                                 >
                                     <CardContent className="p-1 flex items-center justify-center">
                                         {isFlipped || isMatched ? (
-                                            <span className="text-xs font-bold text-center">{card.text}</span>
+                                            <span className="text-[10px] sm:text-xs font-bold text-center">{card.text}</span>
                                         ) : (
                                             <BrainCircuit className="h-5 w-5 text-primary/50" />
                                         )}
@@ -366,7 +366,7 @@ const TimeContent = ({ onComplete }: { onComplete: () => void }) => {
 
                 <Separator />
 
-                <div className="space-y-4">
+                <div className="space-y-4 text-left">
                     <h3 className="text-2xl font-bold text-primary flex items-center gap-2">
                         <Clock className="h-6 w-6" />
                         ¿Cómo funciona?
@@ -377,7 +377,7 @@ const TimeContent = ({ onComplete }: { onComplete: () => void }) => {
                     </div>
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-6">
+                <div className="grid md:grid-cols-2 gap-6 text-left">
                     <div className="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-2xl border-2 border-blue-200">
                         <h4 className="text-xl font-bold text-blue-600 mb-2">Usamos "PAST"</h4>
                         <p className="text-sm mb-4">Para los minutos del <strong>1 al 30</strong>. Significa "pasadas las...".</p>
@@ -417,69 +417,9 @@ const TimeContent = ({ onComplete }: { onComplete: () => void }) => {
                         </div>
                     </div>
                 </div>
-
-                <div className="space-y-4">
-                    <h4 className="text-xl font-bold">Momentos del día (AM / PM):</h4>
-                    <ul className="grid sm:grid-cols-2 gap-2 text-base">
-                        <li className="flex items-center gap-2"><div className="h-2 w-2 rounded-full bg-primary" /> <strong>In the morning:</strong> por la mañana</li>
-                        <li className="flex items-center gap-2"><div className="h-2 w-2 rounded-full bg-primary" /> <strong>In the afternoon:</strong> por la tarde</li>
-                        <li className="flex items-center gap-2"><div className="h-2 w-2 rounded-full bg-primary" /> <strong>In the evening:</strong> por la noche (llegada)</li>
-                        <li className="flex items-center gap-2"><div className="h-2 w-2 rounded-full bg-primary" /> <strong>At night:</strong> por la noche (dormir)</li>
-                    </ul>
-                </div>
             </CardContent>
             <CardFooter>
                 <Button onClick={onComplete} className="w-full sm:w-auto">Avanzar</Button>
-            </CardFooter>
-        </Card>
-    );
-};
-
-const SimpleExercise = ({ title, onComplete, exerciseData }: { title: string; onComplete: () => void, exerciseData: { spanish: string, answer: string[] }[] }) => {
-    const { toast } = useToast();
-    const [currentIndex, setCurrentIndex] = useState(0);
-    const [userAnswer, setUserAnswer] = useState('');
-    const [validation, setValidation] = useState<'correct' | 'incorrect' | 'unchecked'>('unchecked');
-    const [completedCount, setCompletedCount] = useState(0);
-
-    const currentPrompt = exerciseData[currentIndex];
-
-    const handleCheck = () => {
-        const isCorrect = currentPrompt.answer.includes(userAnswer.trim().toLowerCase());
-        setValidation(isCorrect ? 'correct' : 'incorrect');
-        if (isCorrect) {
-            toast({ title: '¡Correcto!' });
-            if(validation !== 'correct') {
-                setCompletedCount(c => c + 1);
-            }
-        } else {
-            toast({ variant: 'destructive', title: 'Incorrecto' });
-        }
-    };
-    
-    const handleNext = () => {
-        if(currentIndex < exerciseData.length - 1) {
-            setCurrentIndex(i => i + 1);
-            setUserAnswer('');
-            setValidation('unchecked');
-        } else {
-            onComplete();
-        }
-    };
-
-    return (
-         <Card>
-            <CardHeader>
-                <CardTitle>{title}</CardTitle>
-                <Progress value={(completedCount / exerciseData.length) * 100} className="mt-2" />
-            </CardHeader>
-            <CardContent className="space-y-4">
-                <p className="text-muted-foreground">Traduce: "{currentPrompt.spanish}"</p>
-                <Input value={userAnswer} onChange={e => setUserAnswer(e.target.value)} className={cn(validation === 'correct' && 'border-green-500', validation === 'incorrect' && 'border-destructive')} />
-            </CardContent>
-            <CardFooter className="justify-between">
-                <Button onClick={handleCheck}>Verificar</Button>
-                <Button onClick={handleNext} disabled={validation !== 'correct'}>Siguiente</Button>
             </CardFooter>
         </Card>
     );
@@ -613,7 +553,7 @@ const CountriesExercise = ({ onComplete }: { onComplete: () => void }) => {
     
     type CountryAnswers = { country: string; nationality: string; language: string; };
     type UserAnswers = Record<number, CountryAnswers>;
-    type ValidationState = Record<number, Record<keyof CountryAnswers, ValidationStatus>>;
+    type ValidationState = Record<number, Record<keyof CountryAnswers, 'correct' | 'incorrect' | 'unchecked'>>;
 
     const [userAnswers, setUserAnswers] = useState<UserAnswers>({});
     const [validationStatus, setValidationStatus] = useState<ValidationState>({});
@@ -637,9 +577,9 @@ const CountriesExercise = ({ onComplete }: { onComplete: () => void }) => {
         countriesExerciseData.forEach((correctData, index) => {
             const userAnswer = userAnswers[index] || { country: '', nationality: '', language: '' };
             
-            const isCountryCorrect = userAnswer.country.trim().toLowerCase() === correctData.country.toLowerCase();
-            const isNationalityCorrect = userAnswer.nationality.trim().toLowerCase() === correctData.nationality.toLowerCase();
-            const isLanguageCorrect = userAnswer.language.trim().toLowerCase() === correctData.language.toLowerCase();
+            const isCountryCorrect = userAnswer.country?.trim().toLowerCase() === correctData.country.toLowerCase();
+            const isNationalityCorrect = userAnswer.nationality?.trim().toLowerCase() === correctData.nationality.toLowerCase();
+            const isLanguageCorrect = userAnswer.language?.trim().toLowerCase() === correctData.language.toLowerCase();
             
             newValidationStatus[index] = {
                 country: isCountryCorrect ? 'correct' : 'incorrect',
@@ -666,7 +606,7 @@ const CountriesExercise = ({ onComplete }: { onComplete: () => void }) => {
         }
     };
     
-    const getInputClass = (status?: ValidationStatus) => {
+    const getInputClass = (status?: string) => {
         if (status === 'correct') return 'border-green-500 bg-green-50 dark:bg-green-900/10';
         if (status === 'incorrect') return 'border-destructive bg-destructive/5';
         return '';
@@ -676,13 +616,13 @@ const CountriesExercise = ({ onComplete }: { onComplete: () => void }) => {
         <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
             <CardHeader>
                 <CardTitle>Países y Nacionalidades</CardTitle>
-                <CardDescription>Escribe la traducción correcta para el país, la nacionalidad y el idioma al inglés.</CardDescription>
+                <CardDescription>Completa la tabla traduciendo al inglés.</CardDescription>
             </CardHeader>
             <CardContent className="overflow-x-auto">
                 <Table>
                     <TableHeader>
                         <TableRow>
-                            <TableHead className="w-[150px] font-bold">Países (Español)</TableHead>
+                            <TableHead className="font-bold">Países (Español)</TableHead>
                             <TableHead className="font-bold">Country (Inglés)</TableHead>
                             <TableHead className="font-bold">Nationality</TableHead>
                             <TableHead className="font-bold">Language</TableHead>
@@ -694,7 +634,6 @@ const CountriesExercise = ({ onComplete }: { onComplete: () => void }) => {
                                 <TableCell className="font-medium">{data.spanish}</TableCell>
                                 <TableCell>
                                     <Input 
-                                        placeholder="Country..."
                                         value={userAnswers[index]?.country || ''} 
                                         onChange={(e) => handleInputChange(index, 'country', e.target.value)} 
                                         className={cn("h-8 text-xs", getInputClass(validationStatus[index]?.country))} 
@@ -703,7 +642,6 @@ const CountriesExercise = ({ onComplete }: { onComplete: () => void }) => {
                                 </TableCell>
                                 <TableCell>
                                     <Input 
-                                        placeholder="Nationality..."
                                         value={userAnswers[index]?.nationality || ''} 
                                         onChange={(e) => handleInputChange(index, 'nationality', e.target.value)} 
                                         className={cn("h-8 text-xs", getInputClass(validationStatus[index]?.nationality))} 
@@ -712,7 +650,6 @@ const CountriesExercise = ({ onComplete }: { onComplete: () => void }) => {
                                 </TableCell>
                                 <TableCell>
                                     <Input 
-                                        placeholder="Language..."
                                         value={userAnswers[index]?.language || ''} 
                                         onChange={(e) => handleInputChange(index, 'language', e.target.value)} 
                                         className={cn("h-8 text-xs", getInputClass(validationStatus[index]?.language))} 
@@ -724,9 +661,58 @@ const CountriesExercise = ({ onComplete }: { onComplete: () => void }) => {
                     </TableBody>
                 </Table>
             </CardContent>
-            <CardFooter className="justify-between">
-                <p className="text-xs text-muted-foreground italic">* Nota: No olvides las mayúsculas en los nombres de países, nacionalidades e idiomas.</p>
+            <CardFooter className="justify-end">
                 <Button onClick={handleCheckAnswers}>Verificar</Button>
+            </CardFooter>
+        </Card>
+    );
+};
+
+const SimpleExercise = ({ title, exerciseData, onComplete }: { title: string; exerciseData: { spanish: string, answer: string[] }[], onComplete: () => void }) => {
+    const { toast } = useToast();
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [userAnswer, setUserAnswer] = useState('');
+    const [validation, setValidation] = useState<'correct' | 'incorrect' | 'unchecked'>('unchecked');
+    const [completedCount, setCompletedCount] = useState(0);
+
+    const currentPrompt = exerciseData[currentIndex];
+
+    const handleCheck = () => {
+        const isCorrect = currentPrompt.answer.includes(userAnswer.trim().toLowerCase());
+        setValidation(isCorrect ? 'correct' : 'incorrect');
+        if (isCorrect) {
+            toast({ title: '¡Correcto!' });
+            if(validation !== 'correct') {
+                setCompletedCount(c => c + 1);
+            }
+        } else {
+            toast({ variant: 'destructive', title: 'Incorrecto' });
+        }
+    };
+    
+    const handleNext = () => {
+        if(currentIndex < exerciseData.length - 1) {
+            setCurrentIndex(i => i + 1);
+            setUserAnswer('');
+            setValidation('unchecked');
+        } else {
+            onComplete();
+        }
+    };
+
+    return (
+         <Card>
+            <CardHeader>
+                <CardTitle>{title}</CardTitle>
+                <Progress value={(completedCount / exerciseData.length) * 100} className="mt-2" />
+            </CardHeader>
+            <CardContent className="space-y-4">
+                <p className="text-muted-foreground">Traduce: "{currentPrompt.spanish}"</p>
+                <Input value={userAnswer} onChange={e => setUserAnswer(e.target.value)} className={cn(validation === 'correct' && 'border-green-500', validation === 'incorrect' && 'border-destructive')} />
+            </CardContent>
+            <CardFooter className="justify-between">
+                <Button onClick={handleCheck}>Verificar</Button>
+                <Button onClick={handleNext} disabled={validation !== 'correct'}>Siguiente</Button>
             </CardFooter>
         </Card>
     );
@@ -816,7 +802,11 @@ export default function KidsIntro2Page() {
 
                 if (currentIndex + 1 < newPath.length && newPath[currentIndex + 1].status === 'locked') {
                     newPath[currentIndex + 1].status = 'active';
-                    setSelectedTopic(newPath[currentIndex + 1].key);
+                    
+                    // Solo saltamos automáticamente si no es el juego de memoria
+                    if (topicToComplete !== 'memory') {
+                        setSelectedTopic(newPath[currentIndex + 1].key);
+                    }
                     
                     toast({
                         title: "¡Tema desbloqueado!",
@@ -868,15 +858,15 @@ export default function KidsIntro2Page() {
           <DashboardHeader />
           <main className="flex-1 p-4 md:p-8">
             <div className="max-w-7xl mx-auto">
-              <div className="mb-8">
-                <Link href={`/kids/intro`} className="hover:underline text-sm text-muted-foreground">
+              <div className="mb-8 text-left">
+                <Link href={`/kids/intro`} className="hover:underline text-sm text-white/80">
                     Volver a Intro Niños
                 </Link>
                 <h1 className="text-4xl font-bold text-white dark:text-primary">Aventura Intro 2</h1>
               </div>
                <div className="grid gap-8 md:grid-cols-12">
                 <div className="md:col-span-9">{renderContent()}</div>
-                <div className="md:col-span-3">
+                <div className="md:col-span-3 text-left">
                   <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple">
                     <CardHeader><CardTitle>Ruta de Aprendizaje</CardTitle></CardHeader>
                     <CardContent>
