@@ -47,7 +47,7 @@ const ICONS = {
   completed: CheckCircle,
 };
 
-const progressStorageVersion = "english_intro2_path_v8";
+const progressStorageVersion = "english_intro2_path_v9";
 
 const greetingsData = [
     { spanish: 'Hola', english: 'Hello' },
@@ -139,7 +139,7 @@ const mixedExercise2Data = [
 
 // --- Auxiliary Components ---
 
-const TipContent = () => (
+const TipContent = ({ onComplete }: { onComplete: () => void }) => (
     <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
         <CardHeader>
             <CardTitle>Tip Importante</CardTitle>
@@ -234,6 +234,9 @@ const TipContent = () => (
                 </AccordionItem>
             </Accordion>
         </CardContent>
+        <CardFooter>
+            <Button onClick={onComplete} className="w-full sm:w-auto">Avanzar</Button>
+        </CardFooter>
     </Card>
 );
 
@@ -346,6 +349,79 @@ const MemoryGame = ({ data, onComplete }: { data: { spanish: string; english: st
                     </div>
                 )}
             </CardContent>
+        </Card>
+    );
+};
+
+type ValidationStatus = 'correct' | 'incorrect' | 'unchecked';
+
+const CountriesExercise = ({ onComplete }: { onComplete: () => void }) => {
+    const { t } = useTranslation();
+    const { toast } = useToast();
+    type CountryAnswers = { pais: string; };
+    type UserAnswers = Record<number, Partial<CountryAnswers>>;
+    type ValidationState = Record<number, { pais: ValidationStatus }>;
+
+    const [userAnswers, setUserAnswers] = useState<UserAnswers>({});
+    const [validationStatus, setValidationStatus] = useState<ValidationState>({});
+
+    const handleInputChange = (index: number, field: 'pais', value: string) => {
+        setUserAnswers(prev => ({ ...prev, [index]: { ...prev[index], [field]: value } }));
+        setValidationStatus(prev => {
+            const newStatus = { ...prev };
+            if (newStatus[index]) {
+                newStatus[index][field] = 'unchecked';
+            }
+            return newStatus;
+        });
+    };
+
+    const handleCheckAnswers = () => {
+        let allCorrect = true;
+        const newValidationStatus: ValidationState = {};
+        countriesExerciseData.forEach((correctAnswer, index) => {
+            const userAnswer = userAnswers[index] || {};
+            const isCountryCorrect = (userAnswer.pais || '').trim().toLowerCase() === correctAnswer.pais.toLowerCase();
+            
+            newValidationStatus[index] = {
+                pais: isCountryCorrect ? 'correct' : 'incorrect',
+            };
+            if (!isCountryCorrect) allCorrect = false;
+        });
+
+        setValidationStatus(newValidationStatus);
+
+        if (allCorrect) {
+            toast({ title: "¡Excelente!", description: "Todas tus respuestas son correctas." });
+            onComplete();
+        } else {
+            toast({ variant: 'destructive', title: "Algunas respuestas son incorrectas" });
+        }
+    };
+    
+    const getInputClass = (status?: ValidationStatus) => {
+        if (status === 'correct') return 'border-green-500';
+        if (status === 'incorrect') return 'border-destructive';
+        return '';
+    };
+
+    return (
+        <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+            <CardHeader><CardTitle>Países</CardTitle></CardHeader>
+            <CardContent>
+                <Table>
+                    <TableHeader><TableRow><TableHead>Country</TableHead><TableHead>País</TableHead></TableRow></TableHeader>
+                    <TableBody>
+                        {countriesExerciseData.map((data, index) => (
+                            <TableRow key={index}>
+                                <TableCell>{data.country}</TableCell>
+                                <TableCell><Input value={userAnswers[index]?.pais || ''} onChange={(e) => handleInputChange(index, 'pais', e.target.value)} className={cn(getInputClass(validationStatus[index]?.pais))} /></TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </CardContent>
+            <CardFooter><Button onClick={handleCheckAnswers}>Verificar</Button></CardFooter>
         </Card>
     );
 };
@@ -584,139 +660,14 @@ const TimeExercise = ({ onComplete }: { onComplete: () => void }) => {
     );
 };
 
-type ValidationStatus = 'correct' | 'incorrect' | 'unchecked';
-
-const CountriesExercise = ({ onComplete }: { onComplete: () => void }) => {
-    const { t } = useTranslation();
-    const { toast } = useToast();
-    type UserAnswerRow = { country: string; nationality: string; language: string };
-    type ValidationRow = { country: 'correct' | 'incorrect' | 'unchecked'; nationality: 'correct' | 'incorrect' | 'unchecked'; language: 'correct' | 'incorrect' | 'unchecked' };
-
-    const [userAnswers, setUserAnswers] = useState<UserAnswerRow[]>(
-        Array(countriesExerciseData.length).fill({ country: '', nationality: '', language: '' })
-    );
-    const [validation, setValidation] = useState<ValidationRow[]>(
-        Array(countriesExerciseData.length).fill({ country: 'unchecked', nationality: 'unchecked', language: 'unchecked' })
-    );
-
-    const handleInputChange = (index: number, field: keyof UserAnswerRow, value: string) => {
-        const newAnswers = [...userAnswers];
-        newAnswers[index] = { ...newAnswers[index], [field]: value };
-        setUserAnswers(newAnswers);
-
-        if (validation[index][field] !== 'unchecked') {
-            const newValidation = [...validation];
-            newValidation[index] = { ...newValidation[index], [field]: 'unchecked' };
-            setValidation(newValidation);
-        }
-    };
-
-    const handleCheck = () => {
-        let allCorrect = true;
-        const newValidationStatus: ValidationRow[] = [];
-        countriesExerciseData.forEach((correctAnswer, index) => {
-            const userAnswer = userAnswers[index] || {};
-            const isCountryCorrect = (userAnswer.country || '').trim().toLowerCase() === correctAnswer.country.toLowerCase();
-            const isNationalityCorrect = (userAnswer.nationality || '').trim().toLowerCase() === correctAnswer.nationality.toLowerCase();
-            const isLanguageCorrect = (userAnswer.language || '').trim().toLowerCase() === correctAnswer.language.toLowerCase();
-            
-            newValidationStatus[index] = {
-                country: isCountryCorrect ? 'correct' : 'incorrect',
-                nationality: isNationalityCorrect ? 'correct' : 'incorrect',
-                language: isLanguageCorrect ? 'correct' : 'incorrect',
-            };
-
-            if (!isCountryCorrect || !isNationalityCorrect || !isLanguageCorrect) allCorrect = false;
-        });
-
-        setValidation(newValidationStatus);
-
-        if (allCorrect) {
-            toast({ title: "¡Excelente!", description: "Todas tus respuestas son correctas." });
-        } else {
-            toast({ variant: 'destructive', title: "Algunas respuestas son incorrectas" });
-        }
-    };
-    
-    const getInputClass = (status?: 'correct' | 'incorrect' | 'unchecked') => {
-        if (status === 'correct') return 'border-green-500 focus-visible:ring-green-500';
-        if (status === 'incorrect') return 'border-destructive focus-visible:ring-destructive';
-        return '';
-    };
-
-    const isTableFilled = useMemo(() => {
-        return userAnswers.every(row => 
-            row.country.trim() !== '' && 
-            row.nationality.trim() !== '' && 
-            row.language.trim() !== ''
-        );
-    }, [userAnswers]);
-
-    return (
-        <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-            <CardHeader>
-                <CardTitle>Países y Nacionalidades</CardTitle>
-                <CardDescription>Completa la tabla traduciendo la información al inglés.</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <div className="overflow-x-auto">
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead className="font-bold">PAISES</TableHead>
-                                <TableHead className="font-bold">COUNTRY</TableHead>
-                                <TableHead className="font-bold">NATIONALITY</TableHead>
-                                <TableHead className="font-bold">LANGUAGE</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {countriesExerciseData.map((item, index) => (
-                                <TableRow key={index}>
-                                    <TableCell className="font-medium">{item.pais}</TableCell>
-                                    <TableCell>
-                                        <Input 
-                                            value={userAnswers[index].country} 
-                                            onChange={e => handleInputChange(index, 'country', e.target.value)} 
-                                            className={cn(getInputClass(validation[index].country))} 
-                                            placeholder="..."
-                                            autoComplete="off"
-                                        />
-                                    </TableCell>
-                                    <TableCell>
-                                        <Input 
-                                            value={userAnswers[index].nationality} 
-                                            onChange={e => handleInputChange(index, 'nationality', e.target.value)} 
-                                            className={cn(getInputClass(validation[index].nationality))} 
-                                            placeholder="..."
-                                            autoComplete="off"
-                                        />
-                                    </TableCell>
-                                    <TableCell>
-                                        <Input 
-                                            value={userAnswers[index].language} 
-                                            onChange={e => handleInputChange(index, 'language', e.target.value)} 
-                                            className={cn(getInputClass(validation[index].language))} 
-                                            placeholder="..."
-                                            autoComplete="off"
-                                        />
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </div>
-            </CardContent>
-            <CardFooter className="flex justify-between items-center mt-4">
-                <Button onClick={handleCheck} className="bg-primary hover:bg-primary/90 text-primary-foreground">Verificar Tabla</Button>
-                {isTableFilled && (
-                    <Button onClick={onComplete} className="bg-primary hover:bg-primary/90 text-primary-foreground">
-                        Terminar Intro 2
-                    </Button>
-                )}
-            </CardFooter>
-        </Card>
-    );
+type Topic = {
+  key: string;
+  name: string;
+  icon: React.ElementType;
+  status: 'completed' | 'active' | 'locked';
 };
+
+const progressStorageVersion = "english_intro2_path_v9_stable";
 
 export default function EnglishIntro2Page() {
     const { t } = useTranslation();
@@ -728,6 +679,7 @@ export default function EnglishIntro2Page() {
     const [selectedTopic, setSelectedTopic] = useState<string>('');
     const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
     const [isClient, setIsClient] = useState(false);
+    const [initialLoadComplete, setInitialLoadComplete] = useState(false);
 
     useEffect(() => {
         setIsClient(true);
@@ -742,7 +694,7 @@ export default function EnglishIntro2Page() {
     const timeImage = PlaceHolderImages.find(p => p.id === 'telling-time');
 
     useEffect(() => {
-        if (!isClient || isUserLoading || isProfileLoading) return;
+        if (!isClient || isUserLoading || isProfileLoading || initialLoadComplete) return;
         
         let path = initialLearningPath.map(item => ({...item}));
 
@@ -758,12 +710,11 @@ export default function EnglishIntro2Page() {
         }
         
         setLearningPath(path);
-        if (!selectedTopic) {
-            const firstActive = path.find(p => p.status === 'active');
-            setSelectedTopic(firstActive?.key || path[0].key);
-        }
+        const firstActive = path.find(p => p.status === 'active');
+        setSelectedTopic(firstActive?.key || path[0].key);
+        setInitialLoadComplete(true);
 
-    }, [isAdmin, initialLearningPath, studentProfile, isUserLoading, isProfileLoading, t, isClient, selectedTopic]);
+    }, [isAdmin, initialLearningPath, studentProfile, isUserLoading, isProfileLoading, t, isClient, initialLoadComplete]);
 
     const progress = useMemo(() => {
         const completedTopics = learningPath.filter(t => t.status === 'completed').length;
@@ -794,13 +745,17 @@ export default function EnglishIntro2Page() {
                 if (currentIndex + 1 < newPath.length && newPath[currentIndex + 1].status === 'locked') {
                     newPath[currentIndex + 1].status = 'active';
                     setSelectedTopic(newPath[currentIndex + 1].key);
+                    toast({
+                        title: "¡Tema desbloqueado!",
+                        description: `Ahora puedes continuar con el siguiente tema.`,
+                    });
                 }
             }
             return newPath;
         });
         
         setTopicToComplete(null);
-    }, [topicToComplete]);
+    }, [topicToComplete, toast]);
 
     const handleTopicSelect = (topicKey: string) => {
         const topic = learningPath.find((t) => t.key === topicKey);
@@ -809,17 +764,16 @@ export default function EnglishIntro2Page() {
             return;
         }
         setSelectedTopic(topicKey);
+    };
 
-        const viewOnlyTopics = ['tip', 'greetings', 'farewells', 'time'];
-        if (viewOnlyTopics.includes(topicKey)) {
-            setTopicToComplete(topicKey);
-        }
+    const handleTopicComplete = (key: string) => {
+        setTopicToComplete(key);
     };
     
     const renderContent = () => {
         switch (selectedTopic) {
-          case 'tip': return <TipContent />;
-          case 'mixed1': return <SimpleExercise title="Ejercicios Mixtos 1" exerciseData={mixedExercise1Data} onComplete={() => setTopicToComplete('mixed1')} />;
+          case 'tip': return <TipContent onComplete={() => handleTopicComplete('tip')} />;
+          case 'mixed1': return <SimpleExercise title="Ejercicios Mixtos 1" exerciseData={mixedExercise1Data} onComplete={() => handleTopicComplete('mixed1')} />;
           case 'greetings':
             return (
               <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
@@ -845,6 +799,9 @@ export default function EnglishIntro2Page() {
                     </TableBody>
                   </Table>
                 </CardContent>
+                <CardFooter>
+                    <Button onClick={() => handleTopicComplete('greetings')} className="w-full sm:w-auto">Avanzar</Button>
+                </CardFooter>
               </Card>
             );
           case 'farewells':
@@ -872,11 +829,14 @@ export default function EnglishIntro2Page() {
                     </TableBody>
                   </Table>
                 </CardContent>
+                <CardFooter>
+                    <Button onClick={() => handleTopicComplete('farewells')} className="w-full sm:w-auto">Avanzar</Button>
+                </CardFooter>
               </Card>
             );
           case 'memory':
             return <MemoryGame data={[...greetingsData.slice(0, 5), ...farewellsData.slice(0, 5)]} onComplete={() => handleTopicComplete('memory')} />;
-          case 'mixed2': return <SimpleExercise title="Ejercicios Mixtos 2" exerciseData={mixedExercise2Data} onComplete={() => setTopicToComplete('mixed2')} />;
+          case 'mixed2': return <SimpleExercise title="Ejercicios Mixtos 2" exerciseData={mixedExercise2Data} onComplete={() => handleTopicComplete('mixed2')} />;
           case 'time':
             return (
               <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
@@ -935,10 +895,13 @@ export default function EnglishIntro2Page() {
                       </div>
                   </div>
                 </CardContent>
+                <CardFooter>
+                    <Button onClick={() => handleTopicComplete('time')} className="w-full sm:w-auto">Avanzar</Button>
+                </CardFooter>
               </Card>
             );
-          case 'time-exercise': return <TimeExercise onComplete={() => setTopicToComplete('time-exercise')} />;
-          case 'countries': return <CountriesExercise onComplete={() => setTopicToComplete('countries')} />;
+          case 'time-exercise': return <TimeExercise onComplete={() => handleTopicComplete('time-exercise')} />;
+          case 'countries': return <CountriesExercise onComplete={() => handleTopicComplete('countries')} />;
           default:
             return (
                 <Card className="shadow-soft rounded-lg border-2 border-brand-purple min-h-[500px]">
