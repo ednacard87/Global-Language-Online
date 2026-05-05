@@ -35,7 +35,6 @@ import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { getEnglishIntro2PathData, type EnglishIntro2PathItem } from '@/lib/course-data';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 
@@ -47,7 +46,7 @@ const ICONS = {
   completed: CheckCircle,
 };
 
-const progressStorageVersion = "english_intro2_path_v9";
+const progressStorageVersion = "english_intro2_path_v9_stable";
 
 const greetingsData = [
     { spanish: 'Hola', english: 'Hello' },
@@ -89,21 +88,12 @@ const timeExerciseData = [
 ];
 
 const countriesExerciseData = [
-    { pais: 'Canadá', country: 'Canada', nationality: 'Canadian', language: 'English' },
-    { pais: 'Estados Unidos', country: 'United States', nationality: 'American', language: 'English' },
-    { pais: 'México', country: 'Mexico', nationality: 'Mexican', language: 'Spanish' },
-    { pais: 'Colombia', country: 'Colombia', nationality: 'Colombian', language: 'Spanish' },
-    { pais: 'Perú', country: 'Peru', nationality: 'Peruvian', language: 'Spanish' },
-    { pais: 'Brasil', country: 'Brazil', nationality: 'Brazilian', language: 'Portuguese' },
-    { pais: 'Portugal', country: 'Portugal', nationality: 'Portuguese', language: 'Portuguese' },
-    { pais: 'España', country: 'Spain', nationality: 'Spanish', language: 'Spanish' },
-    { pais: 'Francia', country: 'France', nationality: 'French', language: 'French' },
-    { pais: 'Italia', country: 'Italy', nationality: 'Italian', language: 'Italian' },
-    { pais: 'Rusia', country: 'Russia', nationality: 'Russian', language: 'Russian' },
-    { pais: 'China', country: 'China', nationality: 'Chinese', language: 'Chinese' },
-    { pais: 'Australia', country: 'Australia', nationality: 'Australian', language: 'English' },
-    { pais: 'Holanda', country: 'Netherlands', nationality: 'Dutch', language: 'Dutch' },
-    { pais: 'Venezuela', country: 'Venezuela', nationality: 'Venezuelan', language: 'Spanish' },
+    { pais: 'Estados Unidos', country: 'United States', nationality: 'American' },
+    { pais: 'Canadá', country: 'Canada', nationality: 'Canadian' },
+    { pais: 'México', country: 'Mexico', nationality: 'Mexican' },
+    { pais: 'Brasil', country: 'Brazil', nationality: 'Brazilian' },
+    { pais: 'Inglaterra', country: 'England', nationality: 'English' },
+    { pais: 'Francia', country: 'France', nationality: 'French' },
 ];
 
 const mixedExercise1Data = [
@@ -352,8 +342,6 @@ const MemoryGame = ({ data, onComplete }: { data: { spanish: string; english: st
         </Card>
     );
 };
-
-type ValidationStatus = 'correct' | 'incorrect' | 'unchecked';
 
 const CountriesExercise = ({ onComplete }: { onComplete: () => void }) => {
     const { t } = useTranslation();
@@ -659,15 +647,6 @@ const TimeExercise = ({ onComplete }: { onComplete: () => void }) => {
         </Card>
     );
 };
-
-type Topic = {
-  key: string;
-  name: string;
-  icon: React.ElementType;
-  status: 'completed' | 'active' | 'locked';
-};
-
-const progressStorageVersion = "english_intro2_path_v9_stable";
 
 export default function EnglishIntro2Page() {
     const { t } = useTranslation();
