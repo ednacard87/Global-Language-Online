@@ -122,7 +122,7 @@ const mixedExercisesData = [
         }
     },
     {
-        spanish: "él va a comprar una casa nueva",
+        spanish: "él va a comprar una house nueva",
         answers: {
             affirmative: ["He is going to buy a new house", "He's going to buy a new house"],
             negative: ["He is not going to buy a new house", "He isn't going to buy a new house", "He's not going to buy a new house"],
@@ -457,7 +457,7 @@ export default function BeGoingToPage() {
                                 <div className="p-3 bg-muted rounded-lg">He/She/It <strong>is</strong></div>
                             </CardContent>
                             <CardFooter><Button onClick={() => handleTopicComplete('grammar')}>Entendido</Button></CardFooter>
-                        </div>
+                        </Card>
                     </div>
                 );
             case 'positive-ex1':
