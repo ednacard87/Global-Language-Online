@@ -12,7 +12,7 @@ import {
   CheckCircle,
   Trophy,
   Loader2,
-  ChevronRight,
+  ArrowRight,
   Lightbulb,
 } from 'lucide-react';
 import { DashboardHeader } from '@/components/dashboard/header';
@@ -110,6 +110,10 @@ export default function BeGoingToPage() {
     const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
     const [initialLoadComplete, setInitialLoadComplete] = useState(false);
 
+    // Final Vocabulary Exercise State
+    const [finalVocabAnswers, setFinalVocabAnswers] = useState<Record<number, string>>({});
+    const [finalVocabValidation, setFinalVocabValidation] = useState<Record<number, 'correct' | 'incorrect' | 'unchecked'>>({});
+
     const studentDocRef = useMemoFirebase(() => (user ? doc(firestore, 'students', user.uid) : null), [firestore, user]);
     const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{ role?: string; lessonProgress?: any; progress?: any }>(studentDocRef);
 
@@ -201,6 +205,47 @@ export default function BeGoingToPage() {
         }
     };
 
+    // Final Vocab Logic
+    const handleFinalVocabInputChange = (index: number, value: string) => {
+        setFinalVocabAnswers(prev => ({ ...prev, [index]: value }));
+        if (finalVocabValidation[index] !== 'unchecked') {
+            setFinalVocabValidation(prev => ({ ...prev, [index]: 'unchecked' }));
+        }
+    };
+
+    const handleCheckFinalVocab = () => {
+        let allCorrect = true;
+        const newValidation: Record<number, 'correct' | 'incorrect' | 'unchecked'> = {};
+        
+        plansVocab.forEach((item, index) => {
+            const userAnswer = (finalVocabAnswers[index] || '').trim().toLowerCase().replace(/[.]/g, '');
+            const correctAnswer = item.english.toLowerCase().replace(/[.]/g, '');
+            const isCorrect = userAnswer === correctAnswer;
+            if (!isCorrect) allCorrect = false;
+            newValidation[index] = isCorrect ? 'correct' : 'incorrect';
+        });
+
+        setFinalVocabValidation(newValidation);
+
+        if (allCorrect) {
+            toast({ title: "¡Excelente!", description: "Has traducido todo correctamente." });
+            handleTopicComplete('final_vocab');
+        } else {
+            toast({
+                variant: "destructive",
+                title: "Algunas respuestas son incorrectas",
+                description: "Revisa los campos en rojo."
+            });
+        }
+    };
+
+    const getFinalVocabInputClass = (index: number) => {
+        const status = finalVocabValidation[index];
+        if (status === 'correct') return 'border-green-500 focus-visible:ring-green-500';
+        if (status === 'incorrect') return 'border-destructive focus-visible:ring-destructive';
+        return '';
+    };
+
     const renderContent = () => {
         switch (selectedTopic) {
             case 'vocabulary':
@@ -272,11 +317,33 @@ export default function BeGoingToPage() {
             case 'final_vocab':
                 return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-                        <CardHeader><CardTitle>Vocabulario Final</CardTitle></CardHeader>
+                        <CardHeader>
+                            <CardTitle>Vocabulario Final</CardTitle>
+                            <CardDescription>Traduce los planes al inglés.</CardDescription>
+                        </CardHeader>
                         <CardContent>
-                            <p className="text-center text-xl font-bold py-12">¡Has completado el repaso de vocabulario!</p>
+                            <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-lg">
+                                <div className="font-bold p-3 bg-muted rounded-lg text-left">Español</div>
+                                <div className="font-bold p-3 bg-muted rounded-lg text-left">Inglés</div>
+                                {plansVocab.map((item, index) => (
+                                    <React.Fragment key={index}>
+                                        <div className="p-3 bg-card border rounded-lg flex items-center">{item.spanish}</div>
+                                        <div className="p-3 bg-card border rounded-lg flex items-center">
+                                            <Input
+                                                value={finalVocabAnswers[index] || ''}
+                                                onChange={(e) => handleFinalVocabInputChange(index, e.target.value)}
+                                                className={cn(getFinalVocabInputClass(index))}
+                                                placeholder="Escribe la traducción..."
+                                                autoComplete="off"
+                                            />
+                                        </div>
+                                    </React.Fragment>
+                                ))}
+                            </div>
                         </CardContent>
-                        <CardFooter className="justify-center"><Button onClick={() => handleTopicComplete('final_vocab')}>Finalizar Lección</Button></CardFooter>
+                        <CardFooter className="justify-center">
+                            <Button onClick={handleCheckFinalVocab}>Verificar Vocabulario</Button>
+                        </CardFooter>
                     </Card>
                 );
             default:
