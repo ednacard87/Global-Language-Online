@@ -119,7 +119,6 @@ export default function BeGoingToPage() {
         { key: 'vocabulary', name: 'Vocabulario', icon: BookOpen, status: 'active' },
         { key: 'grammar', name: 'Gramatica', icon: GraduationCap, status: 'locked' },
         { key: 'exercise1', name: 'Ejercicio 1', icon: PenSquare, status: 'locked' },
-        { key: 'wordsearch', name: 'Sopa de Letras', icon: Gamepad2, status: 'locked' },
         { key: 'mixed', name: 'Ejercicios Mixtos', icon: PenSquare, status: 'locked' },
         { key: 'reading', name: 'Lectura', icon: BookOpen, status: 'locked' },
         { key: 'final_vocab', name: 'Vocabulario Final', icon: BookOpen, status: 'locked' },
