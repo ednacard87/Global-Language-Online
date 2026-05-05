@@ -60,8 +60,8 @@ const exercise1PositiveData = [
 const exercise1NegativeData = [
     { spanish: "Yo no voy a aprender a cocinar.", answer: ["I am not going to learn to cook", "I'm not going to learn to cook"] },
     { spanish: "Tú no vas a ver una película.", answer: ["You are not going to watch a movie", "You're not going to watch a movie", "You aren't going to watch a movie"] },
-    { spanish: "Él no va a hacer ejercicio.", answer: ["He is not going to do exercise", "He's not going to do exercise", "He isn't going to do exercise"] },
-    { spanish: "Nosotros no vamos a limpiar la habitación.", answer: ["We are not going to clean the room", "We're not going to clean the room", "We aren't going to clean the room"] },
+    { spanish: "Él no va a hacer ejercicio.", answer: ["He is not going to do exercise", "He's going to do exercise", "He isn't going to do exercise"] },
+    { spanish: "Nosotros no vamos a limpiar la habitación.", answer: ["We are not going to clean the room", "We're going to clean the room", "We aren't going to clean the room"] },
 ];
 
 const exercise1InterrogativeData = [
@@ -136,12 +136,12 @@ const mixedExercisesData = [
 
 const readingData = {
     title: "Weekend Plans",
-    content: "Next Saturday, my family and I are going to have a picnic in the park. My mom is going to cook some sandwiches, and my dad is going to buy some juice. My sister is going to bring her football, so we are going to play after lunch. We are going to have a lot of fun together!",
+    content: "Next Saturday, my family and I are going to have a picnic in the park. My mom is going to cook some sandwiches, and my dad is going to buy some juice. My sister is going to bring her ball, so we are going to play after lunch. We are going to have a lot of fun together!",
     questions: [
         { id: 'q1', question: "What is the family going to do next Saturday?", answers: ["have a picnic", "a picnic", "have a picnic in the park"] },
         { id: 'q2', question: "Who is going to cook sandwiches?", answers: ["my mom", "mom"] },
         { id: 'q3', question: "What is the dad going to buy?", answers: ["juice", "some juice"] },
-        { id: 'q4', question: "What are they going to do after lunch?", answers: ["play football", "play", "play with a football"] },
+        { id: 'q4', question: "What are they going to do after lunch?", answers: ["play ball", "play", "play with a ball"] },
     ]
 };
 
@@ -458,8 +458,7 @@ export default function BeGoingToPage() {
                                 <div className="p-3 bg-muted rounded-lg">He/She/It <strong>is</strong></div>
                             </CardContent>
                             <CardFooter><Button onClick={() => handleTopicComplete('grammar')}>Entendido</Button></CardFooter>
-                        </Card>
-                    </div>
+                        </div>
                 );
             case 'positive-ex1':
                 return <SingleFormExercise key="ex1-pos" onComplete={() => handleTopicComplete('positive-ex1')} exerciseData={exercise1PositiveData} title="Ejercicio 1: Forma Positiva" description="Traduce las frases a su forma afirmativa usando 'be going to'." formType="affirmative" />;
