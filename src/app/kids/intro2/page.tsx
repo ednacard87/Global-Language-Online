@@ -48,7 +48,7 @@ const ICONS = {
   completed: CheckCircle,
 };
 
-const progressStorageVersion = "kids_intro2_path_v14_stable";
+const progressStorageVersion = "kids_intro2_path_v15_stable";
 
 const greetingsData = [
     { spanish: 'Hola', english: 'Hello' },
@@ -357,8 +357,6 @@ const MemoryGame = ({ data, onComplete }: { data: { spanish: string; english: st
         </Card>
     );
 };
-
-type ValidationStatus = 'correct' | 'incorrect' | 'unchecked';
 
 const TimeContent = ({ onComplete }: { onComplete: () => void }) => {
     const timeImage = PlaceHolderImages.find(p => p.id === 'telling-time');
@@ -761,20 +759,23 @@ export default function KidsIntro2Page() {
             status: index === 0 ? 'active' : 'locked',
         }));
 
+        let savedSelectedTopic = '';
+
         if (isAdmin) {
             path.forEach(topic => { topic.status = 'completed' });
         } else if (studentProfile?.lessonProgress?.[progressStorageVersion]) {
-            const savedStatuses = studentProfile.lessonProgress[progressStorageVersion];
+            const savedData = studentProfile.lessonProgress[progressStorageVersion];
             path.forEach(item => {
-                if (savedStatuses[item.key]) {
-                    item.status = savedStatuses[item.key];
+                if (savedData[item.key]) {
+                    item.status = savedData[item.key];
                 }
             });
+            savedSelectedTopic = savedData.lastSelectedTopic || '';
         }
         
         setLearningPath(path as KidsIntro2PathItem[]);
         const firstActive = path.find(p => p.status === 'active');
-        setSelectedTopic(firstActive?.key || path[0].key);
+        setSelectedTopic(savedSelectedTopic || firstActive?.key || path[0].key);
         setInitialLoadComplete(true);
 
     }, [isAdmin, initialLearningPath, studentProfile, isUserLoading, isProfileLoading, isClient, initialLoadComplete]);
@@ -787,13 +788,15 @@ export default function KidsIntro2Page() {
     useEffect(() => {
         if (!isClient || isProfileLoading || !learningPath.length || isAdmin || !studentDocRef) return;
 
-        const statuses = learningPath.reduce((acc, item) => ({ ...acc, [item.key]: item.status }), {});
+        const statuses: Record<string, any> = learningPath.reduce((acc, item) => ({ ...acc, [item.key]: item.status }), {});
+        statuses.lastSelectedTopic = selectedTopic;
+
         updateDocumentNonBlocking(studentDocRef, {
             [`lessonProgress.${progressStorageVersion}`]: statuses,
             'progress.kidsIntro2Progress': progress
         });
         window.dispatchEvent(new CustomEvent('progressUpdated'));
-    }, [learningPath, progress, isAdmin, isClient, studentDocRef, isProfileLoading]);
+    }, [learningPath, progress, isAdmin, isClient, studentDocRef, isProfileLoading, selectedTopic]);
 
     const handleTopicComplete = useCallback((key: string) => {
         setTopicToComplete(key);
