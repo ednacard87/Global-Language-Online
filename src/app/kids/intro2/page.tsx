@@ -196,9 +196,78 @@ const TimeContent = () => {
     const timeImage = PlaceHolderImages.find(p => p.id === 'telling-time');
     return (
         <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-            <CardHeader><CardTitle>La Hora</CardTitle></CardHeader>
-            <CardContent className="flex justify-center">
-                {timeImage && <Image src={timeImage.imageUrl} alt={timeImage.description} width={400} height={400} className="rounded-lg" data-ai-hint={timeImage.imageHint} />}
+            <CardHeader>
+                <CardTitle>La Hora - How to tell the time</CardTitle>
+                <CardDescription>Aprende a decir la hora de forma completa y sencilla.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-8">
+                <div className="flex justify-center">
+                    {timeImage && <Image src={timeImage.imageUrl} alt={timeImage.description} width={450} height={450} className="rounded-lg shadow-md border" data-ai-hint={timeImage.imageHint} />}
+                </div>
+
+                <Separator />
+
+                <div className="space-y-4">
+                    <h3 className="text-2xl font-bold text-primary flex items-center gap-2">
+                        <Clock className="h-6 w-6" />
+                        ¿Cómo funciona?
+                    </h3>
+                    <p className="text-lg">Para decir la hora en inglés, siempre empezamos con la frase <strong>"It is"</strong> o la contracción <strong>"It's"</strong>.</p>
+                    <div className="p-4 bg-muted rounded-lg font-mono text-lg border-l-4 border-primary">
+                        <p>Ejemplo: 8:00 {"=>"} It is eight o'clock.</p>
+                    </div>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-6">
+                    <div className="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-2xl border-2 border-blue-200">
+                        <h4 className="text-xl font-bold text-blue-600 mb-2">Usamos "PAST"</h4>
+                        <p className="text-sm mb-4">Para los minutos del <strong>1 al 30</strong>. Significa "pasadas las...".</p>
+                        <div className="space-y-2 font-mono text-sm">
+                            <p>2:10 {"=>"} Ten <strong>past</strong> two</p>
+                            <p>5:20 {"=>"} Twenty <strong>past</strong> five</p>
+                        </div>
+                    </div>
+                    <div className="bg-orange-50 dark:bg-orange-900/20 p-6 rounded-2xl border-2 border-orange-200">
+                        <h4 className="text-xl font-bold text-orange-600 mb-2">Usamos "TO"</h4>
+                        <p className="text-sm mb-4">Para los minutos del <strong>31 al 59</strong>. Significa "para las...".</p>
+                        <div className="space-y-2 font-mono text-sm">
+                            <p>2:50 {"=>"} Ten <strong>to</strong> three (diez para las tres)</p>
+                            <p>8:40 {"=>"} Twenty <strong>to</strong> nine (veinte para las nueve)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="space-y-4">
+                    <h4 className="text-xl font-bold">Palabras Especiales:</h4>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        <div className="p-3 bg-secondary rounded-xl text-center">
+                            <p className="font-bold text-primary">o'clock</p>
+                            <p className="text-xs text-muted-foreground">En punto (:00)</p>
+                        </div>
+                        <div className="p-3 bg-secondary rounded-xl text-center">
+                            <p className="font-bold text-primary">quarter past</p>
+                            <p className="text-xs text-muted-foreground">Y cuarto (:15)</p>
+                        </div>
+                        <div className="p-3 bg-secondary rounded-xl text-center">
+                            <p className="font-bold text-primary">half past</p>
+                            <p className="text-xs text-muted-foreground">Y media (:30)</p>
+                        </div>
+                        <div className="p-3 bg-secondary rounded-xl text-center">
+                            <p className="font-bold text-primary">quarter to</p>
+                            <p className="text-xs text-muted-foreground">Menos cuarto (:45)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="space-y-4">
+                    <h4 className="text-xl font-bold">Momentos del día (AM / PM):</h4>
+                    <ul className="grid sm:grid-cols-2 gap-2 text-base">
+                        <li className="flex items-center gap-2"><div className="h-2 w-2 rounded-full bg-primary" /> <strong>In the morning:</strong> por la mañana</li>
+                        <li className="flex items-center gap-2"><div className="h-2 w-2 rounded-full bg-primary" /> <strong>In the afternoon:</strong> por la tarde</li>
+                        <li className="flex items-center gap-2"><div className="h-2 w-2 rounded-full bg-primary" /> <strong>In the evening:</strong> por la noche (llegada)</li>
+                        <li className="flex items-center gap-2"><div className="h-2 w-2 rounded-full bg-primary" /> <strong>At night:</strong> por la noche (dormir)</li>
+                    </ul>
+                </div>
             </CardContent>
         </Card>
     );
@@ -496,4 +565,3 @@ export default function KidsIntro2Page() {
         </div>
       );
 }
-
