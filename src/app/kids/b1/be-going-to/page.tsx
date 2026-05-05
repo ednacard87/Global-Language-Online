@@ -72,8 +72,48 @@ const mixedExercisesData = [
             affirmative: ["You are going to eat pizza", "You're going to eat pizza"],
             negative: ["You are not going to eat pizza", "You aren't going to eat pizza"],
             interrogative: ["Are you going to eat pizza?"],
-            shortAffirmative: ["Yes, I am"],
-            shortNegative: ["No, I am not", "No, I'm not"]
+            shortAffirmative: ["Yes, you are", "Yes, I am"],
+            shortNegative: ["No, you are not", "No, you aren't", "No, I am not", "No, I'm not"]
+        }
+    },
+    {
+        spanish: "ella va a visitar a sus abuelos",
+        answers: {
+            affirmative: ["She is going to visit her grandparents", "She's going to visit her grandparents"],
+            negative: ["She is not going to visit her grandparents", "She isn't going to visit her grandparents", "She's not going to visit her grandparents"],
+            interrogative: ["Is she going to visit her grandparents?"],
+            shortAffirmative: ["Yes, she is"],
+            shortNegative: ["No, she is not", "No, she isn't", "No, she's not"]
+        }
+    },
+    {
+        spanish: "nosotros vamos a viajar a europa",
+        answers: {
+            affirmative: ["We are going to travel to Europe", "We're going to travel to Europe"],
+            negative: ["We are not going to travel to Europe", "We aren't going to travel to Europe", "We're not going to travel to Europe"],
+            interrogative: ["Are we going to travel to Europe?"],
+            shortAffirmative: ["Yes, we are"],
+            shortNegative: ["No, we are not", "No, we aren't", "No, we're not"]
+        }
+    },
+    {
+        spanish: "ellos van a estudiar para el examen",
+        answers: {
+            affirmative: ["They are going to study for the exam", "They're going to study for the exam"],
+            negative: ["They are not going to study for the exam", "They aren't going to study for the exam", "They're not going to study for the exam"],
+            interrogative: ["Are they going to study for the exam?"],
+            shortAffirmative: ["Yes, they are"],
+            shortNegative: ["No, they are not", "No, they aren't", "No, they're not"]
+        }
+    },
+    {
+        spanish: "él va a comprar una casa nueva",
+        answers: {
+            affirmative: ["He is going to buy a new house", "He's going to buy a new house"],
+            negative: ["He is not going to buy a new house", "He isn't going to buy a new house", "He's not going to buy a new house"],
+            interrogative: ["Is he going to buy a new house?"],
+            shortAffirmative: ["Yes, he is"],
+            shortNegative: ["No, he is not", "No, he isn't", "No, he's not"]
         }
     }
 ];
