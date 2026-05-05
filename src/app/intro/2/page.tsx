@@ -296,11 +296,7 @@ const MemoryGame = ({ data, onComplete }: { data: { spanish: string; english: st
 
     useEffect(() => {
         if (isGameComplete) {
-            // Give the UI a moment to show the last match
-            const timer = setTimeout(() => {
-                onComplete();
-            }, 500);
-            return () => clearTimeout(timer);
+            onComplete();
         }
     }, [isGameComplete, onComplete]);
 
@@ -361,7 +357,10 @@ const MemoryGame = ({ data, onComplete }: { data: { spanish: string; english: st
     );
 };
 
+type ValidationStatus = 'correct' | 'incorrect' | 'unchecked';
+
 const CountriesExercise = ({ onComplete }: { onComplete: () => void }) => {
+    const { t } = useTranslation();
     const { toast } = useToast();
     type CountryAnswers = { country: string; nationality: string; language: string; };
     type UserAnswers = Record<number, CountryAnswers>;
@@ -472,6 +471,50 @@ const CountriesExercise = ({ onComplete }: { onComplete: () => void }) => {
                 <p className="text-xs text-muted-foreground italic">* Nota: No olvides incluir "The" donde sea necesario (ej: The United States).</p>
                 <Button onClick={handleCheckAnswers}>Verificar</Button>
             </CardFooter>
+        </Card>
+    );
+};
+
+const ReadingExercise = ({ onComplete }: { onComplete: () => void }) => {
+    const [userAnswers, setUserAnswers] = useState<Record<string, string>>({});
+    const [validationStatus, setValidationStatus] = useState<Record<string, ValidationStatus>>({});
+    const { toast } = useToast();
+
+    const handleInputChange = (id: string, value: string) => setUserAnswers(prev => ({ ...prev, [id]: value }));
+
+    const handleCheckReading = () => {
+        const newValidation: Record<string, ValidationStatus> = {};
+        let allCorrect = true;
+        readingData.questions.forEach(q => {
+            const isCorrect = (userAnswers[q.id] || '').trim().toLowerCase() === q.answer.toLowerCase();
+            if (!isCorrect) allCorrect = false;
+            newValidation[q.id] = isCorrect ? 'correct' : 'incorrect';
+        });
+        setValidationStatus(newValidation);
+        if (allCorrect) {
+            toast({ title: '¡Muy bien!', description: 'Has respondido todo correctamente.' });
+            onComplete();
+        } else {
+            toast({ variant: 'destructive', title: 'Algunas respuestas son incorrectas.' });
+        }
+    };
+    
+    return (
+        <Card>
+            <CardHeader><CardTitle>Lectura: {readingData.title}</CardTitle></CardHeader>
+            <CardContent className="space-y-4">
+                <p className="text-lg leading-relaxed bg-muted p-4 rounded-md">{readingData.content}</p>
+                <div className="space-y-4 border-t pt-4">
+                {readingData.questions.map(q => (
+                    <div key={q.id}>
+                        <Label htmlFor={q.id} className="text-base">{q.question}</Label>
+                        <Input id={q.id} value={userAnswers[q.id] || ''} onChange={e => handleInputChange(q.id, e.target.value)}
+                            className={cn('mt-1', validationStatus[q.id] === 'correct' && 'border-green-500', validationStatus[q.id] === 'incorrect' && 'border-destructive')} />
+                    </div>
+                ))}
+                </div>
+            </CardContent>
+            <CardFooter><Button onClick={handleCheckReading}>Verificar Lectura</Button></CardFooter>
         </Card>
     );
 };
@@ -734,6 +777,7 @@ export default function EnglishIntro2Page() {
     const isAdmin = useMemo(() => (user && (studentProfile?.role === 'admin' || user.email === 'ednacard87@gmail.com')), [user, studentProfile]);
     
     const initialLearningPath = useMemo(() => getEnglishIntro2PathData(t), [t]);
+    const memoryGameData = useMemo(() => [...greetingsData.slice(0, 5), ...farewellsData.slice(0, 5)], []);
     const timeImage = PlaceHolderImages.find(p => p.id === 'telling-time');
 
     useEffect(() => {
@@ -787,7 +831,12 @@ export default function EnglishIntro2Page() {
 
                 if (currentIndex + 1 < newPath.length && newPath[currentIndex + 1].status === 'locked') {
                     newPath[currentIndex + 1].status = 'active';
-                    setSelectedTopic(newPath[currentIndex + 1].key);
+                    
+                    // No saltar automáticamente si es el juego de memoria
+                    if (topicToComplete !== 'memory') {
+                        setSelectedTopic(newPath[currentIndex + 1].key);
+                    }
+                    
                     toast({
                         title: "¡Tema desbloqueado!",
                         description: `Ahora puedes continuar con el siguiente tema.`,
@@ -878,7 +927,7 @@ export default function EnglishIntro2Page() {
               </Card>
             );
           case 'memory':
-            return <MemoryGame data={[...greetingsData.slice(0, 5), ...farewellsData.slice(0, 5)]} onComplete={() => handleTopicComplete('memory')} />;
+            return <MemoryGame data={memoryGameData} onComplete={() => handleTopicComplete('memory')} />;
           case 'mixed2': return <SimpleExercise title="Ejercicios Mixtos 2" exerciseData={mixedExercise2Data} onComplete={() => handleTopicComplete('mixed2')} />;
           case 'time':
             return (
