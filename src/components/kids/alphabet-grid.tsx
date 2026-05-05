@@ -18,7 +18,7 @@ export const alphabetWithPronunciation = [
     { letter: 'S', pronunciation: 'es', audioSrc: '/Audio/Alphabet/S.mp3' }, { letter: 'T', pronunciation: 'ti', audioSrc: '/Audio/Alphabet/T.mp3' },
     { letter: 'U', pronunciation: 'iu', audioSrc: '/Audio/Alphabet/U.mp3' },
     { letter: 'V', pronunciation: 'vi', audioSrc: '/Audio/Alphabet/V.mp3' }, { letter: 'W', pronunciation: 'da-bliú', audioSrc: '/Audio/Alphabet/W.mp3' }, { letter: 'X', pronunciation: 'ex', audioSrc: '/Audio/Alphabet/X.mp3' },
-    { letter: 'Y', pronunciation: 'guai', audioSrc: '/Audio/Alphabet/Y.mp3' }, { letter: 'Z', pronunciation: 'si', audioSrc: '/Audio/Alphabet/Z.mp3' }
+    { letter: 'Y', pronunciation: 'guai', audioSrc: '/Audio/Alphabet/Y.mp3' }, { letter: 'Z', pronunciation: 'Zi', audioSrc: '/Audio/Alphabet/Z.mp3' }
 ];
 
 export function AlphabetGrid({ highlightedItem, onHighlight }: { highlightedItem: string | null; onHighlight: (letter: string) => void; }) {

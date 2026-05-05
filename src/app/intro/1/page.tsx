@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo } from "react";
@@ -120,7 +119,7 @@ const alphabetWithPronunciation = [
     { letter: 'S', pronunciation: 'es', audioSrc: '/Audio/Alphabet/S.mp3' }, { letter: 'T', pronunciation: 'ti', audioSrc: '/Audio/Alphabet/T.mp3' },
     { letter: 'U', pronunciation: 'iu', audioSrc: '/Audio/Alphabet/U.mp3' },
     { letter: 'V', pronunciation: 'vi', audioSrc: '/Audio/Alphabet/V.mp3' }, { letter: 'W', pronunciation: 'da-bliú', audioSrc: '/Audio/Alphabet/W.mp3' }, { letter: 'X', pronunciation: 'ex', audioSrc: '/Audio/Alphabet/X.mp3' },
-    { letter: 'Y', pronunciation: 'guai', audioSrc: '/Audio/Alphabet/Y.mp3' }, { letter: 'Z', pronunciation: 'si', audioSrc: '/Audio/Alphabet/Z.mp3' }
+    { letter: 'Y', pronunciation: 'guai', audioSrc: '/Audio/Alphabet/Y.mp3' }, { letter: 'Z', pronunciation: 'Zi', audioSrc: '/Audio/Alphabet/Z.mp3' }
 ];
 
 const numbersWithAudio: { number: string; name: string; audioSrc: string | null; }[] = [
@@ -508,7 +507,7 @@ export default function Intro1Page() {
     
             (exerciseToViewTopicMap[completedTopicKey] || []).forEach(key => {
                 const index = newPath.findIndex(item => item.key === key);
-                if (index !== -1) newPath[index].status = 'completed';
+                if (index !== -1) nPath[index].status = 'completed';
             });
     
             const nextIndex = completedIndex + 1;
@@ -539,8 +538,8 @@ export default function Intro1Page() {
         const newSubPath = [...currentSubPath];
         const currentItemIndex = newSubPath.findIndex(item => item.key === completedTopicKey);
         
-        if (currentItemIndex !== -1 && newSubPath[currentItemIndex].status !== 'completed') {
-            newSubPath[currentItemIndex].status = 'completed';
+        if (currentItemIndex !== -1 && newSubPath[currentIndex].status !== 'completed') {
+            newSubPath[currentIndex].status = 'completed';
     
             const nextSubItemIndex = currentItemIndex + 1;
             if (nextSubItemIndex < newSubPath.length && newSubPath[nextSubItemIndex].status === 'locked') {
@@ -1086,4 +1085,3 @@ export default function Intro1Page() {
     </div>
   );
 }
-    
