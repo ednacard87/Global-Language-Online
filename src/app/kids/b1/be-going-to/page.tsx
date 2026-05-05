@@ -119,7 +119,7 @@ const mixedExercisesData = [
             negative: ["They are not going to study for the exam", "They aren't going to study for the exam", "They're not going to study for the exam"],
             interrogative: ["Are they going to study for the exam?"],
             shortAffirmative: ["Yes, they are"],
-            shortNegative: ["No, they are not", "No, they aren't", "No, they're not"]
+            shortNegative: ["No, they are not", "No, they aren't", "No, we're not"]
         }
     },
     {
@@ -458,7 +458,8 @@ export default function BeGoingToPage() {
                                 <div className="p-3 bg-muted rounded-lg">He/She/It <strong>is</strong></div>
                             </CardContent>
                             <CardFooter><Button onClick={() => handleTopicComplete('grammar')}>Entendido</Button></CardFooter>
-                        </div>
+                        </Card>
+                    </div>
                 );
             case 'positive-ex1':
                 return <SingleFormExercise key="ex1-pos" onComplete={() => handleTopicComplete('positive-ex1')} exerciseData={exercise1PositiveData} title="Ejercicio 1: Forma Positiva" description="Traduce las frases a su forma afirmativa usando 'be going to'." formType="affirmative" />;
