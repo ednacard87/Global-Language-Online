@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
@@ -118,7 +119,7 @@ const mixed1Vocab = {
 };
 
 const mixedExercise2Data = [
-    { spanish: '1- ¿ERES SU MAMÁ (DE ELLA)?', answer: ["are you her mother?", "are you her mom?"] },
+    { spanish: '1- ¿ERES SU MAMÁ (DE ELLA) ?:', answer: ["are you her mother?", "are you her mom?"] },
     { spanish: '2- ELLA NO ES ALTA (TALL)', answer: ["she is not tall", "she's not tall", "she isn't tall"] },
     { spanish: '3- ÉL ES JHON', answer: ["he is jhon", "he's jhon", "he is john", "he's john"] },
     { spanish: '4- NOSOTROS NO ESTAMOS OCUPADOS (BUSY)', answer: ["we are not busy", "we're not busy", "we aren't busy"] },
@@ -703,36 +704,66 @@ const CountriesExercise = ({ onComplete }: { onComplete: () => void }) => {
 const SimpleExercise = ({ title, exerciseData, onComplete, vocabulary }: { title: string; exerciseData: { spanish: string, answer: string[] }[], onComplete: () => void, vocabulary?: Record<string, string> }) => {
     const { toast } = useToast();
     const [currentIndex, setCurrentIndex] = useState(0);
-    const [userAnswer, setUserAnswer] = useState('');
-    const [validation, setValidation] = useState<'correct' | 'incorrect' | 'unchecked'>('unchecked');
-    const [completedCount, setCompletedCount] = useState(0);
+    const [userAnswers, setUserAnswers] = useState<string[]>(Array(exerciseData.length).fill(''));
+    const [validationStates, setValidationStates] = useState<('correct' | 'incorrect' | 'unchecked')[]>(Array(exerciseData.length).fill('unchecked'));
+    const [showCompletionMessage, setShowCompletionMessage] = useState(false);
 
     const currentPrompt = exerciseData[currentIndex];
 
+    const handleAnswerChange = (value: string) => {
+        const newAnswers = [...userAnswers];
+        newAnswers[currentIndex] = value;
+        setUserAnswers(newAnswers);
+
+        if (validationStates[currentIndex] !== 'unchecked') {
+            const newValidationStates = [...validationStates];
+            newValidationStates[currentIndex] = 'unchecked';
+            setValidationStates(newValidationStates);
+        }
+    };
+    
     const handleCheck = () => {
-        const userAnswerClean = userAnswer.trim().toLowerCase().replace(/[.?,]/g, '');
-        const isCorrect = currentPrompt.answer.some(ans => ans.toLowerCase().replace(/[.?,]/g, '') === userAnswerClean);
-        
-        setValidation(isCorrect ? 'correct' : 'incorrect');
+        const userAnswer = userAnswers[currentIndex].trim().toLowerCase().replace(/[.?,]/g, '');
+        const isCorrect = currentPrompt.answer.some(ans => ans.toLowerCase().replace(/[.?,]/g, '') === userAnswer);
+
+        const newValidationStates = [...validationStates];
+        newValidationStates[currentIndex] = isCorrect ? 'correct' : 'incorrect';
+        setValidationStates(newValidationStates);
+
         if (isCorrect) {
             toast({ title: '¡Correcto!' });
-            if(validation !== 'correct') {
-                setCompletedCount(c => c + 1);
-            }
         } else {
             toast({ variant: 'destructive', title: 'Incorrecto' });
         }
     };
     
     const handleNext = () => {
-        if(currentIndex < exerciseData.length - 1) {
-            setCurrentIndex(i => i + 1);
-            setUserAnswer('');
-            setValidation('unchecked');
+        if (currentIndex < exerciseData.length - 1) {
+            setCurrentIndex(prev => prev + 1);
         } else {
-            onComplete();
+            const allCorrect = validationStates.every(s => s === 'correct');
+            if (allCorrect) {
+                setShowCompletionMessage(true);
+                onComplete();
+            } else {
+                toast({ variant: 'destructive', title: 'Revisa tus respuestas', description: 'Debes completar todos los ejercicios correctamente.' });
+            }
         }
     };
+
+    const completedCount = validationStates.filter(s => s === 'correct').length;
+    const progress = (completedCount / exerciseData.length) * 100;
+
+    if (showCompletionMessage) {
+        return (
+            <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                <CardContent className="p-6 text-center flex flex-col items-center justify-center min-h-[300px]">
+                    <Trophy className="h-16 w-16 text-yellow-400 mb-4" />
+                    <h2 className="text-3xl font-bold">¡Ejercicio Completado!</h2>
+                </CardContent>
+            </Card>
+        );
+    }
 
     return (
          <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
@@ -740,7 +771,24 @@ const SimpleExercise = ({ title, exerciseData, onComplete, vocabulary }: { title
                 <div className="flex justify-between items-start">
                     <div>
                         <CardTitle>{title}</CardTitle>
-                        <Progress value={(completedCount / exerciseData.length) * 100} className="mt-2 h-2" />
+                        <div className="flex items-center justify-start flex-wrap gap-2 pt-4">
+                            {exerciseData.map((_, index) => (
+                                <button
+                                    key={index}
+                                    onClick={() => setCurrentIndex(index)}
+                                    className={cn(
+                                        "h-8 w-8 rounded-full flex items-center justify-center font-bold border-2 transition-all",
+                                        currentIndex === index ? "border-primary ring-2 ring-primary" : "border-muted-foreground/50",
+                                        validationStates[index] === 'correct' && 'bg-green-500/20 border-green-500 text-green-700',
+                                        validationStates[index] === 'incorrect' && 'bg-red-500/20 border-destructive text-destructive',
+                                    )}
+                                    aria-label={`Ir al ejercicio ${index + 1}`}
+                                >
+                                    {index + 1}
+                                </button>
+                            ))}
+                        </div>
+                        <Progress value={progress} className="mt-4 h-2" />
                     </div>
                     {vocabulary && (
                         <Popover>
@@ -776,17 +824,17 @@ const SimpleExercise = ({ title, exerciseData, onComplete, vocabulary }: { title
                     <Label htmlFor="answer-input">Tu respuesta:</Label>
                     <Input 
                         id="answer-input"
-                        value={userAnswer} 
-                        onChange={e => setUserAnswer(e.target.value)} 
+                        value={userAnswers[currentIndex]} 
+                        onChange={e => handleAnswerChange(e.target.value)} 
                         onKeyDown={e => e.key === 'Enter' && handleCheck()}
-                        className={cn("text-lg", validation === 'correct' && 'border-green-500 focus-visible:ring-green-500', validation === 'incorrect' && 'border-destructive focus-visible:ring-destructive')} 
+                        className={cn("text-lg", validationStates[currentIndex] === 'correct' && 'border-green-500 focus-visible:ring-green-500', validationStates[currentIndex] === 'incorrect' && 'border-destructive focus-visible:ring-destructive')} 
                         autoComplete="off"
                     />
                 </div>
             </CardContent>
             <CardFooter className="justify-between">
                 <Button onClick={handleCheck}>Verificar</Button>
-                <Button onClick={handleNext} disabled={validation !== 'correct'}>
+                <Button onClick={handleNext} disabled={validationStates[currentIndex] !== 'correct'}>
                     {currentIndex === exerciseData.length - 1 ? 'Finalizar' : 'Siguiente'}
                     <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
