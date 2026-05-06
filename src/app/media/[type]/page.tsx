@@ -35,7 +35,7 @@ const mediaContent = {
   music: { 
     title: "Music Experience", 
     description: "Music is a great way to learn rhythm and common expressions.",
-    url: "https://www.youtube.com/embed/3hiLTqaIG-g",
+    url: "https://www.youtube.com/embed/60ItHLz5WEA",
     icon: Music,
     progressKey: 'progress_quick_music'
   },
@@ -45,6 +45,13 @@ const mediaContent = {
     url: "https://www.youtube.com/embed/tmORJDin_10",
     icon: CaseSensitive,
     progressKey: 'progress_quick_vocabulary'
+  },
+  kids_music: {
+    title: "Kids Music Adventure",
+    description: "Fun songs to help you learn English while you sing and dance!",
+    url: "https://www.youtube.com/embed/3hiLTqaIG-g",
+    icon: Music,
+    progressKey: 'progress_kids_quick_music'
   },
   // Spanish Content
   es_podcast: {

@@ -208,6 +208,8 @@ export default function KidsCoursePage() {
   const introCourse = useMemo(() => courses.find(c => c.href === "/kids/intro"), [courses]);
   const otherCourses = useMemo(() => courses.filter(c => c.href !== "/kids/intro"), [courses]);
 
+  const adventureMascotImage = PlaceHolderImages.find(p => p.id === 'kids-adventure-mascot');
+
   if (isUserLoading || isProfileLoading || isRedirecting) {
     return (
         <div className="flex h-screen items-center justify-center">
@@ -263,7 +265,7 @@ export default function KidsCoursePage() {
                         </div>
                         <NeonCard icon={Ear} title="LISTENING" href="/listening-practice" />
                         <NeonCard icon={BookOpen} title="READING" href="/reading-exercise" />
-                        <NeonCard icon={Music} title="Music" href="/media/music" />
+                        <NeonCard icon={Music} title="Music" href="/media/kids_music" />
                         <NeonCard>
                             {(studentProfile?.currentStreak || 0) > 1 ? (
                                 <div className="h-12 w-12 mx-auto flex items-center justify-center">
@@ -338,7 +340,7 @@ export default function KidsCoursePage() {
                     </div>
                     <NeonCard icon={Ear} title="LISTENING" href="/listening-practice" />
                     <NeonCard icon={BookOpen} title="READING" href="/reading-exercise" />
-                    <NeonCard icon={Music} title="Music" href="/media/music" />
+                    <NeonCard icon={Music} title="Music" href="/media/kids_music" />
                     <NeonCard>
                         {(studentProfile?.currentStreak || 0) > 1 ? (
                             <div className="h-12 w-12 mx-auto flex items-center justify-center">
