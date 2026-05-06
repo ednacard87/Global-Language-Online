@@ -6,14 +6,14 @@ import Image from "next/image";
 import { DashboardHeader } from "@/components/dashboard/header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { BookOpen, CheckCircle, Lock, Lightbulb, Volume2, Loader2, Bomb, Trophy } from "lucide-react";
+import { BookOpen, CheckCircle, Lock, Lightbulb, Volume2, Loader2, Trophy } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SpellingExercise, type SpellingExerciseKey } from "@/components/dashboard/spelling-exercise";
 import { TranslationExercise } from "@/components/dashboard/translation-exercise";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { useUser, useFirestore, addDocumentNonBlocking, updateDocumentNonBlocking, useDoc, useMemoFirebase } from "@/firebase";
-import { collection, doc } from 'firebase/firestore';
+import { useUser, useFirestore, updateDocumentNonBlocking, useDoc, useMemoFirebase } from "@/firebase";
+import { doc } from 'firebase/firestore';
 import { useTranslation } from "@/context/language-context";
 import { getIntro1PathData, getAbcSpellingPathData, getNumbersSpellingPathData } from "@/lib/course-data";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
@@ -305,19 +305,14 @@ interface Student {
     progress?: Record<string, number>;
 }
 
-// By changing this version, we can force a progress reset for all users
-// if there's a breaking change in the path structure.
 const progressStorageVersion = "_v1_sequential_admin";
 
 export default function Intro1Page() {
     const { t } = useTranslation();
     const { toast } = useToast();
-    const [intro1Path, setIntro1Path] = useState<PathItem[]>([]);
     const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
     const [selectedTopicKey, setSelectedTopicKey] = useState<string | null>(null);
     
-    const [abcSpellingPath, setAbcSpellingPath] = useState<SpellingPathItem[]>([]);
-    const [numbersSpellingPath, setNumbersSpellingPath] = useState<SpellingPathItem[]>([]);
     const [selectedSpellingTopic, setSelectedSpellingTopic] = useState<SpellingExerciseKey | null>(null);
     const [showCongratulations, setShowCongratulations] = useState(false);
     
@@ -373,45 +368,46 @@ export default function Intro1Page() {
         setIsClient(true);
     }, []);
 
-    useEffect(() => {
-        if (isProfileLoading || !isClient) return;
+    const intro1Path = useMemo(() => {
+        const defaultPath = getIntro1PathData(t).map(item => ({ ...item, href: '#' } as PathItem));
+        if (!isClient || isProfileLoading) return defaultPath;
+        if (isAdmin) return defaultPath.map(item => ({ ...item, status: 'active' }));
 
-        const initialIntroPath = getIntro1PathData(t);
-        const initialAbcPath = getAbcSpellingPathData(t);
-        const initialNumbersPath = getNumbersSpellingPathData(t);
+        const versionedKey = 'intro1Path' + progressStorageVersion;
+        const savedStatuses = studentProfile?.lessonProgress?.[versionedKey] || {};
+        
+        return defaultPath.map(item => ({
+            ...item,
+            status: (savedStatuses[item.key] || item.status) as 'completed' | 'active' | 'locked'
+        }));
+    }, [t, isAdmin, studentProfile, isProfileLoading, isClient]);
 
-        const loadPath = (storageKey: string, defaultPath: any[]) => {
-            if (isAdmin) {
-                return defaultPath.map(item => ({ ...item, status: 'active' }));
-            }
-            const versionedKey = storageKey + progressStorageVersion;
+    const abcSpellingPath = useMemo(() => {
+        const defaultPath = getAbcSpellingPathData(t);
+        if (!isClient || isProfileLoading) return defaultPath;
+        if (isAdmin) return defaultPath.map(item => ({ ...item, status: 'active' }));
 
-            if (studentProfile?.lessonProgress?.[versionedKey]) {
-                const savedStatuses = studentProfile.lessonProgress[versionedKey];
-                return defaultPath.map(item => ({ ...item, status: savedStatuses[item.key] || item.status }));
-            }
+        const versionedKey = 'abcSpellingPath' + progressStorageVersion;
+        const savedStatuses = studentProfile?.lessonProgress?.[versionedKey] || {};
+        
+        return defaultPath.map(item => ({
+            ...item,
+            status: (savedStatuses[item.key] || item.status) as 'completed' | 'active' | 'locked'
+        }));
+    }, [t, isAdmin, studentProfile, isProfileLoading, isClient]);
 
-            try {
-                const savedStatusJSON = localStorage.getItem(versionedKey);
-                if (savedStatusJSON) {
-                    const savedStatuses = JSON.parse(savedStatusJSON);
-                    return defaultPath.map(item => ({ ...item, status: savedStatuses[item.key] || item.status }));
-                }
-            } catch (e) {
-                console.error(`Failed to load path from ${versionedKey}`, e);
-            }
-            return defaultPath;
-        };
+    const numbersSpellingPath = useMemo(() => {
+        const defaultPath = getNumbersSpellingPathData(t);
+        if (!isClient || isProfileLoading) return defaultPath;
+        if (isAdmin) return defaultPath.map(item => ({ ...item, status: 'active' }));
 
-        setIntro1Path(loadPath('intro1Path', initialIntroPath).map(item => ({ ...item, href: '#' } as PathItem)));
-        setAbcSpellingPath(loadPath('abcSpellingPath', initialAbcPath) as SpellingPathItem[]);
-        setNumbersSpellingPath(loadPath('numbersSpellingPath', initialNumbersPath) as SpellingPathItem[]);
-
-        if (isAdmin) {
-            setSelectedSpellingTopic('femaleNames');
-            return;
-        }
-
+        const versionedKey = 'numbersSpellingPath' + progressStorageVersion;
+        const savedStatuses = studentProfile?.lessonProgress?.[versionedKey] || {};
+        
+        return defaultPath.map(item => ({
+            ...item,
+            status: (savedStatuses[item.key] || item.status) as 'completed' | 'active' | 'locked'
+        }));
     }, [t, isAdmin, studentProfile, isProfileLoading, isClient]);
 
     useEffect(() => {
@@ -419,73 +415,48 @@ export default function Intro1Page() {
         setHighlightedNumber(null);
     }, [selectedTopicKey]);
 
-    useEffect(() => {
-        if (!user || !firestore || !selectedTopicKey) return;
-        if (['abcspelling', 'numbersspelling'].includes(selectedTopicKey) && !selectedSpellingTopic) return;
-        
-        const startTime = Date.now();
-        const studySessionCollection = collection(firestore, 'students', user.uid, 'studySessions');
-    
-        const saveSession = () => {
-          const endTime = Date.now();
-          const durationMinutes = Math.round((endTime - startTime) / 60000);
-    
-          if (durationMinutes >= 1) {
-            const newSession = {
-              studentId: user.uid,
-              startTime: new Date(startTime).toISOString(),
-              endTime: new Date(endTime).toISOString(),
-              durationMinutes: durationMinutes,
-              courseId: 'intro-1',
-              lessonId: selectedSpellingTopic || selectedTopicKey,
-            };
-            addDocumentNonBlocking(studySessionCollection, newSession);
-          }
-        };
-    
-        window.addEventListener('beforeunload', saveSession);
-    
-        return () => {
-          window.removeEventListener('beforeunload', saveSession);
-          saveSession();
-        };
-      }, [user, firestore, selectedTopicKey, selectedSpellingTopic]);
-
     const handleTopicComplete = (completedTopicKey: string) => {
-        setIntro1Path(currentPath => {
-            const newPath = [...currentPath];
-            const completedIndex = newPath.findIndex(item => item.key === completedTopicKey);
-            
-            if (completedIndex === -1 || newPath[completedIndex].status === 'completed') {
-                return currentPath;
-            }
-    
-            newPath[completedIndex].status = 'completed';
-    
-            const exerciseToViewTopicMap: Record<string, string[]> = {
-                'abcExercise': ['abc'],
-                'abcspelling': ['abc', 'abcExercise'],
-                'numbersspelling': ['numbers'],
-                'exercises1': ['pronouns', 'verbtobe1'],
-                'exercises2': ['possessives', 'verbtobe2'],
-                'exercises3': ['verbtobe3'],
-            };
-    
-            (exerciseToViewTopicMap[completedTopicKey] || []).forEach(key => {
-                const index = newPath.findIndex(item => item.key === key);
-                if (index !== -1) newPath[index].status = 'completed';
-            });
-    
-            const nextIndex = completedIndex + 1;
-            if (nextIndex < newPath.length && newPath[nextIndex].status === 'locked') {
-                newPath[nextIndex].status = 'active';
+        if (!studentDocRef || isAdmin) return;
+
+        const versionedKey = 'intro1Path' + progressStorageVersion;
+        const currentStatuses = studentProfile?.lessonProgress?.[versionedKey] || {};
+        if (currentStatuses[completedTopicKey] === 'completed') return;
+
+        const newStatuses = { ...currentStatuses };
+        newStatuses[completedTopicKey] = 'completed';
+
+        const exerciseToViewTopicMap: Record<string, string[]> = {
+            'abcExercise': ['abc'],
+            'abcspelling': ['abc', 'abcExercise'],
+            'numbersspelling': ['numbers'],
+            'exercises1': ['pronouns', 'verbtobe1'],
+            'exercises2': ['possessives', 'verbtobe2'],
+            'exercises3': ['verbtobe3'],
+        };
+
+        (exerciseToViewTopicMap[completedTopicKey] || []).forEach(key => {
+            newStatuses[key] = 'completed';
+        });
+
+        const defaultPath = getIntro1PathData(t);
+        const completedIndex = defaultPath.findIndex(item => item.key === completedTopicKey);
+        if (completedIndex !== -1 && completedIndex + 1 < defaultPath.length) {
+            const nextKey = defaultPath[completedIndex + 1].key;
+            if (!newStatuses[nextKey] || newStatuses[nextKey] === 'locked') {
+                newStatuses[nextKey] = 'active';
                 toast({
                     title: '¡Siguiente tema desbloqueado!',
-                    description: `Ahora puedes continuar con ${newPath[nextIndex].name}`,
+                    description: `Ahora puedes continuar con el siguiente paso`,
                 });
             }
-    
-            return newPath;
+        }
+
+        const totalCompleted = Object.values(newStatuses).filter(s => s === 'completed').length;
+        const newProgress = Math.round((totalCompleted / defaultPath.length) * 100);
+
+        updateDocumentNonBlocking(studentDocRef, {
+            [`lessonProgress.${versionedKey}`]: newStatuses,
+            'progress.intro1Progress': newProgress
         });
     };
     
@@ -515,31 +486,45 @@ export default function Intro1Page() {
         handleTopicComplete('abcExercise');
     };
     
-    const handleSpellingTopicComplete = (completedTopicKey: SpellingExerciseKey) => {
-        setShowCongratulations(true);
-    
-        const isAbcTopic = abcSpellingPath.some(t => t.key === completedTopicKey);
-        const [currentSubPath, setSubPath, mainTopicKey] = isAbcTopic
-            ? [abcSpellingPath, setAbcSpellingPath, 'abcspelling']
-            : [numbersSpellingPath, setNumbersSpellingPath, 'numbersspelling'];
-    
-        const newSubPath = [...currentSubPath];
-        const currentItemIndex = newSubPath.findIndex(item => item.key === completedTopicKey);
-        
-        if (currentItemIndex !== -1 && newSubPath[currentItemIndex].status !== 'completed') {
-            newSubPath[currentItemIndex].status = 'completed';
-    
-            const nextSubItemIndex = currentItemIndex + 1;
-            if (nextSubItemIndex < newSubPath.length && newSubPath[nextSubItemIndex].status === 'locked') {
-                newSubPath[nextSubItemIndex].status = 'active';
-            }
-            setSubPath(newSubPath);
-    
-            const allSubTopicsCompleted = newSubPath.every(item => item.status === 'completed');
-            if (allSubTopicsCompleted) {
-                handleTopicComplete(mainTopicKey as string);
+    const handleSpellingTopicComplete = (completedSubTopicKey: SpellingExerciseKey) => {
+        if (!studentDocRef || isAdmin) {
+            setShowCongratulations(true);
+            return;
+        }
+
+        const isAbcTopic = abcSpellingPath.some(t => t.key === completedSubTopicKey);
+        const subPathVersionedKey = (isAbcTopic ? 'abcSpellingPath' : 'numbersSpellingPath') + progressStorageVersion;
+        const mainTopicKey = isAbcTopic ? 'abcspelling' : 'numbersspelling';
+
+        const currentStatuses = studentProfile?.lessonProgress?.[subPathVersionedKey] || {};
+        if (currentStatuses[completedSubTopicKey] === 'completed') {
+             setShowCongratulations(true);
+             return;
+        }
+
+        const newStatuses = { ...currentStatuses };
+        newStatuses[completedSubTopicKey] = 'completed';
+
+        const defaultSubPath = isAbcTopic ? getAbcSpellingPathData(t) : getNumbersSpellingPathData(t);
+        const currentIndex = defaultSubPath.findIndex(item => item.key === completedSubTopicKey);
+        if (currentIndex !== -1 && currentIndex + 1 < defaultSubPath.length) {
+            const nextKey = defaultSubPath[currentIndex + 1].key;
+            if (!newStatuses[nextKey] || newStatuses[nextKey] === 'locked') {
+                newStatuses[nextKey] = 'active';
             }
         }
+
+        const allCompleted = defaultSubPath.every(item => newStatuses[item.key] === 'completed');
+        
+        updateDocumentNonBlocking(studentDocRef, {
+            [`lessonProgress.${subPathVersionedKey}`]: newStatuses
+        });
+        
+        if (allCompleted) {
+            handleTopicComplete(mainTopicKey);
+        }
+
+        setShowCongratulations(true);
     };
 
     const handleSpellingTopicSelect = (topicKey: SpellingExerciseKey) => {
@@ -553,32 +538,7 @@ export default function Intro1Page() {
         }
     };
 
-    const completedItems = useMemo(() => intro1Path.filter(item => item.status === 'completed').length, [intro1Path]);
-    const progress = useMemo(() => intro1Path.length > 0 ? Math.round((completedItems / intro1Path.length) * 100) : 0, [completedItems, intro1Path.length]);
-
-    useEffect(() => {
-        if (isProfileLoading || isAdmin || !studentDocRef || !isClient) return;
-
-        const dataToSave: Record<string, any> = {
-            'progress.intro1Progress': progress
-        };
-
-        if (intro1Path.length > 0) {
-            const statusOnly = intro1Path.reduce((acc, item) => ({ ...acc, [item.key]: item.status }), {});
-            dataToSave[`lessonProgress.${'intro1Path' + progressStorageVersion}`] = statusOnly;
-        }
-        if (abcSpellingPath.length > 0) {
-            const statusOnly = abcSpellingPath.reduce((acc, item) => ({ ...acc, [item.key]: item.status }), {});
-            dataToSave[`lessonProgress.${'abcSpellingPath' + progressStorageVersion}`] = statusOnly;
-        }
-        if (numbersSpellingPath.length > 0) {
-            const statusOnly = numbersSpellingPath.reduce((acc, item) => ({ ...acc, [item.key]: item.status }), {});
-            dataToSave[`lessonProgress.${'numbersSpellingPath' + progressStorageVersion}`] = statusOnly;
-        }
-        
-        updateDocumentNonBlocking(studentDocRef, dataToSave);
-        
-    }, [intro1Path, abcSpellingPath, numbersSpellingPath, progress, isAdmin, studentDocRef, isProfileLoading, isClient]);
+    const progress = studentProfile?.progress?.intro1Progress || 0;
 
   return (
     <div className="flex w-full flex-col ingles-dashboard-bg min-h-screen">
@@ -1017,26 +977,24 @@ export default function Intro1Page() {
                     <nav>
                         <ul className="space-y-1">
                         {intro1Path.map((item) => {
-                            const Icon = ICONS[item.status as keyof typeof ICONS];
                             const isLocked = item.status === 'locked';
                             const isSelected = selectedTopic === item.name;
                             const isActive = item.status === 'active';
+                            const isCompleted = item.status === 'completed';
                             
-                            const itemContent = (
-                                <div className={cn(
-                                    "flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors",
-                                    !isLocked && "hover:bg-muted",
-                                    isSelected ? "bg-muted text-primary font-semibold" : (isActive ? "text-foreground" : "text-muted-foreground"),
-                                    isActive && item.key === 'abc' && 'animate-pulse-glow'
-                                )}>
-                                    <Icon className={cn("h-5 w-5", isLocked ? "text-yellow-500" : (item.status === 'completed' || isSelected || isActive) ? "text-primary" : "text-muted-foreground")} />
-                                    <span>{item.name}</span>
-                                </div>
-                            );
+                            const Icon = isCompleted ? CheckCircle : (isLocked && !isAdmin ? Lock : ICONS[item.status as keyof typeof ICONS]);
 
                             return (
-                                <li key={item.key} onClick={() => handleTopicSelect(item.name)} className={cn(!isLocked ? "cursor-pointer" : "cursor-not-allowed")}>
-                                    {itemContent}
+                                <li key={item.key} onClick={() => handleTopicSelect(item.name)} className={cn(!isLocked || isAdmin ? "cursor-pointer" : "cursor-not-allowed")}>
+                                    <div className={cn(
+                                        "flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors",
+                                        (!isLocked || isAdmin) && "hover:bg-muted",
+                                        isSelected ? "bg-muted text-primary font-semibold" : (isActive ? "text-foreground" : "text-muted-foreground"),
+                                        isActive && item.key === 'abc' && 'animate-pulse-glow'
+                                    )}>
+                                        <Icon className={cn("h-5 w-5", isLocked && !isAdmin ? "text-yellow-500" : (item.status === 'completed' || isSelected || isActive) ? "text-primary" : "text-muted-foreground" )} />
+                                        <span>{item.name}</span>
+                                    </div>
                                 </li>
                             );
                         })}
@@ -1047,23 +1005,7 @@ export default function Intro1Page() {
                             <span>{t('intro1Page.progress')}</span>
                             <span className="font-bold text-foreground">{progress}%</span>
                         </div>
-                        <div className="relative">
-                            <Progress value={progress} className="h-2" style={{'--indicator-color': 'hsl(var(--primary))'} as React.CSSProperties} />
-                            <div className="absolute inset-0 flex w-full">
-                                <div className="flex-1 h-full border-r-2 border-background"></div>
-                                <div className="flex-1 h-full border-r-2 border-background"></div>
-                                <div className="flex-1 h-full border-r-2 border-background"></div>
-                                <div className="flex-1 h-full border-r-2 border-background"></div>
-                                <div className="flex-1 h-full border-r-2 border-background"></div>
-                                <div className="flex-1 h-full border-r-2 border-background"></div>
-                                <div className="flex-1 h-full border-r-2 border-background"></div>
-                                <div className="flex-1 h-full border-r-2 border-background"></div>
-                                <div className="flex-1 h-full border-r-2 border-background"></div>
-                                <div className="flex-1 h-full border-r-2 border-background"></div>
-                                <div className="flex-1 h-full border-r-2 border-background"></div>
-                                <div className="flex-1 h-full"></div>
-                            </div>
-                        </div>
+                        <Progress value={progress} className="h-4" />
                     </div>
                 </CardContent>
                 </Card>
@@ -1074,4 +1016,3 @@ export default function Intro1Page() {
     </div>
   );
 }
-
