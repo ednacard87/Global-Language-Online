@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo } from "react";
@@ -242,7 +241,7 @@ export default function KidsCoursePage() {
                 <div className="lg:col-span-1 space-y-4">
                     <h2 className="text-xl font-bold text-cyan-400/90 uppercase tracking-wider">Quick Missions</h2>
                     <div className="grid grid-cols-2 gap-4">
-                        <NeonCard icon={CaseSensitive} title="VOCABULARY" href="https://www.youtube.com/watch?v=tmORJDin_10" />
+                        <NeonCard icon={CaseSensitive} title="VOCABULARY" href="/media/vocabulary" />
                         <div onClick={canPlayIntroGames ? undefined : handleLockedGamesClick}>
                            <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
@@ -264,7 +263,7 @@ export default function KidsCoursePage() {
                         </div>
                         <NeonCard icon={Ear} title="LISTENING" href="/listening-practice" />
                         <NeonCard icon={BookOpen} title="READING" href="/reading-exercise" />
-                        <NeonCard icon={Music} title="Music" href="https://www.youtube.com/watch?v=rFSVwmKzCAQ&list=RDrFSVwmKzCAQ&start_radio=1&t=17s" />
+                        <NeonCard icon={Music} title="Music" href="/media/music" />
                         <NeonCard>
                             {(studentProfile?.currentStreak || 0) > 1 ? (
                                 <div className="h-12 w-12 mx-auto flex items-center justify-center">
@@ -303,7 +302,7 @@ export default function KidsCoursePage() {
               <div className="space-y-4">
                 <h2 className="text-xl font-bold text-cyan-400/90 uppercase tracking-wider">Quick Missions</h2>
                 <div className="grid grid-cols-3 gap-4">
-                    <NeonCard icon={CaseSensitive} title="VOCABULARY" href="https://www.youtube.com/watch?v=tmORJDin_10" />
+                    <NeonCard icon={CaseSensitive} title="VOCABULARY" href="/media/vocabulary" />
                     <div onClick={canPlayIntroGames ? undefined : handleLockedGamesClick}>
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
@@ -325,7 +324,7 @@ export default function KidsCoursePage() {
                     </div>
                     <NeonCard icon={Ear} title="LISTENING" href="/listening-practice" />
                     <NeonCard icon={BookOpen} title="READING" href="/reading-exercise" />
-                    <NeonCard icon={Music} title="Music" href="https://www.youtube.com/watch?v=rFSVwmKzCAQ&list=RDrFSVwmKzCAQ&start_radio=1&t=17s" />
+                    <NeonCard icon={Music} title="Music" href="/media/music" />
                     <NeonCard>
                         {(studentProfile?.currentStreak || 0) > 1 ? (
                             <div className="h-12 w-12 mx-auto flex items-center justify-center">

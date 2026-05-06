@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription }
 import { Button } from '@/components/ui/button';
 import { useUser, useFirestore, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
 import { doc } from 'firebase/firestore';
-import { Video, CheckCircle, ArrowLeft, Mic, Newspaper, FileText, Music } from 'lucide-react';
+import { Video, CheckCircle, ArrowLeft, Mic, Newspaper, FileText, Music, CaseSensitive } from 'lucide-react';
 
 const mediaContent = {
   podcast: { 
@@ -35,9 +35,16 @@ const mediaContent = {
   music: { 
     title: "Music Experience", 
     description: "Music is a great way to learn rhythm and common expressions.",
-    url: "https://www.youtube.com/embed/c0GmkFsS5pA",
+    url: "https://www.youtube.com/embed/bwRAGqiUI0U",
     icon: Music,
     progressKey: 'progress_quick_music'
+  },
+  vocabulary: {
+    title: "Vocabulary Mission",
+    description: "Improve your vocabulary with this interactive session.",
+    url: "https://www.youtube.com/embed/tmORJDin_10",
+    icon: CaseSensitive,
+    progressKey: 'progress_quick_vocabulary'
   }
 };
 
@@ -78,7 +85,7 @@ export default function MediaViewerPage() {
             [`progress.${content.progressKey}`]: 100
         });
         window.dispatchEvent(new CustomEvent('progressUpdated'));
-        router.push('/');
+        router.back();
     };
 
     return (
@@ -87,11 +94,9 @@ export default function MediaViewerPage() {
             <main className="flex-1 p-4 md:p-8 flex flex-col items-center">
                 <div className="w-full max-w-4xl space-y-6">
                     <div className="flex items-center gap-2">
-                         <Button variant="ghost" asChild size="sm" className="text-white hover:bg-white/20">
-                            <Link href="/">
-                                <ArrowLeft className="mr-2 h-4 w-4" />
-                                Volver al panel
-                            </Link>
+                         <Button variant="ghost" onClick={() => router.back()} size="sm" className="text-white hover:bg-white/20">
+                            <ArrowLeft className="mr-2 h-4 w-4" />
+                            Volver
                         </Button>
                     </div>
                     
