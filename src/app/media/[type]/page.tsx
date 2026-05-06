@@ -71,7 +71,7 @@ const mediaContent = {
   es_music: {
     title: "Música en Español",
     description: "Aprende ritmo y vocabulario a través de la música.",
-    url: "https://www.youtube.com/embed/NqLsLVjVuEE",
+    url: "https://www.youtube.com/embed/hy2TN9mRjRU?start=64",
     icon: Music,
     progressKey: 'progress_es_quick_music'
   }
