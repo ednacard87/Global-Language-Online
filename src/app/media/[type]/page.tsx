@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription }
 import { Button } from '@/components/ui/button';
 import { useUser, useFirestore, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
 import { doc } from 'firebase/firestore';
-import { Video, CheckCircle, ArrowLeft, Mic, Newspaper, FileText, Music, CaseSensitive } from 'lucide-react';
+import { Video, CheckCircle, ArrowLeft, Mic, Newspaper, FileText, Music, CaseSensitive, PlayCircle } from 'lucide-react';
 
 const mediaContent = {
   podcast: { 
@@ -45,6 +45,28 @@ const mediaContent = {
     url: "https://www.youtube.com/embed/tmORJDin_10",
     icon: CaseSensitive,
     progressKey: 'progress_quick_vocabulary'
+  },
+  // Spanish Content
+  es_podcast: {
+    title: "Podcast en Español",
+    description: "Escucha atentamente este podcast para mejorar tu comprensión auditiva.",
+    url: "https://www.youtube.com/embed/WRJnVyqVGpc",
+    icon: Mic,
+    progressKey: 'progress_es_quick_podcast'
+  },
+  es_video: {
+    title: "Video de Práctica",
+    description: "Mira este video y presta atención a las expresiones utilizadas.",
+    url: "https://www.youtube.com/embed/7J-PYxCP1_Y",
+    icon: PlayCircle,
+    progressKey: 'progress_es_quick_video'
+  },
+  es_music: {
+    title: "Música en Español",
+    description: "Aprende ritmo y vocabulario a través de la música.",
+    url: "https://www.youtube.com/embed/hy2TN9mRjRU",
+    icon: Music,
+    progressKey: 'progress_es_quick_music'
   }
 };
 

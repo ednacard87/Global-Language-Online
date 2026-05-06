@@ -278,9 +278,9 @@ export default function EspanolDashboardPage() {
                             </div>
                           </DialogContent>
                         </Dialog>
-                        <NeonCard icon={Mic} title="PODCAST" href="https://www.youtube.com/watch?v=WRJnVyqVGpc" />
-                        <NeonCard icon={Video} title="VIDEO" href="https://www.youtube.com/watch?v=7J-PYxCP1_Y" />
-                        <NeonCard icon={Music} title="MÚSICA" href="https://www.youtube.com/watch?v=hy2TN9mRjRU&t=61s" />
+                        <NeonCard icon={Mic} title="PODCAST" href="/media/es_podcast" />
+                        <NeonCard icon={Video} title="VIDEO" href="/media/es_video" />
+                        <NeonCard icon={Music} title="MÚSICA" href="/media/es_music" />
                         <NeonCard icon={Music} title="CANCIÓN" href="https://es.lyricstraining.com/sign_up" />
                     </div>
                 </div>
@@ -365,9 +365,9 @@ export default function EspanolDashboardPage() {
                         </div>
                       </DialogContent>
                     </Dialog>
-                    <NeonCard icon={Mic} title="PODCAST" href="https://www.youtube.com/watch?v=WRJnVyqVGpc" />
-                    <NeonCard icon={Video} title="VIDEO" href="https://www.youtube.com/watch?v=7J-PYxCP1_Y" />
-                    <NeonCard icon={Music} title="MÚSICA" href="https://www.youtube.com/watch?v=hy2TN9mRjRU&t=61s" />
+                    <NeonCard icon={Mic} title="PODCAST" href="/media/es_podcast" />
+                    <NeonCard icon={Video} title="VIDEO" href="/media/es_video" />
+                    <NeonCard icon={Music} title="MÚSICA" href="/media/es_music" />
                     <NeonCard icon={Music} title="CANCIÓN" href="https://es.lyricstraining.com/sign_up" />
                 </div>
               </div>
