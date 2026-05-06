@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
@@ -51,7 +50,7 @@ const ICONS = {
   completed: CheckCircle,
 };
 
-const progressStorageVersion = "kids_intro2_path_v15_stable";
+const progressStorageVersion = "kids_intro2_path_v16_final";
 
 const greetingsData = [
     { spanish: 'Hola', english: 'Hello' },
@@ -119,10 +118,18 @@ const mixed1Vocab = {
 };
 
 const mixedExercise2Data = [
-    { spanish: "¿Cómo estás hoy?", answer: ["how are you today?"] },
-    { spanish: "Hasta mañana, profesor", answer: ["see you tomorrow, teacher"] },
-    { spanish: "Mi amigo es de Canada", answer: ["my friend is from canada"] },
-    { spanish: "Son las diez y cuarto", answer: ["it's a quarter past ten", "it is a quarter past ten"] },
+    { spanish: '1- ¿ERES SU MAMÁ (DE ELLA)?', answer: ["are you her mother?", "are you her mom?"] },
+    { spanish: '2- ELLA NO ES ALTA (TALL)', answer: ["she is not tall", "she's not tall", "she isn't tall"] },
+    { spanish: '3- ÉL ES JHON', answer: ["he is jhon", "he's jhon", "he is john", "he's john"] },
+    { spanish: '4- NOSOTROS NO ESTAMOS OCUPADOS (BUSY)', answer: ["we are not busy", "we're not busy", "we aren't busy"] },
+    { spanish: '5- ¿ESTÁS LIBRE? (FREE)', answer: ["are you free?"] },
+    { spanish: '6- ELLOS NO ESTÁN EN CASA (AT HOME)', answer: ["they are not at home", "they're not at home", "they aren't at home"] },
+    { spanish: '7- ¿ELLA ES TU PRIMA? (COUSIN)', answer: ["is she your cousin?"] },
+    { spanish: '8- ¿ELLOS ESTÁN CASADOS? (MARRIED)', answer: ["are they married?"] },
+    { spanish: '9- ELLOS ESTÁN EN EL TRABAJO (AT WORK)', answer: ["they are at work", "they're at work"] },
+    { spanish: '10- NOSOTROS NO SOMOS ESTUDIANTES: (STUDENTS)', answer: ["we are not students", "we're not students", "we aren't students"] },
+    { spanish: '11- ¿ELLOS SON TUS PRIMOS? (COUSINS)', answer: ["are they your cousins?"] },
+    { spanish: '12- ¿TU MAMA ES ENFERMERA? (NURSE):', answer: ["is your mother a nurse?", "is your mom a nurse?"] },
 ];
 
 // --- Auxiliary Components ---
@@ -287,10 +294,11 @@ const MemoryGame = ({ data, onComplete }: { data: { spanish: string; english: st
         if (flippedIndices.length === 2) {
             setIsChecking(true);
             const [firstIndex, secondIndex] = flippedIndices;
-            const isMatch = cards[firstIndex].pairId === cards[secondIndex].pairId;
+            const firstCard = cards[firstIndex];
+            const secondCard = cards[secondIndex];
 
-            if (isMatch) {
-                setMatchedPairIds(prev => [...prev, cards[firstIndex].pairId]);
+            if (firstCard.pairId === secondCard.pairId) {
+                setMatchedPairIds(prev => [...prev, firstCard.pairId]);
                 setStreak(prev => prev + 1);
                 setFlippedIndices([]);
                 setIsChecking(false);
