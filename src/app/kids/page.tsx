@@ -290,7 +290,21 @@ export default function KidsCoursePage() {
 
             {/* --- MOBILE VIEW --- */}
             <div className="lg:hidden flex flex-col space-y-8">
-              {/* 1. Intro Course */}
+              {/* 1. Saludo */}
+              <div className="flex justify-between items-center rounded-lg bg-gray-800/50 backdrop-blur-sm p-4">
+                  <div>
+                      <h1 className="text-2xl font-bold text-cyan-400">WELCOME, {studentProfile?.name?.split(' ')[0] || 'Player'}!</h1>
+                      <p className="text-gray-400 text-sm">Ready for your next challenge?</p>
+                  </div>
+                  <div className="flex items-center gap-4">
+                      <Avatar className="h-12 w-12 border-4 border-purple-500">
+                          <AvatarImage src={user?.photoURL || vrGamerAvatar?.imageUrl} alt={studentProfile?.name || 'Player'} />
+                          <AvatarFallback>{studentProfile?.name?.[0] || 'P'}</AvatarFallback>
+                      </Avatar>
+                  </div>
+              </div>
+              
+              {/* 2. Intro Course */}
               {introCourse && (
                 <div>
                   <h2 className="text-xl font-bold text-cyan-400/90 uppercase tracking-wider mb-4">The Learning Adventure</h2>
@@ -298,7 +312,7 @@ export default function KidsCoursePage() {
                 </div>
               )}
               
-              {/* 2. Quick Missions */}
+              {/* 3. Quick Missions */}
               <div className="space-y-4">
                 <h2 className="text-xl font-bold text-cyan-400/90 uppercase tracking-wider">Quick Missions</h2>
                 <div className="grid grid-cols-3 gap-4">
@@ -338,7 +352,7 @@ export default function KidsCoursePage() {
                 </div>
               </div>
               
-              {/* 3. Rest of Courses */}
+              {/* 4. Rest of Courses */}
               <div className="space-y-3">
                 {otherCourses.map((course, index) => (
                   <AdventureCard key={index} {...course} />
