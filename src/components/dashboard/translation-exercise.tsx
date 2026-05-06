@@ -312,8 +312,11 @@ export function TranslationExercise({
         fieldsToCheck.forEach(key => {
             const typedKey = key as keyof typeof translations;
             
-            let userAnswer = translations[typedKey].trim().toLowerCase();
-            let possibleAnswers = currentAnswerKey[typedKey].map(ans => ans.toLowerCase());
+            // Normalize: trim, lowercase, handle smart quotes and standardise spaces
+            let userAnswer = translations[typedKey].trim().toLowerCase().replace(/’/g, "'").replace(/\s+/g, ' ');
+            let possibleAnswers = currentAnswerKey[typedKey].map(ans => 
+                ans.toLowerCase().replace(/’/g, "'").replace(/\s+/g, ' ')
+            );
 
             if (typedKey !== 'interrogative') {
                 userAnswer = userAnswer.replace(/[.?]/g, ''); // Remove punctuation for non-questions
