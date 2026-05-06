@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
@@ -740,7 +741,7 @@ const SimpleExercise = ({ title, exerciseData, onComplete, vocabulary }: { title
                                     <BookText className="mr-2 h-4 w-4" />
                                     Vocabulary
                                 </Button>
-                            </Trigger>
+                            </PopoverTrigger>
                             <PopoverContent className="w-64">
                                 <div className="space-y-2">
                                     <h4 className="font-bold border-b pb-1">Vocabulario útil</h4>
@@ -810,7 +811,10 @@ export default function KidsIntro2Page() {
     const isAdmin = useMemo(() => (user && (studentProfile?.role === 'admin' || user.email === 'ednacard87@gmail.com')), [user, studentProfile]);
     
     const initialLearningPath = useMemo(() => getKidsIntro2PathData(), []);
-    const memoryGameData = useMemo(() => [...greetingsData.slice(0, 5), ...farewellsData.slice(0, 5)], []);
+
+    const handleTopicComplete = useCallback((key: string) => {
+        setTopicToComplete(key);
+    }, []);
 
     useEffect(() => {
         if (!isClient || isUserLoading || isProfileLoading || initialLoadComplete) return;
@@ -823,7 +827,7 @@ export default function KidsIntro2Page() {
         let savedSelectedTopic = '';
 
         if (isAdmin) {
-            path.forEach(topic => { topic.status = 'completed' });
+            path.forEach(topic => { (topic as any).status = 'completed' });
         } else if (studentProfile?.lessonProgress?.[progressStorageVersion]) {
             const savedData = studentProfile.lessonProgress[progressStorageVersion];
             path.forEach(item => {
@@ -858,10 +862,6 @@ export default function KidsIntro2Page() {
         });
         window.dispatchEvent(new CustomEvent('progressUpdated'));
     }, [learningPath, progress, isAdmin, isClient, studentDocRef, isProfileLoading, selectedTopic]);
-
-    const handleTopicComplete = useCallback((key: string) => {
-        setTopicToComplete(key);
-    }, []);
 
     useEffect(() => {
         if (!topicToComplete) return;
@@ -908,7 +908,7 @@ export default function KidsIntro2Page() {
           case 'mixed1': return <SimpleExercise title="Ejercicios Mixtos 1" exerciseData={mixedExercise1Data} onComplete={() => handleTopicComplete('mixed1')} vocabulary={mixed1Vocab} />;
           case 'greetings': return <GreetingsFarewellsContent title="Saludos" data={greetingsData} onComplete={() => handleTopicComplete('greetings')} />;
           case 'farewells': return <GreetingsFarewellsContent title="Despedidas" data={farewellsData} onComplete={() => handleTopicComplete('farewells')} />;
-          case 'memory': return <MemoryGame data={memoryGameData} onComplete={() => handleTopicComplete('memory')} />;
+          case 'memory': return <MemoryGame data={[...greetingsData.slice(0, 5), ...farewellsData.slice(0, 5)]} onComplete={() => handleTopicComplete('memory')} />;
           case 'mixed2': return <SimpleExercise title="Ejercicios Mixtos 2" exerciseData={mixedExercise2Data} onComplete={() => handleTopicComplete('mixed2')} />;
           case 'time': return <TimeContent onComplete={() => handleTopicComplete('time')} />;
           case 'time-exercise': return <TimeExercise onComplete={() => handleTopicComplete('time-exercise')} />;
@@ -946,7 +946,7 @@ export default function KidsIntro2Page() {
                       <nav>
                         <ul className="space-y-1">
                           {learningPath.map((item) => {
-                               const StatusIcon = ICONS[item.status as keyof typeof ICONS];
+                               const StatusIcon = ICONS[item.status as keyof typeof ICONS] || BookOpen;
                                return (
                                 <li
                                   key={item.key}
