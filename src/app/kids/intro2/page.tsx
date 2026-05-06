@@ -22,6 +22,7 @@ import {
   X,
   MessageSquare,
   Lightbulb,
+  BookText,
 } from 'lucide-react';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -37,6 +38,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { getKidsIntro2PathData, type KidsIntro2PathItem } from '@/lib/course-data';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 
@@ -95,11 +97,25 @@ const countriesExerciseData = [
 ];
 
 const mixedExercise1Data = [
-    { spanish: "Este (This) es un buen libro", answer: ["this is a good book"] },
-    { spanish: "Esa (That) es mi casa", answer: ["that is my house"] },
-    { spanish: "Estos (These) son tus zapatos", answer: ["these are your shoes"] },
-    { spanish: "Esos (Those) son nuestros amigos", answer: ["those are our friends"] },
+    { spanish: 'Ellos son mis hermanos', answer: ['they are my brothers', "they're my brothers"] },
+    { spanish: 'ella es estudiante', answer: ['she is a student', "she's a student"] },
+    { spanish: 'él es tu hermano', answer: ['he is your brother', "he's your brother"] },
+    { spanish: 'su hermana es amable (de él)', answer: ['his sister is kind'] },
+    { spanish: 'ella no está enojada', answer: ['she is not angry', "she isn't angry", "she's not angry"] },
+    { spanish: 'Ellos no son tus padres', answer: ['they are not your parents', "they aren't your parents", "they're not your parents"] },
+    { spanish: 'Esta es nuestra casa', answer: ['this is our house'] },
+    { spanish: '¿estás en el parque?', answer: ['are you in the park?'] },
 ];
+
+const mixed1Vocab = {
+    "hermanos": "brothers",
+    "hermana": "sister",
+    "amable": "kind",
+    "enojado": "angry",
+    "padres": "parents",
+    "casa": "house",
+    "parque": "park"
+};
 
 const mixedExercise2Data = [
     { spanish: "¿Cómo estás hoy?", answer: ["how are you today?"] },
@@ -675,7 +691,7 @@ const CountriesExercise = ({ onComplete }: { onComplete: () => void }) => {
     );
 };
 
-const SimpleExercise = ({ title, exerciseData, onComplete }: { title: string; exerciseData: { spanish: string, answer: string[] }[], onComplete: () => void }) => {
+const SimpleExercise = ({ title, exerciseData, onComplete, vocabulary }: { title: string; exerciseData: { spanish: string, answer: string[] }[], onComplete: () => void, vocabulary?: Record<string, string> }) => {
     const { toast } = useToast();
     const [currentIndex, setCurrentIndex] = useState(0);
     const [userAnswer, setUserAnswer] = useState('');
@@ -685,7 +701,9 @@ const SimpleExercise = ({ title, exerciseData, onComplete }: { title: string; ex
     const currentPrompt = exerciseData[currentIndex];
 
     const handleCheck = () => {
-        const isCorrect = currentPrompt.answer.includes(userAnswer.trim().toLowerCase());
+        const userAnswerClean = userAnswer.trim().toLowerCase().replace(/[.?,]/g, '');
+        const isCorrect = currentPrompt.answer.some(ans => ans.toLowerCase().replace(/[.?,]/g, '') === userAnswerClean);
+        
         setValidation(isCorrect ? 'correct' : 'incorrect');
         if (isCorrect) {
             toast({ title: '¡Correcto!' });
@@ -708,18 +726,61 @@ const SimpleExercise = ({ title, exerciseData, onComplete }: { title: string; ex
     };
 
     return (
-         <Card>
+         <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
             <CardHeader>
-                <CardTitle>{title}</CardTitle>
-                <Progress value={(completedCount / exerciseData.length) * 100} className="mt-2" />
+                <div className="flex justify-between items-start">
+                    <div>
+                        <CardTitle>{title}</CardTitle>
+                        <Progress value={(completedCount / exerciseData.length) * 100} className="mt-2 h-2" />
+                    </div>
+                    {vocabulary && (
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button variant="outline" size="sm" className="border-2 border-brand-blue animate-border-pulse">
+                                    <BookText className="mr-2 h-4 w-4" />
+                                    Vocabulary
+                                </Button>
+                            </Trigger>
+                            <PopoverContent className="w-64">
+                                <div className="space-y-2">
+                                    <h4 className="font-bold border-b pb-1">Vocabulario útil</h4>
+                                    <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
+                                        {Object.entries(vocabulary).map(([es, en]) => (
+                                            <React.Fragment key={es}>
+                                                <span className="text-muted-foreground capitalize">{es}:</span>
+                                                <span className="font-semibold text-right">{en}</span>
+                                            </React.Fragment>
+                                        ))}
+                                    </div>
+                                </div>
+                            </PopoverContent>
+                        </Popover>
+                    )}
+                </div>
             </CardHeader>
             <CardContent className="space-y-4">
-                <p className="text-muted-foreground">Traduce: "{currentPrompt.spanish}"</p>
-                <Input value={userAnswer} onChange={e => setUserAnswer(e.target.value)} className={cn(validation === 'correct' && 'border-green-500', validation === 'incorrect' && 'border-destructive')} />
+                <div className="p-4 bg-muted rounded-lg border">
+                    <p className="text-sm text-muted-foreground mb-1">Traduce:</p>
+                    <p className="text-xl font-bold">"{currentPrompt.spanish}"</p>
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="answer-input">Tu respuesta:</Label>
+                    <Input 
+                        id="answer-input"
+                        value={userAnswer} 
+                        onChange={e => setUserAnswer(e.target.value)} 
+                        onKeyDown={e => e.key === 'Enter' && handleCheck()}
+                        className={cn("text-lg", validation === 'correct' && 'border-green-500 focus-visible:ring-green-500', validation === 'incorrect' && 'border-destructive focus-visible:ring-destructive')} 
+                        autoComplete="off"
+                    />
+                </div>
             </CardContent>
             <CardFooter className="justify-between">
                 <Button onClick={handleCheck}>Verificar</Button>
-                <Button onClick={handleNext} disabled={validation !== 'correct'}>Siguiente</Button>
+                <Button onClick={handleNext} disabled={validation !== 'correct'}>
+                    {currentIndex === exerciseData.length - 1 ? 'Finalizar' : 'Siguiente'}
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
             </CardFooter>
         </Card>
     );
@@ -844,7 +905,7 @@ export default function KidsIntro2Page() {
     const renderContent = () => {
         switch (selectedTopic) {
           case 'tip': return <TipContent onComplete={() => handleTopicComplete('tip')} />;
-          case 'mixed1': return <SimpleExercise title="Ejercicios Mixtos 1" exerciseData={mixedExercise1Data} onComplete={() => handleTopicComplete('mixed1')} />;
+          case 'mixed1': return <SimpleExercise title="Ejercicios Mixtos 1" exerciseData={mixedExercise1Data} onComplete={() => handleTopicComplete('mixed1')} vocabulary={mixed1Vocab} />;
           case 'greetings': return <GreetingsFarewellsContent title="Saludos" data={greetingsData} onComplete={() => handleTopicComplete('greetings')} />;
           case 'farewells': return <GreetingsFarewellsContent title="Despedidas" data={farewellsData} onComplete={() => handleTopicComplete('farewells')} />;
           case 'memory': return <MemoryGame data={memoryGameData} onComplete={() => handleTopicComplete('memory')} />;
