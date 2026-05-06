@@ -246,14 +246,14 @@ function DashboardPage() {
 
     const today = new Date();
     const todayStr = new Date(today.getFullYear(), today.getMonth(), today.getDate()).toISOString().split('T')[0];
-    const lastLoginStr = studentProfile.lastLoginDate;
+    const lastLoginDate = studentProfile.lastLoginDate;
 
-    if (lastLoginStr !== todayStr) {
+    if (lastLoginDate !== todayStr) {
         const yesterday = new Date(today);
         yesterday.setDate(today.getDate() - 1);
         const yesterdayStr = new Date(yesterday.getFullYear(), yesterday.getMonth(), yesterday.getDate()).toISOString().split('T')[0];
 
-        let newStreak = (lastLoginStr === yesterdayStr) ? (studentProfile.currentStreak || 0) + 1 : 1;
+        let newStreak = (lastLoginDate === yesterdayStr) ? (studentProfile.currentStreak || 0) + 1 : 1;
         
         updateDocumentNonBlocking(doc(firestore, 'students', user.uid), {
             currentStreak: newStreak,
@@ -349,11 +349,11 @@ function DashboardPage() {
                     <div className="grid grid-cols-3 gap-4">
                         <NeonCard icon={BookOpen} title="LECTURA" href="/reading-exercise" />
                         <NeonCard icon={Pencil} title="ESCRITURA" href="/writing-exercise"/>
-                        <NeonCard icon={Mic} title="PODCAST" href="https://youtu.be/bdpyQm5l78o?si=CZz43xsGxDaF6k2S"/>
-                        <NeonCard icon={Newspaper} title="NEWS" href="https://www.youtube.com/watch?v=Ap-UM1O9RBU"/>
+                        <NeonCard icon={Mic} title="PODCAST" href="/media/podcast"/>
+                        <NeonCard icon={Newspaper} title="NEWS" href="/media/news"/>
                         <NeonCard icon={Music} title="SONG" href="https://es.lyricstraining.com/sign_up" />
-                        <NeonCard icon={FileText} title="DOCUMENTARY" href="https://www.youtube.com/watch?v=KpuIyXzv0G4&t=15s" />
-                        <NeonCard icon={Music} title="MUSIC" href="https://www.youtube.com/watch?v=c0GmkFsS5pA&list=RDc0GmkFsS5pA&start_radio=1" />
+                        <NeonCard icon={FileText} title="DOCUMENTARY" href="/media/documentary" />
+                        <NeonCard icon={Music} title="MUSIC" href="/media/music" />
                         <div onClick={canPlayIntroGames ? undefined : handleLockedGamesClick}>
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
@@ -441,11 +441,11 @@ function DashboardPage() {
                 <div className="grid grid-cols-3 gap-4">
                     <NeonCard icon={BookOpen} title="LECTURA" href="/reading-exercise" />
                     <NeonCard icon={Pencil} title="ESCRITURA" href="/writing-exercise"/>
-                    <NeonCard icon={Mic} title="PODCAST" href="https://www.youtube.com/watch?v=bdpyQm5l78o"/>
-                    <NeonCard icon={Newspaper} title="NEWS" href="https://www.youtube.com/watch?v=Ap-UM1O9RBU"/>
+                    <NeonCard icon={Mic} title="PODCAST" href="/media/podcast"/>
+                    <NeonCard icon={Newspaper} title="NEWS" href="/media/news"/>
                     <NeonCard icon={Music} title="SONG" href="https://es.lyricstraining.com/sign_up" />
-                    <NeonCard icon={FileText} title="DOCUMENTARY" href="https://www.youtube.com/watch?v=KpuIyXzv0G4&t=15s" />
-                    <NeonCard icon={Music} title="MUSIC" href="https://www.youtube.com/watch?v=c0GmkFsS5pA&list=RDc0GmkFsS5pA&start_radio=1" />
+                    <NeonCard icon={FileText} title="DOCUMENTARY" href="/media/documentary" />
+                    <NeonCard icon={Music} title="MUSIC" href="/media/music" />
                     <div onClick={canPlayIntroGames ? undefined : handleLockedGamesClick}>
                      <DropdownMenu>
                           <DropdownMenuTrigger asChild>
