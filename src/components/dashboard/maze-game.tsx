@@ -32,7 +32,7 @@ const defaultPathItems: PathItem[] = [
     {type: 'class', icon: A1Icon, label: 'dashboard.courseA1', locked: true},
     {type: 'class', icon: A2Icon, label: 'dashboard.courseA2', locked: true},
     {type: 'class', icon: B1Icon, label: 'dashboard.courseB1', locked: true},
-    {type: 'class', icon: B2Icon, label: 'dashboard.courseB2', locked: true},
+    {type: 'class', icon: B2Icon, label: 'dashboard.courseB1', locked: true},
     {type: 'end', icon: Flag, label: 'dashboard.end'},
 ];
 
@@ -53,6 +53,7 @@ interface MazeGameProps {
 }
 
 const PathItemComponent = ({ item, isClient, t, isIntro }: { item: PathItem, isClient: boolean, t: (key: string) => string, isIntro: boolean }) => {
+    const isExternal = item.href?.startsWith('http');
     const itemContent = (
         <div className="relative flex flex-col items-center gap-2">
             <div className={cn(
@@ -76,7 +77,14 @@ const PathItemComponent = ({ item, isClient, t, isIntro }: { item: PathItem, isC
     );
 
     return item.href && !item.locked ? (
-        <Link href={item.href} className="p-2 -m-2 rounded-lg transition-colors hover:bg-white/10">{itemContent}</Link>
+        <Link 
+            href={item.href} 
+            className="p-2 -m-2 rounded-lg transition-colors hover:bg-white/10"
+            target={isExternal ? "_blank" : undefined}
+            rel={isExternal ? "noopener noreferrer" : undefined}
+        >
+            {itemContent}
+        </Link>
     ) : (
         <div className={cn("p-2 -m-2", item.locked && "cursor-not-allowed")}>{itemContent}</div>
     );

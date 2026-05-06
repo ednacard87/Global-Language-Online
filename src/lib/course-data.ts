@@ -569,7 +569,7 @@ export const getA2UnitPath = (unitId: string | number, t: (key: string) => strin
 
 export const getB1MainPath = (t: (key: string) => string): PathItem[] => [
     { type: 'start', icon: Footprints, label: 'dashboard.start' },
-    { type: 'practice', icon: Video, label: 'Ted x Talks 0', href: '#', storageKey: 'progress_b1_ted_talks_0' },
+    { type: 'practice', icon: Video, label: 'Ted x Talks 0', href: '/ingles/b1/ted-talks-0', storageKey: 'progress_b1_ted_talks_0' },
     { type: 'class', icon: BookOpen, label: 'b1course.unit1', href: '/ingles/b1/unit/1', storageKey: 'progress_b1_unit_1' },
     { type: 'practice', icon: Puzzle, label: 'b1course.review1', href: '#' },
     { type: 'practice', icon: Puzzle, label: 'b1course.test1', href: '#' },
