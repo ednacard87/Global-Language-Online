@@ -6,7 +6,7 @@ import Image from "next/image";
 import { DashboardHeader } from "@/components/dashboard/header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { BookOpen, CheckCircle, Lock, Lightbulb, Volume2, Loader2, Trophy } from "lucide-react";
+import { BookOpen, CheckCircle, Lock, Lightbulb, Volume2, Loader2, Trophy, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SpellingExercise, type SpellingExerciseKey } from "@/components/dashboard/spelling-exercise";
 import { TranslationExercise } from "@/components/dashboard/translation-exercise";
@@ -121,44 +121,6 @@ const alphabetWithPronunciation = [
     { letter: 'V', pronunciation: 'vi', audioSrc: '/Audio/Alphabet/V.mp3' }, { letter: 'W', pronunciation: 'da-bliú', audioSrc: '/Audio/Alphabet/W.mp3' }, { letter: 'X', pronunciation: 'ex', audioSrc: '/Audio/Alphabet/X.mp3' },
     { letter: 'Y', pronunciation: 'guai', audioSrc: '/Audio/Alphabet/Y.mp3' }, { letter: 'Z', pronunciation: 'Zi', audioSrc: '/Audio/Alphabet/Z.mp3' }
 ];
-
-const numbersWithAudio: { number: string; name: string; audioSrc: string | null; }[] = [
-    { number: '1', name: 'one', audioSrc: '/Audio/Numbers/Numbers0/one.mp3' },
-    { number: '2', name: 'two', audioSrc: '/Audio/Numbers/Numbers0/two.mp3' },
-    { number: '3', name: 'three', audioSrc: '/Audio/Numbers/Numbers0/three.mp3' },
-    { number: '4', name: 'four', audioSrc: '/Audio/Numbers/Numbers0/four.mp3' },
-    { number: '5', name: 'five', audioSrc: '/Audio/Numbers/Numbers0/five.mp3' },
-    { number: '6', name: 'six', audioSrc: '/Audio/Numbers/Numbers0/six.mp3' },
-    { number: '7', name: 'seven', audioSrc: '/Audio/Numbers/Numbers0/seven.mp3' },
-    { number: '8', name: 'eight', audioSrc: '/Audio/Numbers/Numbers0/eight.mp3' },
-    { number: '9', name: 'nine', audioSrc: '/Audio/Numbers/Numbers0/nine.mp3' },
-    { number: '10', name: 'ten', audioSrc: '/Audio/Numbers/Numbers0/ten.mp3' },
-    { number: '11', name: 'eleven', audioSrc: '/Audio/Numbers/Numbers0/eleven.mp3' },
-    { number: '12', name: 'twelve', audioSrc: '/Audio/Numbers/Numbers0/twelve.mp3' },
-    { number: '13', name: 'thirteen', audioSrc: '/Audio/Numbers/Numbers0/thirteen.mp3' },
-    { number: '14', name: 'fourteen', audioSrc: '/Audio/Numbers/Numbers0/fourteen.mp3' },
-    { number: '15', name: 'fifteen', audioSrc: '/Audio/Numbers/Numbers0/fifteen.mp3' },
-    { number: '16', name: 'sixteen', audioSrc: '/Audio/Numbers/Numbers0/sixteen.mp3' },
-    { number: '17', name: 'seventeen', audioSrc: '/Audio/Numbers/Numbers0/seventeen.mp3' },
-    { number: '18', name: 'eighteen', audioSrc: '/Audio/Numbers/Numbers0/eighteen.mp3' },
-    { number: '19', name: 'nineteen', audioSrc: '/Audio/Numbers/Numbers0/nineteen.mp3' },
-    { number: '20', name: 'twenty', audioSrc: '/Audio/Numbers/Numbers0/twenty.mp3' },
-    { number: '30', name: 'thirty', audioSrc: '/Audio/Numbers/Numbers0/thirty.mp3' },
-    { number: '40', name: 'forty', audioSrc: '/Audio/Numbers/Numbers0/forty.mp3' },
-    { number: '50', name: 'fifty', audioSrc: '/Audio/Numbers/Numbers0/fifty.mp3' },
-    { number: '60', name: 'sixty', audioSrc: '/Audio/Numbers/Numbers0/sixty.mp3' },
-    { number: '70', name: 'seventy', audioSrc: '/Audio/Numbers/Numbers0/seventy.mp3' },
-    { number: '80', name: 'eighty', audioSrc: '/Audio/Numbers/Numbers0/eighty.mp3' },
-    { number: '90', name: 'ninety', audioSrc: '/Audio/Numbers/Numbers0/ninety.mp3' },
-    { number: '100', name: 'one hundred', audioSrc: '/Audio/Numbers/Numbers0/onehundred.mp3' },
-    { number: '200', name: 'two hundred', audioSrc: null },
-    { number: '300', name: 'three hundred', audioSrc: null },
-    { number: '400', name: 'four hundred', audioSrc: null },
-    { number: '500', name: 'five hundred', audioSrc: null },
-    { number: '1,000', name: 'one thousand', audioSrc: null },
-    { number: '1,000,000', name: 'one million', audioSrc: null }
-];
-
 
 function AlphabetGrid({ highlightedItem, onHighlight }: { highlightedItem: string | null; onHighlight: (letter: string) => void; }) {
     const { toast } = useToast();
@@ -286,16 +248,41 @@ function NumbersGrid({ highlightedItem, onHighlight }: { highlightedItem: string
     );
 }
 
+const numbersWithAudio: { number: string; name: string; audioSrc: string | null; }[] = [
+    { number: '1', name: 'one', audioSrc: '/Audio/Numbers/Numbers0/one.mp3' },
+    { number: '2', name: 'two', audioSrc: '/Audio/Numbers/Numbers0/two.mp3' },
+    { number: '3', name: 'three', audioSrc: '/Audio/Numbers/Numbers0/three.mp3' },
+    { number: '4', name: 'four', audioSrc: '/Audio/Numbers/Numbers0/four.mp3' },
+    { number: '5', name: 'five', audioSrc: '/Audio/Numbers/Numbers0/five.mp3' },
+    { number: '6', name: 'six', audioSrc: '/Audio/Numbers/Numbers0/six.mp3' },
+    { number: '7', name: 'seven', audioSrc: '/Audio/Numbers/Numbers0/seven.mp3' },
+    { number: '8', name: 'eight', audioSrc: '/Audio/Numbers/Numbers0/eight.mp3' },
+    { number: '9', name: 'nine', audioSrc: '/Audio/Numbers/Numbers0/nine.mp3' },
+    { number: '10', name: 'ten', audioSrc: '/Audio/Numbers/Numbers0/ten.mp3' },
+    { number: '11', name: 'eleven', audioSrc: '/Audio/Numbers/Numbers0/eleven.mp3' },
+    { number: '12', name: 'twelve', audioSrc: '/Audio/Numbers/Numbers0/twelve.mp3' },
+    { number: '13', name: 'thirteen', audioSrc: '/Audio/Numbers/Numbers0/thirteen.mp3' },
+    { number: '14', name: 'fourteen', audioSrc: '/Audio/Numbers/Numbers0/fourteen.mp3' },
+    { number: '15', name: 'fifteen', audioSrc: '/Audio/Numbers/Numbers0/fifteen.mp3' },
+    { number: '16', name: 'sixteen', audioSrc: '/Audio/Numbers/Numbers0/sixteen.mp3' },
+    { number: '17', name: 'seventeen', audioSrc: '/Audio/Numbers/Numbers0/seventeen.mp3' },
+    { number: '18', name: 'eighteen', audioSrc: '/Audio/Numbers/Numbers0/eighteen.mp3' },
+    { number: '19', name: 'nineteen', audioSrc: '/Audio/Numbers/Numbers0/nineteen.mp3' },
+    { number: '20', name: 'twenty', audioSrc: '/Audio/Numbers/Numbers0/twenty.mp3' },
+    { number: '30', name: 'thirty', audioSrc: '/Audio/Numbers/Numbers0/thirty.mp3' },
+    { number: '40', name: 'forty', audioSrc: '/Audio/Numbers/Numbers0/forty.mp3' },
+    { number: '50', name: 'fifty', audioSrc: '/Audio/Numbers/Numbers0/fifty.mp3' },
+    { number: '60', name: 'sixty', audioSrc: '/Audio/Numbers/Numbers0/sixty.mp3' },
+    { number: '70', name: 'seventy', audioSrc: '/Audio/Numbers/Numbers0/seventy.mp3' },
+    { number: '80', name: 'eighty', audioSrc: '/Audio/Numbers/Numbers0/eighty.mp3' },
+    { number: '90', name: 'ninety', audioSrc: '/Audio/Numbers/Numbers0/ninety.mp3' },
+    { number: '100', name: 'one hundred', audioSrc: '/Audio/Numbers/Numbers0/onehundred.mp3' },
+];
+
 type PathItem = {
     key: string;
     name: string;
     href?: string;
-    status: 'completed' | 'active' | 'locked';
-};
-
-type SpellingPathItem = {
-    key: SpellingExerciseKey;
-    name: string;
     status: 'completed' | 'active' | 'locked';
 };
 
@@ -420,7 +407,11 @@ export default function Intro1Page() {
 
         const versionedKey = 'intro1Path' + progressStorageVersion;
         const currentStatuses = studentProfile?.lessonProgress?.[versionedKey] || {};
-        if (currentStatuses[completedTopicKey] === 'completed') return;
+        
+        // Prevent duplicate updates if already completed
+        if (currentStatuses[completedTopicKey] === 'completed') {
+            return;
+        }
 
         const newStatuses = { ...currentStatuses };
         newStatuses[completedTopicKey] = 'completed';
@@ -459,6 +450,16 @@ export default function Intro1Page() {
             'progress.intro1Progress': newProgress
         });
     };
+
+    // Auto-mark as complete when viewing an informational topic
+    useEffect(() => {
+        if (selectedTopicKey) {
+            const viewOnlyTopics = ['abc', 'numbers', 'pronouns', 'possessives', 'verbtobe1', 'verbtobe2', 'verbtobe3', 'demonstratives'];
+            if (viewOnlyTopics.includes(selectedTopicKey)) {
+                handleTopicComplete(selectedTopicKey);
+            }
+        }
+    }, [selectedTopicKey]);
     
     const handleTopicSelect = (topicName: string) => {
         const currentItem = intro1Path.find(item => item.name === topicName);
@@ -473,12 +474,15 @@ export default function Intro1Page() {
         } else if (currentItem!.key === 'numbersspelling' && !selectedSpellingTopic) {
             setSelectedSpellingTopic('numbers1');
         }
-    
-        const viewOnlyTopics = ['abc', 'numbers', 'pronouns', 'possessives', 'verbtobe1', 'verbtobe2', 'verbtobe3', 'demonstratives'];
-        const key = currentItem!.key;
-    
-        if (viewOnlyTopics.includes(key)) {
-            handleTopicComplete(key);
+    };
+
+    const handleNextTopic = () => {
+        if (!selectedTopicKey) return;
+        const defaultPath = getIntro1PathData(t);
+        const currentIndex = defaultPath.findIndex(item => item.key === selectedTopicKey);
+        if (currentIndex !== -1 && currentIndex + 1 < defaultPath.length) {
+            const nextItem = defaultPath[currentIndex + 1];
+            handleTopicSelect(nextItem.name);
         }
     };
 
@@ -570,6 +574,11 @@ export default function Intro1Page() {
                                         onHighlight={setHighlightedLetter}
                                     />
                                 </CardContent>
+                                <CardFooter className="justify-end">
+                                    <Button onClick={handleNextTopic}>
+                                        {t('translationExercise.next')} <ArrowRight className="ml-2 h-4 w-4" />
+                                    </Button>
+                                </CardFooter>
                             </Card>
                         );
                     }
@@ -594,6 +603,11 @@ export default function Intro1Page() {
                                         onHighlight={setHighlightedNumber}
                                     />
                                 </CardContent>
+                                <CardFooter className="justify-end">
+                                    <Button onClick={handleNextTopic}>
+                                        {t('translationExercise.next')} <ArrowRight className="ml-2 h-4 w-4" />
+                                    </Button>
+                                </CardFooter>
                             </Card>
                         );
                     }
@@ -623,6 +637,11 @@ export default function Intro1Page() {
                                         ))}
                                     </div>
                                 </CardContent>
+                                <CardFooter className="justify-end">
+                                    <Button onClick={handleNextTopic}>
+                                        {t('translationExercise.next')} <ArrowRight className="ml-2 h-4 w-4" />
+                                    </Button>
+                                </CardFooter>
                             </Card>
                         );
                     }
@@ -650,6 +669,11 @@ export default function Intro1Page() {
                                         ))}
                                     </div>
                                 </CardContent>
+                                <CardFooter className="justify-end">
+                                    <Button onClick={handleNextTopic}>
+                                        {t('translationExercise.next')} <ArrowRight className="ml-2 h-4 w-4" />
+                                    </Button>
+                                </CardFooter>
                             </Card>
                         );
                     }
@@ -694,6 +718,11 @@ export default function Intro1Page() {
                                         </div>
                                     </div>
                                 </CardContent>
+                                <CardFooter className="justify-end">
+                                    <Button onClick={handleNextTopic}>
+                                        {t('translationExercise.next')} <ArrowRight className="ml-2 h-4 w-4" />
+                                    </Button>
+                                </CardFooter>
                             </Card>
                         );
                     }
@@ -738,6 +767,11 @@ export default function Intro1Page() {
                                         </div>
                                     </div>
                                 </CardContent>
+                                <CardFooter className="justify-end">
+                                    <Button onClick={handleNextTopic}>
+                                        {t('translationExercise.next')} <ArrowRight className="ml-2 h-4 w-4" />
+                                    </Button>
+                                </CardFooter>
                             </Card>
                         );
                     }
@@ -782,6 +816,11 @@ export default function Intro1Page() {
                                         </div>
                                     </div>
                                 </CardContent>
+                                <CardFooter className="justify-end">
+                                    <Button onClick={handleNextTopic}>
+                                        {t('translationExercise.next')} <ArrowRight className="ml-2 h-4 w-4" />
+                                    </Button>
+                                </CardFooter>
                             </Card>
                         );
                     }
@@ -811,7 +850,7 @@ export default function Intro1Page() {
                                         ))}
                                     </div>
                                 </CardContent>
-                                <CardFooter>
+                                <CardFooter className="justify-center">
                                     <Button onClick={() => handleTopicComplete('demonstratives')}>Terminar Intro 1</Button>
                                 </CardFooter>
                             </Card>
