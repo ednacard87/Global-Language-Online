@@ -7,7 +7,7 @@ import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { BookOpen, PenSquare, Lock, CheckCircle, Hand, GraduationCap, Type, Activity } from 'lucide-react';
+import { BookOpen, PenSquare, Lock, CheckCircle, Hand, GraduationCap, Type, Activity, MessageSquare } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
@@ -25,22 +25,31 @@ type Topic = {
   status: 'locked' | 'active' | 'completed';
 };
 
-const progressStorageKey = 'progress_espanol_intro_1_v2'; // Bumped version for new topics
+const progressStorageKey = 'progress_espanol_intro_1_v3'; // Bumped version for separated greetings
 const mainProgressKey = 'progress_espanol_intro_1';
 
 const saludosData = [
-    { spanish: 'Hola', english: 'Hello' },
+    { spanish: 'Hola', english: 'Hello / Hi' },
     { spanish: 'Buenos días', english: 'Good morning' },
     { spanish: 'Buenas tardes', english: 'Good afternoon' },
-    { spanish: 'Buenas noches', english: 'Good evening / Good night' },
+    { spanish: 'Buenas noches', english: 'Good evening (greeting)' },
     { spanish: '¿Cómo estás?', english: 'How are you?' },
+    { spanish: '¿Cómo te va?', english: "How's it going?" },
+    { spanish: '¿Qué tal?', english: "What's up?" },
+    { spanish: 'Mucho gusto', english: 'Nice to meet you' },
+    { spanish: 'Encantado / Encantada', english: 'Delighted / Pleased to meet you' },
 ];
 
 const despedidasData = [
     { spanish: 'Adiós', english: 'Goodbye' },
+    { spanish: 'Chao', english: 'Bye' },
     { spanish: 'Hasta luego', english: 'See you later' },
     { spanish: 'Hasta mañana', english: 'See you tomorrow' },
+    { spanish: 'Hasta pronto', english: 'See you soon' },
     { spanish: 'Nos vemos', english: 'See you' },
+    { spanish: 'Cuídate', english: 'Take care' },
+    { spanish: 'Buenas noches', english: 'Good night (farewell/sleep)' },
+    { spanish: 'Que tengas un buen día', english: 'Have a nice day' },
 ];
 
 const vocabularioBasico = {
@@ -103,7 +112,8 @@ export default function EspanolIntro1Page() {
     }, [user, studentProfile]);
     
     const initialLearningPath = useMemo((): Topic[] => [
-        { key: 'saludos', name: 'Greetings and Farewells', icon: Hand, status: 'active' },
+        { key: 'saludos', name: 'Greetings (Saludos)', icon: Hand, status: 'active' },
+        { key: 'despedidas', name: 'Farewells (Despedidas)', icon: MessageSquare, status: 'locked' },
         { key: 'sustantivos', name: 'Nouns (Sustantivos)', icon: Type, status: 'locked' },
         { key: 'adjetivos', name: 'Adjectives (Adjetivos)', icon: GraduationCap, status: 'locked' },
         { key: 'verbos', name: 'Verbs (Verbos)', icon: Activity, status: 'locked' },
@@ -145,7 +155,7 @@ export default function EspanolIntro1Page() {
 
     }, [isAdmin, initialLearningPath, studentProfile, isUserLoading, isProfileLoading]);
     
-    const progress = useMemo(() => {
+    const progressValue = useMemo(() => {
         if (learningPath.length === 0) return 0;
         const completedCount = learningPath.filter(t => t.status === 'completed').length;
         return Math.round((completedCount / learningPath.length) * 100);
@@ -160,11 +170,11 @@ export default function EspanolIntro1Page() {
             });
             updateDocumentNonBlocking(studentDocRef, { 
                 [`lessonProgress.${progressStorageKey}`]: statusesToSave,
-                [`progress.${mainProgressKey}`]: progress
+                [`progress.${mainProgressKey}`]: progressValue
             });
             window.dispatchEvent(new CustomEvent('progressUpdated'));
         }
-    }, [learningPath, progress, isAdmin, studentDocRef, isProfileLoading, isUserLoading]);
+    }, [learningPath, progressValue, isAdmin, studentDocRef, isProfileLoading, isUserLoading]);
 
     useEffect(() => {
         if (!topicToComplete) return;
@@ -202,7 +212,7 @@ export default function EspanolIntro1Page() {
             return;
         }
         setSelectedTopic(key);
-        const autoFinish = ['saludos', 'sustantivos', 'adjetivos', 'verbos'];
+        const autoFinish = ['saludos', 'despedidas', 'sustantivos', 'adjetivos', 'verbos'];
         if (autoFinish.includes(key)) {
             handleTopicComplete(key);
         }
@@ -261,25 +271,46 @@ export default function EspanolIntro1Page() {
             case 'saludos': return (
                 <Card>
                     <CardHeader>
-                        <CardTitle>Greetings and Farewells</CardTitle>
-                        <CardDescription>Essential phrases to start and end a conversation.</CardDescription>
+                        <CardTitle>Greetings (Saludos)</CardTitle>
+                        <CardDescription>Essential phrases to start a conversation in Spanish.</CardDescription>
                     </CardHeader>
-                    <CardContent className="grid md:grid-cols-2 gap-8">
-                        <div>
-                            <h3 className="font-semibold text-lg mb-2">Greetings (Saludos)</h3>
-                            <div className="space-y-1">
-                                {saludosData.map(item => <p key={item.spanish}><span className="font-medium">{item.spanish}:</span> <span className="text-muted-foreground">{item.english}</span></p>)}
-                            </div>
-                        </div>
-                        <div>
-                            <h3 className="font-semibold text-lg mb-2">Farewells (Despedidas)</h3>
-                            <div className="space-y-1">
-                                {despedidasData.map(item => <p key={item.spanish}><span className="font-medium">{item.spanish}:</span> <span className="text-muted-foreground">{item.english}</span></p>)}
-                            </div>
+                    <CardContent>
+                        <div className="grid grid-cols-2 gap-4 text-lg">
+                            <div className="font-bold p-3 bg-muted rounded-lg">Spanish</div>
+                            <div className="font-bold p-3 bg-muted rounded-lg">English</div>
+                            {saludosData.map(item => (
+                                <React.Fragment key={item.spanish}>
+                                    <div className="p-3 border rounded-lg font-medium">{item.spanish}</div>
+                                    <div className="p-3 border rounded-lg text-muted-foreground">{item.english}</div>
+                                </React.Fragment>
+                            ))}
                         </div>
                     </CardContent>
                     <CardFooter>
-                        <Button onClick={() => handleTopicComplete('saludos')}>Continue</Button>
+                        <Button onClick={() => handleTopicComplete('saludos')}>Continue to Farewells</Button>
+                    </CardFooter>
+                </Card>
+            );
+            case 'despedidas': return (
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Farewells (Despedidas)</CardTitle>
+                        <CardDescription>Essential phrases to end a conversation in Spanish.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="grid grid-cols-2 gap-4 text-lg">
+                            <div className="font-bold p-3 bg-muted rounded-lg">Spanish</div>
+                            <div className="font-bold p-3 bg-muted rounded-lg">English</div>
+                            {despedidasData.map(item => (
+                                <React.Fragment key={item.spanish}>
+                                    <div className="p-3 border rounded-lg font-medium">{item.spanish}</div>
+                                    <div className="p-3 border rounded-lg text-muted-foreground">{item.english}</div>
+                                </React.Fragment>
+                            ))}
+                        </div>
+                    </CardContent>
+                    <CardFooter>
+                        <Button onClick={() => handleTopicComplete('despedidas')}>Continue</Button>
                     </CardFooter>
                 </Card>
             );
@@ -491,9 +522,9 @@ export default function EspanolIntro1Page() {
                                     </nav>
                                      <div className="mt-6 pt-6 border-t">
                                         <div className="flex justify-between items-center text-sm font-medium text-muted-foreground mb-2">
-                                            <span>Progress</span><span className="font-bold text-foreground">{progress}%</span>
+                                            <span>Progress</span><span className="font-bold text-foreground">{progressValue}%</span>
                                         </div>
-                                        <Progress value={progress} className="h-2" />
+                                        <Progress value={progressValue} className="h-2" />
                                     </div>
                                 </CardContent>
                             </Card>
