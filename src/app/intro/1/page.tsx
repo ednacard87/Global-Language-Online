@@ -450,41 +450,7 @@ export default function Intro1Page() {
           saveSession();
         };
       }, [user, firestore, selectedTopicKey, selectedSpellingTopic]);
-    
-    const handleTopicSelect = (topicName: string) => {
-        const currentItem = intro1Path.find(item => item.name === topicName);
-        if (!isAdmin && (!currentItem || currentItem.status === 'locked')) return;
-    
-        setSelectedTopic(topicName);
-        setSelectedTopicKey(currentItem!.key);
-        setShowCongratulations(false);
-    
-        if (currentItem!.key === 'abcspelling' && !selectedSpellingTopic) {
-            setSelectedSpellingTopic('femaleNames');
-        } else if (currentItem!.key === 'numbersspelling' && !selectedSpellingTopic) {
-            setSelectedSpellingTopic('numbers1');
-        }
-    
-        const viewOnlyTopics = ['abc', 'numbers', 'pronouns', 'possessives', 'verbtobe1', 'verbtobe2', 'verbtobe3', 'demonstratives'];
-        const key = currentItem!.key;
-    
-        if (viewOnlyTopics.includes(key)) {
-            const currentItemIndex = intro1Path.findIndex(item => item.key === key);
-            if (currentItemIndex !== -1) {
-                const nextItemIndex = currentItemIndex + 1;
-                if (nextItemIndex < intro1Path.length && intro1Path[nextItemIndex].status === 'locked') {
-                    const newPath = [...intro1Path];
-                    newPath[nextItemIndex] = { ...newPath[nextItemIndex], status: 'active' };
-                    setIntro1Path(newPath);
-                    toast({
-                        title: '¡Tema desbloqueado!',
-                        description: `Has desbloqueado ${newPath[nextItemIndex].name}`,
-                    });
-                }
-            }
-        }
-    };
-    
+
     const handleTopicComplete = (completedTopicKey: string) => {
         setIntro1Path(currentPath => {
             const newPath = [...currentPath];
@@ -507,7 +473,7 @@ export default function Intro1Page() {
     
             (exerciseToViewTopicMap[completedTopicKey] || []).forEach(key => {
                 const index = newPath.findIndex(item => item.key === key);
-                if (index !== -1) nPath[index].status = 'completed';
+                if (index !== -1) newPath[index].status = 'completed';
             });
     
             const nextIndex = completedIndex + 1;
@@ -521,6 +487,28 @@ export default function Intro1Page() {
     
             return newPath;
         });
+    };
+    
+    const handleTopicSelect = (topicName: string) => {
+        const currentItem = intro1Path.find(item => item.name === topicName);
+        if (!isAdmin && (!currentItem || currentItem.status === 'locked')) return;
+    
+        setSelectedTopic(topicName);
+        setSelectedTopicKey(currentItem!.key);
+        setShowCongratulations(false);
+    
+        if (currentItem!.key === 'abcspelling' && !selectedSpellingTopic) {
+            setSelectedSpellingTopic('femaleNames');
+        } else if (currentItem!.key === 'numbersspelling' && !selectedSpellingTopic) {
+            setSelectedSpellingTopic('numbers1');
+        }
+    
+        const viewOnlyTopics = ['abc', 'numbers', 'pronouns', 'possessives', 'verbtobe1', 'verbtobe2', 'verbtobe3', 'demonstratives'];
+        const key = currentItem!.key;
+    
+        if (viewOnlyTopics.includes(key)) {
+            handleTopicComplete(key);
+        }
     };
 
     const handleAbcExerciseComplete = () => {
@@ -538,8 +526,8 @@ export default function Intro1Page() {
         const newSubPath = [...currentSubPath];
         const currentItemIndex = newSubPath.findIndex(item => item.key === completedTopicKey);
         
-        if (currentItemIndex !== -1 && newSubPath[currentIndex].status !== 'completed') {
-            newSubPath[currentIndex].status = 'completed';
+        if (currentItemIndex !== -1 && newSubPath[currentItemIndex].status !== 'completed') {
+            newSubPath[currentItemIndex].status = 'completed';
     
             const nextSubItemIndex = currentItemIndex + 1;
             if (nextSubItemIndex < newSubPath.length && newSubPath[nextSubItemIndex].status === 'locked') {
@@ -549,7 +537,7 @@ export default function Intro1Page() {
     
             const allSubTopicsCompleted = newSubPath.every(item => item.status === 'completed');
             if (allSubTopicsCompleted) {
-                handleTopicComplete(mainTopicKey);
+                handleTopicComplete(mainTopicKey as string);
             }
         }
     };
@@ -823,6 +811,7 @@ export default function Intro1Page() {
                                     </div>
                                     <div>
                                         <h3 className="text-xl font-semibold mb-2">{t('intro1Page.exampleTitle')}</h3>
+                                        <p className="text-lg italic text-muted-foreground mb-2">"My mother is a nurse"</p>
                                         <div className="space-y-2 p-4 bg-muted rounded-lg font-mono text-base">
                                             <p><span className="font-bold text-lg text-green-500 mr-2">(+)</span> My mother is a nurse</p>
                                             <p><span className="font-bold text-lg text-red-500 mr-2">(-)</span> My mother is not a nurse</p>
@@ -1085,3 +1074,4 @@ export default function Intro1Page() {
     </div>
   );
 }
+
