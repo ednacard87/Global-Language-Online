@@ -31,6 +31,7 @@ export default function B1CoursePage() {
     const updatePath = () => {
         const initialPath = getB1MainPath(t);
 
+        const progressTed = studentProfile?.progress?.['progress_b1_ted_talks_0'] || 0;
         const progressU1 = studentProfile?.progress?.['progress_b1_unit_1'] || 0;
         const progressU2 = studentProfile?.progress?.['progress_b1_unit_2'] || 0;
         const progressU3 = studentProfile?.progress?.['progress_b1_unit_3'] || 0;
@@ -49,27 +50,30 @@ export default function B1CoursePage() {
         } else {
           // Unlock logic
           itemsWithLockState[0].locked = false; // Start
-          itemsWithLockState[1].locked = false; // Unit 1
+          itemsWithLockState[1].locked = false; // Ted Talks 0
 
+          if (progressTed >= 100) {
+              itemsWithLockState[2].locked = false; // Unit 1
+          }
           if (progressU1 >= 100) {
-              itemsWithLockState[2].locked = false; // Review 1
-              itemsWithLockState[3].locked = false; // Test 1
-              itemsWithLockState[4].locked = false; // Unit 2
+              itemsWithLockState[3].locked = false; // Review 1
+              itemsWithLockState[4].locked = false; // Test 1
+              itemsWithLockState[5].locked = false; // Unit 2
           }
           if (progressU2 >= 100) {
-              itemsWithLockState[5].locked = false; // Review 2
-              itemsWithLockState[6].locked = false; // Test 2
-              itemsWithLockState[7].locked = false; // Unit 3
+              itemsWithLockState[6].locked = false; // Review 2
+              itemsWithLockState[7].locked = false; // Test 2
+              itemsWithLockState[8].locked = false; // Unit 3
           }
           if (progressU3 >= 100) {
-              itemsWithLockState[8].locked = false; // Review 3
-              itemsWithLockState[9].locked = false; // Test 3
-              itemsWithLockState[10].locked = false; // Unit 4
+              itemsWithLockState[9].locked = false; // Review 3
+              itemsWithLockState[10].locked = false; // Test 3
+              itemsWithLockState[11].locked = false; // Unit 4
           }
           if (progressU4 >= 100) {
-              itemsWithLockState[11].locked = false; // Review 4
-              itemsWithLockState[12].locked = false; // Final Test
-              itemsWithLockState[13].locked = false; // Final
+              itemsWithLockState[12].locked = false; // Review 4
+              itemsWithLockState[13].locked = false; // Final Test
+              itemsWithLockState[14].locked = false; // Final
           }
         }
         
@@ -84,9 +88,11 @@ export default function B1CoursePage() {
     
     updatePath();
     
+    window.addEventListener('focus', updatePath);
     window.addEventListener('progressUpdated', updatePath);
     
     return () => {
+      window.removeEventListener('focus', updatePath);
       window.removeEventListener('progressUpdated', updatePath);
     };
   }, [t, isAdmin, studentProfile, isProfileLoading]);
