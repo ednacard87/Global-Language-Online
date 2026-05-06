@@ -35,7 +35,7 @@ const mediaContent = {
   music: { 
     title: "Music Experience", 
     description: "Music is a great way to learn rhythm and common expressions.",
-    url: "https://www.youtube.com/embed/bwRAGqiUI0U",
+    url: "https://www.youtube.com/embed/3hiLTqaIG-g",
     icon: Music,
     progressKey: 'progress_quick_music'
   },
