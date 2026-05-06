@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -181,7 +180,7 @@ export default function ReadingExercisePage() {
     }
     
     return (
-        <div className="flex w-full flex-col min-h-screen">
+        <div className="flex w-full flex-col min-h-screen ingles-dashboard-bg">
             <DashboardHeader />
             <main className="flex-1 p-4 md:p-8 flex flex-col items-center">
                 <div className="w-full max-w-3xl space-y-8">

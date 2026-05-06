@@ -73,7 +73,7 @@ export default function WritingExercisePage() {
     };
 
     return (
-        <div className="flex w-full flex-col min-h-screen">
+        <div className="flex w-full flex-col min-h-screen ingles-dashboard-bg">
             <DashboardHeader />
             <main className="flex-1 p-4 md:p-8 flex flex-col items-center">
                 <Card className="w-full max-w-3xl shadow-soft rounded-lg border-2 border-brand-purple">
