@@ -258,7 +258,7 @@ export default function KidsCoursePage() {
                 <div className="lg:col-span-1 space-y-4">
                     <h2 className="text-xl font-bold text-cyan-400/90 uppercase tracking-wider">Quick Missions</h2>
                     <div className="grid grid-cols-2 gap-4">
-                        <NeonCard icon={CaseSensitive} title="VOCABULARY" href="/media/vocabulary" />
+                        <NeonCard icon={CaseSensitive} title="VOCABULARY" href="/media/kids_vocabulary" />
                         <div onClick={canPlayIntroGames ? undefined : handleLockedGamesClick}>
                            <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
@@ -278,8 +278,8 @@ export default function KidsCoursePage() {
                                 )}
                             </DropdownMenu>
                         </div>
-                        <NeonCard icon={Ear} title="LISTENING" href="/listening-practice" />
-                        <NeonCard icon={BookOpen} title="READING" href="/reading-exercise" />
+                        <NeonCard icon={Ear} title="LISTENING" href="/kids/listening-practice" />
+                        <NeonCard icon={BookOpen} title="READING" href="/kids/reading-exercise" />
                         <NeonCard icon={Music} title="Music" href="/media/kids_music" bgImage={musicBg} />
                         <NeonCard>
                             {(studentProfile?.currentStreak || 0) > 1 ? (
@@ -333,7 +333,7 @@ export default function KidsCoursePage() {
               <div className="space-y-4">
                 <h2 className="text-xl font-bold text-cyan-400/90 uppercase tracking-wider">Quick Missions</h2>
                 <div className="grid grid-cols-3 gap-4">
-                    <NeonCard icon={CaseSensitive} title="VOCABULARY" href="/media/vocabulary" />
+                    <NeonCard icon={CaseSensitive} title="VOCABULARY" href="/media/kids_vocabulary" />
                     <div onClick={canPlayIntroGames ? undefined : handleLockedGamesClick}>
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
@@ -353,8 +353,8 @@ export default function KidsCoursePage() {
                             )}
                         </DropdownMenu>
                     </div>
-                    <NeonCard icon={Ear} title="LISTENING" href="/listening-practice" />
-                    <NeonCard icon={BookOpen} title="READING" href="/reading-exercise" />
+                    <NeonCard icon={Ear} title="LISTENING" href="/kids/listening-practice" />
+                    <NeonCard icon={BookOpen} title="READING" href="/kids/reading-exercise" />
                     <NeonCard icon={Music} title="Music" href="/media/kids_music" bgImage={musicBg} />
                     <NeonCard>
                         {(studentProfile?.currentStreak || 0) > 1 ? (

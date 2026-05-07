@@ -47,12 +47,20 @@ const mediaContent = {
     icon: CaseSensitive,
     progressKey: 'progress_quick_vocabulary'
   },
+  // Kids Content
   kids_music: {
     title: "Kids Music Adventure",
     description: "Fun songs to help you learn English while you sing and dance!",
     url: "https://www.youtube.com/embed/3hiLTqaIG-g",
     icon: Music,
     progressKey: 'progress_kids_quick_music'
+  },
+  kids_vocabulary: {
+    title: "Kids Vocabulary Mission",
+    description: "Boost your English words with this fun session!",
+    url: "https://www.youtube.com/embed/tmORJDin_10",
+    icon: CaseSensitive,
+    progressKey: 'progress_kids_quick_vocabulary'
   },
   // Spanish Content
   es_podcast: {
@@ -98,8 +106,8 @@ export default function MediaViewerPage() {
             <div className="flex h-screen items-center justify-center">
                 <Card className="p-8 text-center">
                     <CardTitle>Content Not Found</CardTitle>
-                    <Button asChild className="mt-4">
-                        <Link href="/">Back to Dashboard</Link>
+                    <Button onClick={() => router.back()} className="mt-4">
+                        Back
                     </Button>
                 </Card>
             </div>
@@ -107,7 +115,7 @@ export default function MediaViewerPage() {
     }
 
     const Icon = content.icon;
-    const bgClass = type.startsWith('es_') ? 'espanol-dashboard-bg' : (type.startsWith('kids_') || type === 'vocabulary' ? 'kids-page-container' : 'ingles-dashboard-bg');
+    const bgClass = type.startsWith('es_') ? 'espanol-dashboard-bg' : (type.startsWith('kids_') ? 'kids-page-container' : 'ingles-dashboard-bg');
 
     const handleComplete = async () => {
         if (!studentDocRef) return;
