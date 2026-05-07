@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
 
-const NeonCard = ({ icon: Icon, title, href, children, disabled }: { icon?: React.ElementType, title?: string, href?: string, children?: React.ReactNode, disabled?: boolean }) => {
+const NeonCard = ({ icon: Icon, title, href, children, disabled, bgImage }: { icon?: React.ElementType, title?: string, href?: string, children?: React.ReactNode, disabled?: boolean, bgImage?: string }) => {
     const cardBody = children || (
       <>
         {Icon && <Icon className="h-12 w-12 mx-auto text-cyan-400" />}
@@ -32,8 +32,22 @@ const NeonCard = ({ icon: Icon, title, href, children, disabled }: { icon?: Reac
     );
 
     const content = (
-        <Card className={cn("bg-gray-800/50 border-2 border-purple-500/50 rounded-2xl text-center p-4 transition-all", disabled ? "cursor-not-allowed opacity-50" : "hover:bg-purple-500/20 hover:border-purple-400 hover:shadow-[0_0_15px_theme(colors.purple.500)]", "aspect-square flex flex-col justify-center items-center")}>
-            {cardBody}
+        <Card className={cn("bg-gray-800/50 border-2 border-purple-500/50 rounded-2xl text-center p-4 transition-all relative overflow-hidden", disabled ? "cursor-not-allowed opacity-50" : "hover:bg-purple-500/20 hover:border-purple-400 hover:shadow-[0_0_15px_theme(colors.purple.500)]", "aspect-square flex flex-col justify-center items-center")}>
+            {bgImage && (
+                <div className="absolute inset-0 z-0">
+                    <Image 
+                        src={bgImage} 
+                        alt="" 
+                        fill 
+                        className="object-cover opacity-40"
+                        data-ai-hint="background texture"
+                    />
+                    <div className="absolute inset-0 bg-gray-900/40" />
+                </div>
+            )}
+            <div className="relative z-10">
+                {cardBody}
+            </div>
         </Card>
     );
 
@@ -206,9 +220,10 @@ export default function KidsCoursePage() {
   }, [t, studentProfile, isAdmin, introProgress]);
 
   const introCourse = useMemo(() => courses.find(c => c.href === "/kids/intro"), [courses]);
-  const otherCourses = useMemo(() => courses.filter(c => c.href !== "/kids/intro"), [courses]);
+  const otherCourses = useMemo(() => courses.filter(c => c.href !== "/intro"), [courses]);
 
   const adventureMascotImage = PlaceHolderImages.find(p => p.id === 'kids-adventure-mascot');
+  const musicBg = "https://s3.envato.com/files/1a8011a5-217f-4a8a-9618-c2ddefbe08e3/inline_image_preview.jpg";
 
   if (isUserLoading || isProfileLoading || isRedirecting) {
     return (
@@ -265,7 +280,7 @@ export default function KidsCoursePage() {
                         </div>
                         <NeonCard icon={Ear} title="LISTENING" href="/listening-practice" />
                         <NeonCard icon={BookOpen} title="READING" href="/reading-exercise" />
-                        <NeonCard icon={Music} title="Music" href="/media/kids_music" />
+                        <NeonCard icon={Music} title="Music" href="/media/kids_music" bgImage={musicBg} />
                         <NeonCard>
                             {(studentProfile?.currentStreak || 0) > 1 ? (
                                 <div className="h-12 w-12 mx-auto flex items-center justify-center">
@@ -340,7 +355,7 @@ export default function KidsCoursePage() {
                     </div>
                     <NeonCard icon={Ear} title="LISTENING" href="/listening-practice" />
                     <NeonCard icon={BookOpen} title="READING" href="/reading-exercise" />
-                    <NeonCard icon={Music} title="Music" href="/media/kids_music" />
+                    <NeonCard icon={Music} title="Music" href="/media/kids_music" bgImage={musicBg} />
                     <NeonCard>
                         {(studentProfile?.currentStreak || 0) > 1 ? (
                             <div className="h-12 w-12 mx-auto flex items-center justify-center">

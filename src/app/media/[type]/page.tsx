@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription }
 import { Button } from '@/components/ui/button';
 import { useUser, useFirestore, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
 import { doc } from 'firebase/firestore';
+import { cn } from '@/lib/utils';
 import { Video, CheckCircle, ArrowLeft, Mic, Newspaper, FileText, Music, CaseSensitive, PlayCircle } from 'lucide-react';
 
 const mediaContent = {
@@ -106,6 +107,7 @@ export default function MediaViewerPage() {
     }
 
     const Icon = content.icon;
+    const bgClass = type.startsWith('es_') ? 'espanol-dashboard-bg' : (type.startsWith('kids_') || type === 'vocabulary' ? 'kids-page-container' : 'ingles-dashboard-bg');
 
     const handleComplete = async () => {
         if (!studentDocRef) return;
@@ -118,7 +120,7 @@ export default function MediaViewerPage() {
     };
 
     return (
-        <div className="flex w-full flex-col min-h-screen ingles-dashboard-bg">
+        <div className={cn("flex w-full flex-col min-h-screen", bgClass)}>
             <DashboardHeader />
             <main className="flex-1 p-4 md:p-8 flex flex-col items-center">
                 <div className="w-full max-w-4xl space-y-6">
