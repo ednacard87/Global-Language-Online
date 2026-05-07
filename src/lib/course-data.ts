@@ -1,3 +1,4 @@
+
 import { BookOpen, Flag, Footprints, Puzzle, Mic, Ear, Smile, GraduationCap, Star, Hand, MessageSquare, BrainCircuit, PenSquare, Lightbulb, Clock, Languages, Video } from 'lucide-react';
 import type { ComponentType } from 'react';
 
@@ -40,7 +41,7 @@ export const espanolIntroPathData: PathItem[] = [
     { type: 'practice', icon: Puzzle, label: 'espanolIntroCourse.quiz1', href: '/espanol/quiz/1', storageKey: 'progress_es_quiz_1' },
     { type: 'class', icon: BookOpen, label: 'espanolIntroCourse.intro2', href: '/espanol/intro/2', storageKey: 'progress_espanol_intro_2' },
     { type: 'practice', icon: Puzzle, label: 'espanolIntroCourse.quiz2', href: '/espanol/quiz/2', storageKey: 'progress_es_quiz_2' },
-    { type: 'practice', icon: Puzzle, label: 'Prueba Final de Español', href: '#', storageKey: 'progress_espanol_quiz_final' },
+    { type: 'practice', icon: Puzzle, label: 'espanolIntroCourse.finalTest', href: '#', storageKey: 'progress_espanol_quiz_final' },
     { type: 'end', icon: Flag, label: 'dashboard.finish' }
 ];
 
@@ -72,7 +73,8 @@ export const calculateEspanolIntroProgress = (progress: Record<string, number> |
 
     const completedItems = courseItemsWithPoints.reduce((sum, item) => {
         const itemProgress = progress[item.storageKey!] || 0;
-        return sum + (itemProgress >= 100 ? 1 : 0);
+        // Para los quices, consideramos "completado" si tiene más de 0 (aunque el bloqueo secuencial use el 70%)
+        return sum + (itemProgress > 0 ? 1 : 0);
     }, 0);
     
     return Math.round((completedItems / totalItems) * 100);
@@ -542,7 +544,7 @@ export const getA2EspanolPath = (t: (key: string) => string): PathItem[] => [
     { type: 'class', icon: BookOpen, label: 'a2Espanol.imperfecto', href: '#', storageKey: 'progress_a2_es_9' },
     { type: 'class', icon: BookOpen, label: 'a2Espanol.preteritoPerfecto', href: '#', storageKey: 'progress_a2_es_10' },
     { type: 'class', icon: BookOpen, label: 'a2Espanol.preteritoPerfectoContinuo', href: '#', storageKey: 'progress_a2_es_11' },
-    { type: 'end', icon: Flag, label: 'dashboard.end' },
+    { type: 'end', icon: Flag, label: 'dashboard.finish' },
 ];
 
 export const getB1EspanolPath = (): PathItem[] => [
@@ -582,7 +584,7 @@ export const getB1MainPath = (t: (key: string) => string): PathItem[] => [
     { type: 'class', icon: BookOpen, label: 'b1course.unit4', href: '/ingles/b1/unit/4', storageKey: 'progress_b1_unit_4' },
     { type: 'practice', icon: Puzzle, label: 'b1course.review4', href: '#' },
     { type: 'practice', icon: Puzzle, label: 'b1course.finalTest', href: '#' },
-    { type: 'end', icon: Flag, label: 'dashboard.end', href: '/ingles/b2' },
+    { type: 'end', icon: Flag, label: 'dashboard.finish', href: '/ingles/b2' },
 ];
 
 export const getB1UnitPath = (unitId: string | number, t: (key: string) => string): PathItem[] => {
@@ -633,7 +635,7 @@ export const getB2MainPath = (t: (key: string) => string): PathItem[] => [
     { type: 'class', icon: BookOpen, label: 'b2course.unit4', href: '/ingles/b2/unit/4', storageKey: 'progress_b2_unit_4' },
     { type: 'practice', icon: Puzzle, label: 'b2course.review4', href: '#' },
     { type: 'practice', icon: Puzzle, label: 'b2course.finalTest', href: '#' },
-    { type: 'end', icon: Flag, label: 'dashboard.end', href: '/pricing' },
+    { type: 'end', icon: Flag, label: 'dashboard.finish' },
 ];
 
 export const getB2UnitPath = (unitId: string | number, t: (key: string) => string): PathItem[] => {
@@ -685,7 +687,7 @@ export const getKidsA1MainPath = (t: (key: string) => string): PathItem[] => [
     { type: 'class', icon: GraduationCap, label: 'kidsA1.objectPronouns', href: '/kids/a1/pronombres-objeto', storageKey: 'progress_kids_a1_objectpronouns' },
     { type: 'class', icon: GraduationCap, label: 'kidsA1.comparativesSuperlatives', href: '/kids/a1/comparativos-y-superlativos', storageKey: 'progress_kids_a1_comparatives' },
     { type: 'class', icon: GraduationCap, label: 'kidsA1.frequencyAdverbs', href: '/kids/a1/adverbios-de-frecuencia', storageKey: 'progress_kids_a1_frequencyadverbs' },
-    { type: 'end', icon: Flag, label: 'dashboard.end', href: '/kids' },
+    { type: 'end', icon: Flag, label: 'dashboard.finish', href: '/kids' },
 ];
 
 export const getKidsA2MainPath = (t: (key: string) => string): PathItem[] => [
@@ -697,7 +699,7 @@ export const getKidsA2MainPath = (t: (key: string) => string): PathItem[] => [
     { type: 'class', icon: GraduationCap, label: 'kidsA2.countables', href: '/kids/a2/contables-y-no-contables', storageKey: 'progress_kids_a2_countables' },
     { type: 'class', icon: GraduationCap, label: 'kidsA2.presentPerfect', href: '/kids/a2/presente-perfecto', storageKey: 'progress_kids_a2_present_perfect' },
     { type: 'class', icon: GraduationCap, label: 'kidsA2.usedTo', href: '/kids/a2/used-to', storageKey: 'progress_kids_a2_used_to' },
-    { type: 'end', icon: Flag, label: 'dashboard.end', href: '/kids' },
+    { type: 'end', icon: Flag, label: 'dashboard.finish', href: '/kids' },
 ];
 
 export const getKidsB1MainPath = (t: (key: string) => string): PathItem[] => [

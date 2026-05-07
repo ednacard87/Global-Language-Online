@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo } from "react";
@@ -30,12 +31,14 @@ export default function EspanolIntroPage() {
     if (isProfileLoading || isUserLoading) return;
 
     const updatePath = () => {
-        const initialPath = espanolIntroPathData;
+        const initialPath = espanolIntroPathData.map(i => ({...i}));
 
         const itemsWithProgress = initialPath.map(item => {
             const newItem = { ...item };
             if (item.storageKey && studentProfile?.progress) {
                 newItem.progress = studentProfile.progress[item.storageKey] || 0;
+            } else {
+                newItem.progress = 0;
             }
             return newItem;
         });
@@ -45,22 +48,35 @@ export default function EspanolIntroPage() {
                 return { ...item, locked: false };
             }
 
-            if (item.label === 'espanolIntroCourse.quiz1' && studentProfile?.unlockedQuizzes?.quiz1) {
-                return { ...item, locked: false };
-            }
-            if (item.label === 'espanolIntroCourse.quiz2' && studentProfile?.unlockedQuizzes?.quiz2) {
-                return { ...item, locked: false };
-            }
-            if (item.label === 'espanolIntroCourse.finalTest' && studentProfile?.unlockedQuizzes?.finalQuiz) {
+            // Inicio siempre desbloqueado
+            if (item.type === 'start') {
                 return { ...item, locked: false };
             }
 
-            if (index === 0) { // Start is always unlocked
+            // Intro 1E (primer item después de start) siempre desbloqueado
+            if (index === 1) {
                 return { ...item, locked: false };
             }
+
             const previousItem = arr[index - 1];
-            
-            const isLocked = (previousItem.progress ?? 0) < 100;
+            let isLocked = true;
+
+            // Lógica secuencial
+            if (previousItem.type === 'start') {
+                isLocked = false;
+            } else if (previousItem.label.includes('quiz') || previousItem.label.includes('Quiz')) {
+                // Si el anterior es un Quiz, desbloquea el siguiente si sacó >= 70
+                isLocked = (previousItem.progress ?? 0) < 70;
+            } else {
+                // Si el anterior es una clase, desbloquea el siguiente si terminó (100%)
+                isLocked = (previousItem.progress ?? 0) < 100;
+            }
+
+            // Desbloqueos manuales por admin
+            if (item.label === 'espanolIntroCourse.quiz1' && studentProfile?.unlockedQuizzes?.quiz1) isLocked = false;
+            if (item.label === 'espanolIntroCourse.quiz2' && studentProfile?.unlockedQuizzes?.quiz2) isLocked = false;
+            if (item.label === 'espanolIntroCourse.finalTest' && studentProfile?.unlockedQuizzes?.finalQuiz) isLocked = false;
+
             return { ...item, locked: isLocked };
         });
 
