@@ -18,6 +18,7 @@ import {
   Flame,
   Loader2,
   Hash,
+  ArrowRight,
 } from 'lucide-react';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -83,6 +84,23 @@ const numerosData = [
     { num: '200', word: 'Doscientos' }, { num: '300', word: 'Trescientos' }, { num: '400', word: 'Cuatrocientos' },
     { num: '500', word: 'Quinientos' }, { num: '700', word: 'Setecientos' }, { num: '900', word: 'Novecientos' },
     { num: '1000', word: 'Mil' }, { num: "1'000.000", word: 'Un Millón' }
+];
+
+const numbersExercisesData = [
+    { num: '15', word: 'Fifteen' },
+    { num: '12', word: 'Twelve' },
+    { num: '20', word: 'Twenty' },
+    { num: '50', word: 'Fifty' },
+    { num: '100', word: 'One hundred' },
+    { num: '500', word: 'Five hundred' },
+    { num: '1000', word: 'One thousand' },
+];
+
+const timeExercisesData = [
+    { time: '2:00', word: 'It is two o\'clock' },
+    { time: '2:30', word: 'It is half past two' },
+    { time: '5:15', word: 'It is a quarter past five' },
+    { time: '10:45', word: 'It is a quarter to eleven' },
 ];
 
 // Components inside the page file
@@ -273,6 +291,76 @@ const CountriesExercise = ({ onComplete }: { onComplete: () => void }) => {
     );
 };
 
+const SimpleTranslationExercise = ({ 
+    title, 
+    data, 
+    onComplete 
+}: { 
+    title: string; 
+    data: { num?: string, time?: string, word: string }[]; 
+    onComplete: () => void 
+}) => {
+    const { toast } = useToast();
+    const [userAnswers, setUserAnswers] = useState<Record<number, string>>({});
+    const [validationStatus, setValidationStatus] = useState<Record<number, ValidationStatus>>({});
+
+    const handleInputChange = (index: number, value: string) => {
+        setUserAnswers(prev => ({ ...prev, [index]: value }));
+        setValidationStatus(prev => ({ ...prev, [index]: 'unchecked' }));
+    };
+
+    const handleCheck = () => {
+        let allCorrect = true;
+        const newValidation: Record<number, ValidationStatus> = {};
+        data.forEach((item, index) => {
+            const userAnswer = (userAnswers[index] || '').trim().toLowerCase().replace(/[.]/g, '');
+            const correctAnswer = item.word.toLowerCase().replace(/[.]/g, '');
+            if (userAnswer === correctAnswer) {
+                newValidation[index] = 'correct';
+            } else {
+                newValidation[index] = 'incorrect';
+                allCorrect = false;
+            }
+        });
+        setValidationStatus(newValidation);
+        if (allCorrect) {
+            toast({ title: '¡Excelente!', description: 'Has respondido todo correctamente.' });
+            onComplete();
+        } else {
+            toast({ variant: 'destructive', title: 'Algunas respuestas son incorrectas.' });
+        }
+    };
+
+    return (
+        <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+            <CardHeader>
+                <CardTitle>{title}</CardTitle>
+                <CardDescription>Escribe la traducción correcta en inglés.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                {data.map((item, index) => (
+                    <div key={index} className="grid grid-cols-2 items-center gap-4">
+                        <Label className="text-right font-bold text-lg">{item.num || item.time}</Label>
+                        <Input 
+                            value={userAnswers[index] || ''} 
+                            onChange={e => handleInputChange(index, e.target.value)}
+                            className={cn(
+                                validationStatus[index] === 'correct' && 'border-green-500',
+                                validationStatus[index] === 'incorrect' && 'border-destructive'
+                            )}
+                            placeholder="En inglés..."
+                            autoComplete="off"
+                        />
+                    </div>
+                ))}
+            </CardContent>
+            <CardFooter className="justify-center">
+                <Button onClick={handleCheck}>Verificar Ejercicio</Button>
+            </CardFooter>
+        </Card>
+    );
+};
+
 const ReadingExercise = ({ onComplete }: { onComplete: () => void }) => {
     const [userAnswers, setUserAnswers] = useState<Record<string, string>>({});
     const [validationStatus, setValidationStatus] = useState<Record<string, ValidationStatus>>({});
@@ -394,7 +482,9 @@ export default function EspanolIntro2Page() {
     const initialLearningPath = useMemo((): Topic[] => [
         { key: 'memory_game', name: 'Juego de Memoria', icon: BrainCircuit, status: 'active' },
         { key: 'numeros', name: 'Números', icon: Hash, status: 'locked' },
+        { key: 'ejercicio_numeros', name: 'Ejercicio Numeros', icon: PenSquare, status: 'locked' },
         { key: 'time', name: 'La Hora', icon: Clock, status: 'locked' },
+        { key: 'time_exercises', name: 'Ejercicios Hora', icon: PenSquare, status: 'locked' },
         { key: 'countries', name: 'Países y Nacionalidades', icon: Globe, status: 'locked' },
         { key: 'reading', name: 'Lectura y Comprensión', icon: BookOpen, status: 'locked' },
         { key: 'mixed_exercises', name: 'Ejercicios Mixtos', icon: PenSquare, status: 'locked' },
@@ -498,6 +588,8 @@ export default function EspanolIntro2Page() {
                         </CardFooter>
                     </Card>
                 );
+            case 'ejercicio_numeros':
+                return <SimpleTranslationExercise title="Ejercicio Números" data={numbersExercisesData} onComplete={() => handleTopicComplete('ejercicio_numeros')} />;
             case 'time': return (
                 <Card>
                     <CardHeader><CardTitle>La Hora</CardTitle></CardHeader>
@@ -522,6 +614,8 @@ export default function EspanolIntro2Page() {
                     </CardContent>
                 </Card>
             );
+            case 'time_exercises':
+                return <SimpleTranslationExercise title="Ejercicios Hora" data={timeExercisesData} onComplete={() => handleTopicComplete('time_exercises')} />;
             case 'countries': return <CountriesExercise onComplete={() => handleTopicComplete('countries')} />;
             case 'reading': return <ReadingExercise onComplete={() => handleTopicComplete('reading')} />;
             case 'mixed_exercises': return <MixedExercise onComplete={() => handleTopicComplete('mixed_exercises')} />;
