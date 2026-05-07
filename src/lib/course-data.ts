@@ -39,7 +39,7 @@ export const espanolIntroPathData: PathItem[] = [
     { type: 'class', icon: BookOpen, label: 'espanolIntroCourse.intro1', href: '/espanol/intro/1', storageKey: 'progress_espanol_intro_1' },
     { type: 'practice', icon: Puzzle, label: 'espanolIntroCourse.quiz1', href: '/espanol/quiz/1', storageKey: 'progress_es_quiz_1' },
     { type: 'class', icon: BookOpen, label: 'espanolIntroCourse.intro2', href: '/espanol/intro/2', storageKey: 'progress_espanol_intro_2' },
-    { type: 'practice', icon: Puzzle, label: 'espanolIntroCourse.quiz2', href: '#', storageKey: 'progress_es_quiz_2' },
+    { type: 'practice', icon: Puzzle, label: 'espanolIntroCourse.quiz2', href: '/espanol/quiz/2', storageKey: 'progress_es_quiz_2' },
     { type: 'practice', icon: Puzzle, label: 'Prueba Final de Español', href: '#', storageKey: 'progress_espanol_quiz_final' },
     { type: 'end', icon: Flag, label: 'dashboard.finish' }
 ];
