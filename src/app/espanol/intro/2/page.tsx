@@ -70,7 +70,7 @@ const mixedExercisesData = [
     { english: 'She is my mother', spanish: ['ella es mi madre', 'ella es mi mamá', 'ella es mi mama'] },
     { english: 'The book is blue', spanish: ['el libro es azul'] },
     { english: 'Today is Wednesday', spanish: ['hoy es miércoles', 'hoy es miercoles'] },
-    { english: 'I am American', spanish: ['yo soy estadounidense', 'soy estadounidense'] },
+    { english: 'I am American', spanish: ['yo soy estadounidense', 'soy estadounidense', 'yo soy americano', 'soy americano'] },
     { english: 'It is half past ten', spanish: ['son las diez y media', 'es la diez y media'] },
     { english: 'He is fifteen years old', spanish: ['él tiene quince años', 'el tiene quince años', 'él tiene 15 años', 'el tiene 15 años'] },
     { english: 'Nice to meet you', spanish: ['mucho gusto', 'encantado', 'encantada', 'un placer'] },
