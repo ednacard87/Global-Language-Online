@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -88,29 +87,29 @@ const numerosData = [
 ];
 
 const numbersExercisesData = [
-    { num: '15', word: 'Fifteen' },
-    { num: '12', word: 'Twelve' },
-    { num: '20', word: 'Twenty' },
-    { num: '50', word: 'Fifty' },
-    { num: '100', word: 'One hundred' },
-    { num: '500', word: 'Five hundred' },
-    { num: '1000', word: 'One thousand' },
-    { num: '11', word: 'Eleven' },
-    { num: '18', word: 'Eighteen' },
-    { num: "1'000.000", word: 'One million' },
+    { num: '1', word: 'Uno' },
+    { num: '12', word: 'Doce' },
+    { num: '15', word: 'Quince' },
+    { num: '20', word: 'Veinte' },
+    { num: '50', word: 'Cincuenta' },
+    { num: '100', word: 'Cien' },
+    { num: '500', word: 'Quinientos' },
+    { num: '900', word: 'Novecientos' },
+    { num: '1000', word: 'Mil' },
+    { num: "1'000.000", word: 'Un millón' },
 ];
 
 const timeExercisesData = [
-    { time: '2:00', word: 'It is two o\'clock' },
-    { time: '2:30', word: 'It is half past two' },
-    { time: '5:15', word: 'It is a quarter past five' },
-    { time: '10:45', word: 'It is a quarter to eleven' },
-    { time: '8:00', word: 'It is eight o\'clock' },
-    { time: '12:00', word: 'It is twelve o\'clock' },
-    { time: '6:45', word: 'It is a quarter to seven' },
-    { time: '3:15', word: 'It is a quarter past three' },
-    { time: '1:30', word: 'It is half past one' },
-    { time: '9:00', word: 'It is nine o\'clock' },
+    { time: '2:00', word: 'Son las dos en punto' },
+    { time: '2:30', word: 'Son las dos y media' },
+    { time: '5:15', word: 'Son las cinco y cuarto' },
+    { time: '10:45', word: 'Son las once menos cuarto' },
+    { time: '8:00', word: 'Son las ocho en punto' },
+    { time: '12:00', word: 'Es mediodía' },
+    { time: '6:45', word: 'Son las siete menos cuarto' },
+    { time: '3:15', word: 'Son las tres y cuarto' },
+    { time: '1:30', word: 'Es la una y media' },
+    { time: '9:00', word: 'Son las nueve en punto' },
 ];
 
 // Components inside the page file
@@ -304,11 +303,13 @@ const CountriesExercise = ({ onComplete }: { onComplete: () => void }) => {
 const SimpleTranslationExercise = ({ 
     title, 
     data, 
-    onComplete 
+    onComplete,
+    label
 }: { 
     title: string; 
     data: { num?: string, time?: string, word: string }[]; 
-    onComplete: () => void 
+    onComplete: () => void;
+    label: string;
 }) => {
     const { toast } = useToast();
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -354,8 +355,6 @@ const SimpleTranslationExercise = ({
         }
     };
 
-    const progress = (Object.values(validationStatus).filter(s => s === 'correct').length / totalPrompts) * 100;
-
     if (showCompletionMessage) {
         return (
             <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
@@ -394,7 +393,7 @@ const SimpleTranslationExercise = ({
                     <p className="text-4xl font-bold">{currentPrompt.num || currentPrompt.time}</p>
                 </div>
                 <div className="space-y-2">
-                    <Label htmlFor="answer">Tu traducción en inglés:</Label>
+                    <Label htmlFor="answer">{label}:</Label>
                     <Input 
                         id="answer"
                         value={userAnswers[currentIndex] || ''} 
@@ -653,7 +652,7 @@ export default function EspanolIntro2Page() {
                     </Card>
                 );
             case 'ejercicio_numeros':
-                return <SimpleTranslationExercise title="Ejercicio Números" data={numbersExercisesData} onComplete={() => handleTopicComplete('ejercicio_numeros')} />;
+                return <SimpleTranslationExercise title="Ejercicio Números" data={numbersExercisesData} onComplete={() => handleTopicComplete('ejercicio_numeros')} label="Números en español" />;
             case 'time': return (
                 <Card>
                     <CardHeader><CardTitle>La Hora</CardTitle></CardHeader>
@@ -679,7 +678,7 @@ export default function EspanolIntro2Page() {
                 </Card>
             );
             case 'time_exercises':
-                return <SimpleTranslationExercise title="Ejercicios Hora" data={timeExercisesData} onComplete={() => handleTopicComplete('time_exercises')} />;
+                return <SimpleTranslationExercise title="Ejercicios Hora" data={timeExercisesData} onComplete={() => handleTopicComplete('time_exercises')} label="Hora en Español" />;
             case 'countries': return <CountriesExercise onComplete={() => handleTopicComplete('countries')} />;
             case 'reading': return <ReadingExercise onComplete={() => handleTopicComplete('reading')} />;
             case 'mixed_exercises': return <MixedExercise onComplete={() => handleTopicComplete('mixed_exercises')} />;
