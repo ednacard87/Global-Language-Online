@@ -20,28 +20,42 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Separator } from '@/components/ui/separator';
 
 
-const NeonCard = ({ icon: Icon, title, href, bgImage }: { icon: React.ElementType, title: string, href?: string, bgImage?: string }) => (
-    <Link href={href || '#'} className="block" target={href?.startsWith('http') ? '_blank' : undefined} rel={href?.startsWith('http') ? 'noopener noreferrer' : undefined}>
-        <Card className="bg-card/80 border-2 border-primary/50 rounded-2xl text-center p-4 transition-all hover:bg-primary/10 hover:border-primary hover:shadow-lg hover:shadow-primary/20 aspect-square flex flex-col justify-center items-center relative overflow-hidden">
+const NeonCard = ({ icon: Icon, title, href, bgImage, onClick }: { icon: React.ElementType, title: string, href?: string, bgImage?: string, onClick?: () => void }) => {
+    const cardContent = (
+        <Card className="bg-card border-2 border-primary/50 rounded-2xl text-center p-4 transition-all hover:bg-primary/10 hover:border-primary hover:shadow-lg hover:shadow-primary/20 aspect-square flex flex-col justify-center items-center relative overflow-hidden">
             {bgImage && (
                 <div className="absolute inset-0 z-0">
                     <Image 
                         src={bgImage} 
                         alt="" 
                         fill 
-                        className="object-cover opacity-40"
+                        className="object-cover opacity-20"
                         data-ai-hint="background texture"
                     />
-                    <div className="absolute inset-0 bg-background/40" />
+                    <div className="absolute inset-0 bg-background/20" />
                 </div>
             )}
-            <div className="relative z-10">
-                <Icon className="h-10 w-10 mx-auto text-primary" />
-                <p className="mt-2 text-sm font-bold uppercase">{title}</p>
+            <div className="relative z-10 flex flex-col items-center">
+                <Icon className="h-12 w-12 mx-auto text-primary" />
+                <p className="mt-2 font-bold uppercase">{title}</p>
             </div>
         </Card>
-    </Link>
-);
+    );
+
+    if (href) {
+        return (
+            <Link href={href} className="block" target={href.startsWith('http') ? '_blank' : undefined} rel={href.startsWith('http') ? 'noopener noreferrer' : undefined}>
+                {cardContent}
+            </Link>
+        );
+    }
+    
+    return (
+        <div onClick={onClick} className="cursor-pointer">
+            {cardContent}
+        </div>
+    );
+};
 
 const AdventureCard = ({ title, description, href, progress, locked, icon: Icon }: { title: string, description: string, href: string, progress?: number, locked?: boolean, icon: React.ElementType }) => (
     <Link href={locked ? '#' : href} className={cn("block", locked && "cursor-not-allowed")}>
@@ -238,10 +252,9 @@ export default function EspanolDashboardPage() {
                     <div className="grid grid-cols-2 gap-4">
                         <Dialog>
                           <DialogTrigger asChild>
-                            <Card className="bg-card border-2 border-primary/50 rounded-2xl text-center p-4 transition-all hover:bg-primary/10 hover:border-primary hover:shadow-lg hover:shadow-primary/20 aspect-square flex flex-col justify-center items-center cursor-pointer">
-                                <BookOpen className="h-12 w-12 mx-auto text-primary" />
-                                <p className="mt-2 font-bold uppercase">LECTURA</p>
-                            </Card>
+                            <div>
+                                <NeonCard icon={BookOpen} title="LECTURA" />
+                            </div>
                           </DialogTrigger>
                           <DialogContent className="sm:max-w-[600px]">
                             <DialogHeader>
@@ -327,10 +340,9 @@ export default function EspanolDashboardPage() {
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                     <Dialog>
                       <DialogTrigger asChild>
-                         <Card className="bg-card border-2 border-primary/50 rounded-2xl text-center p-4 transition-all hover:bg-primary/10 hover:border-primary hover:shadow-lg hover:shadow-primary/20 aspect-square flex flex-col justify-center items-center cursor-pointer">
-                            <BookOpen className="h-12 w-12 mx-auto text-primary" />
-                            <p className="mt-2 font-bold uppercase">LECTURA</p>
-                        </Card>
+                         <div>
+                            <NeonCard icon={BookOpen} title="LECTURA" />
+                         </div>
                       </DialogTrigger>
                       <DialogContent className="sm:max-w-[600px]">
                         <DialogHeader>
