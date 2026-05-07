@@ -136,6 +136,12 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 's3.envato.com',
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
 };
