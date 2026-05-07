@@ -19,6 +19,7 @@ import {
   Loader2,
   Hash,
   ArrowRight,
+  ArrowLeft,
 } from 'lucide-react';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -94,6 +95,9 @@ const numbersExercisesData = [
     { num: '100', word: 'One hundred' },
     { num: '500', word: 'Five hundred' },
     { num: '1000', word: 'One thousand' },
+    { num: '11', word: 'Eleven' },
+    { num: '18', word: 'Eighteen' },
+    { num: "1'000.000", word: 'One million' },
 ];
 
 const timeExercisesData = [
@@ -101,6 +105,12 @@ const timeExercisesData = [
     { time: '2:30', word: 'It is half past two' },
     { time: '5:15', word: 'It is a quarter past five' },
     { time: '10:45', word: 'It is a quarter to eleven' },
+    { time: '8:00', word: 'It is eight o\'clock' },
+    { time: '12:00', word: 'It is twelve o\'clock' },
+    { time: '6:45', word: 'It is a quarter to seven' },
+    { time: '3:15', word: 'It is a quarter past three' },
+    { time: '1:30', word: 'It is half past one' },
+    { time: '9:00', word: 'It is nine o\'clock' },
 ];
 
 // Components inside the page file
@@ -301,61 +311,115 @@ const SimpleTranslationExercise = ({
     onComplete: () => void 
 }) => {
     const { toast } = useToast();
+    const [currentIndex, setCurrentIndex] = useState(0);
     const [userAnswers, setUserAnswers] = useState<Record<number, string>>({});
     const [validationStatus, setValidationStatus] = useState<Record<number, ValidationStatus>>({});
+    const [showCompletionMessage, setShowCompletionMessage] = useState(false);
 
-    const handleInputChange = (index: number, value: string) => {
-        setUserAnswers(prev => ({ ...prev, [index]: value }));
-        setValidationStatus(prev => ({ ...prev, [index]: 'unchecked' }));
+    const currentPrompt = data[currentIndex];
+    const totalPrompts = data.length;
+
+    const handleInputChange = (value: string) => {
+        setUserAnswers(prev => ({ ...prev, [currentIndex]: value }));
+        setValidationStatus(prev => ({ ...prev, [currentIndex]: 'unchecked' }));
     };
 
     const handleCheck = () => {
-        let allCorrect = true;
-        const newValidation: Record<number, ValidationStatus> = {};
-        data.forEach((item, index) => {
-            const userAnswer = (userAnswers[index] || '').trim().toLowerCase().replace(/[.]/g, '');
-            const correctAnswer = item.word.toLowerCase().replace(/[.]/g, '');
-            if (userAnswer === correctAnswer) {
-                newValidation[index] = 'correct';
-            } else {
-                newValidation[index] = 'incorrect';
-                allCorrect = false;
-            }
-        });
-        setValidationStatus(newValidation);
-        if (allCorrect) {
-            toast({ title: '¡Excelente!', description: 'Has respondido todo correctamente.' });
-            onComplete();
+        const userAnswer = (userAnswers[currentIndex] || '').trim().toLowerCase().replace(/[.]/g, '');
+        const correctAnswer = currentPrompt.word.toLowerCase().replace(/[.]/g, '');
+        
+        const isCorrect = userAnswer === correctAnswer;
+        const newStatus = isCorrect ? 'correct' : 'incorrect';
+        
+        setValidationStatus(prev => ({ ...prev, [currentIndex]: newStatus }));
+
+        if (isCorrect) {
+            toast({ title: '¡Correcto!', description: 'Puedes pasar al siguiente.' });
         } else {
-            toast({ variant: 'destructive', title: 'Algunas respuestas son incorrectas.' });
+            toast({ variant: 'destructive', title: 'Incorrecto', description: 'Inténtalo de nuevo.' });
         }
     };
+    
+    const handleNext = () => {
+        if (currentIndex < totalPrompts - 1) {
+            setCurrentIndex(prev => prev + 1);
+        } else {
+            const allCorrect = Object.values(validationStatus).filter(s => s === 'correct').length === totalPrompts;
+            if (allCorrect) {
+                setShowCompletionMessage(true);
+                onComplete();
+            } else {
+                toast({ variant: 'destructive', title: 'Revisa tus respuestas', description: 'Debes completar todos los ejercicios correctamente.' });
+            }
+        }
+    };
+
+    const progress = (Object.values(validationStatus).filter(s => s === 'correct').length / totalPrompts) * 100;
+
+    if (showCompletionMessage) {
+        return (
+            <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                <CardContent className="p-6 text-center flex flex-col items-center justify-center min-h-[300px]">
+                    <Trophy className="h-16 w-16 text-yellow-400 mb-4" />
+                    <h2 className="text-3xl font-bold">¡Ejercicio Completado!</h2>
+                </CardContent>
+            </Card>
+        );
+    }
 
     return (
         <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
             <CardHeader>
                 <CardTitle>{title}</CardTitle>
-                <CardDescription>Escribe la traducción correcta en inglés.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-                {data.map((item, index) => (
-                    <div key={index} className="grid grid-cols-2 items-center gap-4">
-                        <Label className="text-right font-bold text-lg">{item.num || item.time}</Label>
-                        <Input 
-                            value={userAnswers[index] || ''} 
-                            onChange={e => handleInputChange(index, e.target.value)}
+                <div className="flex items-center justify-start flex-wrap gap-2 pt-4">
+                    {data.map((_, index) => (
+                        <button
+                            key={index}
+                            onClick={() => setCurrentIndex(index)}
                             className={cn(
-                                validationStatus[index] === 'correct' && 'border-green-500',
-                                validationStatus[index] === 'incorrect' && 'border-destructive'
+                                "h-8 w-8 rounded-full flex items-center justify-center font-bold border-2 transition-all",
+                                currentIndex === index ? "border-primary ring-2 ring-primary" : "border-muted-foreground/50",
+                                validationStatus[index] === 'correct' && 'bg-green-500/20 border-green-500 text-green-700',
+                                validationStatus[index] === 'incorrect' && 'bg-red-500/20 border-destructive text-destructive',
                             )}
-                            placeholder="En inglés..."
-                            autoComplete="off"
-                        />
-                    </div>
-                ))}
+                        >
+                            {index + 1}
+                        </button>
+                    ))}
+                </div>
+            </CardHeader>
+            <CardContent className="space-y-6">
+                <div className="text-center py-8 bg-muted rounded-lg border">
+                    <p className="text-sm text-muted-foreground mb-1">Escribe la traducción de:</p>
+                    <p className="text-4xl font-bold">{currentPrompt.num || currentPrompt.time}</p>
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="answer">Tu traducción en inglés:</Label>
+                    <Input 
+                        id="answer"
+                        value={userAnswers[currentIndex] || ''} 
+                        onChange={e => handleInputChange(e.target.value)}
+                        className={cn(
+                            "text-lg h-12",
+                            validationStatus[currentIndex] === 'correct' && 'border-green-500 focus-visible:ring-green-500',
+                            validationStatus[currentIndex] === 'incorrect' && 'border-destructive focus-visible:ring-destructive'
+                        )}
+                        placeholder="Escribe aquí..."
+                        autoComplete="off"
+                    />
+                </div>
             </CardContent>
-            <CardFooter className="justify-center">
-                <Button onClick={handleCheck}>Verificar Ejercicio</Button>
+            <CardFooter className="justify-between">
+                <Button variant="outline" onClick={() => setCurrentIndex(prev => Math.max(0, prev - 1))} disabled={currentIndex === 0}>
+                    <ArrowLeft className="mr-2 h-4 w-4" /> Anterior
+                </Button>
+                <div className="flex gap-2">
+                    <Button onClick={handleCheck}>Verificar</Button>
+                    <Button onClick={handleNext} disabled={validationStatus[currentIndex] !== 'correct'}>
+                        {currentIndex === totalPrompts - 1 ? 'Finalizar' : 'Siguiente'}
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                </div>
             </CardFooter>
         </Card>
     );
