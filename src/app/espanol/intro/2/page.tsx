@@ -20,6 +20,7 @@ import {
   Hash,
   ArrowRight,
   ArrowLeft,
+  X,
 } from 'lucide-react';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -65,16 +66,16 @@ const readingData = {
 };
 
 const mixedExercisesData = [
-    { spanish: 'Hola, ¿cómo estás?', english: ['hello, how are you?', 'hi, how are you?'] },
-    { spanish: 'Ella es mi madre', english: ['she is my mother', "she's my mother", 'she is my mom', "she's my mom"] },
-    { spanish: 'El libro es azul', english: ['the book is blue'] },
-    { spanish: 'Hoy es miércoles', english: ['today is wednesday'] },
-    { spanish: 'Yo soy estadounidense', english: ['i am american', "i'm american"] },
-    { spanish: 'Son las diez y media', english: ["it's half past ten", "it is half past ten", "it is ten thirty", "it's ten thirty"] },
-    { spanish: 'Él tiene quince años', english: ['he is fifteen years old', "he's fifteen years old", 'he is fifteen', "he's fifteen"] },
-    { spanish: 'Mucho gusto', english: ['nice to meet you', 'pleased to meet you'] },
-    { spanish: 'Nosotros estamos en México', english: ['we are in mexico', "we're in mexico"] },
-    { spanish: 'Adiós, cuídate', english: ['goodbye, take care', 'bye, take care'] },
+    { english: 'Hello, how are you?', spanish: ['hola, ¿cómo estás?', 'hola, como estas', 'hola ¿cómo estás?', 'hola como estas'] },
+    { english: 'She is my mother', spanish: ['ella es mi madre', 'ella es mi mamá', 'ella es mi mama'] },
+    { english: 'The book is blue', spanish: ['el libro es azul'] },
+    { english: 'Today is Wednesday', spanish: ['hoy es miércoles', 'hoy es miercoles'] },
+    { english: 'I am American', spanish: ['yo soy estadounidense', 'soy estadounidense'] },
+    { english: 'It is half past ten', spanish: ['son las diez y media', 'es la diez y media'] },
+    { english: 'He is fifteen years old', spanish: ['él tiene quince años', 'el tiene quince años', 'él tiene 15 años', 'el tiene 15 años'] },
+    { english: 'Nice to meet you', spanish: ['mucho gusto', 'encantado', 'encantada', 'un placer'] },
+    { english: 'We are in Mexico', spanish: ['nosotros estamos en méxico', 'nosotros estamos en mexico', 'estamos en méxico', 'estamos en mexico'] },
+    { english: 'Goodbye, take care', spanish: ['adiós, cuídate', 'adios, cuidate', 'chao, cuídate', 'chao, cuidate'] },
 ];
 
 const numerosData = [
@@ -174,7 +175,7 @@ const MemoryGame = ({ data, onComplete }: { data: { spanish: string; english: st
         }
     }, [flippedIndices, cards]);
 
-    const isGameComplete = matchedPairIds.length === data.length;
+    const isGameComplete = matchedPairIds.length === data.length && data.length > 0;
 
     useEffect(() => {
         if (isGameComplete) {
@@ -601,8 +602,8 @@ const MixedExercise = ({ onComplete }: { onComplete: () => void }) => {
     };
 
     const handleCheck = () => {
-        const userAnswer = (userAnswers[currentIndex] || '').trim().toLowerCase().replace(/[.?,]/g, '');
-        const isCorrect = currentPrompt.english.some(correct => correct.toLowerCase().replace(/[.?,]/g, '') === userAnswer);
+        const userAnswer = (userAnswers[currentIndex] || '').trim().toLowerCase().replace(/[.?,¿!¡]/g, '');
+        const isCorrect = currentPrompt.spanish.some(correct => correct.toLowerCase().replace(/[.?,¿!¡]/g, '') === userAnswer);
         
         const newStatus = isCorrect ? 'correct' : 'incorrect';
         setValidationStatus(prev => ({ ...prev, [currentIndex]: newStatus }));
@@ -663,11 +664,11 @@ const MixedExercise = ({ onComplete }: { onComplete: () => void }) => {
             </CardHeader>
             <CardContent className="space-y-6">
                 <div className="text-center py-8 bg-muted rounded-lg border">
-                    <p className="text-sm text-muted-foreground mb-1">Traduce esta frase al inglés:</p>
-                    <p className="text-2xl font-bold">"{currentPrompt.spanish}"</p>
+                    <p className="text-sm text-muted-foreground mb-1">Traduce esta frase al español:</p>
+                    <p className="text-2xl font-bold">"{currentPrompt.english}"</p>
                 </div>
                 <div className="space-y-2">
-                    <Label htmlFor="answer">Tu traducción en inglés:</Label>
+                    <Label htmlFor="answer">Tu traducción al español:</Label>
                     <Input 
                         id="answer"
                         value={userAnswers[currentIndex] || ''} 
@@ -678,7 +679,7 @@ const MixedExercise = ({ onComplete }: { onComplete: () => void }) => {
                             validationStatus[currentIndex] === 'correct' && 'border-green-500 focus-visible:ring-green-500',
                             validationStatus[currentIndex] === 'incorrect' && 'border-destructive focus-visible:ring-destructive'
                         )}
-                        placeholder="Type your translation..."
+                        placeholder="Escribe tu traducción..."
                         autoComplete="off"
                     />
                 </div>
