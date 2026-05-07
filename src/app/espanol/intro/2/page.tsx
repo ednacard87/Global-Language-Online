@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -64,9 +65,16 @@ const readingData = {
 };
 
 const mixedExercisesData = [
-    { spanish: 'Me levanto a las siete', english: 'I get up at seven' },
-    { spanish: 'Él es de Estados Unidos', english: 'He is from the United States' },
-    { spanish: 'Buenas tardes, ¿cómo estás?', english: 'Good afternoon, how are you?' },
+    { spanish: 'Hola, ¿cómo estás?', english: ['hello, how are you?', 'hi, how are you?'] },
+    { spanish: 'Ella es mi madre', english: ['she is my mother', "she's my mother", 'she is my mom', "she's my mom"] },
+    { spanish: 'El libro es azul', english: ['the book is blue'] },
+    { spanish: 'Hoy es miércoles', english: ['today is wednesday'] },
+    { spanish: 'Yo soy estadounidense', english: ['i am american', "i'm american"] },
+    { spanish: 'Son las diez y media', english: ["it's half past ten", "it is half past ten", "it is ten thirty", "it's ten thirty"] },
+    { spanish: 'Él tiene quince años', english: ['he is fifteen years old', "he's fifteen years old", 'he is fifteen', "he's fifteen"] },
+    { spanish: 'Mucho gusto', english: ['nice to meet you', 'pleased to meet you'] },
+    { spanish: 'Nosotros estamos en México', english: ['we are in mexico', "we're in mexico"] },
+    { spanish: 'Adiós, cuídate', english: ['goodbye, take care', 'bye, take care'] },
 ];
 
 const numerosData = [
@@ -284,7 +292,12 @@ const CountriesExercise = ({ onComplete }: { onComplete: () => void }) => {
             <CardHeader><CardTitle>Países</CardTitle></CardHeader>
             <CardContent>
                 <Table>
-                    <TableHeader><TableRow><TableHead>Country</TableHead><TableHead>País</TableHead></TableRow></TableHeader>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Country</TableHead>
+                        <TableHead>País</TableHead>
+                      </TableRow>
+                    </TableHeader>
                     <TableBody>
                         {countriesExerciseData.map((data, index) => (
                             <TableRow key={index}>
@@ -574,45 +587,114 @@ const ReadingExercise = ({ onComplete }: { onComplete: () => void }) => {
 
 const MixedExercise = ({ onComplete }: { onComplete: () => void }) => {
     const { toast } = useToast();
+    const [currentIndex, setCurrentIndex] = useState(0);
     const [userAnswers, setUserAnswers] = useState<Record<number, string>>({});
     const [validationStatus, setValidationStatus] = useState<Record<number, ValidationStatus>>({});
-    
-    const handleInputChange = (index: number, value: string) => setUserAnswers(prev => ({ ...prev, [index]: value }));
+    const [showCompletionMessage, setShowCompletionMessage] = useState(false);
 
-    const handleCheckAnswers = () => {
-        let allCorrect = true;
-        const newValidationStatus: Record<number, ValidationStatus> = {};
-        mixedExercisesData.forEach((item, index) => {
-            const isCorrect = (userAnswers[index] || '').trim().toLowerCase() === item.spanish.toLowerCase();
-            if(!isCorrect) allCorrect = false;
-            newValidationStatus[index] = isCorrect ? 'correct' : 'incorrect';
-        });
-        setValidationStatus(newValidationStatus);
-        if (allCorrect) {
-            toast({ title: '¡Excelente!', description: 'Todas las traducciones son correctas.' });
-            onComplete();
+    const currentPrompt = mixedExercisesData[currentIndex];
+    const totalPrompts = mixedExercisesData.length;
+    
+    const handleInputChange = (value: string) => {
+        setUserAnswers(prev => ({ ...prev, [currentIndex]: value }));
+        setValidationStatus(prev => ({ ...prev, [currentIndex]: 'unchecked' }));
+    };
+
+    const handleCheck = () => {
+        const userAnswer = (userAnswers[currentIndex] || '').trim().toLowerCase().replace(/[.?,]/g, '');
+        const isCorrect = currentPrompt.english.some(correct => correct.toLowerCase().replace(/[.?,]/g, '') === userAnswer);
+        
+        const newStatus = isCorrect ? 'correct' : 'incorrect';
+        setValidationStatus(prev => ({ ...prev, [currentIndex]: newStatus }));
+
+        if (isCorrect) {
+            toast({ title: '¡Excelente!', description: 'La traducción es correcta.' });
         } else {
-            toast({ variant: 'destructive', title: 'Revisa tus respuestas.' });
+            toast({ variant: 'destructive', title: 'Inténtalo de nuevo', description: 'La traducción no coincide con las respuestas esperadas.' });
         }
     };
 
+    const handleNext = () => {
+        if (currentIndex < totalPrompts - 1) {
+            setCurrentIndex(prev => prev + 1);
+        } else {
+            const allCorrect = Object.values(validationStatus).filter(s => s === 'correct').length === totalPrompts;
+            if (allCorrect) {
+                setShowCompletionMessage(true);
+                onComplete();
+            } else {
+                toast({ variant: 'destructive', title: 'Revisa tus respuestas', description: 'Debes completar todos los retos correctamente.' });
+            }
+        }
+    };
+
+    if (showCompletionMessage) {
+        return (
+            <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                <CardContent className="p-6 text-center flex flex-col items-center justify-center min-h-[300px]">
+                    <Trophy className="h-16 w-16 text-yellow-400 mb-4" />
+                    <h2 className="text-3xl font-bold">¡Reto Mixto Superado!</h2>
+                    <p className="text-muted-foreground mt-2">Has dominado los temas de Intro 1E y 2E.</p>
+                </CardContent>
+            </Card>
+        );
+    }
+
     return (
-        <Card>
-            <CardHeader><CardTitle>Ejercicios Mixtos</CardTitle></CardHeader>
-            <CardContent>
-                <Table>
-                    <TableHeader><TableRow><TableHead>Inglés</TableHead><TableHead>Español</TableHead></TableRow></TableHeader>
-                    <TableBody>
-                        {mixedExercisesData.map((item, index) => (
-                            <TableRow key={index}>
-                                <TableCell>{item.english}</TableCell>
-                                <TableCell><Input value={userAnswers[index] || ''} onChange={e => handleInputChange(index, e.target.value)} className={cn(validationStatus[index] === 'correct' && 'border-green-500', validationStatus[index] === 'incorrect' && 'border-destructive')} /></TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
+        <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+            <CardHeader>
+                <CardTitle>Ejercicios Mixtos (1E & 2E)</CardTitle>
+                <div className="flex items-center justify-start flex-wrap gap-2 pt-4">
+                    {mixedExercisesData.map((_, index) => (
+                        <button
+                            key={index}
+                            onClick={() => setCurrentIndex(index)}
+                            className={cn(
+                                "h-8 w-8 rounded-full flex items-center justify-center font-bold border-2 transition-all",
+                                currentIndex === index ? "border-primary ring-2 ring-primary" : "border-muted-foreground/50",
+                                validationStatus[index] === 'correct' && 'bg-green-500/20 border-green-500 text-green-700',
+                                validationStatus[index] === 'incorrect' && 'bg-red-500/20 border-destructive text-destructive',
+                            )}
+                        >
+                            {index + 1}
+                        </button>
+                    ))}
+                </div>
+            </CardHeader>
+            <CardContent className="space-y-6">
+                <div className="text-center py-8 bg-muted rounded-lg border">
+                    <p className="text-sm text-muted-foreground mb-1">Traduce esta frase al inglés:</p>
+                    <p className="text-2xl font-bold">"{currentPrompt.spanish}"</p>
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="answer">Tu traducción en inglés:</Label>
+                    <Input 
+                        id="answer"
+                        value={userAnswers[currentIndex] || ''} 
+                        onChange={e => handleInputChange(e.target.value)}
+                        onKeyDown={e => e.key === 'Enter' && handleCheck()}
+                        className={cn(
+                            "text-lg h-12",
+                            validationStatus[currentIndex] === 'correct' && 'border-green-500 focus-visible:ring-green-500',
+                            validationStatus[currentIndex] === 'incorrect' && 'border-destructive focus-visible:ring-destructive'
+                        )}
+                        placeholder="Type your translation..."
+                        autoComplete="off"
+                    />
+                </div>
             </CardContent>
-            <CardFooter><Button onClick={handleCheckAnswers}>Verificar Ejercicios</Button></CardFooter>
+            <CardFooter className="justify-between">
+                <Button variant="outline" onClick={() => setCurrentIndex(prev => Math.max(0, prev - 1))} disabled={currentIndex === 0}>
+                    <ArrowLeft className="mr-2 h-4 w-4" /> Anterior
+                </Button>
+                <div className="flex gap-2">
+                    <Button onClick={handleCheck}>Verificar</Button>
+                    <Button onClick={handleNext} disabled={validationStatus[currentIndex] !== 'correct'}>
+                        {currentIndex === totalPrompts - 1 ? 'Finalizar' : 'Siguiente'}
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                </div>
+            </CardFooter>
         </Card>
     );
 };
