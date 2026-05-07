@@ -130,8 +130,7 @@ export default function EspanolDashboardPage() {
     }, [user, studentProfile, isUserLoading, isProfileLoading, isAdmin, router]);
 
     const vrGamerAvatar = PlaceHolderImages.find(p => p.id === 'vr-gamer-avatar');
-    const happinessImage = "https://s3.envato.com/files/1a8011a5-217f-4a8a-9618-c2ddefbe08e3/inline_image_preview.jpg";
-
+    
     const introProgress = useMemo(() => calculateEspanolIntroProgress(studentProfile?.progress), [studentProfile]);
 
     const a1Progress = useMemo(() => {
@@ -310,7 +309,7 @@ export default function EspanolDashboardPage() {
                         <NeonCard icon={Video} title="VIDEO" href="/media/es_video" />
                         <NeonCard icon={Music} title="MÚSICA" href="/media/es_music" />
                         <NeonCard icon={Music} title="CANCIÓN" href="https://es.lyricstraining.com/sign_up" />
-                        <NeonCard icon={Smile} title="VIDA FELIZ" href="/media/es_vida_feliz" bgImage={happinessImage} />
+                        <NeonCard icon={Mic} title="PRACTICA VERBAL" href="/media/es_practica_verbal" />
                     </div>
                 </div>
 
@@ -397,7 +396,7 @@ export default function EspanolDashboardPage() {
                     <NeonCard icon={Video} title="VIDEO" href="/media/es_video" />
                     <NeonCard icon={Music} title="MÚSICA" href="/media/es_music" />
                     <NeonCard icon={Music} title="CANCIÓN" href="https://es.lyricstraining.com/sign_up" />
-                    <NeonCard icon={Smile} title="VIDA FELIZ" href="/media/es_vida_feliz" bgImage={happinessImage} />
+                    <NeonCard icon={Mic} title="PRACTICA VERBAL" href="/media/es_practica_verbal" />
                 </div>
               </div>
               

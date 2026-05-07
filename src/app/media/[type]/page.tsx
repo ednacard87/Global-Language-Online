@@ -84,12 +84,12 @@ const mediaContent = {
     icon: Music,
     progressKey: 'progress_es_quick_music'
   },
-  es_vida_feliz: {
-    title: "Vida Feliz",
-    description: "Disfruta de este contenido especial para tu bienestar y felicidad.",
-    url: "https://www.youtube.com/embed/zP12m0u0Y-I",
-    icon: Smile,
-    progressKey: 'progress_es_vida_feliz'
+  es_practica_verbal: {
+    title: "Práctica Verbal",
+    description: "Mejora tu fluidez y pronunciación con esta sesión interactiva.",
+    url: "https://www.youtube.com/embed/Zg6IFi5J9Wc",
+    icon: Mic,
+    progressKey: 'progress_es_practica_verbal'
   }
 };
 
