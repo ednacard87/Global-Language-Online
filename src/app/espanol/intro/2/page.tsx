@@ -72,10 +72,17 @@ const numerosData = [
     { num: '1', word: 'Uno' }, { num: '2', word: 'Dos' }, { num: '3', word: 'Tres' },
     { num: '4', word: 'Cuatro' }, { num: '5', word: 'Cinco' }, { num: '6', word: 'Seis' },
     { num: '7', word: 'Siete' }, { num: '8', word: 'Ocho' }, { num: '9', word: 'Nueve' },
-    { num: '10', word: 'Diez' }, { num: '20', word: 'Veinte' }, { num: '30', word: 'Treinta' },
+    { num: '10', word: 'Diez' },
+    { num: '11', word: 'Once' }, { num: '12', word: 'Doce' }, { num: '13', word: 'Trece' },
+    { num: '14', word: 'Catorce' }, { num: '15', word: 'Quince' }, { num: '16', word: 'Dieciséis' },
+    { num: '17', word: 'Diecisiete' }, { num: '18', word: 'Dieciocho' }, { num: '19', word: 'Diecinueve' },
+    { num: '20', word: 'Veinte' }, { num: '30', word: 'Treinta' },
     { num: '40', word: 'Cuarenta' }, { num: '50', word: 'Cincuenta' }, { num: '60', word: 'Sesenta' },
     { num: '70', word: 'Setenta' }, { num: '80', word: 'Ochenta' }, { num: '90', word: 'Noventa' },
-    { num: '100', word: 'Cien' }
+    { num: '100', word: 'Cien' },
+    { num: '200', word: 'Doscientos' }, { num: '300', word: 'Trescientos' }, { num: '400', word: 'Cuatrocientos' },
+    { num: '500', word: 'Quinientos' }, { num: '700', word: 'Setecientos' }, { num: '900', word: 'Novecientos' },
+    { num: '1000', word: 'Mil' }, { num: "1'000.000", word: 'Un Millón' }
 ];
 
 // Components inside the page file
@@ -474,7 +481,7 @@ export default function EspanolIntro2Page() {
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
                         <CardHeader>
                             <CardTitle>Números</CardTitle>
-                            <CardDescription>Repasa los números básicos del 1 al 100.</CardDescription>
+                            <CardDescription>Repasa los números básicos.</CardDescription>
                         </CardHeader>
                         <CardContent>
                             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
