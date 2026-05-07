@@ -12,6 +12,7 @@ import { Label } from '@/components/ui/label';
 import { useRouter } from 'next/navigation';
 import { useUser, useFirestore, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
 import { doc } from 'firebase/firestore';
+import { ArrowLeft } from 'lucide-react';
 
 const exercisesData = {
     part1: {
