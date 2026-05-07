@@ -17,6 +17,7 @@ import {
   RefreshCw,
   Flame,
   Loader2,
+  Hash,
 } from 'lucide-react';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -65,6 +66,16 @@ const mixedExercisesData = [
     { spanish: 'Me levanto a las siete', english: 'I get up at seven' },
     { spanish: 'Él es de Estados Unidos', english: 'He is from the United States' },
     { spanish: 'Buenas tardes, ¿cómo estás?', english: 'Good afternoon, how are you?' },
+];
+
+const numerosData = [
+    { num: '1', word: 'Uno' }, { num: '2', word: 'Dos' }, { num: '3', word: 'Tres' },
+    { num: '4', word: 'Cuatro' }, { num: '5', word: 'Cinco' }, { num: '6', word: 'Seis' },
+    { num: '7', word: 'Siete' }, { num: '8', word: 'Ocho' }, { num: '9', word: 'Nueve' },
+    { num: '10', word: 'Diez' }, { num: '20', word: 'Veinte' }, { num: '30', word: 'Treinta' },
+    { num: '40', word: 'Cuarenta' }, { num: '50', word: 'Cincuenta' }, { num: '60', word: 'Sesenta' },
+    { num: '70', word: 'Setenta' }, { num: '80', word: 'Ochenta' }, { num: '90', word: 'Noventa' },
+    { num: '100', word: 'Cien' }
 ];
 
 // Components inside the page file
@@ -375,6 +386,7 @@ export default function EspanolIntro2Page() {
     
     const initialLearningPath = useMemo((): Topic[] => [
         { key: 'memory_game', name: 'Juego de Memoria', icon: BrainCircuit, status: 'active' },
+        { key: 'numeros', name: 'Números', icon: Hash, status: 'locked' },
         { key: 'time', name: 'La Hora', icon: Clock, status: 'locked' },
         { key: 'countries', name: 'Países y Nacionalidades', icon: Globe, status: 'locked' },
         { key: 'reading', name: 'Lectura y Comprensión', icon: BookOpen, status: 'locked' },
@@ -449,7 +461,7 @@ export default function EspanolIntro2Page() {
             return;
         }
         setSelectedTopic(key);
-        if (['time'].includes(key)) {
+        if (['time', 'numeros'].includes(key)) {
             handleTopicComplete(key);
         }
     };
@@ -457,6 +469,28 @@ export default function EspanolIntro2Page() {
     const renderContent = () => {
         switch(selectedTopic) {
             case 'memory_game': return <MemoryGame data={greetingsAndFarewellsData} onComplete={() => handleTopicComplete('memory_game')} />;
+            case 'numeros':
+                return (
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                        <CardHeader>
+                            <CardTitle>Números</CardTitle>
+                            <CardDescription>Repasa los números básicos del 1 al 100.</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                                {numerosData.map((item) => (
+                                    <div key={item.num} className="p-4 bg-muted rounded-xl text-center border-2 border-transparent hover:border-primary transition-colors">
+                                        <p className="text-3xl font-bold text-primary">{item.num}</p>
+                                        <p className="text-sm font-medium text-muted-foreground uppercase">{item.word}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </CardContent>
+                        <CardFooter>
+                            <Button onClick={() => handleTopicComplete('numeros')}>He terminado de repasar</Button>
+                        </CardFooter>
+                    </Card>
+                );
             case 'time': return (
                 <Card>
                     <CardHeader><CardTitle>La Hora</CardTitle></CardHeader>
@@ -504,21 +538,17 @@ export default function EspanolIntro2Page() {
                                 <CardContent>
                                     <nav>
                                         <ul className="space-y-1">
-                                            {learningPath.map(item => {
-                                                const Icon = item.icon;
-                                                return (
-                                                    <li key={item.key} onClick={() => handleTopicSelect(item.key)}
-                                                        className={cn('flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer',
-                                                            item.status === 'locked' && !isAdmin ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted',
-                                                            selectedTopic === item.key && 'bg-muted text-primary font-semibold'
-                                                        )}
-                                                    >
-                                                        {item.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500"/> : <Icon className="h-5 w-5" />}
-                                                        <span>{item.name}</span>
-                                                        {item.status === 'locked' && !isAdmin && <Lock className="h-4 w-4 text-yellow-500 ml-auto" />}
-                                                    </li>
-                                                )
-                                            })}
+                                            {learningPath.map(item => (
+                                                <li key={item.key} onClick={() => handleTopicSelect(item.key)}
+                                                    className={cn('flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer',
+                                                        item.status === 'locked' && !isAdmin ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted',
+                                                        selectedTopic === item.key && 'bg-muted text-primary font-semibold'
+                                                    )}>
+                                                    {item.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500"/> : <item.icon className="h-5 w-5" />}
+                                                    <span>{item.name}</span>
+                                                    {item.status === 'locked' && !isAdmin && <Lock className="h-4 w-4 text-yellow-500 ml-auto" />}
+                                                </li>
+                                            ))}
                                         </ul>
                                     </nav>
                                      <div className="mt-6 pt-6 border-t">
@@ -539,4 +569,3 @@ export default function EspanolIntro2Page() {
         </div>
     );
 }
-
