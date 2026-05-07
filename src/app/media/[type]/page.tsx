@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { useUser, useFirestore, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { cn } from '@/lib/utils';
-import { Video, CheckCircle, ArrowLeft, Mic, Newspaper, FileText, Music, CaseSensitive, PlayCircle, Smile } from 'lucide-react';
+import { Video, CheckCircle, ArrowLeft, Mic, Newspaper, FileText, Music, CaseSensitive, PlayCircle, Smile, Ear } from 'lucide-react';
 
 const mediaContent = {
   podcast: { 
@@ -85,10 +85,10 @@ const mediaContent = {
     progressKey: 'progress_es_quick_music'
   },
   es_practica_verbal: {
-    title: "Práctica Verbal",
+    title: "Escucha",
     description: "Mejora tu fluidez y pronunciación con esta sesión interactiva.",
     url: "https://www.youtube.com/embed/Zg6IFi5J9Wc",
-    icon: Mic,
+    icon: Ear,
     progressKey: 'progress_es_practica_verbal'
   }
 };

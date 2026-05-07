@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 import Image from 'next/image';
-import { BookOpen, Mic, Video, Music, Lock, CheckCircle, Flame, Gamepad2, Star, Rocket, Smile } from 'lucide-react';
+import { BookOpen, Mic, Video, Music, Lock, CheckCircle, Flame, Gamepad2, Star, Rocket, Smile, PlayCircle, Ear } from 'lucide-react';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -309,7 +309,7 @@ export default function EspanolDashboardPage() {
                         <NeonCard icon={Video} title="VIDEO" href="/media/es_video" />
                         <NeonCard icon={Music} title="MÚSICA" href="/media/es_music" />
                         <NeonCard icon={Music} title="CANCIÓN" href="https://es.lyricstraining.com/sign_up" />
-                        <NeonCard icon={Mic} title="PRACTICA VERBAL" href="/media/es_practica_verbal" />
+                        <NeonCard icon={Ear} title="ESCUCHA" href="/media/es_practica_verbal" />
                     </div>
                 </div>
 
@@ -325,7 +325,21 @@ export default function EspanolDashboardPage() {
 
             {/* --- MOBILE VIEW --- */}
             <div className="lg:hidden flex flex-col space-y-8">
-              {/* 1. Intro Course */}
+              {/* 1. Saludo */}
+              <div className="flex justify-between items-center rounded-lg bg-card/80 backdrop-blur-sm border-2 border-brand-purple p-4">
+                  <div>
+                      <h1 className="text-2xl font-bold text-primary">WELCOME, {studentProfile?.name?.split(' ')[0] || 'Student'}!</h1>
+                      <p className="text-muted-foreground text-sm">Ready for your next challenge?</p>
+                  </div>
+                  <div className="flex items-center gap-4">
+                      <Avatar className="h-12 w-12 border-4 border-primary">
+                          <AvatarImage src={user?.photoURL || vrGamerAvatar?.imageUrl} alt={studentProfile?.name || 'Student'} />
+                          <AvatarFallback>{studentProfile?.name?.[0] || 'S'}</AvatarFallback>
+                      </Avatar>
+                  </div>
+              </div>
+              
+              {/* 2. Intro Course */}
               {introCourse && (
                 <div>
                   <h2 className="text-xl font-bold text-primary uppercase tracking-wider mb-4">La Aventura de Aprendizaje</h2>
@@ -333,7 +347,7 @@ export default function EspanolDashboardPage() {
                 </div>
               )}
               
-              {/* 2. Quick Skills */}
+              {/* 3. Quick Skills */}
               <div className="space-y-4">
                 <h2 className="text-xl font-bold text-primary uppercase tracking-wider">Habilidades Rápidas</h2>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
@@ -396,7 +410,7 @@ export default function EspanolDashboardPage() {
                     <NeonCard icon={Video} title="VIDEO" href="/media/es_video" />
                     <NeonCard icon={Music} title="MÚSICA" href="/media/es_music" />
                     <NeonCard icon={Music} title="CANCIÓN" href="https://es.lyricstraining.com/sign_up" />
-                    <NeonCard icon={Mic} title="PRACTICA VERBAL" href="/media/es_practica_verbal" />
+                    <NeonCard icon={Ear} title="ESCUCHA" href="/media/es_practica_verbal" />
                 </div>
               </div>
               
