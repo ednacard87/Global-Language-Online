@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { useUser, useFirestore, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { cn } from '@/lib/utils';
-import { Video, CheckCircle, ArrowLeft, Mic, Newspaper, FileText, Music, CaseSensitive, PlayCircle } from 'lucide-react';
+import { Video, CheckCircle, ArrowLeft, Mic, Newspaper, FileText, Music, CaseSensitive, PlayCircle, Smile } from 'lucide-react';
 
 const mediaContent = {
   podcast: { 
@@ -83,6 +83,13 @@ const mediaContent = {
     url: "https://www.youtube.com/embed/h6pjFfdSJo8",
     icon: Music,
     progressKey: 'progress_es_quick_music'
+  },
+  es_vida_feliz: {
+    title: "Vida Feliz",
+    description: "Disfruta de este contenido especial para tu bienestar y felicidad.",
+    url: "https://www.youtube.com/embed/zP12m0u0Y-I",
+    icon: Smile,
+    progressKey: 'progress_es_vida_feliz'
   }
 };
 
@@ -115,7 +122,9 @@ export default function MediaViewerPage() {
     }
 
     const Icon = content.icon;
-    const bgClass = type.startsWith('es_') ? 'espanol-dashboard-bg' : (type.startsWith('kids_') ? 'kids-page-container' : 'ingles-dashboard-bg');
+    const isKids = type.startsWith('kids_');
+    const isSpanish = type.startsWith('es_');
+    const bgClass = isSpanish ? 'espanol-dashboard-bg' : (isKids ? 'kids-page-container' : 'ingles-dashboard-bg');
 
     const handleComplete = async () => {
         if (!studentDocRef) return;
@@ -164,10 +173,10 @@ export default function MediaViewerPage() {
                         </CardContent>
                         <CardFooter className="p-6 bg-muted/30 border-t flex flex-col sm:flex-row justify-between items-center gap-4">
                             <p className="text-sm text-muted-foreground text-center sm:text-left">
-                                Once you finish, click the button to mark as completed and return to your dashboard.
+                                Una vez que hayas terminado, haz clic en el botón para marcar como completado y volver.
                             </p>
                             <Button onClick={handleComplete} disabled={isCompleting} className="w-full sm:w-auto">
-                                {isCompleting ? "Saving..." : "Mark as Completed"}
+                                {isCompleting ? "Guardando..." : "Marcar como Completado"}
                                 <CheckCircle className="ml-2 h-4 w-4" />
                             </Button>
                         </CardFooter>

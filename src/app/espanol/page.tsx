@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 import Image from 'next/image';
-import { BookOpen, Mic, Video, Music, Lock, CheckCircle, Flame, Gamepad2, Star, Rocket } from 'lucide-react';
+import { BookOpen, Mic, Video, Music, Lock, CheckCircle, Flame, Gamepad2, Star, Rocket, Smile } from 'lucide-react';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -20,11 +20,25 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Separator } from '@/components/ui/separator';
 
 
-const NeonCard = ({ icon: Icon, title, href }: { icon: React.ElementType, title: string, href?: string }) => (
+const NeonCard = ({ icon: Icon, title, href, bgImage }: { icon: React.ElementType, title: string, href?: string, bgImage?: string }) => (
     <Link href={href || '#'} className="block" target={href?.startsWith('http') ? '_blank' : undefined} rel={href?.startsWith('http') ? 'noopener noreferrer' : undefined}>
-        <Card className="bg-card border-2 border-primary/50 rounded-2xl text-center p-4 transition-all hover:bg-primary/10 hover:border-primary hover:shadow-lg hover:shadow-primary/20 aspect-square flex flex-col justify-center items-center">
-            <Icon className="h-12 w-12 mx-auto text-primary" />
-            <p className="mt-2 font-bold uppercase">{title}</p>
+        <Card className="bg-card/80 border-2 border-primary/50 rounded-2xl text-center p-4 transition-all hover:bg-primary/10 hover:border-primary hover:shadow-lg hover:shadow-primary/20 aspect-square flex flex-col justify-center items-center relative overflow-hidden">
+            {bgImage && (
+                <div className="absolute inset-0 z-0">
+                    <Image 
+                        src={bgImage} 
+                        alt="" 
+                        fill 
+                        className="object-cover opacity-40"
+                        data-ai-hint="background texture"
+                    />
+                    <div className="absolute inset-0 bg-background/40" />
+                </div>
+            )}
+            <div className="relative z-10">
+                <Icon className="h-10 w-10 mx-auto text-primary" />
+                <p className="mt-2 text-sm font-bold uppercase">{title}</p>
+            </div>
         </Card>
     </Link>
 );
@@ -102,6 +116,7 @@ export default function EspanolDashboardPage() {
     }, [user, studentProfile, isUserLoading, isProfileLoading, isAdmin, router]);
 
     const vrGamerAvatar = PlaceHolderImages.find(p => p.id === 'vr-gamer-avatar');
+    const happinessImage = "https://s3.envato.com/files/1a8011a5-217f-4a8a-9618-c2ddefbe08e3/inline_image_preview.jpg";
 
     const introProgress = useMemo(() => calculateEspanolIntroProgress(studentProfile?.progress), [studentProfile]);
 
@@ -282,6 +297,7 @@ export default function EspanolDashboardPage() {
                         <NeonCard icon={Video} title="VIDEO" href="/media/es_video" />
                         <NeonCard icon={Music} title="MÚSICA" href="/media/es_music" />
                         <NeonCard icon={Music} title="CANCIÓN" href="https://es.lyricstraining.com/sign_up" />
+                        <NeonCard icon={Smile} title="VIDA FELIZ" href="/media/es_vida_feliz" bgImage={happinessImage} />
                     </div>
                 </div>
 
@@ -334,7 +350,7 @@ export default function EspanolDashboardPage() {
                             Se levantó lentamente y comenzó a seguir a la mariposa. Primero, caminó despacio para no asustarla. La mariposa voló hacia un rosal, y Polo la siguió. Luego, voló sobre un pequeño estanque, y Polo saltó con cuidado para no mojarse.
                           </p>
                           <p>
-                            La mariposa lo llevó más allá del jardín que conocía, hasta un rincón secreto detrás de unos viejos árboles. Allí, Polo descubrió un jardín escondido, lleno de flores silvestres que nunca había visto y con un aroma dulce y fresco.
+                            La mariposa lo llevó más allá del jardín que conocía, hasta un rincón secreto detrás de unos viejos árboles. Allí, Polo descubrú un jardín escondido, lleno de flores silvestres que nunca había visto y con un aroma dulce y fresco.
                           </p>
                           <p>
                             La mariposa se posó sobre una flor roja y pareció sonreírle. Polo se sentó, feliz por su nueva aventura, y se quedó allí, disfrutando de la paz del jardín secreto hasta que el sol comenzó a bajar.
@@ -369,6 +385,7 @@ export default function EspanolDashboardPage() {
                     <NeonCard icon={Video} title="VIDEO" href="/media/es_video" />
                     <NeonCard icon={Music} title="MÚSICA" href="/media/es_music" />
                     <NeonCard icon={Music} title="CANCIÓN" href="https://es.lyricstraining.com/sign_up" />
+                    <NeonCard icon={Smile} title="VIDA FELIZ" href="/media/es_vida_feliz" bgImage={happinessImage} />
                 </div>
               </div>
               
