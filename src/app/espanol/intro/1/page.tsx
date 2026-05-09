@@ -120,10 +120,12 @@ const lecturaData = {
     multipleChoice: [
         { id: 'mc1', question: '¿Cómo está Juan hoy?', options: ['Feliz', 'Triste', 'Cansado'], answer: 'Feliz' },
         { id: 'mc2', question: '¿De qué color es la mesa?', options: ['Blanca', 'Roja', 'Azul'], answer: 'Roja' },
+        { id: 'mc3', question: '¿Cómo es el perro de Juan?', options: ['Grande', 'Pequeño', 'Negro'], answer: 'Pequeño' },
     ],
     openQuestions: [
         { id: 'oq1', question: '¿Dónde quiere estudiar Juan hoy?', answer: 'biblioteca' },
         { id: 'oq2', question: '¿Qué le gusta leer a Juan?', answer: 'libros' },
+        { id: 'oq3', question: '¿A dónde va a trabajar Juan mañana?', answer: 'oficina' },
     ]
 };
 
