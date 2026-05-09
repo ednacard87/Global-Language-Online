@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
@@ -202,7 +201,7 @@ export default function EspanolIntro1Page() {
     }, [topicToComplete, toast]);
 
     const handleTopicComplete = (key: string) => {
-        setTopicToComplete(key);
+        handleTopicComplete('saludos');
     };
 
     const handleTopicSelect = (key: string) => {
@@ -214,7 +213,7 @@ export default function EspanolIntro1Page() {
         setSelectedTopic(key);
         const autoFinish = ['saludos', 'despedidas', 'sustantivos', 'adjetivos', 'verbos'];
         if (autoFinish.includes(key)) {
-            handleTopicComplete(key);
+            setTopicToComplete(key);
         }
     };
 
@@ -239,7 +238,7 @@ export default function EspanolIntro1Page() {
         setVocabValidation(newValidation);
         if (allCorrect) {
             toast({ title: 'Excellent!', description: 'All basic vocabulary is correct.' });
-            handleTopicComplete('vocabulario');
+            setTopicToComplete('vocabulario');
         } else {
             toast({ variant: 'destructive', title: 'Review your answers.' });
         }
@@ -260,7 +259,7 @@ export default function EspanolIntro1Page() {
         setReadingValidation(newValidation);
         if(allCorrect) {
             toast({ title: 'Very well!', description: 'You answered everything correctly.' });
-            handleTopicComplete('lectura');
+            setTopicToComplete('lectura');
         } else {
             toast({ variant: 'destructive', title: 'Some answers are incorrect.' });
         }
@@ -287,7 +286,7 @@ export default function EspanolIntro1Page() {
                         </div>
                     </CardContent>
                     <CardFooter>
-                        <Button onClick={() => handleTopicComplete('saludos')}>Continue to Farewells</Button>
+                        <Button onClick={() => setTopicToComplete('saludos')}>Continue to Farewells</Button>
                     </CardFooter>
                 </Card>
             );
@@ -310,7 +309,7 @@ export default function EspanolIntro1Page() {
                         </div>
                     </CardContent>
                     <CardFooter>
-                        <Button onClick={() => handleTopicComplete('despedidas')}>Continue</Button>
+                        <Button onClick={() => setTopicToComplete('despedidas')}>Continue</Button>
                     </CardFooter>
                 </Card>
             );
@@ -321,6 +320,9 @@ export default function EspanolIntro1Page() {
                         <CardDescription>Understanding gender and number in Spanish.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-6">
+                        <div className="bg-primary/5 p-4 rounded-lg border-l-4 border-primary">
+                            <p className="text-lg">A noun is a <strong>person, animal and things</strong> (persona, animal o cosa).</p>
+                        </div>
                         <div>
                             <h3 className="text-xl font-bold text-primary mb-2">1. Gender (Género)</h3>
                             <p className="text-muted-foreground">Unlike English, every noun in Spanish has a gender: <strong>Masculine</strong> or <strong>Feminine</strong>.</p>
@@ -348,7 +350,7 @@ export default function EspanolIntro1Page() {
                         </div>
                     </CardContent>
                     <CardFooter>
-                         <Button onClick={() => handleTopicComplete('sustantivos')}>Continue</Button>
+                         <Button onClick={() => setTopicToComplete('sustantivos')}>Continue</Button>
                     </CardFooter>
                 </Card>
             );
@@ -383,7 +385,7 @@ export default function EspanolIntro1Page() {
                         </div>
                     </CardContent>
                     <CardFooter>
-                         <Button onClick={() => handleTopicComplete('adjetivos')}>Continue</Button>
+                         <Button onClick={() => setTopicToComplete('adjetivos')}>Continue</Button>
                     </CardFooter>
                 </Card>
             );
@@ -419,7 +421,7 @@ export default function EspanolIntro1Page() {
                         </div>
                     </CardContent>
                     <CardFooter>
-                         <Button onClick={() => handleTopicComplete('verbos')}>Continue</Button>
+                         <Button onClick={() => setTopicToComplete('verbos')}>Continue</Button>
                     </CardFooter>
                 </Card>
             );
