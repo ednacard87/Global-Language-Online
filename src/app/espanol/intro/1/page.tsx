@@ -16,6 +16,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import Image from 'next/image';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 
@@ -77,7 +78,7 @@ const adjectivesPracticeData = [
     { english: 'bored', spanish: 'aburrido' },
     { english: 'worried', spanish: 'preocupado' },
     { english: 'tired', spanish: 'cansado' },
-    { english: 'busy', spanish: 'ocupado' },
+    { english: 'busy', spanish: 'ocupa' },
     { english: 'tidy', spanish: 'ordenado' },
 ];
 
@@ -114,13 +115,15 @@ const memoryPairs = [
 ];
 
 const lecturaData = {
-    title: 'Un Día en el Parque',
-    content: "Hola, me llamo Ana. Hoy es lunes y el cielo está azul. Voy al parque. En el parque, veo un árbol grande y verde. También veo flores de color rojo y amarillo. Me gusta el parque. Mañana es martes. ¡Adiós!",
-    questions: [
-        { id: 'q1', question: '¿Cómo se llama la persona?', answer: 'ana' },
-        { id: 'q2', question: '¿Qué día es hoy?', answer: 'lunes' },
-        { id: 'q3', question: '¿De qué color es el cielo?', answer: 'azul' },
-        { id: 'q4', question: '¿Qué colores de flores ve Ana?', answer: 'rojo y amarillo' },
+    title: 'Mi Vida Diaria',
+    content: "Hola, mi nombre es Juan. Yo soy un estudiante y hoy estoy muy feliz. En mi casa grande hay una mesa roja y cuatro sillas blancas. Mi perro es pequeño y muy inteligente. Hoy yo quiero estudiar en la biblioteca. Mañana voy a trabajar en la oficina. Me gusta leer libros interesantes. ¡Adiós!",
+    multipleChoice: [
+        { id: 'mc1', question: '¿Cómo está Juan hoy?', options: ['Feliz', 'Triste', 'Cansado'], answer: 'Feliz' },
+        { id: 'mc2', question: '¿De qué color es la mesa?', options: ['Blanca', 'Roja', 'Azul'], answer: 'Roja' },
+    ],
+    openQuestions: [
+        { id: 'oq1', question: '¿Dónde quiere estudiar Juan hoy?', answer: 'biblioteca' },
+        { id: 'oq2', question: '¿Qué le gusta leer a Juan?', answer: 'libros' },
     ]
 };
 
@@ -212,7 +215,7 @@ const VocabularyMatchingGame = ({ onComplete }: { onComplete: () => void }) => {
                             return (
                                 <div key={card.id} onClick={() => handleCardClick(index)}
                                     className={cn(
-                                        "flex items-center justify-center h-14 px-3 text-center cursor-pointer transition-all border-2 rounded-xl text-sm sm:text-base font-bold select-none shadow-sm", 
+                                        "flex items-center justify-center min-h-[50px] px-3 py-2 text-center cursor-pointer transition-all border-2 rounded-xl text-base sm:text-lg font-bold select-none shadow-sm", 
                                         isMatched ? "bg-green-500/10 border-green-500 text-green-700 opacity-50" : 
                                         isSelected ? "bg-primary/20 border-primary text-primary" : "bg-card border-border hover:bg-muted hover:border-muted-foreground/30"
                                     )}>
@@ -447,24 +450,36 @@ export default function EspanolIntro1Page() {
         }
     };
 
-    const handleReadingInputChange = (id: string, value: string) => {
+    const handleReadingAnswerChange = (id: string, value: string) => {
         setReadingAnswers(prev => ({...prev, [id]: value}));
+        setReadingValidation(prev => ({...prev, [id]: 'unchecked'}));
     };
     
     const handleCheckReading = () => {
         const newValidation: Record<string, 'correct' | 'incorrect' | 'unchecked'> = {};
         let allCorrect = true;
-        lecturaData.questions.forEach(q => {
-            const isCorrect = readingAnswers[q.id]?.trim().toLowerCase() === q.answer.toLowerCase();
+
+        // Check Multiple Choice
+        lecturaData.multipleChoice.forEach(q => {
+            const isCorrect = readingAnswers[q.id] === q.answer;
             if(!isCorrect) allCorrect = false;
             newValidation[q.id] = isCorrect ? 'correct' : 'incorrect';
         });
+
+        // Check Open Questions
+        lecturaData.openQuestions.forEach(q => {
+            const userAnswer = readingAnswers[q.id]?.trim().toLowerCase() || '';
+            const isCorrect = userAnswer.includes(q.answer.toLowerCase());
+            if(!isCorrect) allCorrect = false;
+            newValidation[q.id] = isCorrect ? 'correct' : 'incorrect';
+        });
+
         setReadingValidation(newValidation);
         if(allCorrect) {
-            toast({ title: 'Very well!', description: 'You answered everything correctly.' });
+            toast({ title: '¡Excelente trabajo!', description: 'Has respondido todas las preguntas correctamente.' });
             handleTopicComplete('lectura');
         } else {
-            toast({ variant: 'destructive', title: 'Some answers are incorrect.' });
+            toast({ variant: 'destructive', title: 'Algunas respuestas son incorrectas.', description: 'Revisa los campos en rojo.' });
         }
     };
 
@@ -478,12 +493,12 @@ export default function EspanolIntro1Page() {
                     </CardHeader>
                     <CardContent>
                         <div className="grid grid-cols-2 gap-4 text-lg">
-                            <div className="font-bold p-3 bg-muted rounded-lg">Spanish</div>
-                            <div className="font-bold p-3 bg-muted rounded-lg">English</div>
+                            <div className="font-bold p-3 bg-muted rounded-lg text-center">Español</div>
+                            <div className="font-bold p-3 bg-muted rounded-lg text-center">English</div>
                             {saludosData.map(item => (
                                 <React.Fragment key={item.spanish}>
-                                    <div className="p-3 border rounded-lg font-medium">{item.spanish}</div>
-                                    <div className="p-3 border rounded-lg text-muted-foreground">{item.english}</div>
+                                    <div className="p-3 border rounded-lg font-medium text-center">{item.spanish}</div>
+                                    <div className="p-3 border rounded-lg text-muted-foreground text-center">{item.english}</div>
                                 </React.Fragment>
                             ))}
                         </div>
@@ -501,12 +516,12 @@ export default function EspanolIntro1Page() {
                     </CardHeader>
                     <CardContent>
                         <div className="grid grid-cols-2 gap-4 text-lg">
-                            <div className="font-bold p-3 bg-muted rounded-lg">Spanish</div>
-                            <div className="font-bold p-3 bg-muted rounded-lg">English</div>
+                            <div className="font-bold p-3 bg-muted rounded-lg text-center">Español</div>
+                            <div className="font-bold p-3 bg-muted rounded-lg text-center">English</div>
                             {despedidasData.map(item => (
                                 <React.Fragment key={item.spanish}>
-                                    <div className="p-3 border rounded-lg font-medium">{item.spanish}</div>
-                                    <div className="p-3 border rounded-lg text-muted-foreground">{item.english}</div>
+                                    <div className="p-3 border rounded-lg font-medium text-center">{item.spanish}</div>
+                                    <div className="p-3 border rounded-lg text-muted-foreground text-center">{item.english}</div>
                                 </React.Fragment>
                             ))}
                         </div>
@@ -720,29 +735,75 @@ export default function EspanolIntro1Page() {
             );
             case 'vocabulario': return <VocabularyMatchingGame onComplete={() => handleTopicComplete('vocabulario')} />;
             case 'lectura': return (
-                 <Card>
+                 <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
                     <CardHeader>
                         <CardTitle>{lecturaData.title}</CardTitle>
-                        <CardDescription>Practice your reading comprehension.</CardDescription>
+                        <CardDescription>Practica tu comprensión de lectura con este texto que resume lo aprendido.</CardDescription>
                     </CardHeader>
-                    <CardContent>
-                        <p className="text-lg leading-relaxed mb-6 border-b pb-6 italic">{lecturaData.content}</p>
-                        <h3 className="text-xl font-semibold mb-4">Questions</h3>
-                        <div className="space-y-4">
-                            {lecturaData.questions.map(q => (
-                                <div key={q.id}>
-                                    <Label htmlFor={q.id} className="text-base">{q.question}</Label>
-                                    <Input 
-                                        id={q.id} 
-                                        value={readingAnswers[q.id] || ''}
-                                        onChange={e => handleReadingInputChange(q.id, e.target.value)}
-                                        className={cn('mt-1', readingValidation[q.id] === 'correct' && 'border-green-500', readingValidation[q.id] === 'incorrect' && 'border-destructive')}
-                                    />
-                                </div>
-                            ))}
+                    <CardContent className="space-y-6">
+                        <div className="bg-muted p-6 rounded-lg border italic text-lg leading-relaxed shadow-inner">
+                            {lecturaData.content}
+                        </div>
+
+                        <Separator />
+
+                        <div className="space-y-8">
+                            <div className="space-y-6">
+                                <h3 className="text-xl font-bold text-primary">Preguntas de Selección Múltiple</h3>
+                                {lecturaData.multipleChoice.map((q) => (
+                                    <div key={q.id} className="space-y-3 p-4 border rounded-lg bg-card">
+                                        <Label className="text-lg font-semibold">{q.question}</Label>
+                                        <RadioGroup 
+                                            value={readingAnswers[q.id] || ''} 
+                                            onValueChange={(val) => handleReadingAnswerChange(q.id, val)}
+                                            className="grid grid-cols-1 sm:grid-cols-3 gap-4"
+                                        >
+                                            {q.options.map((option) => (
+                                                <div key={option} className="flex items-center space-x-2">
+                                                    <RadioGroupItem value={option} id={`${q.id}-${option}`} />
+                                                    <Label htmlFor={`${q.id}-${option}`} className="font-medium">{option}</Label>
+                                                </div>
+                                            ))}
+                                        </RadioGroup>
+                                        {readingValidation[q.id] === 'incorrect' && (
+                                            <p className="text-xs text-destructive font-bold">Respuesta incorrecta. Inténtalo de nuevo.</p>
+                                        )}
+                                        {readingValidation[q.id] === 'correct' && (
+                                            <p className="text-xs text-green-500 font-bold">¡Correcto!</p>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+
+                            <Separator />
+
+                            <div className="space-y-6">
+                                <h3 className="text-xl font-bold text-primary">Preguntas de Escritura</h3>
+                                {lecturaData.openQuestions.map((q) => (
+                                    <div key={q.id} className="space-y-2 p-4 border rounded-lg bg-card">
+                                        <Label htmlFor={q.id} className="text-lg font-semibold">{q.question}</Label>
+                                        <Input 
+                                            id={q.id} 
+                                            value={readingAnswers[q.id] || ''}
+                                            onChange={e => handleReadingAnswerChange(q.id, e.target.value)}
+                                            className={cn(
+                                                'mt-1 text-lg h-12', 
+                                                readingValidation[q.id] === 'correct' && 'border-green-500 bg-green-500/5', 
+                                                readingValidation[q.id] === 'incorrect' && 'border-destructive bg-destructive/5'
+                                            )}
+                                            placeholder="Escribe tu respuesta aquí..."
+                                            autoComplete="off"
+                                        />
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     </CardContent>
-                    <CardFooter><Button onClick={handleCheckReading}>Verify</Button></CardFooter>
+                    <CardFooter className="flex justify-center pt-6 border-t">
+                        <Button onClick={handleCheckReading} size="lg" className="w-full sm:w-auto px-12">
+                            Verificar Respuestas
+                        </Button>
+                    </CardFooter>
                  </Card>
             );
             default: return <p>Select a topic to start.</p>;
