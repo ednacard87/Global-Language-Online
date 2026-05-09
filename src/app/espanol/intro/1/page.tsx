@@ -122,6 +122,7 @@ const VocabularyMatchingGame = ({ onComplete }: { onComplete: () => void }) => {
     const [selectedIndices, setSelectedIndices] = useState<number[]>([]);
     const [matchedPairIds, setMatchedPairIds] = useState<number[]>([]);
     const [isClient, setIsClient] = useState(false);
+    const [hasNotifiedComplete, setHasNotifiedComplete] = useState(false);
 
     useEffect(() => {
         setIsClient(true);
@@ -136,6 +137,7 @@ const VocabularyMatchingGame = ({ onComplete }: { onComplete: () => void }) => {
         setCards(gameCards);
         setSelectedIndices([]);
         setMatchedPairIds([]);
+        setHasNotifiedComplete(false);
     }, []);
 
     useEffect(() => {
@@ -170,10 +172,11 @@ const VocabularyMatchingGame = ({ onComplete }: { onComplete: () => void }) => {
     const isGameComplete = matchedPairIds.length === memoryPairs.length && memoryPairs.length > 0;
 
     useEffect(() => {
-        if (isGameComplete) {
+        if (isGameComplete && !hasNotifiedComplete) {
             onComplete();
+            setHasNotifiedComplete(true);
         }
-    }, [isGameComplete, onComplete]);
+    }, [isGameComplete, onComplete, hasNotifiedComplete]);
 
     if (!isClient) return null;
 
@@ -304,6 +307,10 @@ export default function EspanolIntro1Page() {
         }
     }, [learningPath, progressValue, isAdmin, studentDocRef, isProfileLoading, isUserLoading]);
 
+    const handleTopicComplete = useCallback((key: string) => {
+        setTopicToComplete(key);
+    }, []);
+
     useEffect(() => {
         if (!topicToComplete) return;
 
@@ -340,10 +347,6 @@ export default function EspanolIntro1Page() {
         if (autoFinish.includes(key)) {
             handleTopicComplete(key);
         }
-    };
-
-    const handleTopicComplete = (key: string) => {
-        setTopicToComplete(key);
     };
     
     const handleNounInputChange = (index: number, value: string) => {
