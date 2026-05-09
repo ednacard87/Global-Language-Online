@@ -1,12 +1,12 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import Link from 'next/link';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { BookOpen, PenSquare, Lock, CheckCircle, Hand, GraduationCap, Type, Activity, MessageSquare } from 'lucide-react';
+import { BookOpen, PenSquare, Lock, CheckCircle, Hand, GraduationCap, Type, Activity, MessageSquare, BrainCircuit, RefreshCw, Flame, Trophy } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
@@ -24,7 +24,7 @@ type Topic = {
   status: 'locked' | 'active' | 'completed';
 };
 
-const progressStorageKey = 'progress_espanol_intro_1_v4'; // Incremented version
+const progressStorageKey = 'progress_espanol_intro_1_v4';
 const mainProgressKey = 'progress_espanol_intro_1';
 
 const saludosData = [
@@ -92,25 +92,16 @@ const verbsPracticeData = [
     { english: 'To live', spanish: 'vivir' },
 ];
 
-const vocabularioBasico = {
-    dias: [
-        { spanish: 'Lunes', english: 'Monday' },
-        { spanish: 'Martes', english: 'Tuesday' },
-        { spanish: 'Miércoles', english: 'Wednesday' },
-        { spanish: 'Jueves', english: 'Thursday' },
-        { spanish: 'Viernes', english: 'Friday' },
-        { spanish: 'Sábado', english: 'Saturday' },
-        { spanish: 'Domingo', english: 'Sunday' },
-    ],
-    colores: [
-        { spanish: 'Rojo', english: 'Red' },
-        { spanish: 'Azul', english: 'Blue' },
-        { spanish: 'Verde', english: 'Green' },
-        { spanish: 'Amarillo', english: 'Yellow' },
-        { spanish: 'Negro', english: 'Black' },
-        { spanish: 'Blanco', english: 'White' },
-    ],
-};
+const memoryPairs = [
+    { english: 'mother', spanish: 'madre' },
+    { english: 'book', spanish: 'libro' },
+    { english: 'house', spanish: 'casa' },
+    { english: 'happy', spanish: 'feliz' },
+    { english: 'tired', spanish: 'cansado' },
+    { english: 'yellow', spanish: 'amarillo' },
+    { english: 'to study', spanish: 'estudiar' },
+    { english: 'to eat', spanish: 'comer' },
+];
 
 const lecturaData = {
     title: 'Un Día en el Parque',
@@ -123,6 +114,120 @@ const lecturaData = {
     ]
 };
 
+// --- Memory Game Component ---
+const VocabularyMemoryGame = ({ onComplete }: { onComplete: () => void }) => {
+    const { toast } = useToast();
+    const [cards, setCards] = useState<any[]>([]);
+    const [flippedIndices, setFlippedIndices] = useState<number[]>([]);
+    const [matchedPairIds, setMatchedPairIds] = useState<number[]>([]);
+    const [isChecking, setIsChecking] = useState(false);
+    const [streak, setStreak] = useState(0);
+    const [isClient, setIsClient] = useState(false);
+
+    useEffect(() => {
+        setIsClient(true);
+    }, []);
+
+    const initializeGame = useCallback(() => {
+        const gameCards = memoryPairs.flatMap((pair, index) => [
+            { id: index * 2, pairId: index, text: pair.english },
+            { id: index * 2 + 1, pairId: index, text: pair.spanish },
+        ]).sort(() => Math.random() - 0.5);
+        
+        setCards(gameCards);
+        setFlippedIndices([]);
+        setMatchedPairIds([]);
+        setIsChecking(false);
+        setStreak(0);
+    }, []);
+
+    useEffect(() => {
+        if (isClient) {
+            initializeGame();
+        }
+    }, [isClient, initializeGame]);
+    
+    useEffect(() => {
+        if (flippedIndices.length === 2) {
+            setIsChecking(true);
+            const [firstIndex, secondIndex] = flippedIndices;
+            const isMatch = cards[firstIndex].pairId === cards[secondIndex].pairId;
+
+            if (isMatch) {
+                setMatchedPairIds(prev => [...prev, cards[firstIndex].pairId]);
+                setStreak(prev => prev + 1);
+                setFlippedIndices([]);
+                setIsChecking(false);
+            } else {
+                setStreak(0);
+                setTimeout(() => {
+                    setFlippedIndices([]);
+                    setIsChecking(false);
+                }, 800);
+            }
+        }
+    }, [flippedIndices, cards]);
+
+    const isGameComplete = matchedPairIds.length === memoryPairs.length && memoryPairs.length > 0;
+
+    useEffect(() => {
+        if (isGameComplete) {
+            onComplete();
+        }
+    }, [isGameComplete, onComplete]);
+
+    const handleCardClick = (index: number) => {
+        if (isChecking || flippedIndices.length >= 2 || flippedIndices.includes(index) || matchedPairIds.includes(cards[index].pairId)) {
+            return;
+        }
+        setFlippedIndices(prev => [...prev, index]);
+    };
+
+    if (!isClient) return null;
+
+    return (
+        <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+            <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                    <CardTitle>Juego de Memoria: Vocabulario</CardTitle>
+                    <CardDescription>Empareja la palabra en inglés con su traducción al español.</CardDescription>
+                </div>
+                <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2 text-orange-500 font-bold">
+                        <Flame className="h-5 w-5" />
+                        <span>{streak}</span>
+                    </div>
+                    <Button size="icon" variant="ghost" onClick={initializeGame}><RefreshCw className="h-5 w-5" /></Button>
+                </div>
+            </CardHeader>
+            <CardContent>
+                {isGameComplete ? (
+                     <div className="text-center p-8 flex flex-col items-center">
+                        <Trophy className="h-16 w-16 text-yellow-400 mb-4" />
+                        <h2 className="text-2xl font-bold">¡Felicidades!</h2>
+                        <p className="text-muted-foreground mt-2">Has dominado el vocabulario básico de Intro 1.</p>
+                     </div>
+                ) : (
+                    <div className="grid grid-cols-4 gap-2">
+                        {cards.map((card, index) => {
+                            const isFlipped = flippedIndices.includes(index);
+                            const isMatched = matchedPairIds.includes(card.pairId);
+                            return (
+                                <Card key={card.id} onClick={() => handleCardClick(index)}
+                                    className={cn("flex items-center justify-center aspect-square cursor-pointer transition-all", isFlipped || isMatched ? "bg-card border-primary" : "bg-secondary", isMatched && "border-green-500")}>
+                                    <CardContent className="p-1 text-center">
+                                        {isFlipped || isMatched ? <span className="text-sm font-bold">{card.text}</span> : <BrainCircuit className="h-5 w-5 text-primary/50" />}
+                                    </CardContent>
+                                </Card>
+                            )
+                        })}
+                    </div>
+                )}
+            </CardContent>
+        </Card>
+    );
+};
+
 export default function EspanolIntro1Page() {
     const { t } = useTranslation();
     const { toast } = useToast();
@@ -132,9 +237,6 @@ export default function EspanolIntro1Page() {
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
     const [selectedTopic, setSelectedTopic] = useState('saludos');
     const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
-
-    const [vocabAnswers, setVocabAnswers] = useState<Record<string, string[]>>({});
-    const [vocabValidation, setVocabValidation] = useState<Record<string, ('correct' | 'incorrect' | 'unchecked')[]>>({});
 
     const [nounAnswers, setNounAnswers] = useState<string[]>(Array(nounsPracticeData.length).fill(''));
     const [nounValidation, setNounValidation] = useState<('correct' | 'incorrect' | 'unchecked')[]>(Array(nounsPracticeData.length).fill('unchecked'));
@@ -190,17 +292,6 @@ export default function EspanolIntro1Page() {
 
         const firstActive = newPath.find(p => p.status === 'active');
         setSelectedTopic(firstActive?.key || 'saludos');
-        
-        // Init vocabulary state
-        const initialAnswers: Record<string, string[]> = {};
-        const initialValidation: Record<string, ('correct' | 'incorrect' | 'unchecked')[]> = {};
-        Object.keys(vocabularioBasico).forEach(category => {
-            const items = vocabularioBasico[category as keyof typeof vocabularioBasico];
-            initialAnswers[category] = Array(items.length).fill('');
-            initialValidation[category] = Array(items.length).fill('unchecked');
-        });
-        setVocabAnswers(initialAnswers);
-        setVocabValidation(initialValidation);
 
     }, [isAdmin, initialLearningPath, studentProfile, isUserLoading, isProfileLoading]);
     
@@ -265,33 +356,6 @@ export default function EspanolIntro1Page() {
 
     const handleTopicComplete = (key: string) => {
         setTopicToComplete(key);
-    };
-
-    const handleVocabInputChange = (category: string, index: number, value: string) => {
-        setVocabAnswers(prev => ({
-            ...prev,
-            [category]: prev[category].map((ans, i) => i === index ? value : ans)
-        }));
-    };
-    
-    const handleCheckVocab = () => {
-        const newValidation: Record<string, ('correct' | 'incorrect' | 'unchecked')[]> = {};
-        let allCorrect = true;
-        Object.keys(vocabularioBasico).forEach(category => {
-            const items = vocabularioBasico[category as keyof typeof vocabularioBasico];
-            newValidation[category] = items.map((item, index) => {
-                const isCorrect = vocabAnswers[category][index].trim().toLowerCase() === item.english.toLowerCase();
-                if (!isCorrect) allCorrect = false;
-                return isCorrect ? 'correct' : 'incorrect';
-            });
-        });
-        setVocabValidation(newValidation);
-        if (allCorrect) {
-            toast({ title: 'Excellent!', description: 'All basic vocabulary is correct.' });
-            handleTopicComplete('vocabulario');
-        } else {
-            toast({ variant: 'destructive', title: 'Review your answers.' });
-        }
     };
     
     const handleNounInputChange = (index: number, value: string) => {
@@ -368,7 +432,6 @@ export default function EspanolIntro1Page() {
         let allCorrect = true;
         const newValidation = verbsPracticeData.map((item, index) => {
             const userAnswer = verbAnswers[index].trim().toLowerCase();
-            // Allow variations like "ver la televisión" or "tomar"
             let isCorrect = userAnswer === item.spanish.toLowerCase();
             if (item.english === 'To watch t.v' && (userAnswer === 'ver la televisión' || userAnswer === 'ver tv')) isCorrect = true;
             if (item.english === 'To drink' && userAnswer === 'tomar') isCorrect = true;
@@ -656,40 +719,7 @@ export default function EspanolIntro1Page() {
                     </CardFooter>
                 </Card>
             );
-            case 'vocabulario': return (
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Basic Vocabulary</CardTitle>
-                        <CardDescription>Colors and days of the week.</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <Accordion type="multiple" defaultValue={['dias', 'colores']}>
-                            {Object.entries(vocabularioBasico).map(([key, items]) => (
-                                <AccordionItem key={key} value={key}>
-                                    <AccordionTrigger>{key === 'dias' ? 'Days of the Week' : 'Colors'}</AccordionTrigger>
-                                    <AccordionContent>
-                                        <div className="grid grid-cols-2 gap-2">
-                                            <div className="font-bold">Spanish</div>
-                                            <div className="font-bold">English</div>
-                                            {items.map((item, index) => (
-                                                <React.Fragment key={item.spanish}>
-                                                    <div className="p-2 bg-muted rounded-md">{item.spanish}</div>
-                                                    <Input 
-                                                        value={vocabAnswers[key]?.[index] || ''}
-                                                        onChange={(e) => handleVocabInputChange(key, index, e.target.value)}
-                                                        className={cn(vocabValidation[key]?.[index] === 'correct' && 'border-green-500', vocabValidation[key]?.[index] === 'incorrect' && 'border-destructive')}
-                                                    />
-                                                </React.Fragment>
-                                            ))}
-                                        </div>
-                                    </AccordionContent>
-                                </AccordionItem>
-                            ))}
-                        </Accordion>
-                    </CardContent>
-                    <CardFooter><Button onClick={handleCheckVocab}>Verify</Button></CardFooter>
-                </Card>
-            );
+            case 'vocabulario': return <VocabularyMemoryGame onComplete={() => handleTopicComplete('vocabulario')} />;
             case 'lectura': return (
                  <Card>
                     <CardHeader>
