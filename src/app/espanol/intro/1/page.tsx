@@ -79,6 +79,19 @@ const adjectivesPracticeData = [
     { english: 'tidy', spanish: 'ordenado' },
 ];
 
+const verbsPracticeData = [
+    { english: 'To study', spanish: 'estudiar' },
+    { english: 'To work', spanish: 'trabajar' },
+    { english: 'To walk', spanish: 'caminar' },
+    { english: 'To have dinner', spanish: 'cenar' },
+    { english: 'To watch t.v', spanish: 'ver televisión' },
+    { english: 'To drink', spanish: 'beber' },
+    { english: 'To read', spanish: 'leer' },
+    { english: 'To sleep', spanish: 'dormir' },
+    { english: 'To eat', spanish: 'comer' },
+    { english: 'To live', spanish: 'vivir' },
+];
+
 const vocabularioBasico = {
     dias: [
         { spanish: 'Lunes', english: 'Monday' },
@@ -128,6 +141,9 @@ export default function EspanolIntro1Page() {
 
     const [adjAnswers, setAdjAnswers] = useState<string[]>(Array(adjectivesPracticeData.length).fill(''));
     const [adjValidation, setAdjValidation] = useState<('correct' | 'incorrect' | 'unchecked')[]>(Array(adjectivesPracticeData.length).fill('unchecked'));
+
+    const [verbAnswers, setVerbAnswers] = useState<string[]>(Array(verbsPracticeData.length).fill(''));
+    const [verbValidation, setVerbValidation] = useState<('correct' | 'incorrect' | 'unchecked')[]>(Array(verbsPracticeData.length).fill('unchecked'));
 
     const [readingAnswers, setReadingAnswers] = useState<Record<string, string>>({});
     const [readingValidation, setReadingValidation] = useState<Record<string, 'correct' | 'incorrect' | 'unchecked'>>({});
@@ -241,7 +257,7 @@ export default function EspanolIntro1Page() {
             return;
         }
         setSelectedTopic(key);
-        const autoFinish = ['saludos', 'despedidas', 'verbos'];
+        const autoFinish = ['saludos', 'despedidas'];
         if (autoFinish.includes(key)) {
             handleTopicComplete(key);
         }
@@ -331,6 +347,39 @@ export default function EspanolIntro1Page() {
         if (allCorrect) {
             toast({ title: 'Great job!', description: 'All adjectives are correct.' });
             handleTopicComplete('adjetivos');
+        } else {
+             toast({ variant: 'destructive', title: 'Some answers are incorrect.' });
+        }
+    };
+
+    const handleVerbInputChange = (index: number, value: string) => {
+        const newAnswers = [...verbAnswers];
+        newAnswers[index] = value;
+        setVerbAnswers(newAnswers);
+        
+        if (verbValidation[index] !== 'unchecked') {
+            const newValidation = [...verbValidation];
+            newValidation[index] = 'unchecked';
+            setVerbValidation(newValidation as any);
+        }
+    };
+
+    const handleCheckVerbs = () => {
+        let allCorrect = true;
+        const newValidation = verbsPracticeData.map((item, index) => {
+            const userAnswer = verbAnswers[index].trim().toLowerCase();
+            // Allow variations like "ver la televisión" or "tomar"
+            let isCorrect = userAnswer === item.spanish.toLowerCase();
+            if (item.english === 'To watch t.v' && (userAnswer === 'ver la televisión' || userAnswer === 'ver tv')) isCorrect = true;
+            if (item.english === 'To drink' && userAnswer === 'tomar') isCorrect = true;
+            
+            if (!isCorrect) allCorrect = false;
+            return isCorrect ? 'correct' : 'incorrect';
+        });
+        setVerbValidation(newValidation as any);
+        if (allCorrect) {
+            toast({ title: 'Excellent!', description: 'All verbs are correct.' });
+            handleTopicComplete('verbos');
         } else {
              toast({ variant: 'destructive', title: 'Some answers are incorrect.' });
         }
@@ -460,6 +509,7 @@ export default function EspanolIntro1Page() {
                                                     nounValidation[index] === 'incorrect' && "border-destructive"
                                                 )}
                                                 placeholder="..."
+                                                autoComplete="off"
                                             />
                                         </div>
                                     </React.Fragment>
@@ -524,6 +574,7 @@ export default function EspanolIntro1Page() {
                                                     adjValidation[index] === 'incorrect' && "border-destructive"
                                                 )}
                                                 placeholder="..."
+                                                autoComplete="off"
                                             />
                                         </div>
                                     </React.Fragment>
@@ -569,6 +620,36 @@ export default function EspanolIntro1Page() {
                                 </div>
                             </div>
                         </div>
+                        <Separator />
+                        <div>
+                            <h3 className="text-xl font-bold text-primary mb-2">3. Vocabulary Practice</h3>
+                            <p className="text-muted-foreground mb-4">Translate these common verbs into Spanish.</p>
+                            <div className="grid grid-cols-2 gap-2 max-w-md mx-auto">
+                                <div className="font-bold bg-muted p-2 rounded text-center">English</div>
+                                <div className="font-bold bg-muted p-2 rounded text-center">Español</div>
+                                {verbsPracticeData.map((item, index) => (
+                                    <React.Fragment key={item.english}>
+                                        <div className="p-2 border rounded flex items-center justify-center font-medium capitalize">{item.english}</div>
+                                        <div className="relative">
+                                            <Input 
+                                                value={verbAnswers[index] || ''}
+                                                onChange={(e) => handleVerbInputChange(index, e.target.value)}
+                                                className={cn(
+                                                    "h-10",
+                                                    verbValidation[index] === 'correct' && "border-green-500",
+                                                    verbValidation[index] === 'incorrect' && "border-destructive"
+                                                )}
+                                                placeholder="..."
+                                                autoComplete="off"
+                                            />
+                                        </div>
+                                    </React.Fragment>
+                                ))}
+                            </div>
+                            <div className="mt-4 flex justify-center">
+                                <Button variant="secondary" onClick={handleCheckVerbs}>Verify Translations</Button>
+                            </div>
+                        </div>
                     </CardContent>
                     <CardFooter>
                          <Button onClick={() => handleTopicComplete('verbos')}>Continue</Button>
@@ -607,7 +688,7 @@ export default function EspanolIntro1Page() {
                         </Accordion>
                     </CardContent>
                     <CardFooter><Button onClick={handleCheckVocab}>Verify</Button></CardFooter>
-                </Card>
+                </Accordion>
             );
             case 'lectura': return (
                  <Card>
