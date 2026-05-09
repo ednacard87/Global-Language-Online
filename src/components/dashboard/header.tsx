@@ -157,7 +157,7 @@ export function DashboardHeader() {
           )}
 
           {user && (
-              <Button asChild variant="outline" className="border-brand-purple text-primary hover:bg-brand-purple/10 font-semibold">
+              <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold">
                   <a href="https://quizlet.com/latest" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
                       <CaseSensitive className="h-5 w-5" />
                       <span className="hidden sm:inline-block">{t('header.vocabulary')}</span>
