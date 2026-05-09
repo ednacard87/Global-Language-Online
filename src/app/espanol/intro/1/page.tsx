@@ -103,6 +103,15 @@ const memoryPairs = [
     { english: 'yellow', spanish: 'amarillo' },
     { english: 'to study', spanish: 'estudiar' },
     { english: 'to eat', spanish: 'comer' },
+    // Doubled pairs
+    { english: 'father', spanish: 'padre' },
+    { english: 'dog', spanish: 'perro' },
+    { english: 'red', spanish: 'rojo' },
+    { english: 'sad', spanish: 'triste' },
+    { english: 'blue', spanish: 'azul' },
+    { english: 'to work', spanish: 'trabajar' },
+    { english: 'to drink', spanish: 'beber' },
+    { english: 'to sleep', spanish: 'dormir' },
 ];
 
 const lecturaData = {
@@ -197,14 +206,14 @@ const VocabularyMatchingGame = ({ onComplete }: { onComplete: () => void }) => {
                         <p className="text-muted-foreground mt-2">Has dominado el vocabulario básico de Intro 1.</p>
                      </div>
                 ) : (
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2">
                         {cards.map((card, index) => {
                             const isSelected = selectedIndices.includes(index);
                             const isMatched = matchedPairIds.includes(card.pairId);
                             return (
                                 <div key={card.id} onClick={() => handleCardClick(index)}
                                     className={cn(
-                                        "flex items-center justify-center h-10 px-2 text-center cursor-pointer transition-all border-2 rounded-lg text-xs font-bold select-none", 
+                                        "flex items-center justify-center h-10 px-2 text-center cursor-pointer transition-all border-2 rounded-lg text-[10px] font-bold select-none", 
                                         isMatched ? "bg-green-500/10 border-green-500 text-green-700 opacity-50" : 
                                         isSelected ? "bg-primary/20 border-primary text-primary" : "bg-card border-border hover:bg-muted"
                                     )}>
