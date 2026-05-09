@@ -26,7 +26,8 @@
     "kidsIntro": "Kids Intro",
     "kidsA1": "Kids Course A1",
     "kidsA2": "Kids Course A2",
-    "tetris": "Tetris"
+    "tetris": "Tetris",
+    "vocabulary": "Vocabulary"
   },
   "dashboard": {
     "greeting": "WELCOME",
@@ -300,7 +301,7 @@
   },
   "common": {
     "english": "English",
-    "spanish": "Spanish",
+    "spanish": "Español",
     "ser": "SER",
     "tobe": "TO BE",
     "estar": "ESTAR"
@@ -627,7 +628,7 @@
     "memory": "Memory",
     "clothes": "Ropa",
     "clothesVocabulary": "Clothing Vocabulary",
-    "grammar": "Grammar",
+    "grammar": "Gramática",
     "exercises": "Exercises",
     "positive": "Positive",
     "negative": "Negative",

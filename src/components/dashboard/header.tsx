@@ -18,6 +18,7 @@ import {
   LayoutDashboard,
   Smile,
   Gamepad2,
+  CaseSensitive,
 } from "lucide-react";
 import { signOut } from "firebase/auth";
 import { doc } from 'firebase/firestore';
@@ -154,6 +155,16 @@ export function DashboardHeader() {
               </PopoverContent>
             </Popover>
           )}
+
+          {user && (
+              <Button asChild variant="outline" className="border-brand-purple text-primary hover:bg-brand-purple/10 font-semibold">
+                  <a href="https://quizlet.com/latest" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
+                      <CaseSensitive className="h-5 w-5" />
+                      <span className="hidden sm:inline-block">{t('header.vocabulary')}</span>
+                  </a>
+              </Button>
+          )}
+
           {user ? (
             (isAdmin || studentProfile?.selectedCourse === 'espanol') && (
                 <Button asChild className="bg-yellow-200 hover:bg-yellow-300 text-yellow-900 font-semibold">
