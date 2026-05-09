@@ -114,14 +114,12 @@ const lecturaData = {
     ]
 };
 
-// --- Memory Game Component ---
-const VocabularyMemoryGame = ({ onComplete }: { onComplete: () => void }) => {
+// --- Matching Game Component ---
+const VocabularyMatchingGame = ({ onComplete }: { onComplete: () => void }) => {
     const { toast } = useToast();
     const [cards, setCards] = useState<any[]>([]);
-    const [flippedIndices, setFlippedIndices] = useState<number[]>([]);
+    const [selectedIndices, setSelectedIndices] = useState<number[]>([]);
     const [matchedPairIds, setMatchedPairIds] = useState<number[]>([]);
-    const [isChecking, setIsChecking] = useState(false);
-    const [streak, setStreak] = useState(0);
     const [isClient, setIsClient] = useState(false);
 
     useEffect(() => {
@@ -135,10 +133,8 @@ const VocabularyMemoryGame = ({ onComplete }: { onComplete: () => void }) => {
         ]).sort(() => Math.random() - 0.5);
         
         setCards(gameCards);
-        setFlippedIndices([]);
+        setSelectedIndices([]);
         setMatchedPairIds([]);
-        setIsChecking(false);
-        setStreak(0);
     }, []);
 
     useEffect(() => {
@@ -146,27 +142,31 @@ const VocabularyMemoryGame = ({ onComplete }: { onComplete: () => void }) => {
             initializeGame();
         }
     }, [isClient, initializeGame]);
-    
-    useEffect(() => {
-        if (flippedIndices.length === 2) {
-            setIsChecking(true);
-            const [firstIndex, secondIndex] = flippedIndices;
-            const isMatch = cards[firstIndex].pairId === cards[secondIndex].pairId;
 
-            if (isMatch) {
-                setMatchedPairIds(prev => [...prev, cards[firstIndex].pairId]);
-                setStreak(prev => prev + 1);
-                setFlippedIndices([]);
-                setIsChecking(false);
-            } else {
-                setStreak(0);
-                setTimeout(() => {
-                    setFlippedIndices([]);
-                    setIsChecking(false);
-                }, 800);
-            }
+    const handleCardClick = (index: number) => {
+        if (matchedPairIds.includes(cards[index].pairId)) return;
+
+        // Deselect if clicking the same card
+        if (selectedIndices.includes(index)) {
+            setSelectedIndices(prev => prev.filter(i => i !== index));
+            return;
         }
-    }, [flippedIndices, cards]);
+
+        if (selectedIndices.length === 1) {
+            const firstIndex = selectedIndices[0];
+            const secondIndex = index;
+
+            if (cards[firstIndex].pairId === cards[secondIndex].pairId) {
+                setMatchedPairIds(prev => [...prev, cards[firstIndex].pairId]);
+                setSelectedIndices([]);
+            } else {
+                // Flash red or just replace selection
+                setSelectedIndices([index]);
+            }
+        } else {
+            setSelectedIndices([index]);
+        }
+    };
 
     const isGameComplete = matchedPairIds.length === memoryPairs.length && memoryPairs.length > 0;
 
@@ -176,29 +176,16 @@ const VocabularyMemoryGame = ({ onComplete }: { onComplete: () => void }) => {
         }
     }, [isGameComplete, onComplete]);
 
-    const handleCardClick = (index: number) => {
-        if (isChecking || flippedIndices.length >= 2 || flippedIndices.includes(index) || matchedPairIds.includes(cards[index].pairId)) {
-            return;
-        }
-        setFlippedIndices(prev => [...prev, index]);
-    };
-
     if (!isClient) return null;
 
     return (
         <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-            <CardHeader className="flex flex-row items-center justify-between">
+            <CardHeader className="flex flex-row items-center justify-between pb-3">
                 <div>
-                    <CardTitle>Juego de Memoria: Vocabulario</CardTitle>
-                    <CardDescription>Empareja la palabra en inglés con su traducción al español.</CardDescription>
+                    <CardTitle className="text-xl">Emparejar Vocabulario</CardTitle>
+                    <CardDescription>Haz clic en una palabra en inglés y su traducción al español.</CardDescription>
                 </div>
-                <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-2 text-orange-500 font-bold">
-                        <Flame className="h-5 w-5" />
-                        <span>{streak}</span>
-                    </div>
-                    <Button size="icon" variant="ghost" onClick={initializeGame}><RefreshCw className="h-5 w-5" /></Button>
-                </div>
+                <Button size="icon" variant="ghost" onClick={initializeGame}><RefreshCw className="h-5 w-5" /></Button>
             </CardHeader>
             <CardContent>
                 {isGameComplete ? (
@@ -208,17 +195,19 @@ const VocabularyMemoryGame = ({ onComplete }: { onComplete: () => void }) => {
                         <p className="text-muted-foreground mt-2">Has dominado el vocabulario básico de Intro 1.</p>
                      </div>
                 ) : (
-                    <div className="grid grid-cols-4 gap-2">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                         {cards.map((card, index) => {
-                            const isFlipped = flippedIndices.includes(index);
+                            const isSelected = selectedIndices.includes(index);
                             const isMatched = matchedPairIds.includes(card.pairId);
                             return (
-                                <Card key={card.id} onClick={() => handleCardClick(index)}
-                                    className={cn("flex items-center justify-center aspect-square cursor-pointer transition-all", isFlipped || isMatched ? "bg-card border-primary" : "bg-secondary", isMatched && "border-green-500")}>
-                                    <CardContent className="p-1 text-center">
-                                        {isFlipped || isMatched ? <span className="text-sm font-bold">{card.text}</span> : <BrainCircuit className="h-5 w-5 text-primary/50" />}
-                                    </CardContent>
-                                </Card>
+                                <div key={card.id} onClick={() => handleCardClick(index)}
+                                    className={cn(
+                                        "flex items-center justify-center h-10 px-2 text-center cursor-pointer transition-all border-2 rounded-lg text-xs font-bold select-none", 
+                                        isMatched ? "bg-green-500/10 border-green-500 text-green-700 opacity-50" : 
+                                        isSelected ? "bg-primary/20 border-primary text-primary" : "bg-card border-border hover:bg-muted"
+                                    )}>
+                                    {card.text}
+                                </div>
                             )
                         })}
                     </div>
@@ -515,8 +504,7 @@ export default function EspanolIntro1Page() {
                     <CardFooter>
                         <Button onClick={() => handleTopicComplete('despedidas')}>Continue</Button>
                     </CardFooter>
-                </Card>
-            );
+                );
             case 'sustantivos': return (
                 <Card>
                     <CardHeader>
@@ -719,7 +707,7 @@ export default function EspanolIntro1Page() {
                     </CardFooter>
                 </Card>
             );
-            case 'vocabulario': return <VocabularyMemoryGame onComplete={() => handleTopicComplete('vocabulario')} />;
+            case 'vocabulario': return <VocabularyMatchingGame onComplete={() => handleTopicComplete('vocabulario')} />;
             case 'lectura': return (
                  <Card>
                     <CardHeader>
