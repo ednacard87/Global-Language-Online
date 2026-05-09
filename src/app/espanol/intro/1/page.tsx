@@ -16,6 +16,8 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
+import Image from 'next/image';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 type Topic = {
   key: string;
@@ -114,7 +116,6 @@ const lecturaData = {
     ]
 };
 
-// --- Matching Game Component ---
 const VocabularyMatchingGame = ({ onComplete }: { onComplete: () => void }) => {
     const { toast } = useToast();
     const [cards, setCards] = useState<any[]>([]);
@@ -146,7 +147,6 @@ const VocabularyMatchingGame = ({ onComplete }: { onComplete: () => void }) => {
     const handleCardClick = (index: number) => {
         if (matchedPairIds.includes(cards[index].pairId)) return;
 
-        // Deselect if clicking the same card
         if (selectedIndices.includes(index)) {
             setSelectedIndices(prev => prev.filter(i => i !== index));
             return;
@@ -160,7 +160,6 @@ const VocabularyMatchingGame = ({ onComplete }: { onComplete: () => void }) => {
                 setMatchedPairIds(prev => [...prev, cards[firstIndex].pairId]);
                 setSelectedIndices([]);
             } else {
-                // Flash red or just replace selection
                 setSelectedIndices([index]);
             }
         } else {
@@ -504,7 +503,8 @@ export default function EspanolIntro1Page() {
                     <CardFooter>
                         <Button onClick={() => handleTopicComplete('despedidas')}>Continue</Button>
                     </CardFooter>
-                );
+                </Card>
+            );
             case 'sustantivos': return (
                 <Card>
                     <CardHeader>
