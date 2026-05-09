@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
@@ -51,6 +52,19 @@ const despedidasData = [
     { spanish: 'Que tengas un buen día', english: 'Have a nice day' },
 ];
 
+const nounsPracticeData = [
+    { english: 'mother', spanish: 'madre' },
+    { english: 'father', spanish: 'padre' },
+    { english: 'book', spanish: 'libro' },
+    { english: 'table', spanish: 'mesa' },
+    { english: 'chair', spanish: 'silla' },
+    { english: 'computer', spanish: 'computador' },
+    { english: 'cellphone', spanish: 'celular' },
+    { english: 'bed', spanish: 'cama' },
+    { english: 'dog', spanish: 'perro' },
+    { english: 'house', spanish: 'casa' },
+];
+
 const vocabularioBasico = {
     dias: [
         { spanish: 'Lunes', english: 'Monday' },
@@ -94,6 +108,9 @@ export default function EspanolIntro1Page() {
 
     const [vocabAnswers, setVocabAnswers] = useState<Record<string, string[]>>({});
     const [vocabValidation, setVocabValidation] = useState<Record<string, ('correct' | 'incorrect' | 'unchecked')[]>>({});
+
+    const [nounAnswers, setNounAnswers] = useState<string[]>(Array(nounsPracticeData.length).fill(''));
+    const [nounValidation, setNounValidation] = useState<('correct' | 'incorrect' | 'unchecked')[]>(Array(nounsPracticeData.length).fill('unchecked'));
 
     const [readingAnswers, setReadingAnswers] = useState<Record<string, string>>({});
     const [readingValidation, setReadingValidation] = useState<Record<string, 'correct' | 'incorrect' | 'unchecked'>>({});
@@ -200,10 +217,6 @@ export default function EspanolIntro1Page() {
         setTopicToComplete(null);
     }, [topicToComplete, toast]);
 
-    const handleTopicComplete = (key: string) => {
-        handleTopicComplete('saludos');
-    };
-
     const handleTopicSelect = (key: string) => {
         const topic = learningPath.find(t => t.key === key);
         if (topic?.status === 'locked' && !isAdmin) {
@@ -211,7 +224,7 @@ export default function EspanolIntro1Page() {
             return;
         }
         setSelectedTopic(key);
-        const autoFinish = ['saludos', 'despedidas', 'sustantivos', 'adjetivos', 'verbos'];
+        const autoFinish = ['saludos', 'despedidas', 'adjetivos', 'verbos'];
         if (autoFinish.includes(key)) {
             setTopicToComplete(key);
         }
@@ -244,6 +257,34 @@ export default function EspanolIntro1Page() {
         }
     };
     
+    const handleNounInputChange = (index: number, value: string) => {
+        const newAnswers = [...nounAnswers];
+        newAnswers[index] = value;
+        setNounAnswers(newAnswers);
+        
+        if (nounValidation[index] !== 'unchecked') {
+            const newValidation = [...nounValidation];
+            newValidation[index] = 'unchecked';
+            setNounValidation(newValidation as any);
+        }
+    };
+
+    const handleCheckNouns = () => {
+        let allCorrect = true;
+        const newValidation = nounsPracticeData.map((item, index) => {
+            const userAnswer = nounAnswers[index].trim().toLowerCase();
+            const isCorrect = userAnswer === item.spanish.toLowerCase() || (item.english === 'mother' && userAnswer === 'mamá');
+            if (!isCorrect) allCorrect = false;
+            return isCorrect ? 'correct' : 'incorrect';
+        });
+        setNounValidation(newValidation as any);
+        if (allCorrect) {
+            toast({ title: 'Very well!', description: 'All translations are correct.' });
+        } else {
+             toast({ variant: 'destructive', title: 'Some answers are incorrect.' });
+        }
+    };
+
     const handleReadingInputChange = (id: string, value: string) => {
         setReadingAnswers(prev => ({...prev, [id]: value}));
     };
@@ -347,6 +388,35 @@ export default function EspanolIntro1Page() {
                                 <li>If it ends in a vowel, add <strong>-s</strong>: <span className="italic">Libro {"=>"} Libros</span></li>
                                 <li>If it ends in a consonant, add <strong>-es</strong>: <span className="italic">Papel {"=>"} Papeles</span></li>
                             </ul>
+                        </div>
+                        <Separator />
+                        <div>
+                            <h3 className="text-xl font-bold text-primary mb-2">3. Vocabulary Practice</h3>
+                            <p className="text-muted-foreground mb-4">Translate these common nouns into Spanish.</p>
+                            <div className="grid grid-cols-2 gap-2 max-w-md mx-auto">
+                                <div className="font-bold bg-muted p-2 rounded text-center">English</div>
+                                <div className="font-bold bg-muted p-2 rounded text-center">Español</div>
+                                {nounsPracticeData.map((item, index) => (
+                                    <React.Fragment key={item.english}>
+                                        <div className="p-2 border rounded flex items-center justify-center font-medium">{item.english}</div>
+                                        <div className="relative">
+                                            <Input 
+                                                value={nounAnswers[index] || ''}
+                                                onChange={(e) => handleNounInputChange(index, e.target.value)}
+                                                className={cn(
+                                                    "h-10",
+                                                    nounValidation[index] === 'correct' && "border-green-500",
+                                                    nounValidation[index] === 'incorrect' && "border-destructive"
+                                                )}
+                                                placeholder="..."
+                                            />
+                                        </div>
+                                    </React.Fragment>
+                                ))}
+                            </div>
+                            <div className="mt-4 flex justify-center">
+                                <Button variant="secondary" onClick={handleCheckNouns}>Verify Translations</Button>
+                            </div>
                         </div>
                     </CardContent>
                     <CardFooter>
