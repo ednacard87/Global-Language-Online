@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { useUser, useFirestore, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { cn } from '@/lib/utils';
-import { Video, CheckCircle, ArrowLeft, Mic, Newspaper, FileText, Music, CaseSensitive, PlayCircle, Smile, Ear } from 'lucide-react';
+import { Video, CheckCircle, ArrowLeft, Mic, Newspaper, FileText, Music, CaseSensitive, PlayCircle, Smile, Ear, Tv } from 'lucide-react';
 
 const mediaContent = {
   podcast: { 
@@ -46,6 +46,13 @@ const mediaContent = {
     url: "https://www.youtube.com/embed/tmORJDin_10",
     icon: CaseSensitive,
     progressKey: 'progress_quick_vocabulary'
+  },
+  movie: { 
+    title: "Movie Time", 
+    description: "Watch this movie segment to improve your immersion and listening comprehension.",
+    url: "https://www.youtube.com/embed/X_cqOEU-wUc?start=3593",
+    icon: Tv,
+    progressKey: 'progress_quick_movie'
   },
   // Kids Content
   kids_music: {

@@ -373,7 +373,7 @@ function DashboardPage() {
                                 )}
                             </DropdownMenu>
                         </div>
-                        <NeonCard icon={CaseSensitive} title="VOCABULARY" href="https://quizlet.com/co" />
+                        <NeonCard icon={Tv} title="MOVIE" href="/media/movie" />
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                         <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
@@ -465,7 +465,7 @@ function DashboardPage() {
                           )}
                       </DropdownMenu>
                     </div>
-                    <NeonCard icon={CaseSensitive} title="VOCABULARY" href="https://quizlet.com/co" />
+                    <NeonCard icon={Tv} title="MOVIE" href="/media/movie" />
                 </div>
               </div>
               
