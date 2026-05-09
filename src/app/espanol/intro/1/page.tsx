@@ -688,7 +688,7 @@ export default function EspanolIntro1Page() {
                         </Accordion>
                     </CardContent>
                     <CardFooter><Button onClick={handleCheckVocab}>Verify</Button></CardFooter>
-                </Accordion>
+                </Card>
             );
             case 'lectura': return (
                  <Card>
