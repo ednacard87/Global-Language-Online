@@ -12,7 +12,8 @@ import { Label } from '@/components/ui/label';
 import { useRouter } from 'next/navigation';
 import { useUser, useFirestore, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
 import { doc } from 'firebase/firestore';
-
+import { ArrowLeft, CheckCircle, RefreshCw, Trophy } from 'lucide-react';
+import Image from 'next/image';
 
 // Data for different listening exercises
 const exercisesData = {
@@ -40,16 +41,6 @@ const exercisesData = {
                 "all right my geography isn't very good"
             ]
         ]
-    },
-    part2: {
-        title: 'Listening Part 2 (Example)',
-        audioSrc: '',
-        answers: [[""], [""], [""], [""], [""]]
-    },
-    part3: {
-        title: 'Listening Part 3 (Example)',
-        audioSrc: '',
-        answers: [[""], [""], [""], [""], [""]]
     }
 };
 
@@ -62,6 +53,7 @@ function ListeningExercise({ exerciseKey }: { exerciseKey: ExerciseKey }) {
     const [userAnswers, setUserAnswers] = useState<string[]>(Array(exercise.answers.length).fill(''));
     const [validationStatus, setValidationStatus] = useState<('correct' | 'incorrect' | 'unchecked')[]>(Array(exercise.answers.length).fill('unchecked'));
     const [isCompleted, setIsCompleted] = useState(false);
+    const [allCorrect, setAllCorrect] = useState(false);
     
     const { user } = useUser();
     const firestore = useFirestore();
@@ -73,10 +65,15 @@ function ListeningExercise({ exerciseKey }: { exerciseKey: ExerciseKey }) {
     const placeholders = ["Mark:", "Laura:", "Mark:", "Laura:", "Mark:"];
 
     useEffect(() => {
+        handleReset();
+    }, [exerciseKey]);
+
+    const handleReset = () => {
         setUserAnswers(Array(exercise.answers.length).fill(''));
         setValidationStatus(Array(exercise.answers.length).fill('unchecked'));
         setIsCompleted(false);
-    }, [exerciseKey, exercise.answers.length]);
+        setAllCorrect(false);
+    };
 
     const handleInputChange = (index: number, value: string) => {
         const newAnswers = [...userAnswers];
@@ -87,6 +84,7 @@ function ListeningExercise({ exerciseKey }: { exerciseKey: ExerciseKey }) {
             const newValidation = [...validationStatus];
             newValidation[index] = 'unchecked';
             setValidationStatus(newValidation);
+            setAllCorrect(false);
         }
     };
     
@@ -106,18 +104,14 @@ function ListeningExercise({ exerciseKey }: { exerciseKey: ExerciseKey }) {
 
         setValidationStatus(newValidationStatus);
 
-        const allCorrect = newValidationStatus.every(status => status === 'correct');
+        const areAllCorrect = newValidationStatus.every(status => status === 'correct');
+        setAllCorrect(areAllCorrect);
 
-        if (allCorrect) {
+        if (areAllCorrect) {
             toast({
-                title: "¡Excelente!",
-                description: "Todas tus respuestas son correctas.",
+                title: "¡Muy bien!",
+                description: "Todas las frases están correctas. Ya puedes terminar.",
             });
-            setIsCompleted(true);
-            if(studentDocRef) {
-                updateDocumentNonBlocking(studentDocRef, { 'progress.listeningProgress': 100 });
-            }
-            window.dispatchEvent(new CustomEvent('progressUpdated'));
         } else {
             toast({
                 variant: "destructive",
@@ -126,10 +120,20 @@ function ListeningExercise({ exerciseKey }: { exerciseKey: ExerciseKey }) {
             });
         }
     };
+
+    const handleFinish = () => {
+        if (!allCorrect) return;
+
+        setIsCompleted(true);
+        if(studentDocRef) {
+            updateDocumentNonBlocking(studentDocRef, { 'progress.listeningProgress': 100 });
+        }
+        window.dispatchEvent(new CustomEvent('progressUpdated'));
+    };
     
     const getInputClass = (status: 'correct' | 'incorrect' | 'unchecked') => {
-        if (status === 'correct') return 'border-green-500 focus-visible:ring-green-500';
-        if (status === 'incorrect') return 'border-destructive focus-visible:ring-destructive';
+        if (status === 'correct') return 'border-green-500 focus-visible:ring-green-500 bg-green-50 dark:bg-green-900/10';
+        if (status === 'incorrect') return 'border-destructive focus-visible:ring-destructive bg-destructive/5';
         return '';
     };
     
@@ -143,16 +147,25 @@ function ListeningExercise({ exerciseKey }: { exerciseKey: ExerciseKey }) {
 
     if (isCompleted) {
         return (
-            <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+            <Card className="shadow-soft rounded-lg border-2 border-brand-purple animate-in fade-in zoom-in duration-300">
                 <CardHeader className="text-center">
-                    <CardTitle>¡Felicitaciones!</CardTitle>
-                    <CardDescription>Has completado el ejercicio de escucha.</CardDescription>
+                    <CardTitle className="text-3xl">¡Felicitaciones!</CardTitle>
+                    <CardDescription>Has completado el ejercicio de escucha con éxito.</CardDescription>
                 </CardHeader>
-                <CardContent className="text-center">
-                    <p className="text-lg">¡Excelente trabajo! Has desbloqueado la siguiente sección.</p>
+                <CardContent className="text-center flex flex-col items-center gap-6">
+                    <div className="relative h-48 w-48">
+                        <Trophy className="h-full w-full text-yellow-400 animate-bounce" />
+                    </div>
+                    <p className="text-xl font-medium">¡Excelente trabajo! El progreso ha sido guardado.</p>
                 </CardContent>
-                <CardFooter className="justify-center">
-                    <Button onClick={() => router.push('/intro')}>Volver al Laberinto</Button>
+                <CardFooter className="flex flex-col sm:flex-row justify-center gap-4">
+                    <Button variant="outline" onClick={handleReset} className="w-full sm:w-auto">
+                        <RefreshCw className="mr-2 h-4 w-4" />
+                        Reiniciar Práctica
+                    </Button>
+                    <Button onClick={() => router.push('/intro')} className="w-full sm:w-auto">
+                        Volver al Laberinto
+                    </Button>
                 </CardFooter>
             </Card>
         );
@@ -184,51 +197,63 @@ function ListeningExercise({ exerciseKey }: { exerciseKey: ExerciseKey }) {
                                 placeholder="Escribe lo que escuchas..."
                                 value={userAnswers[index]}
                                 onChange={(e) => handleInputChange(index, e.target.value)}
-                                className={cn(getInputClass(validationStatus[index]))}
+                                className={cn("text-lg", getInputClass(validationStatus[index]))}
+                                autoComplete="off"
                             />
                         </div>
                     ))}
                 </div>
             </CardContent>
-            <CardFooter>
-                <Button onClick={handleCheckAnswers}>Verificar</Button>
+            <CardFooter className="flex justify-between items-center border-t pt-6">
+                <Button onClick={handleCheckAnswers} variant="secondary">Verificar</Button>
+                {allCorrect && (
+                    <Button onClick={handleFinish} className="bg-green-600 hover:bg-green-700 animate-in slide-in-from-right-4 duration-300">
+                        Terminar
+                        <CheckCircle className="ml-2 h-4 w-4" />
+                    </Button>
+                )}
             </CardFooter>
         </Card>
     );
 }
 
 export default function ListeningPracticePage() {
+    const router = useRouter();
 
     return (
         <div className="flex w-full flex-col ingles-dashboard-bg min-h-screen">
             <DashboardHeader />
             <main className="flex-1 p-4 md:p-8">
                 <div className="max-w-7xl mx-auto">
-                    <Link href="/intro" className="hover:underline">
-                        <h1 className="text-4xl font-bold mb-8 dark:text-primary">Práctica de Escucha y Escritura</h1>
-                    </Link>
+                    <div className="flex items-center gap-4 mb-8">
+                         <Button variant="ghost" size="icon" onClick={() => router.back()} className="text-white hover:bg-white/20">
+                            <ArrowLeft className="h-6 w-6" />
+                        </Button>
+                        <h1 className="text-4xl font-bold text-white [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">Práctica de Escucha y Escritura</h1>
+                    </div>
+                    
                     <div className="grid gap-8 md:grid-cols-12">
                         <div className="md:col-span-4">
                             <div className="sticky top-24 space-y-4">
-                                <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                                <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/90 backdrop-blur-sm">
                                     <CardHeader>
-                                        <CardTitle>Questions</CardTitle>
+                                        <CardTitle>Helpful Questions</CardTitle>
                                     </CardHeader>
                                     <CardContent>
-                                       <ul className="space-y-2 text-sm text-muted-foreground">
-                                            <li><span className="font-semibold text-foreground">1-</span> Can you repeat slowly, please?</li>
-                                            <li><span className="font-semibold text-foreground">2-</span> Can you repeat again, please?</li>
-                                            <li><span className="font-semibold text-foreground">3-</span> Can you speak slowly, please?</li>
-                                            <li><span className="font-semibold text-foreground">4-</span> How do you say in Spanish: _____?</li>
-                                            <li><span className="font-semibold text-foreground">5-</span> How do you say in English: ______?</li>
-                                            <li><span className="font-semibold text-foreground">6-</span> How do you spell: _________?</li>
-                                            <li><span className="font-semibold text-foreground">7-</span> Is it correct?</li>
+                                       <ul className="space-y-3 text-sm">
+                                            <li className="flex gap-2"><span className="font-bold text-primary">1.</span> Can you repeat slowly, please?</li>
+                                            <li className="flex gap-2"><span className="font-bold text-primary">2.</span> Can you repeat again, please?</li>
+                                            <li className="flex gap-2"><span className="font-bold text-primary">3.</span> Can you speak slowly, please?</li>
+                                            <li className="flex gap-2"><span className="font-bold text-primary">4.</span> How do you say in Spanish: _____?</li>
+                                            <li className="flex gap-2"><span className="font-bold text-primary">5.</span> How do you say in English: ______?</li>
+                                            <li className="flex gap-2"><span className="font-bold text-primary">6.</span> How do you spell: _________?</li>
+                                            <li className="flex gap-2"><span className="font-bold text-primary">7.</span> Is it correct?</li>
                                         </ul>
                                     </CardContent>
                                      <CardFooter className="flex-col items-start gap-2 pt-4 border-t">
-                                        <h4 className="font-semibold text-foreground">EXPRESSION</h4>
-                                        <p className="text-sm text-muted-foreground">
-                                            esperame / esperate / dame un momento = <span className="font-semibold text-foreground">HOLD ON</span>
+                                        <h4 className="font-bold text-primary uppercase text-xs tracking-wider">Expression</h4>
+                                        <p className="text-sm font-medium">
+                                            Espérame / Dame un momento = <span className="text-primary font-bold">HOLD ON</span>
                                         </p>
                                     </CardFooter>
                                 </Card>
