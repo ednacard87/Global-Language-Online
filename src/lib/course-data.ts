@@ -18,6 +18,7 @@ export const englishIntroPathData: PathItem[] = [
     { type: 'start', icon: Footprints, label: 'dashboard.start', points: 0 },
     { type: 'class', icon: BookOpen, label: 'englishIntro.intro1', href: '/intro/1', progress: 0, points: 20, storageKey: 'intro1Progress' },
     { type: 'practice', icon: Puzzle, label: 'englishIntro.quiz1', href: '/quiz/1', progress: 0, points: 10, className: 'animate-pulse-glow', storageKey: 'quiz1Progress' },
+    { type: 'practice', icon: Mic, label: 'englishIntro.speaking1', href: '#', progress: 0, points: 10, storageKey: 'speaking1Progress' },
     { type: 'class', icon: BookOpen, label: 'englishIntro.intro2', href: '/intro/2', storageKey: 'intro2Progress' },
     { type: 'practice', icon: Puzzle, label: 'englishIntro.quiz2', href: '/quiz/2', progress: 0, points: 10, storageKey: 'quiz2Progress' },
     { type: 'practice', icon: Ear, label: 'englishIntro.listening', href: '/listening-practice', progress: 0, points: 20, storageKey: 'listeningProgress'},
@@ -717,4 +718,3 @@ export const getKidsB1MainPath = (t: (key: string) => string): PathItem[] => [
     { type: 'class', icon: GraduationCap, label: 'kidsB1.connectors', href: '/kids/b1/connectors', storageKey: 'progress_kids_b1_connectors' },
     { type: 'end', icon: Flag, label: 'dashboard.finish' }
 ];
-

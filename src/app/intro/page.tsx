@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo } from "react";
@@ -87,7 +88,11 @@ export default function EnglishIntroPage() {
               } else {
                 let isLocked = (previousItem.progress ?? 0) < 100;
                 
+                // Specific rules for special nodes
                 if (item.label === 'englishIntro.quiz1' && (previousItem.progress ?? 0) >= 90) {
+                    isLocked = false;
+                } else if (item.label === 'englishIntro.speaking1' && (previousItem.progress ?? 0) >= 90) {
+                    // Speaking 1 depends on Quiz 1
                     isLocked = false;
                 } else if (item.label === 'englishIntro.quiz2' && (previousItem.progress ?? 0) >= 90) {
                     isLocked = false;
