@@ -1,10 +1,10 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, ChevronDown, Loader2 } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
