@@ -65,8 +65,8 @@ const vocabularyData = [
 ];
 
 const possessivesTable = [
-    { adj: 'MY', adjEs: 'MI-MIS', pro: 'MINE', proEs: '(MIO)' },
-    { adj: 'YOUR', adjEs: 'TU-TUS', pro: 'YOURS', proEs: '(TUYO)' },
+    { adj: 'MY', adjEs: 'MI-MIS', pro: 'MINE', proEs: 'MIO (MIOS-MIA- MIAS)' },
+    { adj: 'YOUR', adjEs: 'TU-TUS', pro: 'YOURS', proEs: 'TUYO (OS-A-AS)' },
     { adj: 'HIS', adjEs: 'SU-SUS DE EL', pro: 'HIS', proEs: '(SUYO/A/OS/AS DE EL)' },
     { adj: 'HER', adjEs: 'SU-SUS DE ELLA', pro: 'HERS', proEs: '(SUYO/A/OS/AS DE ELLA)' },
     { adj: 'ITS', adjEs: 'SU-SUS DE ESO', pro: 'ITS', proEs: '(SUYO/A/OS/AS DE ESO)' },
@@ -320,37 +320,6 @@ export default function EngA1Class6Page() {
                                     </TableBody>
                                 </Table>
                             </div>
-
-                            <div className="space-y-4">
-                                <div className="bg-primary/5 p-6 rounded-xl border-l-4 border-primary">
-                                    <h3 className="text-xl font-bold mb-2">LOS ADJETIVOS POSESIVOS</h3>
-                                    <p className="text-muted-foreground leading-relaxed">
-                                        Se utilizan para indicar quién tiene la propiedad sobre una(s) cosa(s). 
-                                        <strong> La cantidad de objetos no se refleja en la forma del adjetivo posesivo</strong> (siempre es la misma palabra).
-                                    </p>
-                                </div>
-
-                                <div className="grid md:grid-cols-2 gap-4">
-                                    <Card className="bg-muted/50 border-dashed border-2">
-                                        <CardHeader className="pb-2">
-                                            <CardTitle className="text-lg">Posición en la frase</CardTitle>
-                                        </CardHeader>
-                                        <CardContent>
-                                            <p className="font-mono text-sm">BEFORE NOUN : ANTES DEL SUSTANTIVO</p>
-                                        </CardContent>
-                                    </Card>
-                                    
-                                    <Card className="bg-muted/50 border-dashed border-2">
-                                        <CardHeader className="pb-2">
-                                            <CardTitle className="text-lg">Ejemplos</CardTitle>
-                                        </CardHeader>
-                                        <CardContent className="space-y-1">
-                                            <p className="text-sm"><strong>IT’S MY CAR</strong> (ESTE ES MI CARRO)</p>
-                                            <p className="text-sm"><strong>THESE ARE MY CARS</strong> (ESTOS SON MIS CARROS)</p>
-                                        </CardContent>
-                                    </Card>
-                                </div>
-                            </div>
                         </CardContent>
                         <CardFooter className="justify-center border-t pt-6">
                             <Button onClick={() => handleTopicComplete('grammar')}>Entendido y Avanzar</Button>
@@ -361,12 +330,39 @@ export default function EngA1Class6Page() {
                 return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
                         <CardHeader>
-                            <CardTitle>Nota</CardTitle>
+                            <CardTitle>Nota: Los Adjetivos Posesivos</CardTitle>
                         </CardHeader>
-                        <CardContent>
-                            <p className="text-lg text-muted-foreground">Información importante a recordar sobre los posesivos y su contexto.</p>
+                        <CardContent className="space-y-6">
+                            <div className="bg-primary/5 p-6 rounded-xl border-l-4 border-primary">
+                                <h3 className="text-xl font-bold mb-2">USO Y REGLAS</h3>
+                                <p className="text-muted-foreground leading-relaxed">
+                                    Se utilizan para indicar quién tiene la propiedad sobre una(s) cosa(s). 
+                                    <strong> La cantidad de objetos no se refleja en la forma del adjetivo posesivo</strong> (siempre es la misma palabra).
+                                </p>
+                            </div>
+
+                            <div className="grid md:grid-cols-2 gap-4">
+                                <Card className="bg-muted/50 border-dashed border-2">
+                                    <CardHeader className="pb-2">
+                                        <CardTitle className="text-lg">Posición en la frase</CardTitle>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <p className="font-mono text-sm uppercase">Before Noun : Antes del sustantivo</p>
+                                    </CardContent>
+                                </Card>
+                                
+                                <Card className="bg-muted/50 border-dashed border-2">
+                                    <CardHeader className="pb-2">
+                                        <CardTitle className="text-lg">Ejemplos</CardTitle>
+                                    </CardHeader>
+                                    <CardContent className="space-y-2">
+                                        <p className="text-sm"><strong>IT’S MY CAR</strong><br/><span className="text-muted-foreground">(ESTE ES MI CARRO)</span></p>
+                                        <p className="text-sm"><strong>THESE ARE MY CARS</strong><br/><span className="text-muted-foreground">(ESTOS SON MIS CARROS)</span></p>
+                                    </CardContent>
+                                </Card>
+                            </div>
                         </CardContent>
-                        <CardFooter>
+                        <CardFooter className="justify-center">
                             <Button onClick={() => handleTopicComplete('note')}>Entendido</Button>
                         </CardFooter>
                     </Card>
