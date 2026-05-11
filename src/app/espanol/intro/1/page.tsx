@@ -130,7 +130,6 @@ const lecturaData = {
 };
 
 const VocabularyMatchingGame = ({ onComplete }: { onComplete: () => void }) => {
-    const { toast } = useToast();
     const [cards, setCards] = useState<any[]>([]);
     const [selectedIndices, setSelectedIndices] = useState<number[]>([]);
     const [matchedPairIds, setMatchedPairIds] = useState<number[]>([]);
@@ -217,7 +216,7 @@ const VocabularyMatchingGame = ({ onComplete }: { onComplete: () => void }) => {
                             return (
                                 <div key={card.id} onClick={() => handleCardClick(index)}
                                     className={cn(
-                                        "flex items-center justify-center min-h-[50px] px-3 py-2 text-center cursor-pointer transition-all border-2 rounded-xl text-base sm:text-lg font-bold select-none shadow-sm", 
+                                        "flex items-center justify-center min-h-[70px] px-3 py-2 text-center cursor-pointer transition-all border-2 rounded-xl text-base sm:text-lg font-bold select-none shadow-sm", 
                                         isMatched ? "bg-green-500/10 border-green-500 text-green-700 opacity-50" : 
                                         isSelected ? "bg-primary/20 border-primary text-primary" : "bg-card border-border hover:bg-muted hover:border-muted-foreground/30"
                                     )}>
@@ -233,13 +232,12 @@ const VocabularyMatchingGame = ({ onComplete }: { onComplete: () => void }) => {
 };
 
 export default function EspanolIntro1Page() {
-    const { t } = useTranslation();
     const { toast } = useToast();
     const { user, isUserLoading } = useUser();
     const firestore = useFirestore();
 
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
-    const [selectedTopic, setSelectedTopic] = useState('saludos');
+    const [selectedTopic, setSelectedTopic] = useState('');
     const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
 
     const [nounAnswers, setNounAnswers] = useState<string[]>(Array(nounsPracticeData.length).fill(''));
@@ -267,11 +265,11 @@ export default function EspanolIntro1Page() {
     }, [user, studentProfile]);
     
     const initialLearningPath = useMemo((): Topic[] => [
-        { key: 'saludos', name: 'Greetings (Saludos)', icon: Hand, status: 'active' },
-        { key: 'despedidas', name: 'Farewells (Despedidas)', icon: MessageSquare, status: 'locked' },
-        { key: 'sustantivos', name: 'Nouns (Sustantivos)', icon: Type, status: 'locked' },
-        { key: 'adjetivos', name: 'Adjectives (Adjetivos)', icon: GraduationCap, status: 'locked' },
-        { key: 'verbos', name: 'Verbs (Verbos)', icon: Activity, status: 'locked' },
+        { key: 'saludos', name: 'Saludos (Greetings)', icon: Hand, status: 'active' },
+        { key: 'despedidas', name: 'Despedidas (Farewells)', icon: MessageSquare, status: 'locked' },
+        { key: 'sustantivos', name: 'Sustantivos (Nouns)', icon: Type, status: 'locked' },
+        { key: 'adjetivos', name: 'Adjetivos (Adjectives)', icon: GraduationCap, status: 'locked' },
+        { key: 'verbos', name: 'Verbos (Verbs)', icon: Activity, status: 'locked' },
         { key: 'vocabulario', name: 'Basic Vocabulary', icon: BookOpen, status: 'locked' },
         { key: 'lectura', name: 'Reading Comprehension', icon: BookOpen, status: 'locked' },
     ], []);
@@ -328,7 +326,7 @@ export default function EspanolIntro1Page() {
         if (!topicToComplete) return;
 
         setLearningPath(currentPath => {
-            const newPath = [...currentPath];
+            const newPath = currentPath.map(item => ({...item}));
             const currentIndex = newPath.findIndex(item => item.key === topicToComplete);
             
             if (currentIndex !== -1 && newPath[currentIndex].status !== 'completed') {
@@ -338,7 +336,7 @@ export default function EspanolIntro1Page() {
                 if (nextIndex < newPath.length && newPath[nextIndex].status === 'locked') {
                     newPath[nextIndex].status = 'active';
                     setSelectedTopic(newPath[nextIndex].key);
-                     toast({ title: "¡Topic unlocked!", description: `Now you can continue with ${newPath[nextIndex].name}` });
+                     toast({ title: "¡Tema desbloqueado!", description: `Ahora puedes continuar con ${newPath[nextIndex].name}` });
                 } else if (newPath.every(item => item.status === 'completed')) {
                     toast({ title: "¡Felicitaciones!", description: "¡Has completado el 100% de la aventura Intro 1E!" });
                 }
@@ -352,7 +350,7 @@ export default function EspanolIntro1Page() {
     const handleTopicSelect = (key: string) => {
         const topic = learningPath.find(t => t.key === key);
         if (topic?.status === 'locked' && !isAdmin) {
-            toast({ variant: 'destructive', title: 'Locked Topic' });
+            toast({ variant: 'destructive', title: 'Tema Bloqueado' });
             return;
         }
         setSelectedTopic(key);
@@ -384,10 +382,10 @@ export default function EspanolIntro1Page() {
         });
         setNounValidation(newValidation as any);
         if (allCorrect) {
-            toast({ title: 'Very well!', description: 'All translations are correct.' });
+            toast({ title: '¡Muy bien!', description: 'Todas las traducciones son correctas.' });
             handleTopicComplete('sustantivos');
         } else {
-             toast({ variant: 'destructive', title: 'Some answers are incorrect.' });
+             toast({ variant: 'destructive', title: 'Algunas respuestas son incorrectas.' });
         }
     };
 
@@ -413,10 +411,10 @@ export default function EspanolIntro1Page() {
         });
         setAdjValidation(newValidation as any);
         if (allCorrect) {
-            toast({ title: 'Great job!', description: 'All adjectives are correct.' });
+            toast({ title: '¡Buen trabajo!', description: 'Todos los adjetivos son correctos.' });
             handleTopicComplete('adjetivos');
         } else {
-             toast({ variant: 'destructive', title: 'Some answers are incorrect.' });
+             toast({ variant: 'destructive', title: 'Algunas respuestas son incorrectas.' });
         }
     };
 
@@ -445,10 +443,10 @@ export default function EspanolIntro1Page() {
         });
         setVerbValidation(newValidation as any);
         if (allCorrect) {
-            toast({ title: 'Excellent!', description: 'All verbs are correct.' });
+            toast({ title: '¡Excelente!', description: 'Todos los verbos son correctos.' });
             handleTopicComplete('verbos');
         } else {
-             toast({ variant: 'destructive', title: 'Some answers are incorrect.' });
+             toast({ variant: 'destructive', title: 'Algunas respuestas son incorrectas.' });
         }
     };
 
@@ -490,13 +488,13 @@ export default function EspanolIntro1Page() {
             case 'saludos': return (
                 <Card>
                     <CardHeader>
-                        <CardTitle>Greetings (Saludos)</CardTitle>
-                        <CardDescription>Essential phrases to start a conversation in Spanish.</CardDescription>
+                        <CardTitle>Saludos (Greetings)</CardTitle>
+                        <CardDescription>Frases esenciales para iniciar una conversación en español.</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <div className="grid grid-cols-2 gap-4 text-lg">
                             <div className="font-bold p-3 bg-muted rounded-lg text-center">Español</div>
-                            <div className="font-bold p-3 bg-muted rounded-lg text-center">English</div>
+                            <div className="font-bold p-3 bg-muted rounded-lg text-center">Inglés</div>
                             {saludosData.map(item => (
                                 <React.Fragment key={item.spanish}>
                                     <div className="p-3 border rounded-lg font-medium text-center">{item.spanish}</div>
@@ -506,20 +504,20 @@ export default function EspanolIntro1Page() {
                         </div>
                     </CardContent>
                     <CardFooter>
-                        <Button onClick={() => handleTopicComplete('saludos')}>Continue to Farewells</Button>
+                        <Button onClick={() => handleTopicComplete('saludos')}>Continuar a Despedidas</Button>
                     </CardFooter>
                 </Card>
             );
             case 'despedidas': return (
                 <Card>
                     <CardHeader>
-                        <CardTitle>Farewells (Despedidas)</CardTitle>
-                        <CardDescription>Essential phrases to end a conversation in Spanish.</CardDescription>
+                        <CardTitle>Despedidas (Farewells)</CardTitle>
+                        <CardDescription>Frases esenciales para terminar una conversación en español.</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <div className="grid grid-cols-2 gap-4 text-lg">
                             <div className="font-bold p-3 bg-muted rounded-lg text-center">Español</div>
-                            <div className="font-bold p-3 bg-muted rounded-lg text-center">English</div>
+                            <div className="font-bold p-3 bg-muted rounded-lg text-center">Inglés</div>
                             {despedidasData.map(item => (
                                 <React.Fragment key={item.spanish}>
                                     <div className="p-3 border rounded-lg font-medium text-center">{item.spanish}</div>
@@ -529,51 +527,51 @@ export default function EspanolIntro1Page() {
                         </div>
                     </CardContent>
                     <CardFooter>
-                        <Button onClick={() => handleTopicComplete('despedidas')}>Continue</Button>
+                        <Button onClick={() => handleTopicComplete('despedidas')}>Continuar</Button>
                     </CardFooter>
                 </Card>
             );
             case 'sustantivos': return (
                 <Card>
                     <CardHeader>
-                        <CardTitle>Nouns (Sustantivos)</CardTitle>
-                        <CardDescription>Understanding gender and number in Spanish.</CardDescription>
+                        <CardTitle>Sustantivos (Nouns)</CardTitle>
+                        <CardDescription>Entendiendo el género y número en español.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-6">
                         <div className="bg-primary/5 p-4 rounded-lg border-l-4 border-primary">
-                            <p className="text-lg">A noun is a <strong>person, animal and things</strong> (persona, animal o cosa).</p>
+                            <p className="text-lg">Un sustantivo es una <strong>persona, animal o cosa</strong> (a noun is a person, animal and things).</p>
                         </div>
                         <div>
-                            <h3 className="text-xl font-bold text-primary mb-2">1. Gender (Género)</h3>
-                            <p className="text-muted-foreground">Unlike English, every noun in Spanish has a gender: <strong>Masculine</strong> or <strong>Feminine</strong>.</p>
+                            <h3 className="text-xl font-bold text-primary mb-2">1. Género</h3>
+                            <p className="text-muted-foreground">A diferencia del inglés, cada sustantivo en español tiene un género: <strong>Masculino</strong> o <strong>Femenino</strong>.</p>
                             <div className="grid sm:grid-cols-2 gap-4 mt-4">
                                 <div className="p-4 bg-muted rounded-lg border-l-4 border-blue-500">
-                                    <h4 className="font-bold">Masculine</h4>
-                                    <p className="text-sm">Usually end in <strong>-o</strong></p>
-                                    <p className="font-mono mt-1 italic">Example: El libr<strong>o</strong> (The book)</p>
+                                    <h4 className="font-bold">Masculino</h4>
+                                    <p className="text-sm">Usualmente terminan en <strong>-o</strong></p>
+                                    <p className="font-mono mt-1 italic">Ejemplo: El libr<strong>o</strong></p>
                                 </div>
                                 <div className="p-4 bg-muted rounded-lg border-l-4 border-pink-500">
-                                    <h4 className="font-bold">Feminine</h4>
-                                    <p className="text-sm">Usually end in <strong>-a</strong></p>
-                                    <p className="font-mono mt-1 italic">Example: La mes<strong>a</strong> (The table)</p>
+                                    <h4 className="font-bold">Femenino</h4>
+                                    <p className="text-sm">Usualmente terminan en <strong>-a</strong></p>
+                                    <p className="font-mono mt-1 italic">Ejemplo: La mes<strong>a</strong></p>
                                 </div>
                             </div>
                         </div>
                         <Separator />
                         <div>
-                            <h3 className="text-xl font-bold text-primary mb-2">2. Number (Número)</h3>
-                            <p className="text-muted-foreground">To make nouns plural, we follow these simple rules:</p>
+                            <h3 className="text-xl font-bold text-primary mb-2">2. Número</h3>
+                            <p className="text-muted-foreground">Para hacer los sustantivos plurales, seguimos estas reglas simples:</p>
                             <ul className="list-disc pl-5 mt-2 space-y-2">
-                                <li>If it ends in a vowel, add <strong>-s</strong>: <span className="italic">Libro {"=>"} Libros</span></li>
-                                <li>If it ends in a consonant, add <strong>-es</strong>: <span className="italic">Papel {"=>"} Papeles</span></li>
+                                <li>Si termina en vocal, añade <strong>-s</strong>: <span className="italic">Libro {"=>"} Libros</span></li>
+                                <li>Si termina en consonante, añade <strong>-es</strong>: <span className="italic">Papel {"=>"} Papeles</span></li>
                             </ul>
                         </div>
                         <Separator />
                         <div>
-                            <h3 className="text-xl font-bold text-primary mb-2">3. Vocabulary Practice</h3>
-                            <p className="text-muted-foreground mb-4">Translate these common nouns into Spanish.</p>
+                            <h3 className="text-xl font-bold text-primary mb-2">3. Práctica de Vocabulario</h3>
+                            <p className="text-muted-foreground mb-4">Traduce estos sustantivos comunes al español.</p>
                             <div className="grid grid-cols-2 gap-2 max-w-md mx-auto">
-                                <div className="font-bold bg-muted p-2 rounded text-center">English</div>
+                                <div className="font-bold bg-muted p-2 rounded text-center">Inglés</div>
                                 <div className="font-bold bg-muted p-2 rounded text-center">Español</div>
                                 {nounsPracticeData.map((item, index) => (
                                     <React.Fragment key={item.english}>
@@ -595,50 +593,50 @@ export default function EspanolIntro1Page() {
                                 ))}
                             </div>
                             <div className="mt-4 flex justify-center">
-                                <Button variant="secondary" onClick={handleCheckNouns}>Verify Translations</Button>
+                                <Button variant="secondary" onClick={handleCheckNouns}>Verificar Traducciones</Button>
                             </div>
                         </div>
                     </CardContent>
                     <CardFooter>
-                         <Button onClick={() => handleTopicComplete('sustantivos')}>Continue</Button>
+                         <Button onClick={() => handleTopicComplete('sustantivos')}>Continuar</Button>
                     </CardFooter>
                 </Card>
             );
             case 'adjetivos': return (
                 <Card>
                     <CardHeader>
-                        <CardTitle>Adjectives (Adjetivos)</CardTitle>
-                        <CardDescription>How to describe things in Spanish.</CardDescription>
+                        <CardTitle>Adjetivos (Adjectives)</CardTitle>
+                        <CardDescription>Cómo describir cosas en español.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-6">
                         <div>
-                            <h3 className="text-xl font-bold text-primary mb-2">1. Agreement (Concordancia)</h3>
-                            <p className="text-muted-foreground">Adjectives must match the noun they describe in both <strong>gender</strong> and <strong>number</strong>.</p>
-                            <div className="mt-4 p-4 bg-muted rounded-lg font-mono">
-                                <p>A red book: El libro roj<strong>o</strong></p>
-                                <p>A red table: La mesa roj<strong>a</strong></p>
-                                <p>Red books: Los libros roj<strong>os</strong></p>
+                            <h3 className="text-xl font-bold text-primary mb-2">1. Concordancia</h3>
+                            <p className="text-muted-foreground">Los adjetivos deben coincidir con el sustantivo que describen en <strong>género</strong> y <strong>número</strong>.</p>
+                            <div className="mt-4 p-4 bg-muted rounded-lg font-mono text-base">
+                                <p>Libro roj<strong>o</strong></p>
+                                <p>Mesa roj<strong>a</strong></p>
+                                <p>Libros roj<strong>os</strong></p>
                             </div>
                         </div>
                         <Separator />
                         <div>
-                            <h3 className="text-xl font-bold text-primary mb-2">2. Placement</h3>
-                            <p className="text-muted-foreground">In Spanish, adjectives usually come <strong>after</strong> the noun.</p>
+                            <h3 className="text-xl font-bold text-primary mb-2">2. Posición</h3>
+                            <p className="text-muted-foreground">En español, los adjetivos usualmente van <strong>después</strong> del sustantivo.</p>
                             <div className="mt-2 p-3 bg-muted rounded-lg border flex items-center justify-between">
-                                <span className="text-sm font-semibold">Spanish: Noun + Adjective</span>
+                                <span className="text-sm font-semibold">Español: Sustantivo + Adjetivo</span>
                                 <span className="text-xs text-muted-foreground italic">"Carro azul"</span>
                             </div>
                             <div className="mt-2 p-3 bg-muted rounded-lg border flex items-center justify-between">
-                                <span className="text-sm font-semibold">English: Adjective + Noun</span>
+                                <span className="text-sm font-semibold">Inglés: Adjetivo + Sustantivo</span>
                                 <span className="text-xs text-muted-foreground italic">"Blue car"</span>
                             </div>
                         </div>
                         <Separator />
                         <div>
-                            <h3 className="text-xl font-bold text-primary mb-2">3. Vocabulary Practice</h3>
-                            <p className="text-muted-foreground mb-4">Translate these common adjectives into Spanish.</p>
+                            <h3 className="text-xl font-bold text-primary mb-2">3. Práctica de Vocabulario</h3>
+                            <p className="text-muted-foreground mb-4">Traduce estos adjetivos comunes al español.</p>
                             <div className="grid grid-cols-2 gap-2 max-w-md mx-auto">
-                                <div className="font-bold bg-muted p-2 rounded text-center">English</div>
+                                <div className="font-bold bg-muted p-2 rounded text-center">Inglés</div>
                                 <div className="font-bold bg-muted p-2 rounded text-center">Español</div>
                                 {adjectivesPracticeData.map((item, index) => (
                                     <React.Fragment key={item.english}>
@@ -660,51 +658,51 @@ export default function EspanolIntro1Page() {
                                 ))}
                             </div>
                             <div className="mt-4 flex justify-center">
-                                <Button variant="secondary" onClick={handleCheckAdjectives}>Verify Translations</Button>
+                                <Button variant="secondary" onClick={handleCheckAdjectives}>Verificar Traducciones</Button>
                             </div>
                         </div>
                     </CardContent>
                     <CardFooter>
-                         <Button onClick={() => handleTopicComplete('adjetivos')}>Continue</Button>
+                         <Button onClick={() => handleTopicComplete('adjetivos')}>Continuar</Button>
                     </CardFooter>
                 </Card>
             );
             case 'verbos': return (
                 <Card>
                     <CardHeader>
-                        <CardTitle>Verbs (Verbos)</CardTitle>
-                        <CardDescription>The engine of the sentence.</CardDescription>
+                        <CardTitle>Verbos (Verbs)</CardTitle>
+                        <CardDescription>El motor de la oración.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-6">
                         <div>
-                            <h3 className="text-xl font-bold text-primary mb-2">1. The Infinitive</h3>
-                            <p className="text-muted-foreground">All Spanish verbs in their original form end in one of three ways:</p>
+                            <h3 className="text-xl font-bold text-primary mb-2">1. El Infinitivo</h3>
+                            <p className="text-muted-foreground">Todos los verbos en español terminan en una de tres formas en su estado original:</p>
                             <div className="flex gap-4 mt-4">
                                 <div className="flex-1 p-3 bg-primary/10 rounded text-center font-bold">-AR</div>
                                 <div className="flex-1 p-3 bg-primary/10 rounded text-center font-bold">-ER</div>
                                 <div className="flex-1 p-3 bg-primary/10 rounded text-center font-bold">-IR</div>
                             </div>
-                            <p className="text-sm mt-2 text-center text-muted-foreground italic">Examples: Habl<strong>ar</strong>, Com<strong>er</strong>, Viv<strong>ir</strong></p>
+                            <p className="text-sm mt-2 text-center text-muted-foreground italic">Ejemplos: Habl<strong>ar</strong>, Com<strong>er</strong>, Viv<strong>ir</strong></p>
                         </div>
                         <Separator />
                         <div>
-                            <h3 className="text-xl font-bold text-primary mb-2">2. The "Ser" vs "Estar" Mystery</h3>
-                            <p className="text-muted-foreground">Spanish has two ways to say "to be":</p>
+                            <h3 className="text-xl font-bold text-primary mb-2">2. El Misterio de "Ser" vs "Estar"</h3>
+                            <p className="text-muted-foreground">En español tenemos dos formas para decir "to be":</p>
                             <div className="grid grid-cols-2 gap-4 mt-2">
                                 <div className="p-3 bg-muted rounded border-l-4 border-primary">
-                                    <strong>SER:</strong> Permanent things (traits, identity).
+                                    <strong>SER:</strong> Cosas permanentes (rasgos, identidad).
                                 </div>
                                 <div className="p-3 bg-muted rounded border-l-4 border-secondary">
-                                    <strong>ESTAR:</strong> Temporary things (feelings, location).
+                                    <strong>ESTAR:</strong> Cosas temporales (sentimientos, ubicación).
                                 </div>
                             </div>
                         </div>
                         <Separator />
                         <div>
-                            <h3 className="text-xl font-bold text-primary mb-2">3. Vocabulary Practice</h3>
-                            <p className="text-muted-foreground mb-4">Translate these common verbs into Spanish.</p>
+                            <h3 className="text-xl font-bold text-primary mb-2">3. Práctica de Vocabulario</h3>
+                            <p className="text-muted-foreground mb-4">Traduce estos verbos comunes al español.</p>
                             <div className="grid grid-cols-2 gap-2 max-w-md mx-auto">
-                                <div className="font-bold bg-muted p-2 rounded text-center">English</div>
+                                <div className="font-bold bg-muted p-2 rounded text-center">Inglés</div>
                                 <div className="font-bold bg-muted p-2 rounded text-center">Español</div>
                                 {verbsPracticeData.map((item, index) => (
                                     <React.Fragment key={item.english}>
@@ -726,12 +724,12 @@ export default function EspanolIntro1Page() {
                                 ))}
                             </div>
                             <div className="mt-4 flex justify-center">
-                                <Button variant="secondary" onClick={handleCheckVerbs}>Verify Translations</Button>
+                                <Button variant="secondary" onClick={handleCheckVerbs}>Verificar Traducciones</Button>
                             </div>
                         </div>
                     </CardContent>
                     <CardFooter>
-                         <Button onClick={() => handleTopicComplete('verbos')}>Continue</Button>
+                         <Button onClick={() => handleTopicComplete('verbos')}>Continuar</Button>
                     </CardFooter>
                 </Card>
             );
@@ -808,7 +806,7 @@ export default function EspanolIntro1Page() {
                     </CardFooter>
                  </Card>
             );
-            default: return <p>Select a topic to start.</p>;
+            default: return <p>Selecciona un tema para empezar.</p>;
         }
     };
 
@@ -818,13 +816,13 @@ export default function EspanolIntro1Page() {
             <main className="flex-1 p-4 md:p-8">
                 <div className="max-w-7xl mx-auto">
                     <div className="mb-8">
-                        <Link href="/espanol/intro" className="hover:underline text-sm text-muted-foreground">Back to Intro Adventure</Link>
-                        <h1 className="text-4xl font-bold dark:text-primary">Intro 1 Spanish</h1>
+                        <Link href="/espanol/intro" className="hover:underline text-sm text-muted-foreground">Volver a Aventura Intro</Link>
+                        <h1 className="text-4xl font-bold dark:text-primary">Intro 1 Español</h1>
                     </div>
                     <div className="grid gap-8 md:grid-cols-12">
                         <div className="md:col-span-4">
                             <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple">
-                                <CardHeader><CardTitle>Learning Path</CardTitle></CardHeader>
+                                <CardHeader><CardTitle>Ruta de Aprendizaje</CardTitle></CardHeader>
                                 <CardContent>
                                     <nav>
                                         <ul className="space-y-1">
@@ -847,7 +845,7 @@ export default function EspanolIntro1Page() {
                                     </nav>
                                      <div className="mt-6 pt-6 border-t">
                                         <div className="flex justify-between items-center text-sm font-medium text-muted-foreground mb-2">
-                                            <span>Progress</span><span className="font-bold text-foreground">{progressValue}%</span>
+                                            <span>Progreso</span><span className="font-bold text-foreground">{progressValue}%</span>
                                         </div>
                                         <Progress value={progressValue} className="h-2" />
                                     </div>
