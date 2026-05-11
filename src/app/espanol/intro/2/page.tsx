@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import {
   BookOpen,
@@ -139,7 +139,7 @@ const MemoryGame = ({ data, onComplete }: { data: { spanish: string; english: st
         setIsClient(true);
     }, []);
 
-    const initializeGame = React.useCallback(() => {
+    const initializeGame = useCallback(() => {
         const gameCards = data.flatMap((pair, index) => [
             { id: index * 2, pairId: index, text: pair.english },
             { id: index * 2 + 1, pairId: index, text: pair.spanish },
@@ -194,21 +194,10 @@ const MemoryGame = ({ data, onComplete }: { data: { spanish: string; english: st
         setFlippedIndices(prev => [...prev, index]);
     };
 
-    if (!isClient) {
-        return (
-            <Card>
-                <CardHeader>
-                    <CardTitle>Juego de Memoria: Saludos y Despedidas</CardTitle>
-                </CardHeader>
-                <CardContent className="flex justify-center items-center h-48">
-                    <Loader2 className="h-8 w-8 animate-spin" />
-                </CardContent>
-            </Card>
-        );
-    }
+    if (!isClient) return null;
 
     return (
-        <Card>
+        <Card className="shadow-soft border-2 border-brand-purple">
             <CardHeader>
                 <CardTitle>Juego de Memoria: Saludos y Despedidas</CardTitle>
                 <div className="flex justify-between items-center pt-2">
@@ -226,9 +215,9 @@ const MemoryGame = ({ data, onComplete }: { data: { spanish: string; english: st
                             const isMatched = matchedPairIds.includes(card.pairId);
                             return (
                                 <Card key={card.id} onClick={() => handleCardClick(index)}
-                                    className={cn("flex items-center justify-center aspect-square cursor-pointer", isFlipped || isMatched ? "bg-card border-primary" : "bg-secondary", isMatched && "border-green-500")}>
+                                    className={cn("flex items-center justify-center aspect-square cursor-pointer transition-all", isFlipped || isMatched ? "bg-card border-primary" : "bg-secondary", isMatched && "border-green-500")}>
                                     <CardContent className="p-1 text-center">
-                                        {isFlipped || isMatched ? <span className="text-sm font-bold">{card.text}</span> : <BrainCircuit className="h-5 w-5 text-primary/50" />}
+                                        {isFlipped || isMatched ? <span className="text-[10px] sm:text-xs font-bold leading-tight">{card.text}</span> : <BrainCircuit className="h-5 w-5 text-primary/50" />}
                                     </CardContent>
                                 </Card>
                             )
@@ -415,7 +404,7 @@ const NumbersExercise = ({ onComplete }: { onComplete: () => void }) => {
     }
 
     return (
-        <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+        <Card className="shadow-soft border-2 border-brand-purple">
             <CardHeader>
                 <CardTitle>Ejercicio Números</CardTitle>
                 <div className="flex items-center justify-start flex-wrap gap-2 pt-4">
@@ -529,7 +518,7 @@ const TimeExercise = ({ onComplete }: { onComplete: () => void }) => {
     }
 
     return (
-        <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+        <Card className="shadow-soft border-2 border-brand-purple">
             <CardHeader>
                 <CardTitle>Ejercicios Hora</CardTitle>
                 <div className="flex items-center justify-start flex-wrap gap-2 pt-4">
@@ -686,7 +675,7 @@ const MixedExercise = ({ onComplete }: { onComplete: () => void }) => {
     }
 
     return (
-        <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+        <Card className="shadow-soft border-2 border-brand-purple">
             <CardHeader>
                 <CardTitle>Ejercicios Mixtos (1E & 2E)</CardTitle>
                 <div className="flex items-center justify-start flex-wrap gap-2 pt-4">
@@ -751,7 +740,7 @@ type Topic = {
   status: 'locked' | 'active' | 'completed';
 };
 
-const progressStorageKey = 'progress_espanol_intro_2_v1';
+const progressStorageKey = 'progress_espanol_intro_2_v2';
 const mainProgressKey = 'progress_espanol_intro_2';
 
 export default function EspanolIntro2Page() {
@@ -862,7 +851,7 @@ export default function EspanolIntro2Page() {
             case 'memory_game': return <MemoryGame data={greetingsAndFarewellsData} onComplete={() => handleTopicComplete('memory_game')} />;
             case 'numeros':
                 return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                    <Card className="shadow-soft border-2 border-brand-purple">
                         <CardHeader>
                             <CardTitle>Números</CardTitle>
                             <CardDescription>Repasa los números básicos.</CardDescription>
@@ -906,6 +895,9 @@ export default function EspanolIntro2Page() {
                             <p><span className="font-bold">Medianoche</span> - Midnight (12:00 AM)</p>
                         </div>
                     </CardContent>
+                    <CardFooter>
+                        <Button onClick={() => handleTopicComplete('time')}>He terminado de estudiar la hora</Button>
+                    </CardFooter>
                 </Card>
             );
             case 'time_exercises':
