@@ -18,6 +18,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Separator } from '@/components/ui/separator';
 import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
 import { LargeTextTranslation } from '@/components/dashboard/large-text-translation';
+import { AdjectivesMemoryGame } from '@/components/kids/exercises/adjectives-memory-game';
 
 type Topic = {
   key: string;
@@ -465,21 +466,10 @@ export default function EngA1Class6Page() {
                 );
             case 'vocab_game':
                 return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple min-h-[400px]">
-                        <CardHeader>
-                            <CardTitle>Vocabulario (Juego)</CardTitle>
-                            <CardDescription>Práctica interactiva de vocabulario.</CardDescription>
-                        </CardHeader>
-                        <CardContent className="flex flex-col items-center justify-center py-12">
-                            <Gamepad2 className="h-20 w-20 text-brand-purple mb-4 animate-bounce" />
-                            <p className="text-muted-foreground text-center mb-6">
-                                Este juego interactivo está diseñado para reforzar lo aprendido.
-                            </p>
-                        </CardContent>
-                        <CardFooter className="justify-center border-t pt-6">
-                            <Button onClick={() => handleTopicComplete('vocab_game')}>Completar y Avanzar</Button>
-                        </CardFooter>
-                    </Card>
+                    <AdjectivesMemoryGame 
+                        data={vocabularyData} 
+                        onComplete={() => handleTopicComplete('vocab_game')} 
+                    />
                 );
             case 'ex6':
                 return (
