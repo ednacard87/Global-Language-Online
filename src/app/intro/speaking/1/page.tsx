@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState } from 'react';
@@ -9,9 +8,10 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription }
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
-import { Mic, CheckCircle, ArrowLeft, MessageSquare, BookOpen, Music, PlayCircle, Star } from 'lucide-react';
+import { Mic, CheckCircle, ArrowLeft, MessageSquare, BookOpen, Music, PlayCircle, Star, ArrowRight, Loader2 } from 'lucide-react';
 import { useUser, useFirestore, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
 import { doc } from 'firebase/firestore';
+import { useToast } from '@/hooks/use-toast';
 
 const personalPresentationData = [
     { 
@@ -55,6 +55,7 @@ export default function Speaking1Page() {
     const router = useRouter();
     const { user } = useUser();
     const firestore = useFirestore();
+    const { toast } = useToast();
     const [isCompleting, setIsCompleting] = useState(false);
 
     const studentDocRef = useMemoFirebase(
@@ -158,8 +159,4 @@ export default function Speaking1Page() {
             </main>
         </div>
     );
-}
-
-function toast(arg0: { title: string; description: string; }) {
-    throw new Error('Function not implemented.');
 }
