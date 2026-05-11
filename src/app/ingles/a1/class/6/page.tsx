@@ -31,7 +31,7 @@ const ICONS = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_a1_eng_unit_2_class_6_v3';
+const progressStorageVersion = 'progress_a1_eng_unit_2_class_6_v4';
 const mainProgressKey = 'progress_a1_eng_unit_2_class_6';
 
 const vocabularyData = [
@@ -109,9 +109,9 @@ export default function EngA1Class6Page() {
         { key: 'ex3', name: 'Ejercicio 3', icon: PenSquare, status: 'locked' },
         { key: 'note', name: 'Nota', icon: Info, status: 'locked' },
         { key: 'ex4', name: 'Ejercicio 4', icon: PenSquare, status: 'locked' },
+        { key: 'ex5', name: 'Ejercicio 5', icon: PenSquare, status: 'locked' },
         { key: 'text', name: 'Texto', icon: BookOpen, status: 'locked' },
         { key: 'vocab_game', name: 'Vocabulario (Juego)', icon: Gamepad2, status: 'locked' },
-        { key: 'ex5', name: 'Ejercicio 5', icon: PenSquare, status: 'locked' },
         { key: 'ex6', name: 'Ejercicio 6', icon: PenSquare, status: 'locked' },
         { key: 'ex7', name: 'Ejercicio 7', icon: PenSquare, status: 'locked' },
     ], []);
@@ -415,6 +415,15 @@ export default function EngA1Class6Page() {
                         onComplete={() => handleTopicComplete('ex4')}
                         course="a1"
                         title="Ejercicio 4"
+                    />
+                );
+            case 'ex5':
+                return (
+                    <SimpleTranslationExercise
+                        exerciseKey="c6_ex5"
+                        onComplete={() => handleTopicComplete('ex5')}
+                        course="a1"
+                        title="Ejercicio 5"
                     />
                 );
             default:

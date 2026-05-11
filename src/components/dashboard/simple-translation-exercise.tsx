@@ -197,6 +197,21 @@ const exercises = {
             { spanish: 'MI CAFÉ ESTÁ MUY CALIENTE, NO PUEDO TOMARLO', english: ["my coffee is very hot, i cannot drink it", "my coffee is very hot, i can't drink it"] },
             { spanish: '¿ESTE ES SUYO? (DE ELLA)', english: ["is this hers?"] },
         ]
+    },
+    c6_ex5: {
+        title: 'a1class1.exercise',
+        prompts: [
+            { spanish: 'YO TENGO UN RELOJ NUEVO- EL RELOJ ES MIO', english: ["i have a new watch - the watch is mine", "i have a new watch the watch is mine"] },
+            { spanish: 'JANE TIENE UNA CASA VIEJA- LA CASA ES DE ELLA', english: ["jane has an old house - the house is hers", "jane has an old house the house is hers"] },
+            { spanish: 'MARY TIENE UNA MASCOTA- LA MASCOTA ES DE ELLA', english: ["mary has a pet - the pet is hers", "mary has a pet the pet is hers"] },
+            { spanish: 'TÚ TIENES ALGUNAS CAMISETAS NUEVAS- LAS CAMISETAS SON TUYAS', english: ["you have some new t-shirts - the t-shirts are yours", "you have some new t-shirts the t-shirts are yours"] },
+            { spanish: 'TIM Y LOUIS TIENEN UNA NUEVA PAGINA WEB- LA PAGINA WEB ES DE ELLOS', english: ["tim and louis have a new website - the website is theirs", "tim and louis have a new website the website is theirs"] },
+            { spanish: 'NOSOTROS TENEMOS UN EMPLEO NUEVO- EL EMPLEO ES NUESTRO', english: ["we have a new job - the job is ours", "we have a new job the job is ours"] },
+            { spanish: 'YO TENGO UN PERRO PEQUEÑO– EL PERRO ES MIO', english: ["i have a small dog - the dog is mine", "i have a small dog the dog is mine"] },
+            { spanish: 'ELLOS TIENEN UNA CAJA- LA CAJA ES DE ELLOS', english: ["they have a box - the box is theirs", "they have a box the box is theirs"] },
+            { spanish: 'ELLA TIENE UN PORTATIL BLANCO- EL PORTATIL ES DE ELLA', english: ["she has a white laptop - the laptop is hers", "she has a white laptop the laptop is hers"] },
+            { spanish: 'NOSOTROS TENEMOS UNA FINCA- LA FINCA ES NUESTRA', english: ["we have a farm - the farm is ours", "we have a farm the farm is ours", "we have a country house - the country house is ours"] },
+        ]
     }
 };
 
