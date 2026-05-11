@@ -212,6 +212,19 @@ const exercises = {
             { spanish: 'ELLA TIENE UN PORTATIL BLANCO- EL PORTATIL ES DE ELLA', english: ["she has a white laptop - the laptop is hers", "she has a white laptop the laptop is hers"] },
             { spanish: 'NOSOTROS TENEMOS UNA FINCA- LA FINCA ES NUESTRA', english: ["we have a farm - the farm is ours", "we have a farm the farm is ours", "we have a country house - the country house is ours"] },
         ]
+    },
+    c6_ex6: {
+        title: 'a1class1.exercise',
+        prompts: [
+            { spanish: 'PERDI MIS LLAVES', english: ["i lost my keys"] },
+            { spanish: '¿ESTE ES MÍO Ó ES TUYO?', english: ["is this mine or is it yours?", "is this mine or is yours?"] },
+            { spanish: 'YO CONOZCO SU HERMANO (DE ELLA)', english: ["i know her brother"] },
+            { spanish: 'ELLOS SON NUESTROS PARIENTES', english: ["they are our relatives"] },
+            { spanish: 'TU NO ERES SU AMIGO- (DE EL)', english: ["you are not his friend", "you aren't his friend", "you're not his friend"] },
+            { spanish: '¿ELLOS SON TUS AMIGOS?', english: ["are they your friends?"] },
+            { spanish: '¿ESTAS SON SUS ARETAS? - (DE ELLA)', english: ["are these her earrings?"] },
+            { spanish: '¿ESTA ES SU CHAQUETA? (DE ÉL)', english: ["is this his jacket?"] },
+        ]
     }
 };
 
