@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState } from 'react';
@@ -13,6 +12,27 @@ import { Mic, CheckCircle, ArrowLeft, BookOpen, ArrowRight, Loader2, HelpCircle,
 import { useUser, useFirestore, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
+
+const allAboutYouQuestions = [
+    "What is your name?",
+    "How are you today?",
+    "How old are you?",
+    "Are you happy or tired?",
+    "Are you a student?",
+    "Are you a teacher?",
+    "Are you from Colombia?",
+    "Are you from Mexico?",
+    "Is your name Juan?",
+    "Is today Monday?",
+    "Are you at home?",
+    "Are you in yoga class?",
+    "What kind of cellphone do you have?",
+    "Are your Friends old or young?",
+    "How many books do you have?",
+    "Is English easy?",
+    "Is your family big?",
+    "How many people are in your family?"
+];
 
 const helpfulQuestions = [
     "Can you repeat slowly, please?",
@@ -127,47 +147,36 @@ export default function SpeakingFinalPage() {
                                             <Mic className="h-6 w-6" />
                                         </div>
                                         <div>
-                                            <CardTitle className="text-2xl">PRÁCTICA DE HABLA FINAL</CardTitle>
-                                            <CardDescription>Sesión de conversación libre</CardDescription>
+                                            <CardTitle className="text-2xl uppercase">Tema: "All About You" – Todo sobre ti</CardTitle>
+                                            <CardDescription>Práctica final usando principalmente el verbo "to be"</CardDescription>
                                         </div>
                                     </div>
                                 </CardHeader>
                                 <CardContent className="p-6 space-y-8">
-                                    <div className="space-y-4">
-                                        <h3 className="text-xl font-bold flex items-center gap-2">
-                                            <BookOpen className="h-5 w-5 text-brand-purple" />
-                                            Objetivo de la Sesión
-                                        </h3>
-                                        <p className="text-lg leading-relaxed">
-                                            En esta práctica final, debes demostrar todo lo aprendido en el curso introductorio. Prepárate para hablar sobre:
-                                        </p>
-                                        <ul className="grid sm:grid-cols-2 gap-3 list-none">
-                                            {[
-                                                "Tu presentación personal completa.",
-                                                "Deletrear tu nombre y correo.",
-                                                "Decir la hora en diferentes formatos.",
-                                                "Hablar sobre tu país e idioma.",
-                                                "Usar saludos y despedidas naturales.",
-                                                "Usar el verbo To Be correctamente."
-                                            ].map((item, i) => (
-                                                <li key={i} className="flex items-center gap-2 bg-muted/50 p-3 rounded-xl border">
-                                                    <CheckCircle className="h-5 w-5 text-green-500 shrink-0" />
-                                                    <span className="text-sm font-medium">{item}</span>
-                                                </li>
-                                            ))}
-                                        </ul>
+                                    <div className="grid sm:grid-cols-2 gap-4">
+                                        {allAboutYouQuestions.map((question, index) => (
+                                            <div key={index} className="flex items-start gap-3 p-3 bg-muted/30 rounded-xl border group hover:border-primary transition-colors">
+                                                <span className="font-bold text-primary min-w-[24px]">{index + 1}-</span>
+                                                <p className="font-medium text-lg tracking-tight group-hover:text-primary transition-colors">
+                                                    {question}
+                                                </p>
+                                            </div>
+                                        ))}
                                     </div>
 
                                     <div className="p-6 bg-brand-blue/10 rounded-2xl border-2 border-dashed border-brand-blue">
-                                        <h3 className="text-xl font-bold mb-2">Instrucciones para el estudiante</h3>
+                                        <h3 className="text-xl font-bold mb-2 flex items-center gap-2">
+                                            <BookOpen className="h-5 w-5 text-brand-blue" />
+                                            Instrucciones
+                                        </h3>
                                         <p className="text-muted-foreground">
-                                            Esta es una sesión guiada por tu profesor. Utiliza el cuadro de la izquierda para pedir aclaraciones o ayuda durante la conversación. ¡No tengas miedo a equivocarte, estamos aprendiendo!
+                                            Responde a estas preguntas en voz alta. Si estás con un profesor, él te hará estas preguntas al azar. Usa el cuadro de la izquierda si necesitas ayuda para comunicarte.
                                         </p>
                                     </div>
                                 </CardContent>
                                 <CardFooter className="p-6 bg-muted/30 border-t flex flex-col sm:flex-row justify-between items-center gap-4">
                                     <p className="text-sm text-muted-foreground text-center sm:text-left">
-                                        Haz clic en el botón una vez que hayas finalizado tu sesión con el profesor.
+                                        Haz clic en el botón una vez que hayas finalizado tu sesión de práctica.
                                     </p>
                                     <Button onClick={handleComplete} disabled={isCompleting} className="w-full sm:w-auto min-w-[200px] h-12 text-lg font-bold">
                                         {isCompleting ? <Loader2 className="animate-spin" /> : "Terminar Práctica"}
