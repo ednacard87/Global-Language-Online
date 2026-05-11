@@ -18,6 +18,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Separator } from '@/components/ui/separator';
 import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
 import { LargeTextTranslation } from '@/components/dashboard/large-text-translation';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 type Topic = {
   key: string;
@@ -121,12 +122,12 @@ export default function EngA1Class6Page() {
         { key: 'ex3', name: 'Ejercicio 3', icon: PenSquare, status: 'locked' },
         { key: 'note', name: 'Nota', icon: Info, status: 'locked' },
         { key: 'ex4', name: 'Ejercicio 4', icon: PenSquare, status: 'locked' },
-        { key: 'ex5', name: 'Ejercicio 5', icon: PenSquare, status: 'locked' },
         { key: 'text', name: 'Traducción de un texto', icon: BookOpen, status: 'locked' },
         { key: 'vocab_game', name: 'Vocabulario (Juego)', icon: Gamepad2, status: 'locked' },
+        { key: 'ex5', name: 'Ejercicio 5', icon: PenSquare, status: 'locked' },
         { key: 'ex6', name: 'Ejercicio 6', icon: PenSquare, status: 'locked' },
         { key: 'ex7', name: 'Ejercicio 7', icon: PenSquare, status: 'locked' },
-    ], []);
+    ], [t]);
     
     useEffect(() => {
         if (isProfileLoading || isUserLoading) return;
@@ -225,7 +226,7 @@ export default function EngA1Class6Page() {
         const newValidation = [...vocabValidation];
         if (newValidation[index] !== 'unchecked') {
             newValidation[index] = 'unchecked';
-            setValidationStatus(newValidation);
+            setVocabValidation(newValidation);
         }
         setCanAdvanceVocab(false);
     };
@@ -439,11 +440,26 @@ export default function EngA1Class6Page() {
                     />
                 );
             case 'text':
+                const textVocab = {
+                    "abuelos": "grandparents",
+                    "comun": "common",
+                    "tia": "aunt",
+                    "tio": "uncle",
+                    "primo": "cousin",
+                    "a menudo": "often",
+                    "programador": "programmer",
+                    "ahora": "now",
+                    "compañia": "company",
+                    "envió": "sent",
+                    "extrañar": "to miss",
+                    "llamar": "to call"
+                };
                 return (
                     <LargeTextTranslation
                         title="Traducción de un texto"
                         phrases={class6NarrativeTextPhrases}
                         onComplete={() => handleTopicComplete('text')}
+                        vocabulary={textVocab}
                     />
                 );
             case 'ex6':

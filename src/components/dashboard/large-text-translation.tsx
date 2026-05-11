@@ -7,6 +7,8 @@ import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { Label } from '@/components/ui/label';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { BookText } from 'lucide-react';
 
 export interface TextPhrase {
     spanish: string;
@@ -17,9 +19,10 @@ interface LargeTextTranslationProps {
     title: string;
     phrases: TextPhrase[];
     onComplete: () => void;
+    vocabulary?: Record<string, string>;
 }
 
-export const LargeTextTranslation = ({ title, phrases, onComplete }: LargeTextTranslationProps) => {
+export const LargeTextTranslation = ({ title, phrases, onComplete, vocabulary }: LargeTextTranslationProps) => {
     const { toast } = useToast();
     const [userAnswers, setUserAnswers] = useState<string[]>(Array(phrases.length).fill(''));
     const [validationStatus, setValidationStatus] = useState<('correct' | 'incorrect' | 'unchecked')[]>(Array(phrases.length).fill('unchecked'));
@@ -73,8 +76,35 @@ export const LargeTextTranslation = ({ title, phrases, onComplete }: LargeTextTr
     return (
         <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
             <CardHeader>
-                <CardTitle>{title}</CardTitle>
-                <CardDescription>Traduce cada frase del texto al inglés.</CardDescription>
+                <div className="flex justify-between items-start">
+                    <div>
+                        <CardTitle>{title}</CardTitle>
+                        <CardDescription>Traduce cada frase del texto al inglés.</CardDescription>
+                    </div>
+                    {vocabulary && (
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button variant="outline" size="sm" className="border-2 border-brand-blue animate-border-pulse">
+                                    <BookText className="mr-2 h-4 w-4" />
+                                    Vocabulary
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-64">
+                                <div className="space-y-2">
+                                    <h4 className="font-bold border-b pb-1">Vocabulario útil</h4>
+                                    <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
+                                        {Object.entries(vocabulary).map(([es, en]) => (
+                                            <React.Fragment key={es}>
+                                                <span className="text-muted-foreground capitalize">{es}:</span>
+                                                <span className="font-semibold text-right">{en}</span>
+                                            </React.Fragment>
+                                        ))}
+                                    </div>
+                                </div>
+                            </PopoverContent>
+                        </Popover>
+                    )}
+                </div>
             </CardHeader>
             <CardContent className="space-y-4">
                 {phrases.map((item, index) => (
