@@ -410,7 +410,7 @@ export const getA1MainPath = (t: (key: string) => string): PathItem[] => [
 export const getA1EngMainPath = (t: (key: string) => string): PathItem[] => [
     { type: 'start', icon: Footprints, label: 'dashboard.start' },
     { type: 'class', icon: BookOpen, label: 'a1Eng.unit1', href: '/ingles/a1/unit/1', storageKey: 'progress_a1_eng_unit_1' },
-    { type: 'practice', icon: Puzzle, label: 'a1Eng.review1', href: '#', storageKey: 'progress_a1_eng_review_1' },
+    { type: 'practice', icon: Puzzle, label: 'a1Eng.review1', href: '/ingles/a1/review/1', storageKey: 'progress_a1_eng_review_1' },
     { type: 'practice', icon: Puzzle, label: 'a1Eng.test1', href: '#', storageKey: 'progress_a1_eng_test_1' },
     { type: 'class', icon: BookOpen, label: 'a1Eng.unit2', href: '/ingles/a1/unit/2', storageKey: 'progress_a1_eng_unit_2' },
     { type: 'practice', icon: Puzzle, label: 'a1Eng.review2', href: '#', storageKey: 'progress_a1_eng_review_2' },
