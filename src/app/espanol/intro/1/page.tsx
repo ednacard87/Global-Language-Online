@@ -340,7 +340,7 @@ export default function EspanolIntro1Page() {
                     setSelectedTopic(newPath[nextIndex].key);
                      toast({ title: "¡Topic unlocked!", description: `Now you can continue with ${newPath[nextIndex].name}` });
                 } else if (newPath.every(item => item.status === 'completed')) {
-                    toast({ title: "Congratulations!", description: "You have completed all topics in this lesson." });
+                    toast({ title: "¡Felicitaciones!", description: "¡Has completado el 100% de la aventura Intro 1E!" });
                 }
             }
             return newPath;
@@ -478,7 +478,7 @@ export default function EspanolIntro1Page() {
 
         setReadingValidation(newValidation);
         if(allCorrect) {
-            toast({ title: '¡Excelente trabajo!', description: 'Has respondido todas las preguntas correctamente.' });
+            toast({ title: '¡Felicitaciones!', description: 'Has respondido todas las preguntas correctamente y completado la lección.' });
             handleTopicComplete('lectura');
         } else {
             toast({ variant: 'destructive', title: 'Algunas respuestas son incorrectas.', description: 'Revisa los campos en rojo.' });
