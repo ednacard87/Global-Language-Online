@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, Info, Gamepad2, BookText, Loader2 } from 'lucide-react';
+import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, Info, Gamepad2, BookText, Loader2, ChevronDown } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Separator } from '@/components/ui/separator';
+import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
 
 type Topic = {
   key: string;
@@ -379,6 +380,15 @@ export default function EngA1Class6Page() {
                             <Button onClick={() => handleTopicComplete('note')}>Entendido</Button>
                         </CardFooter>
                     </Card>
+                );
+            case 'ex1':
+                return (
+                    <SimpleTranslationExercise
+                        exerciseKey="c6_ex1"
+                        onComplete={() => handleTopicComplete('ex1')}
+                        course="a1"
+                        title="Ejercicio 1"
+                    />
                 );
             default:
                 if (selectedTopic.startsWith('ex')) {

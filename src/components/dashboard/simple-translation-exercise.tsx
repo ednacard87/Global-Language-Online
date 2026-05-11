@@ -131,6 +131,19 @@ const exercises = {
             { spanish: 'ELLA NO ESTA CANSADA', english: ["she is not tired", "she isn't tired"] },
             { spanish: 'ESTOS (THESE)NO SON NUESTROS CARROS', english: ["these are not our cars", "these aren't our cars"] }
         ]
+    },
+    c6_ex1: {
+        title: 'a1class1.exercise',
+        prompts: [
+            { spanish: 'YO TENGO UNA MASCOTA – ESTA ES MI MASCOTA', english: ['i have a pet - this is my pet', 'i have a pet this is my pet'] },
+            { spanish: 'TU TIENES UN CARRO – ESTE ES TU CARRO', english: ['you have a car - this is your car', 'you have a car this is your car'] },
+            { spanish: 'ÉL TIENE UNA HERMANA – ESTA ES SU HERMANA', english: ['he has a sister - this is his sister', 'he has a sister this is his sister'] },
+            { spanish: 'ELLA TIENE UN CABALLO – ESE ES SU CABALLO', english: ['she has a horse - that is her horse', 'she has a horse that is her horse'] },
+            { spanish: 'EL GATO TIENE UN JUGUETE – ESE ES SU JUGUETE', english: ['the cat has a toy - that is its toy', 'the cat has a toy that is its toy'] },
+            { spanish: 'NOSOTROS TENEMOS UNA FINCA – ESA ES NUESTRA FINCA', english: ['we have a farm - that is our farm', 'we have a farm that is our farm', 'we have a country house - that is our country house'] },
+            { spanish: 'ELLOS TIENEN UNA CASA- ESA ES SU CASA', english: ['they have a house - that is their house', 'they have a house that is their house'] },
+            { spanish: 'YO TENGO UN LIBRO- ESTE ES MI LIBRO', english: ['i have a book - this is my book', 'i have a book this is my book'] },
+        ]
     }
 };
 
@@ -157,7 +170,7 @@ export function SimpleTranslationExercise({
 
     const imageToShow = course === 'a1' ? a1MascotImage : guideFishImage;
 
-    const exerciseNumber = useMemo(() => exerciseKey.replace(/mixed/g, ''), [exerciseKey]);
+    const exerciseNumber = useMemo(() => exerciseKey.replace(/mixed|c\d+_ex/g, ''), [exerciseKey]);
     
     const exerciseData = useMemo(() => {
         if (exercises[exerciseKey as ExerciseKey]) {
