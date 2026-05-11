@@ -22,7 +22,7 @@ export const englishIntroPathData: PathItem[] = [
     { type: 'class', icon: BookOpen, label: 'englishIntro.intro2', href: '/intro/2', storageKey: 'intro2Progress' },
     { type: 'practice', icon: Puzzle, label: 'englishIntro.quiz2', href: '/quiz/2', progress: 0, points: 10, storageKey: 'quiz2Progress' },
     { type: 'practice', icon: Ear, label: 'englishIntro.listening', href: '/listening-practice', progress: 0, points: 20, storageKey: 'listeningProgress'},
-    { type: 'practice', icon: Mic, label: 'englishIntro.speaking', href: '#', progress: 0, points: 20, storageKey: 'speakingProgress'},
+    { type: 'practice', icon: Mic, label: 'englishIntro.speaking', href: '/intro/speaking/final', progress: 0, points: 20, storageKey: 'speakingProgress'},
     { type: 'end', icon: Flag, label: 'dashboard.end', href: '/pricing', points: 0 },
 ];
 
