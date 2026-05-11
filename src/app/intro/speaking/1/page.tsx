@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription }
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
-import { Mic, CheckCircle, ArrowLeft, MessageSquare, BookOpen, Music, PlayCircle, Star, ArrowRight, Loader2 } from 'lucide-react';
+import { Mic, CheckCircle, ArrowLeft, BookOpen, ArrowRight, Loader2 } from 'lucide-react';
 import { useUser, useFirestore, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
@@ -66,15 +66,24 @@ export default function Speaking1Page() {
     const handleComplete = async () => {
         if (!studentDocRef) return;
         setIsCompleting(true);
+        
+        // Actualizamos el progreso al 100% para activar el siguiente nodo (Intro 2) en el laberinto
         updateDocumentNonBlocking(studentDocRef, {
             'progress.speaking1Progress': 100
         });
+        
+        // Notificamos el cambio de estado global
         window.dispatchEvent(new CustomEvent('progressUpdated'));
+        
         toast({
             title: "¡Práctica Completada!",
-            description: "Has desbloqueado el siguiente tema.",
+            description: "Has desbloqueado Intro 2. ¡Sigue así!",
         });
-        router.push('/intro');
+
+        // Redirigimos al laberinto de la aventura
+        setTimeout(() => {
+            router.push('/intro');
+        }, 500);
     };
 
     return (
@@ -99,7 +108,7 @@ export default function Speaking1Page() {
                                 </div>
                                 <div>
                                     <CardTitle className="text-2xl">SPEAKING 1</CardTitle>
-                                    <CardDescription>PRESENTACION PERSONAL</CardDescription>
+                                    <CardDescription>PRESENTACIÓN PERSONAL</CardDescription>
                                 </div>
                             </div>
                         </CardHeader>
@@ -128,7 +137,6 @@ export default function Speaking1Page() {
                                     </div>
                                 ))}
 
-                                {/* Vocabulary Aide */}
                                 <div className="mt-12 p-6 bg-brand-lilac/50 dark:bg-muted/50 rounded-2xl border-2 border-dashed border-brand-purple">
                                     <h3 className="text-xl font-bold flex items-center gap-2 mb-4">
                                         <BookOpen className="h-5 w-5 text-brand-purple" />
