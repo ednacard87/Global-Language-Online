@@ -330,39 +330,52 @@ export default function EngA1Class6Page() {
                 return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
                         <CardHeader>
-                            <CardTitle>Nota: Los Adjetivos Posesivos</CardTitle>
+                            <CardTitle>Nota Importante</CardTitle>
                         </CardHeader>
-                        <CardContent className="space-y-6">
-                            <div className="bg-primary/5 p-6 rounded-xl border-l-4 border-primary">
-                                <h3 className="text-xl font-bold mb-2">USO Y REGLAS</h3>
-                                <p className="text-muted-foreground leading-relaxed">
-                                    Se utilizan para indicar quién tiene la propiedad sobre una(s) cosa(s). 
-                                    <strong> La cantidad de objetos no se refleja en la forma del adjetivo posesivo</strong> (siempre es la misma palabra).
-                                </p>
+                        <CardContent className="space-y-8">
+                            <div className="space-y-4">
+                                <div className="bg-primary/5 p-6 rounded-xl border-l-4 border-primary">
+                                    <h3 className="text-xl font-bold mb-2">ADJETIVOS POSESIVOS</h3>
+                                    <p className="text-muted-foreground leading-relaxed">
+                                        Se utilizan para indicar quién tiene la propiedad sobre una(s) cosa(s). 
+                                        <strong> La cantidad de objetos no se refleja en la forma del adjetivo posesivo</strong> (siempre es la misma palabra).
+                                    </p>
+                                </div>
+
+                                <div className="grid md:grid-cols-2 gap-4">
+                                    <Card className="bg-muted/50 border-dashed border-2">
+                                        <CardHeader className="pb-2">
+                                            <CardTitle className="text-lg">Posición en la frase</CardTitle>
+                                        </CardHeader>
+                                        <CardContent>
+                                            <p className="font-mono text-sm uppercase">Before Noun : Antes del sustantivo</p>
+                                        </CardContent>
+                                    </Card>
+                                    
+                                    <Card className="bg-muted/50 border-dashed border-2">
+                                        <CardHeader className="pb-2">
+                                            <CardTitle className="text-lg">Ejemplos</CardTitle>
+                                        </CardHeader>
+                                        <CardContent className="space-y-2">
+                                            <p className="text-sm"><strong>IT’S MY CAR</strong><br/><span className="text-muted-foreground">(ESTE ES MI CARRO)</span></p>
+                                            <p className="text-sm"><strong>THESE ARE MY CARS</strong><br/><span className="text-muted-foreground">(ESTOS SON MIS CARROS)</span></p>
+                                        </CardContent>
+                                    </Card>
+                                </div>
                             </div>
 
-                            <div className="grid md:grid-cols-2 gap-4">
-                                <Card className="bg-muted/50 border-dashed border-2">
-                                    <CardHeader className="pb-2">
-                                        <CardTitle className="text-lg">Posición en la frase</CardTitle>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <p className="font-mono text-sm uppercase">Before Noun : Antes del sustantivo</p>
-                                    </CardContent>
-                                </Card>
-                                
-                                <Card className="bg-muted/50 border-dashed border-2">
-                                    <CardHeader className="pb-2">
-                                        <CardTitle className="text-lg">Ejemplos</CardTitle>
-                                    </CardHeader>
-                                    <CardContent className="space-y-2">
-                                        <p className="text-sm"><strong>IT’S MY CAR</strong><br/><span className="text-muted-foreground">(ESTE ES MI CARRO)</span></p>
-                                        <p className="text-sm"><strong>THESE ARE MY CARS</strong><br/><span className="text-muted-foreground">(ESTOS SON MIS CARROS)</span></p>
-                                    </CardContent>
-                                </Card>
+                            <div className="bg-brand-purple/5 p-6 rounded-xl border-l-4 border-brand-purple">
+                                <h3 className="text-xl font-bold mb-2">PRONOMBRES POSESIVOS</h3>
+                                <p className="text-muted-foreground leading-relaxed">
+                                    Siempre en una frase están: <strong>DESPUÉS del sustantivo</strong>.
+                                </p>
+                                <div className="mt-4 p-4 bg-muted rounded-lg font-mono text-base border">
+                                    <p className="text-foreground">Ejemplo: esa casa es mía</p>
+                                    <p className="text-primary font-bold">that house is <span className="underline">mine</span></p>
+                                </div>
                             </div>
                         </CardContent>
-                        <CardFooter className="justify-center">
+                        <CardFooter className="justify-center border-t pt-6">
                             <Button onClick={() => handleTopicComplete('note')}>Entendido</Button>
                         </CardFooter>
                     </Card>
