@@ -243,7 +243,7 @@ export default function EngA1Class6Page() {
         }
     };
 
-    const getInputClass = (index: number) => {
+    const getVocabInputClass = (index: number) => {
         const status = vocabValidation[index];
         if (status === 'correct') return 'border-green-500 focus-visible:ring-green-500 bg-green-50 dark:bg-green-900/10';
         if (status === 'incorrect') return 'border-destructive focus-visible:ring-destructive bg-destructive/5';
@@ -272,7 +272,7 @@ export default function EngA1Class6Page() {
                                             <Input
                                                 value={vocabAnswers[index] || ''}
                                                 onChange={e => handleVocabInputChange(index, e.target.value)}
-                                                className={cn(getInputClass(index))}
+                                                className={cn(getVocabInputClass(index))}
                                                 autoComplete="off"
                                             />
                                         </div>
@@ -388,6 +388,15 @@ export default function EngA1Class6Page() {
                         onComplete={() => handleTopicComplete('ex1')}
                         course="a1"
                         title="Ejercicio 1"
+                    />
+                );
+            case 'ex2':
+                return (
+                    <SimpleTranslationExercise
+                        exerciseKey="c6_ex2"
+                        onComplete={() => handleTopicComplete('ex2')}
+                        course="a1"
+                        title="Ejercicio 2"
                     />
                 );
             default:

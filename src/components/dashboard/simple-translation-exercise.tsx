@@ -144,6 +144,21 @@ const exercises = {
             { spanish: 'ELLOS TIENEN UNA CASA- ESA ES SU CASA', english: ['they have a house - that is their house', 'they have a house that is their house'] },
             { spanish: 'YO TENGO UN LIBRO- ESTE ES MI LIBRO', english: ['i have a book - this is my book', 'i have a book this is my book'] },
         ]
+    },
+    c6_ex2: {
+        title: 'a1class1.exercise',
+        prompts: [
+            { spanish: 'TU TIENES LIBROS - ESTOS SON TUS LIBROS', english: ["you have books - these are your books", "you have books these are your books"] },
+            { spanish: 'MIS HERMANOS VIENEN DE ESPAÑA', english: ["my brothers come from spain"] },
+            { spanish: 'AL GATO LE GUSTA SU COMIDA', english: ["the cat likes its food"] },
+            { spanish: 'RICHARD ES MI HIJO - EL ES NUESTRO HIJO', english: ["richard is my son - he is our son", "richard is my son he is our son"] },
+            { spanish: '¿DÓNDE ESTÁN TUS ZAPATOS?', english: ["where are your shoes?"] },
+            { spanish: '¿DÓNDE ESTÁ SU CASA? - (DE ELLA)', english: ["where is her house?"] },
+            { spanish: '¿ELLOS SON SUS PADRES? (DE ELLOS)', english: ["are they their parents?"] },
+            { spanish: 'ESTA ES MI CASA - ESA NO ES SU CASA- (DE EL)', english: ["this is my house - that is not his house", "this is my house - that isn't his house"] },
+            { spanish: '¿ELLA ES SU NOVIA? (DE EL)', english: ["is she his girlfriend?"] },
+            { spanish: '¿ELLOS SON TUS AMIGOS?', english: ["are they your friends?"] },
+        ]
     }
 };
 
