@@ -50,18 +50,29 @@ export default function EnglishA1Page() {
           itemsWithLockState[0].locked = false; // Start
           itemsWithLockState[1].locked = false; // Unit 1
 
-          if (progressU1 >= 100) {
+          // Unit 1 unlock logic: Review at 90%, Test and Next Unit at 100%
+          if (progressU1 >= 90) {
               itemsWithLockState[2].locked = false; // Review 1
+          }
+          if (progressU1 >= 100) {
               itemsWithLockState[3].locked = false; // Test 1
               itemsWithLockState[4].locked = false; // Unit 2
           }
-          if (progressU2 >= 100) {
+
+          // Unit 2 unlock logic
+          if (progressU2 >= 90) {
               itemsWithLockState[5].locked = false; // Review 2
+          }
+          if (progressU2 >= 100) {
               itemsWithLockState[6].locked = false; // Test 2
               itemsWithLockState[7].locked = false; // Unit 3
           }
-          if (progressU3 >= 100) {
+
+          // Unit 3 unlock logic
+          if (progressU3 >= 90) {
               itemsWithLockState[8].locked = false; // Review 3
+          }
+          if (progressU3 >= 100) {
               itemsWithLockState[9].locked = false; // Test 3
               itemsWithLockState[10].locked = false; // Finish
           }
