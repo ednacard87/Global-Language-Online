@@ -371,7 +371,7 @@ export default function EngA1Class6Page() {
                                     Siempre en una frase están: <strong>DESPUÉS del sustantivo</strong>.
                                 </p>
                                 <div className="mt-4 p-4 bg-muted rounded-lg font-mono text-base border">
-                                    <p className="text-foreground">Ejemplo: esa casa es mía</p>
+                                    <p className="text-foreground">Ejemplo: esa casa es mia</p>
                                     <p className="text-primary font-bold">that house is <span className="underline">mine</span></p>
                                 </div>
                             </div>
@@ -397,6 +397,15 @@ export default function EngA1Class6Page() {
                         onComplete={() => handleTopicComplete('ex2')}
                         course="a1"
                         title="Ejercicio 2"
+                    />
+                );
+            case 'ex3':
+                return (
+                    <SimpleTranslationExercise
+                        exerciseKey="c6_ex3"
+                        onComplete={() => handleTopicComplete('ex3')}
+                        course="a1"
+                        title="Ejercicio 3"
                     />
                 );
             default:

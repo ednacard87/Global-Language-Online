@@ -159,6 +159,17 @@ const exercises = {
             { spanish: '¿ELLA ES SU NOVIA? (DE EL)', english: ["is she his girlfriend?"] },
             { spanish: '¿ELLOS SON TUS AMIGOS?', english: ["are they your friends?"] },
         ]
+    },
+    c6_ex3: {
+        title: 'a1class1.exercise',
+        prompts: [
+            { spanish: 'ESTE ES MI CARRO – ESTE ES MIO', english: ["this is my car - this is mine", "this is my car this is mine"] },
+            { spanish: 'ESTA ES TU FINCA – ESA ES LA TUYA', english: ["this is your farm - that is yours", "this is your farm that is yours", "this is your country house - that is yours"] },
+            { spanish: 'ESTE ES SU LIBRO (de ella) - ESTE ES SUYO', english: ["this is her book - this is hers", "this is her book this is hers"] },
+            { spanish: 'ESTA ES SU CASA (de ellos)– ESTA ES SUYA', english: ["this is their house - this is theirs", "this is their house this is theirs"] },
+            { spanish: 'ESAS SON MIS GAFAS – ESAS SON LAS MIAS', english: ["those are my glasses - those are mine", "those are my glasses those are mine"] },
+            { spanish: 'ESE ES SU CELULAR (de él) – ESE ES EL SUYO', english: ["that is his cellphone - that is his", "that is his cellphone that is his"] },
+        ]
     }
 };
 
