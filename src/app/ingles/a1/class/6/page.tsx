@@ -13,6 +13,7 @@ import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocki
 import { doc } from 'firebase/firestore';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 type Topic = {
   key: string;
@@ -27,8 +28,39 @@ const ICONS = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_a1_eng_unit_2_class_6_v1';
+const progressStorageVersion = 'progress_a1_eng_unit_2_class_6_v2_vocab';
 const mainProgressKey = 'progress_a1_eng_unit_2_class_6';
+
+const vocabularyData = [
+    { spanish: 'SERIO', english: ['serious'] },
+    { spanish: 'ALEGRE', english: ['cheerful'] },
+    { spanish: 'OCUPADO', english: ['busy'] },
+    { spanish: 'RARO, EXTRAÑO', english: ['strange'] },
+    { spanish: 'CURIOSO', english: ['curious'] },
+    { spanish: 'AMIGABLE', english: ['friendly'] },
+    { spanish: 'DULCE', english: ['sweet'] },
+    { spanish: 'INTELIGENTE', english: ['intelligent'] },
+    { spanish: 'LIBRE', english: ['free'] },
+    { spanish: 'EGOÍSTA', english: ['selfish'] },
+    { spanish: 'ENVIDIOSO', english: ['envious'] },
+    { spanish: 'FELIZ', english: ['happy'] },
+    { spanish: 'AMABLE', english: ['kind'] },
+    { spanish: 'RAPIDO', english: ['fast'] },
+    { spanish: 'ABURRIDOR', english: ['boring'] },
+    { spanish: 'GENEROSO', english: ['generous'] },
+    { spanish: 'MINUSCULO', english: ['tiny'] },
+    { spanish: 'HERMOSO', english: ['beautiful'] },
+    { spanish: 'LENTO', english: ['slow'] },
+    { spanish: 'ENORME', english: ['huge'] },
+    { spanish: 'ORDENADO', english: ['tidy'] },
+    { spanish: 'TERCO', english: ['stubborn'] },
+    { spanish: 'NERVIOSO', english: ['nervous'] },
+    { spanish: 'DESORDENADO', english: ['messy', 'untidy'] },
+    { spanish: 'TRABAJADOR', english: ['hardworking'] },
+    { spanish: 'PESIMISTA', english: ['pessimistic'] },
+    { spanish: 'OPTIMISTA', english: ['optimistic'] },
+    { spanish: 'FLEXIBLE', english: ['flexible'] },
+];
 
 export default function EngA1Class6Page() {
     const { t } = useTranslation();
@@ -50,6 +82,11 @@ export default function EngA1Class6Page() {
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
     const [selectedTopic, setSelectedTopic] = useState<string>('');
     const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
+
+    // State for vocabulary exercise
+    const [vocabAnswers, setVocabAnswers] = useState<string[]>(Array(vocabularyData.length).fill(''));
+    const [vocabValidation, setVocabValidation] = useState<('correct' | 'incorrect' | 'unchecked')[]>(Array(vocabularyData.length).fill('unchecked'));
+    const [canAdvance, setCanAdvance] = useState(false);
 
     const initialLearningPath = useMemo((): Topic[] => [
         { key: 'vocabulary', name: 'Vocabulary (Basic Adjectives)', icon: BookOpen, status: 'active' },
@@ -88,6 +125,10 @@ export default function EngA1Class6Page() {
         } else if (newPath.length > 0) {
             setSelectedTopic(newPath[0].key);
         }
+        
+        setVocabAnswers(Array(vocabularyData.length).fill(''));
+        setVocabValidation(Array(vocabularyData.length).fill('unchecked'));
+        setCanAdvance(false);
     }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading, isUserLoading]);
     
     const progress = useMemo(() => {
@@ -145,11 +186,55 @@ export default function EngA1Class6Page() {
         }
         setSelectedTopic(topicKey);
 
-        // For info-only topics, auto-complete on click
-        const infoTopics = ['vocabulary', 'grammar', 'note', 'text'];
-        if (infoTopics.includes(topicKey)) {
+        const autoViewTopics = ['grammar', 'note', 'text'];
+        if (autoViewTopics.includes(topicKey)) {
             handleTopicComplete(topicKey);
         }
+    };
+
+    const handleVocabInputChange = (index: number, value: string) => {
+        const newAnswers = [...vocabAnswers];
+        newAnswers[index] = value;
+        setVocabAnswers(newAnswers);
+
+        const newValidation = [...vocabValidation];
+        if (newValidation[index] !== 'unchecked') {
+            newValidation[index] = 'unchecked';
+            setVocabValidation(newValidation);
+        }
+        setCanAdvance(false);
+    };
+
+    const handleCheckVocab = () => {
+        let atLeastOneCorrect = false;
+        const newValidation = vocabularyData.map((item, index) => {
+            const userAnswer = vocabAnswers[index]?.trim().toLowerCase();
+            const isCorrect = item.english.some(e => e.toLowerCase() === userAnswer);
+            if (isCorrect) {
+                atLeastOneCorrect = true;
+            }
+            return isCorrect ? 'correct' : 'incorrect';
+        });
+        setVocabValidation(newValidation as ('correct' | 'incorrect' | 'unchecked')[]);
+
+        if (atLeastOneCorrect) {
+            toast({ title: "¡Bien hecho!", description: "Has acertado al menos una. ¡Ya puedes avanzar!" });
+            setCanAdvance(true);
+        } else {
+            toast({ 
+                variant: "destructive", 
+                title: "Sigue intentando", 
+                description: "Revisa tus respuestas. ¡Necesitas al menos una correcta para continuar!" 
+            });
+            setCanAdvance(false);
+        }
+    };
+
+    const getInputClass = (index: number) => {
+        const status = vocabValidation[index];
+        if (status === 'correct') return 'border-green-500 focus-visible:ring-green-500 bg-green-50 dark:bg-green-900/10';
+        if (status === 'incorrect') return 'border-destructive focus-visible:ring-destructive bg-destructive/5';
+        return '';
     };
     
     const renderContent = () => {
@@ -161,25 +246,36 @@ export default function EngA1Class6Page() {
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
                         <CardHeader>
                             <CardTitle>Vocabulary (Basic Adjectives)</CardTitle>
-                            <CardDescription>Estudia los adjetivos básicos en inglés.</CardDescription>
+                            <CardDescription>Traduce los adjetivos del español al inglés.</CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <Accordion type="multiple" defaultValue={['adj1']} className="w-full">
-                                <AccordionItem value="adj1">
-                                    <AccordionTrigger>Adjetivos de Apariencia</AccordionTrigger>
-                                    <AccordionContent>
-                                        <div className="grid grid-cols-2 gap-4 text-lg">
-                                            <div className="p-3 bg-muted rounded-lg font-bold">Tall</div><div className="p-3 border rounded-lg">Alto</div>
-                                            <div className="p-3 bg-muted rounded-lg font-bold">Short</div><div className="p-3 border rounded-lg">Bajo / Corto</div>
-                                            <div className="p-3 bg-muted rounded-lg font-bold">Big</div><div className="p-3 border rounded-lg">Grande</div>
-                                            <div className="p-3 bg-muted rounded-lg font-bold">Small</div><div className="p-3 border rounded-lg">Pequeño</div>
+                            <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-lg">
+                                <div className="font-bold p-3 bg-muted rounded-lg text-left">Español</div>
+                                <div className="font-bold p-3 bg-muted rounded-lg text-left">Inglés</div>
+                                {vocabularyData.map((item, index) => (
+                                    <React.Fragment key={index}>
+                                        <div className="p-3 bg-card border rounded-lg flex items-center">{item.spanish}</div>
+                                        <div className="p-3 bg-card border rounded-lg flex items-center">
+                                            <Input
+                                                value={vocabAnswers[index] || ''}
+                                                onChange={e => handleVocabInputChange(index, e.target.value)}
+                                                className={cn(getInputClass(index))}
+                                                autoComplete="off"
+                                            />
                                         </div>
-                                    </AccordionContent>
-                                </AccordionItem>
-                            </Accordion>
+                                    </React.Fragment>
+                                ))}
+                            </div>
                         </CardContent>
-                        <CardFooter>
-                            <Button onClick={() => handleTopicComplete('vocabulary')}>Entendido</Button>
+                        <CardFooter className="flex justify-between items-center">
+                            <Button onClick={handleCheckVocab}>Verificar Vocabulario</Button>
+                            <Button 
+                                onClick={() => handleTopicComplete('vocabulary')} 
+                                disabled={!canAdvance}
+                                className={cn(!canAdvance && "opacity-50")}
+                            >
+                                Avanzar
+                            </Button>
                         </CardFooter>
                     </Card>
                 );
@@ -191,7 +287,7 @@ export default function EngA1Class6Page() {
                             <CardDescription>Reglas gramaticales de la clase.</CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <p className="text-lg">El contenido gramatical se mostrará aquí.</p>
+                            <p className="text-lg text-muted-foreground">El contenido gramatical se mostrará aquí.</p>
                         </CardContent>
                         <CardFooter>
                             <Button onClick={() => handleTopicComplete('grammar')}>Continuar</Button>
@@ -205,8 +301,11 @@ export default function EngA1Class6Page() {
                             <CardTitle>Nota</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <p className="text-lg">Información importante a recordar.</p>
+                            <p className="text-lg text-muted-foreground">Información importante a recordar.</p>
                         </CardContent>
+                        <CardFooter>
+                            <Button onClick={() => handleTopicComplete('note')}>Entendido</Button>
+                        </CardFooter>
                     </Card>
                 );
             default:
@@ -233,7 +332,7 @@ export default function EngA1Class6Page() {
                             <CardTitle>{topic?.name || 'Cargando...'}</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <p>Contenido para este tema estará disponible pronto.</p>
+                            <p className="text-muted-foreground">Contenido para este tema estará disponible pronto.</p>
                         </CardContent>
                     </Card>
                 );
