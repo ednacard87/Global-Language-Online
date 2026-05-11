@@ -413,10 +413,10 @@ export const getA1EngMainPath = (t: (key: string) => string): PathItem[] => [
     { type: 'practice', icon: Puzzle, label: 'a1Eng.review1', href: '/ingles/a1/review/1', storageKey: 'progress_a1_eng_review_1' },
     { type: 'practice', icon: Puzzle, label: 'a1Eng.test1', href: '#', storageKey: 'progress_a1_eng_test_1' },
     { type: 'class', icon: BookOpen, label: 'a1Eng.unit2', href: '/ingles/a1/unit/2', storageKey: 'progress_a1_eng_unit_2' },
-    { type: 'practice', icon: Puzzle, label: 'a1Eng.review2', href: '#', storageKey: 'progress_a1_eng_review_2' },
+    { type: 'practice', icon: Puzzle, label: 'a1Eng.review2', href: '/ingles/a1/review/2', storageKey: 'progress_a1_eng_review_2' },
     { type: 'practice', icon: Puzzle, label: 'a1Eng.test2', href: '#', storageKey: 'progress_a1_eng_test_2' },
     { type: 'class', icon: BookOpen, label: 'a1Eng.unit3', href: '/ingles/a1/unit/3', storageKey: 'progress_a1_eng_unit_3' },
-    { type: 'practice', icon: Puzzle, label: 'a1Eng.review3', href: '#', storageKey: 'progress_a1_eng_review_3' },
+    { type: 'practice', icon: Puzzle, label: 'a1Eng.review3', href: '/ingles/a1/review/3', storageKey: 'progress_a1_eng_review_3' },
     { type: 'practice', icon: Puzzle, label: 'a1Eng.test3', href: '#', storageKey: 'progress_a1_eng_test_3' },
     { type: 'end', icon: Flag, label: 'dashboard.finish' },
 ];
@@ -717,3 +717,4 @@ export const getKidsB1MainPath = (t: (key: string) => string): PathItem[] => [
     { type: 'class', icon: GraduationCap, label: 'kidsB1.connectors', href: '/kids/b1/connectors', storageKey: 'progress_kids_b1_connectors' },
     { type: 'end', icon: Flag, label: 'dashboard.finish' }
 ];
+
