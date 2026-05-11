@@ -87,7 +87,7 @@ export const LargeTextTranslation = ({ title, phrases, onComplete }: LargeTextTr
                             value={userAnswers[index]}
                             onChange={(e) => handleInputChange(index, e.target.value)}
                             className={cn("text-lg", getInputClass(validationStatus[index]))}
-                            placeholder="Escribe la traducción aquí..."
+                            placeholder=""
                             autoComplete="off"
                         />
                     </div>
