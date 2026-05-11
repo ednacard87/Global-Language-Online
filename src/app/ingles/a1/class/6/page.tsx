@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import Link from 'next/link';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -18,7 +18,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Separator } from '@/components/ui/separator';
 import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
 import { LargeTextTranslation } from '@/components/dashboard/large-text-translation';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 type Topic = {
   key: string;
@@ -33,7 +32,7 @@ const ICONS = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_a1_eng_unit_2_class_6_v5';
+const progressStorageVersion = 'progress_a1_eng_unit_2_class_6_v6_stable';
 const mainProgressKey = 'progress_a1_eng_unit_2_class_6';
 
 const vocabularyData = [
@@ -127,7 +126,7 @@ export default function EngA1Class6Page() {
         { key: 'ex5', name: 'Ejercicio 5', icon: PenSquare, status: 'locked' },
         { key: 'ex6', name: 'Ejercicio 6', icon: PenSquare, status: 'locked' },
         { key: 'ex7', name: 'Ejercicio 7', icon: PenSquare, status: 'locked' },
-    ], [t]);
+    ], []);
     
     useEffect(() => {
         if (isProfileLoading || isUserLoading) return;
@@ -170,13 +169,19 @@ export default function EngA1Class6Page() {
             learningPath.forEach(item => {
                 statusesToSave[item.key] = item.status;
             });
-            updateDocumentNonBlocking(studentDocRef, { [`lessonProgress.${progressStorageVersion}`]: statusesToSave });
-            updateDocumentNonBlocking(studentDocRef, { [`progress.${mainProgressKey}`]: Math.round(progress) });
+            updateDocumentNonBlocking(studentDocRef, { 
+                [`lessonProgress.${progressStorageVersion}`]: statusesToSave,
+                [`progress.${mainProgressKey}`]: Math.round(progress)
+            });
         }
         if (progress >= 100) {
           window.dispatchEvent(new CustomEvent('progressUpdated'));
         }
     }, [learningPath, isAdmin, progress, studentDocRef, isProfileLoading, isUserLoading]);
+
+    const handleTopicComplete = useCallback((completedKey: string) => {
+        setTopicToComplete(completedKey);
+    }, []);
 
     useEffect(() => {
         if (!topicToComplete) return;
@@ -199,15 +204,11 @@ export default function EngA1Class6Page() {
         setTopicToComplete(null);
     }, [topicToComplete, toast]);
 
-    const handleTopicComplete = (completedKey: string) => {
-        setTopicToComplete(completedKey);
-    };
-
     const handleTopicSelect = (topicKey: string) => {
         const topic = learningPath.find(t => t.key === topicKey);
         
         if (!isAdmin && topic?.status === 'locked') {
-            toast({ variant: "destructive", title: "Contenido Bloqueado" });
+            toast({ variant: "destructive", title: "Contenido Bloqueado", description: "Debes completar los temas anteriores." });
             return;
         }
         setSelectedTopic(topicKey);
@@ -297,8 +298,8 @@ export default function EngA1Class6Page() {
                             <Button onClick={handleCheckVocab}>Verificar Vocabulario</Button>
                             <Button 
                                 onClick={() => handleTopicComplete('vocabulary')} 
-                                disabled={!canAdvanceVocab}
-                                className={cn(!canAdvanceVocab && "opacity-50")}
+                                disabled={!canAdvanceVocab && !isAdmin}
+                                className={cn(!canAdvanceVocab && !isAdmin && "opacity-50")}
                             >
                                 Avanzar
                             </Button>
@@ -462,6 +463,24 @@ export default function EngA1Class6Page() {
                         vocabulary={textVocab}
                     />
                 );
+            case 'vocab_game':
+                return (
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple min-h-[400px]">
+                        <CardHeader>
+                            <CardTitle>Vocabulario (Juego)</CardTitle>
+                            <CardDescription>Práctica interactiva de vocabulario.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="flex flex-col items-center justify-center py-12">
+                            <Gamepad2 className="h-20 w-20 text-brand-purple mb-4 animate-bounce" />
+                            <p className="text-muted-foreground text-center mb-6">
+                                Este juego interactivo está diseñado para reforzar lo aprendido.
+                            </p>
+                        </CardContent>
+                        <CardFooter className="justify-center border-t pt-6">
+                            <Button onClick={() => handleTopicComplete('vocab_game')}>Completar y Avanzar</Button>
+                        </CardFooter>
+                    </Card>
+                );
             case 'ex6':
                 return (
                     <SimpleTranslationExercise
@@ -481,23 +500,6 @@ export default function EngA1Class6Page() {
                     />
                 );
             default:
-                if (selectedTopic.startsWith('ex')) {
-                    return (
-                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple min-h-[400px]">
-                            <CardHeader>
-                                <CardTitle>{topic?.name}</CardTitle>
-                                <CardDescription>Completa el ejercicio para avanzar.</CardDescription>
-                            </CardHeader>
-                            <CardContent className="flex flex-col items-center justify-center">
-                                <PenSquare className="h-16 w-16 text-muted-foreground mb-4 opacity-20" />
-                                <p className="text-muted-foreground">Contenido del ejercicio interactivo próximamente.</p>
-                            </CardContent>
-                            <CardFooter className="justify-center">
-                                <Button onClick={() => handleTopicComplete(selectedTopic)}>Simular Completado</Button>
-                            </CardFooter>
-                        </Card>
-                    );
-                }
                 return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple min-h-[500px]">
                         <CardHeader>
@@ -539,11 +541,14 @@ export default function EngA1Class6Page() {
                                             {learningPath.map((item) => {
                                                 const Icon = item.status === 'completed' ? CheckCircle : (item.status === 'active' ? item.icon : Lock);
                                                 const isLocked = item.status === 'locked' && !isAdmin;
+                                                const isActive = item.status === 'active';
+                                                
                                                 return (
                                                     <li key={item.key} onClick={() => handleTopicSelect(item.key)}
                                                         className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer',
                                                             isLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted',
-                                                            selectedTopic === item.key && 'bg-muted text-primary font-semibold'
+                                                            selectedTopic === item.key && 'bg-muted text-primary font-semibold',
+                                                            isActive && !isAdmin && "animate-pulse-glow"
                                                         )}
                                                     >
                                                         <div className="flex items-center gap-3">
