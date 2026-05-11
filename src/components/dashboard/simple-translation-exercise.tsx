@@ -170,6 +170,33 @@ const exercises = {
             { spanish: 'ESAS SON MIS GAFAS – ESAS SON LAS MIAS', english: ["those are my glasses - those are mine", "those are my glasses those are mine"] },
             { spanish: 'ESE ES SU CELULAR (de él) – ESE ES EL SUYO', english: ["that is his cellphone - that is his", "that is his cellphone that is his"] },
         ]
+    },
+    c6_ex4: {
+        title: 'a1class1.exercise',
+        prompts: [
+            { spanish: 'ESE COMPUTADOR ES MIO', english: ["that computer is mine"] },
+            { spanish: 'ESA CASA ES NUESTRA', english: ["that house is ours"] },
+            { spanish: 'ESTOS SON NUESTROS LIBROS', english: ["these are our books"] },
+            { spanish: 'ESE CARRO NEGRO ES MÍO', english: ["that black car is mine"] },
+            { spanish: '¿ESTE PERRO ES TUYO? - SI', english: ["is this dog yours? yes, it is", "is this dog yours? yes it is"] },
+            { spanish: 'ESAS SON TUS GAFAS', english: ["those are your glasses"] },
+            { spanish: '¿ESTA MI HERMANO AQUÍ?', english: ["is my brother here?"] },
+            { spanish: 'EL LIBRO ES NUESTRO', english: ["the book is ours"] },
+            { spanish: '¿SU CARRO ESTÁ AHÍ? (DE ELLOS)', english: ["is their car there?"] },
+            { spanish: 'ESTA ES SU FINCA- (DE ELLA)', english: ["this is her farm", "this is her country house"] },
+            { spanish: 'TU AMIGO ESTÁ ESPERANDOTE EN LA PUERTA', english: ["your friend is waiting for you at the door"] },
+            { spanish: 'SUS ZAPATOS SON NEGROS (DE EL)', english: ["his shoes are black"] },
+            { spanish: 'MIS PADRES ESTAN EN SU CASA', english: ["my parents are at home", "my parents are in their house"] },
+            { spanish: 'A LOS PERROS LES GUSTA SU COMIDA', english: ["dogs like their food", "the dogs like their food"] },
+            { spanish: '¿DÓNDE ESTÁN TUS ZAPATOS DE CUERO?', english: ["where are your leather shoes?"] },
+            { spanish: 'EL RESTAURANTE ES DE ELLOS', english: ["the restaurant is theirs"] },
+            { spanish: 'MI NÚMERO DE TELÉFONO ES…', english: ["my telephone number is", "my phone number is"] },
+            { spanish: 'SU JUGUETE ESTÁ EN MI CARRO (DEL GATO)', english: ["its toy is in my car"] },
+            { spanish: '¿ESTE CARRO ES DE ELLOS?', english: ["is this car theirs?"] },
+            { spanish: '¿ESTE ES SU SANDUCHE? (DE ELLA)', english: ["is this her sandwich?"] },
+            { spanish: 'MI CAFÉ ESTÁ MUY CALIENTE, NO PUEDO TOMARLO', english: ["my coffee is very hot, i cannot drink it", "my coffee is very hot, i can't drink it"] },
+            { spanish: '¿ESTE ES SUYO? (DE ELLA)', english: ["is this hers?"] },
+        ]
     }
 };
 
