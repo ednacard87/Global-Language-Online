@@ -435,6 +435,15 @@ export default function EngA1Class6Page() {
                         title="Ejercicio 6"
                     />
                 );
+            case 'ex7':
+                return (
+                    <SimpleTranslationExercise
+                        exerciseKey="c6_ex7"
+                        onComplete={() => handleTopicComplete('ex7')}
+                        course="a1"
+                        title="Ejercicio 7"
+                    />
+                );
             default:
                 if (selectedTopic.startsWith('ex')) {
                     return (

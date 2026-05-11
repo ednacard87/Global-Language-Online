@@ -225,6 +225,16 @@ const exercises = {
             { spanish: '¿ESTAS SON SUS ARETAS? - (DE ELLA)', english: ["are these her earrings?"] },
             { spanish: '¿ESTA ES SU CHAQUETA? (DE ÉL)', english: ["is this his jacket?"] },
         ]
+    },
+    c6_ex7: {
+        title: 'a1class1.exercise',
+        prompts: [
+            { spanish: 'ESTE ES SU BOLSO Y EL OTRO ES MÍO (DE ELLA)', english: ["this is her bag and the other one is mine", "this is her bag and the other is mine"] },
+            { spanish: 'TU ERES FRANCÉS, TU FAMILIA VIVE EN FRANCIA', english: ["you are french, your family lives in france", "you're french, your family lives in france"] },
+            { spanish: '¿ESTA CAMISETA ES TUYA O MÍA?', english: ["is this t-shirt yours or mine?", "is this shirt yours or mine?"] },
+            { spanish: '¿DONDE ESTÁ SU CELULAR? - (DE EL)', english: ["where is his cellphone?", "where is his phone?", "where's his cellphone?", "where's his phone?"] },
+            { spanish: 'ESTA ES NUESTRA FAMILIA', english: ["this is our family"] },
+        ]
     }
 };
 
@@ -354,7 +364,12 @@ export function SimpleTranslationExercise({
     return (
         <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
             <CardHeader>
-                <CardTitle>{title}</CardTitle>
+                <div className="flex justify-between items-center">
+                    <CardTitle>{title}</CardTitle>
+                    <span className="text-sm font-medium text-muted-foreground">
+                        {currentPromptIndex + 1} / {exerciseData.prompts.length}
+                    </span>
+                </div>
                 <div className="flex items-center justify-start flex-wrap gap-2 pt-4">
                     {exerciseData.prompts.map((_, index) => (
                         <button
