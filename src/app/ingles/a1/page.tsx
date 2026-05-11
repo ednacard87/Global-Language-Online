@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo } from "react";
@@ -32,8 +33,14 @@ export default function EnglishA1Page() {
         const initialPath = getA1EngMainPath(t);
 
         const progressU1 = studentProfile?.progress?.['progress_a1_eng_unit_1'] || 0;
+        const progressR1 = studentProfile?.progress?.['progress_a1_eng_review_1'] || 0;
+        const progressT1 = studentProfile?.progress?.['progress_a1_eng_test_1'] || 0;
+
         const progressU2 = studentProfile?.progress?.['progress_a1_eng_unit_2'] || 0;
+        const progressR2 = studentProfile?.progress?.['progress_a1_eng_review_2'] || 0;
+
         const progressU3 = studentProfile?.progress?.['progress_a1_eng_unit_3'] || 0;
+        const progressR3 = studentProfile?.progress?.['progress_a1_eng_review_3'] || 0;
         
         const itemsWithLockState = initialPath.map(item => {
             const newItem: PathItem = {...item, locked: true};
@@ -50,30 +57,36 @@ export default function EnglishA1Page() {
           itemsWithLockState[0].locked = false; // Start
           itemsWithLockState[1].locked = false; // Unit 1
 
-          // Unit 1 unlock logic: Review at 90%, Test and Next Unit at 100%
+          // Unit 1 unlock chain
           if (progressU1 >= 90) {
               itemsWithLockState[2].locked = false; // Review 1
           }
-          if (progressU1 >= 100) {
+          if (progressR1 >= 90) {
               itemsWithLockState[3].locked = false; // Test 1
+          }
+          if (progressT1 >= 100 || progressU1 >= 100) {
               itemsWithLockState[4].locked = false; // Unit 2
           }
 
-          // Unit 2 unlock logic
+          // Unit 2 unlock chain
           if (progressU2 >= 90) {
               itemsWithLockState[5].locked = false; // Review 2
           }
-          if (progressU2 >= 100) {
+          if (progressR2 >= 90) {
               itemsWithLockState[6].locked = false; // Test 2
+          }
+          if (progressU2 >= 100) {
               itemsWithLockState[7].locked = false; // Unit 3
           }
 
-          // Unit 3 unlock logic
+          // Unit 3 unlock chain
           if (progressU3 >= 90) {
               itemsWithLockState[8].locked = false; // Review 3
           }
-          if (progressU3 >= 100) {
+          if (progressR3 >= 90) {
               itemsWithLockState[9].locked = false; // Test 3
+          }
+          if (progressU3 >= 100) {
               itemsWithLockState[10].locked = false; // Finish
           }
         }
