@@ -124,17 +124,20 @@ export default function QuizPage() {
     }
   };
 
-  const handleUnlockNext = async () => {
+  const handleUnlockNext = () => {
     if (!studentDocRef) return;
     setIsLoading(true);
     const progressKey = `quiz1Progress`;
-    await updateDocumentNonBlocking(studentDocRef, { [`progress.${progressKey}`]: 100 });
+    updateDocumentNonBlocking(studentDocRef, { [`progress.${progressKey}`]: 100 });
     window.dispatchEvent(new CustomEvent('progressUpdated'));
-    router.push('/intro/2');
-    setIsLoading(false);
+    
+    setTimeout(() => {
+        router.push('/intro');
+        setIsLoading(false);
+    }, 500);
   };
 
-  const handleUnlockListeningPractice = async () => {
+  const handleUnlockListeningPractice = () => {
     if (!studentDocRef) {
       toast({
         variant: "destructive",
@@ -145,31 +148,22 @@ export default function QuizPage() {
     }
 
     setIsLoading(true);
-    try {
-        const progressKey = `quiz2Progress`;
-        updateDocumentNonBlocking(studentDocRef, {
-            [`progress.${progressKey}`]: 100,
-        });
-        
-        window.dispatchEvent(new CustomEvent('progressUpdated'));
-        
-        toast({
-            title: "¡Éxito!",
-            description: "Has desbloqueado la Práctica de Escucha y Escritura.",
-        });
+    const progressKey = `quiz2Progress`;
+    updateDocumentNonBlocking(studentDocRef, {
+        [`progress.${progressKey}`]: 100,
+    });
+    
+    window.dispatchEvent(new CustomEvent('progressUpdated'));
+    
+    toast({
+        title: "¡Éxito!",
+        description: "Has desbloqueado la Práctica de Escucha y Escritura.",
+    });
 
+    setTimeout(() => {
         router.push('/intro');
-
-    } catch (error) {
-        console.error("Error unlocking listening practice:", error);
-        toast({
-            variant: "destructive",
-            title: "Error",
-            description: "No se pudo desbloquear la siguiente lección.",
-        });
-    } finally {
         setIsLoading(false);
-    }
+    }, 500);
   };
 
   const renderContent = () => {
@@ -219,8 +213,8 @@ export default function QuizPage() {
     if (quizId === '1') {
       return (
         <CardFooter className="flex flex-col items-center justify-center gap-4 pt-6 border-t">
-          <Button onClick={handleUnlockNext} disabled={isLoading} className="w-full max-w-sm mx-auto">
-            {isLoading ? <Loader2 className="animate-spin" /> : "Desbloquear Intro 2"}
+          <Button onClick={handleUnlockNext} disabled={isLoading} className="w-full max-w-sm mx-auto h-12 text-lg font-bold">
+            {isLoading ? <Loader2 className="animate-spin" /> : 'Desbloquear "Speaking 1"'}
           </Button>
           <Button variant="ghost" onClick={() => router.push('/intro')}>Volver al Laberinto</Button>
         </CardFooter>
@@ -250,7 +244,7 @@ export default function QuizPage() {
       <div className="flex w-full flex-col ingles-dashboard-bg min-h-screen">
         <DashboardHeader />
         <main className="flex flex-1 flex-col items-center justify-center gap-6 p-4 md:p-8">
-          <Card className="w-full max-w-lg shadow-soft rounded-lg border-2 border-brand-purple">
+          <Card className="w-full max-w-lg shadow-soft rounded-lg border-2 border-brand-purple bg-card/90 backdrop-blur-sm">
             <CardHeader className="text-center">
               <CardTitle className="text-3xl font-bold">Wayground</CardTitle>
               <CardDescription className='pt-2'>Preparado para tu quiz</CardDescription>
