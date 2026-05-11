@@ -17,6 +17,7 @@ import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Separator } from '@/components/ui/separator';
 import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
+import { LargeTextTranslation } from '@/components/dashboard/large-text-translation';
 
 type Topic = {
   key: string;
@@ -31,7 +32,7 @@ const ICONS = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_a1_eng_unit_2_class_6_v4';
+const progressStorageVersion = 'progress_a1_eng_unit_2_class_6_v5';
 const mainProgressKey = 'progress_a1_eng_unit_2_class_6';
 
 const vocabularyData = [
@@ -75,6 +76,17 @@ const possessivesTable = [
     { adj: 'THEIR', adjEs: 'SU- SUS DE ELLOS', pro: 'THEIRS', proEs: '( SUYO/A/OS/AS DE ELLOS)' },
 ];
 
+const class6NarrativeTextPhrases = [
+    { spanish: "Mi nombre es Trisha, yo tengo quince años y vivo en New Dlehi, India.", answers: ["my name is trisha, i am fifteen years old and i live in new delhi, india", "my name's trisha, i'm fifteen years old and i live in new delhi, india"] },
+    { spanish: "con mi padre, madre, dos hermanos y tres hermanas.", answers: ["with my father, mother, two brothers and three sisters", "with my dad, mom, two brothers and three sisters"] },
+    { spanish: "mis abuelos tambien viven con nosotros.", answers: ["my grandparents also live with us"] },
+    { spanish: "en India, la familia es muy importante. Es comun tener abuelos, tias, tios y primos viviendo en la misma casa.", answers: ["in india, family is very important. it is common to have grandparents, aunts, uncles and cousins living in the same house"] },
+    { spanish: "Mis tias, tios y primos tambien viven cerca de mi casa.", answers: ["my aunts, uncles and cousins also live near my house"] },
+    { spanish: "nosotros nos vemos a menudo.", answers: ["we see each other often"] },
+    { spanish: "MI hermano es un programador de computadores. ahora, el vive en Australia. Su compañia lo envió ahi por un año.", answers: ["my brother is a computer programmer. now, he lives in australia. his company sent him there for a year"] },
+    { spanish: "nosotros lo extrañamos mucho y nosotros lo llamamos cada semana.", answers: ["we miss him a lot and we call him every week", "we miss him very much and we call him every week"] }
+];
+
 export default function EngA1Class6Page() {
     const { t } = useTranslation();
     const { toast } = useToast();
@@ -110,7 +122,7 @@ export default function EngA1Class6Page() {
         { key: 'note', name: 'Nota', icon: Info, status: 'locked' },
         { key: 'ex4', name: 'Ejercicio 4', icon: PenSquare, status: 'locked' },
         { key: 'ex5', name: 'Ejercicio 5', icon: PenSquare, status: 'locked' },
-        { key: 'text', name: 'Texto', icon: BookOpen, status: 'locked' },
+        { key: 'text', name: 'Traducción de un texto', icon: BookOpen, status: 'locked' },
         { key: 'vocab_game', name: 'Vocabulario (Juego)', icon: Gamepad2, status: 'locked' },
         { key: 'ex6', name: 'Ejercicio 6', icon: PenSquare, status: 'locked' },
         { key: 'ex7', name: 'Ejercicio 7', icon: PenSquare, status: 'locked' },
@@ -199,7 +211,7 @@ export default function EngA1Class6Page() {
         }
         setSelectedTopic(topicKey);
 
-        const autoViewTopics = ['grammar', 'note', 'text'];
+        const autoViewTopics = ['grammar', 'note'];
         if (autoViewTopics.includes(topicKey)) {
             handleTopicComplete(topicKey);
         }
@@ -213,7 +225,7 @@ export default function EngA1Class6Page() {
         const newValidation = [...vocabValidation];
         if (newValidation[index] !== 'unchecked') {
             newValidation[index] = 'unchecked';
-            setVocabValidation(newValidation);
+            setValidationStatus(newValidation);
         }
         setCanAdvanceVocab(false);
     };
@@ -424,6 +436,14 @@ export default function EngA1Class6Page() {
                         onComplete={() => handleTopicComplete('ex5')}
                         course="a1"
                         title="Ejercicio 5"
+                    />
+                );
+            case 'text':
+                return (
+                    <LargeTextTranslation
+                        title="Traducción de un texto"
+                        phrases={class6NarrativeTextPhrases}
+                        onComplete={() => handleTopicComplete('text')}
                     />
                 );
             case 'ex6':
