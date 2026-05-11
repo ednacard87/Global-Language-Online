@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, Info, Gamepad2, BookText, Loader2, SeparatorHorizontal } from 'lucide-react';
+import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, Info, Gamepad2, BookText, Loader2 } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
@@ -30,7 +30,7 @@ const ICONS = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_a1_eng_unit_2_class_6_v2_vocab';
+const progressStorageVersion = 'progress_a1_eng_unit_2_class_6_v3';
 const mainProgressKey = 'progress_a1_eng_unit_2_class_6';
 
 const vocabularyData = [
@@ -108,7 +108,7 @@ export default function EngA1Class6Page() {
         { key: 'ex3', name: 'Ejercicio 3', icon: PenSquare, status: 'locked' },
         { key: 'note', name: 'Nota', icon: Info, status: 'locked' },
         { key: 'ex4', name: 'Ejercicio 4', icon: PenSquare, status: 'locked' },
-        { key: 'text', name: 'Texto', icon: BookText, status: 'locked' },
+        { key: 'text', name: 'Texto', icon: BookOpen, status: 'locked' },
         { key: 'vocab_game', name: 'Vocabulario (Juego)', icon: Gamepad2, status: 'locked' },
         { key: 'ex5', name: 'Ejercicio 5', icon: PenSquare, status: 'locked' },
         { key: 'ex6', name: 'Ejercicio 6', icon: PenSquare, status: 'locked' },
@@ -298,7 +298,6 @@ export default function EngA1Class6Page() {
                             <CardTitle>Gramática: Adjetivos y Pronombres Posesivos</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-8">
-                            {/* Table section */}
                             <div className="overflow-x-auto">
                                 <Table className="border text-base">
                                     <TableHeader className="bg-muted">
@@ -322,7 +321,6 @@ export default function EngA1Class6Page() {
                                 </Table>
                             </div>
 
-                            {/* Rules section */}
                             <div className="space-y-4">
                                 <div className="bg-primary/5 p-6 rounded-xl border-l-4 border-primary">
                                     <h3 className="text-xl font-bold mb-2">LOS ADJETIVOS POSESIVOS</h3>
@@ -371,6 +369,7 @@ export default function EngA1Class6Page() {
                         <CardFooter>
                             <Button onClick={() => handleTopicComplete('note')}>Entendido</Button>
                         </CardFooter>
+                    </Card>
                 );
             default:
                 if (selectedTopic.startsWith('ex')) {
@@ -417,7 +416,7 @@ export default function EngA1Class6Page() {
             <main className="flex-1 p-4 md:p-8">
                 <div className="max-w-7xl mx-auto">
                     <div className="mb-8">
-                        <Link href="/ingles/a1/unit/2" className="hover:underline text-sm text-muted-foreground">Volver a la unidad 2</Link>
+                        <Link href="/ingles/a1" className="hover:underline text-sm text-muted-foreground">Volver al curso A1</Link>
                         <h1 className="text-4xl font-bold text-white dark:text-primary [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">Clase 6</h1>
                     </div>
                     <div className="grid gap-8 md:grid-cols-12">
