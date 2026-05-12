@@ -371,7 +371,7 @@ const exercises = {
             { spanish: '¿A DONDE VA TU HERMANO?', english: ["where does your brother go?"] },
             { spanish: 'ESTAS (THESE) NO SON MIS GAFAS', english: ["these are not my glasses", "these aren't my glasses"] },
             { spanish: '¿DONDE ESTAN TUS PADRES? ESTAN EN CASA', english: ["where are your parents? they are at home", "where are your parents? they're at home"] },
-            { spanish: '¿QUE HACE TU HERMANO? EL JUEGA TENNIS', english: ["what does your brother do? he plays tennis"] },
+            { spanish: '¿QUE HACEN TU HERMANO? EL JUEGA TENNIS', english: ["what does your brother do? he plays tennis"] },
             { spanish: '¿CUÁNDO VA SUSAN AL CINE? ELLA VA AL CINE LOS MIERCOLES', english: ["when does susan go to the cinema? she goes to the cinema on wednesdays"] },
             { spanish: '¿QUIEN ES EL? EL ES EL HERMANO DE SARA', english: ["who is he? he is sara's brother", "who is he? he's sara's brother"] },
             { spanish: '¿A DONDE VAS A JUGAR FUTBOL? – YO VOY AL ESTADIO', english: ["where do you go to play football? i go to the stadium", "where do you go to play soccer? i go to the stadium"] },
@@ -386,10 +386,14 @@ const exercises = {
     c8_ex2: {
         title: 'a1class1.exercise',
         prompts: [
-            { spanish: 'YO SIEMPRE DESAYUNO A LAS 7 AM', english: ["i always have breakfast at 7 am", "i always eat breakfast at 7 am"] },
-            { spanish: 'ELLA NUNCA LLEGA TARDE', english: ["she never arrives late"] },
-            { spanish: 'NOSOTROS A VECES CAMINAMOS EN EL PARQUE', english: ["sometimes we walk in the park", "we sometimes walk in the park"] },
-            { spanish: 'ELLOS A MENUDO VISITAN A SUS ABUELOS', english: ["they often visit their grandparents"] },
+            { spanish: 'ESTE NO ES MIO, ES TUYO', english: ["this is not mine, it is yours", "this isn't mine, it's yours", "this is not mine it is yours", "this isn't mine it's yours"] },
+            { spanish: '¿TE GUSTA SU CASA? - (DE ELLOS)', english: ["do you like their house?"] },
+            { spanish: 'ESTE CELULAR ES DE ELLA', english: ["this cellphone is hers", "this phone is hers"] },
+            { spanish: 'ME GUSTA EL COLOR DE SU CASA- (DE ELLA)', english: ["i like the color of her house"] },
+            { spanish: 'ESTE ES NUESTRO GATO', english: ["this is our cat"] },
+            { spanish: 'ESOS CUADROS SON TUYOS', english: ["those paintings are yours", "those pictures are yours"] },
+            { spanish: '¿ESTE ES SUYO? - (DE EL)', english: ["is this his?"] },
+            { spanish: '¿ESTOS SON SUS ZAPATOS? -(DE ELLA)', english: ["are these her shoes?"] },
         ]
     },
     c8_ex3: {
@@ -623,7 +627,7 @@ export function SimpleTranslationExercise({
                         value={userAnswers[currentPromptIndex]}
                         onChange={(e) => handleAnswerChange(e.target.value)}
                         onKeyDown={handleKeyDown}
-                        className="min-h-[100px]"
+                        className="text-lg min-h-[100px]"
                         placeholder="Escribe la traducción en inglés..."
                     />
                 </div>

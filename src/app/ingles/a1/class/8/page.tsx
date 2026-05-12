@@ -33,7 +33,7 @@ const ICONS = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_a1_eng_unit_2_class_8_v4_stable';
+const progressStorageVersion = 'progress_a1_eng_unit_2_class_8_v5_possessives';
 const mainProgressKey = 'progress_a1_eng_unit_2_class_8';
 
 const vocabularyData = [
@@ -177,7 +177,7 @@ export default function EngA1Class8Page() {
             newPath.forEach(item => {
                 if (savedStatuses[item.key]) item.status = savedStatuses[item.key];
             });
-            savedSelectedTopic = savedData?.lastSelectedTopic || '';
+            savedSelectedTopic = savedStatuses.lastSelectedTopic || '';
         }
         
         setLearningPath(newPath);
@@ -380,7 +380,17 @@ export default function EngA1Class8Page() {
                     onComplete={() => handleTopicComplete('ex1')} 
                 />;
             case 'ex2':
-                return <SimpleTranslationExercise exerciseKey="c8_ex2" course="a1" title="Exercise 2" onComplete={() => handleTopicComplete('ex2')} />;
+                const ex2Vocab = {
+                    "Adjetivos": "my, your, his, her, its, our, their",
+                    "Pronombres": "mine, yours, his, hers, its, ours, theirs"
+                };
+                return <SimpleTranslationExercise 
+                    exerciseKey="c8_ex2" 
+                    course="a1" 
+                    title="Exercise 2" 
+                    vocabulary={ex2Vocab}
+                    onComplete={() => handleTopicComplete('ex2')} 
+                />;
             case 'ex3':
                 return <SimpleTranslationExercise exerciseKey="c8_ex3" course="a1" title="Exercise 3" onComplete={() => handleTopicComplete('ex3')} />;
             case 'ex4':
