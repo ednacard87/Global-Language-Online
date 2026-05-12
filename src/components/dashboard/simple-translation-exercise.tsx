@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -359,6 +360,51 @@ const exercises = {
             { spanish: 'ESTOS (THESE) SON PERROS – ESE ES NUESTRO PERRO', english: ["these are dogs - that is our dog", "these are dogs - that's our dog"] },
             { spanish: 'NO ME GUSTA COMER AJO, SOLAMENTE CUANDO ESTÁ EN LA CARNE', english: ["i don't like eating garlic, only when it is in the meat", "i don't like to eat garlic, only when it's in the meat", "i do not like eating garlic, only when it is in the meat"] },
         ]
+    },
+    c8_ex1: {
+        title: 'a1class1.exercise',
+        prompts: [
+            { spanish: 'YO SIEMPRE DESAYUNO A LAS 7 AM', english: ["i always have breakfast at 7 am", "i always eat breakfast at 7 am"] },
+            { spanish: 'ELLA NUNCA LLEGA TARDE', english: ["she never arrives late"] },
+            { spanish: 'NOSOTROS A VECES CAMINAMOS EN EL PARQUE', english: ["sometimes we walk in the park", "we sometimes walk in the park"] },
+            { spanish: 'ELLOS A MENUDO VISITAN A SUS ABUELOS', english: ["they often visit their grandparents"] },
+        ]
+    },
+    c8_ex2: {
+        title: 'a1class1.exercise',
+        prompts: [
+            { spanish: '¿TÚ SIEMPRE ESTUDIAS INGLÉS?', english: ["do you always study english?"] },
+            { spanish: 'ELLA NO SIEMPRE ESTÁ OCUPADA', english: ["she is not always busy", "she isn't always busy"] },
+            { spanish: 'NOSOTROS TAMBIÉN QUEREMOS IR', english: ["we also want to go", "we want to go too"] },
+            { spanish: 'ÉL YA ESTÁ AQUÍ', english: ["he is already here", "he's already here"] },
+        ]
+    },
+    c8_ex3: {
+        title: 'a1class1.exercise',
+        prompts: [
+            { spanish: 'TODAVÍA ESTOY EN EL TRABAJO', english: ["i am still at work", "i'm still at work"] },
+            { spanish: '¿VAS AL GIMNASIO A VECES?', english: ["do you go to the gym sometimes?", "do you sometimes go to the gym?"] },
+            { spanish: 'ELLOS NUNCA BEBEN CAFÉ', english: ["they never drink coffee"] },
+            { spanish: 'ELLA TAMBIÉN ES UNA DOCTORA', english: ["she is also a doctor", "she is a doctor too", "she's also a doctor"] },
+        ]
+    },
+    c8_ex4: {
+        title: 'a1class1.exercise',
+        prompts: [
+            { spanish: 'TAL VEZ ELLA VENGA MAÑANA', english: ["maybe she comes tomorrow", "perhaps she comes tomorrow", "maybe she will come tomorrow"] },
+            { spanish: 'DE NUEVO, POR FAVOR', english: ["again, please"] },
+            { spanish: 'YO TAMBIÉN HABLO ESPAÑOL', english: ["i also speak spanish", "i speak spanish too"] },
+            { spanish: '¿TODAVÍA VIVES EN ESA CASA?', english: ["do you still live in that house?"] },
+        ]
+    },
+    c8_ex5: {
+        title: 'a1class1.exercise',
+        prompts: [
+            { spanish: 'USUALMENTE VAMOS A CINE LOS SÁBADOS', english: ["usually we go to the cinema on saturdays", "we usually go to the cinema on saturdays"] },
+            { spanish: 'ÉL NUNCA HACE EJERCICIO', english: ["he never does exercise", "he never exercises"] },
+            { spanish: 'ELLA A VECES LEE LIBROS INTERESANTES', english: ["sometimes she reads interesting books", "she sometimes reads interesting books"] },
+            { spanish: 'NOSOTROS YA TERMINAMOS LA CLASE', english: ["we already finished the class"] },
+        ]
     }
 };
 
@@ -544,7 +590,7 @@ export function SimpleTranslationExercise({
                 <div>
                     <h3 className="text-lg font-semibold mb-4">{t('translationExercise.translate')}</h3>
                     <div className="flex items-start gap-4">
-                         {imageToShow && <Image
+                        {imageToShow && <Image
                             src={imageToShow.imageUrl}
                             alt={imageToShow.description}
                             width={60}
