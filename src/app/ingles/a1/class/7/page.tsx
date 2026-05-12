@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, Info, Loader2, Plus, Minus, Star, ChevronDown } from 'lucide-react';
+import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, Info, Loader2, Plus, Minus, Star, ChevronDown, Pencil } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
@@ -222,7 +222,7 @@ export default function EngA1Class7Page() {
             }
             return isCorrect ? 'correct' : 'incorrect';
         });
-        setVocabValidation(newValidation as ('correct' | 'incorrect' | 'unchecked')[]);
+        setValidationStatus(newValidation as ('correct' | 'incorrect' | 'unchecked')[]);
 
         if (atLeastOneCorrect) {
             toast({ title: "¡Bien hecho!", description: "Has acertado al menos una. ¡Ya puedes avanzar!" });
