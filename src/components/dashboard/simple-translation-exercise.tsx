@@ -258,7 +258,7 @@ const exercises = {
         title: 'a1class1.exercise',
         prompts: [
             { spanish: 'AYER, KATY ENCONTRÓ UN GATO PERDIDO', english: ["yesterday katy found a lost cat"] },
-            { spanish: 'LA MAMA DE TOM COMPRA VERDURAS EN ESE SUPERMERCADO', english: ["tom's mom buys vegetables in that supermarket", "tom's mother buys vegetables in that supermarket"] },
+            { spanish: 'LA MAMA DE TOM COMPRA VERDURAS IN ESE SUPERMERCADO', english: ["tom's mom buys vegetables in that supermarket", "tom's mother buys vegetables in that supermarket"] },
             { spanish: 'CHARLY VIO UN ACCIDENTE EN LA CALLE', english: ["charly saw an accident on the street"] },
             { spanish: 'SARA QUIERE IR A UN CONCIERTO EL VIERNES EN LA NOCHE', english: ["sara wants to go to a concert on friday night", "sara wants to go to a concert on fridays at night"] },
             { spanish: 'EL ES UN INGENIERO Y SU ESPOSA ES UNA DOCTORA', english: ["he is an engineer and his wife is a doctor", "he's an engineer and his wife's a doctor"] },
@@ -271,9 +271,9 @@ const exercises = {
             { spanish: 'YO NO TENGO UNA MANZANA- YO TENGO UNA SANDIA', english: ["i do not have an apple - i have a watermelon", "i don't have an apple - i have a watermelon"] },
             { spanish: 'NOSOTROS SOMOS ESTUDIANTES- YO SOY UN ESTUDIANTE', english: ["we are students - i am a student", "we're students - i'm a student"] },
             { spanish: 'ELLOS SON PRIMOS- EL ES PRIMO DE CHRISTIAN', english: ["they are cousins - he is christian's cousin", "they're cousins - he's christian's cousin"] },
-            { spanish: 'ESTOS SON GATOS NEGROS- ESTE ES UN GATO GRIS', english: ["these are black cats - this is a gray cat", "these are black cats - this is a grey cat"] },
+            { spanish: 'ESTOS (THESE) SON GATOS NEGROS- ESTE ES UN GATO GRIS', english: ["these are black cats - this is a gray cat", "these are black cats - this is a grey cat"] },
             { spanish: 'ESTE NO ES TU CELULAR-ESE ES MI CELULAR', english: ["this is not your cellphone - that is my cellphone", "this isn't your phone - that's my phone"] },
-            { spanish: 'ESTAS SON TUS GAFAS- ESAS NO SON LAS TUYAS', english: ["these are your glasses - those are not yours", "these are your glasses - those aren't yours"] },
+            { spanish: 'ESTAS (THESE) SON TUS GAFAS- ESAS NO SON LAS TUYAS', english: ["these are your glasses - those are not yours", "these are your glasses - those aren't yours"] },
             { spanish: 'ELLOS SON HERMANAS- EL ES SU HERMANO (DE ELLA)', english: ["they are brothers - he is her brother", "they're brothers - he's her brother"] },
             { spanish: 'ESTOS SON PERROS- ESTE ES SU PERRO (DE ÉL)', english: ["these are dogs - this is his dog", "these are dogs - this is his dog"] },
             { spanish: 'ELLOS SON PROFESORES- ELLA ES UNA PROFESORA', english: ["they are teachers - she is a teacher", "they're teachers - she's a teacher"] },
@@ -416,19 +416,25 @@ const exercises = {
     c8_ex4: {
         title: 'a1class1.exercise',
         prompts: [
-            { spanish: 'TODAVÍA ESTOY EN EL TRABAJO', english: ["i am still at work", "i'm still at work"] },
-            { spanish: '¿VAS AL GIMNASIO A VECES?', english: ["do you go to the gym sometimes?", "do you sometimes go to the gym?"] },
-            { spanish: 'ELLOS NUNCA BEBEN CAFÉ', english: ["they never drink coffee"] },
-            { spanish: 'ELLA TAMBIÉN ES UNA DOCTORA', english: ["she is also a doctor", "she is a doctor too", "she's also a doctor"] },
+            { spanish: '¿ELLOS SON NUESTROS AMIGOS?', english: ["are they our friends?"] },
+            { spanish: '¿ESTE (THIS) ES TU VASO (GLASS)?', english: ["is this your glass?"] },
+            { spanish: 'ESTE NO ES SU CARRO (DE ELLOS)', english: ["this is not their car", "this isn't their car"] },
+            { spanish: 'ELLA ES MI HERMANA', english: ["she is my sister", "she's my sister"] },
+            { spanish: '¿DÓNDE ESTÁ TU CHAQUETA? (JACKET)', english: ["where is your jacket?", "where's your jacket?"] },
+            { spanish: '¿CUÁNDO ES TU CUMPLEAÑOS? (BIRTHDAY)', english: ["when is your birthday?", "when's your birthday?"] },
+            { spanish: 'ELLA NO VA ALLÁ (THERE)', english: ["she does not go there", "she doesn't go there"] },
+            { spanish: 'ELLOS SON SUS AMIGOS (DE ÉL)', english: ["they are his friends", "they're his friends"] },
+            { spanish: '¿DÓNDE CORREN ELLOS?', english: ["where do they run?"] },
+            { spanish: 'ELLA NO SABE (KNOW) A DONDE IR (TO GO)', english: ["she does not know where to go", "she doesn't know where to go"] },
         ]
     },
     c8_ex5: {
         title: 'a1class1.exercise',
         prompts: [
-            { spanish: 'TAL VEZ ELLA VENGA MAÑANA', english: ["maybe she comes tomorrow", "perhaps she comes tomorrow", "maybe she will come tomorrow"] },
-            { spanish: 'DE NUEVO, POR FAVOR', english: ["again, please"] },
-            { spanish: 'YO TAMBIÉN HABLO ESPAÑOL', english: ["i also speak spanish", "i speak spanish too"] },
-            { spanish: '¿TODAVÍA VIVES EN ESA CASA?', english: ["do you still live in that house?"] },
+            { spanish: 'TODAVÍA ESTOY EN EL TRABAJO', english: ["i am still at work", "i'm still at work"] },
+            { spanish: '¿VAS AL GIMNASIO A VECES?', english: ["do you go to the gym sometimes?", "do you sometimes go to the gym?"] },
+            { spanish: 'ELLOS NUNCA BEBEN CAFÉ', english: ["they never drink coffee"] },
+            { spanish: 'ELLA TAMBIÉN ES UNA DOCTORA', english: ["she is also a doctor", "she is a doctor too", "she's also a doctor"] },
         ]
     }
 };
