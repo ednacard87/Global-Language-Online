@@ -53,28 +53,67 @@ const vocabularyData = [
     { spanish: 'CASI', english: ['ALMOST'] },
 ];
 
-const DictationExercise = ({ title, description, onComplete }: { title: string, description: string, onComplete: () => void }) => {
-    const [inputValue, setInputValue] = useState('');
+const DictationExercise = ({ 
+    title, 
+    description, 
+    onComplete, 
+    studentDocRef, 
+    initialData, 
+    savePath 
+}: { 
+    title: string, 
+    description: string, 
+    onComplete: () => void,
+    studentDocRef: any,
+    initialData: string[],
+    savePath: string
+}) => {
+    const [lines, setLines] = useState<string[]>(Array(10).fill(''));
+
+    useEffect(() => {
+        if (initialData && Array.isArray(initialData)) {
+            const newLines = [...Array(10).fill('')];
+            initialData.forEach((val, i) => {
+                if (i < 10) newLines[i] = val || '';
+            });
+            setLines(newLines);
+        }
+    }, [initialData]);
+
+    const handleLineChange = (index: number, value: string) => {
+        const newLines = [...lines];
+        newLines[index] = value;
+        setLines(newLines);
+        
+        if (studentDocRef) {
+            updateDocumentNonBlocking(studentDocRef, {
+                [savePath]: newLines
+            });
+        }
+    };
+
     return (
-        <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
             <CardHeader>
-                <CardTitle>{title}</CardTitle>
+                <CardTitle className="text-2xl">{title}</CardTitle>
                 <CardDescription>{description}</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-                <div className="p-4 bg-muted rounded-lg border-2 border-dashed border-primary/30 flex flex-col items-center gap-4">
-                    <Mic className="h-12 w-12 text-primary animate-pulse" />
-                    <p className="text-sm text-center text-muted-foreground">Escucha el audio de tu profesor y escribe la frase aquí.</p>
-                </div>
-                <Input 
-                    value={inputValue} 
-                    onChange={(e) => setInputValue(e.target.value)} 
-                    placeholder="Escribe lo que escuchas..." 
-                    className="text-lg h-12"
-                />
+            <CardContent className="space-y-3">
+                {lines.map((line, idx) => (
+                    <div key={idx} className="flex items-center gap-3 group">
+                        <span className="font-bold text-primary w-8 text-right shrink-0">{idx + 1}.</span>
+                        <Input 
+                            value={line} 
+                            onChange={(e) => handleLineChange(idx, e.target.value)} 
+                            placeholder={`Escribe aquí el renglón ${idx + 1}...`}
+                            className="flex-1 bg-muted/30 focus:bg-background transition-colors h-11 border-primary/20"
+                            autoComplete="off"
+                        />
+                    </div>
+                ))}
             </CardContent>
-            <CardFooter>
-                <Button onClick={onComplete} disabled={!inputValue.trim()}>Marcar como Completado</Button>
+            <CardFooter className="pt-6 border-t mt-4">
+                <Button onClick={onComplete} className="w-full sm:w-auto min-w-[200px]">Marcar como Completado</Button>
             </CardFooter>
         </Card>
     );
@@ -100,6 +139,7 @@ export default function EngA1Class8Page() {
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
     const [selectedTopic, setSelectedTopic] = useState<string>('');
     const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
+    const [initialLoadComplete, setInitialLoadComplete] = useState(false);
 
     // State for vocabulary exercise
     const [vocabAnswers, setVocabAnswers] = useState<string[]>(Array(vocabularyData.length).fill(''));
@@ -127,26 +167,28 @@ export default function EngA1Class8Page() {
             status: isAdmin ? 'completed' : topic.status,
         }));
         
+        let savedSelectedTopic = '';
+
         if (studentProfile?.lessonProgress?.[progressStorageVersion] && !isAdmin) {
             const savedStatuses = studentProfile.lessonProgress[progressStorageVersion];
             newPath.forEach(item => {
                 if (savedStatuses[item.key]) item.status = savedStatuses[item.key];
             });
+            savedSelectedTopic = savedStatuses.lastSelectedTopic || '';
         }
         
         setLearningPath(newPath);
 
-        const firstActive = newPath.find(p => p.status === 'active');
-        if (firstActive) {
-            setSelectedTopic(firstActive.key);
-        } else if (newPath.length > 0) {
-            setSelectedTopic(newPath[0].key);
+        if (!initialLoadComplete) {
+            const firstActive = newPath.find(p => p.status === 'active');
+            setSelectedTopic(savedSelectedTopic || firstActive?.key || newPath[0]?.key || '');
+            setInitialLoadComplete(true);
         }
         
         setVocabAnswers(Array(vocabularyData.length).fill(''));
         setVocabValidation(Array(vocabularyData.length).fill('unchecked'));
         setCanAdvanceVocab(false);
-    }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading, isUserLoading]);
+    }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading, isUserLoading, initialLoadComplete]);
     
     const progressValue = useMemo(() => {
         if (learningPath.length === 0) return 0;
@@ -155,9 +197,11 @@ export default function EngA1Class8Page() {
     }, [learningPath]);
 
     useEffect(() => {
-        if (isProfileLoading || isUserLoading) return;
+        if (isProfileLoading || isUserLoading || !initialLoadComplete) return;
         if (!isAdmin && studentDocRef && learningPath.length > 0) {
-            const statusesToSave: Record<string, any> = {};
+            const statusesToSave: Record<string, any> = {
+                lastSelectedTopic: selectedTopic
+            };
             learningPath.forEach(item => {
                 statusesToSave[item.key] = item.status;
             });
@@ -169,7 +213,7 @@ export default function EngA1Class8Page() {
         if (progressValue >= 100) {
           window.dispatchEvent(new CustomEvent('progressUpdated'));
         }
-    }, [learningPath, isAdmin, progressValue, studentDocRef, isProfileLoading, isUserLoading]);
+    }, [learningPath, isAdmin, progressValue, studentDocRef, isProfileLoading, isUserLoading, initialLoadComplete, selectedTopic]);
 
     const handleTopicComplete = useCallback((completedKey: string) => {
         setTopicToComplete(completedKey);
@@ -295,9 +339,27 @@ export default function EngA1Class8Page() {
                     </Card>
                 );
             case 'dictation1':
-                return <DictationExercise title="Dictation 1" description="Práctica de escucha activa 1" onComplete={() => handleTopicComplete('dictation1')} />;
+                return (
+                    <DictationExercise 
+                        title="Dictation 1" 
+                        description="Ejercicio de dictado: Escribe las frases dictadas por tu profesor." 
+                        onComplete={() => handleTopicComplete('dictation1')} 
+                        studentDocRef={studentDocRef}
+                        initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.dictation1 || []}
+                        savePath={`lessonProgress.${progressStorageVersion}.dictation1`}
+                    />
+                );
             case 'dictation2':
-                return <DictationExercise title="Dictation 2" description="Práctica de escucha activa 2" onComplete={() => handleTopicComplete('dictation2')} />;
+                return (
+                    <DictationExercise 
+                        title="Dictation 2" 
+                        description="Ejercicio de dictado: Escribe las frases dictadas por tu profesor." 
+                        onComplete={() => handleTopicComplete('dictation2')} 
+                        studentDocRef={studentDocRef}
+                        initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.dictation2 || []}
+                        savePath={`lessonProgress.${progressStorageVersion}.dictation2`}
+                    />
+                );
             case 'ex1':
                 return <SimpleTranslationExercise exerciseKey="c8_ex1" course="a1" title="Exercise 1" onComplete={() => handleTopicComplete('ex1')} />;
             case 'ex2':
