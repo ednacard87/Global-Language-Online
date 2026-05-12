@@ -12,7 +12,7 @@ import { Progress } from '@/components/ui/progress';
 import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
+import { Input } from '@/components/ui/input';
 
 type Topic = {
   key: string;
@@ -27,8 +27,25 @@ const ICONS = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_a1_eng_unit_2_class_7_v1';
+const progressStorageVersion = 'progress_a1_eng_unit_2_class_7_v2_vocab';
 const mainProgressKey = 'progress_a1_eng_unit_2_class_7';
+
+const vocabularyData = [
+    { spanish: 'VOLVERSE, LLEGAR A SER', english: 'TO BECOME' },
+    { spanish: 'COMENZAR', english: 'TO BEGIN' },
+    { spanish: 'ROMPER', english: 'TO BREAK' },
+    { spanish: 'TRAER, LLEVAR', english: 'TO BRING' },
+    { spanish: 'CONSTRUIR', english: 'TO BUILD' },
+    { spanish: 'COMPRAR', english: 'TO BUY' },
+    { spanish: 'VENIR', english: 'TO COME' },
+    { spanish: 'COSTAR', english: 'TO COST' },
+    { spanish: 'CORTAR', english: 'TO CUT' },
+    { spanish: 'HACER', english: 'TO DO' },
+    { spanish: 'DIBUJAR', english: 'TO DRAW' },
+    { spanish: 'BEBER', english: 'TO DRINK' },
+    { spanish: 'MANEJAR', english: 'TO DRIVE' },
+    { spanish: 'COMER', english: 'TO EAT' },
+];
 
 export default function EngA1Class7Page() {
     const { t } = useTranslation();
@@ -50,6 +67,11 @@ export default function EngA1Class7Page() {
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
     const [selectedTopic, setSelectedTopic] = useState<string>('');
     const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
+
+    // Vocab State
+    const [vocabAnswers, setVocabAnswers] = useState<string[]>(Array(vocabularyData.length).fill(''));
+    const [vocabValidation, setVocabValidation] = useState<('correct' | 'incorrect' | 'unchecked')[]>(Array(vocabularyData.length).fill('unchecked'));
+    const [canAdvanceVocab, setCanAdvanceVocab] = useState(false);
 
     const initialLearningPath = useMemo((): Topic[] => [
         { key: 'vocabulary', name: 'Vocabulary (Basic Verbs)', icon: BookOpen, status: 'active' },
@@ -148,10 +170,55 @@ export default function EngA1Class7Page() {
         }
         setSelectedTopic(topicKey);
 
-        // For grammar and vocabulary, we auto-complete on view
-        if (topicKey === 'vocabulary' || topicKey.startsWith('grammar')) {
+        const viewOnlyTopics = ['grammar1', 'grammar2', 'grammar3'];
+        if (viewOnlyTopics.includes(topicKey)) {
             handleTopicComplete(topicKey);
         }
+    };
+
+    const handleVocabInputChange = (index: number, value: string) => {
+        const newAnswers = [...vocabAnswers];
+        newAnswers[index] = value;
+        setVocabAnswers(newAnswers);
+
+        const newValidation = [...vocabValidation];
+        if (newValidation[index] !== 'unchecked') {
+            newValidation[index] = 'unchecked';
+            setVocabValidation(newValidation);
+        }
+        setCanAdvanceVocab(false);
+    };
+
+    const handleCheckVocab = () => {
+        let atLeastOneCorrect = false;
+        const newValidation = vocabularyData.map((item, index) => {
+            const userAnswer = vocabAnswers[index]?.trim().toUpperCase();
+            const isCorrect = userAnswer === item.english.toUpperCase();
+            if (isCorrect) {
+                atLeastOneCorrect = true;
+            }
+            return isCorrect ? 'correct' : 'incorrect';
+        });
+        setVocabValidation(newValidation as ('correct' | 'incorrect' | 'unchecked')[]);
+
+        if (atLeastOneCorrect) {
+            toast({ title: "¡Bien hecho!", description: "Has acertado al menos una. ¡Ya puedes avanzar!" });
+            setCanAdvanceVocab(true);
+        } else {
+            toast({ 
+                variant: "destructive", 
+                title: "Sigue intentando", 
+                description: "Revisa tus respuestas. ¡Necesitas al menos una correcta para continuar!" 
+            });
+            setCanAdvanceVocab(false);
+        }
+    };
+
+    const getVocabInputClass = (index: number) => {
+        const status = vocabValidation[index];
+        if (status === 'correct') return 'border-green-500 focus-visible:ring-green-500 bg-green-50 dark:bg-green-900/10';
+        if (status === 'incorrect') return 'border-destructive focus-visible:ring-destructive bg-destructive/5';
+        return '';
     };
     
     const renderContent = () => {
@@ -162,21 +229,36 @@ export default function EngA1Class7Page() {
                 <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
                     <CardHeader>
                         <CardTitle>Vocabulary: Basic Verbs</CardTitle>
-                        <CardDescription>Estudia los siguientes verbos básicos.</CardDescription>
+                        <CardDescription>Traduce los verbos al inglés (usa "TO" + verbo, ej: TO EAT).</CardDescription>
                     </CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="grid grid-cols-2 gap-4 text-lg">
-                            <div className="font-bold p-3 bg-muted rounded-lg">Spanish</div>
-                            <div className="font-bold p-3 bg-muted rounded-lg">English</div>
-                            <div className="p-3 border rounded-lg">COMER</div><div className="p-3 border rounded-lg font-medium">EAT</div>
-                            <div className="p-3 border rounded-lg">BEBER</div><div className="p-3 border rounded-lg font-medium">DRINK</div>
-                            <div className="p-3 border rounded-lg">DORMIR</div><div className="p-3 border rounded-lg font-medium">SLEEP</div>
-                            <div className="p-3 border rounded-lg">CORRER</div><div className="p-3 border rounded-lg font-medium">RUN</div>
-                            <div className="p-3 border rounded-lg">CAMINAR</div><div className="p-3 border rounded-lg font-medium">WALK</div>
+                    <CardContent>
+                        <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-lg">
+                            <div className="font-bold p-3 bg-muted rounded-lg text-left">Español</div>
+                            <div className="font-bold p-3 bg-muted rounded-lg text-left">Inglés</div>
+                            {vocabularyData.map((item, index) => (
+                                <React.Fragment key={index}>
+                                    <div className="p-3 bg-card border rounded-lg flex items-center">{item.spanish}</div>
+                                    <div className="p-3 bg-card border rounded-lg flex items-center">
+                                        <Input
+                                            value={vocabAnswers[index] || ''}
+                                            onChange={e => handleVocabInputChange(index, e.target.value)}
+                                            className={cn(getVocabInputClass(index))}
+                                            placeholder="TO..."
+                                            autoComplete="off"
+                                        />
+                                    </div>
+                                </React.Fragment>
+                            ))}
                         </div>
                     </CardContent>
-                    <CardFooter>
-                        <Button onClick={() => handleTopicComplete('vocabulary')}>Avanzar</Button>
+                    <CardFooter className="flex justify-between items-center border-t pt-6">
+                        <Button onClick={handleCheckVocab}>Verificar Vocabulario</Button>
+                        <Button 
+                            onClick={() => handleTopicComplete('vocabulary')} 
+                            disabled={!canAdvanceVocab && !isAdmin}
+                        >
+                            Avanzar
+                        </Button>
                     </CardFooter>
                 </Card>
             );
