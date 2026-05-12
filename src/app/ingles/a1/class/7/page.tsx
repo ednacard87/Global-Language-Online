@@ -188,7 +188,7 @@ export default function EngA1Class7Page() {
         const newValidation = [...vocabValidation];
         if (newValidation[index] !== 'unchecked') {
             newValidation[index] = 'unchecked';
-            setValidationStatus(newValidation);
+            setVocabValidation(newValidation);
         }
         setCanAdvanceVocab(false);
     };
@@ -361,6 +361,59 @@ export default function EngA1Class7Page() {
                     onComplete={() => handleTopicComplete('ex1')} 
                     title="Exercise 1"
                 />
+            );
+        }
+
+        if (selectedTopic === 'grammar2') {
+            return (
+                <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                    <CardHeader>
+                        <CardTitle>INDEFINITE ARTICLES "A - AN"</CardTitle>
+                        <CardDescription>Uso de los artículos indefinidos en inglés.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                        <div className="bg-primary/10 p-6 rounded-xl border-l-4 border-primary">
+                            <h3 className="text-2xl font-bold text-primary">A - AN = un / una</h3>
+                        </div>
+
+                        <div className="grid md:grid-cols-2 gap-4">
+                            <Card className="bg-muted/50 border-2 border-dashed">
+                                <CardHeader className="pb-2">
+                                    <CardTitle className="text-lg">A + Consonante</CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <p className="font-mono text-xl font-bold">A car</p>
+                                    <p className="text-sm text-muted-foreground">(Un carro)</p>
+                                </CardContent>
+                            </Card>
+
+                            <Card className="bg-muted/50 border-2 border-dashed">
+                                <CardHeader className="pb-2">
+                                    <CardTitle className="text-lg">An + Vocal</CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <p className="font-mono text-xl font-bold">An elevator</p>
+                                    <p className="text-sm text-muted-foreground">(Un elevador)</p>
+                                </CardContent>
+                            </Card>
+                        </div>
+
+                        <Separator />
+
+                        <div className="space-y-2">
+                            <h3 className="text-xl font-bold text-primary">USO PRINCIPAL</h3>
+                            <p className="text-lg leading-relaxed">
+                                Son utilizados para referirnos a algo o alguien en: <span className="font-bold underline">SINGULAR</span>.
+                            </p>
+                            <p className="text-sm text-muted-foreground italic">
+                                * Nota: No puedes usar "A/AN" con palabras en plural (ej: no se dice "a cars").
+                            </p>
+                        </div>
+                    </CardContent>
+                    <CardFooter className="justify-center pt-6 border-t">
+                        <Button onClick={() => handleTopicComplete('grammar2')}>Continuar</Button>
+                    </CardFooter>
+                </Card>
             );
         }
 
