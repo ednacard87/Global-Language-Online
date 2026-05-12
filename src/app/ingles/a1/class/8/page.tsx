@@ -31,20 +31,26 @@ const ICONS = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_a1_eng_unit_2_class_8_v2_fixed';
+const progressStorageVersion = 'progress_a1_eng_unit_2_class_8_v3_inter';
 const mainProgressKey = 'progress_a1_eng_unit_2_class_8';
 
 const vocabularyData = [
-    { spanish: 'SIEMPRE', english: ['ALWAYS'] },
-    { spanish: 'NUNCA', english: ['NEVER'] },
-    { spanish: 'A VECES', english: ['SOMETIMES'] },
-    { spanish: 'A MENUDO', english: ['OFTEN'] },
-    { spanish: 'USUALMENTE', english: ['USUALLY'] },
-    { spanish: 'TAL VEZ', english: ['MAYBE', 'PERHAPS'] },
-    { spanish: 'DE NUEVO', english: ['AGAIN'] },
+    { spanish: 'ESTE/A', english: ['THIS'] },
+    { spanish: 'ESTOS/AS', english: ['THESE'] },
+    { spanish: 'ESE/A', english: ['THAT'] },
+    { spanish: 'ESOS/AS', english: ['THOSE'] },
+    { spanish: 'PERO', english: ['BUT'] },
+    { spanish: 'MIENTRAS', english: ['WHILE'] },
+    { spanish: 'ENTONCES', english: ['SO'] },
+    { spanish: 'LUEGO', english: ['THEN'] },
+    { spanish: 'ALREDEDOR', english: ['AROUND'] },
+    { spanish: 'MEDIA NOCHE', english: ['MIDNIGHT'] },
+    { spanish: 'MEDIO DIA', english: ['MIDDAY', 'NOON'] },
+    { spanish: 'DESDE', english: ['FROM'] },
     { spanish: 'TAMBIÉN', english: ['ALSO', 'TOO'] },
-    { spanish: 'TODAVÍA', english: ['STILL'] },
-    { spanish: 'YA', english: ['ALREADY'] },
+    { spanish: 'ACERCA DE', english: ['ABOUT'] },
+    { spanish: 'CADA', english: ['EVERY', 'EACH'] },
+    { spanish: 'CASI', english: ['ALMOST'] },
 ];
 
 const DictationExercise = ({ title, description, onComplete }: { title: string, description: string, onComplete: () => void }) => {
@@ -95,6 +101,11 @@ export default function EngA1Class8Page() {
     const [selectedTopic, setSelectedTopic] = useState<string>('');
     const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
 
+    // State for vocabulary exercise
+    const [vocabAnswers, setVocabAnswers] = useState<string[]>(Array(vocabularyData.length).fill(''));
+    const [vocabValidation, setVocabValidation] = useState<('correct' | 'incorrect' | 'unchecked')[]>(Array(vocabularyData.length).fill('unchecked'));
+    const [canAdvanceVocab, setCanAdvanceVocab] = useState(false);
+
     const initialLearningPath = useMemo((): Topic[] => [
         { key: 'vocabulary', name: 'Vocabulary (Basic Words)', icon: BookOpen, status: 'active' },
         { key: 'dictation1', name: 'Dictation 1', icon: Mic, status: 'locked' },
@@ -131,6 +142,10 @@ export default function EngA1Class8Page() {
         } else if (newPath.length > 0) {
             setSelectedTopic(newPath[0].key);
         }
+        
+        setVocabAnswers(Array(vocabularyData.length).fill(''));
+        setVocabValidation(Array(vocabularyData.length).fill('unchecked'));
+        setCanAdvanceVocab(false);
     }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading, isUserLoading]);
     
     const progressValue = useMemo(() => {
@@ -189,11 +204,51 @@ export default function EngA1Class8Page() {
             return;
         }
         setSelectedTopic(topicKey);
+    };
 
-        const autoViewTopics = ['vocabulary'];
-        if (autoViewTopics.includes(topicKey)) {
-            handleTopicComplete(topicKey);
+    const handleVocabInputChange = (index: number, value: string) => {
+        const newAnswers = [...vocabAnswers];
+        newAnswers[index] = value;
+        setVocabAnswers(newAnswers);
+
+        const newValidation = [...vocabValidation];
+        if (newValidation[index] !== 'unchecked') {
+            newValidation[index] = 'unchecked';
+            setVocabValidation(newValidation);
         }
+        setCanAdvanceVocab(false);
+    };
+
+    const handleCheckVocab = () => {
+        let atLeastOneCorrect = false;
+        const newValidation = vocabularyData.map((item, index) => {
+            const userAnswer = vocabAnswers[index]?.trim().toLowerCase();
+            const isCorrect = item.english.some(e => e.toLowerCase() === userAnswer);
+            if (isCorrect) {
+                atLeastOneCorrect = true;
+            }
+            return isCorrect ? 'correct' : 'incorrect';
+        });
+        setVocabValidation(newValidation as ('correct' | 'incorrect' | 'unchecked')[]);
+
+        if (atLeastOneCorrect) {
+            toast({ title: "¡Bien hecho!", description: "Has acertado al menos una. ¡Ya puedes avanzar!" });
+            setCanAdvanceVocab(true);
+        } else {
+            toast({ 
+                variant: "destructive", 
+                title: "Sigue intentando", 
+                description: "Revisa tus respuestas. ¡Necesitas al menos una correcta para continuar!" 
+            });
+            setCanAdvanceVocab(false);
+        }
+    };
+
+    const getVocabInputClass = (index: number) => {
+        const status = vocabValidation[index];
+        if (status === 'correct') return 'border-green-500 focus-visible:ring-green-500 bg-green-50 dark:bg-green-900/10';
+        if (status === 'incorrect') return 'border-destructive focus-visible:ring-destructive bg-destructive/5';
+        return '';
     };
 
     const renderContent = () => {
@@ -205,7 +260,7 @@ export default function EngA1Class8Page() {
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
                         <CardHeader>
                             <CardTitle>Vocabulary (Basic Words)</CardTitle>
-                            <CardDescription>Estudia estas palabras esenciales de frecuencia y conexión.</CardDescription>
+                            <CardDescription>Escribe la traducción correcta en inglés para cada palabra.</CardDescription>
                         </CardHeader>
                         <CardContent>
                             <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-lg">
@@ -214,13 +269,28 @@ export default function EngA1Class8Page() {
                                 {vocabularyData.map((item, index) => (
                                     <React.Fragment key={index}>
                                         <div className="p-3 bg-card border rounded-lg flex items-center">{item.spanish}</div>
-                                        <div className="p-3 bg-card border rounded-lg flex items-center font-bold text-primary">{item.english[0]}</div>
+                                        <div className="p-3 bg-card border rounded-lg flex items-center">
+                                            <Input
+                                                value={vocabAnswers[index] || ''}
+                                                onChange={e => handleVocabInputChange(index, e.target.value)}
+                                                className={cn(getVocabInputClass(index))}
+                                                autoComplete="off"
+                                                placeholder="..."
+                                            />
+                                        </div>
                                     </React.Fragment>
                                 ))}
                             </div>
                         </CardContent>
-                        <CardFooter className="justify-center pt-6 border-t">
-                            <Button onClick={() => handleTopicComplete('vocabulary')}>Entendido y Avanzar</Button>
+                        <CardFooter className="flex justify-between items-center border-t pt-6">
+                            <Button onClick={handleCheckVocab}>Verificar Vocabulario</Button>
+                            <Button 
+                                onClick={() => handleTopicComplete('vocabulary')} 
+                                disabled={!canAdvanceVocab && !isAdmin}
+                                className={cn(!canAdvanceVocab && !isAdmin && "opacity-50")}
+                            >
+                                Avanzar
+                            </Button>
                         </CardFooter>
                     </Card>
                 );
@@ -239,7 +309,7 @@ export default function EngA1Class8Page() {
             case 'ex5':
                 return <SimpleTranslationExercise exerciseKey="c8_ex5" course="a1" title="Exercise 5" onComplete={() => handleTopicComplete('ex5')} />;
             case 'vocab_game':
-                return <AdjectivesMemoryGame data={vocabularyData} onComplete={() => handleTopicComplete('vocab_game')} />;
+                return <AdjectivesMemoryGame data={vocabularyData.map(v => ({ spanish: v.spanish, english: v.english }))} onComplete={() => handleTopicComplete('vocab_game')} />;
             case 'writing1':
                 return (
                     <CreativeWritingExercise 
