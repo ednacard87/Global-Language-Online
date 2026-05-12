@@ -9,7 +9,8 @@ import { useTranslation } from '@/context/language-context';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
-import { ArrowLeft, ArrowRight, Trophy } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Trophy, BookText } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 // Data for the exercises
 const exercises = {
@@ -322,6 +323,27 @@ const exercises = {
             { spanish: 'WHERE IS _______DOG? __________ DOG IS UNDER THE BED.', english: ["where is the dog? the dog is under the bed"] },
             { spanish: '________ SUN IS SHINING.', english: ["the sun is shining"] },
         ]
+    },
+    c7_ex7: {
+        title: 'a1class1.exercise',
+        prompts: [
+            { spanish: 'YO QUIERO COMER UN BANANO CON LECHE', english: ["i want to eat a banana with milk"] },
+            { spanish: 'ELLA ES UNA INGENIERA', english: ["she is an engineer", "she's an engineer"] },
+            { spanish: 'NOSOTROS TRABAJAMOS CON UN PROFESOR EN LA UNIVERSIDAD', english: ["we work with a teacher at the university", "we work with a professor at the university"] },
+            { spanish: 'ÉL ES UN ADOLESCENTE', english: ["he is a teenager", "he's a teenager"] },
+            { spanish: 'HOY ES UN DIA SOLEADO', english: ["today is a sunny day"] },
+            { spanish: 'TRAEME UNA SOMBRILLA, ESTA LLOVIENDO', english: ["bring me an umbrella, it is raining", "bring me an umbrella, it's raining"] },
+            { spanish: 'ELLA ES UNA PERSONA HONESTA', english: ["she is an honest person", "she's an honest person"] },
+            { spanish: 'SU PRIMO TIENE UN BUEN TRABAJO (DE ÉL)', english: ["his cousin has a good job"] },
+            { spanish: '“CONTRATIEMPO” ES UNA PELICULA INTERESANTE', english: ["contratiempo is an interesting movie"] },
+            { spanish: 'NOSOTROS COMEMOS 3 VECES AL DIA', english: ["we eat three times a day", "we eat 3 times a day"] },
+            { spanish: 'CAMERON DIAZ ES UNA ACTRIZ', english: ["cameron diaz is an actress"] },
+            { spanish: 'ESTE ES UN SILLON', english: ["this is an armchair"] },
+            { spanish: '¿PUEDES DARME UN JUGO DE NARANJA? POR FAVOR', english: ["can you give me an orange juice? please"] },
+            { spanish: 'ÉL ES UN BUEN POLICIA', english: ["he is a good policeman", "he's a good policeman", "he is a good police officer", "he's a good police officer"] },
+            { spanish: 'EL SE FRACTURÓ SU BRAZO EN UN ACCIDENTE DE CARRO', english: ["he broke his arm in a car accident", "he fractured his arm in a car accident"] },
+            { spanish: 'MI MAMA ES UNA DOCTORA Y MI PAPÁ ES UN HOMBRE DE NEGOCIOS', english: ["my mom is a doctor and my dad is a businessman", "my mother is a doctor and my father is a businessman"] },
+        ]
     }
 };
 
@@ -337,11 +359,13 @@ export function SimpleTranslationExercise({
     onComplete,
     course,
     title: titleProp,
+    vocabulary
 }: { 
     exerciseKey: string,
     onComplete?: () => void,
     course?: string,
     title?: string,
+    vocabulary?: Record<string, string>
 }) {
     const { t } = useTranslation();
     const { toast } = useToast();
@@ -457,22 +481,47 @@ export function SimpleTranslationExercise({
                         {currentPromptIndex + 1} / {exerciseData.prompts.length}
                     </span>
                 </div>
-                <div className="flex items-center justify-start flex-wrap gap-2 pt-4">
-                    {exerciseData.prompts.map((_, index) => (
-                        <button
-                            key={index}
-                            onClick={() => setCurrentPromptIndex(index)}
-                            className={cn(
-                                "h-8 w-8 rounded-full flex items-center justify-center font-bold border-2 transition-all",
-                                currentPromptIndex === index ? "border-primary ring-2 ring-primary" : "border-muted-foreground/50",
-                                validationStates[index] === 'correct' && 'bg-green-500/20 border-green-500 text-green-700',
-                                validationStates[index] === 'incorrect' && 'bg-red-500/20 border-destructive text-destructive',
-                            )}
-                            aria-label={`Ir al ejercicio ${index + 1}`}
-                        >
-                            {index + 1}
-                        </button>
-                    ))}
+                <div className="flex items-center justify-between mt-4">
+                    <div className="flex items-center justify-start flex-wrap gap-2">
+                        {exerciseData.prompts.map((_, index) => (
+                            <button
+                                key={index}
+                                onClick={() => setCurrentPromptIndex(index)}
+                                className={cn(
+                                    "h-8 w-8 rounded-full flex items-center justify-center font-bold border-2 transition-all",
+                                    currentPromptIndex === index ? "border-primary ring-2 ring-primary" : "border-muted-foreground/50",
+                                    validationStates[index] === 'correct' && 'bg-green-500/20 border-green-500 text-green-700',
+                                    validationStates[index] === 'incorrect' && 'bg-red-500/20 border-destructive text-destructive',
+                                )}
+                                aria-label={`Ir al ejercicio ${index + 1}`}
+                            >
+                                {index + 1}
+                            </button>
+                        ))}
+                    </div>
+                    {vocabulary && (
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button variant="outline" size="sm" className="border-2 border-brand-blue animate-border-pulse">
+                                    <BookText className="mr-2 h-4 w-4" />
+                                    Vocabulario
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-64">
+                                <div className="space-y-2">
+                                    <h4 className="font-bold border-b pb-1">Vocabulario útil</h4>
+                                    <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
+                                        {Object.entries(vocabulary).map(([es, en]) => (
+                                            <React.Fragment key={es}>
+                                                <span className="text-muted-foreground capitalize">{es}:</span>
+                                                <span className="font-semibold text-right">{en}</span>
+                                            </React.Fragment>
+                                        ))}
+                                    </div>
+                                </div>
+                            </PopoverContent>
+                        </Popover>
+                    )}
                 </div>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -501,6 +550,7 @@ export function SimpleTranslationExercise({
                         onChange={(e) => handleAnswerChange(e.target.value)}
                         onKeyDown={handleKeyDown}
                         className="min-h-[100px]"
+                        placeholder="Escribe la traducción en inglés..."
                     />
                 </div>
             </CardContent>

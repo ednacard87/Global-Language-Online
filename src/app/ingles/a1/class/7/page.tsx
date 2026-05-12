@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, Info, Loader2, Plus, Minus, Star } from 'lucide-react';
+import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, Info, Loader2, Plus, Minus, Star, ChevronDown } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
@@ -18,6 +18,7 @@ import { Separator } from '@/components/ui/separator';
 import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
 import { CreativeWritingExercise } from '@/components/dashboard/creative-writing-exercise';
 import { SentenceCompletionExercise, type CompletionPrompt } from '@/components/kids/exercises/sentence-completion-exercise';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 type Topic = {
   key: string;
@@ -32,7 +33,7 @@ const ICONS = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_a1_eng_unit_2_class_7_v7_final';
+const progressStorageVersion = 'progress_a1_eng_unit_2_class_7_v8_final';
 const mainProgressKey = 'progress_a1_eng_unit_2_class_7';
 
 const vocabularyData = [
@@ -615,24 +616,37 @@ export default function EngA1Class7Page() {
             );
         }
 
-        if (selectedTopic?.startsWith('ex')) {
+        if (selectedTopic === 'ex7') {
+            const vocab7 = {
+                "adolescente": "teenager",
+                "sombrilla": "umbrella",
+                "honesta": "honest",
+                "sillón": "armchair",
+                "accidente": "accident",
+                "fracturó": "broke / fractured",
+                "vendedor": "seller",
+                "hombre de negocios": "businessman"
+            };
             return (
-                <Card className="shadow-soft rounded-lg border-2 border-brand-purple min-h-[400px]">
-                    <CardHeader>
-                        <CardTitle>{topic?.name}</CardTitle>
-                        <CardDescription>Práctica interactiva.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="flex flex-col items-center justify-center p-12">
-                        <p className="text-muted-foreground text-center mb-8">El ejercicio interactivo para {topic?.name} estará disponible pronto.</p>
-                        <Button onClick={() => handleTopicComplete(selectedTopic)}>
-                            Simular Completado
-                        </Button>
-                    </CardContent>
-                </Card>
+                <SimpleTranslationExercise 
+                    exerciseKey="c7_ex7" 
+                    course="a1" 
+                    onComplete={() => handleTopicComplete('ex7')} 
+                    title="Exercise 7: A vs AN"
+                    vocabulary={vocab7}
+                />
             );
         }
 
-        return null;
+        return (
+            <Card className="shadow-soft rounded-lg border-2 border-brand-purple min-h-[500px]">
+              <CardHeader>
+                <CardTitle>{topic?.name || 'Cargando...'}</CardTitle>
+                <CardDescription>Contenido para este tema estará disponible pronto.</CardDescription>
+              </CardHeader>
+              <CardContent />
+            </Card>
+        );
     };
 
     if (isUserLoading || isProfileLoading) {
