@@ -235,7 +235,7 @@ function DashboardPage() {
 
   const totalStudyHoursThisWeek = useMemo(() => {
       if (!studySessions) return 0;
-      const totalMinutes = studySessions.reduce((sum, session) => sum + session.durationMinutes, 0);
+      const totalMinutes = studySessions.reduce((sum, session) => total+ session.durationMinutes, 0);
       return Math.round((totalMinutes / 60) * 10) / 10;
   }, [studySessions]);
 
@@ -290,7 +290,7 @@ function DashboardPage() {
 
             return {
               ...course,
-              title: course.href === "/intro" ? "INTRODUCTORY COURSE" : t(course.name),
+              title: t(course.name),
               description: course.description,
               progress: finalProgress,
               locked: isLocked
