@@ -329,7 +329,7 @@ const exercises = {
         prompts: [
             { spanish: 'YO QUIERO COMER UN BANANO CON LECHE', english: ["i want to eat a banana with milk"] },
             { spanish: 'ELLA ES UNA INGENIERA', english: ["she is an engineer", "she's an engineer"] },
-            { spanish: 'NOSOTROS TRABAJAMOS CON UN PROFESOR EN LA UNIVERSIDAD', english: ["we work with a teacher at the university", "we work with a professor at the university"] },
+            { spanish: 'NOSOTROS TRABAJAMOS WITH UN PROFESOR EN LA UNIVERSIDAD', english: ["we work with a teacher at the university", "we work with a professor at the university"] },
             { spanish: 'ÉL ES UN ADOLESCENTE', english: ["he is a teenager", "he's a teenager"] },
             { spanish: 'HOY ES UN DIA SOLEADO', english: ["today is a sunny day"] },
             { spanish: 'TRAEME UNA SOMBRILLA, ESTA LLOVIENDO', english: ["bring me an umbrella, it is raining", "bring me an umbrella, it's raining"] },
@@ -399,28 +399,36 @@ const exercises = {
     c8_ex3: {
         title: 'a1class1.exercise',
         prompts: [
+            { spanish: 'ELLA NO NADA LOS DOMINGOS', english: ["she does not swim on sundays", "she doesn't swim on sundays"] },
+            { spanish: 'TU NO TRABAJAS EN LA MAÑANA', english: ["you do not work in the morning", "you don't work in the morning"] },
+            { spanish: '¿ELLOS CORREN MUY VELOZ (FAST)?', english: ["do they run very fast?"] },
+            { spanish: 'NOSOTROS NO VAMOS A BOGOTÁ', english: ["we do not go to bogota", "we don't go to bogota"] },
+            { spanish: '¿ELLA ESTÁ TRISTE? NO, ELLA ESTA FELIZ', english: ["is she sad? no, she is happy", "is she sad? no, she's happy"] },
+            { spanish: 'A ELLA NO LE GUSTAN LOS GATOS', english: ["she does not like cats", "she doesn't like cats"] },
+            { spanish: 'ELLA JUEGA BALONCESTO (BASKETBALL) LOS SÁBADOS', english: ["she plays basketball on saturdays"] },
+            { spanish: '¿A DÓNDE VIAJA ÉL? ÉL VIAJA A BARCELONA', english: ["where does he travel? he travels to barcelona", "where does he travel to? he travels to barcelona"] },
+            { spanish: 'ELLOS NO SON NUESTROS TÍOS (UNCLES)', english: ["they are not our uncles", "they aren't our uncles", "they're not our uncles"] },
+            { spanish: '¿ELLA BEBE AGUA? –NO, ELLA BEBE VODKA', english: ["does she drink water? no, she drinks vodka"] },
+            { spanish: 'NO ME GUSTA TU COMPORTAMIENTO', english: ["i do not like your behavior", "i don't like your behavior"] },
+            { spanish: 'ELLA VA CON ÉL A LA IGLESIA', english: ["she goes with him to the church", "she goes to the church with him", "she goes to church with him"] },
+        ]
+    },
+    c8_ex4: {
+        title: 'a1class1.exercise',
+        prompts: [
             { spanish: 'TODAVÍA ESTOY EN EL TRABAJO', english: ["i am still at work", "i'm still at work"] },
             { spanish: '¿VAS AL GIMNASIO A VECES?', english: ["do you go to the gym sometimes?", "do you sometimes go to the gym?"] },
             { spanish: 'ELLOS NUNCA BEBEN CAFÉ', english: ["they never drink coffee"] },
             { spanish: 'ELLA TAMBIÉN ES UNA DOCTORA', english: ["she is also a doctor", "she is a doctor too", "she's also a doctor"] },
         ]
     },
-    c8_ex4: {
+    c8_ex5: {
         title: 'a1class1.exercise',
         prompts: [
             { spanish: 'TAL VEZ ELLA VENGA MAÑANA', english: ["maybe she comes tomorrow", "perhaps she comes tomorrow", "maybe she will come tomorrow"] },
             { spanish: 'DE NUEVO, POR FAVOR', english: ["again, please"] },
             { spanish: 'YO TAMBIÉN HABLO ESPAÑOL', english: ["i also speak spanish", "i speak spanish too"] },
             { spanish: '¿TODAVÍA VIVES EN ESA CASA?', english: ["do you still live in that house?"] },
-        ]
-    },
-    c8_ex5: {
-        title: 'a1class1.exercise',
-        prompts: [
-            { spanish: 'USUALMENTE VAMOS A CINE LOS SÁBADOS', english: ["usually we go to the cinema on saturdays", "we usually go to the cinema on saturdays"] },
-            { spanish: 'ÉL NUNCA HACE EJERCICIO', english: ["he never does exercise", "he never exercises"] },
-            { spanish: 'ELLA A VECES LEE LIBROS INTERESANTES', english: ["sometimes she reads interesting books", "she sometimes reads interesting books"] },
-            { spanish: 'NOSOTROS YA TERMINAMOS LA CLASE', english: ["we already finished the class"] },
         ]
     }
 };
