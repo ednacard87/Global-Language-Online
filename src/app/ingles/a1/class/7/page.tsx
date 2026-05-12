@@ -205,7 +205,7 @@ export default function EngA1Class7Page() {
             }
             return isCorrect ? 'correct' : 'incorrect';
         });
-        setValidationStatus(newValidation as ('correct' | 'incorrect' | 'unchecked')[]);
+        setVocabValidation(newValidation as ('correct' | 'incorrect' | 'unchecked')[]);
 
         if (atLeastOneCorrect) {
             toast({ title: "¡Bien hecho!", description: "Has acertado al menos una. ¡Ya puedes avanzar!" });
@@ -583,6 +583,17 @@ export default function EngA1Class7Page() {
                     studentDocRef={studentDocRef}
                     initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.writingData || {}}
                     savePath={`lessonProgress.${progressStorageVersion}.writingData`}
+                />
+            );
+        }
+
+        if (selectedTopic === 'ex6') {
+            return (
+                <SimpleTranslationExercise 
+                    exerciseKey="c7_ex6" 
+                    course="a1" 
+                    onComplete={() => handleTopicComplete('ex6')} 
+                    title="Exercise 6"
                 />
             );
         }

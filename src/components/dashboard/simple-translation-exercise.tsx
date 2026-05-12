@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -289,7 +288,7 @@ const exercises = {
             { spanish: 'A ÉL NO LE GUSTA COMER VERDURAS/VEGETALES', english: ["he doesn't like eating vegetables", "he does not like eating vegetables", "he doesn't like to eat vegetables", "he does not like to eat vegetables"] },
             { spanish: 'PREFIERO EL VERANO QUE EL INVIERNO', english: ["i prefer summer to winter"] },
             { spanish: 'NO NOS GUSTA LA MÚSICA METAL', english: ["we don't like metal music", "we do not like metal music"] },
-            { spanish: 'A ÉL NO LE GUSTA COMER AJO', english: ["he doesn't like eating garlic", "he does not like eating garlic", "he doesn't like to eat garlic", "he does not like to eat garlic"] },
+            { spanish: 'A ÉL NO LE GUSTA COMER AJO', english: ["he doesn't like eating garlic", "he does not like eating garlic", "he doesn't like to eat vegetables", "he does not like to eat vegetables"] },
             { spanish: 'A MI ABUELA LE ENCANTA LAS NOVELAS DE TELEVISION (soap operas)', english: ["my grandmother loves soap operas", "my grandma loves soap operas"] },
             { spanish: '¿PREFIERES LAS FRESAS O LOS BANANOS?', english: ["do you prefer strawberries or bananas?"] },
             { spanish: 'NO NOS GUSTA CAMINAR EN LA NOCHE EN ESE BARRIO PORQUE ES PELIGROSO', english: ["we don't like walking at night in that neighborhood because it is dangerous", "we do not like walking at night in that neighborhood because it is dangerous"] },
@@ -304,6 +303,24 @@ const exercises = {
             { spanish: 'ELLA PREFIERE NO TENER REDES SOCIALES', english: ["she prefers not to have social media"] },
             { spanish: 'PREFIERO VIVIR EN UN PUEBLO QUE VIVIR EN UNA GRAN CIUDAD', english: ["i prefer living in a town to living in a big city", "i prefer living in a village to living in a big city"] },
             { spanish: 'EL PREFIERE EL PESCADO A LA CARNE', english: ["he prefers fish to meat"] },
+        ]
+    },
+    c7_ex6: {
+        title: 'a1class1.exercise',
+        prompts: [
+            { spanish: '_________CAR THAT I BOUGHT IS FAST.', english: ["the car that i bought is fast"] },
+            { spanish: '_________ENGLISH IS SPOKEN IN MANY COUNTRIES.', english: ["english is spoken in many countries"] },
+            { spanish: '_________HOUSES ARE BIG ON THAT FARM.', english: ["the houses are big on that farm"] },
+            { spanish: '_________BLUE CAR IS BETTER THAN THE RED ONE.', english: ["the blue car is better than the red one"] },
+            { spanish: 'DOGS ARE________ BEST PETS.', english: ["dogs are the best pets"] },
+            { spanish: '__________SPORTS ARE IMPORTANT IN MY LIFE.', english: ["sports are important in my life"] },
+            { spanish: '__________LIONS ARE THE MOST BEAUTIFUL ANIMALS.', english: ["lions are the most beautiful animals"] },
+            { spanish: 'I HATE _________ BASKETBALL.', english: ["i hate basketball"] },
+            { spanish: 'I LIKE _________ WEATHER IN THAT CITY.', english: ["i like the weather in that city"] },
+            { spanish: '__________ HORSES ARE PRETTY.', english: ["horses are pretty"] },
+            { spanish: 'I LIKE_______ WHITE SHIRTS.', english: ["i like white shirts"] },
+            { spanish: 'WHERE IS _______DOG? __________ DOG IS UNDER THE BED.', english: ["where is the dog? the dog is under the bed"] },
+            { spanish: '________ SUN IS SHINING.', english: ["the sun is shining"] },
         ]
     }
 };
