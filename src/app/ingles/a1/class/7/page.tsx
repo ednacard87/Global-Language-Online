@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -634,6 +635,22 @@ export default function EngA1Class7Page() {
                     onComplete={() => handleTopicComplete('ex7')} 
                     title="Exercise 7: A vs AN"
                     vocabulary={vocab7}
+                />
+            );
+        }
+
+        if (selectedTopic === 'ex8') {
+            return (
+                <CreativeWritingExercise
+                    title="Exercise 8: Creation"
+                    description="Describe tu ciudad. Tu texto se guardará automáticamente."
+                    prompts={[
+                        { id: 'city-opinion', question: '1- WHAT DO YOU LIKE AND WHAT DO YOU DISLIKE ABOUT YOUR CITY? (8 SENTENCES)', placeholder: 'Escribe tus 8 frases aquí sobre lo que te gusta y disgusta de tu ciudad...' }
+                    ]}
+                    onComplete={() => handleTopicComplete('ex8')}
+                    studentDocRef={studentDocRef}
+                    initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.writingDataEx8 || {}}
+                    savePath={`lessonProgress.${progressStorageVersion}.writingDataEx8`}
                 />
             );
         }
