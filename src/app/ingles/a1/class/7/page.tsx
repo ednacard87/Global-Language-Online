@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -30,7 +31,7 @@ const ICONS = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_a1_eng_unit_2_class_7_v5_ex3';
+const progressStorageVersion = 'progress_a1_eng_unit_2_class_7_v5_ex4';
 const mainProgressKey = 'progress_a1_eng_unit_2_class_7';
 
 const vocabularyData = [
@@ -187,7 +188,7 @@ export default function EngA1Class7Page() {
         const newValidation = [...vocabValidation];
         if (newValidation[index] !== 'unchecked') {
             newValidation[index] = 'unchecked';
-            setValidationStatus(newValidation);
+            setVocabValidation(newValidation as ('correct' | 'incorrect' | 'unchecked')[]);
         }
         setCanAdvanceVocab(false);
     };
@@ -553,6 +554,17 @@ export default function EngA1Class7Page() {
                         <Button onClick={() => handleTopicComplete('grammar3')}>He terminado de estudiar preferencias</Button>
                     </CardFooter>
                 </Card>
+            );
+        }
+
+        if (selectedTopic === 'ex4') {
+            return (
+                <SimpleTranslationExercise 
+                    exerciseKey="c7_ex4" 
+                    course="a1" 
+                    onComplete={() => handleTopicComplete('ex4')} 
+                    title="Exercise 4"
+                />
             );
         }
 

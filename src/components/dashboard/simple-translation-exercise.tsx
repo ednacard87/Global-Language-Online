@@ -278,6 +278,33 @@ const exercises = {
             { spanish: 'ESTOS SON PERROS- ESTE ES SU PERRO (DE ÉL)', english: ["these are dogs - this is his dog", "these are dogs - this is his dog"] },
             { spanish: 'ELLOS SON PROFESORES- ELLA ES UNA PROFESORA', english: ["they are teachers - she is a teacher", "they're teachers - she's a teacher"] },
         ]
+    },
+    c7_ex4: {
+        title: 'a1class1.exercise',
+        prompts: [
+            { spanish: 'ME ENCANTAN LOS CARROS', english: ["i love cars", "i love the cars"] },
+            { spanish: 'A ÉL GUSTA JUGAR FUTBOL CON MIS PRIMOS', english: ["he likes playing football with my cousins", "he likes to play football with my cousins", "he likes playing soccer with my cousins", "he likes to play soccer with my cousins"] },
+            { spanish: 'PREFIERO EL CALOR AL FRIO', english: ["i prefer heat to cold weather", "i prefer heat to the cold"] },
+            { spanish: 'A MI ME GUSTAN LAS PELÍCULAS DE TERROR', english: ["i like horror movies"] },
+            { spanish: 'A ÉL NO LE GUSTA COMER VERDURAS/VEGETALES', english: ["he doesn't like eating vegetables", "he does not like eating vegetables", "he doesn't like to eat vegetables", "he does not like to eat vegetables"] },
+            { spanish: 'PREFIERO EL VERANO QUE EL INVIERNO', english: ["i prefer summer to winter"] },
+            { spanish: 'NO NOS GUSTA LA MÚSICA METAL', english: ["we don't like metal music", "we do not like metal music"] },
+            { spanish: 'A ÉL NO LE GUSTA COMER AJO', english: ["he doesn't like eating garlic", "he does not like eating garlic", "he doesn't like to eat garlic", "he does not like to eat garlic"] },
+            { spanish: 'A MI ABUELA LE ENCANTA LAS NOVELAS DE TELEVISION (soap operas)', english: ["my grandmother loves soap operas", "my grandma loves soap operas"] },
+            { spanish: '¿PREFIERES LAS FRESAS O LOS BANANOS?', english: ["do you prefer strawberries or bananas?"] },
+            { spanish: 'NO NOS GUSTA CAMINAR EN LA NOCHE EN ESE BARRIO PORQUE ES PELIGROSO', english: ["we don't like walking at night in that neighborhood because it is dangerous", "we do not like walking at night in that neighborhood because it is dangerous"] },
+            { spanish: 'REALMENTE ME GUSTA PINTAR (to paint)', english: ["i really like to paint", "i really like painting"] },
+            { spanish: 'ME ENCANTA EL CHOCOLATE', english: ["i love chocolate"] },
+            { spanish: 'NO ME GUSTA EL BILLAR (billiard)', english: ["i don't like billiard", "i do not like billiard"] },
+            { spanish: 'NOSOTROS ODIAMOS LAS MENTIRAS', english: ["we hate lies"] },
+            { spanish: 'A MI PAPA LE ENCANTA LA CARPINTERIA (carpentry)', english: ["my dad loves carpentry", "my father loves carpentry"] },
+            { spanish: 'ÉL DISFRUTA COMER ESPINACA Y REMOLACHA', english: ["he enjoys eating spinach and beetroots", "he enjoys eating spinach and beetroot"] },
+            { spanish: 'YO PREFIERO VIVIR EN UNA CASA QUE EN UN APARTAMENTO', english: ["i prefer living in a house to an apartment", "i prefer living in a house to living in an apartment"] },
+            { spanish: 'ME ENCANTA ESCUCHAR MÚSICA ROMANTICA MIENTRAS HAGO UN ROMPECABEZAS', english: ["i love listening to romantic music while i do a puzzle", "i love to listen to romantic music while i do a puzzle"] },
+            { spanish: 'ELLA PREFIERE NO TENER REDES SOCIALES', english: ["she prefers not to have social media"] },
+            { spanish: 'PREFIERO VIVIR EN UN PUEBLO QUE VIVIR EN UNA GRAN CIUDAD', english: ["i prefer living in a town to living in a big city", "i prefer living in a village to living in a big city"] },
+            { spanish: 'EL PREFIERE EL PESCADO A LA CARNE', english: ["he prefers fish to meat"] },
+        ]
     }
 };
 
