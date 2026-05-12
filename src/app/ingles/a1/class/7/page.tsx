@@ -18,7 +18,6 @@ import { Separator } from '@/components/ui/separator';
 import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
 import { CreativeWritingExercise } from '@/components/dashboard/creative-writing-exercise';
 import { SentenceCompletionExercise, type CompletionPrompt } from '@/components/kids/exercises/sentence-completion-exercise';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 type Topic = {
   key: string;
@@ -33,7 +32,7 @@ const ICONS = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_a1_eng_unit_2_class_7_v9_final_all_ex';
+const progressStorageVersion = 'progress_a1_eng_unit_2_class_7_v10_final';
 const mainProgressKey = 'progress_a1_eng_unit_2_class_7';
 
 const vocabularyData = [
@@ -104,10 +103,10 @@ export default function EngA1Class7Page() {
         { key: 'ex3', name: 'Exercise 3', icon: PenSquare, status: 'locked' },
         { key: 'grammar3', name: 'Grammar 3', icon: GraduationCap, status: 'locked' },
         { key: 'ex4', name: 'Exercise 4', icon: PenSquare, status: 'locked' },
-        { key: 'ex5', name: 'Exercise 5', icon: PenSquare, status: 'locked' },
+        { key: 'ex5', name: 'Exercise 5', icon: Pencil, status: 'locked' },
         { key: 'ex6', name: 'Exercise 6', icon: PenSquare, status: 'locked' },
         { key: 'ex7', name: 'Exercise 7', icon: PenSquare, status: 'locked' },
-        { key: 'ex8', name: 'Exercise 8', icon: PenSquare, status: 'locked' },
+        { key: 'ex8', name: 'Exercise 8', icon: Pencil, status: 'locked' },
         { key: 'ex9', name: 'Exercise 9', icon: PenSquare, status: 'locked' },
     ], []);
     
@@ -135,7 +134,7 @@ export default function EngA1Class7Page() {
         }
     }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading, isUserLoading]);
     
-    const progress = useMemo(() => {
+    const progressValue = useMemo(() => {
         if (learningPath.length === 0) return 0;
         const completedTopics = learningPath.filter(t => t.status === 'completed').length;
         return Math.round((completedTopics / learningPath.length) * 100);
@@ -152,13 +151,13 @@ export default function EngA1Class7Page() {
                 [`lessonProgress.${progressStorageVersion}`]: statusesToSave
             });
             updateDocumentNonBlocking(studentDocRef, { 
-                [`progress.${mainProgressKey}`]: Math.round(progress)
+                [`progress.${mainProgressKey}`]: progressValue
             });
         }
-        if (progress >= 100) {
+        if (progressValue >= 100) {
           window.dispatchEvent(new CustomEvent('progressUpdated'));
         }
-    }, [learningPath, isAdmin, progress, studentDocRef, isProfileLoading, isUserLoading]);
+    }, [learningPath, isAdmin, progressValue, studentDocRef, isProfileLoading, isUserLoading]);
 
     const handleTopicComplete = useCallback((completedKey: string) => {
         setTopicToComplete(completedKey);
@@ -168,7 +167,7 @@ export default function EngA1Class7Page() {
         if (!topicToComplete) return;
     
         setLearningPath(currentPath => {
-            const newPath = [...currentPath];
+            const newPath = currentPath.map(item => ({ ...item }));
             const currentIndex = newPath.findIndex(item => item.key === topicToComplete);
             
             if (currentIndex !== -1 && newPath[currentIndex].status !== 'completed') {
@@ -724,8 +723,8 @@ export default function EngA1Class7Page() {
                                         </ul>
                                     </nav>
                                     <div className="mt-6 pt-6 border-t">
-                                        <div className="flex justify-between items-center text-sm font-medium text-muted-foreground mb-2"><span>Progreso</span><span className="font-bold text-foreground">{Math.round(progress)}%</span></div>
-                                        <Progress value={progress} className="h-2" />
+                                        <div className="flex justify-between items-center text-sm font-medium text-muted-foreground mb-2"><span>Progreso</span><span className="font-bold text-foreground">{Math.round(progressValue)}%</span></div>
+                                        <Progress value={progressValue} className="h-2" />
                                     </div>
                                 </CardContent>
                             </Card>
