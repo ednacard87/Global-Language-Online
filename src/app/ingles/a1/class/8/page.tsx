@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, Info, Mic, Loader2, RefreshCw, Flame, Trophy, Gamepad2 } from 'lucide-react';
+import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, Info, Mic, Loader2, RefreshCw, Flame, Trophy, Gamepad2, ChevronDown } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
@@ -17,12 +17,14 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
 import { CreativeWritingExercise } from '@/components/dashboard/creative-writing-exercise';
 import { AdjectivesMemoryGame } from '@/components/kids/exercises/adjectives-memory-game';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 type Topic = {
   key: string;
   name: string;
   icon: React.ElementType;
   status: 'locked' | 'active' | 'completed';
+  subItems?: { key: string; name: string; status: 'locked' | 'active' | 'completed', icon?: React.ElementType }[];
 };
 
 const ICONS = {
@@ -31,7 +33,7 @@ const ICONS = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_a1_eng_unit_2_class_8_v3_inter';
+const progressStorageVersion = 'progress_a1_eng_unit_2_class_8_v4_stable';
 const mainProgressKey = 'progress_a1_eng_unit_2_class_8';
 
 const vocabularyData = [
@@ -68,13 +70,13 @@ const DictationExercise = ({
     initialData: string[],
     savePath: string
 }) => {
-    const [lines, setLines] = useState<string[]>(Array(10).fill(''));
+    const [lines, setLines] = useState<string[]>(Array(12).fill(''));
 
     useEffect(() => {
         if (initialData && Array.isArray(initialData)) {
-            const newLines = [...Array(10).fill('')];
+            const newLines = [...Array(12).fill('')];
             initialData.forEach((val, i) => {
-                if (i < 10) newLines[i] = val || '';
+                if (i < 12) newLines[i] = val || '';
             });
             setLines(newLines);
         }
@@ -165,6 +167,7 @@ export default function EngA1Class8Page() {
         const newPath = initialLearningPath.map(topic => ({
             ...topic,
             status: isAdmin ? 'completed' : topic.status,
+            subItems: topic.subItems ? topic.subItems.map(sub => ({ ...sub })) : undefined,
         }));
         
         let savedSelectedTopic = '';
@@ -437,17 +440,47 @@ export default function EngA1Class8Page() {
                                                 const isActive = item.status === 'active';
                                                 
                                                 return (
-                                                    <li key={item.key} onClick={() => handleTopicSelect(item.key)}
-                                                        className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer',
-                                                            isLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted',
-                                                            selectedTopic === item.key && 'bg-muted text-primary font-semibold',
-                                                            isActive && !isAdmin && "animate-pulse-glow"
+                                                    <li key={item.key}>
+                                                        {!item.subItems ? (
+                                                            <div onClick={() => handleTopicSelect(item.key)}
+                                                                className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer',
+                                                                    isLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted',
+                                                                    selectedTopic === item.key && 'bg-muted text-primary font-semibold',
+                                                                    isActive && !isAdmin && "animate-pulse-glow"
+                                                                )}
+                                                            >
+                                                                <div className="flex items-center gap-3">
+                                                                    <Icon className={cn("h-5 w-5", item.status === 'completed' ? 'text-green-500' : (item.status === 'locked' ? 'text-yellow-500' : ''))} />
+                                                                    <span>{item.name}</span>
+                                                                </div>
+                                                            </div>
+                                                        ) : (
+                                                            <Collapsible defaultOpen={item.subItems.some(si => si.status !== 'locked')} disabled={item.status === 'locked' && !isAdmin}>
+                                                                <CollapsibleTrigger className="w-full">
+                                                                    <div className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors w-full', item.status === 'locked' && !isAdmin ? 'cursor-not-allowed text-muted-foreground/50' : 'cursor-pointer hover:bg-muted', item.subItems.some(si => si.key === selectedTopic) && 'bg-muted text-primary font-semibold')}>
+                                                                        <div className="flex items-center gap-3">
+                                                                            <Icon className={cn("h-5 w-5", item.status === 'completed' ? 'text-green-500' : '')} />
+                                                                            <span>{item.name}</span>
+                                                                        </div>
+                                                                        {item.status === 'locked' && !isAdmin ? <Lock className="h-4 w-4 text-yellow-500" /> : <ChevronDown className="h-4 w-4 transition-transform [&[data-state=open]]:rotate-180" />}
+                                                                    </div>
+                                                                </CollapsibleTrigger>
+                                                                <CollapsibleContent>
+                                                                    <ul className="pl-8 pt-1 space-y-1">
+                                                                        {item.subItems.map((subItem) => (
+                                                                            <li key={subItem.key} onClick={() => handleTopicSelect(subItem.key)}
+                                                                                className={cn('flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors', subItem.status === 'locked' && !isAdmin ? 'cursor-not-allowed text-muted-foreground/50' : 'cursor-pointer hover:bg-muted', selectedTopic === subItem.key && 'bg-muted text-primary font-semibold')}>
+                                                                                <div className='flex items-center gap-3'>
+                                                                                    <subItem.icon className={cn("h-5 w-5", subItem.status === 'completed' ? 'text-green-500' : '')} />
+                                                                                    <span>{subItem.name}</span>
+                                                                                </div>
+                                                                                {subItem.status === 'locked' && !isAdmin && <Lock className="h-4 w-4 text-yellow-500" />}
+                                                                            </li>
+                                                                        ))}
+                                                                    </ul>
+                                                                </CollapsibleContent>
+                                                            </Collapsible>
                                                         )}
-                                                    >
-                                                        <div className="flex items-center gap-3">
-                                                            <Icon className={cn("h-5 w-5", item.status === 'completed' ? 'text-green-500' : (item.status === 'locked' ? 'text-yellow-500' : ''))} />
-                                                            <span>{item.name}</span>
-                                                        </div>
                                                     </li>
                                                 );
                                             })}
