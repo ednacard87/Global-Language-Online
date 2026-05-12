@@ -17,6 +17,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Separator } from '@/components/ui/separator';
 import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
 import { CreativeWritingExercise } from '@/components/dashboard/creative-writing-exercise';
+import { SentenceCompletionExercise, type CompletionPrompt } from '@/components/kids/exercises/sentence-completion-exercise';
 
 type Topic = {
   key: string;
@@ -31,7 +32,7 @@ const ICONS = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_a1_eng_unit_2_class_7_v6_writing';
+const progressStorageVersion = 'progress_a1_eng_unit_2_class_7_v7_final';
 const mainProgressKey = 'progress_a1_eng_unit_2_class_7';
 
 const vocabularyData = [
@@ -49,6 +50,22 @@ const vocabularyData = [
     { spanish: 'BEBER', english: 'TO DRINK' },
     { spanish: 'MANEJAR', english: 'TO DRIVE' },
     { spanish: 'COMER', english: 'TO EAT' },
+];
+
+const exercise6Data: CompletionPrompt[] = [
+    { parts: ["", " CAR THAT I BOUGHT IS FAST."], answers: ["THE"] },
+    { parts: ["", " ENGLISH IS SPOKEN IN MANY COUNTRIES."], answers: [""] },
+    { parts: ["", " HOUSES ARE BIG ON THAT FARM."], answers: ["THE"] },
+    { parts: ["", " BLUE CAR IS BETTER THAN THE RED ONE."], answers: ["THE"] },
+    { parts: ["DOGS ARE ", " BEST PETS."], answers: ["THE"] },
+    { parts: ["", " SPORTS ARE IMPORTANT IN MY LIFE."], answers: [""] },
+    { parts: ["", " LIONS ARE THE MOST BEAUTIFUL ANIMALS."], answers: [""] },
+    { parts: ["I HATE ", " BASKETBALL."], answers: [""] },
+    { parts: ["I LIKE ", " WEATHER IN THAT CITY."], answers: ["THE"] },
+    { parts: ["", " HORSES ARE PRETTY."], answers: [""] },
+    { parts: ["I LIKE ", " WHITE SHIRTS."], answers: [""] },
+    { parts: ["WHERE IS ", " DOG? ", " DOG IS UNDER THE BED."], answers: ["THE", "THE"] },
+    { parts: ["", " SUN IS SHINING."], answers: ["THE"] },
 ];
 
 export default function EngA1Class7Page() {
@@ -552,7 +569,7 @@ export default function EngA1Class7Page() {
                             </Accordion>
                         </div>
                     </CardContent>
-                    <CardFooter className="justify-center border-t pt-6">
+                    <CardFooter className="justify-center pt-6 border-t">
                         <Button onClick={() => handleTopicComplete('grammar3')}>He terminado de estudiar preferencias</Button>
                     </CardFooter>
                 </Card>
@@ -589,11 +606,11 @@ export default function EngA1Class7Page() {
 
         if (selectedTopic === 'ex6') {
             return (
-                <SimpleTranslationExercise 
-                    exerciseKey="c7_ex6" 
-                    course="a1" 
-                    onComplete={() => handleTopicComplete('ex6')} 
-                    title="Exercise 6"
+                <SentenceCompletionExercise
+                    title="Exercise 6: Fill in the Blanks"
+                    description="Inserta el artículo 'THE' donde sea necesario."
+                    data={exercise6Data}
+                    onComplete={() => handleTopicComplete('ex6')}
                 />
             );
         }
