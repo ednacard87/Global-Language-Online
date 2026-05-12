@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -34,7 +33,7 @@ const ICONS = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_a1_eng_unit_2_class_7_v8_final';
+const progressStorageVersion = 'progress_a1_eng_unit_2_class_7_v9_final_all_ex';
 const mainProgressKey = 'progress_a1_eng_unit_2_class_7';
 
 const vocabularyData = [
@@ -651,6 +650,17 @@ export default function EngA1Class7Page() {
                     studentDocRef={studentDocRef}
                     initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.writingDataEx8 || {}}
                     savePath={`lessonProgress.${progressStorageVersion}.writingDataEx8`}
+                />
+            );
+        }
+
+        if (selectedTopic === 'ex9') {
+            return (
+                <SimpleTranslationExercise 
+                    exerciseKey="c7_ex9" 
+                    course="a1" 
+                    onComplete={() => handleTopicComplete('ex9')} 
+                    title="Exercise 9"
                 />
             );
         }

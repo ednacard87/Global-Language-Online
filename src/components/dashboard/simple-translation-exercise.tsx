@@ -195,7 +195,7 @@ const exercises = {
             { spanish: 'SU JUGUETE ESTÁ EN MI CARRO (DEL GATO)', english: ["its toy is in my car"] },
             { spanish: '¿ESTE CARRO ES DE ELLOS?', english: ["is this car theirs?"] },
             { spanish: '¿ESTE ES SU SANDUCHE? (DE ELLA)', english: ["is this her sandwich?"] },
-            { spanish: 'MI CAFÉ ESTÁ MUY CALIENTE, NO PUEDO TOMARLO', english: ["my coffee is very hot, i cannot drink it", "my coffee is very hot, i can't drink it"] },
+            { spanish: 'MI CAFÉ ESTÁ MUY CALIENTE, NO PUEDO TOMARLO', english: ["my coffee is very heart, i cannot drink it", "my coffee is very hot, i can't drink it"] },
             { spanish: '¿ESTE ES SUYO? (DE ELLA)', english: ["is this hers?"] },
         ]
     },
@@ -343,6 +343,21 @@ const exercises = {
             { spanish: 'ÉL ES UN BUEN POLICIA', english: ["he is a good policeman", "he's a good policeman", "he is a good police officer", "he's a good police officer"] },
             { spanish: 'EL SE FRACTURÓ SU BRAZO EN UN ACCIDENTE DE CARRO', english: ["he broke his arm in a car accident", "he fractured his arm in a car accident"] },
             { spanish: 'MI MAMA ES UNA DOCTORA Y MI PAPÁ ES UN HOMBRE DE NEGOCIOS', english: ["my mom is a doctor and my dad is a businessman", "my mother is a doctor and my father is a businessman"] },
+        ]
+    },
+    c7_ex9: {
+        title: 'a1class1.exercise',
+        prompts: [
+            { spanish: 'A LOS GATOS LES GUSTA LA CARNE', english: ["cats like meat"] },
+            { spanish: 'ESTE ES EL NOMBRE DEL RESTAURANTE CHINO', english: ["this is the name of the chinese restaurant"] },
+            { spanish: 'A ELLA NO LE GUSTA EL TENNIS, A ELLA LE GUSTA EL FUTBOL', english: ["she doesn't like tennis, she likes football", "she doesn't like tennis, she likes soccer", "she does not like tennis, she likes football", "she does not like tennis, she likes soccer"] },
+            { spanish: 'EL VASO ESTÁ LLENO (FULL) DE AGUA', english: ["the glass is full of water"] },
+            { spanish: 'ME GUSTA EL ARTE', english: ["i like art"] },
+            { spanish: 'ELLAS SON HERMANAS –ELLA ES MI HERMANA', english: ["they are sisters - she is my sister", "they're sisters - she's my sister"] },
+            { spanish: 'NOSOTROS SOMOS INGENIEROS –EL ES UN INGENIERO', english: ["we are engineers - he is an engineer", "we're engineers - he's an engineer"] },
+            { spanish: 'ELLOS SON AMIGOS – ELLA ES SU AMIGA (DE ELLOS)', english: ["they are friends - she is their friend", "they're friends - she's their friend"] },
+            { spanish: 'ESTOS (THESE) SON PERROS – ESE ES NUESTRO PERRO', english: ["these are dogs - that is our dog", "these are dogs - that's our dog"] },
+            { spanish: 'NO ME GUSTA COMER AJO, SOLAMENTE CUANDO ESTÁ EN LA CARNE', english: ["i don't like eating garlic, only when it is in the meat", "i don't like to eat garlic, only when it's in the meat", "i do not like eating garlic, only when it is in the meat"] },
         ]
     }
 };
