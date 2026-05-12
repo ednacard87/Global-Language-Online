@@ -177,7 +177,7 @@ export default function EngA1Class8Page() {
             newPath.forEach(item => {
                 if (savedStatuses[item.key]) item.status = savedStatuses[item.key];
             });
-            savedSelectedTopic = savedStatuses.lastSelectedTopic || '';
+            savedSelectedTopic = savedData?.lastSelectedTopic || '';
         }
         
         setLearningPath(newPath);
@@ -364,7 +364,21 @@ export default function EngA1Class8Page() {
                     />
                 );
             case 'ex1':
-                return <SimpleTranslationExercise exerciseKey="c8_ex1" course="a1" title="Exercise 1" onComplete={() => handleTopicComplete('ex1')} />;
+                const ex1Vocab = {
+                    "por el contrario": "on the contrary",
+                    "por otro lado": "on the other hand",
+                    "estadio": "stadium",
+                    "vegetariano": "vegetarian",
+                    "parientes": "relatives",
+                    "compañeros de trabajo": "coworkers"
+                };
+                return <SimpleTranslationExercise 
+                    exerciseKey="c8_ex1" 
+                    course="a1" 
+                    title="Exercise 1" 
+                    vocabulary={ex1Vocab}
+                    onComplete={() => handleTopicComplete('ex1')} 
+                />;
             case 'ex2':
                 return <SimpleTranslationExercise exerciseKey="c8_ex2" course="a1" title="Exercise 2" onComplete={() => handleTopicComplete('ex2')} />;
             case 'ex3':

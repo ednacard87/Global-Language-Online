@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -275,7 +274,7 @@ const exercises = {
             { spanish: 'ESTOS SON GATOS NEGROS- ESTE ES UN GATO GRIS', english: ["these are black cats - this is a gray cat", "these are black cats - this is a grey cat"] },
             { spanish: 'ESTE NO ES TU CELULAR-ESE ES MI CELULAR', english: ["this is not your cellphone - that is my cellphone", "this isn't your phone - that's my phone"] },
             { spanish: 'ESTAS SON TUS GAFAS- ESAS NO SON LAS TUYAS', english: ["these are your glasses - those are not yours", "these are your glasses - those aren't yours"] },
-            { spanish: 'ELLOS SON HERMANOS- EL ES SU HERMANO (DE ELLA)', english: ["they are brothers - he is her brother", "they're brothers - he's her brother"] },
+            { spanish: 'ELLOS SON HERMANAS- EL ES SU HERMANO (DE ELLA)', english: ["they are brothers - he is her brother", "they're brothers - he's her brother"] },
             { spanish: 'ESTOS SON PERROS- ESTE ES SU PERRO (DE ÉL)', english: ["these are dogs - this is his dog", "these are dogs - this is his dog"] },
             { spanish: 'ELLOS SON PROFESORES- ELLA ES UNA PROFESORA', english: ["they are teachers - she is a teacher", "they're teachers - she's a teacher"] },
         ]
@@ -364,19 +363,33 @@ const exercises = {
     c8_ex1: {
         title: 'a1class1.exercise',
         prompts: [
-            { spanish: 'YO SIEMPRE DESAYUNO A LAS 7 AM', english: ["i always have breakfast at 7 am", "i always eat breakfast at 7 am"] },
-            { spanish: 'ELLA NUNCA LLEGA TARDE', english: ["she never arrives late"] },
-            { spanish: 'NOSOTROS A VECES CAMINAMOS EN EL PARQUE', english: ["sometimes we walk in the park", "we sometimes walk in the park"] },
-            { spanish: 'ELLOS A MENUDO VISITAN A SUS ABUELOS', english: ["they often visit their grandparents"] },
+            { spanish: '¿ELLOS VAN A LA ESCUELA?', english: ["do they go to school?"] },
+            { spanish: '¿ESTAS ENOJADO (ANGRY)?', english: ["are you angry?"] },
+            { spanish: 'ELLA NO ESTUDIA ALEMAN (GERMAN)- POR EL CONTRARIO, ELLA ESTUDIA INGLES', english: ["she does not study german - on the contrary, she studies english", "she doesn't study german - on the contrary, she studies english"] },
+            { spanish: 'A ELLA LE GUSTA LA CARNE (MEAT)- POR OTRO LADO, SU ESPOSO ES VEGETARIANO', english: ["she likes meat - on the other hand, her husband is a vegetarian", "she likes meat - on the other hand, her husband is vegetarian"] },
+            { spanish: '¿ELLA ES TU HERMANA?', english: ["is she your sister?"] },
+            { spanish: '¿A DONDE VA TU HERMANO?', english: ["where does your brother go?"] },
+            { spanish: 'ESTAS (THESE) NO SON MIS GAFAS', english: ["these are not my glasses", "these aren't my glasses"] },
+            { spanish: '¿DONDE ESTAN TUS PADRES? ESTAN EN CASA', english: ["where are your parents? they are at home", "where are your parents? they're at home"] },
+            { spanish: '¿QUE HACE TU HERMANO? EL JUEGA TENNIS', english: ["what does your brother do? he plays tennis"] },
+            { spanish: '¿CUÁNDO VA SUSAN AL CINE? ELLA VA AL CINE LOS MIERCOLES', english: ["when does susan go to the cinema? she goes to the cinema on wednesdays"] },
+            { spanish: '¿QUIEN ES EL? EL ES EL HERMANO DE SARA', english: ["who is he? he is sara's brother", "who is he? he's sara's brother"] },
+            { spanish: '¿A DONDE VAS A JUGAR FUTBOL? – YO VOY AL ESTADIO', english: ["where do you go to play football? i go to the stadium", "where do you go to play soccer? i go to the stadium"] },
+            { spanish: '¿DE QUIEN ES ESTE CELULAR? – ESTE ES EL CELULAR DE THOMAS', english: ["whose cellphone is this? this is thomas's cellphone", "whose phone is this? this is thomas's phone"] },
+            { spanish: '¿A ELLOS LES GUSTA EL PESCADO? –SI', english: ["do they like fish? yes, they do"] },
+            { spanish: 'POR QUE EL ESTA TRISTE? EL ESTA TRISTE PORQUE NO TIENE INTERNET', english: ["why is he sad? he is sad because he does not have internet", "why is he sad? he's sad because he doesn't have internet"] },
+            { spanish: 'QUE TIPO DE COMPUTADOR TE GUSTA? – ME GUSTAN LOS COMPUTADORES HP', english: ["what kind of computer do you like? i like hp computers"] },
+            { spanish: '¿ESTOS SON TUS LIBROS?', english: ["are these your books?"] },
+            { spanish: 'ESA ES LA CASA DE MICHAEL', english: ["that is michael's house", "that's michael's house"] },
         ]
     },
     c8_ex2: {
         title: 'a1class1.exercise',
         prompts: [
-            { spanish: '¿TÚ SIEMPRE ESTUDIAS INGLÉS?', english: ["do you always study english?"] },
-            { spanish: 'ELLA NO SIEMPRE ESTÁ OCUPADA', english: ["she is not always busy", "she isn't always busy"] },
-            { spanish: 'NOSOTROS TAMBIÉN QUEREMOS IR', english: ["we also want to go", "we want to go too"] },
-            { spanish: 'ÉL YA ESTÁ AQUÍ', english: ["he is already here", "he's already here"] },
+            { spanish: 'YO SIEMPRE DESAYUNO A LAS 7 AM', english: ["i always have breakfast at 7 am", "i always eat breakfast at 7 am"] },
+            { spanish: 'ELLA NUNCA LLEGA TARDE', english: ["she never arrives late"] },
+            { spanish: 'NOSOTROS A VECES CAMINAMOS EN EL PARQUE', english: ["sometimes we walk in the park", "we sometimes walk in the park"] },
+            { spanish: 'ELLOS A MENUDO VISITAN A SUS ABUELOS', english: ["they often visit their grandparents"] },
         ]
     },
     c8_ex3: {
