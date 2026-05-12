@@ -245,13 +245,14 @@ function DashboardPage() {
     if (!user || !studentProfile || !firestore) return;
 
     const today = new Date();
-    const todayStr = new Date(today.getFullYear(), today.getMonth(), today.getDate()).toISOString().split('T')[0];
+    today.setHours(0, 0, 0, 0);
+    const todayStr = today.toISOString().split('T')[0];
     const lastLoginDate = studentProfile.lastLoginDate;
 
     if (lastLoginDate !== todayStr) {
         const yesterday = new Date(today);
         yesterday.setDate(today.getDate() - 1);
-        const yesterdayStr = new Date(yesterday.getFullYear(), yesterday.getMonth(), yesterday.getDate()).toISOString().split('T')[0];
+        const yesterdayStr = yesterday.toISOString().split('T')[0];
 
         let newStreak = (lastLoginDate === yesterdayStr) ? (studentProfile.currentStreak || 0) + 1 : 1;
         
@@ -345,20 +346,20 @@ function DashboardPage() {
             <div className="hidden lg:grid lg:grid-cols-3 gap-8">
                 {/* Left Column */}
                 <div className="lg:col-span-1 space-y-4">
-                    <h2 className="text-xl font-bold text-primary uppercase tracking-wider">Habilidades Rápidas</h2>
+                    <h2 className="text-xl font-bold text-primary uppercase tracking-wider">{t('dashboard.quickSkills')}</h2>
                     <div className="grid grid-cols-3 gap-4">
-                        <NeonCard icon={BookOpen} title="LECTURA" href="/reading-exercise" />
-                        <NeonCard icon={Pencil} title="ESCRITURA" href="/writing-exercise"/>
-                        <NeonCard icon={Mic} title="PODCAST" href="/media/podcast"/>
-                        <NeonCard icon={Newspaper} title="NEWS" href="/media/news"/>
-                        <NeonCard icon={Music} title="SONG" href="https://es.lyricstraining.com/sign_up" />
-                        <NeonCard icon={FileText} title="DOCUMENTARY" href="/media/documentary" />
-                        <NeonCard icon={Music} title="MUSIC" href="/media/music" />
+                        <NeonCard icon={BookOpen} title={t('dashboard.readingSkill')} href="/reading-exercise" />
+                        <NeonCard icon={Pencil} title={t('dashboard.writingSkill')} href="/writing-exercise"/>
+                        <NeonCard icon={Mic} title={t('dashboard.podcastSkill')} href="/media/podcast"/>
+                        <NeonCard icon={Newspaper} title={t('dashboard.newsSkill')} href="/media/news"/>
+                        <NeonCard icon={Music} title={t('dashboard.songSkill')} href="https://es.lyricstraining.com/sign_up" />
+                        <NeonCard icon={FileText} title={t('dashboard.documentarySkill')} href="/media/documentary" />
+                        <NeonCard icon={Music} title={t('dashboard.musicSkill')} href="/media/music" />
                         <div onClick={canPlayIntroGames ? undefined : handleLockedGamesClick}>
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                     <div className={cn(!canPlayIntroGames && "cursor-not-allowed")}>
-                                       <NeonCard icon={Gamepad2} title="Juegos" href={canPlayIntroGames ? undefined : '#'} />
+                                       <NeonCard icon={Gamepad2} title={t('dashboard.gamesSkill')} href={canPlayIntroGames ? undefined : '#'} />
                                     </div>
                                 </DropdownMenuTrigger>
                                 {canPlayIntroGames && (
@@ -373,7 +374,7 @@ function DashboardPage() {
                                 )}
                             </DropdownMenu>
                         </div>
-                        <NeonCard icon={Tv} title="MOVIE" href="/media/movie" />
+                        <NeonCard icon={Tv} title={t('dashboard.movieSkill')} href="/media/movie" />
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                         <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
@@ -437,20 +438,20 @@ function DashboardPage() {
               
               {/* 3. Quick Skills */}
               <div className="space-y-4">
-                <h2 className="text-xl font-bold text-primary uppercase tracking-wider">Habilidades Rápidas</h2>
+                <h2 className="text-xl font-bold text-primary uppercase tracking-wider">{t('dashboard.quickSkills')}</h2>
                 <div className="grid grid-cols-3 gap-4">
-                    <NeonCard icon={BookOpen} title="LECTURA" href="/reading-exercise" />
-                    <NeonCard icon={Pencil} title="ESCRITURA" href="/writing-exercise"/>
-                    <NeonCard icon={Mic} title="PODCAST" href="/media/podcast"/>
-                    <NeonCard icon={Newspaper} title="NEWS" href="/media/news"/>
-                    <NeonCard icon={Music} title="SONG" href="https://es.lyricstraining.com/sign_up" />
-                    <NeonCard icon={FileText} title="DOCUMENTARY" href="/media/documentary" />
-                    <NeonCard icon={Music} title="MUSIC" href="/media/music" />
+                    <NeonCard icon={BookOpen} title={t('dashboard.readingSkill')} href="/reading-exercise" />
+                    <NeonCard icon={Pencil} title={t('dashboard.writingSkill')} href="/writing-exercise"/>
+                    <NeonCard icon={Mic} title={t('dashboard.podcastSkill')} href="/media/podcast"/>
+                    <NeonCard icon={Newspaper} title={t('dashboard.newsSkill')} href="/media/news"/>
+                    <NeonCard icon={Music} title={t('dashboard.songSkill')} href="https://es.lyricstraining.com/sign_up" />
+                    <NeonCard icon={FileText} title={t('dashboard.documentarySkill')} href="/media/documentary" />
+                    <NeonCard icon={Music} title={t('dashboard.musicSkill')} href="/media/music" />
                     <div onClick={canPlayIntroGames ? undefined : handleLockedGamesClick}>
                      <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                               <div className={cn(!canPlayIntroGames && "cursor-not-allowed")}>
-                                 <NeonCard icon={Gamepad2} title="Juegos" href={canPlayIntroGames ? undefined : '#'} />
+                                 <NeonCard icon={Gamepad2} title={t('dashboard.gamesSkill')} href={canPlayIntroGames ? undefined : '#'} />
                               </div>
                           </DropdownMenuTrigger>
                           {canPlayIntroGames && (
@@ -465,7 +466,7 @@ function DashboardPage() {
                           )}
                       </DropdownMenu>
                     </div>
-                    <NeonCard icon={Tv} title="MOVIE" href="/media/movie" />
+                    <NeonCard icon={Tv} title={t('dashboard.movieSkill')} href="/media/movie" />
                 </div>
               </div>
               

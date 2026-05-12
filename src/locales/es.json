@@ -63,7 +63,21 @@
     "noAchievements": "Aún no hay logros. ¡Sigue esforzándote!",
     "finish": "Finalizar",
     "startHere": "Comienza por aquí",
-    "unlockGames": "Debes completar el 30% del curso de introduccion para desbloquear los juegos"
+    "unlockGames": "Debes completar el 30% del curso de introduccion para desbloquear los juegos",
+    "quickSkills": "Habilidades Rápidas",
+    "readingSkill": "LECTURA",
+    "writingSkill": "ESCRITURA",
+    "podcastSkill": "PODCAST",
+    "newsSkill": "NOTICIAS",
+    "songSkill": "CANCIÓN",
+    "documentarySkill": "DOCUMENTAL",
+    "musicSkill": "MÚSICA",
+    "movieSkill": "PELÍCULA",
+    "gamesSkill": "JUEGOS",
+    "videoSkill": "VIDEO",
+    "listeningSkill": "ESCUCHA",
+    "vocabularySkill": "VOCABULARIO",
+    "dailyStreakSkill": "RACHA DIARIA"
   },
   "englishIntro": {
     "title": "Curso Intro Ingles",

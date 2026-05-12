@@ -63,7 +63,21 @@
     "noAchievements": "No achievements yet. Keep up the good work!",
     "finish": "Finish",
     "startHere": "Start Here",
-    "unlockGames": "You must complete 30% of the introductory course to unlock the games"
+    "unlockGames": "You must complete 30% of the introductory course to unlock the games",
+    "quickSkills": "Quick Skills",
+    "readingSkill": "READING",
+    "writingSkill": "WRITING",
+    "podcastSkill": "PODCAST",
+    "newsSkill": "NEWS",
+    "songSkill": "SONG",
+    "documentarySkill": "DOCUMENTARY",
+    "musicSkill": "MUSIC",
+    "movieSkill": "MOVIE",
+    "gamesSkill": "GAMES",
+    "videoSkill": "VIDEO",
+    "listeningSkill": "LISTENING",
+    "vocabularySkill": "VOCABULARY",
+    "dailyStreakSkill": "DAILY STREAK"
   },
   "englishIntro": {
     "title": "English Intro Course",
@@ -773,5 +787,21 @@
     "backToCourse": "Back to Kids Course",
     "congratulations": "Congratulations!",
     "tryAgain": "Try Again"
+  },
+  "dashboard": {
+    "quickSkills": "Quick Skills",
+    "readingSkill": "READING",
+    "writingSkill": "WRITING",
+    "podcastSkill": "PODCAST",
+    "newsSkill": "NEWS",
+    "songSkill": "SONG",
+    "documentarySkill": "DOCUMENTARY",
+    "musicSkill": "MUSIC",
+    "movieSkill": "MOVIE",
+    "gamesSkill": "GAMES",
+    "videoSkill": "VIDEO",
+    "listeningSkill": "LISTENING",
+    "vocabularySkill": "VOCABULARY",
+    "dailyStreakSkill": "DAILY STREAK"
   }
 }

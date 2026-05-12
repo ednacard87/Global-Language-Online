@@ -86,7 +86,7 @@ const AdventureCard = ({ title, description, href, progress, locked, icon: Icon 
                     {locked ? (
                         <Lock className="h-8 w-8 text-yellow-500"/>
                     ) : progress !== undefined && progress >= 100 ? (
-                        <Check className="h-10 w-10 text-green-400"/>
+                        <CheckCircle className="h-10 w-10 text-green-400"/>
                     ) : progress !== undefined ? (
                         <span className="text-sm font-bold text-white/80">{progress}%</span>
                     ) : null}
@@ -159,13 +159,14 @@ export default function KidsCoursePage() {
     if (!user || !studentProfile || !firestore) return;
 
     const today = new Date();
-    const todayStr = new Date(today.getFullYear(), today.getMonth(), today.getDate()).toISOString().split('T')[0];
+    today.setHours(0, 0, 0, 0);
+    const todayStr = today.toISOString().split('T')[0];
     const lastLoginStr = studentProfile.lastLoginDate;
 
     if (lastLoginStr !== todayStr) {
         const yesterday = new Date(today);
         yesterday.setDate(today.getDate() - 1);
-        const yesterdayStr = new Date(yesterday.getFullYear(), yesterday.getMonth(), yesterday.getDate()).toISOString().split('T')[0];
+        const yesterdayStr = yesterday.toISOString().split('T')[0];
 
         let newStreak = (lastLoginStr === yesterdayStr) ? (studentProfile.currentStreak || 0) + 1 : 1;
         
@@ -258,12 +259,12 @@ export default function KidsCoursePage() {
                 <div className="lg:col-span-1 space-y-4">
                     <h2 className="text-xl font-bold text-cyan-400/90 uppercase tracking-wider">Quick Missions</h2>
                     <div className="grid grid-cols-2 gap-4">
-                        <NeonCard icon={CaseSensitive} title="VOCABULARY" href="/media/kids_vocabulary" />
+                        <NeonCard icon={CaseSensitive} title={t('dashboard.vocabularySkill')} href="/media/kids_vocabulary" />
                         <div onClick={canPlayIntroGames ? undefined : handleLockedGamesClick}>
                            <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                     <div className={cn(!canPlayIntroGames && "cursor-not-allowed")}>
-                                       <NeonCard icon={Gamepad2} title="Juegos" href={canPlayIntroGames ? undefined : '#'} />
+                                       <NeonCard icon={Gamepad2} title={t('dashboard.gamesSkill')} href={canPlayIntroGames ? undefined : '#'} />
                                     </div>
                                 </DropdownMenuTrigger>
                                 {canPlayIntroGames && (
@@ -278,9 +279,9 @@ export default function KidsCoursePage() {
                                 )}
                             </DropdownMenu>
                         </div>
-                        <NeonCard icon={Ear} title="LISTENING" href="/kids/listening-practice" />
-                        <NeonCard icon={BookOpen} title="READING" href="/kids/reading-exercise" />
-                        <NeonCard icon={Music} title="Music" href="/media/kids_music" bgImage={musicBg} />
+                        <NeonCard icon={Ear} title={t('dashboard.listeningSkill')} href="/kids/listening-practice" />
+                        <NeonCard icon={BookOpen} title={t('dashboard.readingSkill')} href="/kids/reading-exercise" />
+                        <NeonCard icon={Music} title={t('dashboard.musicSkill')} href="/media/kids_music" bgImage={musicBg} />
                         <NeonCard>
                             {(studentProfile?.currentStreak || 0) > 1 ? (
                                 <div className="h-12 w-12 mx-auto flex items-center justify-center">
@@ -289,7 +290,7 @@ export default function KidsCoursePage() {
                             ) : (
                                 <Flame className="h-12 w-12 mx-auto text-cyan-400" />
                             )}
-                            <p className="mt-2 font-bold text-white">DAILY STREAK</p>
+                            <p className="mt-2 font-bold text-white">{t('dashboard.dailyStreakSkill')}</p>
                         </NeonCard>
                     </div>
                 </div>
@@ -333,12 +334,12 @@ export default function KidsCoursePage() {
               <div className="space-y-4">
                 <h2 className="text-xl font-bold text-cyan-400/90 uppercase tracking-wider">Quick Missions</h2>
                 <div className="grid grid-cols-3 gap-4">
-                    <NeonCard icon={CaseSensitive} title="VOCABULARY" href="/media/kids_vocabulary" />
+                    <NeonCard icon={CaseSensitive} title={t('dashboard.vocabularySkill')} href="/media/kids_vocabulary" />
                     <div onClick={canPlayIntroGames ? undefined : handleLockedGamesClick}>
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <div className={cn(!canPlayIntroGames && "cursor-not-allowed")}>
-                                    <NeonCard icon={Gamepad2} title="Juegos" href={canPlayIntroGames ? undefined : '#'} />
+                                    <NeonCard icon={Gamepad2} title={t('dashboard.gamesSkill')} href={canPlayIntroGames ? undefined : '#'} />
                                 </div>
                             </DropdownMenuTrigger>
                             {canPlayIntroGames && (
@@ -353,9 +354,9 @@ export default function KidsCoursePage() {
                             )}
                         </DropdownMenu>
                     </div>
-                    <NeonCard icon={Ear} title="LISTENING" href="/kids/listening-practice" />
-                    <NeonCard icon={BookOpen} title="READING" href="/kids/reading-exercise" />
-                    <NeonCard icon={Music} title="Music" href="/media/kids_music" bgImage={musicBg} />
+                    <NeonCard icon={Ear} title={t('dashboard.listeningSkill')} href="/kids/listening-practice" />
+                    <NeonCard icon={BookOpen} title={t('dashboard.readingSkill')} href="/kids/reading-exercise" />
+                    <NeonCard icon={Music} title={t('dashboard.musicSkill')} href="/media/kids_music" bgImage={musicBg} />
                     <NeonCard>
                         {(studentProfile?.currentStreak || 0) > 1 ? (
                             <div className="h-12 w-12 mx-auto flex items-center justify-center">
@@ -364,7 +365,7 @@ export default function KidsCoursePage() {
                         ) : (
                             <Flame className="h-12 w-12 mx-auto text-cyan-400" />
                         )}
-                        <p className="mt-2 font-bold text-white">DAILY STREAK</p>
+                        <p className="mt-2 font-bold text-white">{t('dashboard.dailyStreakSkill')}</p>
                     </NeonCard>
                 </div>
               </div>

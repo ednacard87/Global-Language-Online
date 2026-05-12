@@ -247,12 +247,12 @@ export default function EspanolDashboardPage() {
             {/* --- DESKTOP VIEW --- */}
             <div className="hidden lg:grid lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-1 space-y-4">
-                    <h2 className="text-xl font-bold text-primary uppercase tracking-wider">Habilidades Rápidas</h2>
+                    <h2 className="text-xl font-bold text-primary uppercase tracking-wider">{t('dashboard.quickSkills')}</h2>
                     <div className="grid grid-cols-2 gap-4">
                         <Dialog>
                           <DialogTrigger asChild>
                             <div>
-                                <NeonCard icon={BookOpen} title="LECTURA" />
+                                <NeonCard icon={BookOpen} title={t('dashboard.readingSkill')} />
                             </div>
                           </DialogTrigger>
                           <DialogContent className="sm:max-w-[600px]">
@@ -305,11 +305,11 @@ export default function EspanolDashboardPage() {
                             </div>
                           </DialogContent>
                         </Dialog>
-                        <NeonCard icon={Mic} title="PODCAST" href="/media/es_podcast" />
-                        <NeonCard icon={Video} title="VIDEO" href="/media/es_video" />
-                        <NeonCard icon={Music} title="MÚSICA" href="/media/es_music" />
-                        <NeonCard icon={Music} title="CANCIÓN" href="https://es.lyricstraining.com/sign_up" />
-                        <NeonCard icon={Ear} title="ESCUCHA" href="/media/es_practica_verbal" />
+                        <NeonCard icon={Mic} title={t('dashboard.podcastSkill')} href="/media/es_podcast" />
+                        <NeonCard icon={Video} title={t('dashboard.videoSkill')} href="/media/es_video" />
+                        <NeonCard icon={Music} title={t('dashboard.musicSkill')} href="/media/es_music" />
+                        <NeonCard icon={Music} title={t('dashboard.songSkill')} href="https://es.lyricstraining.com/sign_up" />
+                        <NeonCard icon={Ear} title={t('dashboard.listeningSkill')} href="/media/es_practica_verbal" />
                     </div>
                 </div>
 
@@ -349,12 +349,12 @@ export default function EspanolDashboardPage() {
               
               {/* 3. Quick Skills */}
               <div className="space-y-4">
-                <h2 className="text-xl font-bold text-primary uppercase tracking-wider">Habilidades Rápidas</h2>
+                <h2 className="text-xl font-bold text-primary uppercase tracking-wider">{t('dashboard.quickSkills')}</h2>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                     <Dialog>
                       <DialogTrigger asChild>
                          <div>
-                            <NeonCard icon={BookOpen} title="LECTURA" />
+                            <NeonCard icon={BookOpen} title={t('dashboard.readingSkill')} />
                          </div>
                       </DialogTrigger>
                       <DialogContent className="sm:max-w-[600px]">
@@ -406,11 +406,11 @@ export default function EspanolDashboardPage() {
                         </div>
                       </DialogContent>
                     </Dialog>
-                    <NeonCard icon={Mic} title="PODCAST" href="/media/es_podcast" />
-                    <NeonCard icon={Video} title="VIDEO" href="/media/es_video" />
-                    <NeonCard icon={Music} title="MÚSICA" href="/media/es_music" />
-                    <NeonCard icon={Music} title="CANCIÓN" href="https://es.lyricstraining.com/sign_up" />
-                    <NeonCard icon={Ear} title="ESCUCHA" href="/media/es_practica_verbal" />
+                    <NeonCard icon={Mic} title={t('dashboard.podcastSkill')} href="/media/es_podcast" />
+                    <NeonCard icon={Video} title={t('dashboard.videoSkill')} href="/media/es_video" />
+                    <NeonCard icon={Music} title={t('dashboard.musicSkill')} href="/media/es_music" />
+                    <NeonCard icon={Music} title={t('dashboard.songSkill')} href="https://es.lyricstraining.com/sign_up" />
+                    <NeonCard icon={Ear} title={t('dashboard.listeningSkill')} href="/media/es_practica_verbal" />
                 </div>
               </div>
               
