@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -15,6 +16,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Separator } from '@/components/ui/separator';
+import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
 
 type Topic = {
   key: string;
@@ -29,7 +31,7 @@ const ICONS = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_a1_eng_unit_2_class_7_v2_vocab';
+const progressStorageVersion = 'progress_a1_eng_unit_2_class_7_v3_ex1';
 const mainProgressKey = 'progress_a1_eng_unit_2_class_7';
 
 const vocabularyData = [
@@ -186,7 +188,7 @@ export default function EngA1Class7Page() {
         const newValidation = [...vocabValidation];
         if (newValidation[index] !== 'unchecked') {
             newValidation[index] = 'unchecked';
-            setVocabValidation(newValidation);
+            setValidationStatus(newValidation);
         }
         setCanAdvanceVocab(false);
     };
@@ -351,7 +353,18 @@ export default function EngA1Class7Page() {
             );
         }
 
-        if (selectedTopic.startsWith('grammar')) {
+        if (selectedTopic === 'ex1') {
+            return (
+                <SimpleTranslationExercise 
+                    exerciseKey="c7_ex1" 
+                    course="a1" 
+                    onComplete={() => handleTopicComplete('ex1')} 
+                    title="Exercise 1"
+                />
+            );
+        }
+
+        if (selectedTopic?.startsWith('grammar')) {
             return (
                 <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
                     <CardHeader>
@@ -368,7 +381,7 @@ export default function EngA1Class7Page() {
             );
         }
 
-        if (selectedTopic.startsWith('ex')) {
+        if (selectedTopic?.startsWith('ex')) {
             return (
                 <Card className="shadow-soft rounded-lg border-2 border-brand-purple min-h-[400px]">
                     <CardHeader>

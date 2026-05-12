@@ -1,15 +1,16 @@
+
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
 import Image from 'next/image';
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useTranslation } from '@/context/language-context';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Trophy } from 'lucide-react';
 
 // Data for the exercises
 const exercises = {
@@ -234,6 +235,23 @@ const exercises = {
             { spanish: '¿ESTA CAMISETA ES TUYA O MÍA?', english: ["is this t-shirt yours or mine?", "is this shirt yours or mine?"] },
             { spanish: '¿DONDE ESTÁ SU CELULAR? - (DE EL)', english: ["where is his cellphone?", "where is his phone?", "where's his cellphone?", "where's his phone?"] },
             { spanish: 'ESTA ES NUESTRA FAMILIA', english: ["this is our family"] },
+        ]
+    },
+    c7_ex1: {
+        title: 'a1class1.exercise',
+        prompts: [
+            { spanish: 'LOS PARQUES SON TRANQUILOS (QUIET) DURANTE LA NOCHE', english: ['parks are quiet at night', 'parks are quiet during the night'] },
+            { spanish: 'ELLA ES LA MÁS JOVEN DE LA FAMILIA', english: ['she is the youngest in the family', "she's the youngest in the family"] },
+            { spanish: 'ME GUSTAN LOS JUGOS PORQUE SON SALUDABLES', english: ['i like juices because they are healthy', "i like juice because it is healthy"] },
+            { spanish: '¿TE GUSTO LA PELÍCULA QUE VISTE AYER?', english: ['did you like the movie you saw yesterday?', 'did you like the movie that you saw yesterday?'] },
+            { spanish: 'LA CIUDAD MÁS GRANDE DE COLOMBIA ES BOGOTA', english: ['the biggest city in colombia is bogota'] },
+            { spanish: 'ME GUSTAN LOS ANIMALES, ESPECIALMENTE LOS PERROS/GATOS', english: ['i like animals, especially dogs and cats', 'i like animals, especially dogs/cats'] },
+            { spanish: 'A ELLA NO LE GUSTAN LAS ARAÑAS', english: ["she does not like spiders", "she doesn't like spiders"] },
+            { spanish: '¿TE GUSTAN LAS FRUTAS? - SI', english: ['do you like fruits? yes, i do', 'do you like fruit? yes, i do'] },
+            { spanish: 'EL HERMANO DE ANTONIO ES MUY ALTO', english: ["antonio's brother is very tall"] },
+            { spanish: 'ME GUSTAN MUCHO LAS MARIPOSAS', english: ['i like butterflies very much', 'i really like butterflies'] },
+            { spanish: 'A ELLA LE GUSTAN MUCHO LOS CARROS', english: ['she likes cars very much', 'she really likes cars'] },
+            { spanish: 'CUANDO ESCUCHO MUSICA, ME GUSTA ESCUCHARLA CON AUDIFONOS PORQUE NO ME GUSTA MOLESTAR A LAS PERSONAS', english: ["when i listen to music, i like to listen to it with headphones because i don't like to disturb people", "when i listen to music i like to listen to it with headphones because i do not like to disturb people"] },
         ]
     }
 };
