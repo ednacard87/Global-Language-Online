@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -6,7 +5,7 @@ import Link from 'next/link';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, Info, Mic, Loader2, RefreshCw, Flame, Trophy } from 'lucide-react';
+import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, Info, Mic, Loader2, RefreshCw, Flame, Trophy, Gamepad2 } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
@@ -32,7 +31,7 @@ const ICONS = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_a1_eng_unit_2_class_8_v1';
+const progressStorageVersion = 'progress_a1_eng_unit_2_class_8_v2_fixed';
 const mainProgressKey = 'progress_a1_eng_unit_2_class_8';
 
 const vocabularyData = [
@@ -134,7 +133,7 @@ export default function EngA1Class8Page() {
         }
     }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading, isUserLoading]);
     
-    const progress = useMemo(() => {
+    const progressValue = useMemo(() => {
         if (learningPath.length === 0) return 0;
         const completedTopics = learningPath.filter(t => t.status === 'completed').length;
         return Math.round((completedTopics / learningPath.length) * 100);
@@ -149,13 +148,13 @@ export default function EngA1Class8Page() {
             });
             updateDocumentNonBlocking(studentDocRef, { 
                 [`lessonProgress.${progressStorageVersion}`]: statusesToSave,
-                [`progress.${mainProgressKey}`]: Math.round(progress)
+                [`progress.${mainProgressKey}`]: Math.round(progressValue)
             });
         }
-        if (progress >= 100) {
+        if (progressValue >= 100) {
           window.dispatchEvent(new CustomEvent('progressUpdated'));
         }
-    }, [learningPath, isAdmin, progress, studentDocRef, isProfileLoading, isUserLoading]);
+    }, [learningPath, isAdmin, progressValue, studentDocRef, isProfileLoading, isUserLoading]);
 
     const handleTopicComplete = useCallback((completedKey: string) => {
         setTopicToComplete(completedKey);
@@ -323,8 +322,8 @@ export default function EngA1Class8Page() {
                                         </ul>
                                     </nav>
                                     <div className="mt-6 pt-6 border-t">
-                                        <div className="flex justify-between items-center text-sm font-medium text-muted-foreground mb-2"><span>Progreso</span><span className="font-bold text-foreground">{Math.round(progress)}%</span></div>
-                                        <Progress value={progress} className="h-2" />
+                                        <div className="flex justify-between items-center text-sm font-medium text-muted-foreground mb-2"><span>Progreso</span><span className="font-bold text-foreground">{Math.round(progressValue)}%</span></div>
+                                        <Progress value={progressValue} className="h-2" />
                                     </div>
                                 </CardContent>
                             </Card>
