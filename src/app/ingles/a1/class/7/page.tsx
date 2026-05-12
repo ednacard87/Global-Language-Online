@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -6,7 +5,7 @@ import Link from 'next/link';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, Info, Loader2, ChevronRight } from 'lucide-react';
+import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, Info, Loader2, Plus, Minus, Star } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
@@ -188,7 +187,7 @@ export default function EngA1Class7Page() {
         const newValidation = [...vocabValidation];
         if (newValidation[index] !== 'unchecked') {
             newValidation[index] = 'unchecked';
-            setVocabValidation(newValidation);
+            setValidationStatus(newValidation);
         }
         setCanAdvanceVocab(false);
     };
@@ -439,18 +438,119 @@ export default function EngA1Class7Page() {
             );
         }
 
-        if (selectedTopic?.startsWith('grammar')) {
+        if (selectedTopic === 'grammar3') {
             return (
                 <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
                     <CardHeader>
-                        <CardTitle>{topic?.name}</CardTitle>
-                        <CardDescription>Información gramatical importante.</CardDescription>
+                        <CardTitle>LIKES AND DISLIKES (VERBOS DE PREFERENCIA)</CardTitle>
+                        <CardDescription>Expresa lo que te gusta y lo que no te gusta.</CardDescription>
                     </CardHeader>
-                    <CardContent className="space-y-4">
-                        <p className="text-lg">Contenido gramatical para {topic?.name} se añadirá pronto.</p>
+                    <CardContent className="space-y-8">
+                        <div className="grid sm:grid-cols-2 gap-6">
+                            <div className="space-y-3">
+                                <h4 className="flex items-center gap-2 font-bold text-green-600 text-xl">
+                                    <Plus className="h-6 w-6" /> Positivos
+                                </h4>
+                                <div className="space-y-2 p-4 bg-green-50 dark:bg-green-900/10 rounded-xl border border-green-200">
+                                    <p><strong>Love :</strong> Encantar</p>
+                                    <p><strong>Like :</strong> Gustar</p>
+                                    <p><strong>Enjoy :</strong> Disfrutar</p>
+                                    <p><strong>Prefer :</strong> Preferir</p>
+                                </div>
+                            </div>
+                            <div className="space-y-3">
+                                <h4 className="flex items-center gap-2 font-bold text-red-600 text-xl">
+                                    <Minus className="h-6 w-6" /> Negativos
+                                </h4>
+                                <div className="space-y-2 p-4 bg-red-50 dark:bg-red-900/10 rounded-xl border border-red-200">
+                                    <p><strong>Dislike :</strong> No gustar</p>
+                                    <p><strong>Hate :</strong> Odiar</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="bg-primary/5 p-4 rounded-lg border-l-4 border-primary">
+                            <h4 className="font-bold flex items-center gap-2 mb-2 uppercase">
+                                <Star className="h-4 w-4 text-primary" /> NOTICA: Intensidad
+                            </h4>
+                            <p className="text-muted-foreground italic mb-2">"De verdad me gusta / Realmente me gusta / Me gusta muchísimo"</p>
+                            <div className="p-3 bg-muted rounded font-mono text-lg font-bold">
+                                <p>I <span className="text-primary underline">really</span> like water.</p>
+                            </div>
+                        </div>
+
+                        <Separator />
+
+                        <div className="space-y-6">
+                            <h3 className="text-2xl font-bold text-primary">USOS</h3>
+                            <p className="text-muted-foreground">Estos verbos se utilizan para expresar preferencias de cosas o actividades:</p>
+                            
+                            <Accordion type="multiple" className="w-full" defaultValue={['nouns', 'verbs', 'prefer']}>
+                                <AccordionItem value="nouns">
+                                    <AccordionTrigger className="text-lg font-bold">1. CON SUSTANTIVOS (NOUNS)</AccordionTrigger>
+                                    <AccordionContent className="space-y-3 pt-2">
+                                        <div className="grid gap-2 font-mono bg-muted p-4 rounded-lg">
+                                            <p>I <span className="font-bold">like</span> movies.</p>
+                                            <p>I <span className="font-bold text-red-500">don't like</span> hamburgers.</p>
+                                            <p>She <span className="font-bold text-red-500">doesn't like</span> garlic.</p>
+                                            <p>He <span className="font-bold text-red-600">hates</span> series.</p>
+                                        </div>
+                                    </AccordionContent>
+                                </AccordionItem>
+
+                                <AccordionItem value="verbs">
+                                    <AccordionTrigger className="text-lg font-bold">2. CON OTROS VERBOS (ACCIONES)</AccordionTrigger>
+                                    <AccordionContent className="space-y-4 pt-2">
+                                        <p>Cuando usamos un verbo de preferencia seguido de otra acción, tenemos <strong>dos opciones con el mismo significado</strong>:</p>
+                                        <div className="grid md:grid-cols-2 gap-4">
+                                            <div className="p-4 bg-muted rounded-lg border">
+                                                <h5 className="font-bold mb-2">a) Con "TO" (Infinitivo)</h5>
+                                                <p className="font-mono">I like <span className="text-primary font-bold">to cook</span> pasta.</p>
+                                            </div>
+                                            <div className="p-4 bg-muted rounded-lg border">
+                                                <h5 className="font-bold mb-2">b) Con "-ING" (Gerundio)</h5>
+                                                <p className="font-mono">I like <span className="text-primary font-bold">cooking</span> pasta.</p>
+                                            </div>
+                                        </div>
+                                        <div className="p-4 bg-brand-lilac/50 border rounded-lg italic text-sm">
+                                            <p>Ejemplos adicionales:</p>
+                                            <ul className="list-disc list-inside mt-1">
+                                                <li>You love walking at night. / You love to walk at night.</li>
+                                                <li>She likes reading books. / She likes to read books.</li>
+                                            </ul>
+                                        </div>
+                                    </AccordionContent>
+                                </AccordionItem>
+
+                                <AccordionItem value="prefer">
+                                    <AccordionTrigger className="text-lg font-bold">3. EL USO DE "PREFER"</AccordionTrigger>
+                                    <AccordionContent className="space-y-6 pt-2">
+                                        <div>
+                                            <h5 className="font-bold text-primary mb-1">A) PARA COMPARAR SUSTANTIVOS (OBJETOS)</h5>
+                                            <p className="text-sm font-mono bg-muted p-2 rounded mb-2">Pronoun + prefer + NOUN + <span className="text-primary font-bold">TO</span> + NOUN</p>
+                                            <p className="italic">"Yo prefiero la pizza a la hamburguesa"</p>
+                                            <p className="font-mono font-bold">I prefer pizza <span className="text-primary">to</span> hamburger.</p>
+                                        </div>
+                                        
+                                        <div>
+                                            <h5 className="font-bold text-primary mb-1">B) PARA COMPARAR VERBOS (ACTIVIDADES)</h5>
+                                            <p className="text-sm font-mono bg-muted p-2 rounded mb-2">Pronoun + prefer + verb-ING + <span className="text-primary font-bold">TO</span> + verb-ING</p>
+                                            <p className="italic">"Yo prefiero ir a la playa que quedarme en la piscina"</p>
+                                            <p className="font-mono font-bold">I prefer going to the beach <span className="text-primary">to</span> staying at the pool.</p>
+                                        </div>
+
+                                        <div className="p-4 border-l-4 border-primary bg-primary/5 rounded-r-lg">
+                                            <p className="font-bold">Recuerda:</p>
+                                            <p>Debemos colocar el verbo <span className="font-bold italic">prefer</span> seguido de otro verbo acabado en <strong>-ing</strong>.</p>
+                                            <p className="font-mono mt-1">I prefer playing tennis.</p>
+                                        </div>
+                                    </AccordionContent>
+                                </AccordionItem>
+                            </Accordion>
+                        </div>
                     </CardContent>
-                    <CardFooter>
-                        <Button onClick={() => handleTopicComplete(selectedTopic)}>Entendido</Button>
+                    <CardFooter className="justify-center border-t pt-6">
+                        <Button onClick={() => handleTopicComplete('grammar3')}>He terminado de estudiar preferencias</Button>
                     </CardFooter>
                 </Card>
             );
