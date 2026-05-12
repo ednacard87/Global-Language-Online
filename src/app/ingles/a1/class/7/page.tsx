@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -17,6 +16,7 @@ import { Input } from '@/components/ui/input';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Separator } from '@/components/ui/separator';
 import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
+import { CreativeWritingExercise } from '@/components/dashboard/creative-writing-exercise';
 
 type Topic = {
   key: string;
@@ -31,7 +31,7 @@ const ICONS = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_a1_eng_unit_2_class_7_v5_ex4';
+const progressStorageVersion = 'progress_a1_eng_unit_2_class_7_v6_writing';
 const mainProgressKey = 'progress_a1_eng_unit_2_class_7';
 
 const vocabularyData = [
@@ -131,7 +131,9 @@ export default function EngA1Class7Page() {
                 statusesToSave[item.key] = item.status;
             });
             updateDocumentNonBlocking(studentDocRef, { 
-                [`lessonProgress.${progressStorageVersion}`]: statusesToSave,
+                [`lessonProgress.${progressStorageVersion}`]: statusesToSave
+            });
+            updateDocumentNonBlocking(studentDocRef, { 
                 [`progress.${mainProgressKey}`]: Math.round(progress)
             });
         }
@@ -203,7 +205,7 @@ export default function EngA1Class7Page() {
             }
             return isCorrect ? 'correct' : 'incorrect';
         });
-        setVocabValidation(newValidation as ('correct' | 'incorrect' | 'unchecked')[]);
+        setValidationStatus(newValidation as ('correct' | 'incorrect' | 'unchecked')[]);
 
         if (atLeastOneCorrect) {
             toast({ title: "¡Bien hecho!", description: "Has acertado al menos una. ¡Ya puedes avanzar!" });
@@ -564,6 +566,23 @@ export default function EngA1Class7Page() {
                     course="a1" 
                     onComplete={() => handleTopicComplete('ex4')} 
                     title="Exercise 4"
+                />
+            );
+        }
+
+        if (selectedTopic === 'ex5') {
+            return (
+                <CreativeWritingExercise
+                    title="Exercise 5: Creation"
+                    description="Escribe libremente siguiendo las instrucciones. Tu texto se guardará automáticamente."
+                    prompts={[
+                        { id: 'personal', question: '1- WHAT DO YOU LIKE AND WHAT DO YOU DISLIKE? (5/5 SENTENCES)', placeholder: 'Escribe tus 5 frases sobre lo que te gusta y 5 sobre lo que no...' },
+                        { id: 'other', question: '2- PIENSA EN UNA PERSONA Y ESCRIBE 4 COSAS QUE LE GUSTAN, 4 COSAS QUE NO LE GUSTAN.', placeholder: 'Describe los gustos de otra persona...' }
+                    ]}
+                    onComplete={() => handleTopicComplete('ex5')}
+                    studentDocRef={studentDocRef}
+                    initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.writingData || {}}
+                    savePath={`lessonProgress.${progressStorageVersion}.writingData`}
                 />
             );
         }
