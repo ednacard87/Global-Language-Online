@@ -13,6 +13,8 @@ import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocki
 import { doc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Separator } from '@/components/ui/separator';
 
 type Topic = {
   key: string;
@@ -259,6 +261,91 @@ export default function EngA1Class7Page() {
                         >
                             Avanzar
                         </Button>
+                    </CardFooter>
+                </Card>
+            );
+        }
+
+        if (selectedTopic === 'grammar1') {
+            return (
+                <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                    <CardHeader>
+                        <CardTitle>EL ARTÍCULO DETERMINADO "THE"</CardTitle>
+                        <CardDescription>THE DEFINITE ARTICLE "THE"</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                        <p className="text-lg">En inglés hay un artículo que corresponde a los siguientes artículos en castellano:</p>
+                        
+                        <Accordion type="multiple" className="w-full" defaultValue={['item-1', 'item-2', 'item-3', 'item-4']}>
+                            <AccordionItem value="item-1">
+                                <AccordionTrigger className="text-lg font-bold">1. SIGNIFICADO</AccordionTrigger>
+                                <AccordionContent className="space-y-4">
+                                    <p className="text-base font-semibold">THE = "EL", "LA", "LOS", "LAS"</p>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="p-4 bg-muted rounded-lg space-y-2">
+                                            <h4 className="font-bold border-b pb-1">MASCULINO / SINGULAR</h4>
+                                            <p className="font-mono">THE BOY (EL NIÑO)</p>
+                                            <p className="font-mono">THE BOOK (EL LIBRO)</p>
+                                        </div>
+                                        <div className="p-4 bg-muted rounded-lg space-y-2">
+                                            <h4 className="font-bold border-b pb-1">FEMENINO / SINGULAR</h4>
+                                            <p className="font-mono">THE GIRL (LA NIÑA)</p>
+                                            <p className="font-mono">THE TABLE (LA MESA)</p>
+                                        </div>
+                                        <div className="p-4 bg-muted rounded-lg space-y-2">
+                                            <h4 className="font-bold border-b pb-1">MASCULINO / PLURAL</h4>
+                                            <p className="font-mono">THE BOYS (LOS NIÑOS)</p>
+                                            <p className="font-mono">THE BOOKS (LOS LIBROS)</p>
+                                        </div>
+                                        <div className="p-4 bg-muted rounded-lg space-y-2">
+                                            <h4 className="font-bold border-b pb-1">FEMENINO / PLURAL</h4>
+                                            <p className="font-mono">THE GIRLS (LAS NIÑAS)</p>
+                                            <p className="font-mono">THE TABLES (LAS MESAS)</p>
+                                        </div>
+                                    </div>
+                                </AccordionContent>
+                            </AccordionItem>
+
+                            <AccordionItem value="item-2">
+                                <AccordionTrigger className="text-lg font-bold">2. PRONUNCIACIÓN</AccordionTrigger>
+                                <AccordionContent className="space-y-4">
+                                    <div className="space-y-2 text-base">
+                                        <p><strong>a)</strong> Precedida de <strong>consonante</strong> se pronuncia <span className="font-bold text-primary">"DE"</span>:</p>
+                                        <p className="font-mono ml-4">THE LAMP, LA LÁMPARA (DE LAMP)</p>
+                                        
+                                        <p className="pt-2"><strong>b)</strong> Precedida de <strong>vocal</strong> se pronuncia <span className="font-bold text-primary">"DI"</span>:</p>
+                                        <p className="font-mono ml-4">THE ENEMY, EL ENEMIGO (DI ENEMI)</p>
+                                    </div>
+                                </AccordionContent>
+                            </AccordionItem>
+
+                            <AccordionItem value="item-3">
+                                <AccordionTrigger className="text-lg font-bold">3. USO PRINCIPAL DEL ARTÍCULO "THE"</AccordionTrigger>
+                                <AccordionContent className="space-y-4">
+                                    <p className="text-base">El artículo <span className="font-bold">"THE"</span> se pone cuando se habla de <span className="italic underline">algo en particular o específico</span>:</p>
+                                    <div className="space-y-3 p-4 bg-muted rounded-lg">
+                                        <p className="font-mono text-sm">1. WHAT IS THE NAME OF THE RESTAURANT? (¿CUÁL ES EL NOMBRE DEL RESTAURANTE?)</p>
+                                        <p className="font-mono text-sm">2. DO YOU REMEMBER THE DAY WHEN WE WENT TO WASHINGTON? (¿RECUERDAS EL DÍA CUANDO FUIMOS A WASHINGTON?)</p>
+                                        <p className="font-mono text-sm">3. THE DOCTOR IS VERY GOOD (EL DOCTOR ES MUY BUENO)</p>
+                                    </div>
+                                </AccordionContent>
+                            </AccordionItem>
+
+                            <AccordionItem value="item-4">
+                                <AccordionTrigger className="text-lg font-bold">4. CUÁNDO NO SE PONE "THE"</AccordionTrigger>
+                                <AccordionContent className="space-y-4">
+                                    <p className="text-base font-semibold text-destructive">EL ARTÍCULO "THE" NO SE PONE CUANDO SE HABLA EN GENERAL / SE GENERALIZA:</p>
+                                    <div className="space-y-3 p-4 bg-muted rounded-lg">
+                                        <p className="font-mono text-sm">1. I LIKE FOOTBALL (ME GUSTA EL FÚTBOL)</p>
+                                        <p className="font-mono text-sm">2. SHE LOVES MUSIC (A ELLA LE GUSTA LA MÚSICA)</p>
+                                        <p className="font-mono text-sm">3. PEOPLE ARE STRANGE (LAS PERSONAS SON RARAS)</p>
+                                    </div>
+                                </AccordionContent>
+                            </AccordionItem>
+                        </Accordion>
+                    </CardContent>
+                    <CardFooter className="justify-center pt-6 border-t">
+                        <Button onClick={() => handleTopicComplete('grammar1')}>He terminado de estudiar</Button>
                     </CardFooter>
                 </Card>
             );
