@@ -31,7 +31,7 @@ const ICONS = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_a1_eng_unit_2_class_7_v3_ex1';
+const progressStorageVersion = 'progress_a1_eng_unit_2_class_7_v4_ex2';
 const mainProgressKey = 'progress_a1_eng_unit_2_class_7';
 
 const vocabularyData = [
@@ -79,7 +79,7 @@ export default function EngA1Class7Page() {
 
     const initialLearningPath = useMemo((): Topic[] => [
         { key: 'vocabulary', name: 'Vocabulary (Basic Verbs)', icon: BookOpen, status: 'active' },
-        { key: 'grammar1', name: 'Grammar', icon: GraduationCap, status: 'locked' },
+        { key: 'grammar', name: 'Grammar', icon: GraduationCap, status: 'locked' },
         { key: 'ex1', name: 'Exercise 1', icon: PenSquare, status: 'locked' },
         { key: 'grammar2', name: 'Grammar 2', icon: GraduationCap, status: 'locked' },
         { key: 'ex2', name: 'Exercise 2', icon: PenSquare, status: 'locked' },
@@ -174,7 +174,7 @@ export default function EngA1Class7Page() {
         }
         setSelectedTopic(topicKey);
 
-        const viewOnlyTopics = ['grammar1', 'grammar2', 'grammar3'];
+        const viewOnlyTopics = ['grammar', 'grammar2', 'grammar3'];
         if (viewOnlyTopics.includes(topicKey)) {
             handleTopicComplete(topicKey);
         }
@@ -268,7 +268,7 @@ export default function EngA1Class7Page() {
             );
         }
 
-        if (selectedTopic === 'grammar1') {
+        if (selectedTopic === 'grammar') {
             return (
                 <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
                     <CardHeader>
@@ -347,7 +347,7 @@ export default function EngA1Class7Page() {
                         </Accordion>
                     </CardContent>
                     <CardFooter className="justify-center pt-6 border-t">
-                        <Button onClick={() => handleTopicComplete('grammar1')}>He terminado de estudiar</Button>
+                        <Button onClick={() => handleTopicComplete('grammar')}>He terminado de estudiar</Button>
                     </CardFooter>
                 </Card>
             );
@@ -414,6 +414,17 @@ export default function EngA1Class7Page() {
                         <Button onClick={() => handleTopicComplete('grammar2')}>Continuar</Button>
                     </CardFooter>
                 </Card>
+            );
+        }
+
+        if (selectedTopic === 'ex2') {
+            return (
+                <SimpleTranslationExercise 
+                    exerciseKey="c7_ex2" 
+                    course="a1" 
+                    onComplete={() => handleTopicComplete('ex2')} 
+                    title="Exercise 2"
+                />
             );
         }
 
