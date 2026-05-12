@@ -31,7 +31,7 @@ const ICONS = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_a1_eng_unit_2_class_7_v4_ex2';
+const progressStorageVersion = 'progress_a1_eng_unit_2_class_7_v5_ex3';
 const mainProgressKey = 'progress_a1_eng_unit_2_class_7';
 
 const vocabularyData = [
@@ -424,6 +424,17 @@ export default function EngA1Class7Page() {
                     course="a1" 
                     onComplete={() => handleTopicComplete('ex2')} 
                     title="Exercise 2"
+                />
+            );
+        }
+
+        if (selectedTopic === 'ex3') {
+            return (
+                <SimpleTranslationExercise 
+                    exerciseKey="c7_ex3" 
+                    course="a1" 
+                    onComplete={() => handleTopicComplete('ex3')} 
+                    title="Exercise 3"
                 />
             );
         }

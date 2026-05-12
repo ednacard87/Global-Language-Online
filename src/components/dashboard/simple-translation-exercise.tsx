@@ -263,6 +263,21 @@ const exercises = {
             { spanish: 'SARA QUIERE IR A UN CONCIERTO EL VIERNES EN LA NOCHE', english: ["sara wants to go to a concert on friday night", "sara wants to go to a concert on fridays at night"] },
             { spanish: 'EL ES UN INGENIERO Y SU ESPOSA ES UNA DOCTORA', english: ["he is an engineer and his wife is a doctor", "he's an engineer and his wife's a doctor"] },
         ]
+    },
+    c7_ex3: {
+        title: 'a1class1.exercise',
+        prompts: [
+            { spanish: 'ELLOS SON DOCTORES- EL ES UN DOCTOR', english: ["they are doctors - he is a doctor", "they're doctors - he's a doctor"] },
+            { spanish: 'YO NO TENGO UNA MANZANA- YO TENGO UNA SANDIA', english: ["i do not have an apple - i have a watermelon", "i don't have an apple - i have a watermelon"] },
+            { spanish: 'NOSOTROS SOMOS ESTUDIANTES- YO SOY UN ESTUDIANTE', english: ["we are students - i am a student", "we're students - i'm a student"] },
+            { spanish: 'ELLOS SON PRIMOS- EL ES PRIMO DE CHRISTIAN', english: ["they are cousins - he is christian's cousin", "they're cousins - he's christian's cousin"] },
+            { spanish: 'ESTOS SON GATOS NEGROS- ESTE ES UN GATO GRIS', english: ["these are black cats - this is a gray cat", "these are black cats - this is a grey cat"] },
+            { spanish: 'ESTE NO ES TU CELULAR-ESE ES MI CELULAR', english: ["this is not your cellphone - that is my cellphone", "this isn't your phone - that's my phone"] },
+            { spanish: 'ESTAS SON TUS GAFAS- ESAS NO SON LAS TUYAS', english: ["these are your glasses - those are not yours", "these are your glasses - those aren't yours"] },
+            { spanish: 'ELLOS SON HERMANOS- EL ES SU HERMANO (DE ELLA)', english: ["they are brothers - he is her brother", "they're brothers - he's her brother"] },
+            { spanish: 'ESTOS SON PERROS- ESTE ES SU PERRO (DE ÉL)', english: ["these are dogs - this is his dog", "these are dogs - this is his dog"] },
+            { spanish: 'ELLOS SON PROFESORES- ELLA ES UNA PROFESORA', english: ["they are teachers - she is a teacher", "they're teachers - she's a teacher"] },
+        ]
     }
 };
 
