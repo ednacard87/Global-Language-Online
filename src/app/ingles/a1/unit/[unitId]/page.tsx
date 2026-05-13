@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo } from "react";
@@ -130,7 +131,7 @@ export default function A1EngUnitPage() {
                 &larr; {isClient ? t('dashboard.courseA1') : ''}
             </Link>
         </div>
-        <div className="w-full max-w-7xl">
+        <div className="w-full max-w-4xl">
             <MazeGame 
                 pathItems={pathItems} 
                 title={isClient ? t('a1course.unitPath') : ''} 

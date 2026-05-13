@@ -481,7 +481,12 @@ export const getA1EngUnitPath = (unitId: string | number, t: (key: string) => st
         ],
         '3': [
             { type: 'start', icon: Footprints, label: 'dashboard.start' },
-             ...Array.from({ length: 6 }, (_, i) => ({ type: 'class' as const, icon: BookOpen, label: `Class ${i + 11}`, href: `/ingles/a1/class/${i + 11}`, storageKey: `progress_a1_eng_unit_3_class_${i + 11}` })),
+            { type: 'class', icon: BookOpen, label: 'Class 11', href: '/ingles/a1/class/11', storageKey: 'progress_a1_eng_unit_3_class_11' },
+            { type: 'class', icon: BookOpen, label: 'Class 12', href: '/ingles/a1/class/12', storageKey: 'progress_a1_eng_unit_3_class_12' },
+            { type: 'class', icon: BookOpen, label: 'Class 13', href: '/ingles/a1/class/13', storageKey: 'progress_a1_eng_unit_3_class_13' },
+            { type: 'class', icon: BookOpen, label: 'Class 14', href: '/ingles/a1/class/14', storageKey: 'progress_a1_eng_unit_3_class_14' },
+            { type: 'class', icon: BookOpen, label: 'Class 15', href: '/ingles/a1/class/15', storageKey: 'progress_a1_eng_unit_3_class_15' },
+            { type: 'class', icon: BookOpen, label: 'Class 16', href: '/ingles/a1/class/16', storageKey: 'progress_a1_eng_unit_3_class_16' },
             { type: 'end', icon: Flag, label: 'dashboard.finish' },
         ]
     };
@@ -696,7 +701,7 @@ export const getKidsA2MainPath = (t: (key: string) => string): PathItem[] => [
     { type: 'class', icon: GraduationCap, label: 'kidsA2.atOnIn1', href: '/kids/a2/at-on-in-1', storageKey: 'progress_kids_a2_at_on_in_1' },
     { type: 'class', icon: GraduationCap, label: 'kidsA2.atOnIn2', href: '/kids/a2/at-on-in-2', storageKey: 'progress_kids_a2_at_on_in_2' },
     { type: 'class', icon: GraduationCap, label: 'kidsA2.pastSimple', href: '/kids/a2/pasado-simple', storageKey: 'progress_kids_a2_past_simple' },
-    { type: 'class', icon: GraduationCap, label: 'kidsA2.pastContinuous', href: '/kids/a2/pasado-continuo', storageKey: 'progress_kids_a2_past_continuous' },
+    { type: 'class', icon: GraduationCap, label: 'kidsA2.pastContinuous', href: '/kids/a2/past-continuous', storageKey: 'progress_kids_a2_past_continuous' },
     { type: 'class', icon: GraduationCap, label: 'kidsA2.countables', href: '/kids/a2/contables-y-no-contables', storageKey: 'progress_kids_a2_countables' },
     { type: 'class', icon: GraduationCap, label: 'kidsA2.presentPerfect', href: '/kids/a2/presente-perfecto', storageKey: 'progress_kids_a2_present_perfect' },
     { type: 'class', icon: GraduationCap, label: 'kidsA2.usedTo', href: '/kids/a2/used-to', storageKey: 'progress_kids_a2_used_to' },
