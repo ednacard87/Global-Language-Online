@@ -207,7 +207,7 @@ const exercises = {
             { spanish: 'MARY TIENE UNA MASCOTA- LA MASCOTA ES DE ELLA', english: ["mary has a pet - the pet is hers", "mary has a pet the pet is hers"] },
             { spanish: 'TÚ TIENES ALGUNAS CAMISETAS NUEVAS- LAS CAMISETAS SON TUYAS', english: ["you have some new t-shirts - the t-shirts are yours", "you have some new t-shirts the t-shirts are yours"] },
             { spanish: 'TIM Y LOUIS TIENEN UNA NUEVA PAGINA WEB- LA PAGINA WEB ES DE ELLOS', english: ["tim and louis have a new website - the website is theirs", "tim and louis have a new website the website is theirs"] },
-            { spanish: 'NOSOTROS TENEMOS UN EMPLEO NUEVO- EL EMPLEO ES NUESTRO', english: ["we have a new job - the job is ours", "we have a new job the job is ours"] },
+            { spanish: 'NOSOTROS SOMOS ESTUDIANTES- YO SOY UN ESTUDIANTE', english: ["we are students - i am a student", "we're students - i'm a student"] },
             { spanish: 'YO TENGO UN PERRO PEQUEÑO– EL PERRO ES MIO', english: ["i have a small dog - the dog is mine", "i have a small dog the dog is mine"] },
             { spanish: 'ELLOS TIENEN UNA CAJA- LA CAJA ES DE ELLOS', english: ["they have a box - the box is theirs", "they have a box the box is theirs"] },
             { spanish: 'ELLA TIENE UN PORTATIL BLANCO- EL PORTATIL ES DE ELLA', english: ["she has a white laptop - the laptop is hers", "she has a white laptop the laptop is hers"] },
@@ -462,8 +462,14 @@ const exercises = {
     c9_ex2: {
         title: 'a1class1.exercise',
         prompts: [
-            { spanish: 'Frase de ejemplo 1...', english: ['...'] },
-            { spanish: 'Frase de ejemplo 2...', english: ['...'] },
+            { spanish: '¿TE GUSTA ESTE VESTIDO?', english: ['do you like this dress?'] },
+            { spanish: '¿TE GUSTA ESTE?', english: ['do you like this one?'] },
+            { spanish: '¿TE GUSTA ESE CARRO?', english: ['do you like that car?'] },
+            { spanish: '¿TE GUSTA ESE?', english: ['do you like that one?'] },
+            { spanish: '¿TE GUSTAN ESTAS BOTAS?', english: ['do you like these boots?'] },
+            { spanish: '¿TE GUSTAN ESTAS?', english: ['do you like these ones?'] },
+            { spanish: '¿TE GUSTAN ESOS CABALLOS?', english: ['do you like those horses?'] },
+            { spanish: '¿TE GUSTAN ESOS?', english: ['do you like those ones?'] },
         ]
     },
     c9_ex3: {
