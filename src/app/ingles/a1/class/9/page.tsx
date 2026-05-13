@@ -47,23 +47,53 @@ const ICONS = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_a1_eng_u2_c9_v1';
+const progressStorageVersion = 'progress_a1_eng_u2_c9_v2_lexico';
 const mainProgressKey = 'progress_a1_eng_unit_2_class_9';
 
-const weatherHouseVocab = [
-    { spanish: 'Soleado', english: ['Sunny'] },
-    { spanish: 'Lluvioso', english: ['Rainy'] },
-    { spanish: 'Nublado', english: ['Cloudy'] },
-    { spanish: 'Ventoso', english: ['Windy'] },
-    { spanish: 'Frío', english: ['Cold'] },
-    { spanish: 'Caliente', english: ['Hot'] },
-    { spanish: 'Sala', english: ['Living room'] },
-    { spanish: 'Cocina', english: ['Kitchen'] },
-    { spanish: 'Habitación', english: ['Bedroom'] },
-    { spanish: 'Baño', english: ['Bathroom'] },
-    { spanish: 'Jardín', english: ['Garden'] },
-    { spanish: 'Garaje', english: ['Garage'] },
-];
+const vocabularyData = {
+    weather: [
+        { spanish: 'NEVAR', english: ['(TO) SNOW', 'SNOW', 'TO SNOW'] },
+        { spanish: 'LLOVER', english: ['(TO) RAIN', 'RAIN', 'TO RAIN'] },
+        { spanish: 'SOLEADO', english: ['SUNNY'] },
+        { spanish: 'LLUVIOSO', english: ['RAINY'] },
+        { spanish: 'EL CLIMA', english: ['THE WEATHER'] },
+        { spanish: 'FRIO', english: ['COLD'] },
+        { spanish: 'FRESCO', english: ['COOL'] },
+        { spanish: 'CIELO', english: ['SKY'] },
+        { spanish: 'NIEVE', english: ['SNOW'] },
+        { spanish: 'HACE CALOR', english: ["IT'S HOT", "IT IS HOT", "HAVE HEAT"] },
+        { spanish: 'HUMEDO', english: ['HUMID'] },
+        { spanish: 'LLUVIA', english: ['RAIN'] },
+        { spanish: 'NUBE', english: ['CLOUD'] },
+        { spanish: 'NUBLADO', english: ['CLOUDY'] },
+        { spanish: 'TORMENTA', english: ['STORM'] },
+        { spanish: 'NIEBLA', english: ['FOG'] },
+        { spanish: 'DESPEJADO', english: ['CLEAR'] },
+        { spanish: 'ARCO IRIS', english: ['RAINBOW'] },
+        { spanish: 'VIENTO', english: ['WIND'] },
+        { spanish: 'VENTOSO', english: ['WINDY'] },
+        { spanish: 'CALIDO', english: ['WARM', 'HOT'] },
+    ],
+    house: [
+        { spanish: 'BAÑO', english: ['BATHROOM-TOILET', 'BATHROOM', 'TOILET'] },
+        { spanish: 'CUARTO', english: ['BEDROOM'] },
+        { spanish: 'SOTANO', english: ['BASEMENT'] },
+        { spanish: 'COCINA', english: ['KITCHEN'] },
+        { spanish: 'PUERTA', english: ['DOOR'] },
+        { spanish: 'TIMBRE', english: ['DOORBELL'] },
+        { spanish: 'TECHO', english: ['CEILING'] },
+        { spanish: 'BALCON', english: ['BALCONY'] },
+        { spanish: 'SALA', english: ['LIVING ROOM'] },
+        { spanish: 'COMEDOR', english: ['DINING ROOM', 'DINNING ROOM'] },
+        { spanish: 'JARDIN', english: ['GARDEN'] },
+        { spanish: 'VENTANA', english: ['WINDOW'] },
+        { spanish: 'PARED', english: ['WALL'] },
+        { spanish: 'PISO', english: ['FLOOR'] },
+        { spanish: 'PATIO', english: ['COURTYARD'] },
+    ]
+};
+
+const fullVocabList = [...vocabularyData.weather, ...vocabularyData.house];
 
 export default function EngA1Class9Page() {
     const { t } = useTranslation();
@@ -88,8 +118,9 @@ export default function EngA1Class9Page() {
     const [initialLoadComplete, setInitialLoadComplete] = useState(false);
 
     // Vocab States
-    const [vocabAnswers, setVocabAnswers] = useState<string[]>(Array(weatherHouseVocab.length).fill(''));
-    const [vocabValidation, setVocabValidation] = useState<('correct' | 'incorrect' | 'unchecked')[]>(Array(weatherHouseVocab.length).fill('unchecked'));
+    const [vocabAnswers, setVocabAnswers] = useState<{[key: string]: string[]}>({});
+    const [vocabValidation, setVocabValidation] = useState<{[key: string]: ('correct' | 'incorrect' | 'unchecked')[]}>({});
+    const [canAdvanceVocab, setCanAdvanceVocab] = useState(false);
 
     const initialLearningPath = useMemo((): Topic[] => [
         { key: 'vocabulary', name: 'Vocabulary (Weather and house)', icon: Home, status: 'active' },
@@ -127,6 +158,19 @@ export default function EngA1Class9Page() {
             setSelectedTopic(savedSelectedTopic || firstActive?.key || 'vocabulary');
             setInitialLoadComplete(true);
         }
+
+        // Initialize vocab answers state
+        const initialAnswers: { [key: string]: string[] } = {};
+        const initialValidation: { [key: string]: ('correct' | 'incorrect' | 'unchecked')[] } = {};
+        Object.keys(vocabularyData).forEach(category => {
+            const cat = category as keyof typeof vocabularyData;
+            initialAnswers[cat] = Array(vocabularyData[cat].length).fill('');
+            initialValidation[cat] = Array(vocabularyData[cat].length).fill('unchecked');
+        });
+        setVocabAnswers(initialAnswers);
+        setVocabValidation(initialValidation);
+        setCanAdvanceVocab(false);
+
     }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading, isUserLoading, initialLoadComplete]);
     
     const progressValue = useMemo(() => {
@@ -143,7 +187,7 @@ export default function EngA1Class9Page() {
 
         updateDocumentNonBlocking(studentDocRef, { 
             [`lessonProgress.${progressStorageVersion}`]: statusesToSave,
-            [`progress.${mainProgressKey}`]: progressValue
+            [`progress.${mainProgressKey}`]: Math.round(progressValue)
         });
         
         if (progressValue >= 100) {
@@ -190,31 +234,57 @@ export default function EngA1Class9Page() {
         }
     };
 
-    const handleVocabInputChange = (index: number, value: string) => {
-        const newAnswers = [...vocabAnswers];
-        newAnswers[index] = value;
-        setVocabAnswers(newAnswers);
-        const newValidation = [...vocabValidation];
-        newValidation[index] = 'unchecked';
-        setVocabValidation(newValidation);
+    const handleVocabInputChange = (category: string, index: number, value: string) => {
+        setVocabAnswers(prev => ({
+            ...prev,
+            [category]: prev[category].map((ans, i) => (i === index ? value : ans)),
+        }));
+        const newValidation = { ...vocabValidation };
+        const catKey = category as keyof typeof vocabValidation;
+        if (newValidation[catKey]?.[index] !== 'unchecked') {
+            newValidation[catKey][index] = 'unchecked';
+            setVocabValidation(newValidation);
+        }
+        setCanAdvanceVocab(false);
     };
 
     const handleCheckVocab = () => {
-        let atLeastOneCorrect = false;
-        const newValidation = weatherHouseVocab.map((item, index) => {
-            const userAnswer = vocabAnswers[index]?.trim().toLowerCase();
-            const isCorrect = item.english.some(e => e.toLowerCase() === userAnswer);
-            if (isCorrect) atLeastOneCorrect = true;
-            return isCorrect ? 'correct' : 'incorrect';
-        });
-        setVocabValidation(newValidation as ('correct' | 'incorrect' | 'unchecked')[]);
+        let allCategoriesCorrect = true;
+        const newValidationStatus: { [key: string]: ('correct' | 'incorrect' | 'unchecked')[] } = {};
 
-        if (atLeastOneCorrect) {
-            toast({ title: "¡Buen trabajo!", description: "Has comenzado con éxito." });
+        Object.keys(vocabularyData).forEach(category => {
+            const cat = category as keyof typeof vocabularyData;
+            newValidationStatus[cat] = vocabularyData[cat].map((item, index) => {
+                const userAnswer = (vocabAnswers[cat]?.[index] || '').trim().toUpperCase().replace(/[()]/g, '');
+                const isCorrect = item.english.some(e => e.toUpperCase().replace(/[()]/g, '') === userAnswer);
+                if (!isCorrect) {
+                    allCategoriesCorrect = false;
+                }
+                return isCorrect ? 'correct' : 'incorrect';
+            });
+        });
+
+        setVocabValidation(newValidationStatus);
+
+        if (allCategoriesCorrect) {
+            toast({ title: "¡Excelente!", description: "Has completado todo el vocabulario correctamente." });
+            setCanAdvanceVocab(true);
             handleTopicComplete('vocabulary');
         } else {
-            toast({ variant: "destructive", title: "Sigue intentando", description: "Completa al menos una traducción para continuar." });
+            toast({ 
+                variant: "destructive", 
+                title: "Algunas respuestas son incorrectas", 
+                description: "Revisa los campos marcados en rojo para continuar." 
+            });
+            setCanAdvanceVocab(false);
         }
+    };
+
+    const getVocabInputClass = (category: string, index: number) => {
+        const status = vocabValidation[category]?.[index];
+        if (status === 'correct') return 'border-green-500 bg-green-50 dark:bg-green-900/10 focus-visible:ring-green-500';
+        if (status === 'incorrect') return 'border-destructive bg-destructive/5 focus-visible:ring-destructive';
+        return '';
     };
 
     const renderContent = () => {
@@ -226,32 +296,63 @@ export default function EngA1Class9Page() {
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
                         <CardHeader>
                             <CardTitle>Vocabulary (Weather and house)</CardTitle>
-                            <CardDescription>Escribe la traducción al inglés para cada palabra.</CardDescription>
+                            <CardDescription>Escribe la traducción al inglés para cada palabra basándote en las tablas de la lección.</CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-lg">
-                                <div className="font-bold p-3 bg-muted rounded-lg">Español</div>
-                                <div className="font-bold p-3 bg-muted rounded-lg">Inglés</div>
-                                {weatherHouseVocab.map((item, index) => (
-                                    <React.Fragment key={index}>
-                                        <div className="p-3 bg-card border rounded-lg flex items-center">{item.spanish}</div>
-                                        <div className="p-3 bg-card border rounded-lg flex items-center">
-                                            <Input
-                                                value={vocabAnswers[index] || ''}
-                                                onChange={e => handleVocabInputChange(index, e.target.value)}
-                                                className={cn(
-                                                    vocabValidation[index] === 'correct' && "border-green-500 bg-green-50 dark:bg-green-900/10",
-                                                    vocabValidation[index] === 'incorrect' && "border-destructive bg-destructive/5"
-                                                )}
-                                                autoComplete="off"
-                                            />
+                             <Accordion type="multiple" defaultValue={['weather', 'house']} className="w-full">
+                                <AccordionItem value="weather">
+                                    <AccordionTrigger className="text-xl font-bold uppercase text-primary">Atmospheric Weather</AccordionTrigger>
+                                    <AccordionContent>
+                                        <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-lg">
+                                            <div className="font-bold p-3 bg-muted rounded-lg text-left">Español</div>
+                                            <div className="font-bold p-3 bg-muted rounded-lg text-left">Inglés</div>
+                                            {vocabularyData.weather.map((item, index) => (
+                                                <React.Fragment key={`weather-${index}`}>
+                                                    <div className="p-3 bg-card border rounded-lg flex items-center">{item.spanish}</div>
+                                                    <div className="p-3 bg-card border rounded-lg flex items-center">
+                                                        <Input
+                                                            value={vocabAnswers.weather?.[index] || ''}
+                                                            onChange={e => handleVocabInputChange('weather', index, e.target.value)}
+                                                            className={cn(getVocabInputClass('weather', index))}
+                                                            autoComplete="off"
+                                                        />
+                                                    </div>
+                                                </React.Fragment>
+                                            ))}
                                         </div>
-                                    </React.Fragment>
-                                ))}
-                            </div>
+                                    </AccordionContent>
+                                </AccordionItem>
+                                <AccordionItem value="house">
+                                    <AccordionTrigger className="text-xl font-bold uppercase text-primary">Places in the House</AccordionTrigger>
+                                    <AccordionContent>
+                                        <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-lg">
+                                            <div className="font-bold p-3 bg-muted rounded-lg text-left">Español</div>
+                                            <div className="font-bold p-3 bg-muted rounded-lg text-left">Inglés</div>
+                                            {vocabularyData.house.map((item, index) => (
+                                                <React.Fragment key={`house-${index}`}>
+                                                    <div className="p-3 bg-card border rounded-lg flex items-center">{item.spanish}</div>
+                                                    <div className="p-3 bg-card border rounded-lg flex items-center">
+                                                        <Input
+                                                            value={vocabAnswers.house?.[index] || ''}
+                                                            onChange={e => handleVocabInputChange('house', index, e.target.value)}
+                                                            className={cn(getVocabInputClass('house', index))}
+                                                            autoComplete="off"
+                                                        />
+                                                    </div>
+                                                </React.Fragment>
+                                            ))}
+                                        </div>
+                                    </AccordionContent>
+                                </AccordionItem>
+                            </Accordion>
                         </CardContent>
-                        <CardFooter>
-                            <Button onClick={handleCheckVocab}>Verificar y Continuar</Button>
+                        <CardFooter className="flex justify-between items-center border-t pt-6">
+                            <Button onClick={handleCheckVocab}>Verificar Vocabulario</Button>
+                            {canAdvanceVocab && (
+                                <Button onClick={() => handleTopicComplete('vocabulary')} className="animate-pulse">
+                                    Siguiente Tema <ArrowRight className="ml-2 h-4 w-4" />
+                                </Button>
+                            )}
                         </CardFooter>
                     </Card>
                 );
@@ -332,7 +433,7 @@ export default function EngA1Class9Page() {
                     />
                 );
             case 'vocab_game':
-                return <VocabularyMatchingGame data={weatherHouseVocab} title="Matching Game: Weather & House" onComplete={() => handleTopicComplete('vocab_game')} />;
+                return <VocabularyMatchingGame data={fullVocabList} title="Matching Game: Weather & House" onComplete={() => handleTopicComplete('vocab_game')} />;
             case 'writing1':
                 return (
                     <CreativeWritingExercise 
@@ -393,7 +494,7 @@ export default function EngA1Class9Page() {
                                         </ul>
                                     </nav>
                                     <div className="mt-6 pt-6 border-t">
-                                        <div className="flex justify-between items-center text-sm font-medium text-muted-foreground mb-2"><span>Progreso</span><span className="font-bold text-foreground">{progressValue}%</span></div>
+                                        <div className="flex justify-between items-center text-sm font-medium text-muted-foreground mb-2"><span>Progreso</span><span className="font-bold text-foreground">{Math.round(progressValue)}%</span></div>
                                         <Progress value={progressValue} className="h-2" />
                                     </div>
                                 </CardContent>
