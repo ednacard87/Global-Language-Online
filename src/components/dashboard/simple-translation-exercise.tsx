@@ -393,7 +393,7 @@ const exercises = {
             { spanish: 'ESTE ES NUESTRO GATO', english: ["this is our cat"] },
             { spanish: 'ESOS CUADROS SON TUYOS', english: ["those paintings are yours", "those pictures are yours"] },
             { spanish: '¿ESTE ES SUYO? - (DE EL)', english: ["is this his?"] },
-            { spanish: '¿ESTOS SON SUS ZAPATOS? -(DE ELLA)', english: ["are these her shoes?"] },
+            { spanish: '¿ESTOS SON SENS ZAPATOS? -(DE ELLA)', english: ["are these her shoes?"] },
         ]
     },
     c8_ex3: {
@@ -435,6 +435,41 @@ const exercises = {
             { spanish: '¿VAS AL GIMNASIO A VECES?', english: ["do you go to the gym sometimes?", "do you sometimes go to the gym?"] },
             { spanish: 'ELLOS NUNCA BEBEN CAFÉ', english: ["they never drink coffee"] },
             { spanish: 'ELLA TAMBIÉN ES UNA DOCTORA', english: ["she is also a doctor", "she is a doctor too", "she's also a doctor"] },
+        ]
+    },
+    c9_ex1: {
+        title: 'a1class1.exercise',
+        prompts: [
+            { spanish: 'Frase de ejemplo 1...', english: ['...'] },
+            { spanish: 'Frase de ejemplo 2...', english: ['...'] },
+        ]
+    },
+    c9_ex2: {
+        title: 'a1class1.exercise',
+        prompts: [
+            { spanish: 'Frase de ejemplo 1...', english: ['...'] },
+            { spanish: 'Frase de ejemplo 2...', english: ['...'] },
+        ]
+    },
+    c9_ex3: {
+        title: 'a1class1.exercise',
+        prompts: [
+            { spanish: 'Frase de ejemplo 1...', english: ['...'] },
+            { spanish: 'Frase de ejemplo 2...', english: ['...'] },
+        ]
+    },
+    c9_ex4: {
+        title: 'a1class1.exercise',
+        prompts: [
+            { spanish: 'Frase de ejemplo 1...', english: ['...'] },
+            { spanish: 'Frase de ejemplo 2...', english: ['...'] },
+        ]
+    },
+    c9_ex5: {
+        title: 'a1class1.exercise',
+        prompts: [
+            { spanish: 'Frase de ejemplo 1...', english: ['...'] },
+            { spanish: 'Frase de ejemplo 2...', english: ['...'] },
         ]
     }
 };
