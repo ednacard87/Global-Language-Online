@@ -50,7 +50,7 @@ const ICONS = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_a1_eng_u2_c9_v3_lexico';
+const progressStorageVersion = 'progress_a1_eng_u2_c9_v4_grammar3';
 const mainProgressKey = 'progress_a1_eng_unit_2_class_9';
 
 const vocabularyData = {
@@ -131,6 +131,7 @@ export default function EngA1Class9Page() {
         { key: 'ex1', name: 'Exercise 1', icon: PenSquare, status: 'locked' },
         { key: 'grammar2', name: 'Grammar 2', icon: GraduationCap, status: 'locked' },
         { key: 'ex2', name: 'Exercise 2', icon: PenSquare, status: 'locked' },
+        { key: 'grammar3', name: 'Grammar 3', icon: GraduationCap, status: 'locked' },
         { key: 'ex3', name: 'Exercise 3', icon: PenSquare, status: 'locked' },
         { key: 'dialogue1', name: 'Dialogue 1', icon: MessageSquare, status: 'locked' },
         { key: 'ex4', name: 'Exercise 4', icon: PenSquare, status: 'locked' },
@@ -231,7 +232,7 @@ export default function EngA1Class9Page() {
         }
         setSelectedTopic(topicKey);
 
-        const autoViewTopics = ['grammar', 'grammar2'];
+        const autoViewTopics = ['grammar', 'grammar2', 'grammar3'];
         if (autoViewTopics.includes(topicKey)) {
             handleTopicComplete(topicKey);
         }
@@ -467,6 +468,20 @@ export default function EngA1Class9Page() {
                         </CardContent>
                         <CardFooter className="justify-center">
                             <Button onClick={() => handleTopicComplete('grammar2')}>Avanzar</Button>
+                        </CardFooter>
+                    </Card>
+                );
+            case 'grammar3':
+                return (
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                        <CardHeader>
+                            <CardTitle>Grammar 3</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <p>Contenido para Grammar 3 estará disponible pronto.</p>
+                        </CardContent>
+                        <CardFooter>
+                            <Button onClick={() => handleTopicComplete('grammar3')}>Continuar</Button>
                         </CardFooter>
                     </Card>
                 );
