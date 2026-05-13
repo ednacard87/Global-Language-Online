@@ -16,7 +16,7 @@ import { Input } from '@/components/ui/input';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
 import { CreativeWritingExercise } from '@/components/dashboard/creative-writing-exercise';
-import { AdjectivesMemoryGame } from '@/components/kids/exercises/adjectives-memory-game';
+import { VocabularyMatchingGame } from '@/components/dashboard/vocabulary-matching-game';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { SentenceCompletionExercise, type CompletionPrompt } from '@/components/kids/exercises/sentence-completion-exercise';
 
@@ -34,7 +34,7 @@ const ICONS = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_a1_eng_unit_2_class_8_v10_final';
+const progressStorageVersion = 'progress_a1_eng_unit_2_class_8_v11_stable';
 const mainProgressKey = 'progress_a1_eng_unit_2_class_8';
 
 const vocabularyData = [
@@ -432,7 +432,13 @@ export default function EngA1Class8Page() {
                     />
                 );
             case 'vocab_game':
-                return <AdjectivesMemoryGame data={vocabularyData.map(v => ({ spanish: v.spanish, english: v.english }))} onComplete={() => handleTopicComplete('vocab_game')} />;
+                return (
+                    <VocabularyMatchingGame 
+                        data={vocabularyData} 
+                        onComplete={() => handleTopicComplete('vocab_game')} 
+                        title="Vocabulary Association Game"
+                    />
+                );
             case 'writing1':
                 return (
                     <CreativeWritingExercise 
@@ -530,7 +536,11 @@ export default function EngA1Class8Page() {
                                                                             const isSubLocked = subItem.status === 'locked' && !isAdmin;
                                                                             return (
                                                                                 <li key={subItem.key} onClick={() => handleTopicSelect(subItem.key)}
-                                                                                    className={cn('flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors', subItem.status === 'locked' && !isAdmin ? 'cursor-not-allowed text-muted-foreground/50' : 'cursor-pointer hover:bg-muted', selectedTopic === subItem.key && 'bg-muted text-primary font-semibold')}>
+                                                                                    className={cn(
+                                                                                        'flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors',
+                                                                                        isSubLocked ? 'cursor-not-allowed text-muted-foreground/50' : 'cursor-pointer hover:bg-muted',
+                                                                                        selectedTopic === subItem.key && 'bg-muted text-primary font-semibold'
+                                                                                    )}>
                                                                                     <div className='flex items-center gap-3'>
                                                                                         <SubIcon className={cn("h-5 w-5", subItem.status === 'completed' ? 'text-green-500' : '')} />
                                                                                         <span>{subItem.name}</span>
