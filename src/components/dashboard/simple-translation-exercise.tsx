@@ -460,7 +460,7 @@ const exercises = {
     c9_ex2: {
         title: 'a1class1.exercise',
         prompts: [
-            { spanish: '¿TE GUSTA ESTE VESTIDO?', english: ['do you like this dress?'] },
+            { spanish: '¿TE GUSTA EL VESTIDO NEGRO - ME GUSTA EL NEGRO', english: ["i like the black dress - i like the black one", "i like the black dress i like the black one"] },
             { spanish: '¿TE GUSTA ESTE?', english: ['do you like this one?'] },
             { spanish: '¿TE GUSTA ESE CARRO?', english: ['do you like that car?'] },
             { spanish: '¿TE GUSTA ESE?', english: ['do you like that one?'] },
@@ -476,7 +476,7 @@ const exercises = {
             { spanish: 'ME GUSTAN LOS ANIMALES GRANDES - ME GUSTAN LOS GRANDES', english: ["i like big animals - i like the big ones", "i like big animals i like the big ones"] },
             { spanish: 'ME GUSTA EL VESTIDO NEGRO - ME GUSTA EL NEGRO', english: ["i like the black dress - i like the black one", "i like the black dress i like the black one"] },
             { spanish: 'EL LIBRO AZUL - EL AZUL', english: ["the blue book - the blue one", "the blue book the blue one"] },
-            { spanish: 'EL PERRO GRIS - EL GRIS', english: ["the gray dog - the gray one", "the grey dog - the gray one", "the gray dog the gray one", "the grey dog the grey one"] },
+            { spanish: 'EL PERRO GRIS - EL GRIS', english: ["the gray dog - the gray one", "the grey dog - the gray one", "the gray dog the gray one", "the grey dog the gray one"] },
             { spanish: 'EL CARRO PEQUEÑO - EL PEQUEÑO', english: ["the small car - the small one", "the small car the small one"] },
             { spanish: 'EL EDIFICIO (BUILDING) ALTO - EL ALTO', english: ["the tall building - the tall one", "the tall building the tall one"] },
             { spanish: 'LOS HOMBRES FUERTES - LOS FUERTES', english: ["the strong men - the strong ones", "the strong men the strong ones"] },
@@ -509,6 +509,26 @@ const exercises = {
             { spanish: '¿DONDE ESTÁ ESE RESTAURANTE?', english: ["where is that restaurant?"] },
             { spanish: 'ESOS CABALLOS SON NEGROS', english: ["those horses are black"] },
             { spanish: 'ESTOS GATOS SON BLANCOS MIENTRAS QUE ESOS SON NEGROS', english: ["these cats are white while those ones are black"] },
+        ]
+    },
+    c10_ex1: {
+        title: 'a1class1.exercise',
+        prompts: [
+            { spanish: 'EL TIGRE GRANDE – EL GRANDE', english: ["the big tiger - the big one", "the big tiger the big one"] },
+            { spanish: 'LOS PARQUES PEQUEÑOS- LOS PEQUEÑOS', english: ["the small parks - the small ones", "the small parks the small ones"] },
+            { spanish: 'EL PORTATIL NUEVO- EL NUEVO', english: ["the new laptop - the new one", "the new laptop the new one"] },
+            { spanish: 'LA OTRA SOMBRILLA- LA OTRA', english: ["the other umbrella - the other one", "the other umbrella the other one"] },
+            { spanish: 'LOS OTROS PORTATILES– LOS OTROS', english: ["the other laptops - the other ones", "the other laptops the other ones"] },
+            { spanish: '¿CUALES VESTIDOS TE GUSTAN? – CUALES TE GUSTAN?', english: ["which dresses do you like? - which ones do you like?", "which dresses do you like? which ones do you like?"] },
+            { spanish: '¿CUAL POSTRE QUIERES? – CUAL QUIERES?', english: ["which dessert do you want? - which one do you want?", "which dessert do you want? which one do you want?"] },
+            { spanish: 'QUIERO EL POSTRE DE CHOCOLATE – QUIERO EL DE CHOCOLATE', english: ["i want the chocolate dessert - i want the chocolate one", "i want the chocolate dessert i want the chocolate one"] },
+            { spanish: 'PREFIERO LOS CELULARES PEQUEÑOS – PREFIERO LOS PEQUEÑOS', english: ["i prefer small cellphones - i prefer the small ones", "i prefer small cellphones i prefer the small ones"] },
+            { spanish: '¿CUALES GAFAS TE GUSTAN? – CUALES TE GUSTAN?', english: ["which glasses do you like? - which ones do you like?", "which glasses do you like? which ones do you like?"] },
+            { spanish: '¿CUAL CHAQUETA TE GUSTA? – CUAL TE GUSTA? A MI ME GUSTA LA NEGRA', english: ["which jacket do you like? - which one do you like? i like the black one", "which jacket do you like? which one do you like? i like the black one"] },
+            { spanish: '¿CUALES JUGOS TE GUSTAN? – CUAL TE GUSTA? – A MI ME GUSTA EL DE MARACUYA', english: ["which juices do you like? - which one do you like? - i like the passion fruit one", "which juices do you like? which one do you like? i like the passion fruit one"] },
+            { spanish: '¿CUAL LIBRO LE GUSTA A ELLA? - CUAL LE GUSTA?', english: ["which book does she like? - which one does she like?", "which book does she like? which one does she like?"] },
+            { spanish: '¿CUAL CELULAR ES TUYO? – CUAL ES EL TUYO?', english: ["which cellphone is yours? - which one is yours?", "which cellphone is yours? which one is yours?"] },
+            { spanish: '¿CUALES BOTAS SON DE ELLA? – CUALES SON DE ELLA?', english: ["which boots are hers? - which ones are hers?", "which boots are hers? which ones are hers?"] },
         ]
     }
 };

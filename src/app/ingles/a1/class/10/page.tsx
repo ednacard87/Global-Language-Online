@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, Fragment } from 'react';
 import Link from 'next/link';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -29,6 +29,7 @@ import { doc } from 'firebase/firestore';
 import { Input } from '@/components/ui/input';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Separator } from '@/components/ui/separator';
+import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
 
 type Topic = {
   key: string;
@@ -43,7 +44,7 @@ const ICONS = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_a1_eng_u2_c10_v5_syntax_fix';
+const progressStorageVersion = 'progress_a1_eng_u2_c10_v6_ex1_bubbles';
 const mainProgressKey = 'progress_a1_eng_unit_2_class_10';
 
 const vocabularyData = {
@@ -272,7 +273,7 @@ export default function EngA1Class10Page() {
                                             <div className="font-bold p-3 bg-muted rounded-lg text-left">Spanish</div>
                                             <div className="font-bold p-3 bg-muted rounded-lg text-left">English</div>
                                             {vocabularyData.verbos.map((item, idx) => (
-                                                <React.Fragment key={`v-${idx}`}>
+                                                <Fragment key={`v-${idx}`}>
                                                     <div className="p-3 bg-card border rounded-lg flex items-center font-medium">{item.spanish}</div>
                                                     <div className="p-3 bg-card border rounded-lg flex items-center">
                                                         <Input
@@ -283,7 +284,7 @@ export default function EngA1Class10Page() {
                                                             autoComplete="off"
                                                         />
                                                     </div>
-                                                </React.Fragment>
+                                                </Fragment>
                                             ))}
                                         </div>
                                     </AccordionContent>
@@ -295,7 +296,7 @@ export default function EngA1Class10Page() {
                                             <div className="font-bold p-3 bg-muted rounded-lg text-left">Spanish</div>
                                             <div className="font-bold p-3 bg-muted rounded-lg text-left">English</div>
                                             {vocabularyData.palabras.map((item, idx) => (
-                                                <React.Fragment key={`p-${idx}`}>
+                                                <Fragment key={`p-${idx}`}>
                                                     <div className="p-3 bg-card border rounded-lg flex items-center font-medium">{item.spanish}</div>
                                                     <div className="p-3 bg-card border rounded-lg flex items-center">
                                                         <Input
@@ -306,7 +307,7 @@ export default function EngA1Class10Page() {
                                                             autoComplete="off"
                                                         />
                                                     </div>
-                                                </React.Fragment>
+                                                </Fragment>
                                             ))}
                                         </div>
                                     </AccordionContent>
@@ -428,6 +429,8 @@ export default function EngA1Class10Page() {
                         </CardFooter>
                     </Card>
                 );
+            case 'ex1':
+                return <SimpleTranslationExercise exerciseKey="c10_ex1" course="a1" onComplete={() => handleTopicComplete('ex1')} title="Exercise 1: ONE / ONES" />;
             default:
                 if (selectedTopic.startsWith('ex') || selectedTopic.startsWith('last') || selectedTopic.startsWith('dialogue') || selectedTopic.startsWith('vocab_game') || selectedTopic === 'grammar2') {
                     return (
