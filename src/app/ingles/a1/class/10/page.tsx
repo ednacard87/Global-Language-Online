@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -307,7 +308,7 @@ export default function EngA1Class10Page() {
                                                             autoComplete="off"
                                                         />
                                                     </div>
-                                                </React.Fragment>
+                                                </Fragment>
                                             ))}
                                         </div>
                                     </AccordionContent>
@@ -400,6 +401,28 @@ export default function EngA1Class10Page() {
                                     <Lightbulb className="inline-block h-4 w-4 mr-1 text-yellow-500" />
                                     Podemos elegir reemplazar el sustantivo por <strong>ONE / ONES</strong> solo si ya conocemos el contexto.
                                 </p>
+                            </div>
+
+                            <div className="bg-primary/5 p-6 rounded-xl border-l-4 border-primary mt-6">
+                                <h3 className="text-xl font-bold mb-4">EXAMPLE:</h3>
+                                <div className="space-y-4 font-mono text-sm">
+                                    <div className="p-3 bg-background rounded border border-dashed">
+                                        <p className="font-bold">WHICH HOUSE DOES SHE BUY?</p>
+                                        <p className="text-muted-foreground italic">(¿CUAL CASA COMPRA ELLA? )</p>
+                                    </div>
+                                    <div className="p-3 bg-background rounded border border-dashed">
+                                        <p className="font-bold text-primary">WHICH ONE DOES SHE BUY?</p>
+                                        <p className="text-muted-foreground italic">(¿CUAL COMPRA ELLA?)</p>
+                                    </div>
+                                    <div className="p-3 bg-background rounded border border-dashed">
+                                        <p className="font-bold">WHICH MANGOES DO THEY EAT?</p>
+                                        <p className="text-muted-foreground italic">(¿CUALES MANGOS COMEN ELLOS?)</p>
+                                    </div>
+                                    <div className="p-3 bg-background rounded border border-dashed">
+                                        <p className="font-bold text-primary">WHICH ONES DO THEY EAT?</p>
+                                        <p className="text-muted-foreground italic">(¿CUALES SE COMEN ELLOS?)</p>
+                                    </div>
+                                </div>
                             </div>
                         </CardContent>
                         <CardFooter className="justify-center">
