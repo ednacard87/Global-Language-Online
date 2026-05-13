@@ -18,6 +18,7 @@ import { SimpleTranslationExercise } from '@/components/dashboard/simple-transla
 import { CreativeWritingExercise } from '@/components/dashboard/creative-writing-exercise';
 import { AdjectivesMemoryGame } from '@/components/kids/exercises/adjectives-memory-game';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { SentenceCompletionExercise, type CompletionPrompt } from '@/components/kids/exercises/sentence-completion-exercise';
 
 type Topic = {
   key: string;
@@ -33,7 +34,7 @@ const ICONS = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_a1_eng_unit_2_class_8_v5_possessives';
+const progressStorageVersion = 'progress_a1_eng_unit_2_class_8_v6_the_exercise';
 const mainProgressKey = 'progress_a1_eng_unit_2_class_8';
 
 const vocabularyData = [
@@ -53,6 +54,21 @@ const vocabularyData = [
     { spanish: 'ACERCA DE', english: ['ABOUT'] },
     { spanish: 'CADA', english: ['EVERY', 'EACH'] },
     { spanish: 'CASI', english: ['ALMOST'] },
+];
+
+const exercise5Data: CompletionPrompt[] = [
+    { parts: ["WHERE IS ", " WALLET?"], answers: ["THE"] },
+    { parts: ["THEY LOVE ", " LANGUAGES"], answers: [""] },
+    { parts: ["THIS IS ", " SARA'S PRESENT."], answers: [""] },
+    { parts: ["THIS IS ", " JOHN'S HOUSE."], answers: [""] },
+    { parts: ["THESE ARE ", " KEYS HE GAVE ME."], answers: ["THE"] },
+    { parts: ["", " STRAWBERRIES ARE DELICIOUS."], answers: [""] },
+    { parts: ["HE LIKES ", " SUN GLASSES."], answers: [""] },
+    { parts: ["WHERE ARE ", " SHOES?"], answers: ["THE"] },
+    { parts: ["I DO NOT LIKE ", " SUNNY DAYS."], answers: [""] },
+    { parts: ["HE ISN'T ", " ANTHONY'S HOUSE."], answers: [""] },
+    { parts: ["", " DOOR OF MY HOUSE."], answers: ["THE"] },
+    { parts: ["SHE WORKS WITH ", " ENGINEER."], answers: [""] },
 ];
 
 const DictationExercise = ({ 
@@ -261,7 +277,7 @@ export default function EngA1Class8Page() {
         const newValidation = [...vocabValidation];
         if (newValidation[index] !== 'unchecked') {
             newValidation[index] = 'unchecked';
-            setVocabValidation(newValidation);
+            setVocabValidation(newValidation as ('correct' | 'incorrect' | 'unchecked')[]);
         }
         setCanAdvanceVocab(false);
     };
@@ -396,7 +412,14 @@ export default function EngA1Class8Page() {
             case 'ex4':
                 return <SimpleTranslationExercise exerciseKey="c8_ex4" course="a1" title="Exercise 4" onComplete={() => handleTopicComplete('ex4')} />;
             case 'ex5':
-                return <SimpleTranslationExercise exerciseKey="c8_ex5" course="a1" title="Exercise 5" onComplete={() => handleTopicComplete('ex5')} />;
+                return (
+                    <SentenceCompletionExercise
+                        title="Exercise 5"
+                        description="Completa con la palabra 'THE' donde sea necesario. Si no se requiere nada, deja el espacio en blanco o escribe una 'x'."
+                        data={exercise5Data}
+                        onComplete={() => handleTopicComplete('ex5')}
+                    />
+                );
             case 'vocab_game':
                 return <AdjectivesMemoryGame data={vocabularyData.map(v => ({ spanish: v.spanish, english: v.english }))} onComplete={() => handleTopicComplete('vocab_game')} />;
             case 'writing1':
