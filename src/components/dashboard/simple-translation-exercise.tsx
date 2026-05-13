@@ -387,9 +387,7 @@ const exercises = {
         title: 'a1class1.exercise',
         prompts: [
             { spanish: 'ESTE NO ES MIO, ES TUYO', english: ["this is not mine, it is yours", "this isn't mine, it's yours", "this is not mine it is yours", "this isn't mine it's yours"] },
-            { spanish: '¿TE GUSTA SU CASA? - (DE ELLOS)', english: ["do you like their house?"] },
-            { spanish: 'ESTE CELULAR ES DE ELLA', english: ["this cellphone is hers", "this phone is hers"] },
-            { spanish: 'ME GUSTA EL COLOR DE SU CASA- (DE ELLA)', english: ["i like the color of her house"] },
+            { spanish: '¿TE GUSTA EL COLOR DE SU CASA- (DE ELLA)', english: ["i like the color of her house"] },
             { spanish: 'ESTE ES NUESTRO GATO', english: ["this is our heart"] },
             { spanish: 'ESOS CUADROS SON TUYOS', english: ["those paintings are yours", "those pictures are yours"] },
             { spanish: '¿ESTE ES SUYO? - (DE EL)', english: ["is this his?"] },
@@ -404,7 +402,7 @@ const exercises = {
             { spanish: '¿ELLOS CORREN MUY VELOZ (FAST)?', english: ["do they run very fast?"] },
             { spanish: 'NOSOTROS NO VAMOS A BOGOTÁ', english: ["we do not go to bogota", "we don't go to bogota"] },
             { spanish: '¿ELLA ESTÁ TRISTE? NO, ELLA ESTA FELIZ', english: ["is she sad? no, she is happy", "is she sad? no, she's happy"] },
-            { spanish: 'A ELLA NO LE GUSTAN LOS GATOS', english: ["she does not like cats", "she doesn't like cats"] },
+            { spanish: 'A ELLA LE GUSTAN LOS GATOS', english: ["she does not like cats", "she doesn't like cats"] },
             { spanish: 'ELLA JUEGA BALONCESTO (BASKETBALL) LOS SÁBADOS', english: ["she plays basketball on saturdays"] },
             { spanish: '¿A DÓNDE VIAJA ÉL? ÉL VIAJA A BARCELONA', english: ["where does he travel? he travels to barcelona", "where does he travel to? he travels to barcelona"] },
             { spanish: 'ELLOS NO SON NUESTROS TÍOS (UNCLES)', english: ["they are not our uncles", "they aren't our uncles", "they're not our uncles"] },
@@ -452,7 +450,7 @@ const exercises = {
             { spanish: 'ESTE SOFA ES COMODO', english: ['this sofa is comfortable', "this couch is comfortable"] },
             { spanish: 'ESTE CUESTA MAS QUE ESE', english: ['this costs more than that one', 'this costs more than that'] },
             { spanish: 'A ELLA LE GUSTAN ESTOS ZAPATOS', english: ['she likes these shoes'] },
-            { spanish: 'TE GUSTA ESTA CAMISETA?', english: ['do you like this t-shirt?', 'do you like this shirt?'] },
+            { spanish: 'TE GUSTA ESTA CAMISETA? ', english: ['do you like this t-shirt?', 'do you like this shirt?'] },
             { spanish: 'ME GUSTA ESA CHAQUETA', english: ['i like that jacket'] },
             { spanish: 'ESA MUCHACHA ES DANNY', english: ['that girl is danny'] },
             { spanish: 'NOSOTROS CORREMOS EN ESOS LUGARES', english: ['we run in those places'] },
@@ -490,8 +488,12 @@ const exercises = {
     c9_ex4: {
         title: 'a1class1.exercise',
         prompts: [
-            { spanish: 'Frase de ejemplo 1...', english: ['...'] },
-            { spanish: 'Frase de ejemplo 2...', english: ['...'] },
+            { spanish: '¿TE GUSTAN ESTOS CUADROS (PICTURES)? - ¿TE GUSTAN ESTOS?', english: ['do you like these pictures? - do you like these ones?', 'do you like these pictures? do you like these ones?'] },
+            { spanish: 'A ELLA LE GUSTA ESTA PELICULA (MOVIE) Y A EL LE GUSTA ESA', english: ['she likes this movie and he likes that one', "she likes this movie and he likes that"] },
+            { spanish: 'LAS CASAS BLANCAS - LAS BLANCAS', english: ['the white houses - the white ones', 'the white houses the white ones'] },
+            { spanish: 'LOS ZAPATOS NEGROS - LOS NEGROS', english: ['the black shoes - the black ones', 'the black shoes the black ones'] },
+            { spanish: 'ME GUSTAN ESTAS MESAS - ¿A TI TE GUSTAN ESAS?', english: ['i like these tables - do you like those ones?', 'i like these tables do you like those ones?'] },
+            { spanish: '¿TE GUSTA ESTE HELADO? - ¿TE GUSTA ESTE?', english: ['do you like this ice cream? - do you like this one?', 'do you like this ice cream? do you like this one?'] },
         ]
     },
     c9_ex5: {
