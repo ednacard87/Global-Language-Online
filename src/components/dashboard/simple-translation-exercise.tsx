@@ -374,7 +374,7 @@ const exercises = {
             { spanish: '¿QUE HACEN TU HERMANO? EL JUEGA TENNIS', english: ["what does your brother do? he plays tennis"] },
             { spanish: '¿CUÁNDO VA SUSAN AL CINE? ELLA VA AL CINE LOS MIERCOLES', english: ["when does susan go to the cinema? she goes to the cinema on wednesdays"] },
             { spanish: '¿QUIEN ES EL? EL ES EL HERMANO DE SARA', english: ["who is he? he is sara's brother", "who is he? he's sara's brother"] },
-            { spanish: '¿A DONDE VAS A JUGAR FUTBOL? – YO VOY AL ESTADIO', english: ["where do you go to play football? i go to the stadium", "where do you go to play soccer? i go to the stadium"] },
+            { spanish: '¿A DONDE VAS? A JUGAR FUTBOL? – YO VOY AL ESTADIO', english: ["where do you go to play football? i go to the stadium", "where do you go to play soccer? i go to the stadium"] },
             { spanish: '¿DE QUIEN ES ESTE CELULAR? – ESTE ES EL CELULAR DE THOMAS', english: ["whose cellphone is this? this is thomas's cellphone", "whose phone is this? this is thomas's phone"] },
             { spanish: '¿A ELLOS LES GUSTA EL PESCADO? –SI', english: ["do they like fish? yes, they do"] },
             { spanish: 'POR QUE EL ESTA TRISTE? EL ESTA TRISTE PORQUE NO TIENE INTERNET', english: ["why is he sad? he is sad because he does not have internet", "why is he sad? he's sad because he doesn't have internet"] },
@@ -475,8 +475,16 @@ const exercises = {
     c9_ex3: {
         title: 'a1class1.exercise',
         prompts: [
-            { spanish: 'Frase de ejemplo 1...', english: ['...'] },
-            { spanish: 'Frase de ejemplo 2...', english: ['...'] },
+            { spanish: 'ME GUSTAN LOS ANIMALES GRANDES - ME GUSTAN LOS GRANDES', english: ["i like big animals - i like the big ones", "i like big animals i like the big ones"] },
+            { spanish: 'ME GUSTA EL VESTIDO NEGRO - ME GUSTA EL NEGRO', english: ["i like the black dress - i like the black one", "i like the black dress i like the black one"] },
+            { spanish: 'EL LIBRO AZUL - EL AZUL', english: ["the blue book - the blue one", "the blue book the blue one"] },
+            { spanish: 'EL PERRO GRIS - EL GRIS', english: ["the gray dog - the gray one", "the grey dog - the grey one", "the gray dog the gray one", "the grey dog the grey one"] },
+            { spanish: 'EL CARRO PEQUEÑO - EL PEQUEÑO', english: ["the small car - the small one", "the small car the small one"] },
+            { spanish: 'EL EDIFICIO (BUILDING) ALTO - EL ALTO', english: ["the tall building - the tall one", "the tall building the tall one"] },
+            { spanish: 'LOS HOMBRES FUERTES - LOS FUERTES', english: ["the strong men - the strong ones", "the strong men the strong ones"] },
+            { spanish: 'LOS COMPUTADORES BARATOS - LOS BARATOS', english: ["the cheap computers - the cheap ones", "the cheap computers the cheap ones"] },
+            { spanish: 'LAS CASAS GRANDES - LAS GRANDES', english: ["the big houses - the big ones", "the big houses the big ones"] },
+            { spanish: 'EL COLLAR (NECKLACE) CARO - EL CARO', english: ["the expensive necklace - the expensive one", "the expensive necklace the expensive one"] },
         ]
     },
     c9_ex4: {
