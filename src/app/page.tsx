@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo } from "react";
@@ -156,7 +157,7 @@ const initialActiveCourses = [
 ];
 
 const courseClassCounts = {
-    a1: 15,
+    a1: 16,
     a2: 20,
     b1: 20,
     b2: 20,
@@ -235,7 +236,7 @@ function DashboardPage() {
 
   const totalStudyHoursThisWeek = useMemo(() => {
       if (!studySessions) return 0;
-      const totalMinutes = studySessions.reduce((sum, session) => total+ session.durationMinutes, 0);
+      const totalMinutes = studySessions.reduce((sum, session) => sum + session.durationMinutes, 0);
       return Math.round((totalMinutes / 60) * 10) / 10;
   }, [studySessions]);
 
@@ -421,9 +422,9 @@ function DashboardPage() {
                       <p className="text-muted-foreground text-sm">Ready for your next challenge?</p>
                   </div>
                   <div className="flex items-center gap-4">
-                      <Avatar className="h-12 w-12 border-4 border-primary">
-                          <AvatarImage src={user?.photoURL || vrGamerAvatar?.imageUrl} alt={studentProfile?.name || 'Student'} />
-                          <AvatarFallback>{studentProfile?.name?.[0] || 'S'}</AvatarFallback>
+                      <Avatar className="h-12 w-12 border-4 border-purple-500">
+                          <AvatarImage src={user?.photoURL || vrGamerAvatar?.imageUrl} alt={studentProfile?.name || 'Player'} />
+                          <AvatarFallback>{studentProfile?.name?.[0] || 'P'}</AvatarFallback>
                       </Avatar>
                   </div>
               </div>

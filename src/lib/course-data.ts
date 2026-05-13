@@ -481,7 +481,7 @@ export const getA1EngUnitPath = (unitId: string | number, t: (key: string) => st
         ],
         '3': [
             { type: 'start', icon: Footprints, label: 'dashboard.start' },
-             ...Array.from({ length: 5 }, (_, i) => ({ type: 'class' as const, icon: BookOpen, label: `Class ${i + 11}`, href: `/ingles/a1/class/${i + 11}`, storageKey: `progress_a1_eng_unit_3_class_${i + 11}` })),
+             ...Array.from({ length: 6 }, (_, i) => ({ type: 'class' as const, icon: BookOpen, label: `Class ${i + 11}`, href: `/ingles/a1/class/${i + 11}`, storageKey: `progress_a1_eng_unit_3_class_${i + 11}` })),
             { type: 'end', icon: Flag, label: 'dashboard.finish' },
         ]
     };
