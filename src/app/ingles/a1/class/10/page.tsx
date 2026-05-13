@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -13,9 +12,6 @@ import {
     Lock, 
     GraduationCap, 
     CheckCircle, 
-    Info, 
-    Gamepad2, 
-    MessageSquare, 
     Loader2, 
     ArrowRight,
     Sparkles,
@@ -45,7 +41,7 @@ const ICONS = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_a1_eng_u2_c10_v4_stable';
+const progressStorageVersion = 'progress_a1_eng_u2_c10_v5_syntax_fix';
 const mainProgressKey = 'progress_a1_eng_unit_2_class_10';
 
 const vocabularyData = {
@@ -308,7 +304,7 @@ export default function EngA1Class10Page() {
                                                             autoComplete="off"
                                                         />
                                                     </div>
-                                                </Fragment>
+                                                </React.Fragment>
                                             ))}
                                         </div>
                                     </AccordionContent>
@@ -430,82 +426,8 @@ export default function EngA1Class10Page() {
                         </CardFooter>
                     </Card>
                 );
-            case 'grammar2':
-                return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-                        <CardHeader>
-                            <CardTitle>Grammar 2: ONE AND ONES</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-8 text-lg">
-                            <div className="bg-primary/5 p-6 rounded-xl border-l-4 border-primary">
-                                <p className="font-bold">REEMPLAZA EL SUSTANTIVO POR “ONE” (SINGULAR) Y “ONES” (PLURAL)</p>
-                            </div>
-
-                            <div className="space-y-4">
-                                <h3 className="text-xl font-bold text-brand-purple">DEMOSTRATIVOS + ONE / ONES</h3>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="p-4 bg-muted rounded-lg border">
-                                        <p className="font-bold text-primary">THIS ONE?</p>
-                                        <p className="text-sm text-muted-foreground">(¿ESTE?) Cerca y Singular</p>
-                                    </div>
-                                    <div className="p-4 bg-muted rounded-lg border">
-                                        <p className="font-bold text-primary">THESE ONES?</p>
-                                        <p className="text-sm text-muted-foreground">(¿ESTOS?) Cerca y Plural</p>
-                                    </div>
-                                    <div className="p-4 bg-muted rounded-lg border">
-                                        <p className="font-bold text-brand-purple">THAT ONE?</p>
-                                        <p className="text-sm text-muted-foreground">(¿AQUEL?) Lejos y Singular</p>
-                                    </div>
-                                    <div className="p-4 bg-muted rounded-lg border">
-                                        <p className="font-bold text-brand-purple">THOSE ONES?</p>
-                                        <p className="text-sm text-muted-foreground">(¿AQUELLOS?) Lejos y Plural</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <Separator />
-
-                            <div className="space-y-4">
-                                <h3 className="text-xl font-bold">EXAMPLES</h3>
-                                <div className="space-y-3 p-4 bg-muted/50 rounded-lg border border-dashed">
-                                    <div className="space-y-1">
-                                        <p className="text-sm text-muted-foreground italic">Frase base:</p>
-                                        <p className="font-bold">SHE DOESN'T LIKE THESE COMPUTERS</p>
-                                    </div>
-                                    <ArrowRight className="h-4 w-4 text-muted-foreground mx-auto" />
-                                    <div className="space-y-1">
-                                        <p className="text-sm text-muted-foreground italic">Usando "ones":</p>
-                                        <p className="font-bold text-primary">SHE DOESN'T LIKE THESE ONES</p>
-                                    </div>
-                                    <ArrowRight className="h-4 w-4 text-muted-foreground mx-auto" />
-                                    <div className="space-y-1">
-                                        <p className="text-sm text-muted-foreground italic">Usando un número:</p>
-                                        <p className="font-bold text-brand-purple">SHE DOESN'T LIKE THESE THREE</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </CardContent>
-                        <CardFooter className="justify-center">
-                            <Button onClick={() => handleTopicComplete('grammar2')}>Avanzar</Button>
-                        </CardFooter>
-                    </Card>
-                );
-            case 'general_vocab':
-                return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-                        <CardHeader>
-                            <CardTitle>General Vocabulary</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p>Lista general de vocabulario.</p>
-                        </CardContent>
-                        <CardFooter>
-                            <Button onClick={() => handleTopicComplete('general_vocab')}>Hecho</Button>
-                        </CardFooter>
-                    </Card>
-                );
             default:
-                if (selectedTopic.startsWith('ex') || selectedTopic.startsWith('last') || selectedTopic.startsWith('dialogue') || selectedTopic.startsWith('vocab_game')) {
+                if (selectedTopic.startsWith('ex') || selectedTopic.startsWith('last') || selectedTopic.startsWith('dialogue') || selectedTopic.startsWith('vocab_game') || selectedTopic === 'grammar2') {
                     return (
                         <Card className="shadow-soft rounded-lg border-2 border-brand-purple min-h-[400px]">
                             <CardHeader>
