@@ -34,6 +34,7 @@ import { SimpleTranslationExercise } from '@/components/dashboard/simple-transla
 import { LargeTextTranslation } from '@/components/dashboard/large-text-translation';
 import { VocabularyMatchingGame } from '@/components/dashboard/vocabulary-matching-game';
 import { CreativeWritingExercise } from '@/components/dashboard/creative-writing-exercise';
+import { Separator } from '@/components/ui/separator';
 
 type Topic = {
   key: string;
@@ -362,15 +363,42 @@ export default function EngA1Class9Page() {
                 return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
                         <CardHeader>
-                            <CardTitle>Grammar: Weather and Present Continuous</CardTitle>
+                            <CardTitle>Grammar: Weather and Demonstratives</CardTitle>
                         </CardHeader>
-                        <CardContent className="space-y-6 text-lg">
+                        <CardContent className="space-y-8 text-lg">
                             <div className="bg-primary/5 p-6 rounded-xl border-l-4 border-primary">
                                 <h3 className="text-xl font-bold mb-2">Asking about the weather</h3>
-                                <p className="text-muted-foreground">¿Cómo está el clima?</p>
+                                <p className="text-muted-foreground text-base">¿Cómo está el clima?</p>
                                 <div className="mt-4 p-4 bg-muted rounded-lg font-mono text-base border">
                                     <p className="text-primary font-bold">How is the weather today?</p>
                                     <p className="text-foreground mt-2">It is sunny and hot.</p>
+                                </div>
+                            </div>
+
+                            <Separator />
+
+                            <div className="bg-brand-purple/5 p-6 rounded-xl border-l-4 border-brand-purple">
+                                <h3 className="text-xl font-bold mb-2 text-brand-purple">DEMOSTRATIVOS</h3>
+                                <p className="text-muted-foreground text-base mb-4">
+                                    LOS DEMOSTRATIVOS (THIS, THESE, THAT, THOSE) SE USAN PARA INDICAR LA POSICION Y EL ESPACIO DE UN NOMBRE CON RESPETO AL SUJETO.
+                                </p>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="p-3 bg-muted rounded-lg border">
+                                        <p className="font-bold text-primary">THIS</p>
+                                        <p className="text-sm">ESTE/A (CERCA, SINGULAR)</p>
+                                    </div>
+                                    <div className="p-3 bg-muted rounded-lg border">
+                                        <p className="font-bold text-primary">THESE</p>
+                                        <p className="text-sm">ESTAS/OS (CERCA, PLURAL)</p>
+                                    </div>
+                                    <div className="p-3 bg-muted rounded-lg border">
+                                        <p className="font-bold text-brand-purple">THAT</p>
+                                        <p className="text-sm">ESE/A (LEJOS, SINGULAR)</p>
+                                    </div>
+                                    <div className="p-3 bg-muted rounded-lg border">
+                                        <p className="font-bold text-brand-purple">THOSE</p>
+                                        <p className="text-sm">ESOS/AS (LEJOS, PLURAL)</p>
+                                    </div>
                                 </div>
                             </div>
                         </CardContent>
