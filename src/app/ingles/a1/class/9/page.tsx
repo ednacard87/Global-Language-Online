@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import Link from 'next/link';
+import { useParams, useRouter } from 'next/navigation';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
@@ -51,7 +52,7 @@ const ICONS = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_a1_eng_u2_c9_v6_completion';
+const progressStorageVersion = 'progress_a1_eng_u2_c9_v7_writing';
 const mainProgressKey = 'progress_a1_eng_unit_2_class_9';
 
 const vocabularyData = {
@@ -103,7 +104,7 @@ const dialogue1Phrases = [
     { spanish: "MARY: ¿PUEDO AYUDARTE?", answers: ["can i help you?", "may i help you?"] },
     { spanish: "JON: SI, GRACIAS ¿CUANTO CUESTAN ESOS ARETES?", answers: ["yes, thank you. how much do those earrings cost?", "yes, thanks. how much are those earrings?"] },
     { spanish: "MARY: ¿LOS BLANCOS? ESTOS CUESTAN 18 USD", answers: ["the white ones? these cost 18 usd", "the white ones? these are 18 usd"] },
-    { spanish: "JON: ESO NO ESTA MAL. ESTOS SON PARA MI ESPOSA. ¿VIENEN EN DORADO?", answers: ["that is not bad. these ones are for my wife. do they come in golden?", "that's not bad. these are for my wife. do they come in golden?"] },
+    { spanish: "JON: THAT IS NOT BAD. THESE ________ ARE FOR MY WIFE. DO THEY COME IN GOLDEN?", answers: ["that is not bad. these ones are for my wife. do they come in golden?", "that's not bad. these are for my wife. do they come in golden?"] },
     { spanish: "MARY: NO, LO SIENTO, SOLO PLATEADOS", answers: ["no, i am sorry, only silver ones", "no, i'm sorry, only silver"] },
     { spanish: "JON: OK. ME LOS LLEVO, ¿CUANTO CUESTA ESA CHAQUETA?", answers: ["ok. i take them, how much does that jacket cost?", "ok. i'll take them, how much is that jacket?"] },
     { spanish: "MARY: ¿CUAL? – LA AZUL O LA BLANCA?", answers: ["which one? - the blue one or the white one?", "which? the blue or the white?"] },
@@ -164,6 +165,9 @@ export default function EngA1Class9Page() {
     const [vocabValidation, setVocabValidation] = useState<{[key: string]: ('correct' | 'incorrect' | 'unchecked')[]}>({});
     const [canAdvanceVocab, setCanAdvanceVocab] = useState(false);
 
+    // Writing 1 State
+    const [writingLines, setWritingLines] = useState<string[]>(['', '', '', '']);
+
     const initialLearningPath = useMemo((): Topic[] => [
         { key: 'vocabulary', name: 'Vocabulary (Weather and house)', icon: Home, status: 'active' },
         { key: 'grammar', name: 'Grammar', icon: GraduationCap, status: 'locked' },
@@ -193,6 +197,9 @@ export default function EngA1Class9Page() {
                 if (savedData[item.key]) item.status = savedData[item.key];
             });
             savedSelectedTopic = savedData.lastSelectedTopic || '';
+            if (savedData.writingLines) {
+                setWritingLines(savedData.writingLines);
+            }
         }
         
         setLearningPath(path);
@@ -225,7 +232,10 @@ export default function EngA1Class9Page() {
     useEffect(() => {
         if (!initialLoadComplete || isUserLoading || isProfileLoading || learningPath.length === 0 || isAdmin || !studentDocRef) return;
 
-        const statusesToSave: Record<string, any> = { lastSelectedTopic: selectedTopic };
+        const statusesToSave: Record<string, any> = { 
+            lastSelectedTopic: selectedTopic,
+            writingLines: writingLines
+        };
         learningPath.forEach(item => { statusesToSave[item.key] = item.status; });
 
         updateDocumentNonBlocking(studentDocRef, { 
@@ -236,7 +246,7 @@ export default function EngA1Class9Page() {
         if (progressValue >= 100) {
             window.dispatchEvent(new CustomEvent('progressUpdated'));
         }
-    }, [learningPath, progressValue, selectedTopic, isAdmin, studentDocRef, isUserLoading, isProfileLoading, initialLoadComplete]);
+    }, [learningPath, progressValue, selectedTopic, isAdmin, studentDocRef, isUserLoading, isProfileLoading, initialLoadComplete, writingLines]);
 
     const handleTopicComplete = useCallback((completedKey: string) => {
         setTopicToComplete(completedKey);
@@ -329,8 +339,16 @@ export default function EngA1Class9Page() {
         return '';
     };
 
+    const handleWritingLineChange = (index: number, value: string) => {
+        const newLines = [...writingLines];
+        newLines[index] = value;
+        setWritingLines(newLines);
+    };
+
+    const isWriting1Complete = writingLines.some(line => line.trim().length > 0);
+
     const renderContent = () => {
-        const topic = learningPath.find(t => t.key === selectedTopic);
+        const topic = learningPath.find(t => t.key === selectedTopic) || learningPath.flatMap(t => t.subItems || []).find(st => st?.key === selectedTopic);
 
         switch (selectedTopic) {
             case 'vocabulary':
@@ -590,15 +608,38 @@ export default function EngA1Class9Page() {
                 return <VocabularyMatchingGame data={fullVocabList} title="Matching Game: Weather & House" onComplete={() => handleTopicComplete('vocab_game')} />;
             case 'writing1':
                 return (
-                    <CreativeWritingExercise 
-                        title="Writing 1" 
-                        description="Describe your house and today's weather."
-                        prompts={[{ id: 'writing-c9', question: 'My House and the Weather', placeholder: 'In my house, there is a living room...' }]}
-                        onComplete={() => handleTopicComplete('writing1')}
-                        studentDocRef={studentDocRef}
-                        initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.writing1 || {}}
-                        savePath={`lessonProgress.${progressStorageVersion}.writing1`}
-                    />
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                        <CardHeader>
+                            <CardTitle>Writing 1</CardTitle>
+                            <CardDescription className="text-base font-bold text-primary">
+                                ESCRIBE UNA FRASE CON “THIS”, “THESE”, “THAT”, “THOSE” + ONE/ ONES
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            {writingLines.map((line, idx) => (
+                                <div key={idx} className="space-y-1">
+                                    <Label className="text-xs text-muted-foreground">Renglón {idx + 1}</Label>
+                                    <Input 
+                                        value={line}
+                                        onChange={(e) => handleWritingLineChange(idx, e.target.value)}
+                                        placeholder={`Frase ${idx + 1}...`}
+                                        className="h-12 text-lg"
+                                        autoComplete="off"
+                                    />
+                                </div>
+                            ))}
+                        </CardContent>
+                        <CardFooter className="justify-center border-t pt-6">
+                            <Button 
+                                onClick={() => handleTopicComplete('writing1')} 
+                                disabled={!isWriting1Complete && !isAdmin}
+                                size="lg"
+                                className="w-full sm:w-auto px-12"
+                            >
+                                Avanzar
+                            </Button>
+                        </CardFooter>
+                    </Card>
                 );
             default:
                 return <div className="flex items-center justify-center h-64"><Loader2 className="animate-spin" /></div>;
