@@ -35,6 +35,7 @@ import { SimpleTranslationExercise } from '@/components/dashboard/simple-transla
 import { LargeTextTranslation } from '@/components/dashboard/large-text-translation';
 import { VocabularyMatchingGame } from '@/components/dashboard/vocabulary-matching-game';
 import { CreativeWritingExercise } from '@/components/dashboard/creative-writing-exercise';
+import { DialogueCompletionExercise } from '@/components/kids/exercises/dialogue-completion-exercise';
 import { Separator } from '@/components/ui/separator';
 
 type Topic = {
@@ -50,7 +51,7 @@ const ICONS = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_a1_eng_u2_c9_v5_dialogue';
+const progressStorageVersion = 'progress_a1_eng_u2_c9_v6_completion';
 const mainProgressKey = 'progress_a1_eng_unit_2_class_9';
 
 const vocabularyData = {
@@ -124,6 +125,18 @@ const dialogue1Vocab = {
     "con mucho gusto": "you're welcome / with pleasure"
 };
 
+const dialogue2Data = [
+    { speaker: "MARY", parts: ["HOW MUCH IS ", " DRESS?"], answers: [["THIS", "THAT"]] },
+    { speaker: "JON", parts: ["THE WHITE ", "? OR THE GRAY ", "?"], answers: [["ONE"], ["ONE"]] },
+    { speaker: "MARY", parts: ["THE GRAY ", " PLEASE…"], answers: [["ONE"]] },
+    { speaker: "JON", parts: ["IT IS…...$195"], answers: [] },
+    { speaker: "MARY", parts: ["OH! QUITE EXPENSIVE! AND HOW MUCH ARE ", " GREY JEANS?"], answers: [["THESE", "THOSE"]] },
+    { speaker: "JON", parts: ["", " ONES? - THOSE ARE…. $55."], answers: [["THESE", "THOSE"]] },
+    { speaker: "MARY", parts: ["I LIKE THOSE ", ", BUT… I ONLY HAVE $50 WITH ME."], answers: [["ONES"]] },
+    { speaker: "JON", parts: ["IF YOU WANT, I SHOW YOU ", " RED AND WHITE . THEY ARE JUST $50."], answers: [["THESE", "THOSE"]] },
+    { speaker: "MARY", parts: ["NO, THANK YOU. I DON’T LIKE ", " ONES. I’LL PASS AGAIN IN THE NEXT DAYS."], answers: [["THOSE", "THESE"]] },
+];
+
 export default function EngA1Class9Page() {
     const { t } = useTranslation();
     const { toast } = useToast();
@@ -159,10 +172,10 @@ export default function EngA1Class9Page() {
         { key: 'ex2', name: 'Exercise 2', icon: PenSquare, status: 'locked' },
         { key: 'grammar3', name: 'Grammar 3', icon: GraduationCap, status: 'locked' },
         { key: 'ex3', name: 'Exercise 3', icon: PenSquare, status: 'locked' },
-        { key: 'dialogue1', name: 'Dialogue 1', icon: MessageSquare, status: 'locked' },
         { key: 'ex4', name: 'Exercise 4', icon: PenSquare, status: 'locked' },
-        { key: 'vocab_game', name: 'Vocabulary (Game)', icon: Gamepad2, status: 'locked' },
         { key: 'ex5', name: 'Exercise 5', icon: PenSquare, status: 'locked' },
+        { key: 'dialogue1', name: 'Dialogue 1', icon: MessageSquare, status: 'locked' },
+        { key: 'vocab_game', name: 'Vocabulary (Game)', icon: Gamepad2, status: 'locked' },
         { key: 'writing1', name: 'Writing 1', icon: Pencil, status: 'locked' },
         { key: 'dialogue2', name: 'Dialogue 2', icon: MessageSquare, status: 'locked' },
     ], []);
@@ -205,8 +218,8 @@ export default function EngA1Class9Page() {
     
     const progressValue = useMemo(() => {
         if (learningPath.length === 0) return 0;
-        const completedCount = learningPath.filter(t => t.status === 'completed').length;
-        return Math.round((completedCount / learningPath.length) * 100);
+        const completedTopics = learningPath.filter(t => t.status === 'completed').length;
+        return Math.round((completedTopics / learningPath.length) * 100);
     }, [learningPath]);
 
     useEffect(() => {
@@ -566,13 +579,10 @@ export default function EngA1Class9Page() {
                 );
             case 'dialogue2':
                 return (
-                    <LargeTextTranslation 
+                    <DialogueCompletionExercise 
                         title="Dialogue 2" 
-                        phrases={[
-                            { spanish: "¿Dónde está tu gato?", answers: ["where is your cat?", "where's your cat?"] },
-                            { spanish: "Él está en el jardín.", answers: ["he is in the garden", "he's in the garden"] },
-                            { spanish: "Es un jardín muy grande.", answers: ["it is a very big garden", "it's a very big garden"] }
-                        ]} 
+                        description="Completa el diálogo con “THIS”, “THESE”, “THAT”, “THOSE”, ONES u ONE."
+                        dialogue={dialogue2Data} 
                         onComplete={() => handleTopicComplete('dialogue2')} 
                     />
                 );
