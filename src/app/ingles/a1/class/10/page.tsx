@@ -31,6 +31,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Separator } from '@/components/ui/separator';
 import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
 import { LargeTextTranslation } from '@/components/dashboard/large-text-translation';
+import { DialogueCompletionExercise } from '@/components/kids/exercises/dialogue-completion-exercise';
 
 type Topic = {
   key: string;
@@ -45,7 +46,7 @@ const ICONS = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_a1_eng_u2_c10_v8_final';
+const progressStorageVersion = 'progress_a1_eng_u2_c10_v9_final';
 const mainProgressKey = 'progress_a1_eng_unit_2_class_10';
 
 const vocabularyData = {
@@ -100,6 +101,19 @@ const dialogue1Vocab = {
     "pasaré": "i'll pass / i will pass"
 };
 
+const dialogue2Data = [
+    { speaker: "MARY", parts: ["EXCUSE ME. HOW MUCH ARE ", " T-SHIRTS? (¿cuánto valen esas camisetas?)"], answers: [["THOSE"]] },
+    { speaker: "JON", parts: ["WHICH ", "? DO YOU MEAN ", "?"], answers: [["ONES"], ["THESE", "THOSE"]] },
+    { speaker: "MARY", parts: ["NO, THE WHITE ", "."], answers: [["ONES"]] },
+    { speaker: "JON", parts: ["OH, THOSE ", " 16"], answers: [["ARE", "ONES ARE", "ONES"]] },
+    { speaker: "MARY", parts: ["WOW! THAT’S EXPENSIVE!"], answers: [] },
+    { speaker: "MARY", parts: ["HOW MUCH IS ", " BACKPACK?"], answers: [["THIS", "THAT"]] },
+    { speaker: "JON", parts: ["WHICH ", "?"], answers: [["ONE"]] },
+    { speaker: "MARY", parts: ["THE PINK ", "."], answers: [["ONE"]] },
+    { speaker: "JON", parts: ["IT’S $ 36 BUT ", " GREEN ", " IS ONLY $ 22."], answers: [["THIS", "THAT"], ["ONE"]] },
+    { speaker: "MARY", parts: ["THAT’S NOT BAD. CAN I SEE IT? PLEASE"], answers: [] },
+];
+
 export default function EngA1Class10Page() {
     const { t } = useTranslation();
     const { toast } = useToast();
@@ -132,7 +146,7 @@ export default function EngA1Class10Page() {
         { key: 'grammar', name: 'Grammar', icon: GraduationCap, status: 'locked' },
         { key: 'ex1', name: 'Exercise 1', icon: PenSquare, status: 'locked' },
         { key: 'dialogue1', name: 'Dialogue 1', icon: MessageSquare, status: 'locked' },
-        { key: 'ex2', name: 'Exercise 2', icon: PenSquare, status: 'locked' },
+        { key: 'exercise2', name: 'Exercise 2', icon: PenSquare, status: 'locked' },
         { key: 'dialogue2', name: 'Dialogue 2', icon: MessageSquare, status: 'locked' },
         { key: 'grammar2', name: 'Grammar 2', icon: GraduationCap, status: 'locked' },
         { key: 'ex_the1', name: 'Exercise with "The" 1', icon: PenSquare, status: 'locked' },
@@ -142,7 +156,7 @@ export default function EngA1Class10Page() {
         { key: 'dialogue3', name: 'Dialogue 3', icon: MessageSquare, status: 'locked' },
         { key: 'general_vocab', name: 'General Vocabulary', icon: BookText, status: 'locked' },
         { key: 'last_exercise', name: 'Last Exercise', icon: Sparkles, status: 'locked' },
-    ], [t]);
+    ], []);
     
     useEffect(() => {
         if (isProfileLoading || isUserLoading || !initialLearningPath.length) return;
@@ -301,7 +315,7 @@ export default function EngA1Class10Page() {
                                             <div className="font-bold p-3 bg-muted rounded-lg text-left">Spanish</div>
                                             <div className="font-bold p-3 bg-muted rounded-lg text-left">English</div>
                                             {vocabularyData.verbos.map((item, idx) => (
-                                                <Fragment key={`v-${idx}`}>
+                                                <React.Fragment key={`v-${idx}`}>
                                                     <div className="p-3 bg-card border rounded-lg flex items-center font-medium">{item.spanish}</div>
                                                     <div className="p-3 bg-card border rounded-lg flex items-center">
                                                         <Input
@@ -312,7 +326,7 @@ export default function EngA1Class10Page() {
                                                             autoComplete="off"
                                                         />
                                                     </div>
-                                                </Fragment>
+                                                </React.Fragment>
                                             ))}
                                         </div>
                                     </AccordionContent>
@@ -324,7 +338,7 @@ export default function EngA1Class10Page() {
                                             <div className="font-bold p-3 bg-muted rounded-lg text-left">Spanish</div>
                                             <div className="font-bold p-3 bg-muted rounded-lg text-left">English</div>
                                             {vocabularyData.palabras.map((item, idx) => (
-                                                <Fragment key={`p-${idx}`}>
+                                                <React.Fragment key={`p-${idx}`}>
                                                     <div className="p-3 bg-card border rounded-lg flex items-center font-medium">{item.spanish}</div>
                                                     <div className="p-3 bg-card border rounded-lg flex items-center">
                                                         <Input
@@ -335,7 +349,7 @@ export default function EngA1Class10Page() {
                                                             autoComplete="off"
                                                         />
                                                     </div>
-                                                </Fragment>
+                                                </React.Fragment>
                                             ))}
                                         </div>
                                     </AccordionContent>
@@ -461,8 +475,17 @@ export default function EngA1Class10Page() {
                 return <SimpleTranslationExercise exerciseKey="c10_ex1" course="a1" onComplete={() => handleTopicComplete('ex1')} title="Exercise 1: ONE / ONES" />;
             case 'dialogue1':
                 return <LargeTextTranslation title="Dialogue 1" phrases={dialogue1Phrases} onComplete={() => handleTopicComplete('dialogue1')} vocabulary={dialogue1Vocab} />;
-            case 'ex2':
-                return <SimpleTranslationExercise exerciseKey="c10_ex2" course="a1" onComplete={() => handleTopicComplete('ex2')} title="Exercise 2" />;
+            case 'exercise2':
+                return <SimpleTranslationExercise exerciseKey="c10_ex2" course="a1" onComplete={() => handleTopicComplete('exercise2')} title="Exercise 2" />;
+            case 'dialogue2':
+                return (
+                    <DialogueCompletionExercise 
+                        title="Dialogue 2" 
+                        description="Completa el diálogo con “THIS”, “THESE”, “THAT”, “THOSE”, “ONE” u “ONES”"
+                        dialogue={dialogue2Data}
+                        onComplete={() => handleTopicComplete('dialogue2')}
+                    />
+                );
             default:
                 if (selectedTopic.startsWith('ex') || selectedTopic.startsWith('last') || selectedTopic.startsWith('dialogue') || selectedTopic.startsWith('vocab_game') || selectedTopic === 'grammar2') {
                     return (
