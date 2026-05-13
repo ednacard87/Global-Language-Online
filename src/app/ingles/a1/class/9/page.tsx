@@ -30,6 +30,7 @@ import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocki
 import { doc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
@@ -293,7 +294,7 @@ export default function EngA1Class9Page() {
             [category]: prev[category].map((ans, i) => (i === index ? value : ans)),
         }));
         const newValidation = { ...vocabValidation };
-        const catKey = category as keyof typeof vocabValidation;
+        const catKey = category as keyof typeof vocabularyData;
         if (newValidation[catKey]?.[index] !== 'unchecked') {
             newValidation[catKey][index] = 'unchecked';
             setVocabValidation(newValidation);
