@@ -337,7 +337,7 @@ export default function EngA1Class9Page() {
                                                     <div className="p-3 bg-card border rounded-lg flex items-center">
                                                         <Input
                                                             value={vocabAnswers.house?.[index] || ''}
-                                                            onChange={e => handleVocabInputChange('house', index, e.target.value)}
+                                                            onChange={e => handleTopicSelect('house', index, e.target.value)}
                                                             className={cn(getVocabInputClass('house', index))}
                                                             autoComplete="off"
                                                         />
@@ -475,13 +475,47 @@ export default function EngA1Class9Page() {
                 return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
                         <CardHeader>
-                            <CardTitle>Grammar 3</CardTitle>
+                            <CardTitle>Grammar 3: ONE and ONES</CardTitle>
+                            <CardDescription>Usos avanzados y comparaciones</CardDescription>
                         </CardHeader>
-                        <CardContent>
-                            <p>Contenido para Grammar 3 estará disponible pronto.</p>
+                        <CardContent className="space-y-6 text-lg">
+                            <div className="bg-primary/5 p-4 rounded-lg border-l-4 border-primary">
+                                <p className="font-bold text-xl mb-2">NOTA: ONE - ONES</p>
+                                <p className="text-muted-foreground">Podemos utilizar ONE/ONES con:</p>
+                                <ol className="list-decimal list-inside mt-3 space-y-2 font-medium">
+                                    <li>DEMOSTRATIVOS</li>
+                                    <li>ADJETIVOS</li>
+                                    <li>WHICH?</li>
+                                    <li>OTHER – ANOTHER</li>
+                                </ol>
+                            </div>
+
+                            <Separator />
+
+                            <div className="space-y-6">
+                                <h3 className="text-xl font-bold text-brand-purple">OTHER vs ANOTHER</h3>
+                                
+                                <div className="space-y-4">
+                                    <div className="p-4 bg-muted rounded-xl border border-dashed">
+                                        <h4 className="text-lg font-bold text-primary mb-2 underline">ANOTHER</h4>
+                                        <p className="text-muted-foreground text-base leading-relaxed">
+                                            Se utiliza para referirse a una cosa ó persona <strong>adicional del mismo tipo</strong> de la que ya se mencionó.
+                                        </p>
+                                    </div>
+
+                                    <div className="p-4 bg-muted rounded-xl border border-dashed">
+                                        <h4 className="text-lg font-bold text-primary mb-2 underline">OTHER</h4>
+                                        <p className="text-muted-foreground text-base leading-relaxed">
+                                            Se utiliza para referirse a una cosa o a una persona que es <strong>diferente o distinta</strong> de una que ya se mencionó.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
                         </CardContent>
-                        <CardFooter>
-                            <Button onClick={() => handleTopicComplete('grammar3')}>Continuar</Button>
+                        <CardFooter className="justify-center border-t pt-6">
+                            <Button onClick={() => handleTopicComplete('grammar3')} size="lg" className="px-12">
+                                Continuar
+                            </Button>
                         </CardFooter>
                     </Card>
                 );
