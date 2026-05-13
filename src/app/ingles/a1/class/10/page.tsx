@@ -17,7 +17,9 @@ import {
     Sparkles,
     BookText,
     HelpCircle,
-    Lightbulb
+    Lightbulb,
+    MessageSquare,
+    Gamepad2
 } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
@@ -111,7 +113,7 @@ export default function EngA1Class10Page() {
         { key: 'dialogue3', name: 'Dialogue 3', icon: MessageSquare, status: 'locked' },
         { key: 'general_vocab', name: 'General Vocabulary', icon: BookText, status: 'locked' },
         { key: 'last_exercise', name: 'Last Exercise', icon: Sparkles, status: 'locked' },
-    ], []);
+    ], [t]);
     
     useEffect(() => {
         if (isProfileLoading || isUserLoading || !initialLearningPath.length) return;
@@ -412,7 +414,7 @@ export default function EngA1Class10Page() {
                                     </div>
                                     <div className="p-3 bg-background rounded border border-dashed">
                                         <p className="font-bold">WHICH MANGOES DO THEY EAT?</p>
-                                        <p className="text-muted-foreground italic">(¿CUALES MANGOS COMEN ELLOS?)</p>
+                                        <p className="text-muted-foreground italic">(¿CUALES MANZANAS COMEN ELLOS?)</p>
                                     </div>
                                     <div className="p-3 bg-background rounded border border-dashed">
                                         <p className="font-bold text-primary">WHICH ONES DO THEY EAT?</p>
