@@ -30,6 +30,7 @@ import { Input } from '@/components/ui/input';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Separator } from '@/components/ui/separator';
 import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
+import { LargeTextTranslation } from '@/components/dashboard/large-text-translation';
 
 type Topic = {
   key: string;
@@ -44,7 +45,7 @@ const ICONS = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_a1_eng_u2_c10_v6_ex1_bubbles';
+const progressStorageVersion = 'progress_a1_eng_u2_c10_v7_dialogue1';
 const mainProgressKey = 'progress_a1_eng_unit_2_class_10';
 
 const vocabularyData = {
@@ -70,6 +71,33 @@ const vocabularyData = {
         { spanish: 'VASO', english: 'GLASS' },
         { spanish: 'CUBIERTOS', english: 'SILVERWARE' },
     ]
+};
+
+const dialogue1Phrases = [
+    { spanish: "MARY: ¿CUANTO VALE ESTA BUFANDA?", answers: ["how much is this scarf?", "how much does this scarf cost?"] },
+    { spanish: "JON: ESTA CUESTA 20 DOLARES", answers: ["this one costs 20 dollars", "this costs 20 dollars", "this is 20 dollars"] },
+    { spanish: "MARY: ¿CUANTO VALE ESA SOMBRILLA?", answers: ["how much is that umbrella?", "how much does that umbrella cost?"] },
+    { spanish: "JON: ¿CUAL?", answers: ["which one?", "which?"] },
+    { spanish: "MARY: LA MORADA", answers: ["the purple one", "the purple"] },
+    { spanish: "JON: ESA CUESTA 13", answers: ["that one costs 13", "that costs 13", "that is 13"] },
+    { spanish: "MARY: ¿CUANTO VALEN ESOS GUANTES?", answers: ["how much are those gloves?", "how much do those gloves cost?"] },
+    { spanish: "JON: ESTOS CUESTAN 18", answers: ["these cost 18", "these are 18", "these ones cost 18"] },
+    { spanish: "MARY: ¿CUANTO VALEN ESAS BOTAS?", answers: ["how much are those boots?", "how much do those boots cost?"] },
+    { spanish: "JON: ¿CUALES?", answers: ["which ones?", "which?"] },
+    { spanish: "MARY: LAS GRISES", answers: ["the gray ones", "the grey ones", "the gray", "the grey"] },
+    { spanish: "JON: ESAS CUESTAN $ 40, PORQUE ESAS SON DE CUERO", answers: ["those cost 40 dollars because those are leather", "those cost 40 dollars because they are leather", "those cost 40 because those are leather", "those cost 40 because they are leather"] },
+    { spanish: "MARY: GRACIAS, PASARÉ DE NUEVO", answers: ["thanks, i will pass again", "thank you, i'll pass again", "thank you, i will pass again", "thanks, i'll stop by again"] },
+];
+
+const dialogue1Vocab = {
+    "bufanda": "scarf",
+    "sombrilla": "umbrella",
+    "morada": "purple",
+    "guantes": "gloves",
+    "botas": "boots",
+    "grises": "gray / grey",
+    "cuero": "leather",
+    "pasaré": "i'll pass / i will pass"
 };
 
 export default function EngA1Class10Page() {
@@ -431,6 +459,8 @@ export default function EngA1Class10Page() {
                 );
             case 'ex1':
                 return <SimpleTranslationExercise exerciseKey="c10_ex1" course="a1" onComplete={() => handleTopicComplete('ex1')} title="Exercise 1: ONE / ONES" />;
+            case 'dialogue1':
+                return <LargeTextTranslation title="Dialogue 1" phrases={dialogue1Phrases} onComplete={() => handleTopicComplete('dialogue1')} vocabulary={dialogue1Vocab} />;
             default:
                 if (selectedTopic.startsWith('ex') || selectedTopic.startsWith('last') || selectedTopic.startsWith('dialogue') || selectedTopic.startsWith('vocab_game') || selectedTopic === 'grammar2') {
                     return (
