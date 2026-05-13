@@ -19,7 +19,8 @@ import {
     ChevronDown, 
     CloudSun,
     Home,
-    ArrowRight
+    ArrowRight,
+    Lightbulb
 } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
@@ -400,15 +401,67 @@ export default function EngA1Class9Page() {
                 return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
                         <CardHeader>
-                            <CardTitle>Grammar 2: Location and Prepositions</CardTitle>
+                            <CardTitle>ONE AND ONES</CardTitle>
+                            <CardDescription>Reemplaza el sustantivo para evitar repeticiones.</CardDescription>
                         </CardHeader>
-                        <CardContent className="space-y-6 text-lg">
-                            <div className="bg-brand-purple/5 p-6 rounded-xl border-l-4 border-brand-purple">
-                                <h3 className="text-xl font-bold mb-2">Where is it?</h3>
-                                <p className="text-muted-foreground">Ubicar objetos en la casa.</p>
-                                <div className="mt-4 p-4 bg-muted rounded-lg font-mono text-base border">
-                                    <p className="text-brand-purple font-bold">Where are you?</p>
-                                    <p className="text-foreground mt-2">I am in the kitchen.</p>
+                        <CardContent className="space-y-8 text-lg">
+                            <div className="bg-primary/5 p-6 rounded-xl border-l-4 border-primary">
+                                <p className="font-bold">REEMPLAZA EL SUSTANTIVO POR “ONE” (SINGULAR) Y “ONES” (PLURAL)</p>
+                            </div>
+
+                            <div className="space-y-4">
+                                <h3 className="text-xl font-bold text-brand-purple">DEMOSTRATIVOS + ONE / ONES</h3>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="p-4 bg-muted rounded-lg border">
+                                        <p className="font-bold text-primary">THIS ONE?</p>
+                                        <p className="text-sm text-muted-foreground">(¿ESTE?) Cerca y Singular</p>
+                                    </div>
+                                    <div className="p-4 bg-muted rounded-lg border">
+                                        <p className="font-bold text-primary">THESE ONES?</p>
+                                        <p className="text-sm text-muted-foreground">(¿ESTOS?) Cerca y Plural</p>
+                                    </div>
+                                    <div className="p-4 bg-muted rounded-lg border">
+                                        <p className="font-bold text-brand-purple">THAT ONE?</p>
+                                        <p className="text-sm text-muted-foreground">(¿AQUEL?) Lejos y Singular</p>
+                                    </div>
+                                    <div className="p-4 bg-muted rounded-lg border">
+                                        <p className="font-bold text-brand-purple">THOSE ONES?</p>
+                                        <p className="text-sm text-muted-foreground">(¿AQUELLOS?) Lejos y Plural</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-2 p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200">
+                                    <Lightbulb className="h-5 w-5 text-yellow-500 shrink-0" />
+                                    <p className="text-sm"><strong>NOTA:</strong> Tenemos la opción de utilizar números en reemplazo de "Ones".</p>
+                                </div>
+                            </div>
+
+                            <Separator />
+
+                            <div className="space-y-4">
+                                <h3 className="text-xl font-bold">EXAMPLES</h3>
+                                <div className="space-y-3 p-4 bg-muted/50 rounded-lg border border-dashed">
+                                    <div className="space-y-1">
+                                        <p className="text-sm text-muted-foreground italic">Frase base:</p>
+                                        <p className="font-bold">SHE DOESN'T LIKE THESE COMPUTERS</p>
+                                    </div>
+                                    <ArrowRight className="h-4 w-4 text-muted-foreground mx-auto" />
+                                    <div className="space-y-1">
+                                        <p className="text-sm text-muted-foreground italic">Usando "ones":</p>
+                                        <p className="font-bold text-primary">SHE DOESN'T LIKE THESE ONES</p>
+                                    </div>
+                                    <ArrowRight className="h-4 w-4 text-muted-foreground mx-auto" />
+                                    <div className="space-y-1">
+                                        <p className="text-sm text-muted-foreground italic">Usando un número:</p>
+                                        <p className="font-bold text-brand-purple">SHE DOESN'T LIKE THESE THREE</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="bg-primary/5 p-4 rounded-lg border-2 border-dashed border-primary/30">
+                                <p className="text-base">PODEMOS USAR EL DEMOSTRATIVO SOLO SI YA SE DA POR ENTENDIDO EL CONTEXTO.</p>
+                                <div className="mt-3 space-y-2 font-mono text-sm">
+                                    <p>I DON’T LIKE <strong>THIS</strong> (NO ME GUSTA ESTO)</p>
+                                    <p><strong>THAT</strong> WASN’T WHAT I EXPECTED (ESO NO ERA LO QUE ESPERABA)</p>
                                 </div>
                             </div>
                         </CardContent>
