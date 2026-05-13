@@ -18,7 +18,8 @@ import {
     Loader2, 
     ChevronDown, 
     CloudSun,
-    Home
+    Home,
+    ArrowRight
 } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
@@ -47,7 +48,7 @@ const ICONS = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_a1_eng_u2_c9_v2_lexico';
+const progressStorageVersion = 'progress_a1_eng_u2_c9_v3_lexico';
 const mainProgressKey = 'progress_a1_eng_unit_2_class_9';
 
 const vocabularyData = {
@@ -249,7 +250,7 @@ export default function EngA1Class9Page() {
     };
 
     const handleCheckVocab = () => {
-        let allCategoriesCorrect = true;
+        let atLeastOneCorrect = false;
         const newValidationStatus: { [key: string]: ('correct' | 'incorrect' | 'unchecked')[] } = {};
 
         Object.keys(vocabularyData).forEach(category => {
@@ -257,8 +258,8 @@ export default function EngA1Class9Page() {
             newValidationStatus[cat] = vocabularyData[cat].map((item, index) => {
                 const userAnswer = (vocabAnswers[cat]?.[index] || '').trim().toUpperCase().replace(/[()]/g, '');
                 const isCorrect = item.english.some(e => e.toUpperCase().replace(/[()]/g, '') === userAnswer);
-                if (!isCorrect) {
-                    allCategoriesCorrect = false;
+                if (isCorrect) {
+                    atLeastOneCorrect = true;
                 }
                 return isCorrect ? 'correct' : 'incorrect';
             });
@@ -266,15 +267,14 @@ export default function EngA1Class9Page() {
 
         setVocabValidation(newValidationStatus);
 
-        if (allCategoriesCorrect) {
-            toast({ title: "¡Excelente!", description: "Has completado todo el vocabulario correctamente." });
+        if (atLeastOneCorrect) {
+            toast({ title: "¡Bien hecho!", description: "Has acertado al menos una palabra. ¡Ya puedes avanzar!" });
             setCanAdvanceVocab(true);
-            handleTopicComplete('vocabulary');
         } else {
             toast({ 
                 variant: "destructive", 
-                title: "Algunas respuestas son incorrectas", 
-                description: "Revisa los campos marcados en rojo para continuar." 
+                title: "Respuesta incorrecta", 
+                description: "Necesitas al menos una respuesta correcta para habilitar el avance." 
             });
             setCanAdvanceVocab(false);
         }
@@ -296,7 +296,7 @@ export default function EngA1Class9Page() {
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
                         <CardHeader>
                             <CardTitle>Vocabulary (Weather and house)</CardTitle>
-                            <CardDescription>Escribe la traducción al inglés para cada palabra basándote en las tablas de la lección.</CardDescription>
+                            <CardDescription>Escribe la traducción al inglés para cada palabra. Al menos una correcta para avanzar.</CardDescription>
                         </CardHeader>
                         <CardContent>
                              <Accordion type="multiple" defaultValue={['weather', 'house']} className="w-full">
@@ -347,12 +347,14 @@ export default function EngA1Class9Page() {
                             </Accordion>
                         </CardContent>
                         <CardFooter className="flex justify-between items-center border-t pt-6">
-                            <Button onClick={handleCheckVocab}>Verificar Vocabulario</Button>
-                            {canAdvanceVocab && (
-                                <Button onClick={() => handleTopicComplete('vocabulary')} className="animate-pulse">
-                                    Siguiente Tema <ArrowRight className="ml-2 h-4 w-4" />
-                                </Button>
-                            )}
+                            <Button onClick={handleCheckVocab}>Verificar</Button>
+                            <Button 
+                                onClick={() => handleTopicComplete('vocabulary')} 
+                                disabled={!canAdvanceVocab && !isAdmin}
+                                className={cn(canAdvanceVocab && "bg-green-600 hover:bg-green-700")}
+                            >
+                                Avanzar <ArrowRight className="ml-2 h-4 w-4" />
+                            </Button>
                         </CardFooter>
                     </Card>
                 );
