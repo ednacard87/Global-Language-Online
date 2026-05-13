@@ -45,7 +45,7 @@ const ICONS = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_a1_eng_u2_c10_v7_dialogue1';
+const progressStorageVersion = 'progress_a1_eng_u2_c10_v8_final';
 const mainProgressKey = 'progress_a1_eng_unit_2_class_10';
 
 const vocabularyData = {
@@ -132,7 +132,7 @@ export default function EngA1Class10Page() {
         { key: 'grammar', name: 'Grammar', icon: GraduationCap, status: 'locked' },
         { key: 'ex1', name: 'Exercise 1', icon: PenSquare, status: 'locked' },
         { key: 'dialogue1', name: 'Dialogue 1', icon: MessageSquare, status: 'locked' },
-        { key: 'exercise2', name: 'Exercise 2', icon: PenSquare, status: 'locked' },
+        { key: 'ex2', name: 'Exercise 2', icon: PenSquare, status: 'locked' },
         { key: 'dialogue2', name: 'Dialogue 2', icon: MessageSquare, status: 'locked' },
         { key: 'grammar2', name: 'Grammar 2', icon: GraduationCap, status: 'locked' },
         { key: 'ex_the1', name: 'Exercise with "The" 1', icon: PenSquare, status: 'locked' },
@@ -461,6 +461,8 @@ export default function EngA1Class10Page() {
                 return <SimpleTranslationExercise exerciseKey="c10_ex1" course="a1" onComplete={() => handleTopicComplete('ex1')} title="Exercise 1: ONE / ONES" />;
             case 'dialogue1':
                 return <LargeTextTranslation title="Dialogue 1" phrases={dialogue1Phrases} onComplete={() => handleTopicComplete('dialogue1')} vocabulary={dialogue1Vocab} />;
+            case 'ex2':
+                return <SimpleTranslationExercise exerciseKey="c10_ex2" course="a1" onComplete={() => handleTopicComplete('ex2')} title="Exercise 2" />;
             default:
                 if (selectedTopic.startsWith('ex') || selectedTopic.startsWith('last') || selectedTopic.startsWith('dialogue') || selectedTopic.startsWith('vocab_game') || selectedTopic === 'grammar2') {
                     return (

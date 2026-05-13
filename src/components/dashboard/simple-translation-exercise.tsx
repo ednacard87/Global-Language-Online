@@ -530,6 +530,21 @@ const exercises = {
             { spanish: '¿CUAL CELULAR ES TUYO? – CUAL ES EL TUYO?', english: ["which cellphone is yours? - which one is yours?", "which cellphone is yours? which one is yours?"] },
             { spanish: '¿CUALES BOTAS SON DE ELLA? – CUALES SON DE ELLA?', english: ["which boots are hers? - which ones are hers?", "which boots are hers? which ones are hers?"] },
         ]
+    },
+    c10_ex2: {
+        title: 'a1class1.exercise',
+        prompts: [
+            { spanish: 'ME GUSTA ESTE JUEGO Y A TI TE GUSTA ESE.', english: ["i like this game and you like that one"] },
+            { spanish: 'NO ME GUSTAN ESTAS GAFAS – NO ME GUSTAN ESAS.', english: ["i don't like these glasses - i don't like those ones", "i do not like these glasses - i do not like those ones"] },
+            { spanish: 'ESTOS RELOJES SON VIEJOS- ESTOS SON VIEJOS', english: ["these watches are old - these ones are old"] },
+            { spanish: 'ME GUSTA ESTA SERIE - ME GUSTA ESA:', english: ["i like this series - i like that one"] },
+            { spanish: 'NO ME GUSTAN ESTAS GORRAS (CAPS)- A MI ME GUSTAN ESAS-', english: ["i don't like these caps - i like those ones", "i do not like these caps - i like those ones"] },
+            { spanish: 'A ELLOS LES GUSTAN ESOS COMPUTADORES - A NOSOTROS NOS GUSTAN ESTOS-', english: ["they like those computers - we like these ones"] },
+            { spanish: 'A MI ME GUSTA ESTA CASA MIENTRAS QUE A ELLA LE GUSTA ESA:', english: ["i like this house while she likes that one", "i like this house while she likes that"] },
+            { spanish: 'EL PREFIERE ESTE CARRO A ESA MOTO:', english: ["he prefers this car to that motorcycle"] },
+            { spanish: 'NO ME GUSTAN ESAS CAMISETAS – A MI NO ME GUSTAN ESAS:', english: ["i don't like those t-shirts - i don't like those ones", "i do not like those t-shirts - i do not like those ones", "i don't like those shirts - i don't like those ones"] },
+            { spanish: 'A NOSOTROS NOS GUSTA ESA FINCA – A NOSOTROS NOS GUSTA ESA:', english: ["we like that farm - we like that one", "we like that country house - we like that one"] },
+        ]
     }
 };
 
