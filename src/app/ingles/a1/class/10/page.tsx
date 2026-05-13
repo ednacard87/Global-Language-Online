@@ -414,7 +414,7 @@ export default function EngA1Class10Page() {
                                     </div>
                                     <div className="p-3 bg-background rounded border border-dashed">
                                         <p className="font-bold">WHICH MANGOES DO THEY EAT?</p>
-                                        <p className="text-muted-foreground italic">(¿CUALES MANZANAS COMEN ELLOS?)</p>
+                                        <p className="text-muted-foreground italic">(¿CUALES MANGOS COMEN ELLOS?)</p>
                                     </div>
                                     <div className="p-3 bg-background rounded border border-dashed">
                                         <p className="font-bold text-primary">WHICH ONES DO THEY EAT?</p>
