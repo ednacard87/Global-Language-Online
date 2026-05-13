@@ -19,7 +19,8 @@ import {
     ArrowRight,
     Sparkles,
     BookText,
-    HelpCircle
+    HelpCircle,
+    Lightbulb
 } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
@@ -43,7 +44,7 @@ const ICONS = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_a1_eng_u2_c10_v3';
+const progressStorageVersion = 'progress_a1_eng_u2_c10_v4_stable';
 const mainProgressKey = 'progress_a1_eng_unit_2_class_10';
 
 const vocabularyData = {
@@ -103,13 +104,13 @@ export default function EngA1Class10Page() {
         { key: 'grammar', name: 'Grammar', icon: GraduationCap, status: 'locked' },
         { key: 'ex1', name: 'Exercise 1', icon: PenSquare, status: 'locked' },
         { key: 'dialogue1', name: 'Dialogue 1', icon: MessageSquare, status: 'locked' },
-        { key: 'ex2', name: 'Exercise 2', icon: PenSquare, status: 'locked' },
+        { key: 'exercise2', name: 'Exercise 2', icon: PenSquare, status: 'locked' },
         { key: 'dialogue2', name: 'Dialogue 2', icon: MessageSquare, status: 'locked' },
         { key: 'grammar2', name: 'Grammar 2', icon: GraduationCap, status: 'locked' },
         { key: 'ex_the1', name: 'Exercise with "The" 1', icon: PenSquare, status: 'locked' },
         { key: 'ex_the2', name: 'Exercise with "The" 2', icon: PenSquare, status: 'locked' },
         { key: 'vocab_game', name: 'Vocabulary (Game)', icon: Gamepad2, status: 'locked' },
-        { key: 'ex3', name: 'Exercise 3', icon: PenSquare, status: 'locked' },
+        { key: 'exercise3', name: 'Exercise 3', icon: PenSquare, status: 'locked' },
         { key: 'dialogue3', name: 'Dialogue 3', icon: MessageSquare, status: 'locked' },
         { key: 'general_vocab', name: 'General Vocabulary', icon: BookText, status: 'locked' },
         { key: 'last_exercise', name: 'Last Exercise', icon: Sparkles, status: 'locked' },
@@ -205,7 +206,7 @@ export default function EngA1Class10Page() {
         }
         setSelectedTopic(topicKey);
 
-        const autoViewTopics = ['grammar2', 'general_vocab'];
+        const autoViewTopics = ['grammar', 'grammar2', 'general_vocab'];
         if (autoViewTopics.includes(topicKey)) {
             handleTopicComplete(topicKey);
         }
@@ -330,10 +331,9 @@ export default function EngA1Class10Page() {
                 return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
                         <CardHeader>
-                            <CardTitle>Grammar 1: Diferencia entre "WHAT" y "WHICH"</CardTitle>
+                            <CardTitle>Grammar: Diferencia entre "WHAT" y "WHICH"</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-8 text-lg">
-                            {/* What vs Which */}
                             <div className="space-y-4">
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="p-4 bg-muted rounded-xl border-l-4 border-primary">
@@ -360,7 +360,6 @@ export default function EngA1Class10Page() {
                                 </div>
                             </div>
 
-                            {/* One/Ones usage */}
                             <div className="bg-brand-purple/10 p-6 rounded-2xl border border-brand-purple">
                                 <h3 className="text-xl font-bold mb-4 text-brand-purple">ONE / ONES</h3>
                                 <p className="text-base mb-4">Se utiliza con:</p>
@@ -385,7 +384,6 @@ export default function EngA1Class10Page() {
                                 </div>
                             </div>
 
-                            {/* Which + One/Ones */}
                             <div className="bg-brand-blue/5 p-6 rounded-xl border-l-4 border-brand-blue">
                                 <h3 className="text-xl font-bold mb-2">WHICH + ONE / ONES</h3>
                                 <div className="grid grid-cols-2 gap-4">
@@ -440,10 +438,6 @@ export default function EngA1Class10Page() {
                                         <p className="text-sm text-muted-foreground">(¿AQUELLOS?) Lejos y Plural</p>
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-2 p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200">
-                                    <Lightbulb className="h-5 w-5 text-yellow-500 shrink-0" />
-                                    <p className="text-sm"><strong>NOTA:</strong> Tenemos la opción de utilizar números en reemplazo de "Ones".</p>
-                                </div>
                             </div>
 
                             <Separator />
@@ -465,14 +459,6 @@ export default function EngA1Class10Page() {
                                         <p className="text-sm text-muted-foreground italic">Usando un número:</p>
                                         <p className="font-bold text-brand-purple">SHE DOESN'T LIKE THESE THREE</p>
                                     </div>
-                                </div>
-                            </div>
-
-                            <div className="bg-primary/5 p-4 rounded-lg border-2 border-dashed border-primary/30">
-                                <p className="text-base">PODEMOS USAR EL DEMOSTRATIVO SOLO SI YA SE DA POR ENTENDIDO EL CONTEXTO.</p>
-                                <div className="mt-3 space-y-2 font-mono text-sm">
-                                    <p>I DON’T LIKE <strong>THIS</strong> (NO ME GUSTA ESTO)</p>
-                                    <p><strong>THAT</strong> WASN’T WHAT I EXPECTED (ESO NO ERA LO QUE ESPERABA)</p>
                                 </div>
                             </div>
                         </CardContent>
