@@ -18,7 +18,8 @@ import {
     Loader2, 
     ArrowRight,
     Sparkles,
-    BookText
+    BookText,
+    HelpCircle
 } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
@@ -27,6 +28,7 @@ import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocki
 import { doc } from 'firebase/firestore';
 import { Input } from '@/components/ui/input';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Separator } from '@/components/ui/separator';
 
 type Topic = {
   key: string;
@@ -41,7 +43,7 @@ const ICONS = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_a1_eng_u2_c10_v2';
+const progressStorageVersion = 'progress_a1_eng_u2_c10_v3';
 const mainProgressKey = 'progress_a1_eng_unit_2_class_10';
 
 const vocabularyData = {
@@ -203,7 +205,7 @@ export default function EngA1Class10Page() {
         }
         setSelectedTopic(topicKey);
 
-        const autoViewTopics = ['grammar', 'grammar2', 'general_vocab'];
+        const autoViewTopics = ['grammar2', 'general_vocab'];
         if (autoViewTopics.includes(topicKey)) {
             handleTopicComplete(topicKey);
         }
@@ -325,17 +327,157 @@ export default function EngA1Class10Page() {
                     </Card>
                 );
             case 'grammar':
+                return (
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                        <CardHeader>
+                            <CardTitle>Grammar 1: Diferencia entre "WHAT" y "WHICH"</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-8 text-lg">
+                            {/* What vs Which */}
+                            <div className="space-y-4">
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="p-4 bg-muted rounded-xl border-l-4 border-primary">
+                                        <h3 className="font-bold text-primary mb-2">WHAT?</h3>
+                                        <p className="text-sm">Cual? - Qué?</p>
+                                        <p className="text-xs text-muted-foreground mt-2">Pregunta general, fuera de contexto.</p>
+                                    </div>
+                                    <div className="p-4 bg-muted rounded-xl border-l-4 border-brand-blue">
+                                        <h3 className="font-bold text-brand-blue mb-2">WHICH?</h3>
+                                        <p className="text-sm">Cual?</p>
+                                        <p className="text-xs text-muted-foreground mt-2">Para elegir en un grupo definido (ves los objetos).</p>
+                                    </div>
+                                </div>
+                                
+                                <div className="bg-primary/5 p-4 rounded-lg border border-dashed">
+                                    <h4 className="font-bold mb-2 flex items-center gap-2">
+                                        <HelpCircle className="h-5 w-5" /> EXAMPLES:
+                                    </h4>
+                                    <p className="text-sm italic">1- ¿CUAL ES TU HELADO FAVORITO? (General)</p>
+                                    <p className="font-mono text-base font-bold">What is your favorite ice cream?</p>
+                                    <Separator className="my-2" />
+                                    <p className="text-sm italic">2- ¿CUAL HELADO QUIERES? (Entre estos que ves aquí)</p>
+                                    <p className="font-mono text-base font-bold text-primary">Which ice cream do you want?</p>
+                                </div>
+                            </div>
+
+                            {/* One/Ones usage */}
+                            <div className="bg-brand-purple/10 p-6 rounded-2xl border border-brand-purple">
+                                <h3 className="text-xl font-bold mb-4 text-brand-purple">ONE / ONES</h3>
+                                <p className="text-base mb-4">Se utiliza con:</p>
+                                <ol className="grid grid-cols-2 gap-2 text-sm font-bold">
+                                    <li className="flex items-center gap-2"><div className="h-2 w-2 rounded-full bg-brand-purple" /> 1- DEMOSTRATIVOS</li>
+                                    <li className="flex items-center gap-2"><div className="h-2 w-2 rounded-full bg-brand-purple" /> 2- ADJETIVOS</li>
+                                    <li className="flex items-center gap-2"><div className="h-2 w-2 rounded-full bg-brand-purple" /> 3- WHICH</li>
+                                    <li className="flex items-center gap-2"><div className="h-2 w-2 rounded-full bg-brand-purple" /> 4- OTHER / ANOTHER</li>
+                                </ol>
+
+                                <div className="mt-6 p-4 bg-background rounded-lg border-2 border-dashed">
+                                    <h4 className="font-bold text-primary mb-2 flex items-center gap-2">
+                                        <ArrowRight className="h-4 w-4" /> ANOTHER vs OTHER:
+                                    </h4>
+                                    <p className="text-sm text-muted-foreground leading-relaxed mb-4">
+                                        Ambos significan lo mismo, pero <strong>Another</strong> es para singular y <strong>Other</strong> para plurales o incontables.
+                                    </p>
+                                    <div className="space-y-2 font-mono text-xs">
+                                        <p className="text-foreground">She's going to the cinema with <span className="font-bold text-primary underline">another friend</span>. (Singular)</p>
+                                        <p className="text-foreground">She's going to the cinema with <span className="font-bold text-primary underline">other friends</span>. (Plural)</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Which + One/Ones */}
+                            <div className="bg-brand-blue/5 p-6 rounded-xl border-l-4 border-brand-blue">
+                                <h3 className="text-xl font-bold mb-2">WHICH + ONE / ONES</h3>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <p className="font-bold">Which one?</p>
+                                        <p className="text-sm text-muted-foreground">Singular – Cual?</p>
+                                    </div>
+                                    <div>
+                                        <p className="font-bold">Which ones?</p>
+                                        <p className="text-sm text-muted-foreground">Plural – Cuales?</p>
+                                    </div>
+                                </div>
+                                <p className="mt-4 text-sm bg-yellow-50 dark:bg-yellow-900/20 p-3 rounded border border-yellow-200">
+                                    <Lightbulb className="inline-block h-4 w-4 mr-1 text-yellow-500" />
+                                    Podemos elegir reemplazar el sustantivo por <strong>ONE / ONES</strong> solo si ya conocemos el contexto.
+                                </p>
+                            </div>
+                        </CardContent>
+                        <CardFooter className="justify-center">
+                            <Button onClick={() => handleTopicComplete('grammar')} size="lg" className="px-12">Entendido</Button>
+                        </CardFooter>
+                    </Card>
+                );
             case 'grammar2':
                 return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
                         <CardHeader>
-                            <CardTitle>{topic?.name}</CardTitle>
+                            <CardTitle>Grammar 2: ONE AND ONES</CardTitle>
                         </CardHeader>
-                        <CardContent>
-                            <p>Explicación gramatical para {topic?.name}.</p>
+                        <CardContent className="space-y-8 text-lg">
+                            <div className="bg-primary/5 p-6 rounded-xl border-l-4 border-primary">
+                                <p className="font-bold">REEMPLAZA EL SUSTANTIVO POR “ONE” (SINGULAR) Y “ONES” (PLURAL)</p>
+                            </div>
+
+                            <div className="space-y-4">
+                                <h3 className="text-xl font-bold text-brand-purple">DEMOSTRATIVOS + ONE / ONES</h3>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="p-4 bg-muted rounded-lg border">
+                                        <p className="font-bold text-primary">THIS ONE?</p>
+                                        <p className="text-sm text-muted-foreground">(¿ESTE?) Cerca y Singular</p>
+                                    </div>
+                                    <div className="p-4 bg-muted rounded-lg border">
+                                        <p className="font-bold text-primary">THESE ONES?</p>
+                                        <p className="text-sm text-muted-foreground">(¿ESTOS?) Cerca y Plural</p>
+                                    </div>
+                                    <div className="p-4 bg-muted rounded-lg border">
+                                        <p className="font-bold text-brand-purple">THAT ONE?</p>
+                                        <p className="text-sm text-muted-foreground">(¿AQUEL?) Lejos y Singular</p>
+                                    </div>
+                                    <div className="p-4 bg-muted rounded-lg border">
+                                        <p className="font-bold text-brand-purple">THOSE ONES?</p>
+                                        <p className="text-sm text-muted-foreground">(¿AQUELLOS?) Lejos y Plural</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-2 p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200">
+                                    <Lightbulb className="h-5 w-5 text-yellow-500 shrink-0" />
+                                    <p className="text-sm"><strong>NOTA:</strong> Tenemos la opción de utilizar números en reemplazo de "Ones".</p>
+                                </div>
+                            </div>
+
+                            <Separator />
+
+                            <div className="space-y-4">
+                                <h3 className="text-xl font-bold">EXAMPLES</h3>
+                                <div className="space-y-3 p-4 bg-muted/50 rounded-lg border border-dashed">
+                                    <div className="space-y-1">
+                                        <p className="text-sm text-muted-foreground italic">Frase base:</p>
+                                        <p className="font-bold">SHE DOESN'T LIKE THESE COMPUTERS</p>
+                                    </div>
+                                    <ArrowRight className="h-4 w-4 text-muted-foreground mx-auto" />
+                                    <div className="space-y-1">
+                                        <p className="text-sm text-muted-foreground italic">Usando "ones":</p>
+                                        <p className="font-bold text-primary">SHE DOESN'T LIKE THESE ONES</p>
+                                    </div>
+                                    <ArrowRight className="h-4 w-4 text-muted-foreground mx-auto" />
+                                    <div className="space-y-1">
+                                        <p className="text-sm text-muted-foreground italic">Usando un número:</p>
+                                        <p className="font-bold text-brand-purple">SHE DOESN'T LIKE THESE THREE</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="bg-primary/5 p-4 rounded-lg border-2 border-dashed border-primary/30">
+                                <p className="text-base">PODEMOS USAR EL DEMOSTRATIVO SOLO SI YA SE DA POR ENTENDIDO EL CONTEXTO.</p>
+                                <div className="mt-3 space-y-2 font-mono text-sm">
+                                    <p>I DON’T LIKE <strong>THIS</strong> (NO ME GUSTA ESTO)</p>
+                                    <p><strong>THAT</strong> WASN’T WHAT I EXPECTED (ESO NO ERA LO QUE ESPERABA)</p>
+                                </div>
+                            </div>
                         </CardContent>
-                        <CardFooter>
-                            <Button onClick={() => handleTopicComplete(selectedTopic)}>Entendido</Button>
+                        <CardFooter className="justify-center">
+                            <Button onClick={() => handleTopicComplete('grammar2')}>Avanzar</Button>
                         </CardFooter>
                     </Card>
                 );
