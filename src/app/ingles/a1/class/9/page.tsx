@@ -50,7 +50,7 @@ const ICONS = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_a1_eng_u2_c9_v4_grammar3';
+const progressStorageVersion = 'progress_a1_eng_u2_c9_v5_dialogue';
 const mainProgressKey = 'progress_a1_eng_unit_2_class_9';
 
 const vocabularyData = {
@@ -97,6 +97,32 @@ const vocabularyData = {
 };
 
 const fullVocabList = [...vocabularyData.weather, ...vocabularyData.house];
+
+const dialogue1Phrases = [
+    { spanish: "MARY: ¿PUEDO AYUDARTE?", answers: ["can i help you?", "may i help you?"] },
+    { spanish: "JON: SI, GRACIAS ¿CUANTO CUESTAN ESOS ARETES?", answers: ["yes, thank you. how much do those earrings cost?", "yes, thanks. how much are those earrings?"] },
+    { spanish: "MARY: ¿LOS BLANCOS? ESTOS CUESTAN 18 USD", answers: ["the white ones? these cost 18 usd", "the white ones? these are 18 usd"] },
+    { spanish: "JON: ESO NO ESTA MAL. ESTOS SON PARA MI ESPOSA. ¿VIENEN EN DORADO?", answers: ["that is not bad. these ones are for my wife. do they come in golden?", "that's not bad. these are for my wife. do they come in golden?"] },
+    { spanish: "MARY: NO, LO SIENTO, SOLO PLATEADOS", answers: ["no, i am sorry, only silver ones", "no, i'm sorry, only silver"] },
+    { spanish: "JON: OK. ME LOS LLEVO, ¿CUANTO CUESTA ESA CHAQUETA?", answers: ["ok. i take them, how much does that jacket cost?", "ok. i'll take them, how much is that jacket?"] },
+    { spanish: "MARY: ¿CUAL? – LA AZUL O LA BLANCA?", answers: ["which one? - the blue one or the white one?", "which? the blue or the white?"] },
+    { spanish: "JON: NO, LA MARRON", answers: ["no, the brown one", "no, the brown"] },
+    { spanish: "MARY: DEJAME VER (LET’S SEE) ESA CUESTA 30 USD", answers: ["let's see. that one costs 30 usd", "let me see. that costs 30 usd"] },
+    { spanish: "JON: ESTA BONITA, ME LA LLEVO TAMBIEN, GRACIAS", answers: ["it is pretty, i take it too, thank you", "it's nice, i'll take it too, thanks", "it is nice, i take it too, thank you"] },
+    { spanish: "MARY: CON MUCHO GUSTO", answers: ["you are welcome", "you're welcome", "with pleasure"] },
+];
+
+const dialogue1Vocab = {
+    "aretes": "earrings",
+    "esposa": "wife",
+    "dorado": "golden / gold",
+    "plateado": "silver",
+    "llevar": "to take",
+    "marron": "brown",
+    "chaqueta": "jacket",
+    "bonita": "pretty / nice",
+    "con mucho gusto": "you're welcome / with pleasure"
+};
 
 export default function EngA1Class9Page() {
     const { t } = useTranslation();
@@ -337,7 +363,7 @@ export default function EngA1Class9Page() {
                                                     <div className="p-3 bg-card border rounded-lg flex items-center">
                                                         <Input
                                                             value={vocabAnswers.house?.[index] || ''}
-                                                            onChange={e => handleTopicSelect('house', index, e.target.value)}
+                                                            onChange={e => handleVocabInputChange('house', index, e.target.value)}
                                                             className={cn(getVocabInputClass('house', index))}
                                                             autoComplete="off"
                                                         />
@@ -533,12 +559,9 @@ export default function EngA1Class9Page() {
                 return (
                     <LargeTextTranslation 
                         title="Dialogue 1" 
-                        phrases={[
-                            { spanish: "Hola, ¿cómo estás?", answers: ["hello, how are you?", "hi, how are you?"] },
-                            { spanish: "¿Cómo está el clima afuera?", answers: ["how is the weather outside?"] },
-                            { spanish: "Está muy soleado y hace calor.", answers: ["it is very sunny and hot", "it's very sunny and hot"] }
-                        ]} 
+                        phrases={dialogue1Phrases} 
                         onComplete={() => handleTopicComplete('dialogue1')} 
+                        vocabulary={dialogue1Vocab}
                     />
                 );
             case 'dialogue2':
