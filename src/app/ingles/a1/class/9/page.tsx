@@ -18,7 +18,6 @@ import {
     Pencil, 
     Loader2, 
     ChevronDown, 
-    CloudSun,
     Home,
     ArrowRight,
     Lightbulb
@@ -53,7 +52,7 @@ const ICONS = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_a1_eng_u2_c9_v7_writing';
+const progressStorageVersion = 'progress_a1_eng_u2_c9_v8_stable';
 const mainProgressKey = 'progress_a1_eng_unit_2_class_9';
 
 const vocabularyData = {
@@ -67,7 +66,7 @@ const vocabularyData = {
         { spanish: 'FRESCO', english: ['COOL'] },
         { spanish: 'CIELO', english: ['SKY'] },
         { spanish: 'NIEVE', english: ['SNOW'] },
-        { spanish: 'HACE CALOR', english: ["IT'S HOT", "IT IS HOT", "HAVE HEAT"] },
+        { spanish: 'HACE CALOR', english: ["IT'S HOT", "IT IS HOT"] },
         { spanish: 'HUMEDO', english: ['HUMID'] },
         { spanish: 'LLUVIA', english: ['RAIN'] },
         { spanish: 'NUBE', english: ['CLOUD'] },
