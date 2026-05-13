@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, Info, Mic, Loader2, RefreshCw, Flame, Trophy, Gamepad2, ChevronDown } from 'lucide-react';
+import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, Info, Mic, Loader2, RefreshCw, Flame, Trophy, Gamepad2, ChevronDown, Pencil } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
@@ -34,7 +34,7 @@ const ICONS = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_a1_eng_unit_2_class_8_v6_the_exercise';
+const progressStorageVersion = 'progress_a1_eng_unit_2_class_8_v10_final';
 const mainProgressKey = 'progress_a1_eng_unit_2_class_8';
 
 const vocabularyData = [
@@ -71,9 +71,10 @@ const exercise5Data: CompletionPrompt[] = [
     { parts: ["SHE WORKS WITH ", " ENGINEER."], answers: [""] },
 ];
 
-const DictationExercise = ({ 
+const LinesWritingExercise = ({ 
     title, 
     description, 
+    lineCount = 12,
     onComplete, 
     studentDocRef, 
     initialData, 
@@ -81,22 +82,23 @@ const DictationExercise = ({
 }: { 
     title: string, 
     description: string, 
+    lineCount?: number,
     onComplete: () => void,
     studentDocRef: any,
     initialData: string[],
     savePath: string
 }) => {
-    const [lines, setLines] = useState<string[]>(Array(12).fill(''));
+    const [lines, setLines] = useState<string[]>(Array(lineCount).fill(''));
 
     useEffect(() => {
         if (initialData && Array.isArray(initialData)) {
-            const newLines = [...Array(12).fill('')];
+            const newLines = [...Array(lineCount).fill('')];
             initialData.forEach((val, i) => {
-                if (i < 12) newLines[i] = val || '';
+                if (i < lineCount) newLines[i] = val || '';
             });
             setLines(newLines);
         }
-    }, [initialData]);
+    }, [initialData, lineCount]);
 
     const handleLineChange = (index: number, value: string) => {
         const newLines = [...lines];
@@ -114,7 +116,7 @@ const DictationExercise = ({
         <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
             <CardHeader>
                 <CardTitle className="text-2xl">{title}</CardTitle>
-                <CardDescription>{description}</CardDescription>
+                <CardDescription className="text-lg font-semibold text-primary">{description}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
                 {lines.map((line, idx) => (
@@ -123,7 +125,7 @@ const DictationExercise = ({
                         <Input 
                             value={line} 
                             onChange={(e) => handleLineChange(idx, e.target.value)} 
-                            placeholder={`Escribe aquí el renglón ${idx + 1}...`}
+                            placeholder={`Escribe aquí la frase ${idx + 1}...`}
                             className="flex-1 bg-muted/30 focus:bg-background transition-colors h-11 border-primary/20"
                             autoComplete="off"
                         />
@@ -131,7 +133,7 @@ const DictationExercise = ({
                 ))}
             </CardContent>
             <CardFooter className="pt-6 border-t mt-4">
-                <Button onClick={onComplete} className="w-full sm:w-auto min-w-[200px]">Marcar como Completado</Button>
+                <Button onClick={onComplete} className="w-full sm:w-auto min-w-[200px]">Continuar</Button>
             </CardFooter>
         </Card>
     );
@@ -174,8 +176,8 @@ export default function EngA1Class8Page() {
         { key: 'vocab_game', name: 'Vocabulary (game)', icon: Gamepad2, status: 'locked' },
         { key: 'ex4', name: 'Exercise 4', icon: PenSquare, status: 'locked' },
         { key: 'ex5', name: 'Exercise 5', icon: PenSquare, status: 'locked' },
-        { key: 'writing1', name: 'Writing 1', icon: PenSquare, status: 'locked' },
-        { key: 'writing2', name: 'Writing 2', icon: PenSquare, status: 'locked' },
+        { key: 'writing1', name: 'Writing 1', icon: Pencil, status: 'locked' },
+        { key: 'writing2', name: 'Writing 2', icon: Pencil, status: 'locked' },
     ], []);
     
     useEffect(() => {
@@ -188,7 +190,14 @@ export default function EngA1Class8Page() {
         
         let savedSelectedTopic = '';
 
-        if (studentProfile?.lessonProgress?.[progressStorageVersion] && !isAdmin) {
+        if (isAdmin) {
+            newPath.forEach(item => {
+                item.status = 'completed';
+                if (item.subItems) {
+                    item.subItems.forEach(sub => sub.status = 'completed');
+                }
+            });
+        } else if (studentProfile?.lessonProgress?.[progressStorageVersion]) {
             const savedStatuses = studentProfile.lessonProgress[progressStorageVersion];
             newPath.forEach(item => {
                 if (savedStatuses[item.key]) item.status = savedStatuses[item.key];
@@ -359,24 +368,26 @@ export default function EngA1Class8Page() {
                 );
             case 'dictation1':
                 return (
-                    <DictationExercise 
+                    <LinesWritingExercise 
                         title="Dictation 1" 
-                        description="Ejercicio de dictado: Escribe las frases dictadas por tu profesor." 
+                        description="Escribe las frases dictadas por tu profesor." 
                         onComplete={() => handleTopicComplete('dictation1')} 
                         studentDocRef={studentDocRef}
                         initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.dictation1 || []}
                         savePath={`lessonProgress.${progressStorageVersion}.dictation1`}
+                        lineCount={12}
                     />
                 );
             case 'dictation2':
                 return (
-                    <DictationExercise 
+                    <LinesWritingExercise 
                         title="Dictation 2" 
-                        description="Ejercicio de dictado: Escribe las frases dictadas por tu profesor." 
+                        description="Escribe las frases dictadas por tu profesor." 
                         onComplete={() => handleTopicComplete('dictation2')} 
                         studentDocRef={studentDocRef}
                         initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.dictation2 || []}
                         savePath={`lessonProgress.${progressStorageVersion}.dictation2`}
+                        lineCount={12}
                     />
                 );
             case 'ex1':
@@ -426,8 +437,8 @@ export default function EngA1Class8Page() {
                 return (
                     <CreativeWritingExercise 
                         title="Writing 1" 
-                        description="Escribe un pequeño párrafo sobre tus rutinas diarias usando el vocabulario de frecuencia (Always, Often, Sometimes, Never)."
-                        prompts={[{ id: 'writing1', question: 'Describe your daily routine (6-8 sentences):', placeholder: 'I always wake up at...' }]}
+                        description="WRITE SOMETHING ABOUT YOUR SCHOOL/ UNIVERSITY/ WORK."
+                        prompts={[{ id: 'writing1', question: '', placeholder: 'Escribe tu texto aquí...' }]}
                         onComplete={() => handleTopicComplete('writing1')}
                         studentDocRef={studentDocRef}
                         initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.writingData1 || {}}
@@ -435,15 +446,15 @@ export default function EngA1Class8Page() {
                     />
                 );
             case 'writing2':
-                return (
-                    <CreativeWritingExercise 
+                 return (
+                    <LinesWritingExercise 
                         title="Writing 2" 
-                        description="Imagina que estás planeando un viaje. Escribe sobre lo que tal vez (maybe/perhaps) harás."
-                        prompts={[{ id: 'writing2', question: 'Describe your future plans or dreams:', placeholder: 'Maybe I will travel to...' }]}
-                        onComplete={() => handleTopicComplete('writing2')}
+                        description="ESCRIBE 3 FRASES CON ADJETIVOS POSESIVOS Y 3 CON PRONOMBRES POSESIVOS:" 
+                        onComplete={() => handleTopicComplete('writing2')} 
                         studentDocRef={studentDocRef}
-                        initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.writingData2 || {}}
+                        initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.writingData2 || []}
                         savePath={`lessonProgress.${progressStorageVersion}.writingData2`}
+                        lineCount={6}
                     />
                 );
             default:
@@ -514,16 +525,20 @@ export default function EngA1Class8Page() {
                                                                 </CollapsibleTrigger>
                                                                 <CollapsibleContent>
                                                                     <ul className="pl-8 pt-1 space-y-1">
-                                                                        {item.subItems.map((subItem) => (
-                                                                            <li key={subItem.key} onClick={() => handleTopicSelect(subItem.key)}
-                                                                                className={cn('flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors', subItem.status === 'locked' && !isAdmin ? 'cursor-not-allowed text-muted-foreground/50' : 'cursor-pointer hover:bg-muted', selectedTopic === subItem.key && 'bg-muted text-primary font-semibold')}>
-                                                                                <div className='flex items-center gap-3'>
-                                                                                    <subItem.icon className={cn("h-5 w-5", subItem.status === 'completed' ? 'text-green-500' : '')} />
-                                                                                    <span>{subItem.name}</span>
-                                                                                </div>
-                                                                                {subItem.status === 'locked' && !isAdmin && <Lock className="h-4 w-4 text-yellow-500" />}
-                                                                            </li>
-                                                                        ))}
+                                                                        {item.subItems.map((subItem) => {
+                                                                            const SubIcon = subItem.status === 'completed' ? CheckCircle : subItem.icon;
+                                                                            const isSubLocked = subItem.status === 'locked' && !isAdmin;
+                                                                            return (
+                                                                                <li key={subItem.key} onClick={() => handleTopicSelect(subItem.key)}
+                                                                                    className={cn('flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors', subItem.status === 'locked' && !isAdmin ? 'cursor-not-allowed text-muted-foreground/50' : 'cursor-pointer hover:bg-muted', selectedTopic === subItem.key && 'bg-muted text-primary font-semibold')}>
+                                                                                    <div className='flex items-center gap-3'>
+                                                                                        <SubIcon className={cn("h-5 w-5", subItem.status === 'completed' ? 'text-green-500' : '')} />
+                                                                                        <span>{subItem.name}</span>
+                                                                                    </div>
+                                                                                    {isSubLocked && <Lock className="h-4 w-4 text-yellow-500" />}
+                                                                                </li>
+                                                                            )
+                                                                        })}
                                                                     </ul>
                                                                 </CollapsibleContent>
                                                             </Collapsible>
