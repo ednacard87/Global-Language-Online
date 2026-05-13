@@ -90,7 +90,7 @@ const exercises = {
             { spanish: '¿ELLOS SON TUS HIJOS? (SONS)- SI', english: ["Are they your sons? Yes, they are."] },
             { spanish: '¿ERES DE COLOMBIA? - SI', english: ["Are you from Colombia? Yes, I am."] },
             { spanish: '¿ÉL ES TU PAPÁ? –NO, EL ES MI PADRASTRO', english: ["Is he your dad? No, he is my stepfather.", "Is he your father? No, he is my stepfather."] },
-            { spanish: '¿TU PRIMO ESTÁ EN CALI? – NO, EL ESTÁ EN MIAMI', english: ["Is your cousin in Cali? No, he is in Miami."] },
+            { spanish: '¿TU PRIMO ESTÁ EN CALI? – NO, EL EL ESTÁ EN MIAMI', english: ["Is your cousin in Cali? No, he is in Miami."] },
             { spanish: '¿TUS LIBROS ESTAN SOBRE EL ESTANTE? – NO, ESTAN SOBRE EL ESCRITORIO', english: ["Are your books on the shelf? No, they are on the desk."] },
             { spanish: '¿TU MAMA ESTA EN LA CASA? NO, ELLA ESTA EN LA IGLESIA', english: ["Is your mom at home? No, she is at the church.", "Is your mother at home? No, she is at the church."] },
             { spanish: '¿TUS HERMANOS ESTÁN EN LA UNIVERSIDAD? – NO', english: ["Are your brothers at the university? No, they are not.", "Are your brothers at the university? No, they aren't."] },
@@ -407,7 +407,7 @@ const exercises = {
             { spanish: '¿A DÓNDE VIAJA ÉL? ÉL VIAJA A BARCELONA', english: ["where does he travel? he travels to barcelona", "where does he travel to? he travels to barcelona"] },
             { spanish: 'ELLOS NO SON NUESTROS TÍOS (UNCLES)', english: ["they are not our uncles", "they aren't our uncles", "they're not our uncles"] },
             { spanish: '¿ELLA BEBE AGUA? –NO, ELLA BEBE VODKA', english: ["does she drink water? no, she drinks vodka"] },
-            { spanish: 'NO ME GUSTA TU COMPORTAMIENTO', english: ["i do not like your behavior", "i don't like your behavior"] },
+            { spanish: 'NO ME GUSTA EL COMPORTAMIENTO', english: ["i do not like your behavior", "i don't like your behavior"] },
             { spanish: 'ELLA VA CON ÉL A LA IGLESIA', english: ["she goes with him to the church", "she goes to the church with him", "she goes to church with him"] },
         ]
     },
@@ -476,7 +476,7 @@ const exercises = {
             { spanish: 'ME GUSTAN LOS ANIMALES GRANDES - ME GUSTAN LOS GRANDES', english: ["i like big animals - i like the big ones", "i like big animals i like the big ones"] },
             { spanish: 'ME GUSTA EL VESTIDO NEGRO - ME GUSTA EL NEGRO', english: ["i like the black dress - i like the black one", "i like the black dress i like the black one"] },
             { spanish: 'EL LIBRO AZUL - EL AZUL', english: ["the blue book - the blue one", "the blue book the blue one"] },
-            { spanish: 'EL PERRO GRIS - EL GRIS', english: ["the gray dog - the gray one", "the grey dog - the grey one", "the gray dog the gray one", "the grey dog the grey one"] },
+            { spanish: 'EL PERRO GRIS - EL GRIS', english: ["the gray dog - the gray one", "the grey dog - the gray one", "the gray dog the gray one", "the grey dog the grey one"] },
             { spanish: 'EL CARRO PEQUEÑO - EL PEQUEÑO', english: ["the small car - the small one", "the small car the small one"] },
             { spanish: 'EL EDIFICIO (BUILDING) ALTO - EL ALTO', english: ["the tall building - the tall one", "the tall building the tall one"] },
             { spanish: 'LOS HOMBRES FUERTES - LOS FUERTES', english: ["the strong men - the strong ones", "the strong men the strong ones"] },
@@ -493,14 +493,22 @@ const exercises = {
             { spanish: 'LAS CASAS BLANCAS - LAS BLANCAS', english: ['the white houses - the white ones', 'the white houses the white ones'] },
             { spanish: 'LOS ZAPATOS NEGROS - LOS NEGROS', english: ['the black shoes - the black ones', 'the black shoes the black ones'] },
             { spanish: 'ME GUSTAN ESTAS MESAS - ¿A TI TE GUSTAN ESAS?', english: ['i like these tables - do you like those ones?', 'i like these tables do you like those ones?'] },
-            { spanish: '¿TE GUSTA ESTE HELADO? - ¿TE GUSTA ESTE?', english: ['do you like this ice cream? - do you like this one?', 'do you like this ice cream? do you like this one?'] },
+            { spanish: '¿TE GUSTA EL HELADO? - ¿TE GUSTA ESTE?', english: ['do you like this ice cream? - do you like this one?', 'do you like this ice cream? do you like this one?'] },
         ]
     },
     c9_ex5: {
         title: 'a1class1.exercise',
         prompts: [
-            { spanish: 'Frase de ejemplo 1...', english: ['...'] },
-            { spanish: 'Frase de ejemplo 2...', english: ['...'] },
+            { spanish: 'ESE CARRO ES AZUL MIENTRAS QUE ESTE ES GRIS', english: ["that car is blue while this one is gray", "that car is blue while this one is grey"] },
+            { spanish: 'ESTE ES EL REGALO QUE COMPRE PARA MARY', english: ["this is the gift that i bought for mary", "this is the present i bought for mary"] },
+            { spanish: 'ESA CASA ES CARA MIENTRAS ESTA ES BARATA', english: ["that house is expensive while this one is cheap"] },
+            { spanish: 'ESA MUJER ES SU MAMA Y LA OTRA ES SU TIA (DE EL)', english: ["that woman is his mother and the other one is his aunt", "that woman is his mom and the other one is his aunt"] },
+            { spanish: 'ESTOS HOMBRES SON MIS AMIGOS', english: ["these men are my friends"] },
+            { spanish: 'ESOS ANIMALES SON MUY GRANDES Y SALVAJES MIENTRAS QUE ESTOS SON PEQUEÑOS', english: ["those animals are very big and wild while these ones are small"] },
+            { spanish: 'ESOS MUCHACHOS SON INTELIGENTES MIENTRAS QUE ESTOS SON PEREZOSOS', english: ["those boys are intelligent while these ones are lazy"] },
+            { spanish: '¿DONDE ESTÁ ESE RESTAURANTE?', english: ["where is that restaurant?"] },
+            { spanish: 'ESOS CABALLOS SON NEGROS', english: ["those horses are black"] },
+            { spanish: 'ESTOS GATOS SON BLANCOS MIENTRAS QUE ESOS SON NEGROS', english: ["these cats are white while those ones are black"] },
         ]
     }
 };
