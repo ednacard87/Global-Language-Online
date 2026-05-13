@@ -363,20 +363,9 @@ export default function EngA1Class9Page() {
                 return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
                         <CardHeader>
-                            <CardTitle>Grammar: Weather and Demonstratives</CardTitle>
+                            <CardTitle>Grammar: Demonstratives</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-8 text-lg">
-                            <div className="bg-primary/5 p-6 rounded-xl border-l-4 border-primary">
-                                <h3 className="text-xl font-bold mb-2">Asking about the weather</h3>
-                                <p className="text-muted-foreground text-base">¿Cómo está el clima?</p>
-                                <div className="mt-4 p-4 bg-muted rounded-lg font-mono text-base border">
-                                    <p className="text-primary font-bold">How is the weather today?</p>
-                                    <p className="text-foreground mt-2">It is sunny and hot.</p>
-                                </div>
-                            </div>
-
-                            <Separator />
-
                             <div className="bg-brand-purple/5 p-6 rounded-xl border-l-4 border-brand-purple">
                                 <h3 className="text-xl font-bold mb-2 text-brand-purple">DEMOSTRATIVOS</h3>
                                 <p className="text-muted-foreground text-base mb-4">
