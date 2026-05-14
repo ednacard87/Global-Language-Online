@@ -539,7 +539,7 @@ export default function EspanolIntro1Page() {
                     </CardHeader>
                     <CardContent className="space-y-6">
                         <div className="bg-primary/5 p-4 rounded-lg border-l-4 border-primary">
-                            <p className="text-lg">Un sustantivo es una <strong>persona, animal o cosa</strong> (a noun is a person, animal and things).</p>
+                            <p className="text-lg">Un sustantivo es una <strong>persona, animal y cosa</strong> (a noun is a person, animal and things).</p>
                         </div>
                         <div>
                             <h3 className="text-xl font-bold text-primary mb-2">1. Género</h3>
