@@ -45,7 +45,7 @@ type Topic = {
   status: 'completed' | 'active' | 'locked';
 };
 
-const progressStorageVersion = 'progress_a1_eng_u2_c10_v13_vocab_game';
+const progressStorageVersion = 'progress_a1_eng_u2_c10_v15_gen_vocab';
 const mainProgressKey = 'progress_a1_eng_unit_2_class_10';
 
 const vocabularyData = {
@@ -73,7 +73,43 @@ const vocabularyData = {
     ]
 };
 
-// Vocabulary game data shuffled to not follow the studio list order
+const generalVocabularyData = [
+    { spanish: 'RARO, EXTRAÑO', english: ['STRANGE', 'RARE'] },
+    { spanish: 'EGOISTA', english: ['SELFISH'] },
+    { spanish: 'COMENZAR', english: ['BEGIN', 'START', 'TO BEGIN', 'TO START'] },
+    { spanish: 'TAMBIEN', english: ['ALSO', 'TOO'] },
+    { spanish: 'CASI', english: ['ALMOST'] },
+    { spanish: 'CADA', english: ['EACH', 'EVERY'] },
+    { spanish: 'ACERCA DE', english: ['ABOUT'] },
+    { spanish: 'DESDE', english: ['FROM', 'SINCE'] },
+    { spanish: 'LUEGO', english: ['THEN', 'LATER'] },
+    { spanish: 'PERO', english: ['BUT'] },
+    { spanish: 'ESOS/AS', english: ['THOSE'] },
+    { spanish: 'ESE/A', english: ['THAT'] },
+    { spanish: 'ESTOS/AS', english: ['THESE'] },
+    { spanish: 'ESTE/A', english: ['THIS'] },
+    { spanish: 'ABURRIDOR', english: ['BORING'] },
+    { spanish: 'OCUPADO', english: ['BUSY'] },
+    { spanish: 'RAPIDO', english: ['FAST', 'QUICK'] },
+    { spanish: 'VENIR', english: ['TO COME', 'COME'] },
+    { spanish: 'DIBUJAR', english: ['TO DRAW', 'DRAW'] },
+    { spanish: 'CUCHILLO', english: ['KNIFE'] },
+    { spanish: 'PARED', english: ['WALL'] },
+    { spanish: 'COMEDOR', english: ['DINING ROOM'] },
+    { spanish: 'SALA DE LA CASA', english: ['LIVING ROOM'] },
+    { spanish: 'TIMBRE', english: ['DOORBELL'] },
+    { spanish: 'COCINA', english: ['KITCHEN'] },
+    { spanish: 'VIENTO', english: ['WIND'] },
+    { spanish: 'CIELO', english: ['SKY'] },
+    { spanish: 'EL CLIMA', english: ['THE WEATHER', 'WEATHER'] },
+    { spanish: 'PERDONAR', english: ['TO FORGIVE', 'FORGIVE'] },
+    { spanish: 'OLVIDAR', english: ['TO FORGET', 'FORGET'] },
+    { spanish: 'DAR', english: ['TO GIVE', 'GIVE'] },
+    { spanish: 'SENTIR', english: ['TO FEEL', 'FEEL'] },
+    { spanish: 'CAER', english: ['TO FALL', 'FALL'] },
+    { spanish: 'LLOVER', english: ['TO RAIN', 'RAIN'] },
+];
+
 const vocabGameData = [
     { spanish: 'TENEDOR', english: 'FORK', gapped: 'FO_K' },
     { spanish: 'CAER', english: 'FALL', gapped: 'FA_L' },
@@ -188,6 +224,11 @@ export default function EngA1Class10Page() {
     const [vocabValidation, setVocabValidation] = useState<{[key: string]: ('correct' | 'incorrect' | 'unchecked')[]}>({});
     const [canAdvanceVocab, setCanAdvanceVocab] = useState(false);
 
+    // General Vocab states
+    const [generalVocabAnswers, setGeneralVocabAnswers] = useState<string[]>(Array(generalVocabularyData.length).fill(''));
+    const [generalVocabValidation, setGeneralVocabValidation] = useState<('correct' | 'incorrect' | 'unchecked')[]>(Array(generalVocabularyData.length).fill('unchecked'));
+    const [canAdvanceGenVocab, setCanAdvanceGenVocab] = useState(false);
+
     const initialLearningPath = useMemo((): Topic[] => [
         { key: 'vocabulary', name: 'Vocabulary (Basic Words)', icon: BookOpen, status: 'active' },
         { key: 'grammar', name: 'Grammar', icon: GraduationCap, status: 'locked' },
@@ -295,7 +336,7 @@ export default function EngA1Class10Page() {
         }
         setSelectedTopic(topicKey);
 
-        const autoViewTopics = ['grammar', 'grammar2', 'general_vocab'];
+        const autoViewTopics = ['grammar', 'grammar2'];
         if (autoViewTopics.includes(topicKey)) {
             handleTopicComplete(topicKey);
         }
@@ -337,6 +378,43 @@ export default function EngA1Class10Page() {
 
     const getVocabClass = (cat: string, idx: number) => {
         const status = vocabValidation[cat]?.[idx];
+        if (status === 'correct') return 'border-green-500 bg-green-50 dark:bg-green-900/10 focus-visible:ring-green-500';
+        if (status === 'incorrect') return 'border-destructive focus-visible:ring-destructive';
+        return '';
+    };
+
+    // General Vocab Handlers
+    const handleGenVocabChange = (idx: number, val: string) => {
+        const newAns = [...generalVocabAnswers];
+        newAns[idx] = val;
+        setGeneralVocabAnswers(newAns);
+
+        const newVal = [...generalVocabValidation];
+        newVal[idx] = 'unchecked';
+        setGeneralVocabValidation(newVal as any);
+        setCanAdvanceGenVocab(false);
+    };
+
+    const handleCheckGenVocab = () => {
+        let oneCorrect = false;
+        const newVal = generalVocabularyData.map((item, idx) => {
+            const userVal = (generalVocabAnswers[idx] || '').trim().toUpperCase();
+            const isCorrect = item.english.some(ans => ans.toUpperCase() === userVal);
+            if (isCorrect) oneCorrect = true;
+            return isCorrect ? 'correct' : 'incorrect';
+        });
+
+        setGeneralVocabValidation(newVal as any);
+        if (oneCorrect) {
+            toast({ title: "¡Bien hecho!", description: "Has acertado al menos una palabra. ¡Ya puedes avanzar!" });
+            setCanAdvanceGenVocab(true);
+        } else {
+            toast({ variant: 'destructive', title: "Sigue intentando", description: "Necesitas al menos una correcta para continuar." });
+        }
+    };
+
+    const getGenVocabClass = (idx: number) => {
+        const status = generalVocabValidation[idx];
         if (status === 'correct') return 'border-green-500 bg-green-50 dark:bg-green-900/10 focus-visible:ring-green-500';
         if (status === 'incorrect') return 'border-destructive focus-visible:ring-destructive';
         return '';
@@ -491,7 +569,7 @@ export default function EngA1Class10Page() {
                                     </div>
                                     <div className="p-3 bg-background rounded border border-dashed">
                                         <p className="font-bold">WHICH MANGOES DO THEY EAT?</p>
-                                        <p className="text-muted-foreground italic">(¿CUALES MANGOS COMEN ELLOS?)</p>
+                                        <p className="text-muted-foreground italic">(¿CUALES MANGOS COMEN ELLOS? )</p>
                                     </div>
                                     <div className="p-3 bg-background rounded border border-dashed">
                                         <p className="font-bold text-primary">WHICH ONES DO THEY EAT?</p>
@@ -700,6 +778,47 @@ export default function EngA1Class10Page() {
                         dialogue={dialogue3Data} 
                         onComplete={() => handleTopicComplete('dialogue3')}
                     />
+                );
+            case 'general_vocab':
+                return (
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                        <CardHeader>
+                            <CardTitle>General Vocabulary</CardTitle>
+                            <CardDescription>Traduce el vocabulario del español al inglés. Al menos una correcta para avanzar.</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="grid grid-cols-2 gap-x-6 gap-y-3">
+                                <div className="font-black text-primary border-b pb-2 uppercase tracking-widest text-sm">Español</div>
+                                <div className="font-black text-primary border-b pb-2 uppercase tracking-widest text-sm">Inglés</div>
+                                {generalVocabularyData.map((item, idx) => (
+                                    <React.Fragment key={idx}>
+                                        <div className="flex items-center text-base font-medium py-1">
+                                            {item.spanish}
+                                        </div>
+                                        <div className="flex items-center">
+                                            <Input 
+                                                value={generalVocabAnswers[idx] || ''}
+                                                onChange={(e) => handleGenVocabChange(idx, e.target.value)}
+                                                className={cn("h-9 uppercase font-mono text-sm", getGenVocabClass(idx))}
+                                                placeholder="..."
+                                                autoComplete="off"
+                                            />
+                                        </div>
+                                    </React.Fragment>
+                                ))}
+                            </div>
+                        </CardContent>
+                        <CardFooter className="flex justify-between items-center border-t pt-6 mt-4">
+                            <Button onClick={handleCheckGenVocab} variant="secondary">Verificar</Button>
+                            <Button 
+                                onClick={() => handleTopicComplete('general_vocab')} 
+                                disabled={!canAdvanceGenVocab && !isAdmin}
+                                className={cn(canAdvanceGenVocab && "bg-green-600 hover:bg-green-700")}
+                            >
+                                Avanzar <ArrowRight className="ml-2 h-4 w-4" />
+                            </Button>
+                        </CardFooter>
+                    </Card>
                 );
             default:
                 if (selectedTopic.startsWith('ex') || selectedTopic.startsWith('last') || selectedTopic.startsWith('dialogue') || selectedTopic.startsWith('vocab_game')) {
