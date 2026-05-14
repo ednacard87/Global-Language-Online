@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -130,7 +131,7 @@ const exercises = {
             { spanish: 'YO ESTOY CON (WITH) MI HERMANA', english: ["i am with my sister", "i'm with my sister"] },
             { spanish: '¿QUIENES SON ELLOS?', english: ["who are they?"] },
             { spanish: 'ELLA NO ESTA CANSADA', english: ["she is not tired", "she isn't tired"] },
-            { spanish: 'ESTOS (THESE)NO SON NUESTROS CARROS', english: ["these are not our cars", "these aren't our cars"] }
+            { spanish: 'ESTOS (THESE) NO SON NUESTROS CARROS', english: ["these are not our cars", "these aren't our cars"] }
         ]
     },
     c6_ex1: {
@@ -545,6 +546,21 @@ const exercises = {
             { spanish: 'NO ME GUSTAN ESAS CAMISETAS – A MI NO ME GUSTAN ESAS:', english: ["i don't like those t-shirts - i don't like those ones", "i do not like those t-shirts - i do not like those ones", "i don't like those shirts - i don't like those ones"] },
             { spanish: 'A NOSOTROS NOS GUSTA ESA FINCA – A NOSOTROS NOS GUSTA ESA:', english: ["we like that farm - we like that one", "we like that country house - we like that one"] },
         ]
+    },
+    c10_the1: {
+        title: 'a1class1.exercise',
+        prompts: [
+            { spanish: '1- YO QUIERO IR A PARIS', english: ["i want to go to paris"] },
+            { spanish: '2- TU ERES DEL REINO UNIDO Y ELLA ES DEL NORTE DE ALEMANIA', english: ["you are from the united kingdom and she is from the north of germany", "you're from the united kingdom and she's from the north of germany"] },
+            { spanish: '3- ÉL VIAJA A LAS BAHAMAS MIENTRAS QUE ELLA VISITA A SU FAMILIA AL SUR DE CANADA', english: ["he travels to the bahamas while she visits her family in the south of canada", "he travels to the bahamas while she visits her family to the south of canada"] },
+            { spanish: '4- NOSOTROS CAMINAMOS EN EL MONTE EVEREST', english: ["we walk on mount everest"] },
+            { spanish: '5- ELLOS ESCALAN LOS ALPES', english: ["they climb the alps"] },
+            { spanish: '6- ELLOS NADAN EN EL RIO MISSISSIPPI', english: ["they swim in the mississippi river"] },
+            { spanish: '7- ELLA QUIERE IR A EUROPA PORQUE QUIERE VISITAR ESPAÑA, FRANCIA Y EL REINO UNIDO.', english: ["she wants to go to europe because she wants to visit spain, france and the united kingdom"] },
+            { spanish: '8- NOSOTROS VAMOS AL LAGO MICHIGAN', english: ["we go to lake michigan"] },
+            { spanish: '9- ELLOS ELIGEN REPUBLICA DOMINICANA PARA SU LUNA DE MIEL', english: ["they choose the dominican republic for their honeymoon"] },
+            { spanish: '10- NOSOTROS VAMOS A LA ISLA SICILIA EL PROXIMO MES', english: ["we go to sicily island next month", "we go to sicily next month", "we are going to sicily next month"] },
+        ]
     }
 };
 
@@ -573,7 +589,7 @@ export function SimpleTranslationExercise({
 
     const imageToShow = course === 'a1' ? a1MascotImage : guideFishImage;
 
-    const exerciseNumber = useMemo(() => exerciseKey.replace(/mixed|c\d+_ex/g, ''), [exerciseKey]);
+    const exerciseNumber = useMemo(() => exerciseKey.replace(/mixed|c\d+_ex|c\d+_the/g, ''), [exerciseKey]);
     
     const exerciseData = useMemo(() => {
         if (exercises[exerciseKey as ExerciseKey]) {
