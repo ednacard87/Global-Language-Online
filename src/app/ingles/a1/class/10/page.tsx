@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo, useCallback, Fragment } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import Link from 'next/link';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -19,7 +19,10 @@ import {
     HelpCircle,
     Lightbulb,
     MessageSquare,
-    Gamepad2
+    Gamepad2,
+    Globe,
+    Waves,
+    Mountain
 } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
@@ -46,7 +49,7 @@ const ICONS = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_a1_eng_u2_c10_v9_final';
+const progressStorageVersion = 'progress_a1_eng_u2_c10_v10_definite';
 const mainProgressKey = 'progress_a1_eng_unit_2_class_10';
 
 const vocabularyData = {
@@ -291,7 +294,7 @@ export default function EngA1Class10Page() {
     const getVocabClass = (cat: string, idx: number) => {
         const status = vocabValidation[cat]?.[idx];
         if (status === 'correct') return 'border-green-500 bg-green-50 dark:bg-green-900/10 focus-visible:ring-green-500';
-        if (status === 'incorrect') return 'border-destructive bg-destructive/5 focus-visible:ring-destructive';
+        if (status === 'incorrect') return 'border-destructive focus-visible:ring-destructive';
         return '';
     };
 
@@ -482,12 +485,156 @@ export default function EngA1Class10Page() {
                     <DialogueCompletionExercise 
                         title="Dialogue 2" 
                         description="Completa el diálogo con “THIS”, “THESE”, “THAT”, “THOSE”, “ONE” u “ONES”"
-                        dialogue={dialogue2Data}
+                        dialogue={dialogue2Data} 
                         onComplete={() => handleTopicComplete('dialogue2')}
                     />
                 );
+            case 'grammar2':
+                return (
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                        <CardHeader>
+                            <CardTitle>Grammar 2: ARTÍCULO DEFINIDO "THE"</CardTitle>
+                            <CardDescription>Definite Article "THE"</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-6 text-lg">
+                            <Accordion type="multiple" defaultValue={['item-1', 'item-2', 'item-3', 'item-4']} className="w-full">
+                                <AccordionItem value="item-1">
+                                    <AccordionTrigger className="text-xl font-bold">1. SIGNIFICADO</AccordionTrigger>
+                                    <AccordionContent className="pt-2">
+                                        <p className="text-2xl font-black bg-primary/10 text-primary p-4 rounded-lg text-center">
+                                            THE = EL, LA, LOS, LAS
+                                        </p>
+                                    </AccordionContent>
+                                </AccordionItem>
+
+                                <AccordionItem value="item-2">
+                                    <AccordionTrigger className="text-xl font-bold">2. PRONUNCIACIÓN</AccordionTrigger>
+                                    <AccordionContent className="space-y-4 pt-2">
+                                        <div className="grid sm:grid-cols-2 gap-4">
+                                            <div className="p-4 bg-muted rounded-xl border-l-4 border-brand-blue">
+                                                <h4 className="font-bold text-brand-blue text-2xl mb-2">(DE)</h4>
+                                                <p className="text-sm font-medium">the + consonant</p>
+                                                <div className="mt-2 space-y-1 font-mono text-sm">
+                                                    <p>the motorcycle</p>
+                                                    <p>the house</p>
+                                                </div>
+                                            </div>
+                                            <div className="p-4 bg-muted rounded-xl border-l-4 border-brand-teal">
+                                                <h4 className="font-bold text-brand-teal text-2xl mb-2">(DI)</h4>
+                                                <p className="text-sm font-medium">the + vowel</p>
+                                                <div className="mt-2 space-y-1 font-mono text-sm">
+                                                    <p>the elevator</p>
+                                                    <p>the oranges / apples</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </AccordionContent>
+                                </AccordionItem>
+
+                                <AccordionItem value="item-3">
+                                    <AccordionTrigger className="text-xl font-bold">3. USO: COSAS ESPECÍFICAS</AccordionTrigger>
+                                    <AccordionContent className="space-y-6 pt-2">
+                                        <div className="p-4 bg-muted rounded-xl border-2 border-dashed">
+                                            <h4 className="font-bold mb-2 flex items-center gap-2">
+                                                <CheckCircle className="h-5 w-5 text-green-500" /> ESPECÍFICO (Lleva THE)
+                                            </h4>
+                                            <p className="text-sm italic">Me gusta el computador gris que compré en el centro comercial Monterrey el mes pasado:</p>
+                                            <p className="font-mono text-base font-bold text-primary mt-1">
+                                                I like <span className="underline">the</span> gray computer that I bought in Monterrey shopping center last month.
+                                            </p>
+                                        </div>
+
+                                        <div className="p-4 bg-muted rounded-xl border-2 border-dashed">
+                                            <h4 className="font-bold mb-2 flex items-center gap-2">
+                                                <Globe className="h-5 w-5 text-blue-500" /> GENERALIZACIÓN (NO lleva THE)
+                                            </h4>
+                                            <p className="text-sm italic">Me gustan los computadores:</p>
+                                            <p className="font-mono text-base font-bold text-primary mt-1">
+                                                I like computers.
+                                            </p>
+                                        </div>
+                                    </AccordionContent>
+                                </AccordionItem>
+
+                                <AccordionItem value="item-4">
+                                    <AccordionTrigger className="text-xl font-bold">4. NOMBRES GEOGRÁFICOS</AccordionTrigger>
+                                    <AccordionContent className="space-y-8 pt-2">
+                                        <div className="space-y-4">
+                                            <h4 className="font-black text-green-600 flex items-center gap-2 text-xl">
+                                                <CheckCircle className="h-6 w-6" /> LLEVAN EL ARTÍCULO "THE"
+                                            </h4>
+                                            <ul className="space-y-4">
+                                                <li className="p-3 bg-muted rounded-lg border-l-4 border-green-500">
+                                                    <strong>1. Países con:</strong> "República", "Estado", "Reino", "Unión".
+                                                    <p className="text-sm text-muted-foreground font-mono mt-1">The Soviet Union - The United States - The United Kingdom</p>
+                                                </li>
+                                                <li className="p-3 bg-muted rounded-lg border-l-4 border-green-500">
+                                                    <strong>2. Países con nombre en plural:</strong>
+                                                    <p className="text-sm text-muted-foreground font-mono mt-1">The Netherlands</p>
+                                                </li>
+                                                <li className="p-3 bg-muted rounded-lg border-l-4 border-green-500">
+                                                    <strong>3. Islas con nombre en plural:</strong>
+                                                    <p className="text-sm text-muted-foreground font-mono mt-1">The Bahamas</p>
+                                                </li>
+                                                <li className="p-3 bg-muted rounded-lg border-l-4 border-green-500">
+                                                    <strong>4. Montañas con nombre en plural:</strong>
+                                                    <p className="text-sm text-muted-foreground font-mono mt-1">The Andes - The Alps</p>
+                                                </li>
+                                                <li className="p-3 bg-muted rounded-lg border-l-4 border-green-500">
+                                                    <strong>5. Regiones:</strong>
+                                                    <p className="text-sm text-muted-foreground font-mono mt-1">The South of Canada - The North of Germany</p>
+                                                </li>
+                                                <li className="p-3 bg-muted rounded-lg border-l-4 border-green-500">
+                                                    <strong>6. Océanos, Mares y Ríos:</strong>
+                                                    <p className="text-sm text-muted-foreground font-mono mt-1">The Mississippi River - The Atlantic Ocean - The Caspian Sea</p>
+                                                </li>
+                                            </ul>
+                                        </div>
+
+                                        <Separator />
+
+                                        <div className="space-y-4">
+                                            <h4 className="font-black text-destructive flex items-center gap-2 text-xl">
+                                                <XCircle className="h-6 w-6" /> NO LLEVAN EL ARTÍCULO "THE"
+                                            </h4>
+                                            <ul className="grid sm:grid-cols-2 gap-4">
+                                                <li className="p-3 bg-muted rounded-lg border-l-4 border-destructive">
+                                                    <strong>1. Continentes:</strong>
+                                                    <p className="text-xs text-muted-foreground italic">Europe - Africa</p>
+                                                </li>
+                                                <li className="p-3 bg-muted rounded-lg border-l-4 border-destructive">
+                                                    <strong>2. Países y Estados:</strong>
+                                                    <p className="text-xs text-muted-foreground italic">Greece - Texas</p>
+                                                </li>
+                                                <li className="p-3 bg-muted rounded-lg border-l-4 border-destructive">
+                                                    <strong>3. Ciudades:</strong>
+                                                    <p className="text-xs text-muted-foreground italic">London - Paris - Berlin</p>
+                                                </li>
+                                                <li className="p-3 bg-muted rounded-lg border-l-4 border-destructive">
+                                                    <strong>4. Montañas Singular:</strong>
+                                                    <p className="text-xs text-muted-foreground italic">Mount Everest - Mont Blanc</p>
+                                                </li>
+                                                <li className="p-3 bg-muted rounded-lg border-l-4 border-destructive">
+                                                    <strong>5. Islas Singular:</strong>
+                                                    <p className="text-xs text-muted-foreground italic">Sicily</p>
+                                                </li>
+                                                <li className="p-3 bg-muted rounded-lg border-l-4 border-destructive">
+                                                    <strong>6. Lagos:</strong>
+                                                    <p className="text-xs text-muted-foreground italic">Lake Michigan - Lake Superior</p>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </AccordionContent>
+                                </AccordionItem>
+                            </Accordion>
+                        </CardContent>
+                        <CardFooter className="justify-center pt-6 border-t">
+                            <Button onClick={() => handleTopicComplete('grammar2')} size="lg" className="px-12">He terminado de estudiar</Button>
+                        </CardFooter>
+                    </Card>
+                );
             default:
-                if (selectedTopic.startsWith('ex') || selectedTopic.startsWith('last') || selectedTopic.startsWith('dialogue') || selectedTopic.startsWith('vocab_game') || selectedTopic === 'grammar2') {
+                if (selectedTopic.startsWith('ex') || selectedTopic.startsWith('last') || selectedTopic.startsWith('dialogue') || selectedTopic.startsWith('vocab_game')) {
                     return (
                         <Card className="shadow-soft rounded-lg border-2 border-brand-purple min-h-[400px]">
                             <CardHeader>
@@ -559,4 +706,26 @@ export default function EngA1Class10Page() {
             </main>
         </div>
     );
+}
+
+// Additional minor component to handle the X icon inside the definite article rules
+function XCircle(props: React.ComponentProps<'svg'>) {
+    return (
+        <svg
+            {...props}
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        >
+            <circle cx="12" cy="12" r="10" />
+            <path d="m15 9-6 6" />
+            <path d="m9 9 6 6" />
+        </svg>
+    )
 }
