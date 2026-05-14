@@ -21,8 +21,6 @@ import {
     MessageSquare,
     Gamepad2,
     Globe,
-    Waves,
-    Mountain,
     XCircle
 } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
@@ -38,18 +36,13 @@ import { LargeTextTranslation } from '@/components/dashboard/large-text-translat
 import { DialogueCompletionExercise } from '@/components/kids/exercises/dialogue-completion-exercise';
 import { SentenceCompletionExercise, type CompletionPrompt } from '@/components/kids/exercises/sentence-completion-exercise';
 import { FillInTheBlanksExercise } from '@/components/kids/exercises/fill-in-the-blanks';
+import { Label } from '@/components/ui/label';
 
 type Topic = {
   key: string;
   name: string;
   icon: React.ElementType;
   status: 'completed' | 'active' | 'locked';
-};
-
-const ICONS = {
-    locked: Lock,
-    active: BookOpen,
-    completed: CheckCircle,
 };
 
 const progressStorageVersion = 'progress_a1_eng_u2_c10_v13_vocab_game';
@@ -80,25 +73,26 @@ const vocabularyData = {
     ]
 };
 
+// Vocabulary game data shuffled to not follow the studio list order
 const vocabGameData = [
-    { spanish: 'CAER', english: 'FALL', gapped: 'FA_L' },
-    { spanish: 'SENTIR', english: 'FEEL', gapped: 'FE_L' },
-    { spanish: 'LUCHAR', english: 'FIGHT', gapped: 'FI_HT' },
-    { spanish: 'ENCONTRAR', english: 'FIND', gapped: 'F_ND' },
-    { spanish: 'DAR', english: 'GIVE', gapped: 'GI_E' },
-    { spanish: 'VOLAR', english: 'FLY', gapped: 'F_Y' },
-    { spanish: 'OLVIDAR', english: 'FORGET', gapped: 'FOR_ET' },
-    { spanish: 'PERDONAR', english: 'FORGIVE', gapped: 'FOR_IVE' },
-    { spanish: 'CALIENTE', english: 'HOT', gapped: 'H_T' },
-    { spanish: 'CALIDO', english: 'WARM', gapped: 'WA_M' },
-    { spanish: 'ESTACION', english: 'SEASON', gapped: 'SEA_ON' },
-    { spanish: 'CUCHILLO', english: 'KNIFE', gapped: 'KNI_E' },
-    { spanish: 'OLLA', english: 'POT', gapped: 'P_T' },
     { spanish: 'TENEDOR', english: 'FORK', gapped: 'FO_K' },
+    { spanish: 'CAER', english: 'FALL', gapped: 'FA_L' },
+    { spanish: 'CALIENTE', english: 'HOT', gapped: 'H_T' },
+    { spanish: 'PERDONAR', english: 'FORGIVE', gapped: 'FOR_IVE' },
     { spanish: 'CUCHARA', english: 'SPOON', gapped: 'SPO_N' },
-    { spanish: 'PLATO', english: 'DISH', gapped: 'DI_H' },
-    { spanish: 'VASO', english: 'GLASS', gapped: 'GLA_S' },
+    { spanish: 'SENTIR', english: 'FEEL', gapped: 'FE_L' },
+    { spanish: 'ESTACION', english: 'SEASON', gapped: 'SEA_ON' },
+    { spanish: 'OLVIDAR', english: 'FORGET', gapped: 'FOR_ET' },
+    { spanish: 'OLLA', english: 'POT', gapped: 'P_T' },
+    { spanish: 'LUCHAR', english: 'FIGHT', gapped: 'FI_HT' },
     { spanish: 'CUBIERTOS', english: 'SILVERWARE', gapped: 'SILVER_ARE' },
+    { spanish: 'DAR', english: 'GIVE', gapped: 'GI_E' },
+    { spanish: 'CUCHILLO', english: 'KNIFE', gapped: 'KNI_E' },
+    { spanish: 'PLATO', english: 'DISH', gapped: 'DI_H' },
+    { spanish: 'ENCONTRAR', english: 'FIND', gapped: 'F_ND' },
+    { spanish: 'CALIDO', english: 'WARM', gapped: 'WA_M' },
+    { spanish: 'VOLAR', english: 'FLY', gapped: 'F_Y' },
+    { spanish: 'VASO', english: 'GLASS', gapped: 'GLA_S' },
 ];
 
 const dialogue1Phrases = [
@@ -719,6 +713,7 @@ export default function EngA1Class10Page() {
                                 <p className="text-muted-foreground">Aquí aparecerá el ejercicio para {topic?.name}.</p>
                                 <Button onClick={() => handleTopicComplete(selectedTopic)}>Completar Actividad</Button>
                             </CardContent>
+                            <CardFooter />
                         </Card>
                     );
                 }
