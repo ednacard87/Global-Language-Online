@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -666,6 +665,8 @@ export default function EngA1Class10Page() {
                         onComplete={() => handleTopicComplete('ex_the2')}
                     />
                 );
+            case 'exercise3':
+                return <SimpleTranslationExercise exerciseKey="c10_ex3" course="a1" onComplete={() => handleTopicComplete('exercise3')} title="Exercise 3" />;
             default:
                 if (selectedTopic.startsWith('ex') || selectedTopic.startsWith('last') || selectedTopic.startsWith('dialogue') || selectedTopic.startsWith('vocab_game')) {
                     return (

@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -440,6 +439,7 @@ const exercises = {
         title: 'a1class1.exercise',
         prompts: [
             { spanish: 'ELLOS NO CONOCEN ESE HOMBRE', english: ['they do not know that man', "they don't know that man"] },
+            { spanish: '¿TE GUSTA EL CARRO NEGRO - ME GUSTA EL NEGRO', english: ["i like the black car - i like the black one", "i like the black car i like the black one"] },
             { spanish: '¿TE GUSTA ESTA GUITARRA?', english: ['do you like this guitar?'] },
             { spanish: 'ME GUSTA MUCHO ESTE RESTAURANTE', english: ['i like this restaurant very much', 'i really like this restaurant'] },
             { spanish: 'ESOS HOMBRES SON MUY ALTOS', english: ['those men are very tall'] },
@@ -545,6 +545,17 @@ const exercises = {
             { spanish: 'EL PREFIERE ESTE CARRO A ESA MOTO:', english: ["he prefers this car to that motorcycle"] },
             { spanish: 'NO ME GUSTAN ESAS CAMISETAS – A MI NO ME GUSTAN ESAS:', english: ["i don't like those t-shirts - i don't like those ones", "i do not like those t-shirts - i do not like those ones", "i don't like those shirts - i don't like those ones"] },
             { spanish: 'A NOSOTROS NOS GUSTA ESA FINCA – A NOSOTROS NOS GUSTA ESA:', english: ["we like that farm - we like that one", "we like that country house - we like that one"] },
+        ]
+    },
+    c10_ex3: {
+        title: 'a1class1.exercise',
+        prompts: [
+            { spanish: 'EL HOMBRE VIEJO- EL VIEJO', english: ["the old man - the old one", "the old man the old one"] },
+            { spanish: 'LA NIÑA ALTA- LA ALTA', english: ["the tall girl - the tall one", "the tall girl the tall one"] },
+            { spanish: 'EL GATO NEGRO- EL NEGRO', english: ["the black cat - the black one", "the black cat the black one"] },
+            { spanish: 'LOS JEANS BLANCOS- LOS BLANCOS', english: ["the white jeans - the white ones", "the white jeans the white ones"] },
+            { spanish: 'LAS CAJAS (BOX) CARAS - LAS CARAS', english: ["the expensive boxes - the expensive ones", "the expensive boxes the expensive ones"] },
+            { spanish: 'LAS CASAS BARATAS- LAS BARATAS', english: ["the cheap houses - the cheap ones", "the cheap houses the cheap ones"] },
         ]
     },
     c10_the1: {
@@ -782,7 +793,7 @@ export function SimpleTranslationExercise({
                          {t('translationExercise.checkAll') || 'Verificar Todo'}
                      </Button>
                 ) : (
-                     <Button onClick={() => setCurrentPromptIndex(p => Math.min(totalPrompts - 1, p + 1))} disabled={currentPromptIndex === totalPrompts - 1}>
+                     <Button onClick={() => setCurrentIndex(p => Math.min(totalPrompts - 1, p + 1))} disabled={currentPromptIndex === totalPrompts - 1}>
                          {t('translationExercise.next') || 'Siguiente'}
                          <ArrowRight className="ml-2 h-4 w-4" />
                      </Button>
