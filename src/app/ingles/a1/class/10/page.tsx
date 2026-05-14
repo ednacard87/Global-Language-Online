@@ -36,6 +36,7 @@ import { Separator } from '@/components/ui/separator';
 import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
 import { LargeTextTranslation } from '@/components/dashboard/large-text-translation';
 import { DialogueCompletionExercise } from '@/components/kids/exercises/dialogue-completion-exercise';
+import { SentenceCompletionExercise, type CompletionPrompt } from '@/components/kids/exercises/sentence-completion-exercise';
 
 type Topic = {
   key: string;
@@ -50,7 +51,7 @@ const ICONS = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_a1_eng_u2_c10_v10_definite';
+const progressStorageVersion = 'progress_a1_eng_u2_c10_v11_stable';
 const mainProgressKey = 'progress_a1_eng_unit_2_class_10';
 
 const vocabularyData = {
@@ -116,6 +117,19 @@ const dialogue2Data = [
     { speaker: "MARY", parts: ["THE PINK ", "."], answers: [["ONE"]] },
     { speaker: "JON", parts: ["IT’S $ 36 BUT ", " GREEN ", " IS ONLY $ 22."], answers: [["THIS", "THAT"], ["ONE"]] },
     { speaker: "MARY", parts: ["THAT’S NOT BAD. CAN I SEE IT? PLEASE"], answers: [] },
+];
+
+const exerciseThe2Data: CompletionPrompt[] = [
+    { parts: ["I WENT TO ", " SICILY ISLAND IN ITALY LAST YEAR. THAT WAS WONDERFUL"], answers: [""] },
+    { parts: ["WHEN I WAS 16, I WENT TO ", " EUROPE WITH MY PARENTS."], answers: [""] },
+    { parts: ["THEY GO TO ", " MOUNT EVEREST BECAUSE THEY WANT TO CLIMB THAT MOUNTAIN."], answers: [""] },
+    { parts: ["DO YOU LIKE ", " PARIS ARQUITECTURE?"], answers: ["THE"] },
+    { parts: ["WE WENT BY TRAIN ", " NORTH OF FRANCE"], answers: ["THE"] },
+    { parts: ["I SAW ", " ATLANTIC OCEAN WHEN I WENT TO THE COAST."], answers: ["THE"] },
+    { parts: ["SHE LIVES CLOSE TO ", " MAGDALENA RIVER."], answers: ["THE"] },
+    { parts: ["DID THEY GO TO ", " UNITED STATES LAST YEAR?"], answers: ["THE"] },
+    { parts: ["THEY TRAVEL TO ", " ALPS. (ellos viajan a los alpes)"], answers: ["THE"] },
+    { parts: ["I WANT TO VISIT ", " UNITED KINGDOM NEXT YEAR."], answers: ["THE"] },
 ];
 
 export default function EngA1Class10Page() {
@@ -643,6 +657,15 @@ export default function EngA1Class10Page() {
                     "próximo mes": "next month"
                 };
                 return <SimpleTranslationExercise exerciseKey="c10_the1" course="a1" onComplete={() => handleTopicComplete('ex_the1')} title="Exercise with 'The' 1" vocabulary={vocabThe1} />;
+            case 'ex_the2':
+                return (
+                    <SentenceCompletionExercise
+                        title="Exercise with 'The' 2"
+                        description="Completa con 'THE' si es necesario. Si no se requiere, deja el espacio en blanco o escribe una 'x'."
+                        data={exerciseThe2Data}
+                        onComplete={() => handleTopicComplete('ex_the2')}
+                    />
+                );
             default:
                 if (selectedTopic.startsWith('ex') || selectedTopic.startsWith('last') || selectedTopic.startsWith('dialogue') || selectedTopic.startsWith('vocab_game')) {
                     return (
