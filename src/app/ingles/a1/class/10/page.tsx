@@ -50,7 +50,7 @@ const ICONS = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_a1_eng_u2_c10_v11_stable';
+const progressStorageVersion = 'progress_a1_eng_u2_c10_v12_dialogue3';
 const mainProgressKey = 'progress_a1_eng_unit_2_class_10';
 
 const vocabularyData = {
@@ -116,6 +116,19 @@ const dialogue2Data = [
     { speaker: "MARY", parts: ["THE PINK ", "."], answers: [["ONE"]] },
     { speaker: "JON", parts: ["IT’S $ 36 BUT ", " GREEN ", " IS ONLY $ 22."], answers: [["THIS", "THAT"], ["ONE"]] },
     { speaker: "MARY", parts: ["THAT’S NOT BAD. CAN I SEE IT? PLEASE"], answers: [] },
+];
+
+const dialogue3Data = [
+    { speaker: "MARY", parts: ["LOOK JANE, WHICH SHOES DO YOU LIKE?"], answers: [] },
+    { speaker: "JANE", parts: ["I LIKE THE LEATHER ", "."], answers: [["ONES"]] },
+    { speaker: "MARY", parts: ["WHICH ", "? THE BROWN ", " OR THE BLACK ", "?"], answers: [["ONES"], ["ONES"], ["ONES"]] },
+    { speaker: "JANE", parts: ["THE BLACK ", "."], answers: [["ONES"]] },
+    { speaker: "SALES CLERK", parts: ["HI GIRLS! HOW CAN I HELP YOU?"], answers: [] },
+    { speaker: "JANE", parts: ["I WAS WONDERING, HOW MUCH ARE ", " LEATHER SHOES?"], answers: [["THESE", "THOSE"]] },
+    { speaker: "SALES CLERK", parts: [" ", " ONES? – THE BLACK ", "?"], answers: [["THESE", "THOSE"], ["ONES"]] },
+    { speaker: "JANE", parts: ["YEAH, ", " LEATHER ", "."], answers: [["THESE", "THOSE"], ["ONES"]] },
+    { speaker: "SALES CLERK", parts: ["THEY ARE $ 120"], answers: [] },
+    { speaker: "JANE", parts: ["THAT’S NOT EXPENSIVE. CAN I SEE THEM? PLEASE."], answers: [] },
 ];
 
 const exerciseThe2Data: CompletionPrompt[] = [
@@ -667,6 +680,15 @@ export default function EngA1Class10Page() {
                 );
             case 'exercise3':
                 return <SimpleTranslationExercise exerciseKey="c10_ex3" course="a1" onComplete={() => handleTopicComplete('exercise3')} title="Exercise 3" />;
+            case 'dialogue3':
+                return (
+                    <DialogueCompletionExercise 
+                        title="Dialogue 3: In a Shop" 
+                        description="Completa el diálogo con “THIS”, “THESE”, “THAT”, “THOSE”, “ONE” o “ONES”"
+                        dialogue={dialogue3Data} 
+                        onComplete={() => handleTopicComplete('dialogue3')}
+                    />
+                );
             default:
                 if (selectedTopic.startsWith('ex') || selectedTopic.startsWith('last') || selectedTopic.startsWith('dialogue') || selectedTopic.startsWith('vocab_game')) {
                     return (
