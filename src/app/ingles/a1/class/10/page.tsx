@@ -22,7 +22,8 @@ import {
     Gamepad2,
     Globe,
     Waves,
-    Mountain
+    Mountain,
+    XCircle
 } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
@@ -36,6 +37,7 @@ import { SimpleTranslationExercise } from '@/components/dashboard/simple-transla
 import { LargeTextTranslation } from '@/components/dashboard/large-text-translation';
 import { DialogueCompletionExercise } from '@/components/kids/exercises/dialogue-completion-exercise';
 import { SentenceCompletionExercise, type CompletionPrompt } from '@/components/kids/exercises/sentence-completion-exercise';
+import { FillInTheBlanksExercise } from '@/components/kids/exercises/fill-in-the-blanks';
 
 type Topic = {
   key: string;
@@ -50,7 +52,7 @@ const ICONS = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_a1_eng_u2_c10_v12_dialogue3';
+const progressStorageVersion = 'progress_a1_eng_u2_c10_v13_vocab_game';
 const mainProgressKey = 'progress_a1_eng_unit_2_class_10';
 
 const vocabularyData = {
@@ -78,6 +80,27 @@ const vocabularyData = {
     ]
 };
 
+const vocabGameData = [
+    { spanish: 'CAER', english: 'FALL', gapped: 'FA_L' },
+    { spanish: 'SENTIR', english: 'FEEL', gapped: 'FE_L' },
+    { spanish: 'LUCHAR', english: 'FIGHT', gapped: 'FI_HT' },
+    { spanish: 'ENCONTRAR', english: 'FIND', gapped: 'F_ND' },
+    { spanish: 'DAR', english: 'GIVE', gapped: 'GI_E' },
+    { spanish: 'VOLAR', english: 'FLY', gapped: 'F_Y' },
+    { spanish: 'OLVIDAR', english: 'FORGET', gapped: 'FOR_ET' },
+    { spanish: 'PERDONAR', english: 'FORGIVE', gapped: 'FOR_IVE' },
+    { spanish: 'CALIENTE', english: 'HOT', gapped: 'H_T' },
+    { spanish: 'CALIDO', english: 'WARM', gapped: 'WA_M' },
+    { spanish: 'ESTACION', english: 'SEASON', gapped: 'SEA_ON' },
+    { spanish: 'CUCHILLO', english: 'KNIFE', gapped: 'KNI_E' },
+    { spanish: 'OLLA', english: 'POT', gapped: 'P_T' },
+    { spanish: 'TENEDOR', english: 'FORK', gapped: 'FO_K' },
+    { spanish: 'CUCHARA', english: 'SPOON', gapped: 'SPO_N' },
+    { spanish: 'PLATO', english: 'DISH', gapped: 'DI_H' },
+    { spanish: 'VASO', english: 'GLASS', gapped: 'GLA_S' },
+    { spanish: 'CUBIERTOS', english: 'SILVERWARE', gapped: 'SILVER_ARE' },
+];
+
 const dialogue1Phrases = [
     { spanish: "MARY: ¿CUANTO VALE ESTA BUFANDA?", answers: ["how much is this scarf?", "how much does this scarf cost?"] },
     { spanish: "JON: ESTA CUESTA 20 DOLARES", answers: ["this one costs 20 dollars", "this costs 20 dollars", "this is 20 dollars"] },
@@ -90,7 +113,7 @@ const dialogue1Phrases = [
     { spanish: "MARY: ¿CUANTO VALEN ESAS BOTAS?", answers: ["how much are those boots?", "how much do those boots cost?"] },
     { spanish: "JON: ¿CUALES?", answers: ["which ones?", "which?"] },
     { spanish: "MARY: LAS GRISES", answers: ["the gray ones", "the grey ones", "the gray", "the grey"] },
-    { spanish: "JON: ESAS CUESTAN $ 40, PORQUE ESAS SON DE CUERO", answers: ["those cost 40 dollars because those are leather", "those cost 40 dollars because they are leather", "those cost 40 because those are leather", "those cost 40 because they are leather"] },
+    { spanish: "JON: ESAS CUESTAN $ 40, PORQUE ESAS SON DE CUERO", answers: ["those cost 40 dollars because those are leather", "those cost 40 dollars because they are leather", "those 40 dollars because those are leather", "those cost 40 because those are leather", "those cost 40 because they are leather"] },
     { spanish: "MARY: GRACIAS, PASARÉ DE NUEVO", answers: ["thanks, i will pass again", "thank you, i'll pass again", "thank you, i will pass again", "thanks, i'll stop by again"] },
 ];
 
@@ -676,6 +699,14 @@ export default function EngA1Class10Page() {
                         description="Completa con 'THE' si es necesario. Si no se requiere, deja el espacio en blanco o escribe una 'x'."
                         data={exerciseThe2Data}
                         onComplete={() => handleTopicComplete('ex_the2')}
+                    />
+                );
+            case 'vocab_game':
+                return (
+                    <FillInTheBlanksExercise
+                        title="Vocabulary Game"
+                        data={vocabGameData}
+                        onComplete={() => handleTopicComplete('vocab_game')}
                     />
                 );
             case 'exercise3':
