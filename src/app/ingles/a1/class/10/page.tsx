@@ -45,7 +45,7 @@ type Topic = {
   status: 'completed' | 'active' | 'locked';
 };
 
-const progressStorageVersion = 'progress_a1_eng_u2_c10_v16_final';
+const progressStorageVersion = 'progress_a1_eng_u2_c10_v20_final';
 const mainProgressKey = 'progress_a1_eng_unit_2_class_10';
 
 const vocabularyData = {
@@ -434,7 +434,7 @@ export default function EngA1Class10Page() {
                         <CardContent>
                             <Accordion type="multiple" defaultValue={['verbos', 'palabras']} className="w-full">
                                 <AccordionItem value="verbos">
-                                    <AccordionTrigger className="text-xl font-bold uppercase text-primary">Lexico: Verbos Básicos</AccordionTrigger>
+                                    <AccordionTrigger className="text-xl font-bold uppercase text-primary">Lexico: VerBos Básicos</AccordionTrigger>
                                     <AccordionContent>
                                         <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-lg">
                                             <div className="font-bold p-3 bg-muted rounded-lg text-left">Spanish</div>
@@ -823,21 +823,6 @@ export default function EngA1Class10Page() {
             case 'last_exercise':
                 return <SimpleTranslationExercise exerciseKey="c10_last" course="a1" onComplete={() => handleTopicComplete('last_exercise')} title="Last Exercise" />;
             default:
-                if (selectedTopic.startsWith('ex') || selectedTopic.startsWith('last') || selectedTopic.startsWith('dialogue') || selectedTopic.startsWith('vocab_game')) {
-                    return (
-                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple min-h-[400px]">
-                            <CardHeader>
-                                <CardTitle>{topic?.name}</CardTitle>
-                                <CardDescription>Actividad interactiva próximamente.</CardDescription>
-                            </CardHeader>
-                            <CardContent className="flex flex-col items-center justify-center gap-6 h-full">
-                                <p className="text-muted-foreground">Aquí aparecerá el ejercicio para {topic?.name}.</p>
-                                <Button onClick={() => handleTopicComplete(selectedTopic)}>Completar Actividad</Button>
-                            </CardContent>
-                            <CardFooter />
-                        </Card>
-                    );
-                }
                 return <div className="flex items-center justify-center h-64"><Loader2 className="animate-spin" /></div>;
         }
     };
