@@ -477,20 +477,7 @@ export default function EngA1Class10Page() {
                                         <p className="text-foreground">She's going to the cinema with <span className="font-bold text-primary underline">other friends</span>. (Plural)</p>
                                     </div>
                                 </div>
-                            </div>
 
-                            <div className="bg-brand-blue/5 p-6 rounded-xl border-l-4 border-brand-blue">
-                                <h3 className="text-xl font-bold mb-2">WHICH + ONE / ONES</h3>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <p className="font-bold">Which one?</p>
-                                        <p className="text-sm text-muted-foreground">Singular – Cual?</p>
-                                    </div>
-                                    <div>
-                                        <p className="font-bold">Which ones?</p>
-                                        <p className="text-sm text-muted-foreground">Plural – Cuales?</p>
-                                    </div>
-                                </div>
                                 <p className="mt-4 text-sm bg-yellow-50 dark:bg-yellow-900/20 p-3 rounded border border-yellow-200">
                                     <Lightbulb className="inline-block h-4 w-4 mr-1 text-yellow-500" />
                                     Podemos elegir reemplazar el sustantivo por <strong>ONE / ONES</strong> solo si ya conocemos el contexto.
@@ -793,26 +780,4 @@ export default function EngA1Class10Page() {
             </main>
         </div>
     );
-}
-
-// Additional minor component to handle the X icon inside the definite article rules
-function XCircle(props: React.ComponentProps<'svg'>) {
-    return (
-        <svg
-            {...props}
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-        >
-            <circle cx="12" cy="12" r="10" />
-            <path d="m15 9-6 6" />
-            <path d="m9 9 6 6" />
-        </svg>
-    )
 }
