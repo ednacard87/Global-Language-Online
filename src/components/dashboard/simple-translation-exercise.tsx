@@ -419,7 +419,7 @@ const exercises = {
             { spanish: 'ESTE NO ES SU CARRO (DE ELLOS)', english: ["this is not their car", "this isn't their car"] },
             { spanish: 'ELLA ES MI HERMANA', english: ["she is my sister", "she's my sister"] },
             { spanish: '¿DÓNDE ESTÁ TU CHAQUETA? (JACKET)', english: ["where is your jacket?", "where's your jacket?"] },
-            { spanish: '¿CUÁNDO ES TU CUMPLEAÑOS? (BIRTHDAY)', english: ["when is your birthday?", "when's your birthday?"] },
+            { spanish: '¿CUÁL ES TU CUMPLEAÑOS? (BIRTHDAY)', english: ["when is your birthday?", "when's your birthday?"] },
             { spanish: 'ELLA NO VA ALLÁ (THERE)', english: ["she does not go there", "she doesn't go there"] },
             { spanish: 'ELLOS SON SUS AMIGOS (DE ÉL)', english: ["they are his friends", "they're his friends"] },
             { spanish: '¿DÓNDE CORREN ELLOS?', english: ["where do they run?"] },
@@ -572,6 +572,19 @@ const exercises = {
             { spanish: '9- ELLOS ELIGEN REPUBLICA DOMINICANA PARA SU LUNA DE MIEL', english: ["they choose the dominican republic for their honeymoon"] },
             { spanish: '10- NOSOTROS VAMOS A LA ISLA SICILIA EL PROXIMO MES', english: ["we go to sicily island next month", "we go to sicily next month", "we are going to sicily next month"] },
         ]
+    },
+    c10_last: {
+        title: 'a1class1.exercise',
+        prompts: [
+            { spanish: '1. YO FUI AL REINO UNIDO PARA MI LUNA DE MIEL', english: ["i went to the united kingdom for my honeymoon"] },
+            { spanish: '2. ME GUSTARIA VISITAR LAS ISLAS MALDIVAS.', english: ["i would like to visit the maldives islands", "i'd like to visit the maldives islands", "i would like to visit the maldives", "i'd like to visit the maldives"] },
+            { spanish: '3. ÉL FUE A LOS ALPES SUIZOS CON SU ESPOSA EL AÑO PASADO:', english: ["he went to the swiss alps with his wife last year"] },
+            { spanish: '4. NOSOTROS QUEREMOS VIAJAR EN UN CRUCERO POR EL OCEANO ATLANTICO.', english: ["we want to travel on a cruise through the atlantic ocean", "we want to travel in a cruise through the atlantic ocean"] },
+            { spanish: '5. YO VIAJÉ ARGENTINA EL AÑO PASADO.', english: ["i traveled to argentina last year", "i travelled to argentina last year"] },
+            { spanish: '6. ¿TIENES QUE TRABAJAR EN LA OFICINA?', english: ["do you have to work in the office?", "do you have to work at the office?"] },
+            { spanish: '7. ME GUSTARIA VISITAR TODOS LOS PAISES DE EUROPA.', english: ["i would like to visit all the countries in europe", "i'd like to visit all the countries in europe"] },
+            { spanish: '8. ¿TE GUSTARIA VISITAR BARCELONA EN 2 MESES?', english: ["would you like to visit barcelona in 2 months?"] },
+        ]
     }
 };
 
@@ -600,7 +613,7 @@ export function SimpleTranslationExercise({
 
     const imageToShow = course === 'a1' ? a1MascotImage : guideFishImage;
 
-    const exerciseNumber = useMemo(() => exerciseKey.replace(/mixed|c\d+_ex|c\d+_the/g, ''), [exerciseKey]);
+    const exerciseNumber = useMemo(() => exerciseKey.replace(/mixed|c\d+_ex|c\d+_the|c\d+_last/g, ''), [exerciseKey]);
     
     const exerciseData = useMemo(() => {
         if (exercises[exerciseKey as ExerciseKey]) {
@@ -793,7 +806,7 @@ export function SimpleTranslationExercise({
                          {t('translationExercise.checkAll') || 'Verificar Todo'}
                      </Button>
                 ) : (
-                     <Button onClick={() => setCurrentIndex(p => Math.min(totalPrompts - 1, p + 1))} disabled={currentPromptIndex === totalPrompts - 1}>
+                     <Button onClick={() => setCurrentPromptIndex(p => Math.min(totalPrompts - 1, p + 1))} disabled={currentPromptIndex === totalPrompts - 1}>
                          {t('translationExercise.next') || 'Siguiente'}
                          <ArrowRight className="ml-2 h-4 w-4" />
                      </Button>

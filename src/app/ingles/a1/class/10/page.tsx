@@ -45,7 +45,7 @@ type Topic = {
   status: 'completed' | 'active' | 'locked';
 };
 
-const progressStorageVersion = 'progress_a1_eng_u2_c10_v15_gen_vocab';
+const progressStorageVersion = 'progress_a1_eng_u2_c10_v16_final';
 const mainProgressKey = 'progress_a1_eng_unit_2_class_10';
 
 const vocabularyData = {
@@ -129,7 +129,7 @@ const vocabGameData = [
     { spanish: 'CALIDO', english: 'WARM', gapped: 'WA_M' },
     { spanish: 'VOLAR', english: 'FLY', gapped: 'F_Y' },
     { spanish: 'VASO', english: 'GLASS', gapped: 'GLA_S' },
-];
+].sort(() => Math.random() - 0.5);
 
 const dialogue1Phrases = [
     { spanish: "MARY: ¿CUANTO VALE ESTA BUFANDA?", answers: ["how much is this scarf?", "how much does this scarf cost?"] },
@@ -820,6 +820,8 @@ export default function EngA1Class10Page() {
                         </CardFooter>
                     </Card>
                 );
+            case 'last_exercise':
+                return <SimpleTranslationExercise exerciseKey="c10_last" course="a1" onComplete={() => handleTopicComplete('last_exercise')} title="Last Exercise" />;
             default:
                 if (selectedTopic.startsWith('ex') || selectedTopic.startsWith('last') || selectedTopic.startsWith('dialogue') || selectedTopic.startsWith('vocab_game')) {
                     return (
