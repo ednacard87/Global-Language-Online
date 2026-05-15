@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -54,7 +53,7 @@ const ICONS = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_a1_eng_u3_c11_v6_final';
+const progressStorageVersion = 'progress_a1_eng_u3_c11_v7_final';
 const mainProgressKey = 'progress_a1_eng_unit_3_class_11';
 
 const familyVocabulary = [
@@ -159,6 +158,16 @@ const ex3Vocab = {
     "mientras": "while",
     "diario": "every day",
     "besa": "kisses"
+};
+
+const ex4Vocab = {
+    "finca": "farm / country house",
+    "aretes": "earrings",
+    "guitarra": "guitar",
+    "chaqueta": "jacket",
+    "mío": "mine",
+    "tuyo": "yours",
+    "suyo": "his / hers / theirs"
 };
 
 export default function EngA1Class11Page() {
@@ -594,11 +603,11 @@ export default function EngA1Class11Page() {
             case 'ex3':
                 return <SimpleTranslationExercise exerciseKey="c11_ex3" course="a1" onComplete={() => handleTopicComplete('ex3')} title="Exercise 3" vocabulary={ex3Vocab} />;
             case 'ex4':
-                return <SimpleTranslationExercise exerciseKey="c11_ex4" course="a1" onComplete={() => handleTopicComplete('ex4')} title="Exercise 4" />;
-            case 'vocab_game':
-                return <VocabularyMatchingGame data={familyVocabulary.map(v => ({ spanish: v.spanish, english: v.english }))} title="Vocabulary Game (Family)" onComplete={() => handleTopicComplete('vocab_game')} />;
+                return <SimpleTranslationExercise exerciseKey="c11_ex4" course="a1" onComplete={() => handleTopicComplete('ex4')} title="Exercise 4" vocabulary={ex4Vocab} />;
             case 'ex5':
                 return <SimpleTranslationExercise exerciseKey="c11_ex5" course="a1" onComplete={() => handleTopicComplete('ex5')} title="Exercise 5" />;
+            case 'vocab_game':
+                return <VocabularyMatchingGame data={familyVocabulary.map(v => ({ spanish: v.spanish, english: v.english }))} title="Vocabulary Game (Family)" onComplete={() => handleTopicComplete('vocab_game')} />;
             case 'ex6':
                 return <SimpleTranslationExercise exerciseKey="c11_ex6" course="a1" onComplete={() => handleTopicComplete('ex6')} title="Exercise 6" />;
             default:

@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -640,6 +639,28 @@ const exercises = {
             { spanish: "LA HIJA LLAMA A SU PADRE – EL PAPÁ LA LLAMA TODOS LOS DIAS.", english: ["the daughter calls her father - the dad calls her every day", "the daughter calls her dad - the dad calls her every day"] },
             { spanish: "EL BEBÉ BESA A SU MADRE – EL BEBE LA BESA", english: ["the baby kisses his mother - the baby kisses her", "the baby kisses his mom - the baby kisses her"] },
             { spanish: "EL BAILA CON SU HERMANA EN SU CUMPLEAÑOS.", english: ["he dances with his sister on his birthday", "he dances with his sister on her birthday"] },
+        ]
+    },
+    c11_ex4: {
+        title: 'a1class1.exercise',
+        prompts: [
+            { spanish: "¿DONDE HABLAS CON ELLOS? HABLO CON ELLOS EN EL TRABAJO", english: ["where do you speak with them? i speak with them at work", "where do you talk with them? i talk with them at work"] },
+            { spanish: "ELLOS NO NADAN CONMIGO", english: ["they do not swim with me", "they don't swim with me"] },
+            { spanish: "ELLA CANTA CON ELLOS", english: ["she sings with them"] },
+            { spanish: "¿EL ES SU HERMANO? (DE ELLOS)", english: ["is he their brother?"] },
+            { spanish: "¿A DONDE VAS CON ELLA?", english: ["where are you going with her?", "where do you go with her?"] },
+            { spanish: "¿A EL LE GUSTA SU TRABAJO?", english: ["does he like his job?"] },
+            { spanish: "A ELLA LE GUSTA SU CHAQUETA (JACKET) (DE EL)", english: ["she likes his jacket"] },
+            { spanish: "¿TE GUSTA NUESTRA CASA?", english: ["do you like our house?"] },
+            { spanish: "ESTA ES SU FINCA (DE ELLA)", english: ["this is her farm", "this is her country house"] },
+            { spanish: "ESTE NO ES EL MIO, ES EL TUYO", english: ["this is not mine, it is yours", "this isn't mine, it's yours", "this is not mine, it's yours"] },
+            { spanish: "ELLOS NO ESTAN CONMIGO", english: ["they are not with me", "they aren't with me"] },
+            { spanish: "EL ES MI HERMANO, TIENE 33 AÑOS", english: ["he is my brother, he is 33 years old", "he's my brother, he is 33 years old", "he is my brother, he's 33 years old"] },
+            { spanish: "YO VOY CON ELLA AL SUPERMERCADO", english: ["i go with her to the supermarket", "i'm going with her to the supermarket"] },
+            { spanish: "¿ESTAS EN SU CASA? (DE ELLA)", english: ["are you in her house?", "are you at her house?"] },
+            { spanish: "¿TU HIJO TOCA LA GUITARRA CON EL? –SI", english: ["does your son play the guitar with him? yes, he does", "does your son play the guitar with him? yes"] },
+            { spanish: "¿ESOS SON LOS SUYOS (DE ELLOS) O LOS MIOS?", english: ["are those theirs or mine?"] },
+            { spanish: "ELLOS NOS LLAMAN DESDE ESPAÑA:", english: ["they call us from spain", "they're calling us from spain"] },
         ]
     }
 };
