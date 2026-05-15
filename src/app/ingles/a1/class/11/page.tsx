@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -53,7 +54,7 @@ const ICONS = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_a1_eng_u3_c11_v5_final';
+const progressStorageVersion = 'progress_a1_eng_u3_c11_v6_final';
 const mainProgressKey = 'progress_a1_eng_unit_3_class_11';
 
 const familyVocabulary = [
@@ -145,6 +146,19 @@ const ex2Vocab = {
     "motiva": "motivates",
     "invitan": "invite",
     "demasiado": "too"
+};
+
+const ex3Vocab = {
+    "inviernos": "winters",
+    "cálidos": "warm",
+    "fríos": "cold",
+    "tiquetes": "tickets",
+    "demasiado": "too",
+    "tocineta": "bacon",
+    "lechuga": "lettuce",
+    "mientras": "while",
+    "diario": "every day",
+    "besa": "kisses"
 };
 
 export default function EngA1Class11Page() {
@@ -578,7 +592,7 @@ export default function EngA1Class11Page() {
                     </Card>
                 );
             case 'ex3':
-                return <SimpleTranslationExercise exerciseKey="c11_ex3" course="a1" onComplete={() => handleTopicComplete('ex3')} title="Exercise 3" />;
+                return <SimpleTranslationExercise exerciseKey="c11_ex3" course="a1" onComplete={() => handleTopicComplete('ex3')} title="Exercise 3" vocabulary={ex3Vocab} />;
             case 'ex4':
                 return <SimpleTranslationExercise exerciseKey="c11_ex4" course="a1" onComplete={() => handleTopicComplete('ex4')} title="Exercise 4" />;
             case 'vocab_game':

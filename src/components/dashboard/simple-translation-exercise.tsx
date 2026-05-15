@@ -600,7 +600,7 @@ const exercises = {
             { spanish: "¿JUEGAS CON NOSOTROS? – NO, PORQUE ESTOY JUGANDO CON ELLA:", english: ["do you play with us? no, because i am playing with her", "do you play with us? no, because i'm playing with her"] },
             { spanish: "TUS PRIMOS NO JUEGAN CON NOSOTROS JUEGOS DE MESA", english: ["your cousins do not play board games with us", "your cousins don't play board games with us"] },
             { spanish: "MI CUÑADO TOCA LA GUITARRA (THE GUITAR) CON EL", english: ["my brother in law plays the guitar with him", "my brother-in-law plays the guitar with him"] },
-            { spanish: "¿A DONDE VAS CON ELLOS? –NOSOTROS VAMOS A LA IGLESIA", english: ["where do you go with them? we go to the church", "where are you going with them? we are going to the church"] },
+            { spanish: "¿A DONDE VAS WITH ELLOS? –NOSOTROS VAMOS A LA IGLESIA", english: ["where do you go with them? we go to the church", "where are you going with them? we are going to the church"] },
             { spanish: "NOSOTROS NO VIAJAMOS SIN ELLOS", english: ["we do not travel without them", "we don't travel without them"] },
             { spanish: "EL NOS LLAMA A LAS 10 DE LA NOCHE", english: ["he calls us at 10 at night", "he calls us at 10 in the night", "he calls us at 10 pm"] },
             { spanish: "¿ELLOS VIENEN CON NOSOTROS?", english: ["do they come with us?"] },
@@ -623,6 +623,23 @@ const exercises = {
             { spanish: 'LA HIJA LLAMA A SU PADRE – EL PAPÁ LA LLAMA TODOS LOS DIAS.', english: ["the daughter calls her father - the dad calls her every day", "the daughter calls her father - the father calls her every day", "the daughter calls her dad - the dad calls her every day"] },
             { spanish: 'EL BEBÉ BESA A SU MADRE – EL BEBE LA BESA', english: ["the baby kisses his mother - the baby kisses her", "the baby kisses his mom - the baby kisses her"] },
             { spanish: 'EL BAILA CON SU HERMANA EN SU CUMPLEAÑOS.', english: ["he dances with her on her birthday", "he dances with her on his birthday"] },
+        ]
+    },
+    c11_ex3: {
+        title: 'a1class1.exercise',
+        prompts: [
+            { spanish: "YO VOY A MEDELLIN CON CARLOS Y ANDRES- YO VOY CON ELLOS", english: ["i go to medellin with carlos and andres - i go with them", "i'm going to medellin with carlos and andres - i'm going with them"] },
+            { spanish: "En Bilbao, los inviernos son frios, pero los veranos son calidos", english: ["in bilbao, the winters are cold, but the summers are warm"] },
+            { spanish: "Manchester tiene dos rios y un canal", english: ["manchester has two rivers and a canal"] },
+            { spanish: "Los tiquetes son demasiado caros asi que no puedo ir", english: ["the tickets are too expensive so i can't go", "the tickets are too expensive so i cannot go"] },
+            { spanish: "YO QUIERO IR ALLÁ CON ELLA PERO NO TENGO TIEMPO", english: ["i want to go there with her but i don't have time", "i want to go there with her but i do not have time"] },
+            { spanish: "¿ELLA QUIERE PIZZA O ENSALADA? – ELLA QUIERE UNA ENSALADA CON POLLO,TOCINETA Y LECHUGA", english: ["does she want pizza or salad? she wants a salad with chicken, bacon and lettuce"] },
+            { spanish: "SI TU VAS ALLA, COMPRAME UNA CHAQUETA, POR FAVOR", english: ["if you go there, buy me a jacket please", "if you go there buy me a jacket please"] },
+            { spanish: "MARK VE TELEVISON MIENTRAS YO HAGO EJERCICIO", english: ["mark watches television while i do exercise", "mark watches tv while i do exercise", "mark watches television while i exercise"] },
+            { spanish: "ELLA LOS ESPERA EN LA ESCUELA. (a sus hijos)", english: ["she waits for them at school", "she is waiting for them at school"] },
+            { spanish: "LA HIJA LLAMA A SU PADRE – EL PAPÁ LA LLAMA TODOS LOS DIAS.", english: ["the daughter calls her father - the dad calls her every day", "the daughter calls her dad - the dad calls her every day"] },
+            { spanish: "EL BEBÉ BESA A SU MADRE – EL BEBE LA BESA", english: ["the baby kisses his mother - the baby kisses her", "the baby kisses his mom - the baby kisses her"] },
+            { spanish: "EL BAILA CON SU HERMANA EN SU CUMPLEAÑOS.", english: ["he dances with his sister on his birthday", "he dances with his sister on her birthday"] },
         ]
     }
 };
