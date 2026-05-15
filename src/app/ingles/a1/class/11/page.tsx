@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -20,7 +21,8 @@ import {
     Gamepad2,
     Pencil,
     Users,
-    Table as TableIcon
+    Table as TableIcon,
+    ArrowDownWideArrow
 } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
@@ -46,7 +48,13 @@ type Topic = {
   status: TopicStatus;
 };
 
-const progressStorageVersion = 'progress_a1_eng_u3_c11_v4_final';
+const ICONS = {
+    locked: Lock,
+    active: BookOpen,
+    completed: CheckCircle,
+};
+
+const progressStorageVersion = 'progress_a1_eng_u3_c11_v5_final';
 const mainProgressKey = 'progress_a1_eng_unit_3_class_11';
 
 const familyVocabulary = [
@@ -117,6 +125,19 @@ const ex2Data: CompletionPrompt[] = [
     { parts: ["WE ARE GOOD STUDENTS, BECAUSE THE TEACHER ALWAYS MOTIVATES ", ""], answers: ["US"] },
     { parts: ["SHE DOESN’T SEE HER FRIENDS AT THE PARTY, SO SHE CALLS ", ""], answers: ["THEM"] },
     { parts: ["THEY INVITE ", " TO THEIR HOUSE."], answers: ["US"] },
+];
+
+const conjunctionsData = [
+    { word: "Because", function: "give a reason", example: "I study English because I need it for my job." },
+    { word: "So", function: "give a consequence / result", example: "It is raining, so I have an umbrella." },
+    { word: "After", function: "give the order of events", example: "She goes to bed after she finishes her homework." },
+    { word: "Before", function: "give the order of events", example: "I brush my teeth before I sleep." },
+    { word: "Until", function: "shows up to a point in time", example: "We stay at the office until 6:00 p.m." },
+    { word: "But", function: "give a contrast", example: "He is tall, but his brother is short." },
+    { word: "And", function: "give extra information", example: "I have a pen and a notebook." },
+    { word: "Or", function: "shows options", example: "Do you want tea or coffee?" },
+    { word: "If", function: "shows a condition", example: "Call me if you need help." },
+    { word: "While", function: "shows actions at the same time", example: "I talk with my mom while I cook dinner." },
 ];
 
 const ex2Vocab = {
@@ -493,15 +514,67 @@ export default function EngA1Class11Page() {
                 );
             case 'grammar2':
                 return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-                        <CardHeader>
-                            <CardTitle>Grammar 2: Plurals and Specifics</CardTitle>
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
+                        <CardHeader className="bg-primary/10 border-b">
+                            <div className="flex items-center gap-3">
+                                <ArrowDownWideArrow className="h-6 w-6 text-primary" />
+                                <CardTitle className="text-2xl">CONJUNCIONES BÁSICAS: (CONJUNCTIONS)</CardTitle>
+                            </div>
                         </CardHeader>
-                        <CardContent className="space-y-6 text-lg">
-                            <p className="text-muted-foreground italic">Contenido de gramática avanzada para el nivel A1...</p>
+                        <CardContent className="p-6 space-y-8">
+                            <div className="bg-muted/50 p-6 rounded-2xl border-2 border-dashed">
+                                <h3 className="text-xl font-bold text-primary mb-3">¿Qué son?</h3>
+                                <p className="text-lg leading-relaxed">
+                                    Las conjunciones son palabras que <strong>conectan</strong> oraciones, frases o palabras individuales para darles sentido y fluidez.
+                                </p>
+                            </div>
+
+                            <div className="space-y-4">
+                                <h3 className="text-xl font-black text-primary uppercase tracking-widest flex items-center gap-2">
+                                    <TableIcon className="h-5 w-5" /> CONJUNCIONES PRINCIPALES:
+                                </h3>
+                                <div className="border-2 rounded-xl overflow-hidden shadow-sm">
+                                    <Table>
+                                        <TableHeader className="bg-muted">
+                                            <TableRow>
+                                                <TableHead className="font-bold text-foreground">CONJUNCTION</TableHead>
+                                                <TableHead className="font-bold text-foreground">FUNCTION</TableHead>
+                                                <TableHead className="font-bold text-foreground">EXAMPLE</TableHead>
+                                            </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {conjunctionsData.map((row, idx) => (
+                                                <TableRow key={idx}>
+                                                    <TableCell className="font-black text-primary text-lg">{row.word}</TableCell>
+                                                    <TableCell className="font-medium text-muted-foreground">{row.function}</TableCell>
+                                                    <TableCell className="italic text-sm leading-relaxed">{row.example}</TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </div>
+                            </div>
+
+                            <div className="p-6 bg-brand-lilac/30 rounded-2xl border-2 border-brand-purple">
+                                <h4 className="text-lg font-bold text-primary flex items-center gap-2 mb-4">
+                                    <Sparkles className="h-5 w-5" /> TIP DE APRENDIZAJE:
+                                </h4>
+                                <div className="grid sm:grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <p className="text-sm font-bold">Contrast (Pero):</p>
+                                        <p className="text-sm bg-background p-3 rounded-lg border">I like coffee, <strong>but</strong> I don't like tea.</p>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <p className="text-sm font-bold">Condition (Si):</p>
+                                        <p className="text-sm bg-background p-3 rounded-lg border">I will go to the party <strong>if</strong> I finish my homework.</p>
+                                    </div>
+                                </div>
+                            </div>
                         </CardContent>
-                        <CardFooter className="justify-center border-t pt-6">
-                            <Button onClick={() => handleTopicComplete('grammar2')} size="lg" className="px-12">Siguiente</Button>
+                        <CardFooter className="justify-center pt-6 border-t">
+                            <Button onClick={() => handleTopicComplete('grammar2')} size="lg" className="px-12 font-bold">
+                                Entendido <ArrowRight className="ml-2 h-4 w-4" />
+                            </Button>
                         </CardFooter>
                     </Card>
                 );
@@ -542,7 +615,7 @@ export default function EngA1Class11Page() {
                                     <nav>
                                         <ul className="space-y-1">
                                             {learningPath.map((item) => {
-                                                const Icon = item.status === 'completed' ? CheckCircle : item.icon;
+                                                const Icon = item.status === 'completed' ? CheckCircle : (item.status === 'active' ? item.icon : Lock);
                                                 const isLocked = item.status === 'locked' && !isAdmin;
                                                 const isActive = item.status === 'active';
                                                 return (
