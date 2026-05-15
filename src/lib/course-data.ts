@@ -514,22 +514,22 @@ export const getA2EngUnitPath = (unitId: string | number, t: (key: string) => st
     const unitPaths: {[key: string]: PathItem[]} = {
         '1': [
             { type: 'start', icon: Footprints, label: 'dashboard.start' },
-            ...Array.from({ length: 5 }, (_, i) => ({ type: 'class' as const, icon: BookOpen, label: `Class ${i + 1}`, href: `#`, storageKey: `progress_a2_eng_unit_1_class_${i + 1}` })),
+            ...Array.from({ length: 5 }, (_, i) => ({ type: 'class' as const, icon: BookOpen, label: `Class ${i + 1} (A2)`, href: `#`, storageKey: `progress_a2_eng_unit_1_class_${i + 1}` })),
             { type: 'end', icon: Flag, label: 'dashboard.finish' },
         ],
         '2': [
             { type: 'start', icon: Footprints, label: 'dashboard.start' },
-             ...Array.from({ length: 5 }, (_, i) => ({ type: 'class' as const, icon: BookOpen, label: `Class ${i + 6}`, href: `#`, storageKey: `progress_a2_eng_unit_2_class_${i + 6}` })),
+             ...Array.from({ length: 5 }, (_, i) => ({ type: 'class' as const, icon: BookOpen, label: `Class ${i + 6} (A2)`, href: `#`, storageKey: `progress_a2_eng_unit_2_class_${i + 6}` })),
             { type: 'end', icon: Flag, label: 'dashboard.finish' },
         ],
         '3': [
             { type: 'start', icon: Footprints, label: 'dashboard.start' },
-             ...Array.from({ length: 5 }, (_, i) => ({ type: 'class' as const, icon: BookOpen, label: `Class ${i + 11}`, href: `#`, storageKey: `progress_a2_eng_unit_3_class_${i + 11}` })),
+             ...Array.from({ length: 5 }, (_, i) => ({ type: 'class' as const, icon: BookOpen, label: `Class ${i + 11} (A2)`, href: `#`, storageKey: `progress_a2_eng_unit_3_class_${i + 11}` })),
             { type: 'end', icon: Flag, label: 'dashboard.finish' },
         ],
         '4': [
             { type: 'start', icon: Footprints, label: 'dashboard.start' },
-             ...Array.from({ length: 5 }, (_, i) => ({ type: 'class' as const, icon: BookOpen, label: `Class ${i + 16}`, href: `#`, storageKey: `progress_a2_eng_unit_4_class_${i + 16}` })),
+             ...Array.from({ length: 5 }, (_, i) => ({ type: 'class' as const, icon: BookOpen, label: `Class ${i + 16} (A2)`, href: `#`, storageKey: `progress_a2_eng_unit_4_class_${i + 16}` })),
             { type: 'end', icon: Flag, label: 'dashboard.finish' },
         ]
     };
