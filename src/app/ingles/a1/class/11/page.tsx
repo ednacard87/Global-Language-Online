@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -45,7 +46,7 @@ type Topic = {
   status: TopicStatus;
 };
 
-const progressStorageVersion = 'progress_a1_eng_u3_c11_v2_clean';
+const progressStorageVersion = 'progress_a1_eng_u3_c11_v3_dots';
 const mainProgressKey = 'progress_a1_eng_unit_3_class_11';
 
 const familyVocabulary = [
@@ -462,7 +463,24 @@ export default function EngA1Class11Page() {
                     />
                 );
             case 'ex2':
-                return <SimpleTranslationExercise exerciseKey="c11_ex2" course="a1" onComplete={() => handleTopicComplete('ex2')} title="Exercise 2" />;
+                const vocabEx2 = {
+                    "renunciar": "to quit",
+                    "emocionados": "excited",
+                    "demasiado": "too",
+                    "motiva": "motivates",
+                    "besa": "kisses",
+                    "invitan": "invite",
+                    "espera": "waits"
+                };
+                return (
+                    <SimpleTranslationExercise 
+                        exerciseKey="c11_ex2" 
+                        course="a1" 
+                        onComplete={() => handleTopicComplete('ex2')} 
+                        title="Exercise 2: Object Pronouns" 
+                        vocabulary={vocabEx2}
+                    />
+                );
             case 'grammar2':
                 return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple">

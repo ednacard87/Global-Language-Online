@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -350,7 +351,7 @@ const exercises = {
         prompts: [
             { spanish: 'A LOS GATOS LES GUSTA LA CARNE', english: ["cats like meat"] },
             { spanish: 'ESTE ES EL NOMBRE DEL RESTAURANTE CHINO', english: ["this is the name of the chinese restaurant"] },
-            { spanish: 'A ELLA NO LE GUSTA EL TENNIS, A ELLA LE GUSTA EL FUTBOL', english: ["she doesn't like tennis, she likes football", "she doesn't like tennis, she likes soccer", "she does not like tennis, she likes football", "she does not like tennis, she likes soccer"] },
+            { spanish: 'A ELLA NO LE GUSTA EL TENNIS, A ELLA LE GUSTA EL FUTBOL', english: ["she doesn't like tennis, she likes football", "she doesn't like tennis, she likes soccer", "she does not like tennis, she likes football", "she does not like tennis, she likes football", "she does not like tennis, she likes soccer"] },
             { spanish: 'EL VASO ESTÁ LLENO (FULL) DE AGUA', english: ["the glass is full of water"] },
             { spanish: 'ME GUSTA EL ARTE', english: ["i like art"] },
             { spanish: 'ELLAS SON HERMANAS –ELLA ES MI HERMANA', english: ["they are sisters - she is my sister", "they're sisters - she's my sister"] },
@@ -605,6 +606,23 @@ const exercises = {
             { spanish: "¿ELLOS VIENEN CON NOSOTROS?", english: ["do they come with us?"] },
             { spanish: "¿ESTAS HABLANDO CON ELLA?", english: ["are you talking with her?", "are you talking to her?"] },
             { spanish: "¿ESTUDIAS CON EL?", english: ["do you study with him?"] },
+        ]
+    },
+    c11_ex2: {
+        title: 'a1class1.exercise',
+        prompts: [
+            { spanish: 'I HATE MY JOB, I WANT TO QUIT________________(ODIO MI TRABAJO, QUIERO RENUNCIAR)', english: ["i hate my job, i want to quit it"] },
+            { spanish: 'MY PARENTS ARE REALLY SAD, I DON’T KNOW WHAT TO DO WITH ______________________ (MIS PADRES ESTAN MUY TRISTES, YO NO SE QUE HACER CON ELLOS)', english: ["my parents are really sad, i do not know what to do with them", "my parents are really sad, i don't know what to do with them"] },
+            { spanish: 'SHE LIKES HER HOUSE, BUT SHE IS GOING TO SELL______________________(A ELLA LE GUSTA SU CASA PERO VA A VENDERLA)', english: ["she likes her house, but she is going to sell it"] },
+            { spanish: 'I KNOW THEY’RE EXCITED, THEY HAVEN’T SEEN____________FOR YEARS (YO SE QUE ELLOS ESTÁN EMOCIONADOS, ELLOS NO LO HAN VISTO POR AÑOS)', english: ["i know they are excited, they have not seen him for years", "i know they're excited, they haven't seen him for years"] },
+            { spanish: 'MY BROTHER IS TOO SMART, I NEVER HELP_________________WITH HOMEWORK (MI HERMANO ES DEMASIADO INTELIGENTE, YO NUNCA LO AYUDO CON SUS TAREAS)', english: ["my brother is too smart, i never help him with homework"] },
+            { spanish: 'WE ARE GOOD STUDENTS, BECAUSE THE TEACHER ALWAYS MOTIVATES___________ (NOSOTROS SOMOS BUENOS ESTUDIANTES, PORQUE EL PROFESOR SIEMPRE NOS MOTIVA)', english: ["we are good students, because the teacher always motivates us"] },
+            { spanish: 'SHE DOESN’T SEE HER FRIENDS AT THE PARTY, SO SHE CALLS________________(ELLA NO VE A SUS AMIGOS EN LA FIESTA, ENTONCES ELLA LOS LLAMA)', english: ["she does not see her friends at the party, so she calls them", "she doesn't see her friends at the party, so she calls them"] },
+            { spanish: 'THEY INVITE _____________TO THEIR HOUSE. (ELLOS NOS INVITAN A SU CASA)', english: ["they invite us to their house"] },
+            { spanish: 'ELLA LOS ESPERA EN LA ESCUELA. (a sus hijos)', english: ["she waits for them at school", "she is waiting for them at school"] },
+            { spanish: 'LA HIJA LLAMA A SU PADRE – EL PAPÁ LA LLAMA TODOS LOS DIAS.', english: ["the daughter calls her father - the dad calls her every day", "the daughter calls her father - the father calls her every day", "the daughter calls her dad - the dad calls her every day"] },
+            { spanish: 'EL BEBÉ BESA A SU MADRE – EL BEBE LA BESA', english: ["the baby kisses his mother - the baby kisses her", "the baby kisses his mom - the baby kisses her"] },
+            { spanish: 'EL BAILA CON SU HERMANA EN SU CUMPLEAÑOS.', english: ["he dances with her on her birthday", "he dances with her on his birthday"] },
         ]
     }
 };
