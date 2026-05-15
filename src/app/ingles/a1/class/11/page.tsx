@@ -45,7 +45,7 @@ type Topic = {
   status: TopicStatus;
 };
 
-const progressStorageVersion = 'progress_a1_eng_u3_c11_v1';
+const progressStorageVersion = 'progress_a1_eng_u3_c11_v2_clean';
 const mainProgressKey = 'progress_a1_eng_unit_3_class_11';
 
 const familyVocabulary = [
@@ -145,7 +145,6 @@ export default function EngA1Class11Page() {
         { key: 'ex4', name: 'Exercise 4', icon: PenSquare, status: 'locked' },
         { key: 'vocab_game', name: 'Vocabulary (Game)', icon: Gamepad2, status: 'locked' },
         { key: 'ex5', name: 'Exercise 5', icon: PenSquare, status: 'locked' },
-        { key: 'create2', name: 'Create 2', icon: Pencil, status: 'locked' },
         { key: 'ex6', name: 'Exercise 6', icon: PenSquare, status: 'locked' },
     ], []);
     
@@ -486,20 +485,6 @@ export default function EngA1Class11Page() {
                 return <VocabularyMatchingGame data={familyVocabulary.map(v => ({ spanish: v.spanish, english: v.english }))} title="Vocabulary Game (Family)" onComplete={() => handleTopicComplete('vocab_game')} />;
             case 'ex5':
                 return <SimpleTranslationExercise exerciseKey="c11_ex5" course="a1" onComplete={() => handleTopicComplete('ex5')} title="Exercise 5" />;
-            case 'create2':
-                return (
-                    <CreativeWritingExercise 
-                        title="Create 2: Relationships" 
-                        description="Describe las relaciones entre los miembros de tu familia."
-                        prompts={[
-                            { id: 'rel-desc', question: 'DESCRIBE YOUR FAMILY RELATIONSHIPS:', placeholder: 'Ex: My brother has a dog. His dog is small...' }
-                        ]}
-                        onComplete={() => handleTopicComplete('create2')}
-                        studentDocRef={studentDocRef}
-                        initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.create2Data || {}}
-                        savePath={`lessonProgress.${progressStorageVersion}.create2Data`}
-                    />
-                );
             case 'ex6':
                 return <SimpleTranslationExercise exerciseKey="c11_ex6" course="a1" onComplete={() => handleTopicComplete('ex6')} title="Exercise 6" />;
             default:
