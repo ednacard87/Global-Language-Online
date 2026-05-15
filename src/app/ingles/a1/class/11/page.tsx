@@ -19,7 +19,8 @@ import {
     MessageSquare,
     Gamepad2,
     Pencil,
-    Users
+    Users,
+    Table as TableIcon
 } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
@@ -32,6 +33,8 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
 import { CreativeWritingExercise } from '@/components/dashboard/creative-writing-exercise';
 import { VocabularyMatchingGame } from '@/components/dashboard/vocabulary-matching-game';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Separator } from '@/components/ui/separator';
 
 type TopicStatus = 'completed' | 'active' | 'locked';
 
@@ -79,6 +82,29 @@ const familyVocabulary = [
     { spanish: 'NOVIO', english: ['BOYFRIEND'] },
     { spanish: 'NOVIA', english: ['GIRLFRIEND'] },
     { spanish: 'PAREJA', english: ['COUPLE'] },
+];
+
+const objectPronounsData = [
+    { personal: "I (YO)", object: "ME (A MI, CONMIGO)" },
+    { personal: "YOU (TU)", object: "YOU (A TI, CONTIGO)" },
+    { personal: "HE (EL)", object: "HIM (A EL, CON EL)" },
+    { personal: "SHE (ELLA)", object: "HER (A ELLA, CON ELLA)" },
+    { personal: "IT (ESTO)", object: "IT (A ESO, CON ESO)" },
+    { personal: "WE (NOSOTROS)", object: "US (A NOSOTROS, CON NOSOTROS)" },
+    { personal: "THEY (ELLOS)", object: "THEM (A ELLOS, CON ELLOS)" },
+];
+
+const prepositionsData = [
+    { es: "CON", en: "WITH" },
+    { es: "SIN", en: "WITHOUT" },
+    { es: "CONTRA", en: "AGAINST" },
+    { es: "DE", en: "OF" },
+    { es: "DESDE", en: "FROM" },
+    { es: "EN", en: "IN" },
+    { es: "ENTRE", en: "BETWEEN" },
+    { es: "HASTA", en: "UNTIL" },
+    { es: "POR / PARA", en: "FOR" },
+    { es: "SOBRE", en: "ON" },
 ];
 
 export default function EngA1Class11Page() {
@@ -291,30 +317,114 @@ export default function EngA1Class11Page() {
                 );
             case 'grammar':
                 return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-                        <CardHeader>
-                            <CardTitle>Grammar Review</CardTitle>
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
+                        <CardHeader className="bg-primary/10 border-b">
+                            <div className="flex items-center gap-3">
+                                <GraduationCap className="h-6 w-6 text-primary" />
+                                <CardTitle className="text-2xl">LOS PRONOMBRES OBJETO: (OBJECT PRONOUNS)</CardTitle>
+                            </div>
                         </CardHeader>
-                        <CardContent className="space-y-6 text-lg">
-                            <div className="bg-primary/5 p-6 rounded-xl border-l-4 border-primary">
-                                <h3 className="text-xl font-bold mb-2">Describing Relationships</h3>
-                                <p className="text-muted-foreground">
-                                    Recuerda el uso de los adjetivos posesivos para hablar de tu familia:
+                        <CardContent className="p-6 space-y-8">
+                            <div className="bg-muted/50 p-6 rounded-2xl border-2 border-dashed">
+                                <h3 className="text-xl font-bold text-primary mb-3">¿Qué son?</h3>
+                                <p className="text-lg leading-relaxed">
+                                    SON PRONOMBRES que <strong>RECIBEN LA ACCIÓN</strong> DEL VERBO. Siempre van <strong>DESPUÉS</strong> de un verbo o de una preposición.
                                 </p>
-                                <div className="mt-4 grid grid-cols-2 gap-4 text-sm font-mono">
-                                    <div className="p-3 bg-background rounded border border-dashed">
-                                        <p>My mother is a doctor.</p>
-                                        <p className="text-muted-foreground italic">(Mi madre es doctora)</p>
+                                <p className="font-mono text-xl font-black text-center mt-4 bg-primary/10 p-3 rounded-lg">
+                                    Example: I LOVE <span className="underline text-primary">YOU</span>
+                                </p>
+                            </div>
+
+                            <div className="space-y-4">
+                                <h3 className="text-xl font-black text-primary uppercase tracking-widest flex items-center gap-2">
+                                    <TableIcon className="h-5 w-5" /> LOS PRONOMBRES OBJETO SON:
+                                </h3>
+                                <div className="border-2 rounded-xl overflow-hidden shadow-sm">
+                                    <Table>
+                                        <TableHeader className="bg-muted">
+                                            <TableRow>
+                                                <TableHead className="font-bold text-foreground">PRONOMBRES PERSONALES</TableHead>
+                                                <TableHead className="font-bold text-foreground">PRONOMBRES OBJETO</TableHead>
+                                            </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {objectPronounsData.map((row, idx) => (
+                                                <TableRow key={idx}>
+                                                    <TableCell className="font-medium">{row.personal}</TableCell>
+                                                    <TableCell className="font-bold text-primary">{row.object}</TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </div>
+                            </div>
+
+                            <div className="grid md:grid-cols-2 gap-6">
+                                <div className="space-y-4">
+                                    <h3 className="text-xl font-black text-primary uppercase tracking-widest">PREPOSITIONS</h3>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        {prepositionsData.map((prep, idx) => (
+                                            <div key={idx} className="flex justify-between p-2 bg-muted rounded border text-sm font-medium">
+                                                <span>{prep.es}:</span>
+                                                <span className="text-primary font-bold">{prep.en}</span>
+                                            </div>
+                                        ))}
                                     </div>
-                                    <div className="p-3 bg-background rounded border border-dashed">
-                                        <p>His brother is a student.</p>
-                                        <p className="text-muted-foreground italic">(Su hermano es estudiante)</p>
+                                </div>
+                                <div className="flex flex-col justify-center">
+                                     <div className="p-6 bg-yellow-50 dark:bg-yellow-900/10 border-2 border-yellow-500 rounded-2xl">
+                                        <h4 className="text-lg font-bold text-yellow-700 dark:text-yellow-400 flex items-center gap-2 mb-2">
+                                            <Sparkles className="h-5 w-5" /> NOTA:
+                                        </h4>
+                                        <p className="text-sm leading-relaxed">
+                                            Cuando los pronombres objeto tengan como significado “CONTIGO”, “CON EL”, “CON ELLA” ETC… hay que apoyarlos con la preposición <strong>“WITH”</strong>.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <Separator />
+
+                            <div className="space-y-6">
+                                <h3 className="text-2xl font-black text-primary uppercase tracking-widest">EJEMPLOS</h3>
+                                
+                                <div className="space-y-4">
+                                    <h4 className="font-bold text-lg border-l-4 border-primary pl-3">A. DESPUÉS DE UN VERBO</h4>
+                                    <div className="space-y-3 p-4 bg-muted/30 rounded-xl border">
+                                        <div className="space-y-1">
+                                            <p className="text-sm text-muted-foreground italic">1. Ella llama a su novio todos los días:</p>
+                                            <p className="font-bold">SHE CALLS HER BOYFRIEND EVERY DAY</p>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <p className="text-sm text-muted-foreground italic">2. Ella <span className="font-bold">lo</span> llama todos los días:</p>
+                                            <p className="font-bold text-primary">SHE CALLS <span className="underline">HIM</span> EVERY DAY</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-4">
+                                    <h4 className="font-bold text-lg border-l-4 border-primary pl-3">B. DESPUÉS DE UNA PREPOSICIÓN</h4>
+                                    <div className="grid gap-3">
+                                        <div className="p-3 bg-muted/30 rounded-xl border flex flex-col sm:flex-row justify-between sm:items-center">
+                                            <p className="font-bold text-primary">THE PRESENT IS FOR <span className="underline">THEM</span></p>
+                                            <span className="text-sm text-muted-foreground italic">(EL REGALO ES PARA ELLOS)</span>
+                                        </div>
+                                        <div className="p-3 bg-muted/30 rounded-xl border flex flex-col sm:flex-row justify-between sm:items-center">
+                                            <p className="font-bold text-primary">DO YOU TRAVEL WITH <span className="underline">HER</span>?</p>
+                                            <span className="text-sm text-muted-foreground italic">(¿VIAJAS CON ELLA?)</span>
+                                        </div>
+                                        <div className="p-3 bg-muted/30 rounded-xl border flex flex-col sm:flex-row justify-between sm:items-center">
+                                            <p className="font-bold text-primary">IS SHE WITH <span className="underline">THEM</span>?</p>
+                                            <span className="text-sm text-muted-foreground italic">(¿ELLA ESTÁ CON ELLOS?)</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </CardContent>
-                        <CardFooter className="justify-center border-t pt-6">
-                            <Button onClick={() => handleTopicComplete('grammar')} size="lg" className="px-12">Entendido</Button>
+                        <CardFooter className="justify-center pt-6 border-t">
+                            <Button onClick={() => handleTopicComplete('grammar')} size="lg" className="px-12 font-bold">
+                                Entendido <ArrowRight className="ml-2 h-5 w-5" />
+                            </Button>
                         </CardFooter>
                     </Card>
                 );
