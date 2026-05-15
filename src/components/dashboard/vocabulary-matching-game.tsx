@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { RefreshCw, Trophy, CheckCircle2 } from 'lucide-react';
+import { RefreshCw, Trophy, CheckCircle2, ArrowRight } from 'lucide-react';
 
 interface WordPair {
     spanish: string;
@@ -70,7 +70,6 @@ export function VocabularyMatchingGame({ data, onComplete, title }: VocabularyMa
 
             if (newMatched.size === PAIRS_TO_SHOW) {
                 setGameComplete(true);
-                onComplete();
             }
         } else {
             setSelectedId(cardId);
@@ -94,9 +93,14 @@ export function VocabularyMatchingGame({ data, onComplete, title }: VocabularyMa
                 {gameComplete ? (
                      <div className="text-center p-12 flex flex-col items-center animate-in fade-in zoom-in duration-500">
                         <Trophy className="h-20 w-20 text-yellow-400 mb-6 animate-bounce" />
-                        <h2 className="text-3xl font-bold bg-gradient-to-r from-brand-purple to-brand-teal text-transparent bg-clip-text">¡Excelente Asociación!</h2>
-                        <p className="text-muted-foreground mt-2 mb-8">Has logrado emparejar todos los términos correctamente.</p>
-                        <Button size="lg" onClick={initializeGame} className="font-bold">Jugar de nuevo</Button>
+                        <h2 className="text-3xl font-black bg-gradient-to-r from-brand-purple to-brand-teal text-transparent bg-clip-text uppercase tracking-tighter">Congratulations!</h2>
+                        <p className="text-muted-foreground mt-2 mb-8 font-medium">Has logrado emparejar todos los términos correctamente. ¡Misión cumplida!</p>
+                        <div className="flex gap-4">
+                            <Button variant="outline" size="lg" onClick={initializeGame} className="font-bold">Jugar de nuevo</Button>
+                            <Button size="lg" onClick={onComplete} className="font-bold px-8 bg-green-600 hover:bg-green-700">
+                                Continuar <ArrowRight className="ml-2 h-5 w-5" />
+                            </Button>
+                        </div>
                      </div>
                 ) : (
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
@@ -108,7 +112,7 @@ export function VocabularyMatchingGame({ data, onComplete, title }: VocabularyMa
                                     key={card.id}
                                     onClick={() => handleCardClick(card.id, card.pairId)}
                                     className={cn(
-                                        "flex items-center justify-center min-h-[60px] p-3 cursor-pointer transition-all duration-200 rounded-xl border-2 text-center select-none shadow-sm",
+                                        "flex items-center justify-center min-h-[60px] p-3 cursor-pointer transition-all duration-200 rounded-xl border-2 text-center select-none shadow-sm relative",
                                         isMatched 
                                             ? "bg-green-500/10 border-green-500 text-green-700 opacity-60 pointer-events-none" 
                                             : isSelected
@@ -116,7 +120,7 @@ export function VocabularyMatchingGame({ data, onComplete, title }: VocabularyMa
                                                 : "bg-secondary border-border hover:border-primary/40 hover:bg-secondary/80",
                                     )}
                                 >
-                                    {isMatched && <CheckCircle2 className="absolute -top-2 -right-2 h-5 w-5 text-green-500 bg-background rounded-full" />}
+                                    {isMatched && <CheckCircle2 className="absolute -top-2 -right-2 h-5 w-5 text-green-500 bg-background rounded-full z-10" />}
                                     <span className={cn(
                                         "text-xs sm:text-sm font-bold uppercase tracking-tight leading-tight",
                                         isMatched ? "text-green-700" : (isSelected ? "text-primary" : "text-foreground")
@@ -132,7 +136,7 @@ export function VocabularyMatchingGame({ data, onComplete, title }: VocabularyMa
             {!gameComplete && (
                 <CardFooter className="justify-center border-t py-4">
                     <p className="text-sm font-medium text-muted-foreground">
-                        Progreso: <span className="text-primary">{matchedPairIds.size}</span> / {PAIRS_TO_SHOW} parejas
+                        Progreso: <span className="text-primary font-bold">{matchedPairIds.size}</span> / {PAIRS_TO_SHOW} parejas
                     </p>
                 </CardFooter>
             )}

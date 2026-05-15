@@ -53,7 +53,7 @@ const ICONS = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_a1_eng_u3_c11_v9_stable';
+const progressStorageVersion = 'progress_a1_eng_u3_c11_v10_final';
 const mainProgressKey = 'progress_a1_eng_unit_3_class_11';
 
 const familyVocabulary = [
