@@ -46,21 +46,39 @@ const progressStorageVersion = 'progress_a1_eng_u3_c11_v1';
 const mainProgressKey = 'progress_a1_eng_unit_3_class_11';
 
 const familyVocabulary = [
+    { spanish: 'PADRE', english: ['FATHER'] },
+    { spanish: 'MADRE', english: ['MOTHER'] },
     { spanish: 'PADRES', english: ['PARENTS'] },
-    { spanish: 'MADRE', english: ['MOTHER', 'MOM'] },
-    { spanish: 'PADRE', english: ['FATHER', 'DAD'] },
     { spanish: 'HIJO', english: ['SON'] },
     { spanish: 'HIJA', english: ['DAUGHTER'] },
     { spanish: 'HERMANO', english: ['BROTHER'] },
     { spanish: 'HERMANA', english: ['SISTER'] },
+    { spanish: 'PARIENTES', english: ['RELATIVES'] },
+    { spanish: 'TIA', english: ['AUNT'] },
+    { spanish: 'TIO', english: ['UNCLE'] },
+    { spanish: 'PRIMO/A', english: ['COUSIN'] },
+    { spanish: 'CUÑADO', english: ['BROTHER IN LAW'] },
+    { spanish: 'CUÑADA', english: ['SISTER IN LAW'] },
+    { spanish: 'SUEGRO', english: ['FATHER IN LAW'] },
+    { spanish: 'SUEGRA', english: ['MOTHER IN LAW'] },
+    { spanish: 'ABUELO', english: ['GRANDFATHER'] },
+    { spanish: 'ABUELA', english: ['GRANDMOTHER'] },
     { spanish: 'ABUELOS', english: ['GRANDPARENTS'] },
-    { spanish: 'ABUELO', english: ['GRANDFATHER', 'GRANDPA'] },
-    { spanish: 'ABUELA', english: ['GRANDMOTHER', 'GRANDMA'] },
-    { spanish: 'TÍO', english: ['UNCLE'] },
-    { spanish: 'TÍA', english: ['AUNT'] },
-    { spanish: 'PRIMO / PRIMA', english: ['COUSIN'] },
     { spanish: 'SOBRINO', english: ['NEPHEW'] },
     { spanish: 'SOBRINA', english: ['NIECE'] },
+    { spanish: 'NIETOS (EN GENERAL)', english: ['GRANDCHILDREN'] },
+    { spanish: 'NIETA', english: ['GRANDDAUGHTER'] },
+    { spanish: 'NIETO', english: ['GRANDSON'] },
+    { spanish: 'HIJO UNICO', english: ['ONLY CHILD'] },
+    { spanish: 'HIJASTRO', english: ['STEPSON'] },
+    { spanish: 'HIJASTRA', english: ['STEPDAUGHTER'] },
+    { spanish: 'PADRASTRO', english: ['STEPFATHER'] },
+    { spanish: 'MADRASTRA', english: ['STEPMOTHER'] },
+    { spanish: 'ESPOSO', english: ['HUSBAND'] },
+    { spanish: 'ESPOSA', english: ['WIFE'] },
+    { spanish: 'NOVIO', english: ['BOYFRIEND'] },
+    { spanish: 'NOVIA', english: ['GIRLFRIEND'] },
+    { spanish: 'PAREJA', english: ['COUPLE'] },
 ];
 
 export default function EngA1Class11Page() {
@@ -337,7 +355,7 @@ export default function EngA1Class11Page() {
             case 'ex4':
                 return <SimpleTranslationExercise exerciseKey="c11_ex4" course="a1" onComplete={() => handleTopicComplete('ex4')} title="Exercise 4" />;
             case 'vocab_game':
-                return <VocabularyMatchingGame data={familyVocabulary} title="Vocabulary Game (Family)" onComplete={() => handleTopicComplete('vocab_game')} />;
+                return <VocabularyMatchingGame data={familyVocabulary.map(v => ({ spanish: v.spanish, english: v.english }))} title="Vocabulary Game (Family)" onComplete={() => handleTopicComplete('vocab_game')} />;
             case 'ex5':
                 return <SimpleTranslationExercise exerciseKey="c11_ex5" course="a1" onComplete={() => handleTopicComplete('ex5')} title="Exercise 5" />;
             case 'create2':
