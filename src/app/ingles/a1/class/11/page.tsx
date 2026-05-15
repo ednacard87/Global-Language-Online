@@ -53,7 +53,7 @@ const ICONS = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_a1_eng_u3_c11_v7_final';
+const progressStorageVersion = 'progress_a1_eng_u3_c11_v9_stable';
 const mainProgressKey = 'progress_a1_eng_unit_3_class_11';
 
 const familyVocabulary = [
@@ -170,6 +170,20 @@ const ex4Vocab = {
     "suyo": "his / hers / theirs"
 };
 
+const ex5Vocab = {
+    "novio": "boyfriend",
+    "olor": "smell",
+    "besa": "kisses",
+    "viaje": "trip",
+    "biblioteca": "library",
+    "jefe": "boss",
+    "retraso": "delay",
+    "entrega": "delivery",
+    "tienda de zapatos": "shoe store / shop",
+    "sobrina": "niece",
+    "principiantes": "beginners"
+};
+
 export default function EngA1Class11Page() {
     const { t } = useTranslation();
     const { toast } = useToast();
@@ -206,8 +220,8 @@ export default function EngA1Class11Page() {
         { key: 'grammar2', name: 'Grammar 2', icon: GraduationCap, status: 'locked' },
         { key: 'ex3', name: 'Exercise 3', icon: PenSquare, status: 'locked' },
         { key: 'ex4', name: 'Exercise 4', icon: PenSquare, status: 'locked' },
-        { key: 'vocab_game', name: 'Vocabulary (Game)', icon: Gamepad2, status: 'locked' },
         { key: 'ex5', name: 'Exercise 5', icon: PenSquare, status: 'locked' },
+        { key: 'vocab_game', name: 'Vocabulary (Game)', icon: Gamepad2, status: 'locked' },
         { key: 'ex6', name: 'Exercise 6', icon: PenSquare, status: 'locked' },
     ], []);
     
@@ -580,7 +594,7 @@ export default function EngA1Class11Page() {
                             <div className="p-6 bg-brand-lilac/30 rounded-2xl border-2 border-brand-purple">
                                 <h4 className="text-lg font-bold text-primary flex items-center gap-2 mb-4">
                                     <Sparkles className="h-5 w-5" /> TIP DE APRENDIZAJE:
-                                </h4>
+                               </h4>
                                 <div className="grid sm:grid-cols-2 gap-4">
                                     <div className="space-y-2">
                                         <p className="text-sm font-bold">Contrast (Pero):</p>
@@ -605,7 +619,7 @@ export default function EngA1Class11Page() {
             case 'ex4':
                 return <SimpleTranslationExercise exerciseKey="c11_ex4" course="a1" onComplete={() => handleTopicComplete('ex4')} title="Exercise 4" vocabulary={ex4Vocab} />;
             case 'ex5':
-                return <SimpleTranslationExercise exerciseKey="c11_ex5" course="a1" onComplete={() => handleTopicComplete('ex5')} title="Exercise 5" />;
+                return <SimpleTranslationExercise exerciseKey="c11_ex5" course="a1" onComplete={() => handleTopicComplete('ex5')} title="Exercise 5" vocabulary={ex5Vocab} />;
             case 'vocab_game':
                 return <VocabularyMatchingGame data={familyVocabulary.map(v => ({ spanish: v.spanish, english: v.english }))} title="Vocabulary Game (Family)" onComplete={() => handleTopicComplete('vocab_game')} />;
             case 'ex6':

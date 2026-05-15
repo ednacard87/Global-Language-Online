@@ -141,7 +141,7 @@ const exercises = {
             { spanish: 'ÉL TIENE UNA HERMANA – ESTA ES SU HERMANA', english: ['he has a sister - this is his sister', 'he has a sister this is his sister'] },
             { spanish: 'ELLA TIENE UN CABALLO – ESE ES SU CABALLO', english: ['she has a horse - that is her horse', 'she has a horse that is her horse'] },
             { spanish: 'EL GATO TIENE UN JUGUETE – ESE ES SU JUGUETE', english: ['the cat has a toy - that is its toy', 'the cat has a toy that is its toy'] },
-            { spanish: 'NOSOTROS TENEMOS UNA FINCA – ESA ES NUESTRA FINCA', english: ['we have a farm - that is our farm', 'we have a farm that is our farm', 'we have a country house - that is our country house'] },
+            { spanish: 'NOSOTROS TENEMOS UNA FINCA – ESA ESA NUESTRA FINCA', english: ['we have a farm - that is our farm', 'we have a farm that is our farm', 'we have a country house - that is our country house'] },
             { spanish: 'ELLOS TIENEN UNA CASA- ESA ES SU CASA', english: ['they have a house - that is their house', 'they have a house that is their house'] },
             { spanish: 'YO TENGO UN LIBRO- ESTE ES MI LIBRO', english: ['i have a book - this is my book', 'i have a book this is my book'] },
         ]
@@ -405,7 +405,7 @@ const exercises = {
             { spanish: 'A ELLA LE GUSTAN LOS GATOS', english: ["she does not like cats", "she doesn't like cats"] },
             { spanish: 'ELLA JUEGA BALONCESTO (BASKETBALL) LOS SÁBADOS', english: ["she plays basketball on saturdays"] },
             { spanish: '¿A DÓNDE VIAJA ÉL? ÉL VIAJA A BARCELONA', english: ["where does he travel? he travels to barcelona", "where does he travel to? he travels to barcelona"] },
-            { spanish: 'ELLOS NO SON NUESTROS TÍOS (UNCLES)', english: ["they are not our uncles", "they aren't our uncles", "they're not our uncles"] },
+            { spanish: 'ELLOS NO SOMOS NUESTROS TÍOS (UNCLES)', english: ["they are not our uncles", "they aren't our uncles", "they're not our uncles"] },
             { spanish: '¿ELLA BEBE AGUA? –NO, ELLA BEBE VODKA', english: ["does she drink water? no, she drinks vodka"] },
             { spanish: 'NO ME GUSTA EL COMPORTAMIENTO', english: ["i do not like your behavior", "i don't like your behavior"] },
             { spanish: 'ELLA VA CON ÉL A LA IGLESIA', english: ["she goes with him to the church", "she goes to the church with him", "she goes to church with him"] },
@@ -636,7 +636,7 @@ const exercises = {
             { spanish: "SI TU VAS ALLA, COMPRAME UNA CHAQUETA, POR FAVOR", english: ["if you go there, buy me a jacket please", "if you go there buy me a jacket please"] },
             { spanish: "MARK VE TELEVISON MIENTRAS YO HAGO EJERCICIO", english: ["mark watches television while i do exercise", "mark watches tv while i do exercise", "mark watches television while i exercise"] },
             { spanish: "ELLA LOS ESPERA EN LA ESCUELA. (a sus hijos)", english: ["she waits for them at school", "she is waiting for them at school"] },
-            { spanish: "LA HIJA LLAMA A SU PADRE – EL PAPÁ LA LLAMA TODOS LOS DIAS.", english: ["the daughter calls her father - the dad calls her every day", "the daughter calls her dad - the dad calls her every day"] },
+            { spanish: "LA HIJA LLAMA A SU PADRE – EL PAPÁ LA LLAMA TODOS LOS DIAS.", english: ["the daughter calls her father - the dad calls her every day", "the daughter calls her father - the father calls her every day", "the daughter calls her dad - the dad calls her every day"] },
             { spanish: "EL BEBÉ BESA A SU MADRE – EL BEBE LA BESA", english: ["the baby kisses his mother - the baby kisses her", "the baby kisses his mom - the baby kisses her"] },
             { spanish: "EL BAILA CON SU HERMANA EN SU CUMPLEAÑOS.", english: ["he dances with his sister on his birthday", "he dances with his sister on her birthday"] },
         ]
@@ -661,6 +661,27 @@ const exercises = {
             { spanish: "¿TU HIJO TOCA LA GUITARRA CON EL? –SI", english: ["does your son play the guitar with him? yes, he does", "does your son play the guitar with him? yes"] },
             { spanish: "¿ESOS SON LOS SUYOS (DE ELLOS) O LOS MIOS?", english: ["are those theirs or mine?"] },
             { spanish: "ELLOS NOS LLAMAN DESDE ESPAÑA:", english: ["they call us from spain", "they're calling us from spain"] },
+        ]
+    },
+    c11_ex5: {
+        title: 'a1class1.exercise',
+        prompts: [
+            { spanish: 'ELLA QUIERE VER A SU NOVIO – ELLA QUIERE VERLO', english: ["she wants to see her boyfriend - she wants to see him", "she wants to see her boyfriend she wants to see him"] },
+            { spanish: 'NOSOTROS QUEREMOS ESA CASA- NOSOTROS QUEREMOS TENERLA, PERO ES MUY CARA', english: ["we want that house - we want to have it but it is very expensive", "we want that house we want to have it but it's very expensive"] },
+            { spanish: 'YO QUIERO TENER ESE PERRO- YO QUIERO TENERLO, PERO ES MUY CARO', english: ["i want to have that dog - i want to have it but it is very expensive", "i want to have that dog i want to have it but it's very expensive"] },
+            { spanish: 'A ELLOS NO LES GUSTAN MIS AMIGOS- A ELLOS NO LES GUSTAN', english: ["they do not like my friends - they do not like them", "they don't like my friends they don't like them"] },
+            { spanish: 'A ELLA NO LE GUSTA EL PESCADO- A ELLA NO LE GUSTA, POR EL OLOR', english: ["she does not like fish - she does not like it because of the smell", "she doesn't like fish she doesn't like it because of the smell"] },
+            { spanish: 'ÉL BESA SU ESPOSA ANTES DE SU VIAJE- ÉL LA BESA', english: ["he kisses his wife before his trip - he kisses her", "he kisses his wife before his trip he kisses her"] },
+            { spanish: 'NOSOTROS ESTUDIAMOS CON PAUL- NOSOTROS ESTUDIAMOS CON ÉL EN LA BIBLIOTECA', english: ["we study with paul - we study with him in the library", "we study with paul we study with him in the library"] },
+            { spanish: 'JACK VIAJA CON MARY Y JHON – JACK VIAJA CON ELLOS', english: ["jack travels with mary and john - jack travels with them", "jack travels with mary and jhon jack travels with them"] },
+            { spanish: 'ÉL LLAMA A SU JEFE- ÉL LO LLAMA PORQUE TUVO UN RETRASO EN LA ENTREGA', english: ["he calls his boss - he calls him because he had a delay in the delivery", "he calls his boss he calls him because he had a delay in the delivery"] },
+            { spanish: 'YO AYUDO A MARIA- YO LA AYUDO EN SU TIENDA DE ZAPATOS', english: ["i help maria - i help her in her shoe store", "i help maria i help her in her shoe shop"] },
+            { spanish: 'YO NO SE TU NOMBRE - ¿PUEDES REPETIRLO?', english: ["i do not know your name - can you repeat it?", "i don't know your name can you repeat it?"] },
+            { spanish: 'ELLA LLAMA A SU MAMÁ – ELLA LA LLAMA TODOS LOS DIAS', english: ["she calls her mom - she calls her every day", "she calls her mother she calls her every day"] },
+            { spanish: 'EL NO VE SUS PADRES EN LA CASA, ENTONCES EL LOS LLAMA', english: ["he does not see his parents at home so he calls them", "he doesn't see his parents at home so he calls them", "he does not see his parents in the house so he calls them"] },
+            { spanish: 'CAMILA QUIERE UNA HAMBURGUESA, PERO NO LA COMPRA PORQUE ELLA NO PUEDE COMERLA', english: ["camila wants a hamburger but she does not buy it because she cannot eat it", "camila wants a hamburger but she doesn't buy it because she can't eat it"] },
+            { spanish: 'LINA VIAJA CON SU SOBRINA A EUROPA Y ELLAS LO DISFRUTAN', english: ["lina travels with her niece to europe and they enjoy it", "lina travels with her niece to europe and they're enjoying it"] },
+            { spanish: 'A ELLOS NO LES GUSTA CORRER CON ELLOS, PORQUE SON PRINCIPIANTES', english: ["they do not like to run with them because they are beginners", "they don't like running with them because they're beginners"] },
         ]
     }
 };
