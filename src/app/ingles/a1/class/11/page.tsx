@@ -423,7 +423,7 @@ export default function EngA1Class11Page() {
                         </CardContent>
                         <CardFooter className="justify-center pt-6 border-t">
                             <Button onClick={() => handleTopicComplete('grammar')} size="lg" className="px-12 font-bold">
-                                Entendido <ArrowRight className="ml-2 h-5 w-5" />
+                                Entendido <ArrowRight className="ml-2 h-4 w-4" />
                             </Button>
                         </CardFooter>
                     </Card>
@@ -459,6 +459,7 @@ export default function EngA1Class11Page() {
                         studentDocRef={studentDocRef}
                         initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.create1Data || {}}
                         savePath={`lessonProgress.${progressStorageVersion}.create1Data`}
+                        isSingleLine={true}
                     />
                 );
             case 'ex2':
