@@ -16,7 +16,6 @@ import {
     ArrowRight,
     Sparkles,
     BookText,
-    MessageSquare,
     Gamepad2,
     Pencil,
     Users,
@@ -47,13 +46,7 @@ type Topic = {
   status: TopicStatus;
 };
 
-const ICONS = {
-    locked: Lock,
-    active: BookOpen,
-    completed: CheckCircle,
-};
-
-const progressStorageVersion = 'progress_a1_eng_u3_c11_v10_final';
+const progressStorageVersion = 'progress_a1_eng_u3_c11_v25_organized';
 const mainProgressKey = 'progress_a1_eng_unit_3_class_11';
 
 const familyVocabulary = [
@@ -139,66 +132,11 @@ const conjunctionsData = [
     { word: "While", function: "shows actions at the same time", example: "I talk with my mom while I cook dinner." },
 ];
 
-const ex2Vocab = {
-    "renunciar": "to quit",
-    "emocionados": "excited",
-    "motiva": "motivates",
-    "invitan": "invite",
-    "demasiado": "too"
-};
-
-const ex3Vocab = {
-    "inviernos": "winters",
-    "cálidos": "warm",
-    "fríos": "cold",
-    "tiquetes": "tickets",
-    "demasiado": "too",
-    "tocineta": "bacon",
-    "lechuga": "lettuce",
-    "mientras": "while",
-    "diario": "every day",
-    "besa": "kisses"
-};
-
-const ex4Vocab = {
-    "finca": "farm / country house",
-    "aretes": "earrings",
-    "guitarra": "guitar",
-    "chaqueta": "jacket",
-    "mío": "mine",
-    "tuyo": "yours",
-    "suyo": "his / hers / theirs"
-};
-
-const ex5Vocab = {
-    "novio": "boyfriend",
-    "olor": "smell",
-    "besa": "kisses",
-    "viaje": "trip",
-    "biblioteca": "library",
-    "jefe": "boss",
-    "retraso": "delay",
-    "entrega": "delivery",
-    "tienda de zapatos": "shoe store / shop",
-    "sobrina": "niece",
-    "principiantes": "beginners"
-};
-
-const ex6Vocab = {
-    "enojado": "angry",
-    "sótano": "basement",
-    "hija": "daughter",
-    "lavar los platos": "wash the dishes",
-    "ahora mismo": "right now",
-    "vestido": "dress",
-    "suyo (de ella)": "hers",
-    "hace un año": "a year ago",
-    "tuyos": "yours",
-    "míos": "mine",
-    "canción": "song",
-    "por supuesto": "of course",
-    "sola": "alone"
-};
+const ex2Vocab = { "renunciar": "to quit", "emocionados": "excited", "motiva": "motivates", "invitan": "invite", "demasiado": "too" };
+const ex3Vocab = { "inviernos": "winters", "cálidos": "warm", "fríos": "cold", "tiquetes": "tickets", "demasiado": "too", "tocineta": "bacon", "lechuga": "lettuce", "mientras": "while", "diario": "every day", "besa": "kisses" };
+const ex4Vocab = { "finca": "farm / country house", "aretes": "earrings", "guitarra": "guitar", "chaqueta": "jacket", "mío": "mine", "tuyo": "yours", "suyo": "his / hers / theirs" };
+const ex5Vocab = { "novio": "boyfriend", "olor": "smell", "besa": "kisses", "viaje": "trip", "biblioteca": "library", "jefe": "boss", "retraso": "delay", "entrega": "delivery", "tienda de zapatos": "shoe store / shop", "sobrina": "niece", "principiantes": "beginners" };
+const ex6Vocab = { "enojado": "angry", "sótano": "basement", "hija": "daughter", "lavar los platos": "wash the dishes", "ahora mismo": "right now", "vestido": "dress", "suyo (de ella)": "hers", "hace un año": "a year ago", "tuyos": "yours", "míos": "mine", "canción": "song", "por supuesto": "of course", "sola": "alone" };
 
 export default function EngA1Class11Page() {
     const { t } = useTranslation();
@@ -363,8 +301,6 @@ export default function EngA1Class11Page() {
     };
 
     const renderContent = () => {
-        const topic = learningPath.find(t => t.key === selectedTopic);
-
         switch (selectedTopic) {
             case 'vocabulary':
                 return (
@@ -426,7 +362,6 @@ export default function EngA1Class11Page() {
                                     Example: I LOVE <span className="underline text-primary">YOU</span>
                                 </p>
                             </div>
-
                             <div className="space-y-4">
                                 <h3 className="text-xl font-black text-primary uppercase tracking-widest flex items-center gap-2">
                                     <TableIcon className="h-5 w-5" /> LOS PRONOMBRES OBJETO SON:
@@ -450,7 +385,6 @@ export default function EngA1Class11Page() {
                                     </Table>
                                 </div>
                             </div>
-
                             <div className="grid md:grid-cols-2 gap-6">
                                 <div className="space-y-4">
                                     <h3 className="text-xl font-black text-primary uppercase tracking-widest">PREPOSITIONS</h3>
@@ -474,44 +408,6 @@ export default function EngA1Class11Page() {
                                     </div>
                                 </div>
                             </div>
-
-                            <Separator />
-
-                            <div className="space-y-6">
-                                <h3 className="text-2xl font-black text-primary uppercase tracking-widest">EJEMPLOS</h3>
-                                
-                                <div className="space-y-4">
-                                    <h4 className="font-bold text-lg border-l-4 border-primary pl-3">A. DESPUÉS DE UN VERBO</h4>
-                                    <div className="space-y-3 p-4 bg-muted/30 rounded-xl border">
-                                        <div className="space-y-1">
-                                            <p className="text-sm text-muted-foreground italic">1. Ella llama a su novio todos los días:</p>
-                                            <p className="font-bold">SHE CALLS HER BOYFRIEND EVERY DAY</p>
-                                        </div>
-                                        <div className="space-y-1">
-                                            <p className="text-sm text-muted-foreground italic">2. Ella <span className="font-bold">lo</span> llama todos los días:</p>
-                                            <p className="font-bold text-primary">SHE CALLS <span className="underline">HIM</span> EVERY DAY</p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="space-y-4">
-                                    <h4 className="font-bold text-lg border-l-4 border-primary pl-3">B. DESPUÉS DE UNA PREPOSICIÓN</h4>
-                                    <div className="grid gap-3">
-                                        <div className="p-3 bg-muted/30 rounded-xl border flex flex-col sm:flex-row justify-between sm:items-center">
-                                            <p className="font-bold text-primary">THE PRESENT IS FOR <span className="underline">THEM</span></p>
-                                            <span className="text-sm text-muted-foreground italic">(EL REGALO ES PARA ELLOS)</span>
-                                        </div>
-                                        <div className="p-3 bg-muted/30 rounded-xl border flex flex-col sm:flex-row justify-between sm:items-center">
-                                            <p className="font-bold text-primary">DO YOU TRAVEL WITH <span className="underline">HER</span>?</p>
-                                            <span className="text-sm text-muted-foreground italic">(¿VIAJAS CON ELLA?)</span>
-                                        </div>
-                                        <div className="p-3 bg-muted/30 rounded-xl border flex flex-col sm:flex-row justify-between sm:items-center">
-                                            <p className="font-bold text-primary">IS SHE WITH <span className="underline">THEM</span>?</p>
-                                            <span className="text-sm text-muted-foreground italic">(¿ELLA ESTÁ CON ELLOS?)</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
                         </CardContent>
                         <CardFooter className="justify-center pt-6 border-t">
                             <Button onClick={() => handleTopicComplete('grammar')} size="lg" className="px-12 font-bold">
@@ -521,49 +417,11 @@ export default function EngA1Class11Page() {
                     </Card>
                 );
             case 'ex1':
-                const vocabEx1 = {
-                    "quizás": "maybe / perhaps",
-                    "próxima semana": "next week",
-                    "jugando": "playing",
-                    "videojuegos": "videogames / video games",
-                    "sin": "without",
-                    "durante": "during",
-                    "reunión": "meeting",
-                    "cuñada": "sister-in-law",
-                    "primos": "cousins",
-                    "juegos de mesa": "board games",
-                    "iglesia": "church",
-                    "llamar": "to call"
-                };
-                return <SimpleTranslationExercise exerciseKey="c11_ex1" course="a1" onComplete={() => handleTopicComplete('ex1')} title="Exercise 1" vocabulary={vocabEx1} />;
+                return <SimpleTranslationExercise exerciseKey="c11_ex1" course="a1" onComplete={() => handleTopicComplete('ex1')} title="Exercise 1" vocabulary={{"quizás": "maybe / perhaps", "próxima semana": "next week", "cuñada": "sister-in-law", "reunión": "meeting"}} />;
             case 'create1':
-                return (
-                    <CreativeWritingExercise 
-                        title="Create 1" 
-                        description="EXERCISE: INVENT 4 SENTENCES WITH OBJECT PRONOUNS:"
-                        prompts={[
-                            { id: 'sentence1', question: 'Sentence 1:', placeholder: 'Write your first sentence...' },
-                            { id: 'sentence2', question: 'Sentence 2:', placeholder: 'Write your second sentence...' },
-                            { id: 'sentence3', question: 'Sentence 3:', placeholder: 'Write your third sentence...' },
-                            { id: 'sentence4', question: 'Sentence 4:', placeholder: 'Write your fourth sentence...' }
-                        ]}
-                        onComplete={() => handleTopicComplete('create1')}
-                        studentDocRef={studentDocRef}
-                        initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.create1Data || {}}
-                        savePath={`lessonProgress.${progressStorageVersion}.create1Data`}
-                        isSingleLine={true}
-                    />
-                );
+                return <CreativeWritingExercise title="Create 1" description="EXERCISE: INVENT 4 SENTENCES WITH OBJECT PRONOUNS:" prompts={[{id:'s1', question:'1:'}, {id:'s2', question:'2:'}, {id:'s3', question:'3:'}, {id:'s4', question:'4:'}]} onComplete={() => handleTopicComplete('create1')} studentDocRef={studentDocRef} initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.create1Data || {}} savePath={`lessonProgress.${progressStorageVersion}.create1Data`} isSingleLine={true} />;
             case 'ex2':
-                return (
-                    <SentenceCompletionExercise
-                        title="Exercise 2: Complete the sentences"
-                        description="Escribe el pronombre objeto correcto para completar cada oración."
-                        data={ex2Data}
-                        onComplete={() => handleTopicComplete('ex2')}
-                        vocabulary={ex2Vocab}
-                    />
-                );
+                return <SentenceCompletionExercise title="Exercise 2" description="Completa con el pronombre objeto adecuado." data={ex2Data} onComplete={() => handleTopicComplete('ex2')} vocabulary={ex2Vocab} />;
             case 'grammar2':
                 return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
@@ -574,53 +432,25 @@ export default function EngA1Class11Page() {
                             </div>
                         </CardHeader>
                         <CardContent className="p-6 space-y-8">
-                            <div className="bg-muted/50 p-6 rounded-2xl border-2 border-dashed">
-                                <h3 className="text-xl font-bold text-primary mb-3">¿Qué son?</h3>
-                                <p className="text-lg leading-relaxed">
-                                    Las conjunciones son palabras que <strong>conectan</strong> oraciones, frases o palabras individuales para darles sentido y fluidez.
-                                </p>
-                            </div>
-
-                            <div className="space-y-4">
-                                <h3 className="text-xl font-black text-primary uppercase tracking-widest flex items-center gap-2">
-                                    <TableIcon className="h-5 w-5" /> CONJUNCIONES PRINCIPALES:
-                                </h3>
-                                <div className="border-2 rounded-xl overflow-hidden shadow-sm">
-                                    <Table>
-                                        <TableHeader className="bg-muted">
-                                            <TableRow>
-                                                <TableHead className="font-bold text-foreground">CONJUNCTION</TableHead>
-                                                <TableHead className="font-bold text-foreground">FUNCTION</TableHead>
-                                                <TableHead className="font-bold text-foreground">EXAMPLE</TableHead>
+                            <div className="border-2 rounded-xl overflow-hidden shadow-sm">
+                                <Table>
+                                    <TableHeader className="bg-muted">
+                                        <TableRow>
+                                            <TableHead className="font-bold text-foreground">CONJUNCTION</TableHead>
+                                            <TableHead className="font-bold text-foreground">FUNCTION</TableHead>
+                                            <TableHead className="font-bold text-foreground">EXAMPLE</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {conjunctionsData.map((row, idx) => (
+                                            <TableRow key={idx}>
+                                                <TableCell className="font-black text-primary text-lg">{row.word}</TableCell>
+                                                <TableCell className="font-medium text-muted-foreground">{row.function}</TableCell>
+                                                <TableCell className="italic text-sm leading-relaxed">{row.example}</TableCell>
                                             </TableRow>
-                                        </TableHeader>
-                                        <TableBody>
-                                            {conjunctionsData.map((row, idx) => (
-                                                <TableRow key={idx}>
-                                                    <TableCell className="font-black text-primary text-lg">{row.word}</TableCell>
-                                                    <TableCell className="font-medium text-muted-foreground">{row.function}</TableCell>
-                                                    <TableCell className="italic text-sm leading-relaxed">{row.example}</TableCell>
-                                                </TableRow>
-                                            ))}
-                                        </TableBody>
-                                    </Table>
-                                </div>
-                            </div>
-
-                            <div className="p-6 bg-brand-lilac/30 rounded-2xl border-2 border-brand-purple">
-                                <h4 className="text-lg font-bold text-primary flex items-center gap-2 mb-4">
-                                    <Sparkles className="h-5 w-5" /> TIP DE APRENDIZAJE:
-                               </h4>
-                                <div className="grid sm:grid-cols-2 gap-4">
-                                    <div className="space-y-2">
-                                        <p className="text-sm font-bold">Contrast (Pero):</p>
-                                        <p className="text-sm bg-background p-3 rounded-lg border">I like coffee, <strong>but</strong> I don't like tea.</p>
-                                    </div>
-                                    <div className="space-y-2">
-                                        <p className="text-sm font-bold">Condition (Si):</p>
-                                        <p className="text-sm bg-background p-3 rounded-lg border">I will go to the party <strong>if</strong> I finish my homework.</p>
-                                    </div>
-                                </div>
+                                        ))}
+                                    </TableBody>
+                                </Table>
                             </div>
                         </CardContent>
                         <CardFooter className="justify-center pt-6 border-t">
@@ -700,3 +530,4 @@ export default function EngA1Class11Page() {
         </div>
     );
 }
+
