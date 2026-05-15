@@ -20,6 +20,11 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import Image from 'next/image';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 
+// Helper function to normalize strings for comparison (removes accents)
+const normalizeString = (str: string) => {
+    return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+};
+
 type Topic = {
   key: string;
   name: string;
@@ -78,7 +83,7 @@ const adjectivesPracticeData = [
     { english: 'bored', spanish: 'aburrido' },
     { english: 'worried', spanish: 'preocupado' },
     { english: 'tired', spanish: 'cansado' },
-    { english: 'busy', spanish: 'ocupa' },
+    { english: 'busy', spanish: 'ocupado' },
     { english: 'tidy', spanish: 'ordenado' },
 ];
 
@@ -375,8 +380,10 @@ export default function EspanolIntro1Page() {
     const handleCheckNouns = () => {
         let allCorrect = true;
         const newValidation = nounsPracticeData.map((item, index) => {
-            const userAnswer = nounAnswers[index].trim().toLowerCase();
-            const isCorrect = userAnswer === item.spanish.toLowerCase() || (item.english === 'mother' && userAnswer === 'mamá');
+            const userAnswer = normalizeString(nounAnswers[index]);
+            const correctAnswer = normalizeString(item.spanish);
+            // Accept "mama" for mother too
+            const isCorrect = userAnswer === correctAnswer || (item.english === 'mother' && userAnswer === 'mama');
             if (!isCorrect) allCorrect = false;
             return isCorrect ? 'correct' : 'incorrect';
         });
@@ -404,8 +411,9 @@ export default function EspanolIntro1Page() {
     const handleCheckAdjectives = () => {
         let allCorrect = true;
         const newValidation = adjectivesPracticeData.map((item, index) => {
-            const userAnswer = adjAnswers[index].trim().toLowerCase();
-            const isCorrect = userAnswer === item.spanish.toLowerCase();
+            const userAnswer = normalizeString(adjAnswers[index]);
+            const correctAnswer = normalizeString(item.spanish);
+            const isCorrect = userAnswer === correctAnswer;
             if (!isCorrect) allCorrect = false;
             return isCorrect ? 'correct' : 'incorrect';
         });
@@ -433,9 +441,12 @@ export default function EspanolIntro1Page() {
     const handleCheckVerbs = () => {
         let allCorrect = true;
         const newValidation = verbsPracticeData.map((item, index) => {
-            const userAnswer = verbAnswers[index].trim().toLowerCase();
-            let isCorrect = userAnswer === item.spanish.toLowerCase();
-            if (item.english === 'To watch t.v' && (userAnswer === 'ver la televisión' || userAnswer === 'ver tv')) isCorrect = true;
+            const userAnswer = normalizeString(verbAnswers[index]);
+            const correctAnswer = normalizeString(item.spanish);
+            let isCorrect = userAnswer === correctAnswer;
+
+            // Flexibilización de respuestas compuestas
+            if (item.english === 'To watch t.v' && (userAnswer === 'ver la television' || userAnswer === 'ver tv')) isCorrect = true;
             if (item.english === 'To drink' && userAnswer === 'tomar') isCorrect = true;
             
             if (!isCorrect) allCorrect = false;
@@ -468,8 +479,9 @@ export default function EspanolIntro1Page() {
 
         // Check Open Questions
         lecturaData.openQuestions.forEach(q => {
-            const userAnswer = readingAnswers[q.id]?.trim().toLowerCase() || '';
-            const isCorrect = userAnswer.includes(q.answer.toLowerCase());
+            const userAnswer = normalizeString(readingAnswers[q.id] || '');
+            const correctAnswer = normalizeString(q.answer);
+            const isCorrect = userAnswer.includes(correctAnswer);
             if(!isCorrect) allCorrect = false;
             newValidation[q.id] = isCorrect ? 'correct' : 'incorrect';
         });
