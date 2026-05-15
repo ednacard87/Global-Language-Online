@@ -585,6 +585,27 @@ const exercises = {
             { spanish: '7. ME GUSTARIA VISITAR TODOS LOS PAISES DE EUROPA.', english: ["i would like to visit all the countries in europe", "i'd like to visit all the countries in europe"] },
             { spanish: '8. ¿TE GUSTARIA VISITAR BARCELONA EN 2 MESES?', english: ["would you like to visit barcelona in 2 months?"] },
         ]
+    },
+    c11_ex1: {
+        title: 'a1class1.exercise',
+        prompts: [
+            { spanish: "¿HABLAS CON ELLA HOY? NO, NO QUIERO HABLAR CON ELLA, QUIZAS LA PROXIMA SEMANA:", english: ["do you talk with her today? no, i do not want to talk with her, maybe next week", "do you talk to her today? no, i don't want to talk to her, maybe next week", "do you speak with her today? no, i do not want to speak with her, maybe next week", "do you speak to her today? no, i don't want to speak to her, maybe next week"] },
+            { spanish: "¿ESTAS CON ELLOS? NO, YO ESTOY EN CASA JUGANDO VIDEOJUEGOS", english: ["are you with them? no, i am at home playing videogames", "are you with them? no, i'm at home playing videogames", "are you with them? no, i am at home playing video games", "are you with them? no, i'm at home playing video games"] },
+            { spanish: "¿ELLOS VIAJAN CON NOSOTROS? –NO, ELLOS VIAJAN EL DOMINGO", english: ["do they travel with us? no, they travel on sunday"] },
+            { spanish: "YO LLEGO SIN ELLOS A LAS 9", english: ["i arrive without them at 9"] },
+            { spanish: "¿VAMOS CON ELLAS? - SI", english: ["do we go with them? yes, we do", "are we going with them? yes, we are"] },
+            { spanish: "NOSOTROS TOMAMOS UN CAFÉ CON ELLA DURANTE LA REUNIÓN", english: ["we drink a coffee with her during the meeting", "we have a coffee with her during the meeting", "we had a coffee with her during the meeting"] },
+            { spanish: "TU CUÑADA NO HABLA CONMIGO", english: ["your sister in law does not talk with me", "your sister-in-law does not talk with me", "your sister in law doesn't talk to me", "your sister-in-law doesn't talk to me"] },
+            { spanish: "¿JUEGAS CON NOSOTROS? – NO, PORQUE ESTOY JUGANDO CON ELLA:", english: ["do you play with us? no, because i am playing with her", "do you play with us? no, because i'm playing with her"] },
+            { spanish: "TUS PRIMOS NO JUEGAN CON NOSOTROS JUEGOS DE MESA", english: ["your cousins do not play board games with us", "your cousins don't play board games with us"] },
+            { spanish: "MI CUÑADO TOCA LA GUITARRA (THE GUITAR) CON EL", english: ["my brother in law plays the guitar with him", "my brother-in-law plays the guitar with him"] },
+            { spanish: "¿A DONDE VAS CON ELLOS? –NOSOTROS VAMOS A LA IGLESIA", english: ["where do you go with them? we go to the church", "where are you going with them? we are going to the church"] },
+            { spanish: "NOSOTROS NO VIAJAMOS SIN ELLOS", english: ["we do not travel without them", "we don't travel without them"] },
+            { spanish: "EL NOS LLAMA A LAS 10 DE LA NOCHE", english: ["he calls us at 10 at night", "he calls us at 10 in the night", "he calls us at 10 pm"] },
+            { spanish: "¿ELLOS VIENEN CON NOSOTROS?", english: ["do they come with us?"] },
+            { spanish: "¿ESTAS HABLANDO CON ELLA?", english: ["are you talking with her?", "are you talking to her?"] },
+            { spanish: "¿ESTUDIAS CON EL?", english: ["do you study with him?"] },
+        ]
     }
 };
 
