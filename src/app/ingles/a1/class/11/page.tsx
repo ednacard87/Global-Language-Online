@@ -447,10 +447,13 @@ export default function EngA1Class11Page() {
             case 'create1':
                 return (
                     <CreativeWritingExercise 
-                        title="Create 1: My Family Tree" 
-                        description="Describe a 5 miembros de tu familia usando el vocabulario aprendido."
+                        title="Create 1" 
+                        description="EXERCISE: INVENT 4 SENTENCES WITH OBJECT PRONOUNS:"
                         prompts={[
-                            { id: 'family-desc', question: 'WRITE ABOUT 5 MEMBERS OF YOUR FAMILY:', placeholder: 'Ex: My mother is Anna. She is very kind...' }
+                            { id: 'sentence1', question: 'Sentence 1:', placeholder: 'Write your first sentence...' },
+                            { id: 'sentence2', question: 'Sentence 2:', placeholder: 'Write your second sentence...' },
+                            { id: 'sentence3', question: 'Sentence 3:', placeholder: 'Write your third sentence...' },
+                            { id: 'sentence4', question: 'Sentence 4:', placeholder: 'Write your fourth sentence...' }
                         ]}
                         onComplete={() => handleTopicComplete('create1')}
                         studentDocRef={studentDocRef}
