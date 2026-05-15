@@ -375,7 +375,7 @@ const exercises = {
             { spanish: '¿CUÁNDO VA SUSAN AL CINE? ELLA VA AL CINE LOS MIERCOLES', english: ["when does susan go to the cinema? she goes to the cinema on wednesdays"] },
             { spanish: '¿QUIEN ES EL? EL ES EL HERMANO DE SARA', english: ["who is he? he is sara's brother", "who is he? he's sara's brother"] },
             { spanish: '¿A DONDE VAS? A JUGAR FUTBOL? – YO VOY AL ESTADIO', english: ["where do you go to play football? i go to the stadium", "where do you go to play soccer? i go to the stadium"] },
-            { spanish: '¿DE QUIEN ES ESTE CELULAR? – ESTE ES EL CELULAR DE THOMAS', english: ["whose cellphone is this? this is thomas's cellphone", "whose phone is this? this is thomas's phone"] },
+            { spanish: '¿DE QUIEN ES ESTE CELULAR? – ESTE ES EL CELULAR DE THOMAS', english: ["whose umbrella is this? this is thomas's cellphone", "whose phone is this? this is thomas's phone"] },
             { spanish: '¿A ELLOS LES GUSTA EL PESCADO? –SI', english: ["do they like fish? yes, they do"] },
             { spanish: 'POR QUE EL ESTA TRISTE? EL ESTA TRISTE PORQUE NO TIENE INTERNET', english: ["why is he sad? he is sad because he does not have internet", "why is he sad? he's sad because he doesn't have internet"] },
             { spanish: 'QUE TIPO DE COMPUTADOR TE GUSTA? – ME GUSTAN LOS COMPUTADORES HP', english: ["what kind of computer do you like? i like hp computers"] },
@@ -539,7 +539,7 @@ const exercises = {
             { spanish: 'NO ME GUSTAN ESTAS GAFAS – NO ME GUSTAN ESAS.', english: ["i don't like these glasses - i don't like those ones", "i do not like these glasses - i do not like those ones"] },
             { spanish: 'ESTOS RELOJES SON VIEJOS- ESTOS SON VIEJOS', english: ["these watches are old - these ones are old"] },
             { spanish: 'ME GUSTA ESTA SERIE - ME GUSTA ESA:', english: ["i like this series - i like that one"] },
-            { spanish: 'NO ME GUSTAN ESTAS GORRAS (CAPS)- A MI ME GUSTAN ESAS-', english: ["i don't like these caps - i like those ones", "i do not like these caps - i like those ones"] },
+            { spanish: 'NO ME GUSTAN ESTAS GORRAS (CAPS)- A MI ME GUSTAN ESAS-', english: ["i don't like these caps - i like those ones", "i do not like these caps - i do not like those ones"] },
             { spanish: 'A ELLOS LES GUSTAN ESOS COMPUTADORES - A NOSOTROS NOS GUSTAN ESTOS-', english: ["they like those computers - we like these ones"] },
             { spanish: 'A MI ME GUSTA ESTA CASA MIENTRAS QUE A ELLA LE GUSTA ESA:', english: ["i like this house while she likes that one", "i like this house while she likes that"] },
             { spanish: 'EL PREFIERE ESTE CARRO A ESA MOTO:', english: ["he prefers this car to that motorcycle"] },
@@ -589,8 +589,8 @@ const exercises = {
     c11_ex1: {
         title: 'a1class1.exercise',
         prompts: [
-            { spanish: "¿HABLAS CON ELLA HOY? NO, NO QUIERO HABLAR CON ELLA, QUIZAS LA PROXIMA SEMANA:", english: ["do you talk with her today? no, i do not want to talk with her, maybe next week", "do you talk to her today? no, i don't want to talk to her, maybe next week", "do you speak with her today? no, i do not want to speak with her, maybe next week", "do you speak to her today? no, i don't want to speak to her, maybe next week"] },
-            { spanish: "¿ESTAS CON ELLOS? NO, YO ESTOY EN CASA JUGANDO VIDEOJUEGOS", english: ["are you with them? no, i am at home playing videogames", "are you with them? no, i'm at home playing videogames", "are you with them? no, i am at home playing video games", "are you with them? no, i'm at home playing video games"] },
+            { spanish: "¿HABLAS CON ELLA HOY? NO, NO QUIERO HABLAR CON ELLA, QUIZAS LA PROXIMA SEMANA:", english: ["do you talk with her today? no, i do not want to talk with her, maybe next week", "do you talk to her today? no, i don't want to talk to her, maybe next week", "do you speak with her today? no, i do not want to speak with her, maybe next week", "do you speak to her today? no, i don't want to speak to her, maybe next week", "do you speak with her today? no, i don't want to speak with her, maybe next week"] },
+            { spanish: "¿ESTAS CON ELLOS? NO, YO ESTOY EN CASA JUGANDO VIDEOJUEGOS", english: ["are you with them? no, i am at home playing videogames", "are you with them? no, i'm at home playing videogames", "are you with them? no, i am at home playing video games", "are you with them? i'm at home playing video games"] },
             { spanish: "¿ELLOS VIAJAN CON NOSOTROS? –NO, ELLOS VIAJAN EL DOMINGO", english: ["do they travel with us? no, they travel on sunday"] },
             { spanish: "YO LLEGO SIN ELLOS A LAS 9", english: ["i arrive without them at 9"] },
             { spanish: "¿VAMOS CON ELLAS? - SI", english: ["do we go with them? yes, we do", "are we going with them? yes, we are"] },
