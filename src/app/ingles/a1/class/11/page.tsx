@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -34,6 +33,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
 import { CreativeWritingExercise } from '@/components/dashboard/creative-writing-exercise';
 import { VocabularyMatchingGame } from '@/components/dashboard/vocabulary-matching-game';
+import { SentenceCompletionExercise, type CompletionPrompt } from '@/components/kids/exercises/sentence-completion-exercise';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Separator } from '@/components/ui/separator';
 
@@ -46,7 +46,7 @@ type Topic = {
   status: TopicStatus;
 };
 
-const progressStorageVersion = 'progress_a1_eng_u3_c11_v3_dots';
+const progressStorageVersion = 'progress_a1_eng_u3_c11_v4_final';
 const mainProgressKey = 'progress_a1_eng_unit_3_class_11';
 
 const familyVocabulary = [
@@ -107,6 +107,25 @@ const prepositionsData = [
     { es: "POR / PARA", en: "FOR" },
     { es: "SOBRE", en: "ON" },
 ];
+
+const ex2Data: CompletionPrompt[] = [
+    { parts: ["I HATE MY JOB, I WANT TO QUIT ", ""], answers: ["IT"] },
+    { parts: ["MY PARENTS ARE REALLY SAD, I DON’T KNOW WHAT TO DO WITH ", ""], answers: ["THEM"] },
+    { parts: ["SHE LIKES HER HOUSE, BUT SHE IS GOING TO SELL ", ""], answers: ["IT"] },
+    { parts: ["I KNOW THEY’RE EXCITED, THEY HAVEN’T SEEN ", " FOR YEARS"], answers: ["HIM"] },
+    { parts: ["MY BROTHER IS TOO SMART, I NEVER HELP ", " WITH HOMEWORK"], answers: ["HIM"] },
+    { parts: ["WE ARE GOOD STUDENTS, BECAUSE THE TEACHER ALWAYS MOTIVATES ", ""], answers: ["US"] },
+    { parts: ["SHE DOESN’T SEE HER FRIENDS AT THE PARTY, SO SHE CALLS ", ""], answers: ["THEM"] },
+    { parts: ["THEY INVITE ", " TO THEIR HOUSE."], answers: ["US"] },
+];
+
+const ex2Vocab = {
+    "renunciar": "to quit",
+    "emocionados": "excited",
+    "motiva": "motivates",
+    "invitan": "invite",
+    "demasiado": "too"
+};
 
 export default function EngA1Class11Page() {
     const { t } = useTranslation();
@@ -463,22 +482,13 @@ export default function EngA1Class11Page() {
                     />
                 );
             case 'ex2':
-                const vocabEx2 = {
-                    "renunciar": "to quit",
-                    "emocionados": "excited",
-                    "demasiado": "too",
-                    "motiva": "motivates",
-                    "besa": "kisses",
-                    "invitan": "invite",
-                    "espera": "waits"
-                };
                 return (
-                    <SimpleTranslationExercise 
-                        exerciseKey="c11_ex2" 
-                        course="a1" 
-                        onComplete={() => handleTopicComplete('ex2')} 
-                        title="Exercise 2: Object Pronouns" 
-                        vocabulary={vocabEx2}
+                    <SentenceCompletionExercise
+                        title="Exercise 2: Complete the sentences"
+                        description="Escribe el pronombre objeto correcto para completar cada oración."
+                        data={ex2Data}
+                        onComplete={() => handleTopicComplete('ex2')}
+                        vocabulary={ex2Vocab}
                     />
                 );
             case 'grammar2':

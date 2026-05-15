@@ -6,7 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
-import { ArrowLeft, ArrowRight, Trophy, Info } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Trophy, Info, BookText } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 export type CompletionPrompt = {
     parts: string[]; // Segmentos de la frase que rodean a los espacios
@@ -18,11 +19,12 @@ interface SentenceCompletionExerciseProps {
     onComplete: () => void;
     title: string;
     description: string;
+    vocabulary?: Record<string, string>;
 }
 
 type ValidationStatus = 'correct' | 'incorrect' | 'unchecked';
 
-export function SentenceCompletionExercise({ data, onComplete, title, description }: SentenceCompletionExerciseProps) {
+export function SentenceCompletionExercise({ data, onComplete, title, description, vocabulary }: SentenceCompletionExerciseProps) {
     const { toast } = useToast();
     const [currentIndex, setCurrentIndex] = useState(0);
     // userAnswers es un array de arrays (una entrada por cada blanco de cada frase)
@@ -94,7 +96,7 @@ export function SentenceCompletionExercise({ data, onComplete, title, descriptio
                 <CardContent className="p-6 text-center flex flex-col items-center justify-center min-h-[300px]">
                     <Trophy className="h-16 w-16 text-yellow-400 mb-4" />
                     <h2 className="text-3xl font-bold">¡Ejercicio Completado!</h2>
-                    <p className="text-muted-foreground mt-2">Has dominado el uso del artículo determinado.</p>
+                    <p className="text-muted-foreground mt-2">Has dominado los ejercicios de completación.</p>
                 </CardContent>
             </Card>
         );
@@ -105,8 +107,35 @@ export function SentenceCompletionExercise({ data, onComplete, title, descriptio
     return (
         <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
             <CardHeader>
-                <CardTitle>{title}</CardTitle>
-                <CardDescription>{description}</CardDescription>
+                <div className="flex justify-between items-start">
+                    <div className="space-y-1">
+                        <CardTitle>{title}</CardTitle>
+                        <CardDescription>{description}</CardDescription>
+                    </div>
+                    {vocabulary && (
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button variant="outline" size="sm" className="border-2 border-brand-blue animate-border-pulse">
+                                    <BookText className="mr-2 h-4 w-4" />
+                                    Vocabulario
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-64">
+                                <div className="space-y-2">
+                                    <h4 className="font-bold border-b pb-1 text-primary">Vocabulario de apoyo</h4>
+                                    <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
+                                        {Object.entries(vocabulary).map(([es, en]) => (
+                                            <React.Fragment key={es}>
+                                                <span className="text-muted-foreground capitalize">{es}:</span>
+                                                <span className="font-semibold text-right">{en}</span>
+                                            </React.Fragment>
+                                        ))}
+                                    </div>
+                                </div>
+                            </PopoverContent>
+                        </Popover>
+                    )}
+                </div>
                 <div className="flex items-center justify-start flex-wrap gap-2 pt-4">
                     {data.map((_, index) => (
                         <button
@@ -128,7 +157,7 @@ export function SentenceCompletionExercise({ data, onComplete, title, descriptio
             <CardContent className="space-y-8">
                 <div className="bg-primary/5 p-4 rounded-lg flex items-start gap-3 text-sm text-primary border border-primary/20">
                     <Info className="h-5 w-5 shrink-0" />
-                    <p>Instrucciones: Escribe <strong>"THE"</strong> donde sea necesario. Si no se requiere artículo (generalización), deja el espacio en blanco o escribe una <strong>"x"</strong>.</p>
+                    <p>Instrucciones: Completa cada espacio con el <strong>Pronombre Objeto</strong> correcto para que la frase tenga sentido.</p>
                 </div>
 
                 <div className="bg-muted p-8 rounded-xl border flex flex-wrap items-center gap-x-2 gap-y-4 text-xl font-medium leading-loose">
