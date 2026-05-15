@@ -681,7 +681,26 @@ const exercises = {
             { spanish: 'EL NO VE SUS PADRES EN LA CASA, ENTONCES EL LOS LLAMA', english: ["he does not see his parents at home so he calls them", "he doesn't see his parents at home so he calls them", "he does not see his parents in the house so he calls them"] },
             { spanish: 'CAMILA QUIERE UNA HAMBURGUESA, PERO NO LA COMPRA PORQUE ELLA NO PUEDE COMERLA', english: ["camila wants a hamburger but she does not buy it because she cannot eat it", "camila wants a hamburger but she doesn't buy it because she can't eat it"] },
             { spanish: 'LINA VIAJA CON SU SOBRINA A EUROPA Y ELLAS LO DISFRUTAN', english: ["lina travels with her niece to europe and they enjoy it", "lina travels with her niece to europe and they're enjoying it"] },
-            { spanish: 'A ELLOS NO LES GUSTA CORRER CON ELLOS, PORQUE SON PRINCIPIANTES', english: ["they do not like to run with them because they are beginners", "they don't like running with them because they're beginners"] },
+            { spanish: 'A ELLOS NO LES GUSTAN CORRER CON ELLOS, PORQUE SON PRINCIPIANTES', english: ["they do not like to run with them because they are beginners", "they don't like running with them because they're beginners"] },
+        ]
+    },
+    c11_ex6: {
+        title: 'a1class1.exercise',
+        prompts: [
+            { spanish: "ELLOS NO ESTAN ENOJADOS CON NOSOTROS, ELLOS ESTAN ENOJADOS CON EL", english: ["they are not angry with us, they are angry with him", "they aren't angry with us, they're angry with him"] },
+            { spanish: "¿DONDE ESTÁ LA CAMARA? - ¿DONDE ESTA LA MIA? TU CAMARA ESTÁ EN EL SOTANO", english: ["where is the camera? where is mine? your camera is in the basement"] },
+            { spanish: "¿ELLA ES SU HIJA? (DE EL)- ELLA ES MUY ALTA", english: ["is she his daughter? she is very tall", "is she his daughter? she's very tall"] },
+            { spanish: "ELLOS NO ME AYUDAN BECAUSE ELLOS ESTÁN OCUPADOS EN SU PROYECTO", english: ["they do not help me because they are busy in their project", "they don't help me because they're busy in their project"] },
+            { spanish: "¿ESTUDIAS CON NOSOTROS? – NO,YO TENGO QUE LAVAR LOS PLATOS AHORA MISMO, MI MAMÁ ESTÁ ENOJADA", english: ["do you study with us? no, i have to wash the dishes right now, my mom is angry", "do you study with us? no, i have to wash the dishes right now, my mother is angry"] },
+            { spanish: "A ELLA NO LE GUSTA SU VESTIDO- A ELLA NO LE GUSTA EL SUYO (DE ELLA)", english: ["she does not like her dress, she does not like hers", "she doesn't like her dress, she doesn't like hers"] },
+            { spanish: "¿HABLAS CON EL? – NO, NOSOTROS NO HABLAMOS HACE UN AÑO", english: ["do you talk with him? no, we do not talk for a year", "do you talk to him? no, we don't talk for a year"] },
+            { spanish: "¿ESTOS SON TUYOS O MIOS? - ESOS SON MIOS", english: ["are these yours or mine? those are mine"] },
+            { spanish: "ELLOS SON MIS PRIMOS", english: ["they are my cousins", "they're my cousins"] },
+            { spanish: "ESTA ES SU CANCION (SONG) (DE ELLOS)", english: ["this is their song"] },
+            { spanish: "¿NOSOTROS VAMOS CON ELLOS? -NO", english: ["do we go with them? no", "are we going with them? no"] },
+            { spanish: "EL NO VIVE CONMIGO- EL VIVE CON SU MADRE", english: ["he does not live with me, he lives with his mother", "he doesn't live with me, he lives with his mom"] },
+            { spanish: "¿VIENES CON NOSOTROS? –POR SUPUESTO", english: ["do you come with us? of course", "are you coming with us? of course"] },
+            { spanish: "ELLA NO COME CON EL- ELLA COME SOLA", english: ["she does not eat with him, she eats alone", "she doesn't eat with him, she eats alone"] },
         ]
     }
 };

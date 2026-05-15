@@ -184,6 +184,22 @@ const ex5Vocab = {
     "principiantes": "beginners"
 };
 
+const ex6Vocab = {
+    "enojado": "angry",
+    "sótano": "basement",
+    "hija": "daughter",
+    "lavar los platos": "wash the dishes",
+    "ahora mismo": "right now",
+    "vestido": "dress",
+    "suyo (de ella)": "hers",
+    "hace un año": "a year ago",
+    "tuyos": "yours",
+    "míos": "mine",
+    "canción": "song",
+    "por supuesto": "of course",
+    "sola": "alone"
+};
+
 export default function EngA1Class11Page() {
     const { t } = useTranslation();
     const { toast } = useToast();
@@ -623,7 +639,7 @@ export default function EngA1Class11Page() {
             case 'vocab_game':
                 return <VocabularyMatchingGame data={familyVocabulary.map(v => ({ spanish: v.spanish, english: v.english }))} title="Vocabulary Game (Family)" onComplete={() => handleTopicComplete('vocab_game')} />;
             case 'ex6':
-                return <SimpleTranslationExercise exerciseKey="c11_ex6" course="a1" onComplete={() => handleTopicComplete('ex6')} title="Exercise 6" />;
+                return <SimpleTranslationExercise exerciseKey="c11_ex6" course="a1" onComplete={() => handleTopicComplete('ex6')} title="Exercise 6" vocabulary={ex6Vocab} />;
             default:
                 return <div className="flex items-center justify-center h-64"><Loader2 className="animate-spin" /></div>;
         }
