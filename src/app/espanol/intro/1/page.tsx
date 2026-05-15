@@ -92,7 +92,7 @@ const verbsPracticeData = [
     { english: 'To work', spanish: 'trabajar' },
     { english: 'To walk', spanish: 'caminar' },
     { english: 'To have dinner', spanish: 'cenar' },
-    { english: 'To watch t.v', spanish: 'ver televisión' },
+    { english: 'To watch TV', spanish: 'ver televisión' },
     { english: 'To drink', spanish: 'beber' },
     { english: 'To read', spanish: 'leer' },
     { english: 'To sleep', spanish: 'dormir' },
@@ -446,7 +446,7 @@ export default function EspanolIntro1Page() {
             let isCorrect = userAnswer === correctAnswer;
 
             // Flexibilización de respuestas compuestas
-            if (item.english === 'To watch t.v' && (userAnswer === 'ver la television' || userAnswer === 'ver tv')) isCorrect = true;
+            if (item.english === 'To watch TV' && (userAnswer === 'ver la television' || userAnswer === 'ver tv' || userAnswer === 'ver tele')) isCorrect = true;
             if (item.english === 'To drink' && userAnswer === 'tomar') isCorrect = true;
             
             if (!isCorrect) allCorrect = false;
