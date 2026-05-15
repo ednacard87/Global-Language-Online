@@ -575,7 +575,7 @@ export default function EspanolIntro1Page() {
                                 <div className="font-bold bg-muted p-2 rounded text-center">Español</div>
                                 {nounsPracticeData.map((item, index) => (
                                     <React.Fragment key={item.english}>
-                                        <div className="p-2 border rounded flex items-center justify-center font-medium">{item.english}</div>
+                                        <div className="p-2 border rounded flex items-center justify-center font-medium capitalize">{item.english}</div>
                                         <div className="relative">
                                             <Input 
                                                 value={nounAnswers[index] || ''}
@@ -788,7 +788,7 @@ export default function EspanolIntro1Page() {
                                             onChange={e => handleReadingAnswerChange(q.id, e.target.value)}
                                             className={cn(
                                                 'mt-1 text-lg h-12', 
-                                                readingValidation[q.id] === 'correct' && 'border-green-500 bg-green-500/5', 
+                                                readingValidation[q.id] === 'correct' && 'border-green-500 bg-green-50/5', 
                                                 readingValidation[q.id] === 'incorrect' && 'border-destructive bg-destructive/5'
                                             )}
                                             placeholder="Escribe tu respuesta aquí..."
