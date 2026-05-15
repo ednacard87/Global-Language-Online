@@ -429,7 +429,21 @@ export default function EngA1Class11Page() {
                     </Card>
                 );
             case 'ex1':
-                return <SimpleTranslationExercise exerciseKey="c11_ex1" course="a1" onComplete={() => handleTopicComplete('ex1')} title="Exercise 1" />;
+                const vocabEx1 = {
+                    "quizás": "maybe / perhaps",
+                    "próxima semana": "next week",
+                    "jugando": "playing",
+                    "videojuegos": "videogames / video games",
+                    "sin": "without",
+                    "durante": "during",
+                    "reunión": "meeting",
+                    "cuñada": "sister-in-law",
+                    "primos": "cousins",
+                    "juegos de mesa": "board games",
+                    "iglesia": "church",
+                    "llamar": "to call"
+                };
+                return <SimpleTranslationExercise exerciseKey="c11_ex1" course="a1" onComplete={() => handleTopicComplete('ex1')} title="Exercise 1" vocabulary={vocabEx1} />;
             case 'create1':
                 return (
                     <CreativeWritingExercise 
