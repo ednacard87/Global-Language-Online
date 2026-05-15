@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -22,7 +21,7 @@ import {
     Pencil,
     Users,
     Table as TableIcon,
-    ArrowDownWideArrow
+    ArrowDownWideNarrow
 } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
@@ -517,7 +516,7 @@ export default function EngA1Class11Page() {
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
                         <CardHeader className="bg-primary/10 border-b">
                             <div className="flex items-center gap-3">
-                                <ArrowDownWideArrow className="h-6 w-6 text-primary" />
+                                <ArrowDownWideNarrow className="h-6 w-6 text-primary" />
                                 <CardTitle className="text-2xl">CONJUNCIONES BÁSICAS: (CONJUNCTIONS)</CardTitle>
                             </div>
                         </CardHeader>
