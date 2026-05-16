@@ -18,7 +18,9 @@ import {
     Clock,
     Check,
     Info,
-    Globe
+    Globe,
+    ArrowLeft,
+    Trophy
 } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
@@ -31,6 +33,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
 import { CreativeWritingExercise } from '@/components/dashboard/creative-writing-exercise';
 import { ShortAnswerPresentSimpleExercise, type ShortAnswerPresentSimplePrompt } from '@/components/kids/exercises/short-answer-present-simple';
+import { Label } from '@/components/ui/label';
 
 type Topic = {
   key: string;
@@ -39,7 +42,7 @@ type Topic = {
   status: 'completed' | 'active' | 'locked';
 };
 
-const progressStorageVersion = 'progress_a1_eng_u3_c12_v9_ex3_added';
+const progressStorageVersion = 'progress_a1_eng_u3_c12_v10_ex4_added';
 const mainProgressKey = 'progress_a1_eng_unit_3_class_12';
 
 const timeExpressionsData = [
@@ -75,6 +78,145 @@ const class12Exercise3Data: ShortAnswerPresentSimplePrompt[] = [
     { question: "IS MARIO SINGING IN THE BATHROOM?", answers: { shortAffirmative: ["yes, he is"], shortNegative: ["no, he is not", "no, he isn't"] } },
     { question: "IS SHE LOOKING FOR A JOB?", answers: { shortAffirmative: ["yes, she is"], shortNegative: ["no, she is not", "no, she isn't"] } },
 ];
+
+const class12Exercise4Data = [
+    { 
+        spanish: "ELLA ESCRIBE - ELLA ESTA ESCRIBIENDO", 
+        answers: { 
+            simple: ["she writes"], 
+            continuous: ["she is writing", "she's writing"] 
+        } 
+    },
+    { 
+        spanish: "ELLA NO TRABAJA - ELLA NO ESTA TRABAJANDO", 
+        answers: { 
+            simple: ["she does not work", "she doesn't work", "she works not"], 
+            continuous: ["she is not working", "she'n not working", "she isn't working"] 
+        } 
+    },
+    { 
+        spanish: "¿ÉL CANTA? - ¿ÉL ESTA CANTANDO?", 
+        answers: { 
+            simple: ["does he sing?"], 
+            continuous: ["is he singing?"] 
+        } 
+    },
+    { 
+        spanish: "¿TÚ ESTUDIAS? - ¿ESTÁS ESTUDIANDO?", 
+        answers: { 
+            simple: ["do you study?"], 
+            continuous: ["are you studying?"] 
+        } 
+    },
+];
+
+const SimpleVsContinuousExercise = ({ onComplete }: { onComplete: () => void }) => {
+    const { toast } = useToast();
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [answers, setAnswers] = useState({ simple: '', continuous: '' });
+    const [validation, setValidation] = useState({ simple: 'unchecked', continuous: 'unchecked' });
+    const [showCompletion, setShowCompletion] = useState(false);
+
+    const currentPrompt = class12Exercise4Data[currentIndex];
+
+    useEffect(() => {
+        setAnswers({ simple: '', continuous: '' });
+        setValidation({ simple: 'unchecked', continuous: 'unchecked' });
+    }, [currentIndex]);
+
+    const handleCheck = () => {
+        const checkSimple = currentPrompt.answers.simple.map(a => a.toLowerCase().replace(/[.?]/g, ''))
+            .includes(answers.simple.trim().toLowerCase().replace(/[.?]/g, ''));
+        
+        const checkContinuous = currentPrompt.answers.continuous.map(a => a.toLowerCase().replace(/[.?]/g, ''))
+            .includes(answers.continuous.trim().toLowerCase().replace(/[.?]/g, ''));
+
+        setValidation({
+            simple: checkSimple ? 'correct' : 'incorrect',
+            continuous: checkContinuous ? 'correct' : 'incorrect'
+        });
+
+        if (checkSimple && checkContinuous) {
+            toast({ title: "¡Excelente!", description: "Ambas traducciones son correctas." });
+        } else {
+            toast({ variant: 'destructive', title: "Revisa tus respuestas", description: "Una o ambas traducciones no coinciden." });
+        }
+    };
+
+    const handleNext = () => {
+        if (currentIndex < class12Exercise4Data.length - 1) {
+            setCurrentIndex(prev => prev + 1);
+        } else {
+            setShowCompletion(true);
+            onComplete();
+        }
+    };
+
+    if (showCompletion) {
+        return (
+            <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                <CardContent className="p-6 text-center flex flex-col items-center justify-center min-h-[300px]">
+                    <Trophy className="h-16 w-16 text-yellow-400 mb-4" />
+                    <h2 className="text-3xl font-bold">¡Ejercicio Completado!</h2>
+                    <p className="text-muted-foreground mt-2">Has dominado la diferencia entre los tiempos presentes.</p>
+                </CardContent>
+            </Card>
+        );
+    }
+
+    return (
+        <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+            <CardHeader>
+                <CardTitle>Exercise 4: Simple vs Continuous</CardTitle>
+                <CardDescription>Traduce la frase a Present Simple y Present Continuous.</CardDescription>
+                <div className="flex gap-2 pt-4">
+                    {class12Exercise4Data.map((_, idx) => (
+                        <div key={idx} className={cn("h-3 w-3 rounded-full border", currentIndex === idx ? "bg-primary border-primary" : "bg-muted border-border")} />
+                    ))}
+                </div>
+            </CardHeader>
+            <CardContent className="space-y-6">
+                <div className="p-4 bg-muted rounded-xl border-2 border-dashed">
+                    <p className="text-center text-xl font-bold">"{currentPrompt.spanish}"</p>
+                </div>
+
+                <div className="space-y-4">
+                    <div className="space-y-2">
+                        <Label className="font-bold text-primary">Present Simple</Label>
+                        <Input 
+                            value={answers.simple} 
+                            onChange={e => { setAnswers(prev => ({ ...prev, simple: e.target.value })); setValidation(v => ({ ...v, simple: 'unchecked' })); }}
+                            className={cn(validation.simple === 'correct' ? 'border-green-500' : validation.simple === 'incorrect' ? 'border-destructive' : '')}
+                            placeholder="Escribe aquí..."
+                            autoComplete="off"
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <Label className="font-bold text-primary">Present Continuous</Label>
+                        <Input 
+                            value={answers.continuous} 
+                            onChange={e => { setAnswers(prev => ({ ...prev, continuous: e.target.value })); setValidation(v => ({ ...v, continuous: 'unchecked' })); }}
+                            className={cn(validation.continuous === 'correct' ? 'border-green-500' : validation.continuous === 'incorrect' ? 'border-destructive' : '')}
+                            placeholder="Escribe aquí..."
+                            autoComplete="off"
+                        />
+                    </div>
+                </div>
+            </CardContent>
+            <CardFooter className="flex justify-between">
+                <Button variant="outline" onClick={() => setCurrentIndex(p => Math.max(0, p - 1))} disabled={currentIndex === 0}>
+                    <ArrowLeft className="mr-2 h-4 w-4" /> Anterior
+                </Button>
+                <div className="flex gap-2">
+                    <Button onClick={handleCheck}>Verificar</Button>
+                    <Button onClick={handleNext} disabled={validation.simple !== 'correct' || validation.continuous !== 'correct'}>
+                        {currentIndex === class12Exercise4Data.length - 1 ? 'Finalizar' : 'Siguiente'} <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                </div>
+            </CardFooter>
+        </Card>
+    );
+};
 
 export default function EngA1Class12Page() {
     const { t } = useTranslation();
@@ -544,6 +686,8 @@ export default function EngA1Class12Page() {
                         onComplete={() => handleTopicComplete('ex3')}
                     />
                 );
+            case 'ex4':
+                return <SimpleVsContinuousExercise onComplete={() => handleTopicComplete('ex4')} />;
             case 'grammar3':
                 return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
