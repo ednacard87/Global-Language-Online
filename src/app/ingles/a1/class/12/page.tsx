@@ -17,7 +17,9 @@ import {
     ArrowRight,
     Pencil,
     Clock,
-    Check
+    Check,
+    Info,
+    Globe
 } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
@@ -26,6 +28,7 @@ import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocki
 import { doc } from 'firebase/firestore';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
 
 type Topic = {
@@ -35,7 +38,7 @@ type Topic = {
   status: 'completed' | 'active' | 'locked';
 };
 
-const progressStorageVersion = 'progress_a1_eng_u3_c12_v4_present_continuous';
+const progressStorageVersion = 'progress_a1_eng_u3_c12_v5_spelling_rules';
 const mainProgressKey = 'progress_a1_eng_unit_3_class_12';
 
 const timeExpressionsData = [
@@ -360,6 +363,132 @@ export default function EngA1Class12Page() {
                 };
                 return <SimpleTranslationExercise exerciseKey="c12_ex1" course="a1" onComplete={() => handleTopicComplete('ex1')} title="Exercise 1" vocabulary={vocabEx1} />;
             case 'grammar2':
+                return (
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
+                        <CardHeader className="bg-primary/10 border-b">
+                            <div className="flex items-center gap-3">
+                                <GraduationCap className="h-6 w-6 text-primary" />
+                                <CardTitle className="text-2xl uppercase tracking-tighter">Reglas de Ortografía para la forma "-ING"</CardTitle>
+                            </div>
+                        </CardHeader>
+                        <CardContent className="p-6">
+                            <Accordion type="multiple" defaultValue={['rule-1', 'rule-2']} className="w-full space-y-4">
+                                <AccordionItem value="rule-1" className="border-2 rounded-xl px-4">
+                                    <AccordionTrigger className="text-lg font-bold">1. Verbos terminados en "E"</AccordionTrigger>
+                                    <AccordionContent className="space-y-4 pt-2">
+                                        <p className="text-muted-foreground">Normalmente la <strong>"e"</strong> se quita delante de la terminación <strong>-ing</strong>.</p>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="p-3 bg-muted rounded-lg font-mono">
+                                                <p>To take {"=>"} <span className="text-primary font-bold">Taking</span></p>
+                                                <p>To make {"=>"} <span className="text-primary font-bold">Making</span></p>
+                                            </div>
+                                            <div className="p-3 bg-yellow-50 dark:bg-yellow-900/10 border border-yellow-200 rounded-lg">
+                                                <h5 className="font-bold text-yellow-700 dark:text-yellow-400 text-xs uppercase mb-1">Exception:</h5>
+                                                <p className="font-mono text-sm">To see {"=>"} <span className="font-bold">Seeing</span></p>
+                                            </div>
+                                        </div>
+                                    </AccordionContent>
+                                </AccordionItem>
+
+                                <AccordionItem value="rule-2" className="border-2 rounded-xl px-4">
+                                    <AccordionTrigger className="text-lg font-bold">2. Verbos Monosilábicos (CVC)</AccordionTrigger>
+                                    <AccordionContent className="space-y-4 pt-2">
+                                        <p className="text-muted-foreground">Cuando el verbo es corto y termina en una <strong>sola vocal</strong> seguida por una <strong>consonante</strong>, la consonante final se duplica.</p>
+                                        <div className="grid md:grid-cols-2 gap-4">
+                                            <div className="p-3 bg-muted rounded-lg font-mono space-y-1">
+                                                <p>To stop {"=>"} <span className="text-primary font-bold">Stopping</span></p>
+                                                <p>To sit {"=>"} <span className="text-primary font-bold">Sitting</span></p>
+                                                <p>To win {"=>"} <span className="text-primary font-bold">Winning</span></p>
+                                            </div>
+                                            <div className="space-y-2">
+                                                <div className="p-3 bg-red-50 dark:bg-red-900/10 border border-red-200 rounded-lg">
+                                                    <h5 className="font-bold text-red-700 dark:text-red-400 text-xs uppercase mb-1">Exception (X, W, Z):</h5>
+                                                    <p className="font-mono text-sm">To fix {"=>"} <span className="font-bold">Fixing</span></p>
+                                                    <p className="font-mono text-sm">To draw {"=>"} <span className="font-bold">Drawing</span></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="p-3 bg-blue-50 dark:bg-blue-900/10 border border-blue-200 rounded-lg">
+                                            <h5 className="font-bold text-blue-700 dark:text-blue-400 text-xs uppercase mb-1">Nota:</h5>
+                                            <p className="text-sm">Si hay <strong>más de una vocal</strong>, NO duplicamos la consonante.</p>
+                                            <p className="font-mono text-sm mt-1">To read {"=>"} Reading // To open {"=>"} Opening</p>
+                                        </div>
+                                    </AccordionContent>
+                                </AccordionItem>
+
+                                <AccordionItem value="rule-3" className="border-2 rounded-xl px-4">
+                                    <AccordionTrigger className="text-lg font-bold">3. Verbos Bisilábicos</AccordionTrigger>
+                                    <AccordionContent className="space-y-4 pt-2">
+                                        <div className="grid md:grid-cols-2 gap-4">
+                                            <div className="p-3 bg-muted rounded-lg border-l-4 border-primary">
+                                                <h5 className="font-bold text-sm mb-1">Acento en la 2ª sílaba:</h5>
+                                                <p className="text-xs text-muted-foreground mb-2">La consonante final se dobla.</p>
+                                                <div className="font-mono text-sm">
+                                                    <p>To begin {"=>"} <span className="font-bold">Beginning</span></p>
+                                                    <p>To prefer {"=>"} <span className="font-bold">Preferring</span></p>
+                                                </div>
+                                            </div>
+                                            <div className="p-3 bg-muted rounded-lg border-l-4 border-muted-foreground">
+                                                <h5 className="font-bold text-sm mb-1">Acento en la 1ª sílaba:</h5>
+                                                <p className="text-xs text-muted-foreground mb-2">No existen modificaciones.</p>
+                                                <div className="font-mono text-sm">
+                                                    <p>To visit {"=>"} <span className="font-bold">Visiting</span></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </AccordionContent>
+                                </AccordionItem>
+
+                                <AccordionItem value="rule-4" className="border-2 rounded-xl px-4">
+                                    <AccordionTrigger className="text-lg font-bold">4. Verbos terminados en "Y"</AccordionTrigger>
+                                    <AccordionContent className="space-y-2 pt-2">
+                                        <p className="text-muted-foreground">No existen modificaciones cuando el verbo acaba en vocal o consonante + <strong>Y</strong>.</p>
+                                        <div className="p-3 bg-muted rounded-lg font-mono">
+                                            <p>To play {"=>"} <span className="text-primary font-bold">Playing</span></p>
+                                            <p>To study {"=>"} <span className="text-primary font-bold">Studying</span></p>
+                                        </div>
+                                    </AccordionContent>
+                                </AccordionItem>
+
+                                <AccordionItem value="rule-5" className="border-2 rounded-xl px-4">
+                                    <AccordionTrigger className="text-lg font-bold">5. Verbos terminados en "-IE"</AccordionTrigger>
+                                    <AccordionContent className="space-y-2 pt-2">
+                                        <p className="text-muted-foreground">Cambiamos este grupo de vocales por una <strong>"Y"</strong> delante de la terminación <strong>-ing</strong>.</p>
+                                        <div className="p-3 bg-muted rounded-lg font-mono text-center text-xl">
+                                            <p>To die {"=>"} <span className="text-primary font-bold italic">Dying</span></p>
+                                        </div>
+                                    </AccordionContent>
+                                </AccordionItem>
+
+                                <AccordionItem value="rule-6" className="border-2 rounded-xl px-4">
+                                    <AccordionTrigger className="text-lg font-bold">6. Inglés Británico vs Americano</AccordionTrigger>
+                                    <AccordionContent className="space-y-4 pt-2">
+                                        <p className="text-muted-foreground italic text-sm">Ejemplo con el verbo "Travel":</p>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="p-4 bg-muted rounded-xl text-center border">
+                                                <h5 className="font-bold text-primary flex items-center justify-center gap-2">
+                                                    <Globe className="h-4 w-4" /> UK
+                                                </h5>
+                                                <p className="font-mono text-lg font-black">Travelling</p>
+                                                <p className="text-[10px] text-muted-foreground">(Dobla la "L")</p>
+                                            </div>
+                                            <div className="p-4 bg-muted rounded-xl text-center border">
+                                                <h5 className="font-bold text-primary flex items-center justify-center gap-2">
+                                                    <Globe className="h-4 w-4" /> USA
+                                                </h5>
+                                                <p className="font-mono text-lg font-black">Traveling</p>
+                                                <p className="text-[10px] text-muted-foreground">(Una sola "L")</p>
+                                            </div>
+                                        </div>
+                                    </AccordionContent>
+                                </AccordionItem>
+                            </Accordion>
+                        </CardContent>
+                        <CardFooter className="justify-center pt-6 border-t">
+                            <Button onClick={() => handleTopicComplete('grammar2')} size="lg" className="px-12">He terminado de estudiar</Button>
+                        </CardFooter>
+                    </Card>
+                );
             case 'grammar3':
                 return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
