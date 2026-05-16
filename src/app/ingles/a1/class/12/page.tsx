@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -48,7 +49,7 @@ type Topic = {
   status: 'completed' | 'active' | 'locked';
 };
 
-const progressStorageVersion = 'progress_a1_eng_u3_c12_v21_final_renumbered';
+const progressStorageVersion = 'progress_a1_eng_u3_c12_v22_last_ex_fixed';
 const mainProgressKey = 'progress_a1_eng_unit_3_class_12';
 
 const timeExpressionsData = [
@@ -295,17 +296,33 @@ const class12Exercise7Data = [
     { parts: ["JANE ", " PIZZA."], options: ["LOVES", "IS LOVING"], correct: "LOVES" },
 ];
 
-const class12Exercise8Data: ShortAnswerPresentSimplePrompt[] = [
-    { question: "IS SHE GOING TO WORK?", answers: { shortAffirmative: ["yes, she is"], shortNegative: ["no, she is not", "no, she isn't", "no, she's not"] } },
-    { question: "DO THEY STUDY GERMAN?", answers: { shortAffirmative: ["yes, they do"], shortNegative: ["no, they do not", "no, they don't"] } },
-    { question: "DOES SHE TRAVEL TO MIAMI?", answers: { shortAffirmative: ["yes, she does"], shortNegative: ["no, she does not", "no, she doesn't"] } },
-    { question: "ARE THEY LEARNING ENGLISH?", answers: { shortAffirmative: ["yes, they are"], shortNegative: ["no, they are not", "no, they aren't"] } },
-    { question: "IS SHE WALKING FAST?", answers: { shortAffirmative: ["yes, she is"], shortNegative: ["no, she is not", "no, she isn't", "no, she's not"] } },
-    { question: "DOES SHE SPEAK ITALIAN?", answers: { shortAffirmative: ["yes, she does"], shortNegative: ["no, she does not", "no, she doesn't"] } },
-    { question: "ARE WE GOING TO NEW YORK?", answers: { shortAffirmative: ["yes, we are"], shortNegative: ["no, we are not", "no, we aren't"] } },
-    { question: "DO YOU GO TO SCHOOL TODAY?", answers: { shortAffirmative: ["yes, i do"], shortNegative: ["no, i do not", "no, i don't"] } },
-    { question: "IS HE CALLING HIS FAMILY?", answers: { shortAffirmative: ["yes, he is"], shortNegative: ["no, he is not", "no, he isn't", "no, he's not"] } },
-    { question: "IS SHE EATING SUSHI?", answers: { shortAffirmative: ["yes, she is"], shortNegative: ["no, she is not", "no, she isn't", "no, she's not"] } },
+const lastExerciseData = [
+    { sentence: "TOM ________ FOOTBALL IN A SCHOOL TEAM.", options: ["PLAYS", "IS PLAYING"], correct: "PLAYS" },
+    { sentence: "I’M BUSY NOW. I ________ SOME SHOPPING.", options: ["GO", "AM GOING"], correct: "AM GOING" },
+    { sentence: "WHAT TIME ________ YOUR FAVORITE TV PROGRAM TONIGHT?", options: ["IS", "IS BEING"], correct: "IS" },
+    { sentence: "________ NEWSPAPERS?", options: ["ARE YOU USUALLY READING", "DO YOU USUALLY READ"], correct: "DO YOU USUALLY READ" },
+    { sentence: "YOU ________ SO NICE.", options: ["LOOK", "ARE LOOKING"], correct: "LOOK" },
+    { sentence: "MARTIN ________ NY MONTHLY FOR WORK.", options: ["VISITS", "IS VISITING"], correct: "VISITS" },
+    { sentence: "I ________ WAITING FOR HIM.", options: ["SIT", "AM SITTING"], correct: "AM SITTING" },
+    { sentence: "THE WEATHER ________ BETTER FOR THE WEEKEND.", options: ["DOESN’T GET", "ISN’T GETTING"], correct: "ISN’T GETTING" },
+    { sentence: "HURRY UP! EVERY BODY ________ FOR YOU!", options: ["IS WAITING", "WAIT"], correct: "IS WAITING" },
+    { sentence: "I ________ TO THE CINEMA UNLESS I FINISH MY HOMEWORK.", options: ["DON’T GO", "AM NOT GOING"], correct: "DON’T GO" },
+    { sentence: "I USUALLY ________ TO ROCK MUSIC.", options: ["LISTEN", "AM LISTENING"], correct: "LISTEN" },
+    { sentence: "WHAT IS SHE DOING? SHE ________ TO MUSIC.", options: ["LISTENS", "IS LISTENING"], correct: "IS LISTENING" },
+    { sentence: "MY PROFESSOR ALWAYS ________ SLOWLY.", options: ["IS SPEAKING", "SPEAKS"], correct: "SPEAKS" },
+    { sentence: "WHAT ARE YOU DOING TONIGHT? WE ________ TO WATCH A MOVIE.", options: ["ARE GOING", "GO"], correct: "ARE GOING" },
+    { sentence: "HE NORMALLY ________ FAST.", options: ["DRIVES", "IS DRIVING"], correct: "DRIVES" },
+    { sentence: "I’M SORRY, ANGELA CAN’T COME TO THE PHONE- SHE ________ A SHOWER.", options: ["TAKES", "IS TAKING"], correct: "IS TAKING" },
+    { sentence: "I ________ HOME RIGHT NOW.", options: ["GO", "AM GOING"], correct: "AM GOING" },
+    { sentence: "THOSE GIRLS ________ OUT EVERY FRIDAY.", options: ["GO", "ARE GOING"], correct: "GO" },
+    { sentence: "GENERALLY, I ________ CLASSICAL MUSIC.", options: ["AM LIKING", "LIKE"], correct: "LIKE" },
+    { sentence: "MARTHA ________ IN AFRICA.", options: ["DOESN’T LIVE", "ISN’T LIVING"], correct: "DOESN’T LIVE" },
+    { sentence: "DAD USUALLY ________ FOR DINNER.", options: ["IS COOKING", "COOKS"], correct: "COOKS" },
+    { sentence: "MARIA ________ FOR A TV STATION.", options: ["WORKS", "IS WORKING"], correct: "WORKS" },
+    { sentence: "AT THE MOMENT SHE ________ IN THE SAHARA DESERT.", options: ["TRAVELS", "IS TRAVELLING"], correct: "IS TRAVELLING" },
+    { sentence: "MY SISTER ________ TO SCHOOL EVERY DAY.", options: ["WALKS", "IS WALKING"], correct: "WALKS" },
+    { sentence: "DAN ________ WILD ANIMALS.", options: ["IS LOVING", "LOVES"], correct: "LOVES" },
+    { sentence: "WE ________ LUNCH NOW.", options: ["HAVE", "ARE HAVING"], correct: "ARE HAVING" },
 ];
 
 const ChoiceExercise = ({ onComplete }: { onComplete: () => void }) => {
@@ -398,6 +415,136 @@ const ChoiceExercise = ({ onComplete }: { onComplete: () => void }) => {
                     <Button onClick={handleCheck} disabled={!selectedOption || validation === 'correct'}>Verificar</Button>
                     <Button onClick={handleNext} disabled={validation !== 'correct'}>
                         {currentIndex === class12Exercise7Data.length - 1 ? 'Finalizar' : 'Siguiente'} <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                </div>
+            </CardFooter>
+        </Card>
+    );
+};
+
+const LastExerciseComp = ({ onComplete }: { onComplete: () => void }) => {
+    const { toast } = useToast();
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [selections, setSelections] = useState<string[]>(Array(lastExerciseData.length).fill(''));
+    const [validation, setValidation] = useState<('correct' | 'incorrect' | 'unchecked')[]>(Array(lastExerciseData.length).fill('unchecked'));
+    const [showResults, setShowResults] = useState(false);
+    const [completed, setCompleted] = useState(false);
+
+    const isAllSelected = selections.every(s => s !== '');
+
+    const handleSelect = (option: string) => {
+        if (completed) return;
+        const newS = [...selections];
+        newS[currentIndex] = option;
+        setSelections(newS);
+        
+        // Auto-advance if not at the end
+        if (currentIndex < lastExerciseData.length - 1) {
+            setTimeout(() => setCurrentIndex(prev => prev + 1), 300);
+        }
+    };
+
+    const handleCheck = () => {
+        const newV = lastExerciseData.map((item, idx) => 
+            item.correct === selections[idx] ? 'correct' : 'incorrect'
+        );
+        setValidation(newV as any);
+        setShowResults(true);
+
+        const allCorrect = newV.every(v => v === 'correct');
+        if (allCorrect) {
+            toast({ title: "¡Excelente!", description: "Has completado la lección con éxito." });
+            setCompleted(true);
+            onComplete();
+        } else {
+            toast({ 
+                variant: 'destructive', 
+                title: "Algunas respuestas son incorrectas", 
+                description: "Revisa las bolitas rojas y corrige tus selecciones." 
+            });
+        }
+    };
+
+    const currentPrompt = lastExerciseData[currentIndex];
+
+    if (completed) {
+        return (
+            <Card className="shadow-soft rounded-lg border-2 border-brand-purple min-h-[400px] flex flex-col justify-center items-center text-center">
+                <CardContent className="p-12 space-y-4">
+                    <Trophy className="h-20 w-20 text-yellow-400 mx-auto animate-bounce" />
+                    <h2 className="text-3xl font-black bg-gradient-to-r from-brand-purple to-brand-teal text-transparent bg-clip-text uppercase tracking-tighter">¡Clase 12 Completada!</h2>
+                    <p className="text-muted-foreground text-lg">Has dominado perfectamente el contraste entre Presente Simple y Continuo.</p>
+                </CardContent>
+            </Card>
+        );
+    }
+
+    return (
+        <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+            <CardHeader>
+                <CardTitle>Last Exercise: Final Challenge</CardTitle>
+                <CardDescription>Elige la opción más adecuada para cada frase. Al final, presiona verificar.</CardDescription>
+                <div className="flex flex-wrap gap-2 pt-4">
+                    {lastExerciseData.map((_, idx) => (
+                        <button
+                            key={idx}
+                            onClick={() => setCurrentIndex(idx)}
+                            className={cn(
+                                "h-6 w-6 rounded-full flex items-center justify-center text-[10px] font-bold border transition-all",
+                                currentIndex === idx ? "ring-2 ring-primary ring-offset-1" : "",
+                                showResults 
+                                    ? (validation[idx] === 'correct' ? "bg-green-500 border-green-500 text-white" : "bg-red-500 border-red-500 text-white")
+                                    : (selections[idx] !== '' ? "bg-primary/20 border-primary text-primary" : "bg-muted border-border")
+                            )}
+                        >
+                            {idx + 1}
+                        </button>
+                    ))}
+                </div>
+            </CardHeader>
+            <CardContent className="space-y-8 pt-6 min-h-[250px] flex flex-col justify-center">
+                <div className="text-center space-y-6">
+                    <div className="p-8 bg-muted rounded-2xl border-2 border-dashed text-2xl font-bold leading-relaxed">
+                        {currentPrompt.sentence.split('________').map((part, i, arr) => (
+                            <React.Fragment key={i}>
+                                {part}
+                                {i < arr.length - 1 && (
+                                    <span className="text-primary underline px-2">
+                                        {selections[currentIndex] || "________"}
+                                    </span>
+                                )}
+                            </React.Fragment>
+                        ))}
+                    </div>
+                    
+                    <div className="flex justify-center gap-4">
+                        {currentPrompt.options.map(opt => (
+                            <Button
+                                key={opt}
+                                variant={selections[currentIndex] === opt ? "default" : "outline"}
+                                size="lg"
+                                onClick={() => handleSelect(opt)}
+                                className={cn(
+                                    "text-xl h-16 px-8 border-2 font-black tracking-tight",
+                                    selections[currentIndex] === opt && "scale-105 shadow-lg shadow-primary/20"
+                                )}
+                            >
+                                {opt}
+                            </Button>
+                        ))}
+                    </div>
+                </div>
+            </CardContent>
+            <CardFooter className="flex justify-between border-t pt-6">
+                <Button variant="outline" onClick={() => setCurrentIndex(p => Math.max(0, p - 1))} disabled={currentIndex === 0}>
+                    <ArrowLeft className="mr-2 h-4 w-4" /> Anterior
+                </Button>
+                <div className="flex gap-2">
+                    <Button onClick={handleCheck} disabled={!isAllSelected} className={cn(isAllSelected && "animate-pulse-glow")}>
+                        Verificar Todo
+                    </Button>
+                    <Button variant="outline" onClick={() => setCurrentIndex(p => Math.min(lastExerciseData.length - 1, p + 1))} disabled={currentIndex === lastExerciseData.length - 1}>
+                        Siguiente <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
                 </div>
             </CardFooter>
@@ -597,9 +744,9 @@ export default function EngA1Class12Page() {
         { key: 'ex4', name: 'Exercise 4', icon: PenSquare, status: 'locked' },
         { key: 'ex5', name: 'Exercise 5', icon: PenSquare, status: 'locked' },
         { key: 'grammar3', name: 'Grammar 3', icon: BookText, status: 'locked' },
-        { key: 'ex7', name: 'Exercise 6', icon: PenSquare, status: 'locked' },
-        { key: 'ex8', name: 'Exercise 7', icon: PenSquare, status: 'locked' },
-        { key: 'ex9', name: 'Exercise 8', icon: PenSquare, status: 'locked' },
+        { key: 'ex6', name: 'Exercise 6', icon: PenSquare, status: 'locked' },
+        { key: 'ex7', name: 'Exercise 7', icon: PenSquare, status: 'locked' },
+        { key: 'ex8', name: 'Exercise 8', icon: PenSquare, status: 'locked' },
         { key: 'last_ex', name: 'Last Exercise', icon: Sparkles, status: 'locked' },
     ], []);
     
@@ -1166,49 +1313,23 @@ export default function EngA1Class12Page() {
                         </CardFooter>
                     </Card>
                 );
+            case 'ex6':
+                return <ChoiceExercise onComplete={() => handleTopicComplete('ex6')} />;
             case 'ex7':
-                return <ChoiceExercise onComplete={() => handleTopicComplete('ex7')} />;
-            case 'ex8':
                 return (
                     <ShortAnswerPresentSimpleExercise
                         title="Exercise 7: Short Answers"
                         description="Escribe las dos respuestas cortas para cada pregunta de Present Simple y Present Continuous (+A) y (-A)."
                         exerciseData={class12Exercise8Data}
-                        onComplete={() => handleTopicComplete('ex8')}
+                        onComplete={() => handleTopicComplete('ex7')}
                     />
                 );
-            case 'ex9':
-                return <DualTranslationExercise onComplete={() => handleTopicComplete('ex9')} data={class12Exercise9Data} title="Exercise 8: Simple vs Continuous" vocabulary={ex9Vocab} />;
+            case 'ex8':
+                return <DualTranslationExercise onComplete={() => handleTopicComplete('ex8')} data={class12Exercise9Data} title="Exercise 8: Simple vs Continuous" vocabulary={ex9Vocab} />;
             case 'last_ex':
-                return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple min-h-[400px] flex flex-col justify-center">
-                        <CardHeader className="text-center">
-                            <Trophy className="h-16 w-16 text-yellow-400 mx-auto mb-4" />
-                            <CardTitle>Last Exercise</CardTitle>
-                            <CardDescription>Has llegado al final de la Clase 12. ¡Gran trabajo!</CardDescription>
-                        </CardHeader>
-                        <CardContent className="text-center">
-                            <p className="text-muted-foreground">Has dominado el Presente Continuo y sus contrastes con el Presente Simple.</p>
-                        </CardContent>
-                        <CardFooter className="justify-center">
-                            <Button onClick={() => handleTopicComplete('last_ex')} size="lg">Finalizar Clase</Button>
-                        </CardFooter>
-                    </Card>
-                );
+                return <LastExerciseComp onComplete={() => handleTopicComplete('last_ex')} />;
             default:
-                return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple min-h-[500px]">
-                        <CardHeader>
-                            <CardTitle>{topic?.name || 'Cargando...'}</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="text-muted-foreground">Contenido interactivo próximamente.</p>
-                        </CardContent>
-                        <CardFooter>
-                            <Button onClick={() => handleTopicComplete(selectedTopic)}>Completar Actividad</Button>
-                        </CardFooter>
-                    </Card>
-                );
+                return <div className="flex items-center justify-center h-64"><Loader2 className="animate-spin" /></div>;
         }
     };
 
@@ -1267,3 +1388,4 @@ export default function EngA1Class12Page() {
         </div>
     );
 }
+
