@@ -15,7 +15,8 @@ import {
     Loader2, 
     ArrowRight,
     Pencil,
-    Clock
+    Clock,
+    Check
 } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
@@ -23,6 +24,7 @@ import { Progress } from '@/components/ui/progress';
 import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Input } from '@/components/ui/input';
+import { Separator } from '@/components/ui/separator';
 
 type Topic = {
   key: string;
@@ -31,7 +33,7 @@ type Topic = {
   status: 'completed' | 'active' | 'locked';
 };
 
-const progressStorageVersion = 'progress_a1_eng_u3_c12_v2_expressions';
+const progressStorageVersion = 'progress_a1_eng_u3_c12_v3_present_continuous';
 const mainProgressKey = 'progress_a1_eng_unit_3_class_12';
 
 const timeExpressionsData = [
@@ -93,7 +95,7 @@ export default function EngA1Class12Page() {
         { key: 'ex6', name: 'Exercise 6', icon: PenSquare, status: 'locked' },
         { key: 'grammar3', name: 'Grammar 3', icon: GraduationCap, status: 'locked' },
         { key: 'ex7', name: 'Exercise 7', icon: PenSquare, status: 'locked' },
-        { key: 'ex8', name: 'Exercise 8', icon: PenSquare, status: 'locked' },
+        { key: 'ex8', name: 'Exercise 8', icon: Pencil, status: 'locked' },
         { key: 'ex9', name: 'Exercise 9', icon: PenSquare, status: 'locked' },
         { key: 'ex10', name: 'Exercise 10', icon: PenSquare, status: 'locked' },
     ], []);
@@ -263,6 +265,90 @@ export default function EngA1Class12Page() {
                     </Card>
                 );
             case 'grammar':
+                return (
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
+                        <CardHeader className="bg-primary/10 border-b">
+                            <div className="flex items-center gap-3">
+                                <GraduationCap className="h-6 w-6 text-primary" />
+                                <CardTitle className="text-2xl">PRESENT CONTINUOUS</CardTitle>
+                            </div>
+                        </CardHeader>
+                        <CardContent className="p-6 space-y-8">
+                            <div className="bg-muted/50 p-6 rounded-2xl border-2 border-dashed">
+                                <h3 className="text-xl font-bold text-primary mb-3">¿Qué es?</h3>
+                                <p className="text-lg leading-relaxed">
+                                    Se utiliza para describir acciones que están ocurriendo <strong>en este preciso momento</strong>. El verbo principal termina en <strong>-ING</strong>, que equivale a las terminaciones <strong>"-ando"</strong> o <strong>"-endo"</strong> en español.
+                                </p>
+                            </div>
+
+                            <div className="space-y-6">
+                                <h3 className="text-xl font-black text-primary uppercase tracking-widest flex items-center gap-2">
+                                    FORMAS Y ESTRUCTURA:
+                                </h3>
+                                
+                                <div className="grid gap-4">
+                                    <div className="p-4 border rounded-xl bg-background shadow-sm hover:shadow-md transition-shadow">
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <div className="h-6 w-6 rounded-full bg-green-500 flex items-center justify-center text-white font-bold text-sm">+</div>
+                                            <h4 className="font-bold text-lg">AFIRMATIVA</h4>
+                                        </div>
+                                        <p className="font-mono text-base bg-muted p-2 rounded">
+                                            Pronoun + <span className="text-primary font-bold">To Be</span> + Verb <span className="underline text-brand-purple font-bold">ING</span> + Complement
+                                        </p>
+                                        <p className="text-sm text-muted-foreground mt-2 italic">Example: I am working now. (Yo estoy trabajando ahora).</p>
+                                    </div>
+
+                                    <div className="p-4 border rounded-xl bg-background shadow-sm hover:shadow-md transition-shadow">
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <div className="h-6 w-6 rounded-full bg-red-500 flex items-center justify-center text-white font-bold text-sm">-</div>
+                                            <h4 className="font-bold text-lg">NEGATIVA</h4>
+                                        </div>
+                                        <p className="font-mono text-base bg-muted p-2 rounded">
+                                            Pronoun + <span className="text-primary font-bold">To Be</span> + <span className="text-red-500 font-bold">NOT</span> + Verb <span className="underline text-brand-purple font-bold">ING</span> + Complement
+                                        </p>
+                                        <p className="text-sm text-muted-foreground mt-2 italic">Example: She is not sleeping. (Ella no está durmiendo).</p>
+                                    </div>
+
+                                    <div className="p-4 border rounded-xl bg-background shadow-sm hover:shadow-md transition-shadow">
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <div className="h-6 w-6 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-sm">?</div>
+                                            <h4 className="font-bold text-lg">INTERROGATIVA</h4>
+                                        </div>
+                                        <p className="font-mono text-base bg-muted p-2 rounded">
+                                            <span className="text-primary font-bold">To Be</span> + Pronoun + Verb <span className="underline text-brand-purple font-bold">ING</span> + Complement?
+                                        </p>
+                                        <p className="text-sm text-muted-foreground mt-2 italic">Example: Are they playing soccer? (¿Están ellos jugando futbol?).</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <Separator />
+
+                            <div className="space-y-4">
+                                <h3 className="text-xl font-black text-primary uppercase tracking-widest flex items-center gap-2">
+                                    SHORT ANSWERS (Respuestas Cortas):
+                                </h3>
+                                <div className="grid sm:grid-cols-2 gap-4 font-mono">
+                                    <div className="p-4 bg-green-50 dark:bg-green-900/10 border border-green-200 rounded-xl">
+                                        <p className="font-bold text-green-700 dark:text-green-400 mb-1">(+A) POSITIVA</p>
+                                        <p className="text-lg">Yes, Pronoun + To be</p>
+                                        <p className="text-xs text-muted-foreground mt-1">Ex: Yes, I am. / Yes, he is.</p>
+                                    </div>
+                                    <div className="p-4 bg-red-50 dark:bg-red-900/10 border border-red-200 rounded-xl">
+                                        <p className="font-bold text-red-700 dark:text-red-400 mb-1">(-A) NEGATIVA</p>
+                                        <p className="text-lg">No, Pronoun + To be + Not</p>
+                                        <p className="text-xs text-muted-foreground mt-1">Ex: No, I am not. / No, they aren't.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </CardContent>
+                        <CardFooter className="justify-center border-t pt-6">
+                            <Button onClick={() => handleTopicComplete('grammar')} size="lg" className="px-12 font-bold">
+                                Entendido <ArrowRight className="ml-2 h-4 w-4" />
+                            </Button>
+                        </CardFooter>
+                    </Card>
+                );
             case 'grammar2':
             case 'grammar3':
                 return (
