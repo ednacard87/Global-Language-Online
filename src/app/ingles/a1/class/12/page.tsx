@@ -46,7 +46,7 @@ type Topic = {
   status: 'completed' | 'active' | 'locked';
 };
 
-const progressStorageVersion = 'progress_a1_eng_u3_c12_v16_no_ex6';
+const progressStorageVersion = 'progress_a1_eng_u3_c12_v17_ex7';
 const mainProgressKey = 'progress_a1_eng_unit_3_class_12';
 
 const timeExpressionsData = [
@@ -169,6 +169,120 @@ const class12Exercise4Data = [
         } 
     },
 ];
+
+const class12Exercise7Data = [
+    { parts: ["EVERY MONDAY SALLY ", " HER KIDS TO FOOTBALL PRACTICE."], options: ["DRIVES", "IS DRIVING"], correct: "DRIVES" },
+    { parts: ["", " NOW?"], options: ["DO YOU EAT", "ARE YOU EATING"], correct: "ARE YOU EATING" },
+    { parts: ["I ", " THE KITCHEN EVERY DAY."], options: ["CLEAN", "AM CLEANING"], correct: "CLEAN" },
+    { parts: ["THE MOVIE ", " AT 3 PM."], options: ["STARTS", "IS STARTING"], correct: "STARTS" },
+    { parts: ["BOB ", " IN A RESTAURANT (EN GENERAL)"], options: ["WORKS", "IS WORKING"], correct: "WORKS" },
+    { parts: ["SHHHHHHHHHHH! BE QUIET! JOHN ", ""], options: ["SLEEPS", "IS SLEEPING"], correct: "IS SLEEPING" },
+    { parts: ["YOU ", " CHOCOLATE"], options: ["DON’T LIKE", "ARE NOT LIKING"], correct: "DON’T LIKE" },
+    { parts: ["THE CHILDREN ", " OUT SIDE AT THE MOMENT."], options: ["PLAY", "ARE PLAYING"], correct: "ARE PLAYING" },
+    { parts: ["SAM ", " A CAT"], options: ["HAS", "IS HAVING"], correct: "HAS" },
+    { parts: ["THEY ", " NOW."], options: ["STUDY", "ARE STUDYING"], correct: "ARE STUDYING" },
+    { parts: ["SMELLS GOOD! WHAT ", "?"], options: ["DO YOU MAKE", "ARE YOU MAKING"], correct: "ARE YOU MAKING" },
+    { parts: ["THEY ", " RICE EVERY DAY."], options: ["DON’T EAT", "AREN’T EATING"], correct: "DON’T EAT" },
+    { parts: ["SHE ", " AT THE MOMENT."], options: ["DOESN’T STUDY", "ISN’T STUDYING"], correct: "ISN’T STUDYING" },
+    { parts: ["JANE ", " PIZZA."], options: ["LOVES", "IS LOVING"], correct: "LOVES" },
+];
+
+const ChoiceExercise = ({ onComplete }: { onComplete: () => void }) => {
+    const { toast } = useToast();
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [selectedOption, setSelectedOption] = useState<string | null>(null);
+    const [validation, setValidation] = useState<'correct' | 'incorrect' | 'unchecked'>('unchecked');
+    const [showCompletion, setShowCompletion] = useState(false);
+
+    const currentPrompt = class12Exercise7Data[currentIndex];
+
+    const handleSelect = (option: string) => {
+        if (validation === 'correct') return;
+        setSelectedOption(option);
+        setValidation('unchecked');
+    };
+
+    const handleCheck = () => {
+        if (!selectedOption) return;
+        const isCorrect = selectedOption === currentPrompt.correct;
+        setValidation(isCorrect ? 'correct' : 'incorrect');
+
+        if (isCorrect) {
+            toast({ title: "¡Correcto!", description: "Muy bien." });
+        } else {
+            toast({ variant: 'destructive', title: "Incorrecto", description: "Inténtalo de nuevo." });
+        }
+    };
+
+    const handleNext = () => {
+        if (currentIndex < class12Exercise7Data.length - 1) {
+            setCurrentIndex(prev => prev + 1);
+            setSelectedOption(null);
+            setValidation('unchecked');
+        } else {
+            setShowCompletion(true);
+            onComplete();
+        }
+    };
+
+    if (showCompletion) {
+        return (
+            <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                <CardContent className="p-6 text-center flex flex-col items-center justify-center min-h-[300px]">
+                    <Trophy className="h-16 w-16 text-yellow-400 mb-4" />
+                    <h2 className="text-3xl font-bold">¡Ejercicio Completado!</h2>
+                    <p className="text-muted-foreground mt-2">Has dominado la diferencia de usos entre los presentes.</p>
+                </CardContent>
+            </Card>
+        );
+    }
+
+    return (
+        <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+            <CardHeader>
+                <CardTitle>Exercise 7: Choice</CardTitle>
+                <CardDescription>Elige la opción más adecuada (Present Simple vs Present Continuous).</CardDescription>
+                <div className="pt-2 text-sm font-medium text-muted-foreground">
+                    Pregunta {currentIndex + 1} de {class12Exercise7Data.length}
+                </div>
+                <Progress value={((currentIndex + 1) / class12Exercise7Data.length) * 100} className="mt-2 h-1" />
+            </CardHeader>
+            <CardContent className="space-y-8 pt-6">
+                <div className="p-6 bg-muted rounded-xl border-2 border-dashed flex flex-wrap items-center justify-center gap-x-2 gap-y-4 text-2xl font-bold text-center">
+                    {currentPrompt.parts[0]}
+                    <div className="flex gap-2">
+                        {currentPrompt.options.map(opt => (
+                            <Button
+                                key={opt}
+                                variant={selectedOption === opt ? "default" : "outline"}
+                                onClick={() => handleSelect(opt)}
+                                className={cn(
+                                    "text-lg h-auto py-1 px-4 border-2 font-black",
+                                    selectedOption === opt && validation === 'correct' && "bg-green-600 border-green-600 hover:bg-green-600",
+                                    selectedOption === opt && validation === 'incorrect' && "bg-destructive border-destructive hover:bg-destructive"
+                                )}
+                            >
+                                {opt}
+                            </Button>
+                        ))}
+                    </div>
+                    {currentPrompt.parts[1]}
+                </div>
+            </CardContent>
+            <CardFooter className="flex justify-between border-t pt-6">
+                <Button variant="outline" onClick={() => setCurrentIndex(p => Math.max(0, p - 1))} disabled={currentIndex === 0}>
+                    <ArrowLeft className="mr-2 h-4 w-4" /> Anterior
+                </Button>
+                <div className="flex gap-2">
+                    <Button onClick={handleCheck} disabled={!selectedOption || validation === 'correct'}>Verificar</Button>
+                    <Button onClick={handleNext} disabled={validation !== 'correct'}>
+                        {currentIndex === class12Exercise7Data.length - 1 ? 'Finalizar' : 'Siguiente'} <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                </div>
+            </CardFooter>
+        </Card>
+    );
+};
 
 const SimpleVsContinuousExercise = ({ onComplete }: { onComplete: () => void }) => {
     const { toast } = useToast();
@@ -324,7 +438,7 @@ export default function EngA1Class12Page() {
         { key: 'ex3', name: 'Exercise 3', icon: PenSquare, status: 'locked' },
         { key: 'ex4', name: 'Exercise 4', icon: PenSquare, status: 'locked' },
         { key: 'ex5', name: 'Exercise 5', icon: PenSquare, status: 'locked' },
-        { key: 'grammar3', name: 'Grammar 3', icon: GraduationCap, status: 'locked' },
+        { key: 'grammar3', name: 'Grammar 3', icon: BookText, status: 'locked' },
         { key: 'ex7', name: 'Exercise 7', icon: PenSquare, status: 'locked' },
         { key: 'ex8', name: 'Exercise 8', icon: Pencil, status: 'locked' },
         { key: 'ex9', name: 'Exercise 9', icon: PenSquare, status: 'locked' },
@@ -894,6 +1008,8 @@ export default function EngA1Class12Page() {
                         </CardFooter>
                     </Card>
                 );
+            case 'ex7':
+                return <ChoiceExercise onComplete={() => handleTopicComplete('ex7')} />;
             default:
                 return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple min-h-[500px]">
