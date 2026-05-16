@@ -517,7 +517,7 @@ const exercises = {
         prompts: [
             { spanish: 'EL TIGRE GRANDE – EL GRANDE', english: ["the big tiger - the big one", "the big tiger the big one"] },
             { spanish: 'LOS PARQUES PEQUEÑOS- LOS PEQUEÑOS', english: ["the small parks - the small ones", "the small parks the small ones"] },
-            { spanish: 'EL PORTATIL NUEVO- EL NUEVO', english: ["the new laptop - the new one", "the new laptop the new one"] },
+            { spanish: 'EL PORTATIL NUEEVO- EL NUEVO', english: ["the new laptop - the new one", "the new laptop the new one"] },
             { spanish: 'LA OTRA SOMBRILLA- LA OTRA', english: ["the other umbrella - the other one", "the other umbrella the other one"] },
             { spanish: 'LOS OTROS PORTATILES– LOS OTROS', english: ["the other laptops - the other ones", "the other laptops the other ones"] },
             { spanish: '¿CUALES VESTIDOS TE GUSTAN? – CUALES TE GUSTAN?', english: ["which dresses do you like? - which ones do you like?", "which dresses do you like? which ones do you like?"] },
@@ -745,6 +745,21 @@ const exercises = {
             { spanish: '7. ¿QUE HACES LOS VIERNES? - ¿QUE ESTAS HACIENDO LOS DOMINGOS?', english: ["what do you do on fridays? - what are you doing on sundays?"] },
             { spanish: '8. ELLA NO CORRE- ELLA NO ESTA CORRIENDO – ELLA ESTÁ CAMINANDO.', english: ["she does not run - she is not running - she is walking", "she doesn't run - she isn't running - she's walking"] },
         ]
+    },
+    c14_general: {
+        title: 'a1class1.exercise',
+        prompts: [
+            { spanish: '1. ¿DONDE ESTA EL ARBOL MAS ALTO? (HIGH)', english: ["where is the highest tree?"] },
+            { spanish: '2. EL PUEDE AYUDARNOS', english: ["he can help us"] },
+            { spanish: '3. NOSOTROS NO ESTAMOS MANEJANDO UN CAMION', english: ["we are not driving a truck", "we're not driving a truck", "we aren't driving a truck"] },
+            { spanish: '4. ¿ELLA JUEGA CON EL?', english: ["does she play with him?"] },
+            { spanish: '5. ¿BARRANQUILLA ES MAS CALIENTE QUE CARTAGENA?', english: ["is barranquilla hotter than cartagena?"] },
+            { spanish: '6. ELLOS NO DESAYUNAN A LAS 9', english: ["they do not have breakfast at 9", "they don't have breakfast at 9", "they do not eat breakfast at 9", "they don't eat breakfast at 9"] },
+            { spanish: '7. ELLA ESTA JUGANDO CON SU HIJO', english: ["she is playing with her son", "she's playing with her son"] },
+            { spanish: '8. ¿COLOMBIA ES MAS GRANDE QUE PANAMA?', english: ["is colombia bigger than panama?"] },
+            { spanish: '9. ELLA NO LOS ESTA LLAMANDO', english: ["she is not calling them", "she's not calling them", "she isn't calling them"] },
+            { spanish: '10. ¿QUE LE ENSEÑAS A ELLOS?', english: ["what do you teach them?"] },
+        ]
     }
 };
 
@@ -773,7 +788,7 @@ export function SimpleTranslationExercise({
 
     const imageToShow = course === 'a1' ? a1MascotImage : guideFishImage;
 
-    const exerciseNumber = useMemo(() => exerciseKey.replace(/mixed|c\d+_ex|c\d+_the|c\d+_last/g, ''), [exerciseKey]);
+    const exerciseNumber = useMemo(() => exerciseKey.replace(/mixed|c\d+_ex|c\d+_the|c\d+_last|c\d+_general/g, ''), [exerciseKey]);
     
     const exerciseData = useMemo(() => {
         if (exercises[exerciseKey as ExerciseKey]) {

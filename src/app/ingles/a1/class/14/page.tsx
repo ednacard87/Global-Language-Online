@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
@@ -29,6 +28,7 @@ import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocki
 import { doc } from 'firebase/firestore';
 import { Input } from '@/components/ui/input';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
 
 type TopicStatus = 'completed' | 'active' | 'locked';
 
@@ -39,7 +39,7 @@ type Topic = {
   status: TopicStatus;
 };
 
-const progressStorageVersion = 'progress_a1_eng_u3_c14_v8_final';
+const progressStorageVersion = 'progress_a1_eng_u3_c14_v10_general_vocab';
 const mainProgressKey = 'progress_a1_eng_unit_3_class_14';
 
 const vocabularyData = {
@@ -393,7 +393,7 @@ export default function EngA1Class14Page() {
         { key: 'vocabulary', name: 'Vocabulary', icon: BookOpen, status: 'active' },
         { key: 'dictation1', name: 'Dictation 1', icon: Mic, status: 'locked' },
         { key: 'ex1', name: 'Exercise 1', icon: PenSquare, status: 'locked' },
-        { key: 'general_ex', name: 'General Exercise', icon: GraduationCap, status: 'locked' },
+        { key: 'general_ex', name: 'General Vocabulary', icon: GraduationCap, status: 'locked' },
         { key: 'dictation2', name: 'Dictation 2', icon: Mic, status: 'locked' },
         { key: 'last_ex', name: 'Last Exercise', icon: Sparkles, status: 'locked' },
     ], []);
@@ -630,17 +630,18 @@ export default function EngA1Class14Page() {
                 );
             case 'general_ex':
                 return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-                        <CardHeader>
-                            <CardTitle>General Exercise</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p>Repaso general de los temas vistos.</p>
-                        </CardContent>
-                        <CardFooter>
-                            <Button onClick={() => handleTopicComplete('general_ex')}>Finalizar Repaso</Button>
-                        </CardFooter>
-                    </Card>
+                    <SimpleTranslationExercise 
+                        exerciseKey="c14_general" 
+                        onComplete={() => handleTopicComplete('general_ex')} 
+                        course="a1" 
+                        title="General Vocabulary"
+                        vocabulary={{
+                            "árbol": "tree",
+                            "más alto": "highest",
+                            "camión": "truck",
+                            "enseñar": "teach"
+                        }}
+                    />
                 );
             case 'dictation2':
                 return (
