@@ -131,7 +131,7 @@ const lastExerciseQuestions = [
         answers: { 
             question: ["is he drawing?"], 
             pos: ["yes, he is"], 
-            neg: ["no, he is not", "no, he isn't"] 
+            neg: ["no, i am not", "no, i'm not"] 
         } 
     },
     { 
@@ -258,9 +258,9 @@ const VocabGame = ({ onComplete }: { onComplete: () => void }) => {
             <CardContent className="space-y-8 py-12">
                 <div className="text-center space-y-6">
                     <div className="bg-primary/10 w-fit mx-auto px-6 py-2 rounded-full border border-primary/20">
-                        <p className="text-xl text-primary font-black uppercase tracking-widest">{current.spanish}</p>
+                        <p className="text-lg text-primary font-black uppercase tracking-widest">{current.spanish}</p>
                     </div>
-                    <div className="flex justify-center items-center gap-2 font-mono text-6xl font-black text-foreground tracking-tighter">
+                    <div className="flex justify-center items-center gap-2 font-mono text-4xl font-black text-foreground tracking-tighter">
                         {current.gapped.split('_').map((part, i, arr) => (
                             <React.Fragment key={i}>
                                 <span>{part}</span>
@@ -270,7 +270,7 @@ const VocabGame = ({ onComplete }: { onComplete: () => void }) => {
                                             value={answer}
                                             onChange={e => setAnswer(e.target.value.toUpperCase())}
                                             maxLength={1}
-                                            className="w-16 h-20 text-center text-5xl border-b-4 border-t-0 border-x-0 rounded-none focus-visible:ring-0 focus-visible:border-primary bg-transparent text-primary caret-transparent"
+                                            className="w-12 h-14 text-center text-3xl border-b-4 border-t-0 border-x-0 rounded-none focus-visible:ring-0 focus-visible:border-primary bg-transparent text-primary caret-transparent"
                                             autoFocus
                                             autoComplete="off"
                                         />
