@@ -34,7 +34,7 @@ type Topic = {
   status: TopicStatus;
 };
 
-const progressStorageVersion = 'progress_a1_eng_u3_c14_v3_infinitives';
+const progressStorageVersion = 'progress_a1_eng_u3_c14_v4_dictation';
 const mainProgressKey = 'progress_a1_eng_unit_3_class_14';
 
 const vocabularyData = {
@@ -75,6 +75,77 @@ const vocabularyData = {
         { spanish: 'ORO', english: 'GOLD' },
         { spanish: 'PLASTICO', english: 'PLASTIC' },
     ]
+};
+
+// Component for Dictations with automatic saving
+const LinesWritingExercise = ({ 
+    title, 
+    description, 
+    lineCount = 12,
+    onComplete, 
+    studentDocRef, 
+    initialData, 
+    savePath 
+}: { 
+    title: string, 
+    description: string, 
+    lineCount?: number,
+    onComplete: () => void,
+    studentDocRef: any,
+    initialData: string[],
+    savePath: string
+}) => {
+    const [lines, setLines] = useState<string[]>(Array(lineCount).fill(''));
+
+    useEffect(() => {
+        if (initialData && Array.isArray(initialData)) {
+            const newLines = [...Array(lineCount).fill('')];
+            initialData.forEach((val, i) => {
+                if (i < lineCount) newLines[i] = val || '';
+            });
+            setLines(newLines);
+        }
+    }, [initialData, lineCount]);
+
+    const handleLineChange = (index: number, value: string) => {
+        const newLines = [...lines];
+        newLines[index] = value;
+        setLines(newLines);
+        
+        if (studentDocRef) {
+            updateDocumentNonBlocking(studentDocRef, {
+                [savePath]: newLines
+            });
+        }
+    };
+
+    return (
+        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
+            <CardHeader>
+                <CardTitle className="text-2xl">{title}</CardTitle>
+                <CardDescription className="text-lg font-semibold text-primary">{description}</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+                <div className="grid grid-cols-1 gap-3 max-h-[600px] overflow-y-auto pr-2">
+                    {lines.map((line, idx) => (
+                        <div key={idx} className="flex items-center gap-3 group">
+                            <span className="font-bold text-primary w-8 text-right shrink-0">{idx + 1}.</span>
+                            <Input 
+                                value={line} 
+                                onChange={(e) => handleLineChange(idx, e.target.value)} 
+                                placeholder="..."
+                                className="flex-1 bg-muted/30 focus:bg-background transition-colors h-11 border-primary/20"
+                                autoComplete="off"
+                            />
+                        </div>
+                    ))}
+                </div>
+            </CardContent>
+            <CardFooter className="pt-6 border-t mt-4">
+                <Button onClick={onComplete} size="lg" className="w-full sm:w-auto min-w-[200px]">Completar Tarea</Button>
+            </CardFooter>
+        </Card>
+    );
 };
 
 export default function EngA1Class14Page() {
@@ -321,18 +392,15 @@ export default function EngA1Class14Page() {
                 );
             case 'dictation1':
                 return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-                        <CardHeader>
-                            <CardTitle>Dictation 1</CardTitle>
-                            <CardDescription>Escucha y escribe las frases dictadas.</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <p>El ejercicio de dictado estará disponible pronto.</p>
-                        </CardContent>
-                        <CardFooter>
-                            <Button onClick={() => handleTopicComplete('dictation1')}>Completar Dictado</Button>
-                        </CardFooter>
-                    </Card>
+                    <LinesWritingExercise 
+                        title="DICTATION 1 = COMPARATIVES AND SUPERLATIVE ADJECTIVES" 
+                        description="Escucha atentamente a tu profesor y escribe las frases en los renglones correspondientes." 
+                        onComplete={() => handleTopicComplete('dictation1')} 
+                        studentDocRef={studentDocRef}
+                        lineCount={30}
+                        initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.dictation1 || []}
+                        savePath={`lessonProgress.${progressStorageVersion}.dictation1`}
+                    />
                 );
             case 'ex1':
                 return (
