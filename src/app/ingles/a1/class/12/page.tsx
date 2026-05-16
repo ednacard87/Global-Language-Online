@@ -22,6 +22,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
 import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
 import { doc } from 'firebase/firestore';
+import { Input } from '@/components/ui/input';
 
 type Topic = {
   key: string;
@@ -30,8 +31,27 @@ type Topic = {
   status: 'completed' | 'active' | 'locked';
 };
 
-const progressStorageVersion = 'progress_a1_eng_u3_c12_v1_base';
+const progressStorageVersion = 'progress_a1_eng_u3_c12_v2_expressions';
 const mainProgressKey = 'progress_a1_eng_unit_3_class_12';
+
+const timeExpressionsData = [
+    { spanish: 'ANOCHE', english: ['LAST NIGHT'] },
+    { spanish: 'ESTA NOCHE', english: ['TONIGHT'] },
+    { spanish: 'LA SEMANA PASADA', english: ['LAST WEEK'] },
+    { spanish: 'EL AÑO PASADO', english: ['LAST YEAR'] },
+    { spanish: 'EN LA MAÑANA', english: ['IN THE MORNING'] },
+    { spanish: 'EN LA TARDE', english: ['IN THE AFTERNOON'] },
+    { spanish: 'EN LA NOCHE', english: ['AT NIGHT'] },
+    { spanish: 'RECIENTEMENTE', english: ['RECENTLY', 'LATELY'] },
+    { spanish: 'ESTA SEMANA', english: ['THIS WEEK'] },
+    { spanish: 'LA PROX. SEMANA', english: ['NEXT WEEK'] },
+    { spanish: 'ESTA MAÑANA', english: ['THIS MORNING'] },
+    { spanish: 'HACE UNA HORA', english: ['AN HOUR AGO'] },
+    { spanish: 'HACE 5 MINUTOS', english: ['FIVE MINUTES AGO'] },
+    { spanish: 'EN EL PASADO', english: ['IN THE PAST'] },
+    { spanish: 'EN EL FUTURO', english: ['IN THE FUTURE'] },
+    { spanish: 'AHORA- YA', english: ['NOW'] },
+];
 
 export default function EngA1Class12Page() {
     const { t } = useTranslation();
@@ -55,8 +75,13 @@ export default function EngA1Class12Page() {
     const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
     const [initialLoadComplete, setInitialLoadComplete] = useState(false);
 
+    // Vocab State
+    const [vocabAnswers, setVocabAnswers] = useState<string[]>(Array(timeExpressionsData.length).fill(''));
+    const [vocabValidation, setVocabValidation] = useState<('correct' | 'incorrect' | 'unchecked')[]>(Array(timeExpressionsData.length).fill('unchecked'));
+    const [canAdvanceVocab, setCanAdvanceVocab] = useState(false);
+
     const initialLearningPath = useMemo((): Topic[] => [
-        { key: 'vocabulary', name: 'Vocabulary (Time Expresions)', icon: Clock, status: 'active' },
+        { key: 'vocabulary', name: 'Vocabulary (Time Expressions)', icon: Clock, status: 'active' },
         { key: 'grammar', name: 'Grammar', icon: GraduationCap, status: 'locked' },
         { key: 'ex1', name: 'Exercise 1', icon: PenSquare, status: 'locked' },
         { key: 'grammar2', name: 'Grammar 2', icon: GraduationCap, status: 'locked' },
@@ -152,10 +177,44 @@ export default function EngA1Class12Page() {
         }
         setSelectedTopic(topicKey);
 
-        const autoViewTopics = ['vocabulary', 'grammar', 'grammar2', 'grammar3'];
+        const autoViewTopics = ['grammar', 'grammar2', 'grammar3'];
         if (autoViewTopics.includes(topicKey)) {
             handleTopicComplete(topicKey);
         }
+    };
+
+    const handleVocabInputChange = (index: number, value: string) => {
+        const newAns = [...vocabAnswers];
+        newAns[index] = value;
+        setVocabAnswers(newAns);
+        const newVal = [...vocabValidation];
+        newVal[index] = 'unchecked';
+        setVocabValidation(newVal as any);
+        setCanAdvanceVocab(false);
+    };
+
+    const handleCheckVocab = () => {
+        let oneCorrect = false;
+        const newVal = timeExpressionsData.map((item, index) => {
+            const userVal = (vocabAnswers[index] || '').trim().toUpperCase();
+            const isCorrect = item.english.some(ans => ans.toUpperCase() === userVal);
+            if (isCorrect) oneCorrect = true;
+            return isCorrect ? 'correct' : 'incorrect';
+        });
+        setVocabValidation(newVal as any);
+        if (oneCorrect) {
+            toast({ title: "¡Buen trabajo!", description: "Has acertado al menos una. ¡Ya puedes avanzar!" });
+            setCanAdvanceVocab(true);
+        } else {
+            toast({ variant: 'destructive', title: "Sigue intentando", description: "Necesitas al menos una correcta para avanzar." });
+        }
+    };
+
+    const getVocabInputClass = (index: number) => {
+        const status = vocabValidation[index];
+        if (status === 'correct') return 'border-green-500 focus-visible:ring-green-500 bg-green-50 dark:bg-green-900/10';
+        if (status === 'incorrect') return 'border-destructive focus-visible:ring-destructive bg-destructive/5';
+        return '';
     };
 
     const renderContent = () => {
@@ -166,14 +225,40 @@ export default function EngA1Class12Page() {
                 return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
                         <CardHeader>
-                            <CardTitle>Vocabulary (Time Expresions)</CardTitle>
-                            <CardDescription>Estudia las expresiones de tiempo esenciales.</CardDescription>
+                            <CardTitle>Vocabulary (Time Expressions)</CardTitle>
+                            <CardDescription>Traduce las expresiones de tiempo al inglés. Al menos una correcta para avanzar.</CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <p className="text-muted-foreground">Contenido de expresiones de tiempo próximamente.</p>
+                            <div className="grid grid-cols-2 gap-x-6 gap-y-3 text-lg">
+                                <div className="font-black text-primary border-b pb-2 uppercase tracking-widest text-sm text-left">English</div>
+                                <div className="font-black text-primary border-b pb-2 uppercase tracking-widest text-sm text-left">Spanish</div>
+                                {timeExpressionsData.map((item, idx) => (
+                                    <React.Fragment key={idx}>
+                                        <div className="flex items-center">
+                                            <Input 
+                                                value={vocabAnswers[idx] || ''}
+                                                onChange={(e) => handleVocabInputChange(idx, e.target.value)}
+                                                className={cn("h-10 uppercase font-mono text-sm", getVocabInputClass(idx))}
+                                                placeholder="..."
+                                                autoComplete="off"
+                                            />
+                                        </div>
+                                        <div className="flex items-center text-base font-medium py-1 text-left">
+                                            {item.spanish}
+                                        </div>
+                                    </React.Fragment>
+                                ))}
+                            </div>
                         </CardContent>
-                        <CardFooter>
-                            <Button onClick={() => handleTopicComplete('vocabulary')}>Avanzar</Button>
+                        <CardFooter className="flex justify-between items-center border-t pt-6">
+                            <Button onClick={handleCheckVocab} variant="secondary">Verificar</Button>
+                            <Button 
+                                onClick={() => handleTopicComplete('vocabulary')} 
+                                disabled={!canAdvanceVocab && !isAdmin}
+                                className={cn(canAdvanceVocab && "bg-green-600 hover:bg-green-700 shadow-lg")}
+                            >
+                                Avanzar <ArrowRight className="ml-2 h-5 w-5" />
+                            </Button>
                         </CardFooter>
                     </Card>
                 );
@@ -195,7 +280,7 @@ export default function EngA1Class12Page() {
                 );
             default:
                 return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple min-h-[500px]">
                         <CardHeader>
                             <CardTitle>{topic?.name}</CardTitle>
                         </CardHeader>
@@ -221,7 +306,7 @@ export default function EngA1Class12Page() {
                 <div className="max-w-7xl mx-auto">
                     <div className="mb-8 text-left">
                         <Link href="/ingles/a1" className="hover:underline text-sm text-white/80">Volver al curso A1</Link>
-                        <h1 className="text-4xl font-bold text-white dark:text-primary [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">Clase 12 (A1)</h1>
+                        <h1 className="text-4xl font-bold text-white dark:text-primary [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">Class 12 (A1)</h1>
                     </div>
                     <div className="grid gap-8 md:grid-cols-12">
                         <div className="md:col-span-9">{renderContent()}</div>
