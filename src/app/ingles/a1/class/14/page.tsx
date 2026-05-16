@@ -406,7 +406,7 @@ const OptionsChoiceExercise = ({ data, onComplete, title }: { data: any[], onCom
                             onClick={() => setCurrentIndex(idx)}
                             className={cn(
                                 "h-8 w-8 rounded-full flex items-center justify-center font-bold border-2 transition-all",
-                                currentIndex === idx ? "border-primary ring-2 ring-primary ring-offset-1" : "border-muted-foreground/30",
+                                currentIndex === idx ? "border-primary ring-2 ring-primary" : "border-muted-foreground/30",
                                 validation[idx] === 'correct' && "bg-green-500 border-green-500 text-white",
                                 validation[idx] === 'incorrect' && "bg-red-500 border-red-500 text-white"
                             )}
@@ -709,7 +709,7 @@ export default function EngA1Class14Page() {
         { key: 'vocabulary', name: 'Vocabulary', icon: BookOpen, status: 'active' },
         { key: 'dictation1', name: 'Dictation 1', icon: Mic, status: 'locked' },
         { key: 'ex1', name: 'Exercise 1', icon: PenSquare, status: 'locked' },
-        { key: 'general_ex', name: 'General Vocabulary', icon: GraduationCap, status: 'locked' },
+        { key: 'general_ex', name: 'General Exercise', icon: GraduationCap, status: 'locked' },
         { key: 'dictation2', name: 'Dictation 2', icon: Mic, status: 'locked' },
         { key: 'last_ex', name: 'Last Exercise', icon: Sparkles, status: 'locked' },
     ], []);
@@ -950,7 +950,7 @@ export default function EngA1Class14Page() {
                         exerciseKey="c14_general" 
                         onComplete={() => handleTopicComplete('general_ex')} 
                         course="a1" 
-                        title="General Vocabulary"
+                        title="General Exercise"
                         vocabulary={{
                             "árbol": "tree",
                             "más alto": "highest",
