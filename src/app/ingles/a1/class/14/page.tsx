@@ -17,7 +17,8 @@ import {
     Sparkles,
     Mic,
     Check,
-    X
+    X,
+    HelpCircle
 } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
@@ -36,7 +37,7 @@ type Topic = {
   status: TopicStatus;
 };
 
-const progressStorageVersion = 'progress_a1_eng_u3_c14_v5_fix_sync';
+const progressStorageVersion = 'progress_a1_eng_u3_c14_v6_questions';
 const mainProgressKey = 'progress_a1_eng_unit_3_class_14';
 
 const vocabularyData = {
@@ -267,6 +268,7 @@ export default function EngA1Class14Page() {
     const initialLearningPath = useMemo((): Topic[] => [
         { key: 'vocabulary', name: 'Vocabulary', icon: BookOpen, status: 'active' },
         { key: 'dictation1', name: 'Dictation 1', icon: Mic, status: 'locked' },
+        { key: 'questions1', name: 'Questions 1', icon: HelpCircle, status: 'locked' },
         { key: 'ex1', name: 'Exercise 1', icon: PenSquare, status: 'locked' },
         { key: 'general_ex', name: 'General Exercise', icon: GraduationCap, status: 'locked' },
         { key: 'dictation2', name: 'Dictation 2', icon: Mic, status: 'locked' },
@@ -420,7 +422,6 @@ export default function EngA1Class14Page() {
                             <Accordion type="multiple" defaultValue={['verbs', 'materials']} className="w-full">
                                 <AccordionItem value="verbs">
                                     <AccordionTrigger className="text-xl font-bold uppercase text-primary">Lexico: Verbos Básicos</AccordionTrigger>
-                                    <AccordionItem value="verbs">
                                     <AccordionContent>
                                         <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-lg">
                                             <div className="font-bold p-3 bg-muted rounded-lg text-left">Spanish</div>
@@ -441,7 +442,6 @@ export default function EngA1Class14Page() {
                                             ))}
                                         </div>
                                     </AccordionContent>
-                                </AccordionItem>
                                 </AccordionItem>
                                 <AccordionItem value="materials">
                                     <AccordionTrigger className="text-xl font-bold uppercase text-primary">Lexico: Materiales y Tejidos</AccordionTrigger>
@@ -497,6 +497,20 @@ export default function EngA1Class14Page() {
                         savePathGrades={`lessonProgress.${progressStorageVersion}.dictation1Grades`}
                         isAdmin={isAdmin}
                     />
+                );
+            case 'questions1':
+                return (
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                        <CardHeader>
+                            <CardTitle>Questions 1</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <p className="text-muted-foreground">Contenido de Questions 1 próximamente.</p>
+                        </CardContent>
+                        <CardFooter>
+                            <Button onClick={() => handleTopicComplete('questions1')}>Finalizar Sección</Button>
+                        </CardFooter>
+                    </Card>
                 );
             case 'ex1':
                 return (
