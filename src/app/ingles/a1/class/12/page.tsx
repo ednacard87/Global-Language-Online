@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -25,6 +26,7 @@ import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocki
 import { doc } from 'firebase/firestore';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
+import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
 
 type Topic = {
   key: string;
@@ -33,7 +35,7 @@ type Topic = {
   status: 'completed' | 'active' | 'locked';
 };
 
-const progressStorageVersion = 'progress_a1_eng_u3_c12_v3_present_continuous';
+const progressStorageVersion = 'progress_a1_eng_u3_c12_v4_present_continuous';
 const mainProgressKey = 'progress_a1_eng_unit_3_class_12';
 
 const timeExpressionsData = [
@@ -196,15 +198,15 @@ export default function EngA1Class12Page() {
     };
 
     const handleCheckVocab = () => {
-        let oneCorrect = false;
+        let atLeastOneCorrect = false;
         const newVal = timeExpressionsData.map((item, index) => {
             const userVal = (vocabAnswers[index] || '').trim().toUpperCase();
             const isCorrect = item.english.some(ans => ans.toUpperCase() === userVal);
-            if (isCorrect) oneCorrect = true;
+            if (isCorrect) atLeastOneCorrect = true;
             return isCorrect ? 'correct' : 'incorrect';
         });
         setVocabValidation(newVal as any);
-        if (oneCorrect) {
+        if (atLeastOneCorrect) {
             toast({ title: "¡Buen trabajo!", description: "Has acertado al menos una. ¡Ya puedes avanzar!" });
             setCanAdvanceVocab(true);
         } else {
@@ -349,6 +351,14 @@ export default function EngA1Class12Page() {
                         </CardFooter>
                     </Card>
                 );
+            case 'ex1':
+                const vocabEx1 = {
+                    "programación": "programming",
+                    "escuchando": "listening",
+                    "abuela": "grandmother / grandma",
+                    "llegando": "arriving"
+                };
+                return <SimpleTranslationExercise exerciseKey="c12_ex1" course="a1" onComplete={() => handleTopicComplete('ex1')} title="Exercise 1" vocabulary={vocabEx1} />;
             case 'grammar2':
             case 'grammar3':
                 return (

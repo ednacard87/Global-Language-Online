@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -526,7 +527,7 @@ const exercises = {
             { spanish: 'PREFIERO LOS CELULARES PEQUEÑOS – PREFIERO LOS PEQUEÑOS', english: ["i prefer small cellphones - i prefer the small ones", "i prefer small cellphones i prefer the small ones"] },
             { spanish: '¿CUALES GAFAS TE GUSTAN? – CUALES TE GUSTAN?', english: ["which glasses do you like? - which ones do you like?", "which glasses do you like? which ones do you like?"] },
             { spanish: '¿CUAL CHAQUETA TE GUSTA? – CUAL TE GUSTA? A MI ME GUSTA LA NEGRA', english: ["which jacket do you like? - which one do you like? i like the black one", "which jacket do you like? which one do you like? i like the black one"] },
-            { spanish: '¿CUALES JUGOS TE GUSTAN? – CUAL TE GUSTA? – A MI ME GUSTA EL DE MARACUYA', english: ["which juices do you like? - which one do you like? - i like the passion fruit one", "which juices do you like? which one do you like? i like the passion fruit one"] },
+            { spanish: '¿CUALES JUGOS TE GUSTAN? – CUAL TE GUSTA? – A MI ME GUSTA EL DE MARACUYA', english: ["which juices do you like? - which one do you like? - i like the passion fruit one", "which juices do you like? which one do you like? i like the peak passion fruit one"] },
             { spanish: '¿CUAL LIBRO LE GUSTA A ELLA? - CUAL LE GUSTA?', english: ["which book does she like? - which one does she like?", "which book does she like? which one does she like?"] },
             { spanish: '¿CUAL CELULAR ES TUYO? – CUAL ES EL TUYO?', english: ["which cellphone is yours? - which one is yours?", "which cellphone is yours? which one is yours?"] },
             { spanish: '¿CUALES BOTAS SON DE ELLA? – CUALES SON DE ELLA?', english: ["which boots are hers? - which ones are hers?", "which boots are hers? which ones are hers?"] },
@@ -681,7 +682,7 @@ const exercises = {
             { spanish: 'EL NO VE SUS PADRES EN LA CASA, ENTONCES EL LOS LLAMA', english: ["he does not see his parents at home so he calls them", "he doesn't see his parents at home so he calls them", "he does not see his parents in the house so he calls them"] },
             { spanish: 'CAMILA QUIERE UNA HAMBURGUESA, PERO NO LA COMPRA PORQUE ELLA NO PUEDE COMERLA', english: ["camila wants a hamburger but she does not buy it because she cannot eat it", "camila wants a hamburger but she doesn't buy it because she can't eat it"] },
             { spanish: 'LINA VIAJA CON SU SOBRINA A EUROPA Y ELLAS LO DISFRUTAN', english: ["lina travels with her niece to europe and they enjoy it", "lina travels with her niece to europe and they're enjoying it"] },
-            { spanish: 'A ELLOS NO LES GUSTAN CORRER CON ELLOS, PORQUE SON PRINCIPIANTES', english: ["they do not like to run with them because they are beginners", "they don't like running with them because they're beginners"] },
+            { spanish: 'A ELLOS NO LES GUSTA CORRER CON ELLOS, PORQUE SON PRINCIPIANTES', english: ["they do not like to run with them because they are beginners", "they don't like running with them because they're beginners"] },
         ]
     },
     c11_ex6: {
@@ -701,6 +702,18 @@ const exercises = {
             { spanish: "EL NO VIVE CONMIGO- EL VIVE CON SU MADRE", english: ["he does not live with me, he lives with his mother", "he doesn't live with me, he lives with his mom"] },
             { spanish: "¿VIENES CON NOSOTROS? –POR SUPUESTO", english: ["do you come with us? of course", "are you coming with us? of course"] },
             { spanish: "ELLA NO COME CON EL- ELLA COME SOLA", english: ["she does not eat with him, she eats alone", "she doesn't eat with him, she eats alone"] },
+        ]
+    },
+    c12_ex1: {
+        title: 'a1class1.exercise',
+        prompts: [
+            { spanish: '¿QUE ESTAN HACIENDO ELLOS?', english: ["what are they doing?"] },
+            { spanish: 'ELLA NO ESTA DURMIENDO, ELLA ESTA COCINANDO', english: ["she is not sleeping, she is cooking", "she isn't sleeping, she's cooking"] },
+            { spanish: 'NOSOTROS ESTAMOS ESTUDIANDO PROGRAMACION', english: ["we are studying programming", "we're studying programming"] },
+            { spanish: '¿A DONDE ESTA YENDO MARY?', english: ["where is mary going?", "where's mary going?"] },
+            { spanish: '¿ESTAS ESCUCHANDO MUSICA? - NO', english: ["are you listening to music? - no", "are you listening to music? no"] },
+            { spanish: 'EL NO LLEGA A LAS 10, EL ESTA LLEGANDO A LAS 8', english: ["he does not arrive at 10, he is arriving at 8", "he doesn't arrive at 10, he's arriving at 8"] },
+            { spanish: '¿TU ABUELA ESTA LEYENDO UN LIBRO? – SI', english: ["is your grandmother reading a book? - yes", "is your grandma reading a book? - yes", "is your grandmother reading a book? yes", "is your grandma reading a book? yes"] },
         ]
     }
 };
