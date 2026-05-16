@@ -42,7 +42,7 @@ type Topic = {
   status: 'completed' | 'active' | 'locked';
 };
 
-const progressStorageVersion = 'progress_a1_eng_u3_c12_v15_exercise5';
+const progressStorageVersion = 'progress_a1_eng_u3_c12_v16_no_ex6';
 const mainProgressKey = 'progress_a1_eng_unit_3_class_12';
 
 const timeExpressionsData = [
@@ -320,7 +320,6 @@ export default function EngA1Class12Page() {
         { key: 'ex3', name: 'Exercise 3', icon: PenSquare, status: 'locked' },
         { key: 'ex4', name: 'Exercise 4', icon: PenSquare, status: 'locked' },
         { key: 'ex5', name: 'Exercise 5', icon: PenSquare, status: 'locked' },
-        { key: 'ex6', name: 'Exercise 6', icon: PenSquare, status: 'locked' },
         { key: 'grammar3', name: 'Grammar 3', icon: GraduationCap, status: 'locked' },
         { key: 'ex7', name: 'Exercise 7', icon: PenSquare, status: 'locked' },
         { key: 'ex8', name: 'Exercise 8', icon: Pencil, status: 'locked' },
