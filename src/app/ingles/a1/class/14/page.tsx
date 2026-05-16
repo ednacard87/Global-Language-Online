@@ -85,7 +85,8 @@ const LinesWritingExercise = ({
     onComplete, 
     studentDocRef, 
     initialData, 
-    savePath 
+    savePath,
+    hasTitleLine = false
 }: { 
     title: string, 
     description: string, 
@@ -93,19 +94,21 @@ const LinesWritingExercise = ({
     onComplete: () => void,
     studentDocRef: any,
     initialData: string[],
-    savePath: string
+    savePath: string,
+    hasTitleLine?: boolean
 }) => {
-    const [lines, setLines] = useState<string[]>(Array(lineCount).fill(''));
+    const totalLines = hasTitleLine ? lineCount + 1 : lineCount;
+    const [lines, setLines] = useState<string[]>(Array(totalLines).fill(''));
 
     useEffect(() => {
         if (initialData && Array.isArray(initialData)) {
-            const newLines = [...Array(lineCount).fill('')];
+            const newLines = [...Array(totalLines).fill('')];
             initialData.forEach((val, i) => {
-                if (i < lineCount) newLines[i] = val || '';
+                if (i < totalLines) newLines[i] = val || '';
             });
             setLines(newLines);
         }
-    }, [initialData, lineCount]);
+    }, [initialData, totalLines]);
 
     const handleLineChange = (index: number, value: string) => {
         const newLines = [...lines];
@@ -127,18 +130,33 @@ const LinesWritingExercise = ({
             </CardHeader>
             <CardContent className="space-y-3">
                 <div className="grid grid-cols-1 gap-3 max-h-[600px] overflow-y-auto pr-2">
-                    {lines.map((line, idx) => (
-                        <div key={idx} className="flex items-center gap-3 group">
-                            <span className="font-bold text-primary w-8 text-right shrink-0">{idx + 1}.</span>
+                    {hasTitleLine && (
+                        <div className="flex items-center gap-3 group mb-4">
+                            <span className="font-bold text-brand-purple w-20 text-right shrink-0">TITULO:</span>
                             <Input 
-                                value={line} 
-                                onChange={(e) => handleLineChange(idx, e.target.value)} 
-                                placeholder="..."
-                                className="flex-1 bg-muted/30 focus:bg-background transition-colors h-11 border-primary/20"
+                                value={lines[0]} 
+                                onChange={(e) => handleLineChange(0, e.target.value)} 
+                                placeholder="Escribe el título del dictado aquí..."
+                                className="flex-1 bg-primary/5 focus:bg-background transition-colors h-12 border-brand-purple/30 font-bold"
                                 autoComplete="off"
                             />
                         </div>
-                    ))}
+                    )}
+                    {lines.slice(hasTitleLine ? 1 : 0).map((line, idx) => {
+                        const actualIndex = hasTitleLine ? idx + 1 : idx;
+                        return (
+                            <div key={actualIndex} className="flex items-center gap-3 group">
+                                <span className="font-bold text-primary w-8 text-right shrink-0">{idx + 1}.</span>
+                                <Input 
+                                    value={line} 
+                                    onChange={(e) => handleLineChange(actualIndex, e.target.value)} 
+                                    placeholder="..."
+                                    className="flex-1 bg-muted/30 focus:bg-background transition-colors h-11 border-primary/20"
+                                    autoComplete="off"
+                                />
+                            </div>
+                        );
+                    })}
                 </div>
             </CardContent>
             <CardFooter className="pt-6 border-t mt-4">
@@ -398,6 +416,7 @@ export default function EngA1Class14Page() {
                         onComplete={() => handleTopicComplete('dictation1')} 
                         studentDocRef={studentDocRef}
                         lineCount={30}
+                        hasTitleLine={true}
                         initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.dictation1 || []}
                         savePath={`lessonProgress.${progressStorageVersion}.dictation1`}
                     />
