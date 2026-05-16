@@ -30,6 +30,7 @@ import { Separator } from '@/components/ui/separator';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
 import { CreativeWritingExercise } from '@/components/dashboard/creative-writing-exercise';
+import { ShortAnswerPresentSimpleExercise, type ShortAnswerPresentSimplePrompt } from '@/components/kids/exercises/short-answer-present-simple';
 
 type Topic = {
   key: string;
@@ -38,7 +39,7 @@ type Topic = {
   status: 'completed' | 'active' | 'locked';
 };
 
-const progressStorageVersion = 'progress_a1_eng_u3_c12_v8_create1_added';
+const progressStorageVersion = 'progress_a1_eng_u3_c12_v9_ex3_added';
 const mainProgressKey = 'progress_a1_eng_unit_3_class_12';
 
 const timeExpressionsData = [
@@ -58,6 +59,21 @@ const timeExpressionsData = [
     { spanish: 'EN EL PASADO', english: ['IN THE PAST'] },
     { spanish: 'EN EL FUTURO', english: ['IN THE FUTURE'] },
     { spanish: 'AHORA- YA', english: ['NOW'] },
+];
+
+const class12Exercise3Data: ShortAnswerPresentSimplePrompt[] = [
+    { question: "ARE YOU CALLING YOUR MOTHER?", answers: { shortAffirmative: ["yes, i am"], shortNegative: ["no, i am not", "no, i'm not"] } },
+    { question: "ARE YOU TIRED?", answers: { shortAffirmative: ["yes, i am"], shortNegative: ["no, i am not", "no, i'm not"] } },
+    { question: "IS SHE SLEEPING?", answers: { shortAffirmative: ["yes, she is"], shortNegative: ["no, she is not", "no, she isn't"] } },
+    { question: "IS SHE JULIA?", answers: { shortAffirmative: ["yes, she is"], shortNegative: ["no, she is not", "no, she isn't"] } },
+    { question: "ARE THEY ARRIVING ON SUNDAY?", answers: { shortAffirmative: ["yes, they are"], shortNegative: ["no, they are not", "no, they aren't"] } },
+    { question: "ARE THEY STUDENTS?", answers: { shortAffirmative: ["yes, they are"], shortNegative: ["no, they are not", "no, they aren't"] } },
+    { question: "IS HE DRINKING RED WINE?", answers: { shortAffirmative: ["yes, he is"], shortNegative: ["no, he is not", "no, he isn't"] } },
+    { question: "ARE THEY FOOTBALL PLAYERS?", answers: { shortAffirmative: ["yes, they are"], shortNegative: ["no, they are not", "no, they aren't"] } },
+    { question: "ARE THEY EATING HAMBURGERS?", answers: { shortAffirmative: ["yes, they are"], shortNegative: ["no, they are not", "no, they aren't"] } },
+    { question: "IS HE DRIVING A TRUCK?", answers: { shortAffirmative: ["yes, he is"], shortNegative: ["no, he is not", "no, he isn't"] } },
+    { question: "IS MARIO SINGING IN THE BATHROOM?", answers: { shortAffirmative: ["yes, he is"], shortNegative: ["no, he is not", "no, he isn't"] } },
+    { question: "IS SHE LOOKING FOR A JOB?", answers: { shortAffirmative: ["yes, she is"], shortNegative: ["no, she is not", "no, she isn't"] } },
 ];
 
 export default function EngA1Class12Page() {
@@ -519,6 +535,15 @@ export default function EngA1Class12Page() {
                         isSingleLine={true}
                     />
                 );
+            case 'ex3':
+                return (
+                    <ShortAnswerPresentSimpleExercise
+                        title="Exercise 3: Short Answers"
+                        description="Escribe las dos respuestas cortas para cada pregunta (+A) y (-A)."
+                        exerciseData={class12Exercise3Data}
+                        onComplete={() => handleTopicComplete('ex3')}
+                    />
+                );
             case 'grammar3':
                 return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
@@ -537,7 +562,7 @@ export default function EngA1Class12Page() {
                 return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple min-h-[500px]">
                         <CardHeader>
-                            <CardTitle>{topic?.name}</CardTitle>
+                            <CardTitle>{topic?.name || 'Cargando...'}</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <p className="text-muted-foreground">Contenido interactivo próximamente.</p>
