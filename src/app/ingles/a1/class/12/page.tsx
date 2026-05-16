@@ -38,6 +38,7 @@ import { SimpleTranslationExercise } from '@/components/dashboard/simple-transla
 import { CreativeWritingExercise } from '@/components/dashboard/creative-writing-exercise';
 import { ShortAnswerPresentSimpleExercise, type ShortAnswerPresentSimplePrompt } from '@/components/kids/exercises/short-answer-present-simple';
 import { Label } from '@/components/ui/label';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 type Topic = {
   key: string;
@@ -46,7 +47,7 @@ type Topic = {
   status: 'completed' | 'active' | 'locked';
 };
 
-const progressStorageVersion = 'progress_a1_eng_u3_c12_v18_final_ex8';
+const progressStorageVersion = 'progress_a1_eng_u3_c12_v19_final_ex9';
 const mainProgressKey = 'progress_a1_eng_unit_3_class_12';
 
 const timeExpressionsData = [
@@ -87,88 +88,194 @@ const class12Exercise4Data = [
     { 
         spanish: "ELLA ESCRIBE - ELLA ESTA ESCRIBIENDO", 
         answers: { 
-            simple: ["she writes"], 
-            continuous: ["she is writing", "she's writing"] 
-        } 
+            ans1: ["she writes"], 
+            ans2: ["she is writing", "she's writing"] 
+        },
+        labels: { ans1: "Present Simple", ans2: "Present Continuous" }
     },
     { 
         spanish: "ELLA NO TRABAJA - ELLA NO ESTA TRABAJANDO", 
         answers: { 
-            simple: ["she does not work", "she doesn't work", "she works not"], 
-            continuous: ["she is not working", "she'n not working", "she isn't working"] 
-        } 
+            ans1: ["she does not work", "she doesn't work"], 
+            ans2: ["she is not working", "she isn't working"] 
+        },
+        labels: { ans1: "Present Simple", ans2: "Present Continuous" }
     },
     { 
         spanish: "¿EL CANTA? - ¿EL ESTA CANTANDO?", 
         answers: { 
-            simple: ["does he sing?"], 
-            continuous: ["is he singing?"] 
-        } 
+            ans1: ["does he sing?"], 
+            ans2: ["is he singing?"] 
+        },
+        labels: { ans1: "Present Simple", ans2: "Present Continuous" }
     },
     { 
         spanish: "¿TÚ ESTUDIAS? - ¿ESTÁS ESTUDIANDO?", 
         answers: { 
-            simple: ["do you study?"], 
-            continuous: ["are you studying?"] 
-        } 
+            ans1: ["do you study?"], 
+            ans2: ["are you studying?", "are you studying?"] 
+        },
+        labels: { ans1: "Present Simple", ans2: "Present Continuous" }
     },
     { 
         spanish: "¿ELLA HABLA ALEMAN? – ¿ELLA ESTA HABLANDO INGLÉS?", 
         answers: { 
-            simple: ["does she speak german?"], 
-            continuous: ["is she speaking english?"] 
-        } 
+            ans1: ["does she speak german?"], 
+            ans2: ["is she speaking english?"] 
+        },
+        labels: { ans1: "Present Simple", ans2: "Present Continuous" }
     },
     { 
         spanish: "¿ELLOS ESTAN CORRIENDO? –¿ELLOS CORREN EN LA CASA?", 
         answers: { 
-            simple: ["do they run in the house?"], 
-            continuous: ["are they running?"] 
-        } 
+            ans1: ["do they run in the house?"], 
+            ans2: ["are they running?"] 
+        },
+        labels: { ans1: "Present Simple", ans2: "Present Continuous" }
     },
     { 
         spanish: "¿QUE HACES? – ¿QUE ESTAS HACIENDO?", 
         answers: { 
-            simple: ["what do you do?"], 
-            continuous: ["what are you doing?", "what're you doing?"] 
-        } 
+            ans1: ["what do you do?"], 
+            ans2: ["what are you doing?", "what're you doing?"] 
+        },
+        labels: { ans1: "Present Simple", ans2: "Present Continuous" }
     },
     { 
         spanish: "¿A DONDE ESTAS YENDO? - ¿A DONDE VAS?", 
         answers: { 
-            simple: ["where do you go?"], 
-            continuous: ["where are you going?", "where're you going?"] 
-        } 
+            ans1: ["where do you go?"], 
+            ans2: ["where are you going?", "where're you going?"] 
+        },
+        labels: { ans1: "Present Simple", ans2: "Present Continuous" }
     },
     { 
         spanish: "¿DONDE TRABAJAS? –¿DONDE ESTAS TRABAJANDO?", 
         answers: { 
-            simple: ["where do you work?"], 
-            continuous: ["where are you working?", "where're you working?"] 
-        } 
+            ans1: ["where do you work?"], 
+            ans2: ["where are you working?", "where're you working?"] 
+        },
+        labels: { ans1: "Present Simple", ans2: "Present Continuous" }
     },
     { 
         spanish: "¿ELLA ESTA DURMIENDO? - ¿ELLA DUERME EN LA TARDE?", 
         answers: { 
-            simple: ["does she sleep in the afternoon?"], 
-            continuous: ["is she sleeping?"] 
-        } 
+            ans1: ["does she sleep in the afternoon?"], 
+            ans2: ["is she sleeping?"] 
+        },
+        labels: { ans1: "Present Simple", ans2: "Present Continuous" }
     },
     { 
         spanish: "¿ELLOS ESCRIBEN LIBROS? - ¿ELLOS ESTAN ESCRIBIENDO LIBROS ?:", 
         answers: { 
-            simple: ["do they write books?"], 
-            continuous: ["are they writing books?"] 
-        } 
+            ans1: ["do they write books?"], 
+            ans2: ["are they writing books?"] 
+        },
+        labels: { ans1: "Present Simple", ans2: "Present Continuous" }
     },
     { 
         spanish: "¿TRABAJAS? - ¿ESTÁS TRABAJANDO?", 
         answers: { 
-            simple: ["do you work?"], 
-            continuous: ["are you working?", "are you working?"] 
-        } 
+            ans1: ["do you work?"], 
+            ans2: ["are you working?", "are you working?"] 
+        },
+        labels: { ans1: "Present Simple", ans2: "Present Continuous" }
     },
 ];
+
+const class12Exercise9Data = [
+    { 
+        spanish: "¿QUE ESTUDIAS? - ¿QUE ESTAS ESTUDIANDO?", 
+        answers: { 
+            ans1: ["what do you study?"], 
+            ans2: ["what are you studying?", "what're you studying?"] 
+        },
+        labels: { ans1: "Present Simple", ans2: "Present Continuous" }
+    },
+    { 
+        spanish: "¿QUE ESTA HACIENDO ELLA? - ¿QUE HACEN ELLOS?", 
+        answers: { 
+            ans1: ["what do they do?"], 
+            ans2: ["what is she doing?", "what's she doing?"] 
+        },
+        labels: { ans1: "Present Simple", ans2: "Present Continuous" }
+    },
+    { 
+        spanish: "¿QUE BEBEN ELLOS? – ¿QUE ESTÁN BEBIENDO ELLOS?", 
+        answers: { 
+            ans1: ["what do they drink?"], 
+            ans2: ["what are they drinking?", "what're they drinking?"] 
+        },
+        labels: { ans1: "Present Simple", ans2: "Present Continuous" }
+    },
+    { 
+        spanish: "¿ELLOS JUEGAN EN EL PARQUE? - ¿ELLOS ESTÁN JUGANDO EN LA UNIVERSIDAD?", 
+        answers: { 
+            ans1: ["do they play in the park?"], 
+            ans2: ["are they playing in the university?", "are they playing at the university?"] 
+        },
+        labels: { ans1: "Present Simple", ans2: "Present Continuous" }
+    },
+    { 
+        spanish: "¿ELLA ESTA VIVIENDO EN BARCELONA? - ¿ELLA VIVE EN MEDELLIN?", 
+        answers: { 
+            ans1: ["does she live in medellin?"], 
+            ans2: ["is she living in barcelona?", "she is living in barcelona?"] 
+        },
+        labels: { ans1: "Present Simple", ans2: "Present Continuous" }
+    },
+    { 
+        spanish: "¿CUÁNDO LLEGA EL? - ¿CUANDO ESTÁ LLEGANDO ELLA?", 
+        answers: { 
+            ans1: ["when does he arrive?"], 
+            ans2: ["when is she arriving?"] 
+        },
+        labels: { ans1: "Present Simple", ans2: "Present Continuous" }
+    },
+    { 
+        spanish: "¿DONDE ESTAS VIVIENDO? - ¿DONDE VIVES?", 
+        answers: { 
+            ans1: ["where do you live?"], 
+            ans2: ["where are you living?", "where're you living?"] 
+        },
+        labels: { ans1: "Present Simple", ans2: "Present Continuous" }
+    },
+    { 
+        spanish: "¿ESTAS LAVANDO TU CARRO? - ¿LAVAS SU CARRO LOS DOMINGOS? (DE ÉL)", 
+        answers: { 
+            ans1: ["do you wash his car on sundays?"], 
+            ans2: ["are you washing your car?", "are you washing your car?"] 
+        },
+        labels: { ans1: "Present Simple", ans2: "Present Continuous" }
+    },
+    { 
+        spanish: "¿QUE ESTA ESTUDIANDO ELLA? - ¿QUE ESTUDIAS?", 
+        answers: { 
+            ans1: ["what do you study?"], 
+            ans2: ["what is she studying?", "what's she studying?"] 
+        },
+        labels: { ans1: "Present Simple", ans2: "Present Continuous" }
+    },
+    { 
+        spanish: "¿ESTÁS JUGANDO CON ELLOS? - ¿JUEGAS CON NOSOTROS?", 
+        answers: { 
+            ans1: ["do you play with us?"], 
+            ans2: ["are you playing with them?", "are you playing with them?"] 
+        },
+        labels: { ans1: "Present Simple", ans2: "Present Continuous" }
+    },
+];
+
+const ex9Vocab = {
+    "lavando": "washing",
+    "llegando": "arriving",
+    "viviendo": "living",
+    "estudiando": "studying",
+    "bebiendo": "drinking",
+    "jugando": "playing",
+    "con nosotros": "with us",
+    "con ellos": "with them"
+};
 
 const class12Exercise7Data = [
     { parts: ["EVERY MONDAY SALLY ", " HER KIDS TO FOOTBALL PRACTICE."], options: ["DRIVES", "IS DRIVING"], correct: "DRIVES" },
@@ -297,33 +404,43 @@ const ChoiceExercise = ({ onComplete }: { onComplete: () => void }) => {
     );
 };
 
-const SimpleVsContinuousExercise = ({ onComplete }: { onComplete: () => void }) => {
+const DualTranslationExercise = ({ 
+    onComplete, 
+    data, 
+    title,
+    vocabulary 
+}: { 
+    onComplete: () => void, 
+    data: any[], 
+    title: string,
+    vocabulary?: Record<string, string>
+}) => {
     const { toast } = useToast();
     const [currentIndex, setCurrentIndex] = useState(0);
-    const [answers, setAnswers] = useState({ simple: '', continuous: '' });
-    const [validation, setValidation] = useState({ simple: 'unchecked', continuous: 'unchecked' });
+    const [answers, setAnswers] = useState({ ans1: '', ans2: '' });
+    const [validation, setValidation] = useState({ ans1: 'unchecked', ans2: 'unchecked' });
     const [showCompletion, setShowCompletion] = useState(false);
 
-    const currentPrompt = class12Exercise4Data[currentIndex];
+    const currentPrompt = data[currentIndex];
 
     useEffect(() => {
-        setAnswers({ simple: '', continuous: '' });
-        setValidation({ simple: 'unchecked', continuous: 'unchecked' });
-    }, [currentIndex]);
+        setAnswers({ ans1: '', ans2: '' });
+        setValidation({ ans1: 'unchecked', ans2: 'unchecked' });
+    }, [currentIndex, data]);
 
     const handleCheck = () => {
-        const checkSimple = currentPrompt.answers.simple.map(a => a.toLowerCase().replace(/[.?]/g, ''))
-            .includes(answers.simple.trim().toLowerCase().replace(/[.?]/g, ''));
+        const check1 = currentPrompt.answers.ans1.map((a: string) => a.toLowerCase().replace(/[.?,]/g, ''))
+            .includes(answers.ans1.trim().toLowerCase().replace(/[.?,]/g, ''));
         
-        const checkContinuous = currentPrompt.answers.continuous.map(a => a.toLowerCase().replace(/[.?]/g, ''))
-            .includes(answers.continuous.trim().toLowerCase().replace(/[.?]/g, ''));
+        const check2 = currentPrompt.answers.ans2.map((a: string) => a.toLowerCase().replace(/[.?,]/g, ''))
+            .includes(answers.ans2.trim().toLowerCase().replace(/[.?,]/g, ''));
 
         setValidation({
-            simple: checkSimple ? 'correct' : 'incorrect',
-            continuous: checkContinuous ? 'correct' : 'incorrect'
+            ans1: check1 ? 'correct' : 'incorrect',
+            ans2: check2 ? 'correct' : 'incorrect'
         });
 
-        if (checkSimple && checkContinuous) {
+        if (check1 && check2) {
             toast({ title: "¡Excelente!", description: "Ambas traducciones son correctas." });
         } else {
             toast({ variant: 'destructive', title: "Revisa tus respuestas", description: "Una o ambas traducciones no coinciden." });
@@ -331,7 +448,7 @@ const SimpleVsContinuousExercise = ({ onComplete }: { onComplete: () => void }) 
     };
 
     const handleNext = () => {
-        if (currentIndex < class12Exercise4Data.length - 1) {
+        if (currentIndex < data.length - 1) {
             setCurrentIndex(prev => prev + 1);
         } else {
             setShowCompletion(true);
@@ -345,7 +462,7 @@ const SimpleVsContinuousExercise = ({ onComplete }: { onComplete: () => void }) 
                 <CardContent className="p-6 text-center flex flex-col items-center justify-center min-h-[300px]">
                     <Trophy className="h-16 w-16 text-yellow-400 mb-4" />
                     <h2 className="text-3xl font-bold">¡Ejercicio Completado!</h2>
-                    <p className="text-muted-foreground mt-2">Has dominado la diferencia entre los tiempos presentes.</p>
+                    <p className="text-muted-foreground mt-2">Has dominado el contraste entre tiempos verbales.</p>
                 </CardContent>
             </Card>
         );
@@ -354,10 +471,37 @@ const SimpleVsContinuousExercise = ({ onComplete }: { onComplete: () => void }) 
     return (
         <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
             <CardHeader>
-                <CardTitle>Exercise 4: Simple vs Continuous</CardTitle>
-                <CardDescription>Traduce la frase a Present Simple y Present Continuous.</CardDescription>
+                <div className="flex justify-between items-start">
+                    <div>
+                        <CardTitle>{title}</CardTitle>
+                        <CardDescription>Traduce cada parte de la frase según el tiempo verbal indicado.</CardDescription>
+                    </div>
+                    {vocabulary && (
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button variant="outline" size="sm" className="border-2 border-brand-blue animate-border-pulse">
+                                    <BookText className="mr-2 h-4 w-4" />
+                                    Vocabulary
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-64">
+                                <div className="space-y-2">
+                                    <h4 className="font-bold border-b pb-1">Vocabulario útil</h4>
+                                    <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
+                                        {Object.entries(vocabulary).map(([es, en]) => (
+                                            <React.Fragment key={es}>
+                                                <span className="text-muted-foreground capitalize">{es}:</span>
+                                                <span className="font-semibold text-right">{en}</span>
+                                            </React.Fragment>
+                                        ))}
+                                    </div>
+                                </div>
+                            </PopoverContent>
+                        </Popover>
+                    )}
+                </div>
                 <div className="flex flex-wrap gap-2 pt-4">
-                    {class12Exercise4Data.map((_, idx) => (
+                    {data.map((_, idx) => (
                         <button
                             key={idx}
                             onClick={() => setCurrentIndex(idx)}
@@ -378,21 +522,21 @@ const SimpleVsContinuousExercise = ({ onComplete }: { onComplete: () => void }) 
 
                 <div className="space-y-4">
                     <div className="space-y-2">
-                        <Label className="font-bold text-primary">Present Simple</Label>
+                        <Label className="font-bold text-primary">{currentPrompt.labels?.ans1 || 'Translation 1'}</Label>
                         <Input 
-                            value={answers.simple} 
-                            onChange={e => { setAnswers(prev => ({ ...prev, simple: e.target.value })); setValidation(v => ({ ...v, simple: 'unchecked' })); }}
-                            className={cn(validation.simple === 'correct' ? 'border-green-500' : validation.simple === 'incorrect' ? 'border-destructive' : '')}
+                            value={answers.ans1} 
+                            onChange={e => { setAnswers(prev => ({ ...prev, ans1: e.target.value })); setValidation(v => ({ ...v, ans1: 'unchecked' })); }}
+                            className={cn(validation.ans1 === 'correct' ? 'border-green-500 bg-green-50' : validation.ans1 === 'incorrect' ? 'border-destructive bg-destructive/5' : '')}
                             placeholder="Escribe aquí..."
                             autoComplete="off"
                         />
                     </div>
                     <div className="space-y-2">
-                        <Label className="font-bold text-primary">Present Continuous</Label>
+                        <Label className="font-bold text-primary">{currentPrompt.labels?.ans2 || 'Translation 2'}</Label>
                         <Input 
-                            value={answers.continuous} 
-                            onChange={e => { setAnswers(prev => ({ ...prev, continuous: e.target.value })); setValidation(v => ({ ...v, continuous: 'unchecked' })); }}
-                            className={cn(validation.continuous === 'correct' ? 'border-green-500' : validation.continuous === 'incorrect' ? 'border-destructive' : '')}
+                            value={answers.ans2} 
+                            onChange={e => { setAnswers(prev => ({ ...prev, ans2: e.target.value })); setValidation(v => ({ ...v, ans2: 'unchecked' })); }}
+                            className={cn(validation.ans2 === 'correct' ? 'border-green-500 bg-green-50' : validation.ans2 === 'incorrect' ? 'border-destructive bg-destructive/5' : '')}
                             placeholder="Escribe aquí..."
                             autoComplete="off"
                         />
@@ -405,8 +549,8 @@ const SimpleVsContinuousExercise = ({ onComplete }: { onComplete: () => void }) 
                 </Button>
                 <div className="flex gap-2">
                     <Button onClick={handleCheck}>Verificar</Button>
-                    <Button onClick={handleNext} disabled={validation.simple !== 'correct' || validation.continuous !== 'correct'}>
-                        {currentIndex === class12Exercise4Data.length - 1 ? 'Finalizar' : 'Siguiente'} <ArrowRight className="ml-2 h-4 w-4" />
+                    <Button onClick={handleNext} disabled={validation.ans1 !== 'correct' || validation.ans2 !== 'correct'}>
+                        {currentIndex === data.length - 1 ? 'Finalizar' : 'Siguiente'} <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
                 </div>
             </CardFooter>
@@ -455,7 +599,6 @@ export default function EngA1Class12Page() {
         { key: 'ex7', name: 'Exercise 7', icon: PenSquare, status: 'locked' },
         { key: 'ex8', name: 'Exercise 8', icon: PenSquare, status: 'locked' },
         { key: 'ex9', name: 'Exercise 9', icon: PenSquare, status: 'locked' },
-        { key: 'ex10', name: 'Exercise 10', icon: PenSquare, status: 'locked' },
     ], []);
     
     useEffect(() => {
@@ -589,7 +732,7 @@ export default function EngA1Class12Page() {
                             <CardDescription>Traduce las expresiones de tiempo al inglés. Al menos una correcta para avanzar.</CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <div className="grid grid-cols-2 gap-x-6 gap-y-3 text-lg">
+                            <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-lg">
                                 <div className="font-black text-primary border-b pb-2 uppercase tracking-widest text-sm text-left">Spanish</div>
                                 <div className="font-black text-primary border-b pb-2 uppercase tracking-widest text-sm text-left">English</div>
                                 {timeExpressionsData.map((item, idx) => (
@@ -882,7 +1025,7 @@ export default function EngA1Class12Page() {
                     />
                 );
             case 'ex4':
-                return <SimpleVsContinuousExercise onComplete={() => handleTopicComplete('ex4')} />;
+                return <DualTranslationExercise onComplete={() => handleTopicComplete('ex4')} data={class12Exercise4Data} title="Exercise 4: Simple vs Continuous" />;
             case 'ex5':
                 const vocabEx5 = {
                     "colegio": "school",
@@ -1032,6 +1175,8 @@ export default function EngA1Class12Page() {
                         onComplete={() => handleTopicComplete('ex8')}
                     />
                 );
+            case 'ex9':
+                return <DualTranslationExercise onComplete={() => handleTopicComplete('ex9')} data={class12Exercise9Data} title="Exercise 9: Simple vs Continuous" vocabulary={ex9Vocab} />;
             default:
                 return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple min-h-[500px]">
