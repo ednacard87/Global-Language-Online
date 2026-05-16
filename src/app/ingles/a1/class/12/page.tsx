@@ -38,7 +38,7 @@ type Topic = {
   status: 'completed' | 'active' | 'locked';
 };
 
-const progressStorageVersion = 'progress_a1_eng_u3_c12_v5_spelling_rules';
+const progressStorageVersion = 'progress_a1_eng_u3_c12_v7_ex2_added';
 const mainProgressKey = 'progress_a1_eng_unit_3_class_12';
 
 const timeExpressionsData = [
@@ -382,7 +382,7 @@ export default function EngA1Class12Page() {
                                                 <p>To take {"=>"} <span className="text-primary font-bold">Taking</span></p>
                                                 <p>To make {"=>"} <span className="text-primary font-bold">Making</span></p>
                                             </div>
-                                            <div className="p-3 bg-yellow-50 dark:bg-yellow-900/10 border border-yellow-200 rounded-lg">
+                                            <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 rounded-lg">
                                                 <h5 className="font-bold text-yellow-700 dark:text-yellow-400 text-xs uppercase mb-1">Exception:</h5>
                                                 <p className="font-mono text-sm">To see {"=>"} <span className="font-bold">Seeing</span></p>
                                             </div>
@@ -401,14 +401,14 @@ export default function EngA1Class12Page() {
                                                 <p>To win {"=>"} <span className="text-primary font-bold">Winning</span></p>
                                             </div>
                                             <div className="space-y-2">
-                                                <div className="p-3 bg-red-50 dark:bg-red-900/10 border border-red-200 rounded-lg">
+                                                <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 rounded-lg">
                                                     <h5 className="font-bold text-red-700 dark:text-red-400 text-xs uppercase mb-1">Exception (X, W, Z):</h5>
                                                     <p className="font-mono text-sm">To fix {"=>"} <span className="font-bold">Fixing</span></p>
                                                     <p className="font-mono text-sm">To draw {"=>"} <span className="font-bold">Drawing</span></p>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="p-3 bg-blue-50 dark:bg-blue-900/10 border border-blue-200 rounded-lg">
+                                        <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 rounded-lg">
                                             <h5 className="font-bold text-blue-700 dark:text-blue-400 text-xs uppercase mb-1">Nota:</h5>
                                             <p className="text-sm">Si hay <strong>más de una vocal</strong>, NO duplicamos la consonante.</p>
                                             <p className="font-mono text-sm mt-1">To read {"=>"} Reading // To open {"=>"} Opening</p>
@@ -489,6 +489,16 @@ export default function EngA1Class12Page() {
                         </CardFooter>
                     </Card>
                 );
+            case 'ex2':
+                const vocabEx2 = {
+                    "mejor": "better",
+                    "cirugía": "surgery",
+                    "enseñando": "teaching",
+                    "comenzando": "beginning",
+                    "camión": "truck",
+                    "ganando": "winning"
+                };
+                return <SimpleTranslationExercise exerciseKey="c12_ex2" course="a1" onComplete={() => handleTopicComplete('ex2')} title="Exercise 2" vocabulary={vocabEx2} />;
             case 'grammar3':
                 return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple">

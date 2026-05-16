@@ -679,7 +679,7 @@ const exercises = {
             { spanish: 'YO AYUDO A MARIA- YO LA AYUDO EN SU TIENDA DE ZAPATOS', english: ["i help maria - i help her in her shoe store", "i help maria i help her in her shoe shop"] },
             { spanish: 'YO NO SE TU NOMBRE - ¿PUEDES REPETIRLO?', english: ["i do not know your name - can you repeat it?", "i don't know your name can you repeat it?"] },
             { spanish: 'ELLA LLAMA A SU MAMÁ – ELLA LA LLAMA TODOS LOS DIAS', english: ["she calls her mom - she calls her every day", "she calls her mother she calls her every day"] },
-            { spanish: 'EL NO VE SUS PADRES EN LA CASA, ENTONCES EL LOS LLAMA', english: ["he does not see his parents at home so he calls them", "he doesn't see his parents at home so he calls them", "he does not see his parents in the house so he calls them"] },
+            { spanish: 'EL NO VE SUS PADRES IN LA CASA, ENTONCES EL LOS LLAMA', english: ["he does not see his parents at home so he calls them", "he doesn't see his parents at home so he calls them", "he does not see his parents in the house so he calls them"] },
             { spanish: 'CAMILA QUIERE UNA HAMBURGUESA, PERO NO LA COMPRA PORQUE ELLA NO PUEDE COMERLA', english: ["camila wants a hamburger but she does not buy it because she cannot eat it", "camila wants a hamburger but she doesn't buy it because she can't eat it"] },
             { spanish: 'LINA VIAJA CON SU SOBRINA A EUROPA Y ELLAS LO DISFRUTAN', english: ["lina travels with her niece to europe and they enjoy it", "lina travels with her niece to europe and they're enjoying it"] },
             { spanish: 'A ELLOS NO LES GUSTA CORRER CON ELLOS, PORQUE SON PRINCIPIANTES', english: ["they do not like to run with them because they are beginners", "they don't like running with them because they're beginners"] },
@@ -714,6 +714,24 @@ const exercises = {
             { spanish: '¿ESTAS ESCUCHANDO MUSICA? - NO', english: ["are you listening to music? - no", "are you listening to music? no"] },
             { spanish: 'EL NO LLEGA A LAS 10, EL ESTA LLEGANDO A LAS 8', english: ["he does not arrive at 10, he is arriving at 8", "he doesn't arrive at 10, he's arriving at 8"] },
             { spanish: '¿TU ABUELA ESTA LEYENDO UN LIBRO? – SI', english: ["is your grandmother reading a book? - yes", "is your grandma reading a book? - yes", "is your grandmother reading a book? yes", "is your grandma reading a book? yes"] },
+        ]
+    },
+    c12_ex2: {
+        title: 'a1class1.exercise',
+        prompts: [
+            { spanish: '1. ¿ELLA ESTA ESTUDIANDO? SI. (SHORT ANSWER)', english: ["is she studying? yes, she is"] },
+            { spanish: '2. NOSOTROS NO ESTAMOS TRABAJANDO EN ESA EMPRESA', english: ["we are not working in that company", "we're not working in that company", "we aren't working in that company"] },
+            { spanish: '3. ¿EL SE ESTA MURIENDO EN ESE HOSPITAL? NO, EL ESTA MEJOR DESPUES DE SU CIRUGIA.', english: ["is he dying in that hospital? no, he is better after his surgery", "is he dying in that hospital? no, he's better after his surgery"] },
+            { spanish: '4. ¿ESTAS CORRIENDO TODOS LOS DIAS? SI.', english: ["are you running every day? yes, i am", "are you running every day? yes i am"] },
+            { spanish: '5. ¿USTEDES ESTAN APRENDIENDO CON ESA PROFESORA? - SI', english: ["are you learning with that teacher? yes, we are", "are you learning with that teacher? yes we are"] },
+            { spanish: '6. ELLA NO ESTÁ ENSEÑANDO (TEACH) ALEMAN', english: ["she is not teaching german", "she isn't teaching german", "she's not teaching german"] },
+            { spanish: '7. ELLOS ESTAN COMENZANDO EL CURSO DE ITALIANO.', english: ["they are beginning the italian course", "they're beginning the italian course"] },
+            { spanish: '8. ¿ELLOS ESTAN JUGANDO VIDEOJUEGOS? – NO.', english: ["are they playing video games? no, they are not", "are they playing video games? no, they aren't", "are they playing videogames? no, they are not"] },
+            { spanish: '9. NOSOTROS ESTAMOS MANEJANDO (DRIVE) UN CAMION-', english: ["we are driving a truck", "we're driving a truck"] },
+            { spanish: '10. ELLOS ESTAN GANANDO EL PARTIDO DE FUTBOL.', english: ["they are winning the soccer match", "they're winning the soccer match", "they are winning the football match", "they're winning the football match"] },
+            { spanish: '11. ESTOY VIAJANDO PARA NUEVA YORK EN ESTE MOMENTO.', english: ["i am traveling to new york at this moment", "i'm traveling to new york at this moment", "i am travelling to new york at this moment"] },
+            { spanish: '12. ¿QUE ESTAS HACIENDO? – YO ESTOY ESTUDIANDO INGLES.', english: ["what are you doing? i am studying english", "what are you doing? i'm studying english"] },
+            { spanish: '13. ¿ESTA LLOVIENDO MUCHO? – SI, TODOS LOS DIAS.', english: ["is it raining a lot? yes, every day", "is it raining a lot? yes every day"] },
         ]
     }
 };
@@ -803,7 +821,7 @@ export function SimpleTranslationExercise({
 
         const allCorrect = newValidationStates.every(state => state === 'correct');
         if (allCorrect) {
-            toast({ title: t('translationExercise.allCorrect') || "¡Todo correcto! Ejercicio completado." });
+            toast({ title: t('spellingExercise.correct') || "¡Todo correcto! Ejercicio completado." });
             setShowCompletionMessage(true);
             if (onComplete) {
                 onComplete();
@@ -811,7 +829,7 @@ export function SimpleTranslationExercise({
         } else {
             toast({ 
                 variant: 'destructive', 
-                title: t('translationExercise.someIncorrect') || "Algunas respuestas son incorrectas", 
+                title: t('spellingExercise.incorrect') || "Algunas respuestas son incorrectas", 
                 description: t('translationExercise.reviewRed') || "Revisa las bolitas rojas y corrige tus respuestas." 
             });
         }
