@@ -230,10 +230,13 @@ export default function EngA1Class12Page() {
                         </CardHeader>
                         <CardContent>
                             <div className="grid grid-cols-2 gap-x-6 gap-y-3 text-lg">
-                                <div className="font-black text-primary border-b pb-2 uppercase tracking-widest text-sm text-left">English</div>
                                 <div className="font-black text-primary border-b pb-2 uppercase tracking-widest text-sm text-left">Spanish</div>
+                                <div className="font-black text-primary border-b pb-2 uppercase tracking-widest text-sm text-left">English</div>
                                 {timeExpressionsData.map((item, idx) => (
                                     <React.Fragment key={idx}>
+                                        <div className="flex items-center text-base font-medium py-1 text-left">
+                                            {item.spanish}
+                                        </div>
                                         <div className="flex items-center">
                                             <Input 
                                                 value={vocabAnswers[idx] || ''}
@@ -242,9 +245,6 @@ export default function EngA1Class12Page() {
                                                 placeholder="..."
                                                 autoComplete="off"
                                             />
-                                        </div>
-                                        <div className="flex items-center text-base font-medium py-1 text-left">
-                                            {item.spanish}
                                         </div>
                                     </React.Fragment>
                                 ))}
