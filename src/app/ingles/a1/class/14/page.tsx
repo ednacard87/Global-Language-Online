@@ -17,8 +17,7 @@ import {
     Sparkles,
     Mic,
     Check,
-    X,
-    HelpCircle
+    X
 } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
@@ -37,7 +36,7 @@ type Topic = {
   status: TopicStatus;
 };
 
-const progressStorageVersion = 'progress_a1_eng_u3_c14_v6_questions';
+const progressStorageVersion = 'progress_a1_eng_u3_c14_v7_final';
 const mainProgressKey = 'progress_a1_eng_unit_3_class_14';
 
 const vocabularyData = {
@@ -80,7 +79,6 @@ const vocabularyData = {
     ]
 };
 
-// Component for Dictations with automatic saving and Admin Feedback
 const LinesWritingExercise = ({ 
     title, 
     description, 
@@ -111,7 +109,6 @@ const LinesWritingExercise = ({
     const [grades, setGrades] = useState<Record<number, 'correct' | 'incorrect' | null>>(initialGrades || {});
     const initializedRef = useRef(false);
 
-    // Only initialize from server once to avoid blocking typing
     useEffect(() => {
         if (!initializedRef.current && initialData && Array.isArray(initialData)) {
             const newLines = [...Array(totalLines).fill('')];
@@ -125,7 +122,6 @@ const LinesWritingExercise = ({
         }
     }, [initialData, totalLines]);
 
-    // Keep grades in sync as they are only changed by admin
     useEffect(() => {
         if (initialGrades) {
             setGrades(initialGrades);
@@ -145,7 +141,7 @@ const LinesWritingExercise = ({
     };
 
     const handleToggleGrade = (index: number, type: 'correct' | 'incorrect') => {
-        if (!isAdmin) return; // Only admins can grade
+        if (!isAdmin) return;
 
         const newGrades = { ...grades };
         if (newGrades[index] === type) {
@@ -164,10 +160,10 @@ const LinesWritingExercise = ({
 
     const renderRenglon = (line: string, idx: number, isTitle: boolean = false) => {
         const status = grades[idx];
-        const inputBorderClass = status === 'correct' ? 'border-green-500 ring-1 ring-green-500' : status === 'incorrect' ? 'border-red-500 ring-1 ring-red-500' : '';
+        const borderClass = status === 'correct' ? 'border-green-500 ring-1 ring-green-500' : status === 'incorrect' ? 'border-red-500 ring-1 ring-red-500' : '';
 
         return (
-            <div key={idx} className="flex items-center gap-3 group">
+            <div key={idx} className="flex items-center gap-3">
                 <span className={cn("font-bold w-8 text-right shrink-0", isTitle ? "text-brand-purple w-20" : "text-primary")}>
                     {isTitle ? "TITULO:" : `${idx}.`}
                 </span>
@@ -178,12 +174,11 @@ const LinesWritingExercise = ({
                     className={cn(
                         "flex-1 bg-muted/30 focus:bg-background transition-all h-11 border-primary/20",
                         isTitle && "bg-primary/5 h-12 font-bold",
-                        inputBorderClass
+                        borderClass
                     )}
                     autoComplete="off"
                 />
                 
-                {/* Admin Grade Controls */}
                 <div className="flex gap-2 shrink-0">
                     <button
                         onClick={() => handleToggleGrade(idx, 'correct')}
@@ -194,7 +189,6 @@ const LinesWritingExercise = ({
                                 : "bg-gray-200 border-gray-300 dark:bg-gray-800 dark:border-gray-700 text-transparent",
                             !isAdmin && "cursor-default pointer-events-none"
                         )}
-                        title={isAdmin ? "Marcar como correcto" : ""}
                     >
                         <Check className="h-3 w-3" />
                     </button>
@@ -207,7 +201,6 @@ const LinesWritingExercise = ({
                                 : "bg-gray-200 border-gray-300 dark:bg-gray-800 dark:border-gray-700 text-transparent",
                             !isAdmin && "cursor-default pointer-events-none"
                         )}
-                        title={isAdmin ? "Marcar como incorrecto" : ""}
                     >
                         <X className="h-3 w-3" />
                     </button>
@@ -260,7 +253,6 @@ export default function EngA1Class14Page() {
     const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
     const [initialLoadComplete, setInitialLoadComplete] = useState(false);
 
-    // Vocab States
     const [vocabAnswers, setVocabAnswers] = useState<{[key: string]: string[]}>({});
     const [vocabValidation, setVocabValidation] = useState<{[key: string]: ('correct' | 'incorrect' | 'unchecked')[]}>({});
     const [canAdvanceVocab, setCanAdvanceVocab] = useState(false);
@@ -268,7 +260,6 @@ export default function EngA1Class14Page() {
     const initialLearningPath = useMemo((): Topic[] => [
         { key: 'vocabulary', name: 'Vocabulary', icon: BookOpen, status: 'active' },
         { key: 'dictation1', name: 'Dictation 1', icon: Mic, status: 'locked' },
-        { key: 'questions1', name: 'Questions 1', icon: HelpCircle, status: 'locked' },
         { key: 'ex1', name: 'Exercise 1', icon: PenSquare, status: 'locked' },
         { key: 'general_ex', name: 'General Exercise', icon: GraduationCap, status: 'locked' },
         { key: 'dictation2', name: 'Dictation 2', icon: Mic, status: 'locked' },
@@ -298,7 +289,6 @@ export default function EngA1Class14Page() {
             setInitialLoadComplete(true);
         }
 
-        // Initialize vocab states
         const initAnswers: any = {};
         const initVal: any = {};
         Object.keys(vocabularyData).forEach(cat => {
@@ -497,20 +487,6 @@ export default function EngA1Class14Page() {
                         savePathGrades={`lessonProgress.${progressStorageVersion}.dictation1Grades`}
                         isAdmin={isAdmin}
                     />
-                );
-            case 'questions1':
-                return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-                        <CardHeader>
-                            <CardTitle>Questions 1</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="text-muted-foreground">Contenido de Questions 1 próximamente.</p>
-                        </CardContent>
-                        <CardFooter>
-                            <Button onClick={() => handleTopicComplete('questions1')}>Finalizar Sección</Button>
-                        </CardFooter>
-                    </Card>
                 );
             case 'ex1':
                 return (
