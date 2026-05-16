@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -543,7 +542,7 @@ const exercises = {
             { spanish: 'NO ME GUSTAN ESTAS GORRAS (CAPS)- A MI ME GUSTAN ESAS-', english: ["i don't like these caps - i like those ones", "i do not like these caps - i do not like those ones"] },
             { spanish: 'A ELLOS LES GUSTAN ESOS COMPUTADORES - A NOSOTROS NOS GUSTAN ESTOS-', english: ["they like those computers - we like these ones"] },
             { spanish: 'A MI ME GUSTA ESTA CASA MIENTRAS QUE A ELLA LE GUSTA ESA:', english: ["i like this house while she likes that one", "i like this house while she likes that"] },
-            { spanish: 'EL PREFIERE ESTE CARRO A ESA MOTO:', english: ["he prefers this car to that motorcycle"] },
+            { spanish: 'EL PREFIERE EL ESTE CARRO A ESA MOTO:', english: ["he prefers this car to that motorcycle"] },
             { spanish: 'NO ME GUSTAN ESAS CAMISETAS – A MI NO ME GUSTAN ESAS:', english: ["i don't like those t-shirts - i don't like those ones", "i do not like those t-shirts - i do not like those ones", "i don't like those shirts - i don't like those ones"] },
             { spanish: 'A NOSOTROS NOS GUSTA ESA FINCA – A NOSOTROS NOS GUSTA ESA:', english: ["we like that farm - we like that one", "we like that country house - we like that one"] },
         ]
@@ -693,7 +692,7 @@ const exercises = {
             { spanish: "¿ELLA ES SU HIJA? (DE EL)- ELLA ES MUY ALTA", english: ["is she his daughter? she is very tall", "is she his daughter? she's very tall"] },
             { spanish: "ELLOS NO ME AYUDAN BECAUSE ELLOS ESTÁN OCUPADOS EN SU PROYECTO", english: ["they do not help me because they are busy in their project", "they don't help me because they're busy in their project"] },
             { spanish: "¿ESTUDIAS CON NOSOTROS? – NO,YO TENGO QUE LAVAR LOS PLATOS AHORA MISMO, MI MAMÁ ESTÁ ENOJADA", english: ["do you study with us? no, i have to wash the dishes right now, my mom is angry", "do you study with us? no, i have to wash the dishes right now, my mother is angry"] },
-            { spanish: "A ELLA NO LE GUSTA SU VESTIDO- A ELLA NO LE GUSTA EL SUYO (DE ELLA)", english: ["she does not like her dress, she does not like hers", "she doesn't like her dress, she doesn't like hers"] },
+            { spanish: "A ELLA LE GUSTA SU VESTIDO- A ELLA LE GUSTA EL SUYO (DE ELLA)", english: ["she does not like her dress, she does not like hers", "she doesn't like her dress, she doesn't like hers"] },
             { spanish: "¿HABLAS CON EL? – NO, NOSOTROS NO HABLAMOS HACE UN AÑO", english: ["do you talk with him? no, we do not talk for a year", "do you talk to him? no, we don't talk for a year"] },
             { spanish: "¿ESTOS SON TUYOS O MIOS? - ESOS SON MIOS", english: ["are these yours or mine? those are mine"] },
             { spanish: "ELLOS SON MIS PRIMOS", english: ["they are my cousins", "they're my cousins"] },
@@ -732,6 +731,19 @@ const exercises = {
             { spanish: '11. ESTOY VIAJANDO PARA NUEVA YORK EN ESTE MOMENTO.', english: ["i am traveling to new york at this moment", "i'm traveling to new york at this moment", "i am travelling to new york at this moment"] },
             { spanish: '12. ¿QUE ESTAS HACIENDO? – YO ESTOY ESTUDIANDO INGLES.', english: ["what are you doing? i am studying english", "what are you doing? i'm studying english"] },
             { spanish: '13. ¿ESTA LLOVIENDO MUCHO? – SI, TODOS LOS DIAS.', english: ["is it raining a lot? yes, every day", "is it raining a lot? yes every day"] },
+        ]
+    },
+    c12_ex5: {
+        title: 'a1class1.exercise',
+        prompts: [
+            { spanish: '1. YO VOY A ITALIA---------- YO ESTOY YENDO A ITALIA.', english: ["i go to italy - i am going to italy", "i go to italy - i'm going to italy"] },
+            { spanish: '2. ELLA VA A LA UNIVERSIDAD -- ELLA ESTA YENDO AL COLEGIO', english: ["she goes to the university - she is going to school", "she goes to the university - she's going to school"] },
+            { spanish: '3. NOSOTROS NO VAMOS A LA BIBLIOTECA--NOSOTROS NO ESTAMOS YENDO A LA EMPRESA', english: ["we do not go to the library - we are not going to the company", "we don't go to the library - we aren't going to the company", "we don't go to the library - we're not going to the company"] },
+            { spanish: '4. ¿ELLOS CORREN EN LA CALLE? -- ¿ELLOS ESTAN CORRIENDO EN EL PARQUE?', english: ["do they run in the street? - are they running in the park?"] },
+            { spanish: '5. ¿ELLA BEBE VINO? –¿ELLA ESTA BEBIENDO AGUA? – NO, ELLA ESTA BEBIENDO VODKA CON JUGO DE NARANJA', english: ["does she drink wine? - is she drinking water? - no, she is drinking vodka with orange juice", "does she drink wine? - is she drinking water? - no, she's drinking vodka with orange juice"] },
+            { spanish: '6. ¿TU CANTAS EN EL BAÑO? – ¿ELLA ESTA CANTANDO EN EL JARDIN?', english: ["do you sing in the bathroom? - is she singing in the garden?"] },
+            { spanish: '7. ¿QUE HACES LOS VIERNES? - ¿QUE ESTAS HACIENDO LOS DOMINGOS?', english: ["what do you do on fridays? - what are you doing on sundays?"] },
+            { spanish: '8. ELLA NO CORRE- ELLA NO ESTA CORRIENDO – ELLA ESTÁ CAMINANDO.', english: ["she does not run - she is not running - she is walking", "she doesn't run - she isn't running - she's walking"] },
         ]
     }
 };

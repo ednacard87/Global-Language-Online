@@ -42,7 +42,7 @@ type Topic = {
   status: 'completed' | 'active' | 'locked';
 };
 
-const progressStorageVersion = 'progress_a1_eng_u3_c12_v11_more_ex4';
+const progressStorageVersion = 'progress_a1_eng_u3_c12_v15_exercise5';
 const mainProgressKey = 'progress_a1_eng_unit_3_class_12';
 
 const timeExpressionsData = [
@@ -753,6 +753,20 @@ export default function EngA1Class12Page() {
                 );
             case 'ex4':
                 return <SimpleVsContinuousExercise onComplete={() => handleTopicComplete('ex4')} />;
+            case 'ex5':
+                const vocabEx5 = {
+                    "colegio": "school",
+                    "biblioteca": "library",
+                    "empresa": "company",
+                    "calle": "street",
+                    "parque": "park",
+                    "vino": "wine",
+                    "vodka": "vodka",
+                    "jugo de naranja": "orange juice",
+                    "jardín": "garden",
+                    "caminando": "walking"
+                };
+                return <SimpleTranslationExercise exerciseKey="c12_ex5" course="a1" onComplete={() => handleTopicComplete('ex5')} title="Exercise 5" vocabulary={vocabEx5} />;
             case 'grammar3':
                 return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
