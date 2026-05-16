@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -30,6 +29,7 @@ import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
+import { CreativeWritingExercise } from '@/components/dashboard/creative-writing-exercise';
 
 type Topic = {
   key: string;
@@ -38,7 +38,7 @@ type Topic = {
   status: 'completed' | 'active' | 'locked';
 };
 
-const progressStorageVersion = 'progress_a1_eng_u3_c12_v7_ex2_added';
+const progressStorageVersion = 'progress_a1_eng_u3_c12_v8_create1_added';
 const mainProgressKey = 'progress_a1_eng_unit_3_class_12';
 
 const timeExpressionsData = [
@@ -203,8 +203,8 @@ export default function EngA1Class12Page() {
     const handleCheckVocab = () => {
         let atLeastOneCorrect = false;
         const newVal = timeExpressionsData.map((item, index) => {
-            const userVal = (vocabAnswers[index] || '').trim().toUpperCase();
-            const isCorrect = item.english.some(ans => ans.toUpperCase() === userVal);
+            const userAnswer = vocabAnswers[index]?.trim().toUpperCase();
+            const isCorrect = item.english.some(ans => ans.toUpperCase() === userAnswer);
             if (isCorrect) atLeastOneCorrect = true;
             return isCorrect ? 'correct' : 'incorrect';
         });
@@ -499,6 +499,26 @@ export default function EngA1Class12Page() {
                     "ganando": "winning"
                 };
                 return <SimpleTranslationExercise exerciseKey="c12_ex2" course="a1" onComplete={() => handleTopicComplete('ex2')} title="Exercise 2" vocabulary={vocabEx2} />;
+            case 'create1':
+                return (
+                    <CreativeWritingExercise
+                        title="Create 1"
+                        description="ESCRIBE 2 FRASES AFIRMATIVAS, 2 NEGATIVAS, 2 INTERROGATIVAS CON EL PRESENTE CONTINUO."
+                        prompts={[
+                            { id: 'af1', question: '1. AF.' },
+                            { id: 'af2', question: '2. AF.' },
+                            { id: 'neg1', question: '1. NEG.' },
+                            { id: 'neg2', question: '2. NEG.' },
+                            { id: 'int1', question: '1. INT.' },
+                            { id: 'int2', question: '2. INT.' },
+                        ]}
+                        onComplete={() => handleTopicComplete('create1')}
+                        studentDocRef={studentDocRef}
+                        initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.create1Data || {}}
+                        savePath={`lessonProgress.${progressStorageVersion}.create1Data`}
+                        isSingleLine={true}
+                    />
+                );
             case 'grammar3':
                 return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
