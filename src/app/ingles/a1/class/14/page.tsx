@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
@@ -17,7 +18,9 @@ import {
     Sparkles,
     Mic,
     Check,
-    X
+    X,
+    Trophy,
+    ArrowLeft
 } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
@@ -36,7 +39,7 @@ type Topic = {
   status: TopicStatus;
 };
 
-const progressStorageVersion = 'progress_a1_eng_u3_c14_v7_final';
+const progressStorageVersion = 'progress_a1_eng_u3_c14_v8_final';
 const mainProgressKey = 'progress_a1_eng_unit_3_class_14';
 
 const vocabularyData = {
@@ -78,6 +81,21 @@ const vocabularyData = {
         { spanish: 'PLASTICO', english: 'PLASTIC' },
     ]
 };
+
+const class14Exercise1Data = [
+    { sentence: "IS COLOMBIA __________________ COUNTRY OF SOUTH AMERICA?", options: ["NICE", "NICER", "THE NICEST", "THE MOST NICE"], correct: "THE NICEST" },
+    { sentence: "ARE THEY _______________ THAN THEM?", options: ["THE MOST FAMOUS", "MORE FAMOUS", "FAMOUSER", "FAMOUS"], correct: "MORE FAMOUS" },
+    { sentence: "I’M ________________________ OF MY FAMILY", options: ["THE MOST TALL", "TALLER", "THE TALLEST", "THE MORE TALL"], correct: "THE TALLEST" },
+    { sentence: "ARE THEY ______________ THAN US?", options: ["YOUNG", "MORE YOUNG", "YOUNGER", "THE YOUNGESTS"], correct: "YOUNGER" },
+    { sentence: "THIS IS THE ____________________ VIDEO I’VE EVER SEEN!", options: ["FUNNIER", "THE MOST FUNNY", "THE FUNNIEST", "FUNNY"], correct: "FUNNIEST" },
+    { sentence: "THIS BOX IS _________________________ THAN THE OTHER", options: ["THE LIGHTER", "LIGHTER", "THE LIGHTEST", "LIGHT"], correct: "LIGHTER" },
+    { sentence: "JANE IS __________________________ THAN MARY", options: ["INTERESTINGER", "MORE INTERESTING", "INTERESTING", "THE INTERESTINGEST"], correct: "MORE INTERESTING" },
+    { sentence: "HE IS ________________________ PILOT IN THE RACE", options: ["BAD", "THE WORST", "WORSE", "THE BADDEST"], correct: "THE WORST" },
+    { sentence: "THAT MOVIE IS _______________________", options: ["BORINGER", "THE MOST BORING", "MORE BORING", "BORING"], correct: "THE MOST BORING" },
+    { sentence: "THESE JEANS ARE ________________________ THAN THOSE ONES", options: ["DIRTIEST", "DIRTIER", "THE MOST DIRTY", "DIRTY"], correct: "DIRTIER" },
+    { sentence: "THIS PLACE IS __________________________ OF THIS COUNTRY", options: ["MORE SAFE", "THE SAFEST", "THE MOST SAFE", "SAFER"], correct: "THE SAFEST" },
+    { sentence: "TABUN IS _____________________ RESTAURANT IN MEDELLIN", options: ["THE BETTHER", "THE BEST", "BEST", "BETTER"], correct: "THE BEST" },
+];
 
 const LinesWritingExercise = ({ 
     title, 
@@ -226,6 +244,120 @@ const LinesWritingExercise = ({
             </CardContent>
             <CardFooter className="pt-6 border-t mt-4">
                 <Button onClick={onComplete} size="lg" className="w-full sm:w-auto min-w-[200px]">Completar Tarea</Button>
+            </CardFooter>
+        </Card>
+    );
+};
+
+const OptionsChoiceExercise = ({ data, onComplete, title }: { data: any[], onComplete: () => void, title: string }) => {
+    const { toast } = useToast();
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [selections, setSelections] = useState<string[]>(Array(data.length).fill(''));
+    const [validation, setValidation] = useState<('correct' | 'incorrect' | 'unchecked')[]>(Array(data.length).fill('unchecked'));
+    const [isFinished, setIsFinished] = useState(false);
+
+    const currentPrompt = data[currentIndex];
+
+    const handleSelect = (option: string) => {
+        if (validation[currentIndex] === 'correct') return;
+        
+        const newS = [...selections];
+        newS[currentIndex] = option;
+        setSelections(newS);
+
+        const isCorrect = option === currentPrompt.correct;
+        const newV = [...validation];
+        newV[currentIndex] = isCorrect ? 'correct' : 'incorrect';
+        setValidation(newV);
+
+        if (isCorrect) {
+            toast({ title: "¡Correcto!" });
+            if (currentIndex < data.length - 1) {
+                setTimeout(() => setCurrentIndex(prev => prev + 1), 600);
+            }
+        } else {
+            toast({ variant: 'destructive', title: "Incorrecto", description: "Inténtalo de nuevo." });
+        }
+    };
+
+    const allCorrect = validation.every(v => v === 'correct');
+
+    if (isFinished) {
+        return (
+            <Card className="shadow-soft rounded-lg border-2 border-brand-purple p-8 text-center">
+                <Trophy className="h-16 w-16 text-yellow-400 mx-auto mb-4 animate-bounce" />
+                <h2 className="text-3xl font-bold">¡Ejercicio Completado!</h2>
+                <p className="text-muted-foreground mt-2 mb-6">Has dominado los comparativos y superlativos de este nivel.</p>
+                <Button onClick={onComplete} size="lg">Continuar</Button>
+            </Card>
+        );
+    }
+
+    return (
+        <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+            <CardHeader>
+                <CardTitle>{title}</CardTitle>
+                <CardDescription>Elige la opción correcta para completar la frase.</CardDescription>
+                <div className="flex flex-wrap gap-2 pt-4">
+                    {data.map((_, idx) => (
+                        <button
+                            key={idx}
+                            onClick={() => setCurrentIndex(idx)}
+                            className={cn(
+                                "h-8 w-8 rounded-full flex items-center justify-center font-bold border-2 transition-all",
+                                currentIndex === idx ? "border-primary ring-2 ring-primary ring-offset-1" : "border-muted-foreground/30",
+                                validation[idx] === 'correct' && "bg-green-500 border-green-500 text-white",
+                                validation[idx] === 'incorrect' && "bg-red-500 border-red-500 text-white"
+                            )}
+                        >
+                            {idx + 1}
+                        </button>
+                    ))}
+                </div>
+            </CardHeader>
+            <CardContent className="space-y-8 pt-6 min-h-[300px] flex flex-col justify-center">
+                <div className="text-center space-y-8">
+                    <div className="p-8 bg-muted rounded-2xl border-2 border-dashed text-2xl font-bold leading-relaxed">
+                        {currentPrompt.sentence.split('__________________').map((part, i, arr) => (
+                            <React.Fragment key={i}>
+                                {part}
+                                {i < arr.length - 1 && (
+                                    <span className={cn(
+                                        "px-2 underline min-w-[100px] inline-block",
+                                        validation[currentIndex] === 'correct' ? "text-green-600" : (validation[currentIndex] === 'incorrect' ? "text-red-500" : "text-primary")
+                                    )}>
+                                        {selections[currentIndex] || "__________________"}
+                                    </span>
+                                )}
+                            </React.Fragment>
+                        ))}
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-2xl mx-auto">
+                        {currentPrompt.options.map(opt => (
+                            <Button
+                                key={opt}
+                                variant={selections[currentIndex] === opt ? "default" : "outline"}
+                                onClick={() => handleSelect(opt)}
+                                className={cn(
+                                    "h-14 text-lg font-bold border-2",
+                                    selections[currentIndex] === opt && validation[currentIndex] === 'correct' && "bg-green-600 border-green-600 hover:bg-green-700",
+                                    selections[currentIndex] === opt && validation[currentIndex] === 'incorrect' && "bg-red-600 border-red-600 hover:bg-red-700"
+                                )}
+                            >
+                                {opt}
+                            </Button>
+                        ))}
+                    </div>
+                </div>
+            </CardContent>
+            <CardFooter className="justify-between border-t pt-6">
+                <Button variant="outline" onClick={() => setCurrentIndex(p => Math.max(0, p - 1))} disabled={currentIndex === 0}>
+                    <ArrowLeft className="mr-2 h-4 w-4" /> Anterior
+                </Button>
+                <Button onClick={() => setIsFinished(true)} disabled={!allCorrect} className={cn(allCorrect && "animate-pulse-glow")}>
+                    Finalizar <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
             </CardFooter>
         </Card>
     );
@@ -490,17 +622,11 @@ export default function EngA1Class14Page() {
                 );
             case 'ex1':
                 return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-                        <CardHeader>
-                            <CardTitle>Exercise 1</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p>Contenido del ejercicio 1 próximamente.</p>
-                        </CardContent>
-                        <CardFooter>
-                            <Button onClick={() => handleTopicComplete('ex1')}>Finalizar Ejercicio</Button>
-                        </CardFooter>
-                    </Card>
+                    <OptionsChoiceExercise 
+                        data={class14Exercise1Data} 
+                        onComplete={() => handleTopicComplete('ex1')} 
+                        title="EXERCISE: COMPARATIVOS Y SUPERLATIVOS" 
+                    />
                 );
             case 'general_ex':
                 return (
