@@ -17,13 +17,9 @@ import {
     ArrowRight,
     Pencil,
     Clock,
-    Check,
-    Info,
-    Globe,
     ArrowLeft,
     Trophy,
     Activity,
-    Calendar,
     MousePointer2,
     BookText,
     Sparkles
@@ -49,7 +45,7 @@ type Topic = {
   status: 'completed' | 'active' | 'locked';
 };
 
-const progressStorageVersion = 'progress_a1_eng_u3_c12_v22_last_ex_fixed';
+const progressStorageVersion = 'progress_a1_eng_u3_c12_v25_final_flow';
 const mainProgressKey = 'progress_a1_eng_unit_3_class_12';
 
 const timeExpressionsData = [
@@ -115,7 +111,7 @@ const class12Exercise4Data = [
         spanish: "¿TÚ ESTUDIAS? - ¿ESTÁS ESTUDIANDO?", 
         answers: { 
             ans1: ["do you study?"], 
-            ans2: ["are you studying?", "are you studying?"] 
+            ans2: ["are you studying?"] 
         },
         labels: { ans1: "Present Simple", ans2: "Present Continuous" }
     },
@@ -139,7 +135,7 @@ const class12Exercise4Data = [
         spanish: "¿QUE HACES? – ¿QUE ESTAS HACIENDO?", 
         answers: { 
             ans1: ["what do you do?"], 
-            ans2: ["what are you doing?", "what're you doing?"] 
+            ans2: ["what are you doing?"] 
         },
         labels: { ans1: "Present Simple", ans2: "Present Continuous" }
     },
@@ -147,7 +143,7 @@ const class12Exercise4Data = [
         spanish: "¿A DONDE ESTAS YENDO? - ¿A DONDE VAS?", 
         answers: { 
             ans1: ["where do you go?"], 
-            ans2: ["where are you going?", "where're you going?"] 
+            ans2: ["where are you going?"] 
         },
         labels: { ans1: "Present Simple", ans2: "Present Continuous" }
     },
@@ -155,7 +151,7 @@ const class12Exercise4Data = [
         spanish: "¿DONDE TRABAJAS? –¿DONDE ESTAS TRABAJANDO?", 
         answers: { 
             ans1: ["where do you work?"], 
-            ans2: ["where are you working?", "where're you working?"] 
+            ans2: ["where are you working?"] 
         },
         labels: { ans1: "Present Simple", ans2: "Present Continuous" }
     },
@@ -179,10 +175,40 @@ const class12Exercise4Data = [
         spanish: "¿TRABAJAS? - ¿ESTÁS TRABAJANDO?", 
         answers: { 
             ans1: ["do you work?"], 
-            ans2: ["are you working?", "are you working?"] 
+            ans2: ["are you working?"] 
         },
         labels: { ans1: "Present Simple", ans2: "Present Continuous" }
     },
+];
+
+const class12Exercise7Data = [
+    { parts: ["EVERY MONDAY SALLY ", " HER KIDS TO FOOTBALL PRACTICE."], options: ["DRIVES", "IS DRIVING"], correct: "DRIVES" },
+    { parts: ["", " NOW?"], options: ["DO YOU EAT", "ARE YOU EATING"], correct: "ARE YOU EATING" },
+    { parts: ["I ", " THE KITCHEN EVERY DAY."], options: ["CLEAN", "AM CLEANING"], correct: "CLEAN" },
+    { parts: ["THE MOVIE ", " AT 3 PM."], options: ["STARTS", "IS STARTING"], correct: "STARTS" },
+    { parts: ["BOB ", " IN A RESTAURANT (EN GENERAL)"], options: ["WORKS", "IS WORKING"], correct: "WORKS" },
+    { parts: ["SHHHHHHHHHHH! BE QUIET! JOHN ", ""], options: ["SLEEPS", "IS SLEEPING"], correct: "IS SLEEPING" },
+    { parts: ["YOU ", " CHOCOLATE"], options: ["DON’T LIKE", "ARE NOT LIKING"], correct: "DON’T LIKE" },
+    { parts: ["THE CHILDREN ", " OUT SIDE AT THE MOMENT."], options: ["PLAY", "ARE PLAYING"], correct: "ARE PLAYING" },
+    { parts: ["SAM ", " A CAT"], options: ["HAS", "IS HAVING"], correct: "HAS" },
+    { parts: ["THEY ", " NOW."], options: ["STUDY", "ARE STUDYING"], correct: "ARE STUDYING" },
+    { parts: ["SMELLS GOOD! WHAT ", "?"], options: ["DO YOU MAKE", "ARE YOU MAKING"], correct: "ARE YOU MAKING" },
+    { parts: ["THEY ", " RICE EVERY DAY."], options: ["DON’T EAT", "AREN’T EATING"], correct: "DON’T EAT" },
+    { parts: ["SHE ", " AT THE MOMENT."], options: ["DOESN’T STUDY", "ISN’T STUDYING"], correct: "ISN’T STUDYING" },
+    { parts: ["JANE ", " PIZZA."], options: ["LOVES", "IS LOVING"], correct: "LOVES" },
+];
+
+const class12Exercise8Data: ShortAnswerPresentSimplePrompt[] = [
+    { question: "IS SHE GOING TO WORK?", answers: { shortAffirmative: ["yes, she is"], shortNegative: ["no, she is not", "no, she isn't"] } },
+    { question: "DO THEY STUDY GERMAN?", answers: { shortAffirmative: ["yes, they do"], shortNegative: ["no, they do not", "no, they don't"] } },
+    { question: "DOES SHE TRAVEL TO MIAMI?", answers: { shortAffirmative: ["yes, she does"], shortNegative: ["no, she does not", "no, she doesn't"] } },
+    { question: "ARE THEY LEARNING ENGLISH?", answers: { shortAffirmative: ["yes, they are"], shortNegative: ["no, they are not", "no, they aren't"] } },
+    { question: "IS SHE WALKING FAST?", answers: { shortAffirmative: ["yes, she is"], shortNegative: ["no, she is not", "no, she isn't"] } },
+    { question: "DOES SHE SPEAK ITALIAN?", answers: { shortAffirmative: ["yes, she does"], shortNegative: ["no, she does not", "no, she doesn't"] } },
+    { question: "ARE WE GOING TO NEW YORK?", answers: { shortAffirmative: ["yes, we are"], shortNegative: ["no, we are not", "no, we aren't"] } },
+    { question: "DO YOU GO TO SCHOOL TODAY?", answers: { shortAffirmative: ["yes, i do"], shortNegative: ["no, i do not", "no, i don't"] } },
+    { question: "IS HE CALLING HIS FAMILY?", answers: { shortAffirmative: ["yes, he is"], shortNegative: ["no, he is not", "no, he isn't"] } },
+    { question: "IS SHE EATING SUSHI?", answers: { shortAffirmative: ["yes, she is"], shortNegative: ["no, she is not", "no, she isn't"] } },
 ];
 
 const class12Exercise9Data = [
@@ -246,7 +272,7 @@ const class12Exercise9Data = [
         spanish: "¿ESTAS LAVANDO TU CARRO? - ¿LAVAS SU CARRO LOS DOMINGOS? (DE ÉL)", 
         answers: { 
             ans1: ["do you wash his car on sundays?"], 
-            ans2: ["are you washing your car?", "are you washing your car?"] 
+            ans2: ["are you washing your car?"] 
         },
         labels: { ans1: "Present Simple", ans2: "Present Continuous" }
     },
@@ -262,7 +288,7 @@ const class12Exercise9Data = [
         spanish: "¿ESTÁS JUGANDO CON ELLOS? - ¿JUEGAS CON NOSOTROS?", 
         answers: { 
             ans1: ["do you play with us?"], 
-            ans2: ["are you playing with them?", "are you playing with them?"] 
+            ans2: ["are you playing with them?"] 
         },
         labels: { ans1: "Present Simple", ans2: "Present Continuous" }
     },
@@ -278,23 +304,6 @@ const ex9Vocab = {
     "con nosotros": "with us",
     "con ellos": "with them"
 };
-
-const class12Exercise7Data = [
-    { parts: ["EVERY MONDAY SALLY ", " HER KIDS TO FOOTBALL PRACTICE."], options: ["DRIVES", "IS DRIVING"], correct: "DRIVES" },
-    { parts: ["", " NOW?"], options: ["DO YOU EAT", "ARE YOU EATING"], correct: "ARE YOU EATING" },
-    { parts: ["I ", " THE KITCHEN EVERY DAY."], options: ["CLEAN", "AM CLEANING"], correct: "CLEAN" },
-    { parts: ["THE MOVIE ", " AT 3 PM."], options: ["STARTS", "IS STARTING"], correct: "STARTS" },
-    { parts: ["BOB ", " IN A RESTAURANT (EN GENERAL)"], options: ["WORKS", "IS WORKING"], correct: "WORKS" },
-    { parts: ["SHHHHHHHHHHH! BE QUIET! JOHN ", ""], options: ["SLEEPS", "IS SLEEPING"], correct: "IS SLEEPING" },
-    { parts: ["YOU ", " CHOCOLATE"], options: ["DON’T LIKE", "ARE NOT LIKING"], correct: "DON’T LIKE" },
-    { parts: ["THE CHILDREN ", " OUT SIDE AT THE MOMENT."], options: ["PLAY", "ARE PLAYING"], correct: "ARE PLAYING" },
-    { parts: ["SAM ", " A CAT"], options: ["HAS", "IS HAVING"], correct: "HAS" },
-    { parts: ["THEY ", " NOW."], options: ["STUDY", "ARE STUDYING"], correct: "ARE STUDYING" },
-    { parts: ["SMELLS GOOD! WHAT ", "?"], options: ["DO YOU MAKE", "ARE YOU MAKING"], correct: "ARE YOU MAKING" },
-    { parts: ["THEY ", " RICE EVERY DAY."], options: ["DON’T EAT", "AREN’T EATING"], correct: "DON’T EAT" },
-    { parts: ["SHE ", " AT THE MOMENT."], options: ["DOESN’T STUDY", "ISN’T STUDYING"], correct: "ISN’T STUDYING" },
-    { parts: ["JANE ", " PIZZA."], options: ["LOVES", "IS LOVING"], correct: "LOVES" },
-];
 
 const lastExerciseData = [
     { sentence: "TOM ________ FOOTBALL IN A SCHOOL TEAM.", options: ["PLAYS", "IS PLAYING"], correct: "PLAYS" },
@@ -438,7 +447,6 @@ const LastExerciseComp = ({ onComplete }: { onComplete: () => void }) => {
         newS[currentIndex] = option;
         setSelections(newS);
         
-        // Auto-advance if not at the end
         if (currentIndex < lastExerciseData.length - 1) {
             setTimeout(() => setCurrentIndex(prev => prev + 1), 300);
         }
@@ -648,14 +656,15 @@ const DualTranslationExercise = ({
                         </Popover>
                     )}
                 </div>
-                <div className="flex flex-wrap gap-2 pt-4">
+                <div className="flex items-center justify-start flex-wrap gap-2 pt-4">
                     {data.map((_, idx) => (
                         <button
                             key={idx}
                             onClick={() => setCurrentIndex(idx)}
                             className={cn(
-                                "h-6 w-6 rounded-full flex items-center justify-center text-[10px] font-bold border transition-all",
-                                currentIndex === idx ? "bg-primary border-primary text-white" : "bg-muted border-border"
+                                "h-8 w-8 rounded-full flex items-center justify-center font-bold border-2 transition-all",
+                                currentIndex === idx ? "border-primary ring-2 ring-primary" : "border-muted-foreground/50",
+                                validation[idx as any] === 'correct' ? "bg-green-500/20 border-green-500 text-green-700" : ""
                             )}
                         >
                             {idx + 1}
@@ -788,7 +797,7 @@ export default function EngA1Class12Page() {
 
         updateDocumentNonBlocking(studentDocRef, { 
             [`lessonProgress.${progressStorageVersion}`]: statusesToSave,
-            [`progress.${mainProgressKey}`]: Math.round(progressValue)
+            [`progress.${mainProgressKey}`]: progressValue
         });
         
         if (progressValue >= 100) {
@@ -870,8 +879,6 @@ export default function EngA1Class12Page() {
     };
 
     const renderContent = () => {
-        const topic = learningPath.find(t => t.key === selectedTopic);
-
         switch (selectedTopic) {
             case 'vocabulary':
                 return (
@@ -937,7 +944,7 @@ export default function EngA1Class12Page() {
                                 </h3>
                                 
                                 <div className="grid gap-4">
-                                    <div className="p-4 border rounded-xl bg-background shadow-sm hover:shadow-md transition-shadow">
+                                    <div className="p-4 border rounded-xl bg-background shadow-sm">
                                         <div className="flex items-center gap-2 mb-2">
                                             <div className="h-6 w-6 rounded-full bg-green-500 flex items-center justify-center text-white font-bold text-sm">+</div>
                                             <h4 className="font-bold text-lg">AFIRMATIVA</h4>
@@ -945,10 +952,9 @@ export default function EngA1Class12Page() {
                                         <p className="font-mono text-base bg-muted p-2 rounded">
                                             Pronoun + <span className="text-primary font-bold">To Be</span> + Verb <span className="underline text-brand-purple font-bold">ING</span> + Complement
                                         </p>
-                                        <p className="text-sm text-muted-foreground mt-2 italic">Example: I am working now. (Yo estoy trabajando ahora).</p>
                                     </div>
 
-                                    <div className="p-4 border rounded-xl bg-background shadow-sm hover:shadow-md transition-shadow">
+                                    <div className="p-4 border rounded-xl bg-background shadow-sm">
                                         <div className="flex items-center gap-2 mb-2">
                                             <div className="h-6 w-6 rounded-full bg-red-500 flex items-center justify-center text-white font-bold text-sm">-</div>
                                             <h4 className="font-bold text-lg">NEGATIVA</h4>
@@ -956,10 +962,9 @@ export default function EngA1Class12Page() {
                                         <p className="font-mono text-base bg-muted p-2 rounded">
                                             Pronoun + <span className="text-primary font-bold">To Be</span> + <span className="text-red-500 font-bold">NOT</span> + Verb <span className="underline text-brand-purple font-bold">ING</span> + Complement
                                         </p>
-                                        <p className="text-sm text-muted-foreground mt-2 italic">Example: She is not sleeping. (Ella no está durmiendo).</p>
                                     </div>
 
-                                    <div className="p-4 border rounded-xl bg-background shadow-sm hover:shadow-md transition-shadow">
+                                    <div className="p-4 border rounded-xl bg-background shadow-sm">
                                         <div className="flex items-center gap-2 mb-2">
                                             <div className="h-6 w-6 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-sm">?</div>
                                             <h4 className="font-bold text-lg">INTERROGATIVA</h4>
@@ -967,27 +972,6 @@ export default function EngA1Class12Page() {
                                         <p className="font-mono text-base bg-muted p-2 rounded">
                                             <span className="text-primary font-bold">To Be</span> + Pronoun + Verb <span className="underline text-brand-purple font-bold">ING</span> + Complement?
                                         </p>
-                                        <p className="text-sm text-muted-foreground mt-2 italic">Example: Are they playing soccer? (¿Están ellos jugando futbol?).</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <Separator />
-
-                            <div className="space-y-4">
-                                <h3 className="text-xl font-black text-primary uppercase tracking-widest flex items-center gap-2">
-                                    SHORT ANSWERS (Respuestas Cortas):
-                                </h3>
-                                <div className="grid sm:grid-cols-2 gap-4 font-mono">
-                                    <div className="p-4 bg-green-50 dark:bg-green-900/10 border border-green-200 rounded-xl">
-                                        <p className="font-bold text-green-700 dark:text-green-400 mb-1">(+A) POSITIVA</p>
-                                        <p className="text-lg">Yes, Pronoun + To be</p>
-                                        <p className="text-xs text-muted-foreground mt-1">Ex: Yes, I am. / Yes, he is.</p>
-                                    </div>
-                                    <div className="p-4 bg-red-50 dark:bg-red-900/10 border border-red-200 rounded-xl">
-                                        <p className="font-bold text-red-700 dark:text-red-400 mb-1">(-A) NEGATIVA</p>
-                                        <p className="text-lg">No, Pronoun + To be + Not</p>
-                                        <p className="text-xs text-muted-foreground mt-1">Ex: No, I am not. / No, they aren't.</p>
                                     </div>
                                 </div>
                             </div>
@@ -1000,13 +984,7 @@ export default function EngA1Class12Page() {
                     </Card>
                 );
             case 'ex1':
-                const vocabEx1 = {
-                    "programación": "programming",
-                    "escuchando": "listening",
-                    "abuela": "grandmother / grandma",
-                    "llegando": "arriving"
-                };
-                return <SimpleTranslationExercise exerciseKey="c12_ex1" course="a1" onComplete={() => handleTopicComplete('ex1')} title="Exercise 1" vocabulary={vocabEx1} />;
+                return <SimpleTranslationExercise exerciseKey="c12_ex1" course="a1" onComplete={() => handleTopicComplete('ex1')} title="Exercise 1" />;
             case 'grammar2':
                 return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
@@ -1043,86 +1021,10 @@ export default function EngA1Class12Page() {
                                             <div className="p-3 bg-muted rounded-lg font-mono space-y-1">
                                                 <p>To stop {"=>"} <span className="text-primary font-bold">Stopping</span></p>
                                                 <p>To sit {"=>"} <span className="text-primary font-bold">Sitting</span></p>
-                                                <p>To win {"=>"} <span className="text-primary font-bold">Winning</span></p>
                                             </div>
-                                            <div className="space-y-2">
-                                                <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 rounded-lg">
-                                                    <h5 className="font-bold text-red-700 dark:text-red-400 text-xs uppercase mb-1">Exception (X, W, Z):</h5>
-                                                    <p className="font-mono text-sm">To fix {"=>"} <span className="font-bold">Fixing</span></p>
-                                                    <p className="font-mono text-sm">To draw {"=>"} <span className="font-bold">Drawing</span></p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 rounded-lg">
-                                            <h5 className="font-bold text-blue-700 dark:text-blue-400 text-xs uppercase mb-1">Nota:</h5>
-                                            <p className="text-sm">Si hay <strong>más de una vocal</strong>, NO duplicamos la consonante.</p>
-                                            <p className="font-mono text-sm mt-1">To read {"=>"} Reading // To open {"=>"} Opening</p>
-                                        </div>
-                                    </AccordionContent>
-                                </AccordionItem>
-
-                                <AccordionItem value="rule-3" className="border-2 rounded-xl px-4">
-                                    <AccordionTrigger className="text-lg font-bold">3. Verbos Bisilábicos</AccordionTrigger>
-                                    <AccordionContent className="space-y-4 pt-2">
-                                        <div className="grid md:grid-cols-2 gap-4">
-                                            <div className="p-3 bg-muted rounded-lg border-l-4 border-primary">
-                                                <h5 className="font-bold text-sm mb-1">Acento en la 2ª sílaba:</h5>
-                                                <p className="text-xs text-muted-foreground mb-2">La consonante final se dobla.</p>
-                                                <div className="font-mono text-sm">
-                                                    <p>To begin {"=>"} <span className="font-bold">Beginning</span></p>
-                                                    <p>To prefer {"=>"} <span className="font-bold">Preferring</span></p>
-                                                </div>
-                                            </div>
-                                            <div className="p-3 bg-muted rounded-lg border-l-4 border-muted-foreground">
-                                                <h5 className="font-bold text-sm mb-1">Acento en la 1ª sílaba:</h5>
-                                                <p className="text-xs text-muted-foreground mb-2">No existen modificaciones.</p>
-                                                <div className="font-mono text-sm">
-                                                    <p>To visit {"=>"} <span className="font-bold">Visiting</span></p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </AccordionContent>
-                                </AccordionItem>
-
-                                <AccordionItem value="rule-4" className="border-2 rounded-xl px-4">
-                                    <AccordionTrigger className="text-lg font-bold">4. Verbos terminados en "Y"</AccordionTrigger>
-                                    <AccordionContent className="space-y-2 pt-2">
-                                        <p className="text-muted-foreground">No existen modificaciones cuando el verbo acaba en vocal o consonante + <strong>Y</strong>.</p>
-                                        <div className="p-3 bg-muted rounded-lg font-mono">
-                                            <p>To play {"=>"} <span className="text-primary font-bold">Playing</span></p>
-                                            <p>To study {"=>"} <span className="text-primary font-bold">Studying</span></p>
-                                        </div>
-                                    </AccordionContent>
-                                </AccordionItem>
-
-                                <AccordionItem value="rule-5" className="border-2 rounded-xl px-4">
-                                    <AccordionTrigger className="text-lg font-bold">5. Verbos terminados en "-IE"</AccordionTrigger>
-                                    <AccordionContent className="space-y-2 pt-2">
-                                        <p className="text-muted-foreground">Cambiamos este grupo de vocales por una <strong>"Y"</strong> delante de la terminación <strong>-ing</strong>.</p>
-                                        <div className="p-3 bg-muted rounded-lg font-mono text-center text-xl">
-                                            <p>To die {"=>"} <span className="text-primary font-bold italic">Dying</span></p>
-                                        </div>
-                                    </AccordionContent>
-                                </AccordionItem>
-
-                                <AccordionItem value="rule-6" className="border-2 rounded-xl px-4">
-                                    <AccordionTrigger className="text-lg font-bold">6. Inglés Británico vs Americano</AccordionTrigger>
-                                    <AccordionContent className="space-y-4 pt-2">
-                                        <p className="text-muted-foreground italic text-sm">Ejemplo con el verbo "Travel":</p>
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <div className="p-4 bg-muted rounded-xl text-center border">
-                                                <h5 className="font-bold text-primary flex items-center justify-center gap-2">
-                                                    <Globe className="h-4 w-4" /> UK
-                                                </h5>
-                                                <p className="font-mono text-lg font-black">Travelling</p>
-                                                <p className="text-[10px] text-muted-foreground">(Dobla la "L")</p>
-                                            </div>
-                                            <div className="p-4 bg-muted rounded-xl text-center border">
-                                                <h5 className="font-bold text-primary flex items-center justify-center gap-2">
-                                                    <Globe className="h-4 w-4" /> USA
-                                                </h5>
-                                                <p className="font-mono text-lg font-black">Traveling</p>
-                                                <p className="text-[10px] text-muted-foreground">(Una sola "L")</p>
+                                            <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 rounded-lg">
+                                                <h5 className="font-bold text-red-700 dark:text-red-400 text-xs uppercase mb-1">Exception (X, W, Z):</h5>
+                                                <p className="font-mono text-sm">To fix {"=>"} <span className="font-bold">Fixing</span></p>
                                             </div>
                                         </div>
                                     </AccordionContent>
@@ -1130,32 +1032,21 @@ export default function EngA1Class12Page() {
                             </Accordion>
                         </CardContent>
                         <CardFooter className="justify-center pt-6 border-t">
-                            <Button onClick={() => handleTopicComplete('grammar2')} size="lg" className="px-12">He terminado de estudiar</Button>
+                            <Button onClick={() => handleTopicComplete('grammar2')} size="lg" className="px-12">Continuar</Button>
                         </CardFooter>
                     </Card>
                 );
             case 'ex2':
-                const vocabEx2 = {
-                    "mejor": "better",
-                    "cirugía": "surgery",
-                    "enseñando": "teaching",
-                    "comenzando": "beginning",
-                    "camión": "truck",
-                    "ganando": "winning"
-                };
-                return <SimpleTranslationExercise exerciseKey="c12_ex2" course="a1" onComplete={() => handleTopicComplete('ex2')} title="Exercise 2" vocabulary={vocabEx2} />;
+                return <SimpleTranslationExercise exerciseKey="c12_ex2" course="a1" onComplete={() => handleTopicComplete('ex2')} title="Exercise 2" />;
             case 'create1':
                 return (
                     <CreativeWritingExercise
                         title="Create 1"
                         description="ESCRIBE 2 FRASES AFIRMATIVAS, 2 NEGATIVAS, 2 INTERROGATIVAS CON EL PRESENTE CONTINUO."
                         prompts={[
-                            { id: 'af1', question: '1. AF.' },
-                            { id: 'af2', question: '2. AF.' },
-                            { id: 'neg1', question: '1. NEG.' },
-                            { id: 'neg2', question: '2. NEG.' },
-                            { id: 'int1', question: '1. INT.' },
-                            { id: 'int2', question: '2. INT.' },
+                            { id: 'af1', question: '1. AF.' }, { id: 'af2', question: '2. AF.' },
+                            { id: 'neg1', question: '1. NEG.' }, { id: 'neg2', question: '2. NEG.' },
+                            { id: 'int1', question: '1. INT.' }, { id: 'int2', question: '2. INT.' },
                         ]}
                         onComplete={() => handleTopicComplete('create1')}
                         studentDocRef={studentDocRef}
@@ -1165,30 +1056,11 @@ export default function EngA1Class12Page() {
                     />
                 );
             case 'ex3':
-                return (
-                    <ShortAnswerPresentSimpleExercise
-                        title="Exercise 3: Short Answers"
-                        description="Escribe las dos respuestas cortas para cada pregunta (+A) y (-A)."
-                        exerciseData={class12Exercise3Data}
-                        onComplete={() => handleTopicComplete('ex3')}
-                    />
-                );
+                return <ShortAnswerPresentSimpleExercise title="Exercise 3" description="Respuestas cortas (+A y -A)" exerciseData={class12Exercise3Data} onComplete={() => handleTopicComplete('ex3')} />;
             case 'ex4':
-                return <DualTranslationExercise onComplete={() => handleTopicComplete('ex4')} data={class12Exercise4Data} title="Exercise 4: Simple vs Continuous" />;
+                return <DualTranslationExercise onComplete={() => handleTopicComplete('ex4')} data={class12Exercise4Data} title="Exercise 4" />;
             case 'ex5':
-                const vocabEx5 = {
-                    "colegio": "school",
-                    "biblioteca": "library",
-                    "empresa": "company",
-                    "calle": "street",
-                    "parque": "park",
-                    "vino": "wine",
-                    "vodka": "vodka",
-                    "jugo de naranja": "orange juice",
-                    "jardín": "garden",
-                    "caminando": "walking"
-                };
-                return <SimpleTranslationExercise exerciseKey="c12_ex5" course="a1" onComplete={() => handleTopicComplete('ex5')} title="Exercise 5" vocabulary={vocabEx5} />;
+                return <SimpleTranslationExercise exerciseKey="c12_ex5" course="a1" onComplete={() => handleTopicComplete('ex5')} title="Exercise 5" />;
             case 'grammar3':
                 return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
@@ -1199,133 +1071,37 @@ export default function EngA1Class12Page() {
                             </div>
                         </CardHeader>
                         <CardContent className="p-6 space-y-8">
-                            {/* Present Simple Uses */}
-                            <div className="space-y-4">
-                                <h3 className="text-xl font-black text-brand-purple uppercase tracking-widest flex items-center gap-2">
-                                    <Activity className="h-5 w-5" /> USOS DEL PRESENTE SIMPLE:
-                                </h3>
-                                
-                                <Accordion type="multiple" defaultValue={['ps-1', 'ps-2', 'ps-3', 'ps-4', 'ps-5', 'ps-6']} className="w-full space-y-2">
-                                    <AccordionItem value="ps-1" className="border rounded-lg px-4">
-                                        <AccordionTrigger className="font-bold">Routine (Rutina)</AccordionTrigger>
-                                        <AccordionContent className="font-mono text-sm space-y-1">
-                                            <p>I always open the door.</p>
-                                            <p>She plays in the park on Sundays.</p>
-                                        </AccordionContent>
-                                    </AccordionItem>
-                                    
-                                    <AccordionItem value="ps-2" className="border rounded-lg px-4">
-                                        <AccordionTrigger className="font-bold">Give instruction (Dar instrucciones)</AccordionTrigger>
-                                        <AccordionContent className="font-mono text-sm space-y-1">
-                                            <p>Open the window, please.</p>
-                                            <p>Come here! – Sit down! – Don’t smoke here.</p>
-                                        </AccordionContent>
-                                    </AccordionItem>
-                                    
-                                    <AccordionItem value="ps-3" className="border rounded-lg px-4">
-                                        <AccordionTrigger className="font-bold">Transportation & Events (Horarios)</AccordionTrigger>
-                                        <AccordionContent className="font-mono text-sm space-y-1">
-                                            <p>The train leaves at 8:00pm.</p>
-                                            <p>Her plain won’t arrive today due to bad weather.</p>
-                                            <p>The party is tonight – The movie starts at 6 pm.</p>
-                                        </AccordionContent>
-                                    </AccordionItem>
-
-                                    <AccordionItem value="ps-4" className="border rounded-lg px-4">
-                                        <AccordionTrigger className="font-bold">Scientific facts (Hechos científicos)</AccordionTrigger>
-                                        <AccordionContent className="font-mono text-sm space-y-1">
-                                            <p>The sun warms the atmosphere.</p>
-                                            <p>Water boils at 100 degrees (el agua hierve a 100 grados).</p>
-                                        </AccordionContent>
-                                    </AccordionItem>
-
-                                    <AccordionItem value="ps-5" className="border rounded-lg px-4">
-                                        <AccordionTrigger className="font-bold">General truth (Verdades generales)</AccordionTrigger>
-                                        <AccordionContent className="font-mono text-sm space-y-1">
-                                            <p>He likes football.</p>
-                                            <p>We go to bed at 10 pm.</p>
-                                            <p>He doesn’t eat vegetables because he doesn’t like it.</p>
-                                        </AccordionContent>
-                                    </AccordionItem>
-
-                                    <AccordionItem value="ps-6" className="border rounded-lg px-4">
-                                        <AccordionTrigger className="font-bold">Permanent situation (Situación permanente)</AccordionTrigger>
-                                        <AccordionContent className="font-mono text-sm space-y-1">
-                                            <p>She has a car.</p>
-                                            <p>They work in Europe.</p>
-                                            <p>I have 2 children.</p>
-                                        </AccordionContent>
-                                    </AccordionItem>
-                                </Accordion>
-                            </div>
-
-                            <Separator />
-
-                            {/* Present Continuous Uses */}
-                            <div className="space-y-4">
-                                <h3 className="text-xl font-black text-primary uppercase tracking-widest flex items-center gap-2">
-                                    <MousePointer2 className="h-5 w-5" /> USOS DEL PRESENTE CONTINUO:
-                                </h3>
-                                
-                                <Accordion type="multiple" defaultValue={['pc-1', 'pc-2', 'pc-3']} className="w-full space-y-2">
-                                    <AccordionItem value="pc-1" className="border rounded-lg px-4">
-                                        <AccordionTrigger className="font-bold text-left">Something happening right now (Ahora mismo)</AccordionTrigger>
-                                        <AccordionContent className="space-y-3">
-                                            <p className="text-xs text-muted-foreground italic">Specific action at the moment of speaking:</p>
-                                            <div className="font-mono text-sm space-y-1">
-                                                <p>I’m studying English now (Estoy estudiando ahora).</p>
-                                                <p>He’s eating vegetables with meat (Él está comiendo).</p>
-                                                <p>Is it raining? (¿Está lloviendo?).</p>
-                                            </div>
-                                        </AccordionContent>
-                                    </AccordionItem>
-
-                                    <AccordionItem value="pc-2" className="border rounded-lg px-4">
-                                        <AccordionTrigger className="font-bold text-left">Currently happening (Temporalmente actualmente)</AccordionTrigger>
-                                        <AccordionContent className="space-y-3">
-                                            <p className="text-xs text-muted-foreground italic">Something that is happening currently but it isn’t necessarily at the moment we speak. Uses expressions: currently, recently, these days.</p>
-                                            <div className="font-mono text-sm space-y-1">
-                                                <p>They are learning Italian these days.</p>
-                                                <p>She’s currently looking for a job.</p>
-                                                <p>Are you lately working on that project?</p>
-                                            </div>
-                                        </AccordionContent>
-                                    </AccordionItem>
-
-                                    <AccordionItem value="pc-3" className="border rounded-lg px-4">
-                                        <AccordionTrigger className="font-bold text-left">Decided future plans (Planes futuros decididos)</AccordionTrigger>
-                                        <AccordionContent className="space-y-3">
-                                            <p className="text-xs text-muted-foreground italic">Se usa para hablar de algo que está decidido que se hará en el futuro.</p>
-                                            <div className="font-mono text-sm space-y-1">
-                                                <p>I’m going to the party tonight.</p>
-                                                <p>He’s not coming to class ‘cause he’s sick.</p>
-                                                <p>Are you working in that company next week?</p>
-                                            </div>
-                                        </AccordionContent>
-                                    </AccordionItem>
-                                </Accordion>
-                            </div>
+                            <Accordion type="multiple" defaultValue={['ps', 'pc']} className="w-full space-y-4">
+                                <AccordionItem value="ps" className="border rounded-xl px-4">
+                                    <AccordionTrigger className="text-lg font-bold">Usos del Presente Simple</AccordionTrigger>
+                                    <AccordionContent className="space-y-2 pt-2">
+                                        <p><strong>Rutinas:</strong> I always open the door.</p>
+                                        <p><strong>Instrucciones:</strong> Open the window, please.</p>
+                                        <p><strong>Horarios:</strong> The train leaves at 8:00pm.</p>
+                                        <p><strong>Hechos:</strong> The sun warms the atmosphere.</p>
+                                    </AccordionContent>
+                                </AccordionItem>
+                                <AccordionItem value="pc" className="border rounded-xl px-4">
+                                    <AccordionTrigger className="text-lg font-bold">Usos del Presente Continuo</AccordionTrigger>
+                                    <AccordionContent className="space-y-2 pt-2">
+                                        <p><strong>Acciones ahora:</strong> I'm studying English now.</p>
+                                        <p><strong>Acciones temporales:</strong> They are learning Italian these days.</p>
+                                        <p><strong>Planes futuros:</strong> I'm going to the party tonight.</p>
+                                    </AccordionContent>
+                                </AccordionItem>
+                            </Accordion>
                         </CardContent>
                         <CardFooter className="justify-center border-t pt-6">
-                            <Button onClick={() => handleTopicComplete('grammar3')} size="lg" className="px-12">
-                                He terminado de estudiar los usos
-                            </Button>
+                            <Button onClick={() => handleTopicComplete('grammar3')} size="lg">Entendido</Button>
                         </CardFooter>
                     </Card>
                 );
             case 'ex6':
                 return <ChoiceExercise onComplete={() => handleTopicComplete('ex6')} />;
             case 'ex7':
-                return (
-                    <ShortAnswerPresentSimpleExercise
-                        title="Exercise 7: Short Answers"
-                        description="Escribe las dos respuestas cortas para cada pregunta de Present Simple y Present Continuous (+A) y (-A)."
-                        exerciseData={class12Exercise8Data}
-                        onComplete={() => handleTopicComplete('ex7')}
-                    />
-                );
+                return <ShortAnswerPresentSimpleExercise title="Exercise 7" description="Respuestas cortas mixtas" exerciseData={class12Exercise8Data} onComplete={() => handleTopicComplete('ex7')} />;
             case 'ex8':
-                return <DualTranslationExercise onComplete={() => handleTopicComplete('ex8')} data={class12Exercise9Data} title="Exercise 8: Simple vs Continuous" vocabulary={ex9Vocab} />;
+                return <DualTranslationExercise onComplete={() => handleTopicComplete('ex8')} data={class12Exercise9Data} title="Exercise 8" vocabulary={ex9Vocab} />;
             case 'last_ex':
                 return <LastExerciseComp onComplete={() => handleTopicComplete('last_ex')} />;
             default:
