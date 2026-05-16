@@ -19,7 +19,8 @@ import {
     Check,
     X,
     Trophy,
-    ArrowLeft
+    ArrowLeft,
+    BookText
 } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
@@ -29,6 +30,8 @@ import { doc } from 'firebase/firestore';
 import { Input } from '@/components/ui/input';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Label } from '@/components/ui/label';
 
 type TopicStatus = 'completed' | 'active' | 'locked';
 
@@ -39,7 +42,7 @@ type Topic = {
   status: TopicStatus;
 };
 
-const progressStorageVersion = 'progress_a1_eng_u3_c14_v10_general_vocab';
+const progressStorageVersion = 'progress_a1_eng_u3_c14_v11_final_revision';
 const mainProgressKey = 'progress_a1_eng_unit_3_class_14';
 
 const vocabularyData = {
@@ -87,7 +90,7 @@ const class14Exercise1Data = [
     { sentence: "ARE THEY _______________ THAN THEM?", options: ["THE MOST FAMOUS", "MORE FAMOUS", "FAMOUSER", "FAMOUS"], correct: "MORE FAMOUS" },
     { sentence: "I’M ________________________ OF MY FAMILY", options: ["THE MOST TALL", "TALLER", "THE TALLEST", "THE MORE TALL"], correct: "THE TALLEST" },
     { sentence: "ARE THEY ______________ THAN US?", options: ["YOUNG", "MORE YOUNG", "YOUNGER", "THE YOUNGESTS"], correct: "YOUNGER" },
-    { sentence: "THIS IS THE ____________________ VIDEO I’VE EVER SEEN!", options: ["FUNNIER", "THE MOST FUNNY", "THE FUNNIEST", "FUNNY"], correct: "FUNNIEST" },
+    { sentence: "THIS IS THE ____________________ VIDEO I’VE EVER SEEN!", options: ["FUNNIER", "THE MOST FUNNY", "THE FUNNIEST", "FUNNY"], correct: "THE FUNNIEST" },
     { sentence: "THIS BOX IS _________________________ THAN THE OTHER", options: ["THE LIGHTER", "LIGHTER", "THE LIGHTEST", "LIGHT"], correct: "LIGHTER" },
     { sentence: "JANE IS __________________________ THAN MARY", options: ["INTERESTINGER", "MORE INTERESTING", "INTERESTING", "THE INTERESTINGEST"], correct: "MORE INTERESTING" },
     { sentence: "HE IS ________________________ PILOT IN THE RACE", options: ["BAD", "THE WORST", "WORSE", "THE BADDEST"], correct: "THE WORST" },
@@ -96,6 +99,104 @@ const class14Exercise1Data = [
     { sentence: "THIS PLACE IS __________________________ OF THIS COUNTRY", options: ["MORE SAFE", "THE SAFEST", "THE MOST SAFE", "SAFER"], correct: "THE SAFEST" },
     { sentence: "TABUN IS _____________________ RESTAURANT IN MEDELLIN", options: ["THE BETTHER", "THE BEST", "BEST", "BETTER"], correct: "THE BEST" },
 ];
+
+const lastExerciseQuestions = [
+    { 
+        spanish: "¿TÚ TIO ESTA DURMIENDO?", 
+        answers: { 
+            question: ["is your uncle sleeping?"], 
+            pos: ["yes, he is"], 
+            neg: ["no, he is not", "no, he isn't"] 
+        } 
+    },
+    { 
+        spanish: "¿ESTÁS MANEJANDO UN CARRO O UNA MOTO?", 
+        answers: { 
+            question: ["are you driving a car or a motorcycle?", "are you driving a car or a motorbike?"], 
+            pos: ["yes, i am"], 
+            neg: ["no, i am not", "no, i'm not"] 
+        } 
+    },
+    { 
+        spanish: "¿NOSOTROS ESTAMOS ESTUDIANDO INGLES UNA VEZ A LA SEMANA?", 
+        answers: { 
+            question: ["are we studying english once a week?"], 
+            pos: ["yes, we are"], 
+            neg: ["no, we are not", "no, we aren't"] 
+        } 
+    },
+    { 
+        spanish: "¿ÉL ESTA DIBUJANDO?", 
+        answers: { 
+            question: ["is he drawing?"], 
+            pos: ["yes, he is"], 
+            neg: ["no, he is not", "no, he isn't"] 
+        } 
+    },
+    { 
+        spanish: "¿ELLOS ESTAN CANTANDO EN LA FIESTA?", 
+        answers: { 
+            question: ["are they singing at the party?", "are they singing in the party?"], 
+            pos: ["yes, they are"], 
+            neg: ["no, they are not", "no, they aren't"] 
+        } 
+    },
+    { 
+        spanish: "¿ESTÁS LLAMANDO A TU MAMÁ TODOS LOS DIAS?", 
+        answers: { 
+            question: ["are you calling your mother every day?", "are you calling your mom every day?"], 
+            pos: ["yes, i am"], 
+            neg: ["no, i am not", "no, i'm not"] 
+        } 
+    },
+    { 
+        spanish: "¿ELLA ESTÁ LEYENDO UN LIBRO?", 
+        answers: { 
+            question: ["is she reading a book?"], 
+            pos: ["yes, she is"], 
+            neg: ["no, she is not", "no, she isn't"] 
+        } 
+    },
+    { 
+        spanish: "¿ELLOS ESTÁN VIAJANDO?", 
+        answers: { 
+            question: ["are they traveling?", "are they travelling?"], 
+            pos: ["yes, they are"], 
+            neg: ["no, they are not", "no, they aren't"] 
+        } 
+    },
+    { 
+        spanish: "¿ÉL ESTÁ VIENDO TELEVISION?", 
+        answers: { 
+            question: ["is he watching television?", "is he watching tv?"], 
+            pos: ["yes, he is"], 
+            neg: ["no, he is not", "no, he isn't"] 
+        } 
+    },
+    { 
+        spanish: "¿MARK ESTA YENDO A LONDRES O ROMA?", 
+        answers: { 
+            question: ["is mark going to london or rome?"], 
+            pos: ["yes, he is"], 
+            neg: ["no, he is not", "no, he isn't"] 
+        } 
+    },
+];
+
+const lastExerciseVocab = {
+    "tio": "uncle",
+    "manejando": "driving",
+    "moto": "motorcycle / motorbike",
+    "estudiando": "studying",
+    "una vez a la semana": "once a week",
+    "dibujando": "drawing",
+    "cantando": "singing",
+    "llamando": "calling",
+    "leyendo": "reading",
+    "viajando": "traveling / travelling",
+    "viendo": "watching",
+    "yendo": "going"
+};
 
 const LinesWritingExercise = ({ 
     title, 
@@ -358,6 +459,221 @@ const OptionsChoiceExercise = ({ data, onComplete, title }: { data: any[], onCom
                 <Button onClick={() => setIsFinished(true)} disabled={!allCorrect} className={cn(allCorrect && "animate-pulse-glow")}>
                     Finalizar <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
+            </CardFooter>
+        </Card>
+    );
+};
+
+const LastExerciseQA = ({ onComplete }: { onComplete: () => void }) => {
+    const { toast } = useToast();
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [userAnswers, setUserAnswers] = useState<Record<number, { question: string; pos: string; neg: string }>>(
+        lastExerciseQuestions.reduce((acc, _, idx) => ({ ...acc, [idx]: { question: '', pos: '', neg: '' } }), {})
+    );
+    const [validation, setValidation] = useState<Record<number, { question: boolean; pos: boolean; neg: boolean } | null>>({});
+    const [showResults, setShowResults] = useState(false);
+    const [isFinished, setIsFinished] = useState(false);
+
+    const currentPrompt = lastExerciseQuestions[currentIndex];
+    
+    const handleInputChange = (field: 'question' | 'pos' | 'neg', value: string) => {
+        if (showResults) return;
+        setUserAnswers(prev => ({
+            ...prev,
+            [currentIndex]: { ...prev[currentIndex], [field]: value }
+        }));
+    };
+
+    const handleCheckAll = () => {
+        const newValidation: Record<number, { question: boolean; pos: boolean; neg: boolean }> = {};
+        let allCorrect = true;
+
+        lastExerciseQuestions.forEach((item, idx) => {
+            const user = userAnswers[idx];
+            const check = (userVal: string, correctList: string[]) => 
+                correctList.map(c => c.toLowerCase().replace(/[.?,¿!¡]/g, '').trim())
+                    .includes(userVal.toLowerCase().replace(/[.?,¿!¡]/g, '').trim());
+
+            const questionCorrect = check(user.question, item.answers.question);
+            const posCorrect = check(user.pos, item.answers.pos);
+            const negCorrect = check(user.neg, item.answers.neg);
+
+            newValidation[idx] = { question: questionCorrect, pos: posCorrect, neg: negCorrect };
+            if (!questionCorrect || !posCorrect || !negCorrect) allCorrect = false;
+        });
+
+        setValidation(newValidation);
+        setShowResults(true);
+
+        if (allCorrect) {
+            toast({ title: "¡Excelente!", description: "Has dominado las respuestas cortas del presente continuo." });
+            setIsFinished(true);
+            onComplete();
+        } else {
+            toast({ 
+                variant: 'destructive', 
+                title: "Algunas respuestas son incorrectas", 
+                description: "Revisa las bolitas y los campos marcados para corregir." 
+            });
+        }
+    };
+
+    const isAllCompleted = Object.values(userAnswers).every(ua => 
+        ua.question.trim().length > 0 && ua.pos.trim().length > 0 && ua.neg.trim().length > 0
+    );
+
+    if (isFinished) {
+        return (
+            <Card className="shadow-soft rounded-lg border-2 border-brand-purple p-12 text-center flex flex-col items-center justify-center min-h-[400px]">
+                <Trophy className="h-20 w-20 text-yellow-400 mb-6 animate-bounce" />
+                <h2 className="text-3xl font-black bg-gradient-to-r from-brand-purple to-brand-teal text-transparent bg-clip-text uppercase tracking-tighter">¡Clase 14 Completada!</h2>
+                <p className="text-muted-foreground mt-2 mb-8">¡Felicidades! Has terminado todos los retos de la Clase 14.</p>
+                <Button size="lg" className="px-12 font-bold" variant="outline" onClick={() => setIsFinished(false)}>Revisar Respuestas</Button>
+            </Card>
+        );
+    }
+
+    return (
+        <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+            <CardHeader>
+                <div className="flex justify-between items-start">
+                    <div className="space-y-1">
+                        <CardTitle>Last Exercise: Short Answers</CardTitle>
+                        <CardDescription>Traduce la pregunta y escribe las respuestas cortas (+A y -A) en Presente Continuo.</CardDescription>
+                    </div>
+                    <Popover>
+                        <PopoverTrigger asChild>
+                            <Button variant="outline" size="sm" className="border-2 border-brand-blue animate-border-pulse">
+                                <BookText className="mr-2 h-4 w-4" />
+                                Vocabulary
+                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-64">
+                            <div className="space-y-2">
+                                <h4 className="font-bold border-b pb-1 text-primary">Vocabulario de apoyo</h4>
+                                <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
+                                    {Object.entries(lastExerciseVocab).map(([es, en]) => (
+                                        <React.Fragment key={es}>
+                                            <span className="text-muted-foreground capitalize">{es}:</span>
+                                            <span className="font-semibold text-right">{en}</span>
+                                        </React.Fragment>
+                                    ))}
+                                </div>
+                            </div>
+                        </PopoverContent>
+                    </Popover>
+                </div>
+                <div className="flex flex-wrap gap-2 pt-4">
+                    {lastExerciseQuestions.map((_, idx) => {
+                        const val = validation[idx];
+                        const isSelected = currentIndex === idx;
+                        const hasStarted = userAnswers[idx].question.trim().length > 0;
+                        
+                        let bgColor = "bg-muted border-border";
+                        if (showResults) {
+                            const isCorrect = val?.question && val?.pos && val?.neg;
+                            bgColor = isCorrect ? "bg-green-500 border-green-600 text-white" : "bg-red-500 border-red-600 text-white";
+                        } else if (hasStarted) {
+                            bgColor = "bg-primary/20 border-primary text-primary";
+                        }
+
+                        return (
+                            <button
+                                key={idx}
+                                onClick={() => setCurrentIndex(idx)}
+                                className={cn(
+                                    "h-8 w-8 rounded-full flex items-center justify-center font-bold border-2 transition-all",
+                                    isSelected && !showResults ? "ring-2 ring-primary ring-offset-1" : "",
+                                    bgColor
+                                )}
+                            >
+                                {idx + 1}
+                            </button>
+                        );
+                    })}
+                </div>
+            </CardHeader>
+            <CardContent className="space-y-6 pt-6">
+                <div className="bg-muted p-6 rounded-2xl border-2 border-dashed text-center">
+                    <p className="text-sm text-muted-foreground mb-1">Traduce esta pregunta:</p>
+                    <p className="text-2xl font-bold">"{currentPrompt.spanish}"</p>
+                </div>
+
+                <div className="space-y-4">
+                    <div className="space-y-2">
+                        <Label className={cn(
+                            "font-bold flex items-center gap-2",
+                            showResults && validation[currentIndex]?.question ? "text-green-600" : showResults ? "text-red-500" : "text-primary"
+                        )}>
+                            (?) TRANSLATE THE QUESTION:
+                            {showResults && (validation[currentIndex]?.question ? <CheckCircle className="h-4 w-4" /> : <X className="h-4 w-4" />)}
+                        </Label>
+                        <Input 
+                            value={userAnswers[currentIndex].question}
+                            onChange={e => handleInputChange('question', e.target.value)}
+                            className={cn(
+                                "h-12 text-lg",
+                                showResults && validation[currentIndex]?.question ? "border-green-500 bg-green-50" : showResults ? "border-red-500 bg-red-50" : ""
+                            )}
+                            placeholder="Is..."
+                        />
+                    </div>
+
+                    <div className="grid sm:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <Label className={cn(
+                                "font-bold flex items-center gap-2",
+                                showResults && validation[currentIndex]?.pos ? "text-green-600" : showResults ? "text-red-500" : "text-primary"
+                            )}>
+                                (+A) YES,
+                                {showResults && (validation[currentIndex]?.pos ? <CheckCircle className="h-4 w-4" /> : <X className="h-4 w-4" />)}
+                            </Label>
+                            <Input 
+                                value={userAnswers[currentIndex].pos}
+                                onChange={e => handleInputChange('pos', e.target.value)}
+                                className={cn(
+                                    "h-12 text-lg",
+                                    showResults && validation[currentIndex]?.pos ? "border-green-500 bg-green-50" : showResults ? "border-red-500 bg-red-50" : ""
+                                )}
+                                placeholder="Yes, he is"
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label className={cn(
+                                "font-bold flex items-center gap-2",
+                                showResults && validation[currentIndex]?.neg ? "text-green-600" : showResults ? "text-red-500" : "text-primary"
+                            )}>
+                                (-A) NO,
+                                {showResults && (validation[currentIndex]?.neg ? <CheckCircle className="h-4 w-4" /> : <X className="h-4 w-4" />)}
+                            </Label>
+                            <Input 
+                                value={userAnswers[currentIndex].neg}
+                                onChange={e => handleInputChange('neg', e.target.value)}
+                                className={cn(
+                                    "h-12 text-lg",
+                                    showResults && validation[currentIndex]?.neg ? "border-green-500 bg-green-50" : showResults ? "border-red-500 bg-red-50" : ""
+                                )}
+                                placeholder="No, he isn't"
+                            />
+                        </div>
+                    </div>
+                </div>
+            </CardContent>
+            <CardFooter className="flex justify-between border-t pt-6">
+                <Button variant="outline" onClick={() => setCurrentIndex(p => Math.max(0, p - 1))} disabled={currentIndex === 0}>
+                    <ArrowLeft className="mr-2 h-4 w-4" /> Anterior
+                </Button>
+                <div className="flex gap-2">
+                    {currentIndex === lastExerciseQuestions.length - 1 || showResults ? (
+                        <Button onClick={handleCheckAll} disabled={!isAllCompleted} className={cn(isAllCompleted && !showResults && "animate-pulse-glow")}>
+                            Verificar Todo
+                        </Button>
+                    ) : (
+                        <Button variant="outline" onClick={() => setCurrentIndex(p => p + 1)}>
+                            Siguiente <ArrowRight className="ml-2 h-4 w-4" />
+                        </Button>
+                    )}
+                </div>
             </CardFooter>
         </Card>
     );
@@ -661,23 +977,7 @@ export default function EngA1Class14Page() {
                     />
                 );
             case 'last_ex':
-                return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-                        <CardHeader>
-                            <CardTitle>Last Exercise</CardTitle>
-                        </CardHeader>
-                        <CardContent className="text-center py-12">
-                            <Trophy className="h-16 w-16 text-yellow-400 mx-auto mb-4" />
-                            <h3 className="text-2xl font-bold">¡Casi terminas!</h3>
-                            <p className="text-muted-foreground mt-2">Completa el último desafío de la Clase 14.</p>
-                        </CardContent>
-                        <CardFooter className="justify-center">
-                            <Button onClick={() => handleTopicComplete('last_ex')} size="lg" className="px-12">
-                                Terminar Clase
-                            </Button>
-                        </CardFooter>
-                    </Card>
-                );
+                return <LastExerciseQA onComplete={() => handleTopicComplete('last_ex')} />;
             default:
                 return <div className="flex items-center justify-center h-64"><Loader2 className="animate-spin" /></div>;
         }
