@@ -43,7 +43,7 @@ type Topic = {
   status: TopicStatus;
 };
 
-const progressStorageVersion = 'progress_a1_eng_u3_c14_v11_final_revision';
+const progressStorageVersion = 'progress_a1_eng_u3_c14_v15_organized';
 const mainProgressKey = 'progress_a1_eng_unit_3_class_14';
 
 const vocabularyData = {
@@ -171,7 +171,7 @@ const lastExerciseQuestions = [
         answers: { 
             question: ["is he watching television?", "is he watching tv?"], 
             pos: ["yes, he is"], 
-            neg: ["no, he is not", "no, he isn't"] 
+            neg: ["no, i am not", "no, i'm not"] 
         } 
     },
     { 
