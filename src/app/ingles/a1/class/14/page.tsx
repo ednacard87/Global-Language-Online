@@ -20,7 +20,8 @@ import {
     X,
     Trophy,
     ArrowLeft,
-    BookText
+    BookText,
+    Gamepad2
 } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
@@ -196,6 +197,96 @@ const lastExerciseVocab = {
     "viajando": "traveling / travelling",
     "viendo": "watching",
     "yendo": "going"
+};
+
+const VocabGame = ({ onComplete }: { onComplete: () => void }) => {
+    const data = [
+        { spanish: 'DAR', english: 'GIVE', gapped: 'GI_E' },
+        { spanish: 'SABER', english: 'KNOW', gapped: 'KNO_' },
+        { spanish: 'HACER', english: 'MAKE', gapped: 'MA_E' },
+        { spanish: 'LEER', english: 'READ', gapped: 'RE_D' },
+        { spanish: 'ALGODÓN', english: 'COTTON', gapped: 'COT_ON' },
+        { spanish: 'ORO', english: 'GOLD', gapped: 'GOL_' },
+        { spanish: 'PLATA', english: 'SILVER', gapped: 'SIL_ER' },
+        { spanish: 'LANA', english: 'WOOL', gapped: 'WO_L' },
+    ];
+
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [answer, setAnswer] = useState('');
+    const [isFinished, setIsFinished] = useState(false);
+    const { toast } = useToast();
+
+    const current = data[currentIndex];
+    const gapIndex = current.gapped.indexOf('_');
+    const missingLetter = current.english[gapIndex];
+
+    const handleCheck = () => {
+        if (answer.trim().toLowerCase() === missingLetter.toLowerCase()) {
+            if (currentIndex < data.length - 1) {
+                toast({ title: "¡Correcto!" });
+                setCurrentIndex(prev => prev + 1);
+                setAnswer('');
+            } else {
+                setIsFinished(true);
+            }
+        } else {
+            toast({ variant: 'destructive', title: "Incorrecto", description: "Prueba con otra letra." });
+        }
+    };
+
+    if (isFinished) {
+        return (
+            <Card className="shadow-soft rounded-lg border-2 border-brand-purple p-8 text-center flex flex-col items-center justify-center min-h-[350px]">
+                <Trophy className="h-16 w-16 text-yellow-400 mb-4 animate-bounce" />
+                <h2 className="text-4xl font-black text-primary uppercase tracking-tighter">Congratulations</h2>
+                <p className="text-muted-foreground mt-2 mb-8 font-medium text-lg">Has completado el juego de vocabulario.</p>
+                <Button onClick={onComplete} size="lg" className="px-16 font-bold h-14 text-xl shadow-lg">avanzar</Button>
+            </Card>
+        );
+    }
+
+    return (
+        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
+            <CardHeader>
+                <CardTitle>Vocabulary (Game)</CardTitle>
+                <CardDescription>Completa la palabra con la letra que falta.</CardDescription>
+                <div className="pt-2 text-sm font-medium text-muted-foreground">
+                    Palabra {currentIndex + 1} de {data.length}
+                </div>
+                <Progress value={((currentIndex + 1) / data.length) * 100} className="h-1 mt-2" />
+            </CardHeader>
+            <CardContent className="space-y-8 py-12">
+                <div className="text-center space-y-6">
+                    <div className="bg-primary/10 w-fit mx-auto px-6 py-2 rounded-full border border-primary/20">
+                        <p className="text-xl text-primary font-black uppercase tracking-widest">{current.spanish}</p>
+                    </div>
+                    <div className="flex justify-center items-center gap-2 font-mono text-6xl font-black text-foreground tracking-tighter">
+                        {current.gapped.split('_').map((part, i, arr) => (
+                            <React.Fragment key={i}>
+                                <span>{part}</span>
+                                {i < arr.length - 1 && (
+                                    <div className="relative group">
+                                        <Input 
+                                            value={answer}
+                                            onChange={e => setAnswer(e.target.value.toUpperCase())}
+                                            maxLength={1}
+                                            className="w-16 h-20 text-center text-5xl border-b-4 border-t-0 border-x-0 rounded-none focus-visible:ring-0 focus-visible:border-primary bg-transparent text-primary caret-transparent"
+                                            autoFocus
+                                            autoComplete="off"
+                                        />
+                                        <div className="absolute inset-x-0 bottom-0 h-1 bg-primary/20 group-hover:bg-primary/40 transition-colors" />
+                                    </div>
+                                )}
+                            </React.Fragment>
+                        ))}
+                    </div>
+                </div>
+            </CardContent>
+            <CardFooter className="justify-center border-t pt-6">
+                <Button onClick={handleCheck} size="lg" className="px-12 font-bold h-12 text-lg">Verificar</Button>
+            </CardFooter>
+        </Card>
+    );
 };
 
 const LinesWritingExercise = ({ 
@@ -710,6 +801,7 @@ export default function EngA1Class14Page() {
         { key: 'dictation1', name: 'Dictation 1', icon: Mic, status: 'locked' },
         { key: 'ex1', name: 'Exercise 1', icon: PenSquare, status: 'locked' },
         { key: 'general_ex', name: 'General Exercise', icon: GraduationCap, status: 'locked' },
+        { key: 'vocab_game', name: 'Vocabulary (Game)', icon: Gamepad2, status: 'locked' },
         { key: 'dictation2', name: 'Dictation 2', icon: Mic, status: 'locked' },
         { key: 'last_ex', name: 'Last Exercise', icon: Sparkles, status: 'locked' },
     ], []);
@@ -959,6 +1051,8 @@ export default function EngA1Class14Page() {
                         }}
                     />
                 );
+            case 'vocab_game':
+                return <VocabGame onComplete={() => handleTopicComplete('vocab_game')} />;
             case 'dictation2':
                 return (
                     <LinesWritingExercise 
