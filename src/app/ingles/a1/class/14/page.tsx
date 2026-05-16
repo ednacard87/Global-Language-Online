@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -36,7 +36,7 @@ type Topic = {
   status: TopicStatus;
 };
 
-const progressStorageVersion = 'progress_a1_eng_u3_c14_v4_dictation';
+const progressStorageVersion = 'progress_a1_eng_u3_c14_v5_fix_sync';
 const mainProgressKey = 'progress_a1_eng_unit_3_class_14';
 
 const vocabularyData = {
@@ -108,22 +108,30 @@ const LinesWritingExercise = ({
     const totalLines = hasTitleLine ? lineCount + 1 : lineCount;
     const [lines, setLines] = useState<string[]>(Array(totalLines).fill(''));
     const [grades, setGrades] = useState<Record<number, 'correct' | 'incorrect' | null>>(initialGrades || {});
+    const initializedRef = useRef(false);
 
+    // Only initialize from server once to avoid blocking typing
     useEffect(() => {
-        if (initialData && Array.isArray(initialData)) {
+        if (!initializedRef.current && initialData && Array.isArray(initialData)) {
             const newLines = [...Array(totalLines).fill('')];
             initialData.forEach((val, i) => {
                 if (i < totalLines) newLines[i] = val || '';
             });
             setLines(newLines);
+            if (initialData.length > 0) {
+                initializedRef.current = true;
+            }
         }
+    }, [initialData, totalLines]);
+
+    // Keep grades in sync as they are only changed by admin
+    useEffect(() => {
         if (initialGrades) {
             setGrades(initialGrades);
         }
-    }, [initialData, initialGrades, totalLines]);
+    }, [initialGrades]);
 
     const handleLineChange = (index: number, value: string) => {
-        if (isAdmin) return; // Admins shouldn't edit student text
         const newLines = [...lines];
         newLines[index] = value;
         setLines(newLines);
@@ -140,7 +148,7 @@ const LinesWritingExercise = ({
 
         const newGrades = { ...grades };
         if (newGrades[index] === type) {
-            newGrades[index] = null; // Unselect if clicking again
+            newGrades[index] = null;
         } else {
             newGrades[index] = type;
         }
@@ -155,7 +163,7 @@ const LinesWritingExercise = ({
 
     const renderRenglon = (line: string, idx: number, isTitle: boolean = false) => {
         const status = grades[idx];
-        const inputBorderClass = status === 'correct' ? 'border-green-500' : status === 'incorrect' ? 'border-red-500' : '';
+        const inputBorderClass = status === 'correct' ? 'border-green-500 ring-1 ring-green-500' : status === 'incorrect' ? 'border-red-500 ring-1 ring-red-500' : '';
 
         return (
             <div key={idx} className="flex items-center gap-3 group">
@@ -172,34 +180,33 @@ const LinesWritingExercise = ({
                         inputBorderClass
                     )}
                     autoComplete="off"
-                    disabled={isAdmin}
                 />
                 
-                {/* Admin Circles */}
+                {/* Admin Grade Controls */}
                 <div className="flex gap-2 shrink-0">
                     <button
                         onClick={() => handleToggleGrade(idx, 'correct')}
-                        disabled={!isAdmin}
                         className={cn(
                             "h-6 w-6 rounded-full border-2 flex items-center justify-center transition-all",
                             status === 'correct' 
                                 ? "bg-green-500 border-green-600 text-white" 
                                 : "bg-gray-200 border-gray-300 dark:bg-gray-800 dark:border-gray-700 text-transparent",
-                            !isAdmin && "cursor-default"
+                            !isAdmin && "cursor-default pointer-events-none"
                         )}
+                        title={isAdmin ? "Marcar como correcto" : ""}
                     >
                         <Check className="h-3 w-3" />
                     </button>
                     <button
                         onClick={() => handleToggleGrade(idx, 'incorrect')}
-                        disabled={!isAdmin}
                         className={cn(
                             "h-6 w-6 rounded-full border-2 flex items-center justify-center transition-all",
                             status === 'incorrect' 
                                 ? "bg-red-500 border-red-600 text-white" 
                                 : "bg-gray-200 border-gray-300 dark:bg-gray-800 dark:border-gray-700 text-transparent",
-                            !isAdmin && "cursor-default"
+                            !isAdmin && "cursor-default pointer-events-none"
                         )}
+                        title={isAdmin ? "Marcar como incorrecto" : ""}
                     >
                         <X className="h-3 w-3" />
                     </button>
