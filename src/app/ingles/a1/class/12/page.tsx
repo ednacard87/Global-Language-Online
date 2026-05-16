@@ -46,7 +46,7 @@ type Topic = {
   status: 'completed' | 'active' | 'locked';
 };
 
-const progressStorageVersion = 'progress_a1_eng_u3_c12_v17_ex7';
+const progressStorageVersion = 'progress_a1_eng_u3_c12_v18_final_ex8';
 const mainProgressKey = 'progress_a1_eng_unit_3_class_12';
 
 const timeExpressionsData = [
@@ -185,6 +185,19 @@ const class12Exercise7Data = [
     { parts: ["THEY ", " RICE EVERY DAY."], options: ["DON’T EAT", "AREN’T EATING"], correct: "DON’T EAT" },
     { parts: ["SHE ", " AT THE MOMENT."], options: ["DOESN’T STUDY", "ISN’T STUDYING"], correct: "ISN’T STUDYING" },
     { parts: ["JANE ", " PIZZA."], options: ["LOVES", "IS LOVING"], correct: "LOVES" },
+];
+
+const class12Exercise8Data: ShortAnswerPresentSimplePrompt[] = [
+    { question: "IS SHE GOING TO WORK?", answers: { shortAffirmative: ["yes, she is"], shortNegative: ["no, she is not", "no, she isn't", "no, she's not"] } },
+    { question: "DO THEY STUDY GERMAN?", answers: { shortAffirmative: ["yes, they do"], shortNegative: ["no, they do not", "no, they don't"] } },
+    { question: "DOES SHE TRAVEL TO MIAMI?", answers: { shortAffirmative: ["yes, she does"], shortNegative: ["no, she does not", "no, she doesn't"] } },
+    { question: "ARE THEY LEARNING ENGLISH?", answers: { shortAffirmative: ["yes, they are"], shortNegative: ["no, they are not", "no, they aren't"] } },
+    { question: "IS SHE WALKING FAST?", answers: { shortAffirmative: ["yes, she is"], shortNegative: ["no, she is not", "no, she isn't", "no, she's not"] } },
+    { question: "DOES SHE SPEAK ITALIAN?", answers: { shortAffirmative: ["yes, she does"], shortNegative: ["no, she does not", "no, she doesn't"] } },
+    { question: "ARE WE GOING TO NEW YORK?", answers: { shortAffirmative: ["yes, we are"], shortNegative: ["no, we are not", "no, we aren't"] } },
+    { question: "DO YOU GO TO SCHOOL TODAY?", answers: { shortAffirmative: ["yes, i do"], shortNegative: ["no, i do not", "no, i don't"] } },
+    { question: "IS HE CALLING HIS FAMILY?", answers: { shortAffirmative: ["yes, he is"], shortNegative: ["no, he is not", "no, he isn't", "no, he's not"] } },
+    { question: "IS SHE EATING SUSHI?", answers: { shortAffirmative: ["yes, she is"], shortNegative: ["no, she is not", "no, she isn't", "no, she's not"] } },
 ];
 
 const ChoiceExercise = ({ onComplete }: { onComplete: () => void }) => {
@@ -440,7 +453,7 @@ export default function EngA1Class12Page() {
         { key: 'ex5', name: 'Exercise 5', icon: PenSquare, status: 'locked' },
         { key: 'grammar3', name: 'Grammar 3', icon: BookText, status: 'locked' },
         { key: 'ex7', name: 'Exercise 7', icon: PenSquare, status: 'locked' },
-        { key: 'ex8', name: 'Exercise 8', icon: Pencil, status: 'locked' },
+        { key: 'ex8', name: 'Exercise 8', icon: PenSquare, status: 'locked' },
         { key: 'ex9', name: 'Exercise 9', icon: PenSquare, status: 'locked' },
         { key: 'ex10', name: 'Exercise 10', icon: PenSquare, status: 'locked' },
     ], []);
@@ -531,9 +544,9 @@ export default function EngA1Class12Page() {
     };
 
     const handleVocabInputChange = (index: number, value: string) => {
-        const newAns = [...vocabAnswers];
-        newAns[index] = value;
-        setVocabAnswers(newAns);
+        const newAnswers = [...vocabAnswers];
+        newAnswers[index] = value;
+        setVocabAnswers(newAnswers);
         const newVal = [...vocabValidation];
         newVal[index] = 'unchecked';
         setVocabValidation(newVal as any);
@@ -1010,6 +1023,15 @@ export default function EngA1Class12Page() {
                 );
             case 'ex7':
                 return <ChoiceExercise onComplete={() => handleTopicComplete('ex7')} />;
+            case 'ex8':
+                return (
+                    <ShortAnswerPresentSimpleExercise
+                        title="Exercise 8: Short Answers"
+                        description="Escribe las dos respuestas cortas para cada pregunta de Present Simple y Present Continuous (+A) y (-A)."
+                        exerciseData={class12Exercise8Data}
+                        onComplete={() => handleTopicComplete('ex8')}
+                    />
+                );
             default:
                 return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple min-h-[500px]">
