@@ -23,7 +23,8 @@ import {
     Trophy,
     Activity,
     Calendar,
-    MousePointer2
+    MousePointer2,
+    BookText
 } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
