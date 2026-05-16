@@ -15,8 +15,7 @@ import {
     Loader2, 
     ArrowRight,
     Sparkles,
-    Mic,
-    Pencil
+    Mic
 } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
@@ -35,29 +34,29 @@ type Topic = {
   status: TopicStatus;
 };
 
-const progressStorageVersion = 'progress_a1_eng_u3_c14_v2_vocab';
+const progressStorageVersion = 'progress_a1_eng_u3_c14_v3_infinitives';
 const mainProgressKey = 'progress_a1_eng_unit_3_class_14';
 
 const vocabularyData = {
     verbs: [
-        { spanish: 'DAR', english: 'GIVE' },
-        { spanish: 'IR', english: 'GO' },
-        { spanish: 'HABER-TENER', english: 'HAVE' },
-        { spanish: 'OIR', english: 'HEAR' },
-        { spanish: 'CONOCER', english: 'KNOW' },
-        { spanish: 'IRSE', english: 'LEAVE' },
-        { spanish: 'PERDER', english: 'LOSE' },
-        { spanish: 'HACER', english: 'MAKE' },
-        { spanish: 'ENCONTRAR', english: 'MEET' },
-        { spanish: 'PONER', english: 'PUT' },
-        { spanish: 'LEER', english: 'READ' },
-        { spanish: 'MONTAR (HORSE-BIKE)', english: 'RIDE' },
-        { spanish: 'CORRER', english: 'RUN' },
-        { spanish: 'DECIR', english: 'SAY' },
-        { spanish: 'VENDER', english: 'SELL' },
-        { spanish: 'ENVIAR', english: 'SEND' },
-        { spanish: 'CANTAR', english: 'SING' },
-        { spanish: 'DORMIR', english: 'SLEEP' },
+        { spanish: 'DAR', english: 'TO GIVE' },
+        { spanish: 'IR', english: 'TO GO' },
+        { spanish: 'HABER-TENER', english: 'TO HAVE' },
+        { spanish: 'OIR', english: 'TO HEAR' },
+        { spanish: 'CONOCER', english: 'TO KNOW' },
+        { spanish: 'IRSE', english: 'TO LEAVE' },
+        { spanish: 'PERDER', english: 'TO LOSE' },
+        { spanish: 'HACER', english: 'TO MAKE' },
+        { spanish: 'ENCONTRAR', english: 'TO MEET' },
+        { spanish: 'PONER', english: 'TO PUT' },
+        { spanish: 'LEER', english: 'TO READ' },
+        { spanish: 'MONTAR (HORSE-BIKE)', english: 'TO RIDE' },
+        { spanish: 'CORRER', english: 'TO RUN' },
+        { spanish: 'DECIR', english: 'TO SAY' },
+        { spanish: 'VENDER', english: 'TO SELL' },
+        { spanish: 'ENVIAR', english: 'TO SEND' },
+        { spanish: 'CANTAR', english: 'TO SING' },
+        { spanish: 'DORMIR', english: 'TO SLEEP' },
     ],
     materials: [
         { spanish: 'TEJIDO', english: 'FABRIC' },
@@ -255,7 +254,7 @@ export default function EngA1Class14Page() {
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
                         <CardHeader>
                             <CardTitle>Vocabulary (Verbs and Materials)</CardTitle>
-                            <CardDescription>Traduce las palabras del español al inglés.</CardDescription>
+                            <CardDescription>Traduce las palabras al inglés. Para los verbos, incluye la palabra <strong>"TO"</strong> antes (ej: TO GIVE).</CardDescription>
                         </CardHeader>
                         <CardContent>
                             <Accordion type="multiple" defaultValue={['verbs', 'materials']} className="w-full">
@@ -264,7 +263,7 @@ export default function EngA1Class14Page() {
                                     <AccordionContent>
                                         <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-lg">
                                             <div className="font-bold p-3 bg-muted rounded-lg text-left">Spanish</div>
-                                            <div className="font-bold p-3 bg-muted rounded-lg text-left">English</div>
+                                            <div className="font-bold p-3 bg-muted rounded-lg text-left">English (Infinitive)</div>
                                             {vocabularyData.verbs.map((item, idx) => (
                                                 <React.Fragment key={`v-${idx}`}>
                                                     <div className="p-3 bg-card border rounded-lg flex items-center font-medium">{item.spanish}</div>
@@ -273,7 +272,7 @@ export default function EngA1Class14Page() {
                                                             value={vocabAnswers.verbs?.[idx] || ''}
                                                             onChange={e => handleVocabChange('verbs', idx, e.target.value)}
                                                             className={cn("h-11 font-mono uppercase", getVocabClass('verbs', idx))}
-                                                            placeholder="..."
+                                                            placeholder="TO..."
                                                             autoComplete="off"
                                                         />
                                                     </div>
