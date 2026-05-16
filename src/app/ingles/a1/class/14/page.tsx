@@ -15,7 +15,9 @@ import {
     Loader2, 
     ArrowRight,
     Sparkles,
-    Mic
+    Mic,
+    Check,
+    X
 } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
@@ -77,15 +79,18 @@ const vocabularyData = {
     ]
 };
 
-// Component for Dictations with automatic saving
+// Component for Dictations with automatic saving and Admin Feedback
 const LinesWritingExercise = ({ 
     title, 
     description, 
     lineCount = 12,
     onComplete, 
     studentDocRef, 
-    initialData, 
+    initialData,
+    initialGrades,
     savePath,
+    savePathGrades,
+    isAdmin = false,
     hasTitleLine = false
 }: { 
     title: string, 
@@ -94,11 +99,15 @@ const LinesWritingExercise = ({
     onComplete: () => void,
     studentDocRef: any,
     initialData: string[],
+    initialGrades: Record<number, 'correct' | 'incorrect' | null>,
     savePath: string,
+    savePathGrades: string,
+    isAdmin?: boolean,
     hasTitleLine?: boolean
 }) => {
     const totalLines = hasTitleLine ? lineCount + 1 : lineCount;
     const [lines, setLines] = useState<string[]>(Array(totalLines).fill(''));
+    const [grades, setGrades] = useState<Record<number, 'correct' | 'incorrect' | null>>(initialGrades || {});
 
     useEffect(() => {
         if (initialData && Array.isArray(initialData)) {
@@ -108,9 +117,13 @@ const LinesWritingExercise = ({
             });
             setLines(newLines);
         }
-    }, [initialData, totalLines]);
+        if (initialGrades) {
+            setGrades(initialGrades);
+        }
+    }, [initialData, initialGrades, totalLines]);
 
     const handleLineChange = (index: number, value: string) => {
+        if (isAdmin) return; // Admins shouldn't edit student text
         const newLines = [...lines];
         newLines[index] = value;
         setLines(newLines);
@@ -122,6 +135,79 @@ const LinesWritingExercise = ({
         }
     };
 
+    const handleToggleGrade = (index: number, type: 'correct' | 'incorrect') => {
+        if (!isAdmin) return; // Only admins can grade
+
+        const newGrades = { ...grades };
+        if (newGrades[index] === type) {
+            newGrades[index] = null; // Unselect if clicking again
+        } else {
+            newGrades[index] = type;
+        }
+        setGrades(newGrades);
+
+        if (studentDocRef) {
+            updateDocumentNonBlocking(studentDocRef, {
+                [savePathGrades]: newGrades
+            });
+        }
+    };
+
+    const renderRenglon = (line: string, idx: number, isTitle: boolean = false) => {
+        const status = grades[idx];
+        const inputBorderClass = status === 'correct' ? 'border-green-500' : status === 'incorrect' ? 'border-red-500' : '';
+
+        return (
+            <div key={idx} className="flex items-center gap-3 group">
+                <span className={cn("font-bold w-8 text-right shrink-0", isTitle ? "text-brand-purple w-20" : "text-primary")}>
+                    {isTitle ? "TITULO:" : `${idx}.`}
+                </span>
+                <Input 
+                    value={line} 
+                    onChange={(e) => handleLineChange(idx, e.target.value)} 
+                    placeholder={isTitle ? "Escribe el título aquí..." : "..."}
+                    className={cn(
+                        "flex-1 bg-muted/30 focus:bg-background transition-all h-11 border-primary/20",
+                        isTitle && "bg-primary/5 h-12 font-bold",
+                        inputBorderClass
+                    )}
+                    autoComplete="off"
+                    disabled={isAdmin}
+                />
+                
+                {/* Admin Circles */}
+                <div className="flex gap-2 shrink-0">
+                    <button
+                        onClick={() => handleToggleGrade(idx, 'correct')}
+                        disabled={!isAdmin}
+                        className={cn(
+                            "h-6 w-6 rounded-full border-2 flex items-center justify-center transition-all",
+                            status === 'correct' 
+                                ? "bg-green-500 border-green-600 text-white" 
+                                : "bg-gray-200 border-gray-300 dark:bg-gray-800 dark:border-gray-700 text-transparent",
+                            !isAdmin && "cursor-default"
+                        )}
+                    >
+                        <Check className="h-3 w-3" />
+                    </button>
+                    <button
+                        onClick={() => handleToggleGrade(idx, 'incorrect')}
+                        disabled={!isAdmin}
+                        className={cn(
+                            "h-6 w-6 rounded-full border-2 flex items-center justify-center transition-all",
+                            status === 'incorrect' 
+                                ? "bg-red-500 border-red-600 text-white" 
+                                : "bg-gray-200 border-gray-300 dark:bg-gray-800 dark:border-gray-700 text-transparent",
+                            !isAdmin && "cursor-default"
+                        )}
+                    >
+                        <X className="h-3 w-3" />
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
             <CardHeader>
@@ -130,32 +216,10 @@ const LinesWritingExercise = ({
             </CardHeader>
             <CardContent className="space-y-3">
                 <div className="grid grid-cols-1 gap-3 max-h-[600px] overflow-y-auto pr-2">
-                    {hasTitleLine && (
-                        <div className="flex items-center gap-3 group mb-4">
-                            <span className="font-bold text-brand-purple w-20 text-right shrink-0">TITULO:</span>
-                            <Input 
-                                value={lines[0]} 
-                                onChange={(e) => handleLineChange(0, e.target.value)} 
-                                placeholder="Escribe el título del dictado aquí..."
-                                className="flex-1 bg-primary/5 focus:bg-background transition-colors h-12 border-brand-purple/30 font-bold"
-                                autoComplete="off"
-                            />
-                        </div>
-                    )}
+                    {hasTitleLine && renderRenglon(lines[0], 0, true)}
                     {lines.slice(hasTitleLine ? 1 : 0).map((line, idx) => {
                         const actualIndex = hasTitleLine ? idx + 1 : idx;
-                        return (
-                            <div key={actualIndex} className="flex items-center gap-3 group">
-                                <span className="font-bold text-primary w-8 text-right shrink-0">{idx + 1}.</span>
-                                <Input 
-                                    value={line} 
-                                    onChange={(e) => handleLineChange(actualIndex, e.target.value)} 
-                                    placeholder="..."
-                                    className="flex-1 bg-muted/30 focus:bg-background transition-colors h-11 border-primary/20"
-                                    autoComplete="off"
-                                />
-                            </div>
-                        );
+                        return renderRenglon(line, actualIndex);
                     })}
                 </div>
             </CardContent>
@@ -418,7 +482,10 @@ export default function EngA1Class14Page() {
                         lineCount={30}
                         hasTitleLine={true}
                         initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.dictation1 || []}
+                        initialGrades={studentProfile?.lessonProgress?.[progressStorageVersion]?.dictation1Grades || {}}
                         savePath={`lessonProgress.${progressStorageVersion}.dictation1`}
+                        savePathGrades={`lessonProgress.${progressStorageVersion}.dictation1Grades`}
+                        isAdmin={isAdmin}
                     />
                 );
             case 'ex1':
@@ -451,17 +518,18 @@ export default function EngA1Class14Page() {
                 );
             case 'dictation2':
                 return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-                        <CardHeader>
-                            <CardTitle>Dictation 2</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p>Segundo ejercicio de dictado.</p>
-                        </CardContent>
-                        <CardFooter>
-                            <Button onClick={() => handleTopicComplete('dictation2')}>Completar Dictado</Button>
-                        </CardFooter>
-                    </Card>
+                    <LinesWritingExercise 
+                        title="Dictation 2" 
+                        description="Segundo ejercicio de dictado." 
+                        onComplete={() => handleTopicComplete('dictation2')} 
+                        studentDocRef={studentDocRef}
+                        lineCount={12}
+                        initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.dictation2 || []}
+                        initialGrades={studentProfile?.lessonProgress?.[progressStorageVersion]?.dictation2Grades || {}}
+                        savePath={`lessonProgress.${progressStorageVersion}.dictation2`}
+                        savePathGrades={`lessonProgress.${progressStorageVersion}.dictation2Grades`}
+                        isAdmin={isAdmin}
+                    />
                 );
             case 'last_ex':
                 return (
