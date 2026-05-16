@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, Gamepad2, Feather, Bot, Trophy, Loader2, ArrowRight, BookText } from 'lucide-react';
+import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, Gamepad2, Feather, Bot, Trophy, Loader2, ArrowRight } from 'lucide-react';
 import { DashboardHeader } from "@/components/dashboard/header";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
@@ -25,8 +25,8 @@ import { useTranslation } from '@/context/language-context';
 import { HolidayTextExercise } from '@/components/kids/exercises/holiday-text-exercise';
 import { MixedExercise3 } from '@/components/kids/exercises/mixed-exercise-3';
 
-// --- Claves de progreso específicas para la Clase 13 (A1) ---
-const progressStorageKey = 'progress_a1_eng_u3_c13_v1';
+// --- Claves de progreso únicas para la Clase 13 de Adultos ---
+const progressStorageKey = 'progress_a1_eng_u3_c13_independent_v1';
 const mainProgressKey = 'progress_a1_eng_unit_3_class_13';
 
 type Topic = {
@@ -200,7 +200,7 @@ const WordSearchGame = ({ onComplete }: { onComplete: () => void }) => {
                         {grid.map((row, rowIndex) => (
                             row.map((cell, colIndex) => {
                                 const isSelected = selection.some(s => s.row === rowIndex && s.col === colIndex);
-                                const isFound = foundWords.some(fw => fw.cells.some(c => c.row === rowIndex && c.col === colIndex));
+                                const isFound = foundWords.some(fw => fw.cells.some(c => c.row === rowIndex && colIndex === colIndex));
                                 return (
                                 <div key={`${rowIndex}-${colIndex}`}
                                     onMouseDown={() => { setIsSelecting(true); setSelection([{row: rowIndex, col: colIndex}]); }}
@@ -388,8 +388,8 @@ export default function EngA1Class13Page() {
                         </CardHeader>
                         <CardContent>
                             <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-lg">
-                                <div className="font-black text-primary border-b pb-2 uppercase tracking-widest text-sm">Español</div>
-                                <div className="font-black text-primary border-b pb-2 uppercase tracking-widest text-sm">Inglés</div>
+                                <div className="font-black text-primary border-b pb-2 uppercase tracking-widest text-sm text-left">Español</div>
+                                <div className="font-black text-primary border-b pb-2 uppercase tracking-widest text-sm text-left">Inglés</div>
                                 {vocabularyData.map((item, index) => (
                                     <React.Fragment key={index}>
                                         <div className="p-3 bg-muted/30 border rounded-lg flex items-center font-medium">{item.spanish}</div>
@@ -509,8 +509,8 @@ export default function EngA1Class13Page() {
                         <h1 className="text-4xl font-black text-white dark:text-primary [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">Clase 13: Comparativos y Superlativos</h1>
                     </div>
                     <div className="grid gap-8 md:grid-cols-12">
-                        <div className="md:col-span-9">{renderContent()}</div>
-                        <div className="md:col-span-3">
+                        <div className="md:col-span-9 text-left">{renderContent()}</div>
+                        <div className="md:col-span-3 text-left">
                             <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
                                 <CardHeader><CardTitle>Ruta de Aprendizaje</CardTitle></CardHeader>
                                 <CardContent>
