@@ -20,7 +20,10 @@ import {
     Info,
     Globe,
     ArrowLeft,
-    Trophy
+    Trophy,
+    Activity,
+    Calendar,
+    MousePointer2
 } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
@@ -151,7 +154,7 @@ const class12Exercise4Data = [
         } 
     },
     { 
-        spanish: "¿ELLOS ESCRIBEN LIBROS? - ¿ELLOS ESTAN ESCRIBIENDO LIBROS ?", 
+        spanish: "¿ELLOS ESCRIBEN LIBROS? - ¿ELLOS ESTAN ESCRIBIENDO LIBROS ?:", 
         answers: { 
             simple: ["do they write books?"], 
             continuous: ["are they writing books?"] 
@@ -768,15 +771,125 @@ export default function EngA1Class12Page() {
                 return <SimpleTranslationExercise exerciseKey="c12_ex5" course="a1" onComplete={() => handleTopicComplete('ex5')} title="Exercise 5" vocabulary={vocabEx5} />;
             case 'grammar3':
                 return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-                        <CardHeader>
-                            <CardTitle>{topic?.name}</CardTitle>
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
+                        <CardHeader className="bg-primary/10 border-b">
+                            <div className="flex items-center gap-3">
+                                <BookText className="h-6 w-6 text-primary" />
+                                <CardTitle className="text-2xl uppercase tracking-tighter">USOS DEL PRESENTE SIMPLE Y DEL PRESENTE CONTINUO</CardTitle>
+                            </div>
                         </CardHeader>
-                        <CardContent>
-                            <p className="text-muted-foreground">Contenido gramatical próximamente.</p>
+                        <CardContent className="p-6 space-y-8">
+                            {/* Present Simple Uses */}
+                            <div className="space-y-4">
+                                <h3 className="text-xl font-black text-brand-purple uppercase tracking-widest flex items-center gap-2">
+                                    <Activity className="h-5 w-5" /> USOS DEL PRESENTE SIMPLE:
+                                </h3>
+                                
+                                <Accordion type="multiple" defaultValue={['ps-1', 'ps-2', 'ps-3', 'ps-4', 'ps-5', 'ps-6']} className="w-full space-y-2">
+                                    <AccordionItem value="ps-1" className="border rounded-lg px-4">
+                                        <AccordionTrigger className="font-bold">Routine (Rutina)</AccordionTrigger>
+                                        <AccordionContent className="font-mono text-sm space-y-1">
+                                            <p>I always open the door.</p>
+                                            <p>She plays in the park on Sundays.</p>
+                                        </AccordionContent>
+                                    </AccordionItem>
+                                    
+                                    <AccordionItem value="ps-2" className="border rounded-lg px-4">
+                                        <AccordionTrigger className="font-bold">Give instruction (Dar instrucciones)</AccordionTrigger>
+                                        <AccordionContent className="font-mono text-sm space-y-1">
+                                            <p>Open the window, please.</p>
+                                            <p>Come here! – Sit down! – Don’t smoke here.</p>
+                                        </AccordionContent>
+                                    </AccordionItem>
+                                    
+                                    <AccordionItem value="ps-3" className="border rounded-lg px-4">
+                                        <AccordionTrigger className="font-bold">Transportation & Events (Horarios)</AccordionTrigger>
+                                        <AccordionContent className="font-mono text-sm space-y-1">
+                                            <p>The train leaves at 8:00pm.</p>
+                                            <p>Her plain won’t arrive today due to bad weather.</p>
+                                            <p>The party is tonight – The movie starts at 6 pm.</p>
+                                        </AccordionContent>
+                                    </AccordionItem>
+
+                                    <AccordionItem value="ps-4" className="border rounded-lg px-4">
+                                        <AccordionTrigger className="font-bold">Scientific facts (Hechos científicos)</AccordionTrigger>
+                                        <AccordionContent className="font-mono text-sm space-y-1">
+                                            <p>The sun warms the atmosphere.</p>
+                                            <p>Water boils at 100 degrees (el agua hierve a 100 grados).</p>
+                                        </AccordionContent>
+                                    </AccordionItem>
+
+                                    <AccordionItem value="ps-5" className="border rounded-lg px-4">
+                                        <AccordionTrigger className="font-bold">General truth (Verdades generales)</AccordionTrigger>
+                                        <AccordionContent className="font-mono text-sm space-y-1">
+                                            <p>He likes football.</p>
+                                            <p>We go to bed at 10 pm.</p>
+                                            <p>He doesn’t eat vegetables because he doesn’t like it.</p>
+                                        </AccordionContent>
+                                    </AccordionItem>
+
+                                    <AccordionItem value="ps-6" className="border rounded-lg px-4">
+                                        <AccordionTrigger className="font-bold">Permanent situation (Situación permanente)</AccordionTrigger>
+                                        <AccordionContent className="font-mono text-sm space-y-1">
+                                            <p>She has a car.</p>
+                                            <p>They work in Europe.</p>
+                                            <p>I have 2 children.</p>
+                                        </AccordionContent>
+                                    </AccordionItem>
+                                </Accordion>
+                            </div>
+
+                            <Separator />
+
+                            {/* Present Continuous Uses */}
+                            <div className="space-y-4">
+                                <h3 className="text-xl font-black text-primary uppercase tracking-widest flex items-center gap-2">
+                                    <MousePointer2 className="h-5 w-5" /> USOS DEL PRESENTE CONTINUO:
+                                </h3>
+                                
+                                <Accordion type="multiple" defaultValue={['pc-1', 'pc-2', 'pc-3']} className="w-full space-y-2">
+                                    <AccordionItem value="pc-1" className="border rounded-lg px-4">
+                                        <AccordionTrigger className="font-bold text-left">Something happening right now (Ahora mismo)</AccordionTrigger>
+                                        <AccordionContent className="space-y-3">
+                                            <p className="text-xs text-muted-foreground italic">Specific action at the moment of speaking:</p>
+                                            <div className="font-mono text-sm space-y-1">
+                                                <p>I’m studying English now (Estoy estudiando ahora).</p>
+                                                <p>He’s eating vegetables with meat (Él está comiendo).</p>
+                                                <p>Is it raining? (¿Está lloviendo?).</p>
+                                            </div>
+                                        </AccordionContent>
+                                    </AccordionItem>
+
+                                    <AccordionItem value="pc-2" className="border rounded-lg px-4">
+                                        <AccordionTrigger className="font-bold text-left">Currently happening (Temporalmente actualmente)</AccordionTrigger>
+                                        <AccordionContent className="space-y-3">
+                                            <p className="text-xs text-muted-foreground italic">Something that is happening currently but it isn’t necessarily at the moment we speak. Uses expressions: currently, recently, these days.</p>
+                                            <div className="font-mono text-sm space-y-1">
+                                                <p>They are learning Italian these days.</p>
+                                                <p>She’s currently looking for a job.</p>
+                                                <p>Are you lately working on that project?</p>
+                                            </div>
+                                        </AccordionContent>
+                                    </AccordionItem>
+
+                                    <AccordionItem value="pc-3" className="border rounded-lg px-4">
+                                        <AccordionTrigger className="font-bold text-left">Decided future plans (Planes futuros decididos)</AccordionTrigger>
+                                        <AccordionContent className="space-y-3">
+                                            <p className="text-xs text-muted-foreground italic">Se usa para hablar de algo que está decidido que se hará en el futuro.</p>
+                                            <div className="font-mono text-sm space-y-1">
+                                                <p>I’m going to the party tonight.</p>
+                                                <p>He’s not coming to class ‘cause he’s sick.</p>
+                                                <p>Are you working in that company next week?</p>
+                                            </div>
+                                        </AccordionContent>
+                                    </AccordionItem>
+                                </Accordion>
+                            </div>
                         </CardContent>
-                        <CardFooter>
-                            <Button onClick={() => handleTopicComplete(selectedTopic)}>Entendido</Button>
+                        <CardFooter className="justify-center border-t pt-6">
+                            <Button onClick={() => handleTopicComplete('grammar3')} size="lg" className="px-12">
+                                He terminado de estudiar los usos
+                            </Button>
                         </CardFooter>
                     </Card>
                 );
