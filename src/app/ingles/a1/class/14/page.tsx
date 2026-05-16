@@ -420,6 +420,7 @@ export default function EngA1Class14Page() {
                             <Accordion type="multiple" defaultValue={['verbs', 'materials']} className="w-full">
                                 <AccordionItem value="verbs">
                                     <AccordionTrigger className="text-xl font-bold uppercase text-primary">Lexico: Verbos Básicos</AccordionTrigger>
+                                    <AccordionItem value="verbs">
                                     <AccordionContent>
                                         <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-lg">
                                             <div className="font-bold p-3 bg-muted rounded-lg text-left">Spanish</div>
@@ -440,6 +441,7 @@ export default function EngA1Class14Page() {
                                             ))}
                                         </div>
                                     </AccordionContent>
+                                </AccordionItem>
                                 </AccordionItem>
                                 <AccordionItem value="materials">
                                     <AccordionTrigger className="text-xl font-bold uppercase text-primary">Lexico: Materiales y Tejidos</AccordionTrigger>
@@ -482,6 +484,7 @@ export default function EngA1Class14Page() {
             case 'dictation1':
                 return (
                     <LinesWritingExercise 
+                        key="dictation1"
                         title="DICTATION 1 = COMPARATIVES AND SUPERLATIVE ADJECTIVES" 
                         description="Escucha atentamente a tu profesor y escribe las frases en los renglones correspondientes." 
                         onComplete={() => handleTopicComplete('dictation1')} 
@@ -526,6 +529,7 @@ export default function EngA1Class14Page() {
             case 'dictation2':
                 return (
                     <LinesWritingExercise 
+                        key="dictation2"
                         title="DICTATION 2" 
                         description="Escucha atentamente a tu profesor y escribe las frases en los renglones correspondientes." 
                         onComplete={() => handleTopicComplete('dictation2')} 
