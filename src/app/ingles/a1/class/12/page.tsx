@@ -24,7 +24,8 @@ import {
     Activity,
     Calendar,
     MousePointer2,
-    BookText
+    BookText,
+    Sparkles
 } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
@@ -47,7 +48,7 @@ type Topic = {
   status: 'completed' | 'active' | 'locked';
 };
 
-const progressStorageVersion = 'progress_a1_eng_u3_c12_v19_final_ex9';
+const progressStorageVersion = 'progress_a1_eng_u3_c12_v21_final_renumbered';
 const mainProgressKey = 'progress_a1_eng_unit_3_class_12';
 
 const timeExpressionsData = [
@@ -360,7 +361,7 @@ const ChoiceExercise = ({ onComplete }: { onComplete: () => void }) => {
     return (
         <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
             <CardHeader>
-                <CardTitle>Exercise 7: Choice</CardTitle>
+                <CardTitle>Exercise 6: Choice</CardTitle>
                 <CardDescription>Elige la opción más adecuada (Present Simple vs Present Continuous).</CardDescription>
                 <div className="pt-2 text-sm font-medium text-muted-foreground">
                     Pregunta {currentIndex + 1} de {class12Exercise7Data.length}
@@ -596,9 +597,10 @@ export default function EngA1Class12Page() {
         { key: 'ex4', name: 'Exercise 4', icon: PenSquare, status: 'locked' },
         { key: 'ex5', name: 'Exercise 5', icon: PenSquare, status: 'locked' },
         { key: 'grammar3', name: 'Grammar 3', icon: BookText, status: 'locked' },
-        { key: 'ex7', name: 'Exercise 7', icon: PenSquare, status: 'locked' },
-        { key: 'ex8', name: 'Exercise 8', icon: PenSquare, status: 'locked' },
-        { key: 'ex9', name: 'Exercise 9', icon: PenSquare, status: 'locked' },
+        { key: 'ex7', name: 'Exercise 6', icon: PenSquare, status: 'locked' },
+        { key: 'ex8', name: 'Exercise 7', icon: PenSquare, status: 'locked' },
+        { key: 'ex9', name: 'Exercise 8', icon: PenSquare, status: 'locked' },
+        { key: 'last_ex', name: 'Last Exercise', icon: Sparkles, status: 'locked' },
     ], []);
     
     useEffect(() => {
@@ -1169,14 +1171,30 @@ export default function EngA1Class12Page() {
             case 'ex8':
                 return (
                     <ShortAnswerPresentSimpleExercise
-                        title="Exercise 8: Short Answers"
+                        title="Exercise 7: Short Answers"
                         description="Escribe las dos respuestas cortas para cada pregunta de Present Simple y Present Continuous (+A) y (-A)."
                         exerciseData={class12Exercise8Data}
                         onComplete={() => handleTopicComplete('ex8')}
                     />
                 );
             case 'ex9':
-                return <DualTranslationExercise onComplete={() => handleTopicComplete('ex9')} data={class12Exercise9Data} title="Exercise 9: Simple vs Continuous" vocabulary={ex9Vocab} />;
+                return <DualTranslationExercise onComplete={() => handleTopicComplete('ex9')} data={class12Exercise9Data} title="Exercise 8: Simple vs Continuous" vocabulary={ex9Vocab} />;
+            case 'last_ex':
+                return (
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple min-h-[400px] flex flex-col justify-center">
+                        <CardHeader className="text-center">
+                            <Trophy className="h-16 w-16 text-yellow-400 mx-auto mb-4" />
+                            <CardTitle>Last Exercise</CardTitle>
+                            <CardDescription>Has llegado al final de la Clase 12. ¡Gran trabajo!</CardDescription>
+                        </CardHeader>
+                        <CardContent className="text-center">
+                            <p className="text-muted-foreground">Has dominado el Presente Continuo y sus contrastes con el Presente Simple.</p>
+                        </CardContent>
+                        <CardFooter className="justify-center">
+                            <Button onClick={() => handleTopicComplete('last_ex')} size="lg">Finalizar Clase</Button>
+                        </CardFooter>
+                    </Card>
+                );
             default:
                 return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple min-h-[500px]">
