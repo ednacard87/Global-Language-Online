@@ -519,11 +519,12 @@ export default function EngA1Class14Page() {
             case 'dictation2':
                 return (
                     <LinesWritingExercise 
-                        title="Dictation 2" 
-                        description="Segundo ejercicio de dictado." 
+                        title="DICTATION 2" 
+                        description="Escucha atentamente a tu profesor y escribe las frases en los renglones correspondientes." 
                         onComplete={() => handleTopicComplete('dictation2')} 
                         studentDocRef={studentDocRef}
-                        lineCount={12}
+                        lineCount={30}
+                        hasTitleLine={true}
                         initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.dictation2 || []}
                         initialGrades={studentProfile?.lessonProgress?.[progressStorageVersion]?.dictation2Grades || {}}
                         savePath={`lessonProgress.${progressStorageVersion}.dictation2`}
