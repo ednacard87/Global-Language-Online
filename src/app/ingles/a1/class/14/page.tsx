@@ -23,6 +23,8 @@ import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
 import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
 import { doc } from 'firebase/firestore';
+import { Input } from '@/components/ui/input';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 type TopicStatus = 'completed' | 'active' | 'locked';
 
@@ -33,18 +35,54 @@ type Topic = {
   status: TopicStatus;
 };
 
-const progressStorageVersion = 'progress_a1_eng_u3_c14_v1';
+const progressStorageVersion = 'progress_a1_eng_u3_c14_v2_vocab';
 const mainProgressKey = 'progress_a1_eng_unit_3_class_14';
+
+const vocabularyData = {
+    verbs: [
+        { spanish: 'DAR', english: 'GIVE' },
+        { spanish: 'IR', english: 'GO' },
+        { spanish: 'HABER-TENER', english: 'HAVE' },
+        { spanish: 'OIR', english: 'HEAR' },
+        { spanish: 'CONOCER', english: 'KNOW' },
+        { spanish: 'IRSE', english: 'LEAVE' },
+        { spanish: 'PERDER', english: 'LOSE' },
+        { spanish: 'HACER', english: 'MAKE' },
+        { spanish: 'ENCONTRAR', english: 'MEET' },
+        { spanish: 'PONER', english: 'PUT' },
+        { spanish: 'LEER', english: 'READ' },
+        { spanish: 'MONTAR (HORSE-BIKE)', english: 'RIDE' },
+        { spanish: 'CORRER', english: 'RUN' },
+        { spanish: 'DECIR', english: 'SAY' },
+        { spanish: 'VENDER', english: 'SELL' },
+        { spanish: 'ENVIAR', english: 'SEND' },
+        { spanish: 'CANTAR', english: 'SING' },
+        { spanish: 'DORMIR', english: 'SLEEP' },
+    ],
+    materials: [
+        { spanish: 'TEJIDO', english: 'FABRIC' },
+        { spanish: 'LANA', english: 'WOOL' },
+        { spanish: 'ALGODÓN', english: 'COTTON' },
+        { spanish: 'SEDA', english: 'SILK' },
+        { spanish: 'CUERO', english: 'LEATHER' },
+        { spanish: 'PIEDRA', english: 'STONE' },
+        { spanish: 'BRONCE', english: 'BRONZE' },
+        { spanish: 'ACERO', english: 'STEEL' },
+        { spanish: 'HIERRO', english: 'IRON' },
+        { spanish: 'VIDRIO', english: 'GLASS' },
+        { spanish: 'MADERA', english: 'WOOD' },
+        { spanish: 'METAL', english: 'METAL' },
+        { spanish: 'PLATA', english: 'SILVER' },
+        { spanish: 'ORO', english: 'GOLD' },
+        { spanish: 'PLASTICO', english: 'PLASTIC' },
+    ]
+};
 
 export default function EngA1Class14Page() {
     const { t } = useTranslation();
     const { toast } = useToast();
-    const { user, isUserLoading } = userHook();
+    const { user, isUserLoading } = useUser();
     const firestore = useFirestore();
-
-    function userHook() {
-        return useUser();
-    }
 
     const studentDocRef = useMemoFirebase(
         () => (user ? doc(firestore, 'students', user.uid) : null),
@@ -61,6 +99,11 @@ export default function EngA1Class14Page() {
     const [selectedTopic, setSelectedTopic] = useState<string>('');
     const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
     const [initialLoadComplete, setInitialLoadComplete] = useState(false);
+
+    // Vocab States
+    const [vocabAnswers, setVocabAnswers] = useState<{[key: string]: string[]}>({});
+    const [vocabValidation, setVocabValidation] = useState<{[key: string]: ('correct' | 'incorrect' | 'unchecked')[]}>({});
+    const [canAdvanceVocab, setCanAdvanceVocab] = useState(false);
 
     const initialLearningPath = useMemo((): Topic[] => [
         { key: 'vocabulary', name: 'Vocabulary', icon: BookOpen, status: 'active' },
@@ -93,6 +136,16 @@ export default function EngA1Class14Page() {
             setSelectedTopic(savedSelectedTopic || firstActive?.key || 'vocabulary');
             setInitialLoadComplete(true);
         }
+
+        // Initialize vocab states
+        const initAnswers: any = {};
+        const initVal: any = {};
+        Object.keys(vocabularyData).forEach(cat => {
+            initAnswers[cat] = Array((vocabularyData as any)[cat].length).fill('');
+            initVal[cat] = Array((vocabularyData as any)[cat].length).fill('unchecked');
+        });
+        setVocabAnswers(initAnswers);
+        setVocabValidation(initVal);
 
     }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading, isUserLoading, initialLoadComplete]);
     
@@ -150,11 +203,47 @@ export default function EngA1Class14Page() {
             return;
         }
         setSelectedTopic(topicKey);
+    };
 
-        // Auto-complete informational topics for now until content is provided
-        if (topicKey === 'vocabulary' || topicKey === 'general_ex') {
-             // handleTopicComplete(topicKey);
+    const handleVocabChange = (cat: string, idx: number, val: string) => {
+        const newAns = { ...vocabAnswers };
+        newAns[cat][idx] = val;
+        setVocabAnswers(newAns);
+
+        const newVal = { ...vocabValidation };
+        newVal[cat][idx] = 'unchecked';
+        setVocabValidation(newVal);
+        setCanAdvanceVocab(false);
+    };
+
+    const handleCheckVocab = () => {
+        let oneCorrect = false;
+        const newVal: any = {};
+        
+        Object.keys(vocabularyData).forEach(cat => {
+            newVal[cat] = (vocabularyData as any)[cat].map((item: any, idx: number) => {
+                const userVal = (vocabAnswers[cat][idx] || '').trim().toUpperCase();
+                const correctVal = item.english.toUpperCase();
+                const isCorrect = userVal === correctVal;
+                if (isCorrect) oneCorrect = true;
+                return isCorrect ? 'correct' : 'incorrect';
+            });
+        });
+
+        setVocabValidation(newVal);
+        if (oneCorrect) {
+            toast({ title: "¡Buen trabajo!", description: "Has acertado al menos una. ¡Ya puedes avanzar!" });
+            setCanAdvanceVocab(true);
+        } else {
+            toast({ variant: 'destructive', title: "Revisa tus respuestas", description: "Necesitas al menos una correcta para avanzar." });
         }
+    };
+
+    const getVocabClass = (cat: string, idx: number) => {
+        const status = vocabValidation[cat]?.[idx];
+        if (status === 'correct') return 'border-green-500 bg-green-50 dark:bg-green-900/10 focus-visible:ring-green-500';
+        if (status === 'incorrect') return 'border-destructive focus-visible:ring-destructive';
+        return '';
     };
 
     const renderContent = () => {
@@ -165,14 +254,69 @@ export default function EngA1Class14Page() {
                 return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
                         <CardHeader>
-                            <CardTitle>Vocabulary</CardTitle>
-                            <CardDescription>Estudia el vocabulario de esta lección.</CardDescription>
+                            <CardTitle>Vocabulary (Verbs and Materials)</CardTitle>
+                            <CardDescription>Traduce las palabras del español al inglés.</CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <p className="text-lg">El contenido del vocabulario se añadirá pronto.</p>
+                            <Accordion type="multiple" defaultValue={['verbs', 'materials']} className="w-full">
+                                <AccordionItem value="verbs">
+                                    <AccordionTrigger className="text-xl font-bold uppercase text-primary">Lexico: Verbos Básicos</AccordionTrigger>
+                                    <AccordionContent>
+                                        <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-lg">
+                                            <div className="font-bold p-3 bg-muted rounded-lg text-left">Spanish</div>
+                                            <div className="font-bold p-3 bg-muted rounded-lg text-left">English</div>
+                                            {vocabularyData.verbs.map((item, idx) => (
+                                                <React.Fragment key={`v-${idx}`}>
+                                                    <div className="p-3 bg-card border rounded-lg flex items-center font-medium">{item.spanish}</div>
+                                                    <div className="p-3 bg-card border rounded-lg flex items-center">
+                                                        <Input
+                                                            value={vocabAnswers.verbs?.[idx] || ''}
+                                                            onChange={e => handleVocabChange('verbs', idx, e.target.value)}
+                                                            className={cn("h-11 font-mono uppercase", getVocabClass('verbs', idx))}
+                                                            placeholder="..."
+                                                            autoComplete="off"
+                                                        />
+                                                    </div>
+                                                </React.Fragment>
+                                            ))}
+                                        </div>
+                                    </AccordionContent>
+                                </AccordionItem>
+                                <AccordionItem value="materials">
+                                    <AccordionTrigger className="text-xl font-bold uppercase text-primary">Lexico: Materiales y Tejidos</AccordionTrigger>
+                                    <AccordionContent>
+                                        <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-lg">
+                                            <div className="font-bold p-3 bg-muted rounded-lg text-left">Spanish</div>
+                                            <div className="font-bold p-3 bg-muted rounded-lg text-left">English</div>
+                                            {vocabularyData.materials.map((item, idx) => (
+                                                <React.Fragment key={`m-${idx}`}>
+                                                    <div className="p-3 bg-card border rounded-lg flex items-center font-medium">{item.spanish}</div>
+                                                    <div className="p-3 bg-card border rounded-lg flex items-center">
+                                                        <Input
+                                                            value={vocabAnswers.materials?.[idx] || ''}
+                                                            onChange={e => handleVocabChange('materials', idx, e.target.value)}
+                                                            className={cn("h-11 font-mono uppercase", getVocabClass('materials', idx))}
+                                                            placeholder="..."
+                                                            autoComplete="off"
+                                                        />
+                                                    </div>
+                                                </React.Fragment>
+                                            ))}
+                                        </div>
+                                    </AccordionContent>
+                                </AccordionItem>
+                            </Accordion>
                         </CardContent>
-                        <CardFooter>
-                            <Button onClick={() => handleTopicComplete('vocabulary')}>Marcar como Estudiado</Button>
+                        <CardFooter className="flex justify-between items-center border-t pt-6">
+                            <Button onClick={handleCheckVocab} variant="secondary" size="lg">Verificar</Button>
+                            <Button 
+                                onClick={() => handleTopicComplete('vocabulary')} 
+                                disabled={!canAdvanceVocab && !isAdmin}
+                                size="lg"
+                                className={cn(canAdvanceVocab && "bg-green-600 hover:bg-green-700 shadow-lg")}
+                            >
+                                Avanzar <ArrowRight className="ml-2 h-5 w-5" />
+                            </Button>
                         </CardFooter>
                     </Card>
                 );
