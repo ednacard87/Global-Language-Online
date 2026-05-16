@@ -42,7 +42,7 @@ type Topic = {
   status: 'completed' | 'active' | 'locked';
 };
 
-const progressStorageVersion = 'progress_a1_eng_u3_c12_v10_ex4_added';
+const progressStorageVersion = 'progress_a1_eng_u3_c12_v11_more_ex4';
 const mainProgressKey = 'progress_a1_eng_unit_3_class_12';
 
 const timeExpressionsData = [
@@ -95,7 +95,7 @@ const class12Exercise4Data = [
         } 
     },
     { 
-        spanish: "¿ÉL CANTA? - ¿ÉL ESTA CANTANDO?", 
+        spanish: "¿EL CANTA? - ¿EL ESTA CANTANDO?", 
         answers: { 
             simple: ["does he sing?"], 
             continuous: ["is he singing?"] 
@@ -106,6 +106,62 @@ const class12Exercise4Data = [
         answers: { 
             simple: ["do you study?"], 
             continuous: ["are you studying?"] 
+        } 
+    },
+    { 
+        spanish: "¿ELLA HABLA ALEMAN? – ¿ELLA ESTA HABLANDO INGLÉS?", 
+        answers: { 
+            simple: ["does she speak german?"], 
+            continuous: ["is she speaking english?"] 
+        } 
+    },
+    { 
+        spanish: "¿ELLOS ESTAN CORRIENDO? –¿ELLOS CORREN EN LA CASA?", 
+        answers: { 
+            simple: ["do they run in the house?"], 
+            continuous: ["are they running?"] 
+        } 
+    },
+    { 
+        spanish: "¿QUE HACES? – ¿QUE ESTAS HACIENDO?", 
+        answers: { 
+            simple: ["what do you do?"], 
+            continuous: ["what are you doing?", "what're you doing?"] 
+        } 
+    },
+    { 
+        spanish: "¿A DONDE ESTAS YENDO? - ¿A DONDE VAS?", 
+        answers: { 
+            simple: ["where do you go?"], 
+            continuous: ["where are you going?", "where're you going?"] 
+        } 
+    },
+    { 
+        spanish: "¿DONDE TRABAJAS? –¿DONDE ESTAS TRABAJANDO?", 
+        answers: { 
+            simple: ["where do you work?"], 
+            continuous: ["where are you working?", "where're you working?"] 
+        } 
+    },
+    { 
+        spanish: "¿ELLA ESTA DURMIENDO? - ¿ELLA DUERME EN LA TARDE?", 
+        answers: { 
+            simple: ["does she sleep in the afternoon?"], 
+            continuous: ["is she sleeping?"] 
+        } 
+    },
+    { 
+        spanish: "¿ELLOS ESCRIBEN LIBROS? - ¿ELLOS ESTAN ESCRIBIENDO LIBROS ?", 
+        answers: { 
+            simple: ["do they write books?"], 
+            continuous: ["are they writing books?"] 
+        } 
+    },
+    { 
+        spanish: "¿TRABAJAS? - ¿ESTÁS TRABAJANDO?", 
+        answers: { 
+            simple: ["do you work?"], 
+            continuous: ["are you working?", "are you working?"] 
         } 
     },
 ];
@@ -169,9 +225,18 @@ const SimpleVsContinuousExercise = ({ onComplete }: { onComplete: () => void }) 
             <CardHeader>
                 <CardTitle>Exercise 4: Simple vs Continuous</CardTitle>
                 <CardDescription>Traduce la frase a Present Simple y Present Continuous.</CardDescription>
-                <div className="flex gap-2 pt-4">
+                <div className="flex flex-wrap gap-2 pt-4">
                     {class12Exercise4Data.map((_, idx) => (
-                        <div key={idx} className={cn("h-3 w-3 rounded-full border", currentIndex === idx ? "bg-primary border-primary" : "bg-muted border-border")} />
+                        <button
+                            key={idx}
+                            onClick={() => setCurrentIndex(idx)}
+                            className={cn(
+                                "h-6 w-6 rounded-full flex items-center justify-center text-[10px] font-bold border transition-all",
+                                currentIndex === idx ? "bg-primary border-primary text-white" : "bg-muted border-border"
+                            )}
+                        >
+                            {idx + 1}
+                        </button>
                     ))}
                 </div>
             </CardHeader>
