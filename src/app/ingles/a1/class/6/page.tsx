@@ -163,7 +163,7 @@ const LinesWritingExercise = ({
         return (
             <div key={idx} className="flex items-center gap-3">
                 <span className={cn("font-bold w-8 text-right shrink-0", isTitle ? "text-brand-purple w-20" : "text-primary")}>
-                    {isTitle ? "TITULO:" : `${idx}.`}
+                    {isTitle ? "TITULO:" : (hasTitleLine ? `${idx}.` : `${idx + 1}.`)}
                 </span>
                 <Input 
                     value={line} 
