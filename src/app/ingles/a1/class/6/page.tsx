@@ -33,7 +33,7 @@ const ICONS = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_a1_eng_unit_2_class_6_v10_dictation';
+const progressStorageVersion = 'progress_a1_eng_unit_2_class_6_v12_final';
 const mainProgressKey = 'progress_a1_eng_unit_2_class_6';
 
 const vocabularyData = [
@@ -77,7 +77,6 @@ const possessivesTable = [
     { adj: 'THEIR', adjEs: 'SU- SUS DE ELLOS', pro: 'THEIRS', proEs: '( SUYO/A/OS/AS DE ELLOS)' },
 ];
 
-// Componente de Dictado compartido con Class 14 para consistencia
 const LinesWritingExercise = ({ 
     title, 
     description, 
@@ -269,6 +268,7 @@ export default function EngA1Class6Page() {
         { key: 'ex5', name: 'Ejercicio 5', icon: PenSquare, status: 'locked' },
         { key: 'ex6', name: 'Ejercicio 6', icon: PenSquare, status: 'locked' },
         { key: 'ex7', name: 'Ejercicio 7', icon: PenSquare, status: 'locked' },
+        { key: 'ex8', name: 'Ejercicio 8', icon: PenSquare, status: 'locked' },
     ], []);
     
     useEffect(() => {
@@ -623,6 +623,15 @@ export default function EngA1Class6Page() {
                         onComplete={() => handleTopicComplete('ex7')}
                         course="a1"
                         title="Ejercicio 7"
+                    />
+                );
+            case 'ex8':
+                return (
+                    <SimpleTranslationExercise
+                        exerciseKey="c6_ex8"
+                        onComplete={() => handleTopicComplete('ex8')}
+                        course="a1"
+                        title="Ejercicio 8"
                     />
                 );
             default:

@@ -237,6 +237,21 @@ const exercises = {
             { spanish: 'ESTA ES NUESTRA FAMILIA', english: ["this is our family"] },
         ]
     },
+    c6_ex8: {
+        title: 'a1class1.exercise',
+        prompts: [
+            { spanish: 'MI PERRO ES MAS INTELIGENTE QUE EL TUYO', english: ["my dog is smarter than yours", "my dog is more intelligent than yours"] },
+            { spanish: 'ESTOS SON MIS LIBROS Y ESOS SON LOS TUYOS', english: ["these are my books and those are yours"] },
+            { spanish: '¿EL PORTATIL ES TUYO O DE ELLA?', english: ["is the laptop yours or hers?"] },
+            { spanish: 'NUESTRA CASA ES MAS GRANDE QUE LA DE ELLOS', english: ["our house is bigger than theirs"] },
+            { spanish: 'SU PADRE ES UN DOCTOR FAMOSO (DE EL)', english: ["his father is a famous doctor", "his dad is a famous doctor"] },
+            { spanish: 'ESTA CHAQUETA NO ES MIA, ES DE MI HERMANA', english: ["this jacket is not mine, it is my sister's", "this jacket isn't mine, it's my sister's"] },
+            { spanish: '¿ESTE CELULAR ES EL TUYO?', english: ["is this cellphone yours?", "is this phone yours?"] },
+            { spanish: 'LOS JUGUETES SON NUESTROS', english: ["the toys are ours"] },
+            { spanish: 'SU CARRO ES RAPIDO PERO EL MIO ES MAS SEGURO (DE ELLOS)', english: ["their car is fast but mine is safer"] },
+            { spanish: '¿DONDE ESTAN LAS MIAS? (LAS LLAVES)', english: ["where are mine?"] },
+        ]
+    },
     c7_ex1: {
         title: 'a1class1.exercise',
         prompts: [
@@ -668,8 +683,8 @@ const exercises = {
         prompts: [
             { spanish: 'ELLA QUIERE VER A SU NOVIO – ELLA QUIERE VERLO', english: ["she wants to see her boyfriend - she wants to see him", "she wants to see her boyfriend she wants to see him"] },
             { spanish: 'NOSOTROS QUEREMOS ESA CASA- NOSOTROS QUEREMOS TENERLA, PERO ES MUY CARA', english: ["we want that house - we want to have it but it is very expensive", "we want that house we want to have it but it's very expensive"] },
-            { spanish: 'YO QUIERO TENER ESE PERRO- YO QUIERO TENERLO, PERO ES MUY CARO', english: ["i want to have that dog - i want to have it but it is very expensive", "i want to have that dog i want to have it but it's very expensive"] },
-            { spanish: 'A ELLOS NO LES GUSTAN MIS AMIGOS- A ELLOS NO LES GUSTAN', english: ["they do not like my friends - they do not like them", "they don't like my friends they don't like them"] },
+            { spanish: 'YO QUIERO TENER ESE PERRO- YO QUIERO TENERLO, PERO ES MUY CARA', english: ["i want to have that dog - i want to have it but it is very expensive", "i want to have that dog i want to have it but it's very expensive"] },
+            { spanish: 'A ELLOS NO LES GUSTAN MIS AMIGOS- A ELLOS NO LES GUSTAN', english: ["they do not like my friends - they do not like them", "they'n tlike my friends they don't like them"] },
             { spanish: 'A ELLA NO LE GUSTA EL PESCADO- A ELLA NO LE GUSTA, POR EL OLOR', english: ["she does not like fish - she does not like it because of the smell", "she doesn't like fish she doesn't like it because of the smell"] },
             { spanish: 'ÉL BESA SU ESPOSA ANTES DE SU VIAJE- ÉL LA BESA', english: ["he kisses his wife before his trip - he kisses her", "he kisses his wife before his trip he kisses her"] },
             { spanish: 'NOSOTROS ESTUDIAMOS CON PAUL- NOSOTROS ESTUDIAMOS CON ÉL EN LA BIBLIOTECA', english: ["we study with paul - we study with him in the library", "we study with paul we study with him in the library"] },
