@@ -1,11 +1,11 @@
 'use client';
 
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, Info, Gamepad2, BookText, Loader2, ChevronDown } from 'lucide-react';
+import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, Info, Gamepad2, BookText, Loader2, ChevronDown, Check, X } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
@@ -33,7 +33,7 @@ const ICONS = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_a1_eng_unit_2_class_6_v6_stable';
+const progressStorageVersion = 'progress_a1_eng_unit_2_class_6_v10_dictation';
 const mainProgressKey = 'progress_a1_eng_unit_2_class_6';
 
 const vocabularyData = [
@@ -77,16 +77,158 @@ const possessivesTable = [
     { adj: 'THEIR', adjEs: 'SU- SUS DE ELLOS', pro: 'THEIRS', proEs: '( SUYO/A/OS/AS DE ELLOS)' },
 ];
 
-const class6NarrativeTextPhrases = [
-    { spanish: "Mi nombre es Trisha, yo tengo quince años y vivo en New Dlehi, India.", answers: ["my name is trisha, i am fifteen years old and i live in new delhi, india", "my name's trisha, i'm fifteen years old and i live in new delhi, india"] },
-    { spanish: "con mi padre, madre, dos hermanos y tres hermanas.", answers: ["with my father, mother, two brothers and three sisters", "with my dad, mom, two brothers and three sisters"] },
-    { spanish: "mis abuelos tambien viven con nosotros.", answers: ["my grandparents also live with us"] },
-    { spanish: "en India, la familia es muy importante. Es comun tener abuelos, tias, tios y primos viviendo en la misma casa.", answers: ["in india, family is very important. it is common to have grandparents, aunts, uncles and cousins living in the same house"] },
-    { spanish: "Mis tias, tios y primos tambien viven cerca de mi casa.", answers: ["my aunts, uncles and cousins also live near my house"] },
-    { spanish: "nosotros nos vemos a menudo.", answers: ["we see each other often"] },
-    { spanish: "MI hermano es un programador de computadores. ahora, el vive en Australia. Su compañia lo envió ahi por un año.", answers: ["my brother is a computer programmer. now, he lives in australia. his company sent him there for a year"] },
-    { spanish: "nosotros lo extrañamos mucho y nosotros lo llamamos cada semana.", answers: ["we miss him a lot and we call him every week", "we miss him very much and we call him every week"] }
-];
+// Componente de Dictado compartido con Class 14 para consistencia
+const LinesWritingExercise = ({ 
+    title, 
+    description, 
+    lineCount = 16,
+    onComplete, 
+    studentDocRef, 
+    initialData,
+    initialGrades,
+    savePath,
+    savePathGrades,
+    isAdmin = false,
+    hasTitleLine = true
+}: { 
+    title: string, 
+    description: string, 
+    lineCount?: number,
+    onComplete: () => void,
+    studentDocRef: any,
+    initialData: string[],
+    initialGrades: Record<number, 'correct' | 'incorrect' | null>,
+    savePath: string,
+    savePathGrades: string,
+    isAdmin?: boolean,
+    hasTitleLine?: boolean
+}) => {
+    const totalLines = hasTitleLine ? lineCount + 1 : lineCount;
+    const [lines, setLines] = useState<string[]>(Array(totalLines).fill(''));
+    const [grades, setGrades] = useState<Record<number, 'correct' | 'incorrect' | null>>(initialGrades || {});
+    const initializedRef = useRef(false);
+
+    useEffect(() => {
+        if (!initializedRef.current && initialData && Array.isArray(initialData)) {
+            const newLines = [...Array(totalLines).fill('')];
+            initialData.forEach((val, i) => {
+                if (i < totalLines) newLines[i] = val || '';
+            });
+            setLines(newLines);
+            if (initialData.length > 0) {
+                initializedRef.current = true;
+            }
+        }
+    }, [initialData, totalLines]);
+
+    useEffect(() => {
+        if (initialGrades) {
+            setGrades(initialGrades);
+        }
+    }, [initialGrades]);
+
+    const handleLineChange = (index: number, value: string) => {
+        const newLines = [...lines];
+        newLines[index] = value;
+        setLines(newLines);
+        
+        if (studentDocRef) {
+            updateDocumentNonBlocking(studentDocRef, {
+                [savePath]: newLines
+            });
+        }
+    };
+
+    const handleToggleGrade = (index: number, type: 'correct' | 'incorrect') => {
+        if (!isAdmin) return;
+
+        const newGrades = { ...grades };
+        if (newGrades[index] === type) {
+            newGrades[index] = null;
+        } else {
+            newGrades[index] = type;
+        }
+        setGrades(newGrades);
+
+        if (studentDocRef) {
+            updateDocumentNonBlocking(studentDocRef, {
+                [savePathGrades]: newGrades
+            });
+        }
+    };
+
+    const renderRenglon = (line: string, idx: number, isTitle: boolean = false) => {
+        const status = grades[idx];
+        const borderClass = status === 'correct' ? 'border-green-500 ring-1 ring-green-500' : status === 'incorrect' ? 'border-red-500 ring-1 ring-red-500' : '';
+
+        return (
+            <div key={idx} className="flex items-center gap-3">
+                <span className={cn("font-bold w-8 text-right shrink-0", isTitle ? "text-brand-purple w-20" : "text-primary")}>
+                    {isTitle ? "TITULO:" : `${idx}.`}
+                </span>
+                <Input 
+                    value={line} 
+                    onChange={(e) => handleLineChange(idx, e.target.value)} 
+                    placeholder={isTitle ? "Escribe el título aquí..." : "..."}
+                    className={cn(
+                        "flex-1 bg-muted/30 focus:bg-background transition-all h-11 border-primary/20",
+                        isTitle && "bg-primary/5 h-12 font-bold",
+                        borderClass
+                    )}
+                    autoComplete="off"
+                />
+                
+                <div className="flex gap-2 shrink-0">
+                    <button
+                        onClick={() => handleToggleGrade(idx, 'correct')}
+                        className={cn(
+                            "h-6 w-6 rounded-full border-2 flex items-center justify-center transition-all",
+                            status === 'correct' 
+                                ? "bg-green-500 border-green-600 text-white" 
+                                : "bg-gray-200 border-gray-300 dark:bg-gray-800 dark:border-gray-700 text-transparent",
+                            !isAdmin && "cursor-default pointer-events-none"
+                        )}
+                    >
+                        <Check className="h-3 w-3" />
+                    </button>
+                    <button
+                        onClick={() => handleToggleGrade(idx, 'incorrect')}
+                        className={cn(
+                            "h-6 w-6 rounded-full border-2 flex items-center justify-center transition-all",
+                            status === 'incorrect' 
+                                ? "bg-red-500 border-red-600 text-white" 
+                                : "bg-gray-200 border-gray-300 dark:bg-gray-800 dark:border-gray-700 text-transparent",
+                            !isAdmin && "cursor-default pointer-events-none"
+                        )}
+                    >
+                        <X className="h-3 w-3" />
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
+            <CardHeader>
+                <CardTitle className="text-2xl">{title}</CardTitle>
+                <CardDescription className="text-lg font-semibold text-primary">{description}</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+                <div className="grid grid-cols-1 gap-3 max-h-[600px] overflow-y-auto pr-2">
+                    {hasTitleLine && renderRenglon(lines[0], 0, true)}
+                    {lines.slice(hasTitleLine ? 1 : 0).map((line, idx) => {
+                        const actualIndex = hasTitleLine ? idx + 1 : idx;
+                        return renderRenglon(line, actualIndex);
+                    })}
+                </div>
+            </CardContent>
+            <CardFooter className="pt-6 border-t mt-4">
+                <Button onClick={onComplete} size="lg" className="w-full sm:w-auto min-w-[200px]">Avanzar</Button>
+            </CardFooter>
+        </Card>
+    );
+};
 
 export default function EngA1Class6Page() {
     const { t } = useTranslation();
@@ -442,26 +584,20 @@ export default function EngA1Class6Page() {
                     />
                 );
             case 'text':
-                const textVocab = {
-                    "abuelos": "grandparents",
-                    "comun": "common",
-                    "tia": "aunt",
-                    "tio": "uncle",
-                    "primo": "cousin",
-                    "a menudo": "often",
-                    "programador": "programmer",
-                    "ahora": "now",
-                    "compañia": "company",
-                    "envió": "sent",
-                    "extrañar": "to miss",
-                    "llamar": "to call"
-                };
                 return (
-                    <LargeTextTranslation
-                        title="Dictation 1"
-                        phrases={class6NarrativeTextPhrases}
-                        onComplete={() => handleTopicComplete('text')}
-                        vocabulary={textVocab}
+                    <LinesWritingExercise 
+                        key="dictation1-c6"
+                        title="DICTATION 1" 
+                        description="Escucha atentamente a tu profesor y escribe las frases en los renglones correspondientes." 
+                        onComplete={() => handleTopicComplete('text')} 
+                        studentDocRef={studentDocRef}
+                        lineCount={16}
+                        hasTitleLine={true}
+                        initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.dictation1 || []}
+                        initialGrades={studentProfile?.lessonProgress?.[progressStorageVersion]?.dictation1Grades || {}}
+                        savePath={`lessonProgress.${progressStorageVersion}.dictation1`}
+                        savePathGrades={`lessonProgress.${progressStorageVersion}.dictation1Grades`}
+                        isAdmin={isAdmin}
                     />
                 );
             case 'vocab_game':
@@ -517,7 +653,7 @@ export default function EngA1Class6Page() {
             <main className="flex-1 p-4 md:p-8">
                 <div className="max-w-7xl mx-auto">
                     <div className="mb-8">
-                        <Link href="/ingles/a1" className="hover:underline text-sm text-muted-foreground">Volver al curso A1</Link>
+                        <Link href="/ingles/a1" className="hover:underline text-sm text-white/80">Volver al curso A1</Link>
                         <h1 className="text-4xl font-bold text-white dark:text-primary [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">Clase 6</h1>
                     </div>
                     <div className="grid gap-8 md:grid-cols-12">
