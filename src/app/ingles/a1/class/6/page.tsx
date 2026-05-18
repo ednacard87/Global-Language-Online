@@ -627,11 +627,19 @@ export default function EngA1Class6Page() {
                 );
             case 'ex8':
                 return (
-                    <SimpleTranslationExercise
-                        exerciseKey="c6_ex8"
-                        onComplete={() => handleTopicComplete('ex8')}
-                        course="a1"
-                        title="Ejercicio 8"
+                    <LinesWritingExercise 
+                        key="ex8-creative"
+                        title="Ejercicio 8" 
+                        description="INVENTA TRES FRASES CON ADJETIVOS POSESIVOS Y TRES FRASES CON PRONOMBRES POSESIVOS:" 
+                        onComplete={() => handleTopicComplete('ex8')} 
+                        studentDocRef={studentDocRef}
+                        lineCount={6}
+                        hasTitleLine={false}
+                        initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.writingEx8 || []}
+                        initialGrades={studentProfile?.lessonProgress?.[progressStorageVersion]?.writingEx8Grades || {}}
+                        savePath={`lessonProgress.${progressStorageVersion}.writingEx8`}
+                        savePathGrades={`lessonProgress.${progressStorageVersion}.writingEx8Grades`}
+                        isAdmin={isAdmin}
                     />
                 );
             default:
