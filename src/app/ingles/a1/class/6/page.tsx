@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, Info, Gamepad2, BookText, Loader2, ChevronDown, Check, X } from 'lucide-react';
+import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, Info, Gamepad2, Loader2, ChevronDown, Check, X, ArrowRight } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
@@ -15,9 +15,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Separator } from '@/components/ui/separator';
 import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
-import { LargeTextTranslation } from '@/components/dashboard/large-text-translation';
 import { AdjectivesMemoryGame } from '@/components/kids/exercises/adjectives-memory-game';
 
 type Topic = {
@@ -33,7 +31,7 @@ const ICONS = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_a1_eng_unit_2_class_6_v12_final';
+const progressStorageVersion = 'progress_a1_eng_u2_c6_v15_final_organized';
 const mainProgressKey = 'progress_a1_eng_unit_2_class_6';
 
 const vocabularyData = [
@@ -88,7 +86,7 @@ const LinesWritingExercise = ({
     savePath,
     savePathGrades,
     isAdmin = false,
-    hasTitleLine = true
+    hasTitleLine = false
 }: { 
     title: string, 
     description: string, 
@@ -249,6 +247,7 @@ export default function EngA1Class6Page() {
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
     const [selectedTopic, setSelectedTopic] = useState<string>('');
     const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
+    const [initialLoadComplete, setInitialLoadComplete] = useState(false);
 
     // State for vocabulary exercise
     const [vocabAnswers, setVocabAnswers] = useState<string[]>(Array(vocabularyData.length).fill(''));
@@ -272,55 +271,54 @@ export default function EngA1Class6Page() {
     ], []);
     
     useEffect(() => {
-        if (isProfileLoading || isUserLoading) return;
-        const newPath = initialLearningPath.map(topic => ({
-            ...topic,
-            status: isAdmin ? 'completed' : topic.status,
-        }));
-        
-        if (studentProfile?.lessonProgress?.[progressStorageVersion] && !isAdmin) {
-            const savedStatuses = studentProfile.lessonProgress[progressStorageVersion];
-            newPath.forEach(item => {
-                if (savedStatuses[item.key]) item.status = savedStatuses[item.key];
+        if (isProfileLoading || isUserLoading || !initialLearningPath.length) return;
+
+        const path = initialLearningPath.map(topic => ({ ...topic }));
+        let savedSelectedTopic = '';
+
+        if (isAdmin) {
+            path.forEach(item => { item.status = 'completed'; });
+        } else if (studentProfile?.lessonProgress?.[progressStorageVersion]) {
+            const savedData = studentProfile.lessonProgress[progressStorageVersion];
+            path.forEach(item => {
+                if (savedData[item.key]) item.status = savedData[item.key];
             });
+            savedSelectedTopic = savedData.lastSelectedTopic || '';
         }
         
-        setLearningPath(newPath);
-
-        const firstActive = newPath.find(p => p.status === 'active');
-        if (firstActive) {
-            setSelectedTopic(firstActive.key);
-        } else if (newPath.length > 0) {
-            setSelectedTopic(newPath[0].key);
+        setLearningPath(path);
+        if (!initialLoadComplete) {
+            const firstActive = path.find(p => p.status === 'active');
+            setSelectedTopic(savedSelectedTopic || firstActive?.key || 'vocabulary');
+            setInitialLoadComplete(true);
         }
         
         setVocabAnswers(Array(vocabularyData.length).fill(''));
         setVocabValidation(Array(vocabularyData.length).fill('unchecked'));
         setCanAdvanceVocab(false);
-    }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading, isUserLoading]);
+    }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading, isUserLoading, initialLoadComplete]);
     
-    const progress = useMemo(() => {
+    const progressValue = useMemo(() => {
         if (learningPath.length === 0) return 0;
-        const completedTopics = learningPath.filter(t => t.status === 'completed').length;
-        return Math.round((completedTopics / learningPath.length) * 100);
+        const completedCount = learningPath.filter(t => t.status === 'completed').length;
+        return Math.round((completedCount / learningPath.length) * 100);
     }, [learningPath]);
 
     useEffect(() => {
-        if (isProfileLoading || isUserLoading) return;
-        if (!isAdmin && studentDocRef && learningPath.length > 0) {
-            const statusesToSave: Record<string, any> = {};
-            learningPath.forEach(item => {
-                statusesToSave[item.key] = item.status;
-            });
-            updateDocumentNonBlocking(studentDocRef, { 
-                [`lessonProgress.${progressStorageVersion}`]: statusesToSave,
-                [`progress.${mainProgressKey}`]: Math.round(progress)
-            });
+        if (!initialLoadComplete || isUserLoading || isProfileLoading || learningPath.length === 0 || isAdmin || !studentDocRef) return;
+
+        const statusesToSave: Record<string, any> = { lastSelectedTopic: selectedTopic };
+        learningPath.forEach(item => { statusesToSave[item.key] = item.status; });
+
+        updateDocumentNonBlocking(studentDocRef, { 
+            [`lessonProgress.${progressStorageVersion}`]: statusesToSave,
+            [`progress.${mainProgressKey}`]: Math.round(progressValue)
+        });
+        
+        if (progressValue >= 100) {
+            window.dispatchEvent(new CustomEvent('progressUpdated'));
         }
-        if (progress >= 100) {
-          window.dispatchEvent(new CustomEvent('progressUpdated'));
-        }
-    }, [learningPath, isAdmin, progress, studentDocRef, isProfileLoading, isUserLoading]);
+    }, [learningPath, progressValue, selectedTopic, isAdmin, studentDocRef, isUserLoading, isProfileLoading, initialLoadComplete]);
 
     const handleTopicComplete = useCallback((completedKey: string) => {
         setTopicToComplete(completedKey);
@@ -442,7 +440,6 @@ export default function EngA1Class6Page() {
                             <Button 
                                 onClick={() => handleTopicComplete('vocabulary')} 
                                 disabled={!canAdvanceVocab && !isAdmin}
-                                className={cn(!canAdvanceVocab && !isAdmin && "opacity-50")}
                             >
                                 Avanzar
                             </Button>
@@ -539,50 +536,13 @@ export default function EngA1Class6Page() {
                     </Card>
                 );
             case 'ex1':
-                return (
-                    <SimpleTranslationExercise
-                        exerciseKey="c6_ex1"
-                        onComplete={() => handleTopicComplete('ex1')}
-                        course="a1"
-                        title="Ejercicio 1"
-                    />
-                );
+                return <SimpleTranslationExercise exerciseKey="c6_ex1" onComplete={() => handleTopicComplete('ex1')} course="a1" title="Ejercicio 1" />;
             case 'ex2':
-                return (
-                    <SimpleTranslationExercise
-                        exerciseKey="c6_ex2"
-                        onComplete={() => handleTopicComplete('ex2')}
-                        course="a1"
-                        title="Ejercicio 2"
-                    />
-                );
+                return <SimpleTranslationExercise exerciseKey="c6_ex2" onComplete={() => handleTopicComplete('ex2')} course="a1" title="Ejercicio 2" />;
             case 'ex3':
-                return (
-                    <SimpleTranslationExercise
-                        exerciseKey="c6_ex3"
-                        onComplete={() => handleTopicComplete('ex3')}
-                        course="a1"
-                        title="Ejercicio 3"
-                    />
-                );
+                return <SimpleTranslationExercise exerciseKey="c6_ex3" onComplete={() => handleTopicComplete('ex3')} course="a1" title="Ejercicio 3" />;
             case 'ex4':
-                return (
-                    <SimpleTranslationExercise
-                        exerciseKey="c6_ex4"
-                        onComplete={() => handleTopicComplete('ex4')}
-                        course="a1"
-                        title="Ejercicio 4"
-                    />
-                );
-            case 'ex5':
-                return (
-                    <SimpleTranslationExercise
-                        exerciseKey="c6_ex5"
-                        onComplete={() => handleTopicComplete('ex5')}
-                        course="a1"
-                        title="Ejercicio 5"
-                    />
-                );
+                return <SimpleTranslationExercise exerciseKey="c6_ex4" onComplete={() => handleTopicComplete('ex4')} course="a1" title="Ejercicio 4" />;
             case 'text':
                 return (
                     <LinesWritingExercise 
@@ -601,30 +561,13 @@ export default function EngA1Class6Page() {
                     />
                 );
             case 'vocab_game':
-                return (
-                    <AdjectivesMemoryGame 
-                        data={vocabularyData} 
-                        onComplete={() => handleTopicComplete('vocab_game')} 
-                    />
-                );
+                return <AdjectivesMemoryGame data={vocabularyData} onComplete={() => handleTopicComplete('vocab_game')} />;
+            case 'ex5':
+                return <SimpleTranslationExercise exerciseKey="c6_ex5" onComplete={() => handleTopicComplete('ex5')} course="a1" title="Ejercicio 5" />;
             case 'ex6':
-                return (
-                    <SimpleTranslationExercise
-                        exerciseKey="c6_ex6"
-                        onComplete={() => handleTopicComplete('ex6')}
-                        course="a1"
-                        title="Ejercicio 6"
-                    />
-                );
+                return <SimpleTranslationExercise exerciseKey="c6_ex6" onComplete={() => handleTopicComplete('ex6')} course="a1" title="Ejercicio 6" />;
             case 'ex7':
-                return (
-                    <SimpleTranslationExercise
-                        exerciseKey="c6_ex7"
-                        onComplete={() => handleTopicComplete('ex7')}
-                        course="a1"
-                        title="Ejercicio 7"
-                    />
-                );
+                return <SimpleTranslationExercise exerciseKey="c6_ex7" onComplete={() => handleTopicComplete('ex7')} course="a1" title="Ejercicio 7" />;
             case 'ex8':
                 return (
                     <LinesWritingExercise 
@@ -643,25 +586,12 @@ export default function EngA1Class6Page() {
                     />
                 );
             default:
-                return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple min-h-[500px]">
-                        <CardHeader>
-                            <CardTitle>{topic?.name || 'Cargando...'}</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="text-muted-foreground">Contenido para este tema estará disponible pronto.</p>
-                        </CardContent>
-                    </Card>
-                );
+                return <div className="flex items-center justify-center h-64"><Loader2 className="animate-spin" /></div>;
         }
     };
 
     if (isUserLoading || isProfileLoading) {
-        return (
-            <div className="flex h-screen w-full items-center justify-center">
-                <Loader2 className="h-16 w-16 animate-spin text-primary" />
-            </div>
-        );
+        return <div className="flex h-screen w-full items-center justify-center"><Loader2 className="h-16 w-16 animate-spin text-primary" /></div>;
     }
 
     return (
@@ -669,13 +599,13 @@ export default function EngA1Class6Page() {
             <DashboardHeader />
             <main className="flex-1 p-4 md:p-8">
                 <div className="max-w-7xl mx-auto">
-                    <div className="mb-8">
+                    <div className="mb-8 text-left">
                         <Link href="/ingles/a1" className="hover:underline text-sm text-white/80">Volver al curso A1</Link>
                         <h1 className="text-4xl font-bold text-white dark:text-primary [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">Clase 6</h1>
                     </div>
                     <div className="grid gap-8 md:grid-cols-12">
                         <div className="md:col-span-9">{renderContent()}</div>
-                        <div className="md:col-span-3">
+                        <div className="md:col-span-3 text-left">
                             <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple">
                                 <CardHeader><CardTitle>Ruta de Aprendizaje</CardTitle></CardHeader>
                                 <CardContent>
@@ -685,7 +615,6 @@ export default function EngA1Class6Page() {
                                                 const Icon = item.status === 'completed' ? CheckCircle : (item.status === 'active' ? item.icon : Lock);
                                                 const isLocked = item.status === 'locked' && !isAdmin;
                                                 const isActive = item.status === 'active';
-                                                
                                                 return (
                                                     <li key={item.key} onClick={() => handleTopicSelect(item.key)}
                                                         className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer',
@@ -704,8 +633,8 @@ export default function EngA1Class6Page() {
                                         </ul>
                                     </nav>
                                     <div className="mt-6 pt-6 border-t">
-                                        <div className="flex justify-between items-center text-sm font-medium text-muted-foreground mb-2"><span>Progreso</span><span className="font-bold text-foreground">{Math.round(progress)}%</span></div>
-                                        <Progress value={progress} className="h-2" />
+                                        <div className="flex justify-between items-center text-sm font-medium text-muted-foreground mb-2"><span>Progreso</span><span className="font-bold text-foreground">{progressValue}%</span></div>
+                                        <Progress value={progressValue} className="h-2" />
                                     </div>
                                 </CardContent>
                             </Card>
