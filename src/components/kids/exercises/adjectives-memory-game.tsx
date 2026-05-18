@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { BrainCircuit, RefreshCw, Flame, Trophy } from 'lucide-react';
+import { BrainCircuit, RefreshCw, Flame, Trophy, ArrowRight } from 'lucide-react';
 
 interface AdjectivePair {
     spanish: string;
@@ -80,9 +80,9 @@ export const AdjectivesMemoryGame = ({ data, onComplete }: AdjectivesMemoryGameP
     useEffect(() => {
         if (matchedPairIds.length === PAIRS_TO_SHOW && PAIRS_TO_SHOW > 0 && !gameComplete) {
             setGameComplete(true);
-            onComplete();
+            // We removed the immediate onComplete() call to allow showing the "Congratulations" screen first
         }
-    }, [matchedPairIds.length, gameComplete, onComplete]);
+    }, [matchedPairIds.length, gameComplete]);
 
     const handleCardClick = (index: number) => {
         if (isChecking || flippedIndices.length >= 2 || flippedIndices.includes(index) || matchedPairIds.includes(cards[index].pairId)) {
@@ -100,21 +100,28 @@ export const AdjectivesMemoryGame = ({ data, onComplete }: AdjectivesMemoryGameP
                     <CardTitle>Memory Game (Adjectives)</CardTitle>
                     <CardDescription>Empareja el adjetivo en español con su traducción.</CardDescription>
                 </div>
-                <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-2 text-orange-500 font-bold bg-orange-500/10 px-3 py-1 rounded-full">
-                        <Flame className="h-5 w-5" />
-                        <span>{streak}</span>
+                {!gameComplete && (
+                    <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-2 text-orange-500 font-bold bg-orange-500/10 px-3 py-1 rounded-full">
+                            <Flame className="h-5 w-5" />
+                            <span>{streak}</span>
+                        </div>
+                        <Button size="icon" variant="outline" onClick={initializeGame}><RefreshCw className="h-5 w-5" /></Button>
                     </div>
-                    <Button size="icon" variant="outline" onClick={initializeGame}><RefreshCw className="h-5 w-5" /></Button>
-                </div>
+                )}
             </CardHeader>
             <CardContent>
                 {gameComplete ? (
                      <div className="text-center p-12 flex flex-col items-center animate-in fade-in zoom-in duration-500">
                         <Trophy className="h-20 w-20 text-yellow-400 mb-6 animate-bounce" />
-                        <h2 className="text-3xl font-bold bg-gradient-to-r from-brand-purple to-brand-teal text-transparent bg-clip-text">¡Excelente trabajo!</h2>
-                        <p className="text-muted-foreground mt-2 mb-8">Has dominado los adjetivos de esta lección.</p>
-                        <Button size="lg" onClick={initializeGame} className="font-bold">Jugar de nuevo</Button>
+                        <h2 className="text-4xl font-black bg-gradient-to-r from-brand-purple to-brand-teal text-transparent bg-clip-text uppercase tracking-tighter">Congratulations!</h2>
+                        <p className="text-muted-foreground mt-2 mb-8 font-medium text-lg">Has logrado emparejar todos los términos correctamente. ¡Misión cumplida!</p>
+                        <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
+                            <Button variant="outline" size="lg" onClick={initializeGame} className="font-bold min-w-[150px]">Jugar de nuevo</Button>
+                            <Button size="lg" onClick={onComplete} className="font-bold px-12 bg-green-600 hover:bg-green-700 min-w-[150px] shadow-lg shadow-green-500/20">
+                                Avanzar <ArrowRight className="ml-2 h-5 w-5" />
+                            </Button>
+                        </div>
                      </div>
                 ) : (
                     <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
@@ -149,9 +156,11 @@ export const AdjectivesMemoryGame = ({ data, onComplete }: AdjectivesMemoryGameP
                     </div>
                 )}
             </CardContent>
-            <CardFooter className="justify-center border-t py-4 text-xs text-muted-foreground">
-                Misión: Encuentra las {PAIRS_TO_SHOW} parejas para avanzar.
-            </CardFooter>
+            {!gameComplete && (
+                <CardFooter className="justify-center border-t py-4 text-xs text-muted-foreground">
+                    Misión: Encuentra las {PAIRS_TO_SHOW} parejas para avanzar.
+                </CardFooter>
+            )}
         </Card>
     );
 };
