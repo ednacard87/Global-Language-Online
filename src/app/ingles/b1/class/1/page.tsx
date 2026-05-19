@@ -21,7 +21,9 @@ import {
     MessageSquare,
     Info,
     ListChecks,
-    Check
+    Check,
+    HelpCircle,
+    XCircle
 } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
@@ -55,15 +57,6 @@ const phrasalVerbsData = [
     { spanish: 'SALIR', english: 'GO OUT' },
     { spanish: 'MAQUILLARSE', english: 'MAKE UP' },
     { spanish: 'SENTARSE', english: 'SIT DOWN' },
-];
-
-const exerciseSomeData = [
-    { spanish: "HAY UNAS ROSAS EN MI JARDIN", english: ["there are some roses in my garden", "there are some roses in my yard"] },
-    { spanish: "HAY UNOS PAJAROS ALLI", english: ["there are some birds there"] },
-    { spanish: "HAY ALGO DE LECHE EN LA BOTELLA", english: ["there is some milk in the bottle", "there's some milk in the bottle"] },
-    { spanish: "HAY UNAS CERVEZAS EN LA NEVERA", english: ["there are some beers in the fridge", "there are some beers in the refrigerator"] },
-    { spanish: "HAY ALGUNOS ARBOLES EN LA FINCA", english: ["there are some trees on the farm", "there are some trees in the country house", "there are some trees in the farm"] },
-    { spanish: "HAY ALGO DE DINERO EN LA MESA", english: ["there is some money on the table", "there's some money on the table"] },
 ];
 
 const exerciseSomeVocab = {
@@ -382,6 +375,61 @@ export default function EngB1Class1Page() {
                         vocabulary={exerciseSomeVocab}
                         course="b1"
                     />
+                );
+            case 'grammar_any':
+                return (
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                        <CardHeader className="bg-brand-purple/10 border-b">
+                            <div className="flex items-center gap-3">
+                                <GraduationCap className="h-6 w-6 text-brand-purple" />
+                                <CardTitle className="text-2xl font-black">ANY</CardTitle>
+                            </div>
+                        </CardHeader>
+                        <CardContent className="p-6 space-y-8">
+                            <div className="bg-muted/50 p-6 rounded-2xl border-2 border-dashed space-y-6">
+                                <div className="space-y-4">
+                                    <h3 className="text-xl font-bold flex items-center gap-2">
+                                        <Info className="h-6 w-6 text-brand-purple" />
+                                        USO DE "ANY"
+                                    </h3>
+                                    <p className="text-lg leading-relaxed">
+                                        Se usa en <span className="font-bold text-red-500">(-) Frases negativas</span> e <span className="font-bold text-blue-500">(?) interrogativas</span>.
+                                    </p>
+                                </div>
+
+                                <div className="grid md:grid-cols-2 gap-6">
+                                    <div className="p-4 bg-red-50 dark:bg-red-900/10 rounded-xl border border-red-200 space-y-2">
+                                        <div className="flex items-center gap-2">
+                                            <XCircle className="h-5 w-5 text-red-500" />
+                                            <h4 className="font-bold text-red-700 dark:text-red-400">(-) NEGATIVO</h4>
+                                        </div>
+                                        <p className="text-sm">Significado: <strong>Ninguno(a) - nada de</strong></p>
+                                    </div>
+
+                                    <div className="p-4 bg-blue-50 dark:bg-blue-900/10 rounded-xl border border-blue-200 space-y-2">
+                                        <div className="flex items-center gap-2">
+                                            <HelpCircle className="h-5 w-5 text-blue-500" />
+                                            <h4 className="font-bold text-blue-700 dark:text-blue-400">(?) INTERROGATIVO</h4>
+                                        </div>
+                                        <p className="text-sm">Significado: <strong>alguno(a) - algo de</strong></p>
+                                    </div>
+                                </div>
+
+                                <div className="pt-4 border-t border-dashed">
+                                    <div className="flex items-center gap-2 font-bold text-lg text-primary">
+                                        <Globe className="h-5 w-5" />
+                                        <span>Countable and Uncountable</span>
+                                    </div>
+                                    <p className="text-sm text-muted-foreground mt-1 italic">Funciona tanto con sustantivos que se pueden contar como con los que no.</p>
+                                </div>
+                            </div>
+                        </CardContent>
+                        <CardFooter className="justify-center border-t pt-6">
+                            <Button onClick={() => handleTopicComplete('grammar_any')} size="lg" className="px-16 font-bold h-14 text-xl bg-brand-purple hover:bg-brand-purple/90 text-purple-900">
+                                Entendido <ArrowRight className="ml-2 h-6 w-6" />
+                            </Button>
+                        </CardFooter>
+                    </Card>
                 );
             default:
                 const isGrammar = topic.key.startsWith('grammar') || topic.key === 'rules';
