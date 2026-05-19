@@ -410,7 +410,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
           
             let nextSelectedTopic: string | null = null;
             let topicFound = false;
-            for (let i = 0; i < newPath.length && !topicFound; i++) {
+            for (let i = 0; i < newPath.length && !found; i++) {
               const currentTopic = newPath[i];
           
               if (currentTopic.key === topicToComplete) {
@@ -613,7 +613,10 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             case 'tobe-1-grammar':
                 return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-                        <CardHeader><CardTitle>To be 1</CardTitle></CardHeader>
+                        <CardHeader>
+                            <CardTitle>To be 1</CardTitle>
+                            <CardDescription>Aprende la estructura básica del verbo To be.</CardDescription>
+                        </CardHeader>
                         <CardContent className="space-y-6">
                             <div>
                                 <h3 className="text-xl font-semibold mb-2">Estructura Verbo To be</h3>
@@ -635,7 +638,20 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                     </Card>
                 );
             case 'tobe-1-exercise':
-                return <TranslationExercise exerciseKey="exercises1" onComplete={() => handleTopicComplete('tobe-1-exercise')} />;
+                const vocabEx1 = {
+                    'un- una': 'a / an',
+                    'abogado': 'lawyer',
+                    'enfermo': 'sick',
+                    'enfermero': 'nurse'
+                };
+                return (
+                    <TranslationExercise 
+                        exerciseKey="exercises1" 
+                        onComplete={() => handleTopicComplete('tobe-1-exercise')} 
+                        vocabulary={vocabEx1}
+                        highlightVocabulary={true}
+                    />
+                );
             case 'possessives':
                  return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
@@ -681,7 +697,19 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                     </Card>
                 );
             case 'tobe-2-exercise':
-                 return <TranslationExercise exerciseKey="exercises2" onComplete={() => handleTopicComplete('tobe-2-exercise')} />;
+                const vocabEx2 = {
+                    'amigo': 'friend',
+                    'hijo': 'son',
+                    'perro': 'dog'
+                };
+                return (
+                    <TranslationExercise 
+                        exerciseKey="exercises2" 
+                        onComplete={() => handleTopicComplete('tobe-2-exercise')} 
+                        vocabulary={vocabEx2}
+                        highlightVocabulary={true}
+                    />
+                );
             case 'tobe-3-grammar':
                 return (
                      <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
@@ -707,7 +735,20 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                     </Card>
                 );
             case 'tobe-3-exercise':
-                return <TranslationExercise exerciseKey="exercises3" onComplete={() => handleTopicComplete('tobe-3-exercise')} />;
+                const vocabEx3 = {
+                    'enfermera': 'nurse',
+                    'abuelos': 'grandparents',
+                    'pensionado': 'retired',
+                    'juguete': 'toy'
+                };
+                return (
+                    <TranslationExercise 
+                        exerciseKey="exercises3" 
+                        onComplete={() => handleTopicComplete('tobe-3-exercise')} 
+                        vocabulary={vocabEx3}
+                        highlightVocabulary={true}
+                    />
+                );
             default:
                 if (selectedTopic === 'ex-mixto-1') {
                     return <SimpleTranslationExercise course="a1" exerciseKey="mixed1" onComplete={() => handleTopicComplete('ex-mixto-1')} />;

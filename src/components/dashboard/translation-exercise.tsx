@@ -1,9 +1,8 @@
-
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
 import Image from 'next/image';
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -402,22 +401,22 @@ export function TranslationExercise({
     return (
         <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
             <CardHeader>
-                <div className="flex justify-between items-center">
-                    <CardTitle>{t(exerciseData.title, {number: exerciseKey.replace('exercises', '')})}</CardTitle>
-                    <span className="text-sm font-medium text-muted-foreground">
-                        {currentPromptIndex + 1} / {exerciseData.prompts.length}
-                    </span>
-                </div>
-                {vocabulary && (
-                    <div className="flex justify-center mt-2">
+                <div className="flex justify-between items-start">
+                    <div className="space-y-1">
+                        <CardTitle>{t(exerciseData.title, {number: exerciseKey.replace('exercises', '')})}</CardTitle>
+                        <div className="text-sm font-medium text-muted-foreground">
+                            {currentPromptIndex + 1} / {exerciseData.prompts.length}
+                        </div>
+                    </div>
+                    {vocabulary && (
                         <Popover>
                             <PopoverTrigger asChild>
-                                <Button variant="outline" size="sm" className={cn("w-fit", highlightVocabulary && "border-2 border-brand-blue animate-border-pulse")}>
+                                <Button variant="outline" size="sm" className={cn("w-fit shrink-0", highlightVocabulary && "border-2 border-brand-blue animate-border-pulse")}>
                                     <BookText className="mr-2 h-4 w-4" />
                                     Vocabulario
                                 </Button>
                             </PopoverTrigger>
-                            <PopoverContent>
+                            <PopoverContent className="w-64">
                                 <div className="grid gap-4">
                                     <div className="space-y-2">
                                         <h4 className="font-medium leading-none">Vocabulario Clave</h4>
@@ -436,8 +435,8 @@ export function TranslationExercise({
                                 </div>
                             </PopoverContent>
                         </Popover>
-                    </div>
-                )}
+                    )}
+                </div>
             </CardHeader>
             <CardContent className="space-y-6">
                 
