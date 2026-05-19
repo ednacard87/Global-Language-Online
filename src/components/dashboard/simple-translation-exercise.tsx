@@ -775,6 +775,17 @@ const exercises = {
             { spanish: '9. ELLA NO LOS ESTA LLAMANDO', english: ["she is not calling them", "she's not calling them", "she isn't calling them"] },
             { spanish: '10. ¿QUE LE ENSEÑAS A ELLOS?', english: ["what do you teach them?"] },
         ]
+    },
+    custom_ex_some: {
+        title: 'Exercise With Some',
+        prompts: [
+            { spanish: 'HAY UNAS ROSAS EN MI JARDIN', english: ["there are some roses in my garden", "there are some roses in my yard"] },
+            { spanish: 'HAY UNOS PAJAROS ALLI', english: ["there are some birds there"] },
+            { spanish: 'HAY ALGO DE LECHE EN LA BOTELLA', english: ["there is some milk in the bottle", "there's some milk in the bottle"] },
+            { spanish: 'HAY UNAS CERVEZAS EN LA NEVERA', english: ["there are some beers in the fridge", "there are some beers in the refrigerator"] },
+            { spanish: 'HAY ALGUNOS ARBOLES EN LA FINCA', english: ["there are some trees on the farm", "there are some trees in the country house", "there are some trees in the farm"] },
+            { spanish: 'HAY ALGO DE DINERO EN LA MESA', english: ["there is some money on the table", "there's some money on the table"] },
+        ]
     }
 };
 
@@ -803,7 +814,7 @@ export function SimpleTranslationExercise({
 
     const imageToShow = course === 'a1' ? a1MascotImage : guideFishImage;
 
-    const exerciseNumber = useMemo(() => exerciseKey.replace(/mixed|c\d+_ex|c\d+_the|c\d+_last|c\d+_general/g, ''), [exerciseKey]);
+    const exerciseNumber = useMemo(() => exerciseKey.replace(/mixed|c\d+_ex|c\d+_the|c\d+_last|c\d+_general|custom_ex_/g, ''), [exerciseKey]);
     
     const exerciseData = useMemo(() => {
         if (exercises[exerciseKey as ExerciseKey]) {
@@ -856,7 +867,7 @@ export function SimpleTranslationExercise({
             const userAnswer = userAnswers[index]?.trim().toLowerCase().replace(/[.?,]/g, '') || '';
             const correctAnswers = Array.isArray(prompt.english)
                 ? prompt.english.map(a => a.toLowerCase().replace(/[.?,]/g, ''))
-                : [prompt.english.toLowerCase().replace(/[.?,]/g, '')];
+                : [(prompt.english as string).toLowerCase().replace(/[.?,]/g, '')];
             return correctAnswers.includes(userAnswer) ? 'correct' : 'incorrect';
         });
         setValidationStates(newValidationStates);

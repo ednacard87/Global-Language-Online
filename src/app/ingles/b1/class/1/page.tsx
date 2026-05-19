@@ -30,6 +30,7 @@ import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocki
 import { doc } from 'firebase/firestore';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
+import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
 
 type Topic = {
   key: string;
@@ -55,6 +56,28 @@ const phrasalVerbsData = [
     { spanish: 'MAQUILLARSE', english: 'MAKE UP' },
     { spanish: 'SENTARSE', english: 'SIT DOWN' },
 ];
+
+const exerciseSomeData = [
+    { spanish: "HAY UNAS ROSAS EN MI JARDIN", english: ["there are some roses in my garden", "there are some roses in my yard"] },
+    { spanish: "HAY UNOS PAJAROS ALLI", english: ["there are some birds there"] },
+    { spanish: "HAY ALGO DE LECHE EN LA BOTELLA", english: ["there is some milk in the bottle", "there's some milk in the bottle"] },
+    { spanish: "HAY UNAS CERVEZAS EN LA NEVERA", english: ["there are some beers in the fridge", "there are some beers in the refrigerator"] },
+    { spanish: "HAY ALGUNOS ARBOLES EN LA FINCA", english: ["there are some trees on the farm", "there are some trees in the country house", "there are some trees in the farm"] },
+    { spanish: "HAY ALGO DE DINERO EN LA MESA", english: ["there is some money on the table", "there's some money on the table"] },
+];
+
+const exerciseSomeVocab = {
+    "unas rosas": "some roses",
+    "unos pajaros": "some birds",
+    "alli": "there",
+    "algo de leche": "some milk",
+    "la botella": "the bottle",
+    "unas cervezas": "some beers",
+    "la nevera": "the fridge",
+    "algunos arboles": "some trees",
+    "la finca": "the farm / country house",
+    "algo de dinero": "some money"
+};
 
 export default function EngB1Class1Page() {
     const { t } = useTranslation();
@@ -349,6 +372,16 @@ export default function EngB1Class1Page() {
                             </Button>
                         </CardFooter>
                     </Card>
+                );
+            case 'ex_some':
+                return (
+                    <SimpleTranslationExercise 
+                        exerciseKey="custom_ex_some"
+                        title="Exercise With Some"
+                        onComplete={() => handleTopicComplete('ex_some')}
+                        vocabulary={exerciseSomeVocab}
+                        course="b1"
+                    />
                 );
             default:
                 const isGrammar = topic.key.startsWith('grammar') || topic.key === 'rules';
