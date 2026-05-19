@@ -715,7 +715,7 @@ const exercises = {
             { spanish: "¿NOSOTROS VAMOS CON ELLOS? -NO", english: ["do we go with them? no", "are we going with them? no"] },
             { spanish: "EL NO VIVE CONMIGO- EL VIVE CON SU MADRE", english: ["he does not live with me, he lives with his mother", "he doesn't live with me, he lives with his mom"] },
             { spanish: "¿VIENES CON NOSOTROS? –POR SUPUESTO", english: ["do you come with us? of course", "are you coming with us? of course"] },
-            { spanish: "ELLA NO COME CON EL- ELLA COME SOLA", english: ["she does not eat with him, she eats alone", "she doesn't eat with him, she eats alone"] },
+            { spanish: "ELLA NO COME CON EL- ELLA COME SOLA", english: ["she does not eat with him, she eats alone", "she doesn't eat with him, she alone"] },
         ]
     },
     c12_ex1: {
@@ -797,6 +797,17 @@ const exercises = {
             { spanish: '¿HAY AGUA?', english: ["is there any water?"] },
             { spanish: '¿NO HAY CARROS AFUERA?', english: ["aren't there any cars outside?", "are there not any cars outside?"] },
         ]
+    },
+    custom_ex_mix: {
+        title: 'Exercise Mix',
+        prompts: [
+            { spanish: '¿PUEDO BEBER (ALGO DE) AGUA?', english: ["can i have some water?", "can i drink some water?"] },
+            { spanish: '¿QUISIERAS (ALGO DE) TE?', english: ["would you like some tea?"] },
+            { spanish: '¿PUEDES DARME UN POCO DE VINO?', english: ["can you give me some wine?"] },
+            { spanish: 'EL CASI NUNCA HACE NINGUNA TAREA.', english: ["he hardly ever does any homework", "he almost never does any homework"] },
+            { spanish: '¿TE GUSTARIA COMER ALGO?', english: ["would you like to eat something?", "would you like some?", "would you like something to eat?"] },
+            { spanish: '¿PUEDO COMER ALGO DE PAN?', english: ["can i have some bread?", "can i eat some bread?"] },
+        ]
     }
 };
 
@@ -823,7 +834,7 @@ export function SimpleTranslationExercise({
     const { t } = useTranslation();
     const { toast } = useToast();
 
-    const imageToShow = course === 'a1' ? a1MascotImage : guideFishImage;
+    const imageToShow = course === 'a1' || course === 'b1' ? a1MascotImage : guideFishImage;
 
     const exerciseNumber = useMemo(() => exerciseKey.replace(/mixed|c\d+_ex|c\d+_the|c\d+_last|c\d+_general|custom_ex_/g, ''), [exerciseKey]);
     
@@ -955,20 +966,25 @@ export function SimpleTranslationExercise({
                     {vocabulary && (
                         <Popover>
                             <PopoverTrigger asChild>
-                                <Button variant="outline" size="sm" className="border-2 border-brand-blue animate-border-pulse">
+                                <Button variant="outline" size="sm" className={cn("w-fit", highlightVocabulary && "border-2 border-brand-blue animate-border-pulse")}>
                                     <BookText className="mr-2 h-4 w-4" />
                                     Vocabulario
                                 </Button>
                             </PopoverTrigger>
                             <PopoverContent className="w-64">
-                                <div className="space-y-2">
-                                    <h4 className="font-bold border-b pb-1">Vocabulario útil</h4>
-                                    <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
-                                        {Object.entries(vocabulary).map(([es, en]) => (
-                                            <React.Fragment key={es}>
-                                                <span className="text-muted-foreground capitalize">{es}:</span>
-                                                <span className="font-semibold text-right">{en}</span>
-                                            </React.Fragment>
+                                <div className="grid gap-4">
+                                    <div className="space-y-2">
+                                        <h4 className="font-medium leading-none">Vocabulario Clave</h4>
+                                        <p className="text-sm text-muted-foreground">
+                                            Palabras importantes para este ejercicio.
+                                        </p>
+                                    </div>
+                                    <div className="grid gap-2 text-sm">
+                                        {Object.entries(vocabulary).map(([spanish, english]) => (
+                                            <div key={spanish} className="grid grid-cols-2 items-center gap-4">
+                                                <span className="text-muted-foreground capitalize">{spanish}</span>
+                                                <span className="font-semibold text-right">{english}</span>
+                                            </div>
                                         ))}
                                     </div>
                                 </div>
@@ -1008,7 +1024,7 @@ export function SimpleTranslationExercise({
                 </div>
             </CardContent>
             <CardFooter className="flex justify-between items-center">
-                 <Button onClick={() => setCurrentPromptIndex(p => Math.max(0, p - 1))} disabled={currentPromptIndex === 0}>
+                 <Button variant="outline" onClick={() => setCurrentPromptIndex(p => Math.max(0, p - 1))} disabled={currentPromptIndex === 0}>
                      <ArrowLeft className="mr-2 h-4 w-4" />
                      {t('translationExercise.previous') || 'Anterior'}
                  </Button>
@@ -1018,7 +1034,7 @@ export function SimpleTranslationExercise({
                          {t('translationExercise.checkAll') || 'Verificar Todo'}
                      </Button>
                 ) : (
-                     <Button onClick={() => setCurrentPromptIndex(p => Math.min(totalPrompts - 1, p + 1))} disabled={currentPromptIndex === totalPrompts - 1}>
+                     <Button variant="outline" onClick={() => setCurrentPromptIndex(p => Math.min(totalPrompts - 1, p + 1))} disabled={currentPromptIndex === totalPrompts - 1}>
                          {t('translationExercise.next') || 'Siguiente'}
                          <ArrowRight className="ml-2 h-4 w-4" />
                      </Button>

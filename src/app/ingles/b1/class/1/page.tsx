@@ -83,6 +83,17 @@ const exerciseAnyVocab = {
     "afuera": "outside"
 };
 
+const exerciseMixVocab = {
+    "agua": "water",
+    "te": "tea",
+    "vino": "wine",
+    "pan": "bread",
+    "casi nunca": "hardly ever",
+    "tarea": "homework",
+    "quisieras": "would you like",
+    "puedo": "can i"
+};
+
 export default function EngB1Class1Page() {
     const { t } = useTranslation();
     const { toast } = useToast();
@@ -535,6 +546,16 @@ export default function EngB1Class1Page() {
                             </Button>
                         </CardFooter>
                     </Card>
+                );
+            case 'ex_mix':
+                return (
+                    <SimpleTranslationExercise 
+                        exerciseKey="custom_ex_mix"
+                        title="Exercise Mix"
+                        onComplete={() => handleTopicComplete('ex_mix')}
+                        vocabulary={exerciseMixVocab}
+                        course="b1"
+                    />
                 );
             default:
                 const isGrammar = topic.key.startsWith('grammar') || topic.key === 'rules';
