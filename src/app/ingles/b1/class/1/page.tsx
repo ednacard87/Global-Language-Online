@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -27,6 +28,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
 import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
 import { doc } from 'firebase/firestore';
+import { Input } from '@/components/ui/input';
 
 type Topic = {
   key: string;
@@ -37,6 +39,21 @@ type Topic = {
 
 const progressStorageVersion = 'progress_b1_eng_u1_c1_v2_full_path';
 const mainProgressKey = 'progress_b1_eng_unit_1_class_1';
+
+const phrasalVerbsData = [
+    { spanish: 'LEVANTARSE', english: 'GET UP' },
+    { spanish: 'DESPERTARSE', english: 'WAKE UP' },
+    { spanish: 'ENCENDER', english: 'TURN ON' },
+    { spanish: 'APAGAR', english: 'TURN OFF' },
+    { spanish: 'RECOGER', english: 'PICK UP' },
+    { spanish: 'BUSCAR', english: 'LOOK FOR' },
+    { spanish: 'CUIDAR', english: 'TAKE CARE' },
+    { spanish: 'AVERIGUAR', english: 'FIND OUT' },
+    { spanish: 'REGRESAR', english: 'COME BACK' },
+    { spanish: 'SALIR', english: 'GO OUT' },
+    { spanish: 'MAQUILLARSE', english: 'MAKE UP' },
+    { spanish: 'SENTARSE', english: 'SIT DOWN' },
+];
 
 export default function EngB1Class1Page() {
     const { t } = useTranslation();
@@ -59,6 +76,11 @@ export default function EngB1Class1Page() {
     const [selectedTopic, setSelectedTopic] = useState<string>('');
     const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
     const [initialLoadComplete, setInitialLoadComplete] = useState(false);
+
+    // Vocab states
+    const [phrasalAnswers, setPhrasalAnswers] = useState<string[]>(Array(phrasalVerbsData.length).fill(''));
+    const [phrasalValidation, setPhrasalValidation] = useState<('correct' | 'incorrect' | 'unchecked')[]>(Array(phrasalVerbsData.length).fill('unchecked'));
+    const [canAdvancePhrasal, setCanAdvancePhrasal] = useState(false);
 
     const initialLearningPath = useMemo((): Topic[] => [
         { key: 'vocabulary_phrasal', name: 'Vocabulary (Phrasal Verbs)', icon: BookOpen, status: 'active' },
@@ -167,43 +189,123 @@ export default function EngB1Class1Page() {
         }
     };
 
+    const handlePhrasalChange = (idx: number, val: string) => {
+        const newAns = [...phrasalAnswers];
+        newAns[idx] = val;
+        setPhrasalAnswers(newAns);
+
+        const newVal = [...phrasalValidation];
+        newVal[idx] = 'unchecked';
+        setPhrasalValidation(newVal as any);
+        setCanAdvancePhrasal(false);
+    };
+
+    const handleCheckPhrasal = () => {
+        let atLeastOneCorrect = false;
+        const newVal = phrasalVerbsData.map((item, idx) => {
+            const userVal = (phrasalAnswers[idx] || '').trim().toUpperCase();
+            const correctVal = item.english.toUpperCase();
+            const isCorrect = userVal === correctVal;
+            if (isCorrect) atLeastOneCorrect = true;
+            return isCorrect ? 'correct' : 'incorrect';
+        });
+
+        setPhrasalValidation(newVal as any);
+        if (atLeastOneCorrect) {
+            toast({ title: "¡Buen trabajo!", description: "Has acertado al menos una. ¡Ya puedes avanzar!" });
+            setCanAdvancePhrasal(true);
+        } else {
+            toast({ variant: 'destructive', title: "Revisa tus respuestas", description: "Necesitas al menos una correcta para avanzar." });
+        }
+    };
+
+    const getPhrasalInputClass = (idx: number) => {
+        const status = phrasalValidation[idx];
+        if (status === 'correct') return 'border-green-500 bg-green-50 dark:bg-green-900/10 focus-visible:ring-green-500';
+        if (status === 'incorrect') return 'border-destructive focus-visible:ring-destructive';
+        return '';
+    };
+
     const renderContent = () => {
         const topic = learningPath.find(t => t.key === selectedTopic);
         if (!topic) return null;
 
-        const isGrammar = topic.key.startsWith('grammar') || topic.key === 'rules';
-
-        return (
-            <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-                <CardHeader>
-                    <div className="flex items-center gap-3">
-                        <div className="p-2 bg-primary/10 rounded-lg text-primary">
-                            <topic.icon className="h-6 w-6" />
-                        </div>
-                        <div>
-                            <CardTitle>{topic.name}</CardTitle>
-                            <CardDescription>
-                                {isGrammar ? 'Estudia la lección de gramática.' : 'Completa la actividad para avanzar.'}
-                            </CardDescription>
-                        </div>
-                    </div>
-                </CardHeader>
-                <CardContent className="min-h-[300px] flex flex-col justify-center items-center text-center space-y-4">
-                    <p className="text-lg text-muted-foreground">
-                        {isGrammar ? 'El contenido gramatical de esta sección estará disponible pronto.' : 'Aquí aparecerá el ejercicio interactivo.'}
-                    </p>
-                    <div className="p-8 bg-muted/30 rounded-full">
-                        <topic.icon className="h-24 w-24 text-primary/20" />
-                    </div>
-                </CardContent>
-                <CardFooter className="justify-center border-t pt-6">
-                    <Button onClick={() => handleTopicComplete(topic.key)} size="lg" className="px-12 font-bold">
-                        {isGrammar ? 'He terminado de leer' : 'Completar actividad'}
-                        <ArrowRight className="ml-2 h-5 w-5" />
-                    </Button>
-                </CardFooter>
-            </Card>
-        );
+        switch (selectedTopic) {
+            case 'vocabulary_phrasal':
+                return (
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                        <CardHeader>
+                            <CardTitle>Vocabulary (Phrasal Verbs)</CardTitle>
+                            <CardDescription>Traduce los phrasal verbs al inglés.</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="grid grid-cols-2 gap-x-6 gap-y-3 text-lg">
+                                <div className="font-black text-primary border-b pb-2 uppercase tracking-widest text-sm text-left">Español</div>
+                                <div className="font-black text-primary border-b pb-2 uppercase tracking-widest text-sm text-left">Inglés</div>
+                                {phrasalVerbsData.map((item, idx) => (
+                                    <React.Fragment key={idx}>
+                                        <div className="flex items-center text-base font-medium py-1 text-left">
+                                            {item.spanish}
+                                        </div>
+                                        <div className="flex items-center">
+                                            <Input 
+                                                value={phrasalAnswers[idx] || ''}
+                                                onChange={(e) => handlePhrasalChange(idx, e.target.value)}
+                                                className={cn("h-10 uppercase font-mono text-sm", getPhrasalInputClass(idx))}
+                                                placeholder="..."
+                                                autoComplete="off"
+                                            />
+                                        </div>
+                                    </React.Fragment>
+                                ))}
+                            </div>
+                        </CardContent>
+                        <CardFooter className="flex justify-between items-center border-t pt-6 mt-4">
+                            <Button onClick={handleCheckPhrasal} variant="secondary">Verificar</Button>
+                            <Button 
+                                onClick={() => handleTopicComplete('vocabulary_phrasal')} 
+                                disabled={!canAdvancePhrasal && !isAdmin}
+                                className={cn(canAdvancePhrasal && "bg-green-600 hover:bg-green-700 shadow-lg")}
+                            >
+                                Avanzar <ArrowRight className="ml-2 h-5 w-5" />
+                            </Button>
+                        </CardFooter>
+                    </Card>
+                );
+            default:
+                const isGrammar = topic.key.startsWith('grammar') || topic.key === 'rules';
+                return (
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                        <CardHeader>
+                            <div className="flex items-center gap-3">
+                                <div className="p-2 bg-primary/10 rounded-lg text-primary">
+                                    <topic.icon className="h-6 w-6" />
+                                </div>
+                                <div>
+                                    <CardTitle>{topic.name}</CardTitle>
+                                    <CardDescription>
+                                        {isGrammar ? 'Estudia la lección de gramática.' : 'Completa la actividad para avanzar.'}
+                                    </CardDescription>
+                                </div>
+                            </div>
+                        </CardHeader>
+                        <CardContent className="min-h-[300px] flex flex-col justify-center items-center text-center space-y-4">
+                            <p className="text-lg text-muted-foreground">
+                                {isGrammar ? 'El contenido gramatical de esta sección estará disponible pronto.' : 'Aquí aparecerá el ejercicio interactivo.'}
+                            </p>
+                            <div className="p-8 bg-muted/30 rounded-full">
+                                <topic.icon className="h-24 w-24 text-primary/20" />
+                            </div>
+                        </CardContent>
+                        <CardFooter className="justify-center border-t pt-6">
+                            <Button onClick={() => handleTopicComplete(topic.key)} size="lg" className="px-12 font-bold">
+                                {isGrammar ? 'He terminado de leer' : 'Completar actividad'}
+                                <ArrowRight className="ml-2 h-5 w-5" />
+                            </Button>
+                        </CardFooter>
+                    </Card>
+                );
+        }
     };
 
     if (isUserLoading || isProfileLoading) {
