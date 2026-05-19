@@ -34,6 +34,7 @@ import { doc } from 'firebase/firestore';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 type Topic = {
   key: string;
@@ -450,6 +451,90 @@ export default function EngB1Class1Page() {
                         vocabulary={exerciseAnyVocab}
                         course="b1"
                     />
+                );
+            case 'grammar_2':
+                return (
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                        <CardHeader className="bg-primary/10 border-b">
+                            <div className="flex items-center gap-3">
+                                <GraduationCap className="h-6 w-6 text-primary" />
+                                <CardTitle className="text-2xl font-black">SOME AND ANY - USOS ESPECIALES</CardTitle>
+                            </div>
+                        </CardHeader>
+                        <CardContent className="p-6 space-y-8">
+                            {/* Section 1: Recap */}
+                            <div className="space-y-4">
+                                <h3 className="text-xl font-bold text-primary flex items-center gap-2">
+                                    <Info className="h-5 w-5" /> 1. Repaso General
+                                </h3>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="p-4 bg-muted rounded-xl border-l-4 border-primary">
+                                        <p className="font-bold">SOME</p>
+                                        <p className="text-sm">(+) Frases Afirmativas</p>
+                                    </div>
+                                    <div className="p-4 bg-muted rounded-xl border-l-4 border-brand-purple">
+                                        <p className="font-bold">ANY</p>
+                                        <p className="text-sm">(-) Negativas / (?) Interrogativas</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <Separator />
+
+                            {/* Section 2: Some in Questions */}
+                            <div className="space-y-4">
+                                <h3 className="text-xl font-bold text-primary flex items-center gap-2">
+                                    <HelpCircle className="h-5 w-5" /> 2. SOME en preguntas (?)
+                                </h3>
+                                <p className="text-muted-foreground">Usamos <span className="font-bold text-primary">SOME</span> en preguntas cuando se trata de ofrecimientos (Offer) o peticiones (Request):</p>
+                                
+                                <div className="grid md:grid-cols-2 gap-4">
+                                    <div className="p-4 bg-primary/5 rounded-xl border-2 border-dashed border-primary/30">
+                                        <h4 className="font-bold text-primary uppercase text-sm mb-2">Offer (Ofrecimiento)</h4>
+                                        <p className="font-mono text-base">Would you like <strong>some</strong>____?</p>
+                                        <p className="text-xs text-muted-foreground italic mt-1">(¿Te gustaría algo de...?)</p>
+                                    </div>
+                                    <div className="p-4 bg-primary/5 rounded-xl border-2 border-dashed border-primary/30">
+                                        <h4 className="font-bold text-primary uppercase text-sm mb-2">Request (Petición)</h4>
+                                        <p className="font-mono text-base">Can I have <strong>some</strong>_____?</p>
+                                        <p className="text-xs text-muted-foreground italic mt-1">(¿Podría darme algo de...?)</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <Separator />
+
+                            {/* Section 3: Any in Affirmative */}
+                            <div className="space-y-4">
+                                <h3 className="text-xl font-bold text-primary flex items-center gap-2">
+                                    <CheckCircle className="h-5 w-5" /> 3. ANY en frases afirmativas (+)
+                                </h3>
+                                <div className="space-y-4">
+                                    <div className="p-4 bg-muted rounded-xl border">
+                                        <h4 className="font-bold text-foreground">Significado: "Cualquiera"</h4>
+                                        <p className="text-sm italic mt-1">Example: Dame cualquiera de ellos</p>
+                                        <p className="font-mono text-primary font-bold mt-1">Give me <strong>any</strong> of them.</p>
+                                    </div>
+
+                                    <div className="p-4 bg-muted rounded-xl border">
+                                        <h4 className="font-bold text-foreground flex items-center gap-2">
+                                            Aparentemente (+) pero con significado negativo
+                                        </h4>
+                                        <p className="text-sm text-muted-foreground mb-2">
+                                            Se trata de frases que contienen palabras negativas como <span className="font-bold">Never</span>, <span className="font-bold">Hardly ever</span>, etc.
+                                        </p>
+                                        <p className="text-sm italic">Example: Yo nunca bebo ningún vino</p>
+                                        <p className="font-mono text-primary font-bold mt-1">I <strong>never</strong> drink <strong>any</strong> wine.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </CardContent>
+                        <CardFooter className="justify-center border-t pt-6">
+                            <Button onClick={() => handleTopicComplete('grammar_2')} size="lg" className="px-16 font-bold h-14 text-xl">
+                                He terminado de estudiar <ArrowRight className="ml-2 h-6 w-6" />
+                            </Button>
+                        </CardFooter>
+                    </Card>
                 );
             default:
                 const isGrammar = topic.key.startsWith('grammar') || topic.key === 'rules';
