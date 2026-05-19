@@ -677,12 +677,78 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                         highlightVocabulary={true}
                     />
                 );
-            case 'ex-mixto-1': return <SimpleTranslationExercise course="a1" exerciseKey="mixed1" onComplete={() => handleTopicComplete('ex-mixto-1')} />;
+            case 'ex-mixto-1': 
+                return (
+                    <SimpleTranslationExercise 
+                        course="a1" 
+                        exerciseKey="mixed1" 
+                        onComplete={() => handleTopicComplete('ex-mixto-1')} 
+                        vocabulary={{
+                            "estudiante": "student",
+                            "amigos": "friends",
+                            "padres": "parents",
+                            "hermana": "sister",
+                            "abogados": "lawyers",
+                            "Inglaterra": "England",
+                            "de ellos": "their",
+                            "de él": "his"
+                        }}
+                        highlightVocabulary={true}
+                    />
+                );
             case 'ex-mixto-2': return <TranslationExercise exerciseKey="qna2" formType="qna" onComplete={() => handleTopicComplete('ex-mixto-2')} />;
-            case 'ex-mixto-3': return <SimpleTranslationExercise course="a1" exerciseKey="mixed3" onComplete={() => handleTopicComplete('ex-mixto-3')} />;
-            case 'ex-mixto-4': return <SimpleTranslationExercise course="a1" exerciseKey="mixed4" onComplete={() => handleTopicComplete('ex-mixto-4')} />;
+            case 'ex-mixto-3': 
+                return (
+                    <SimpleTranslationExercise 
+                        course="a1" 
+                        exerciseKey="mixed3" 
+                        onComplete={() => handleTopicComplete('ex-mixto-3')} 
+                        vocabulary={{
+                            "estudiantes": "students",
+                            "amigos": "friends",
+                            "mamá": "mother / mom",
+                            "padres": "parents",
+                            "abuela": "grandmother / grandma",
+                            "hermanas": "sisters",
+                            "enojados": "angry",
+                            "preocupados": "worried"
+                        }}
+                        highlightVocabulary={true}
+                    />
+                );
+            case 'ex-mixto-4': 
+                return (
+                    <SimpleTranslationExercise 
+                        course="a1" 
+                        exerciseKey="mixed4" 
+                        onComplete={() => handleTopicComplete('ex-mixto-4')} 
+                        vocabulary={{
+                            "profesor": "teacher",
+                            "ingeniero": "engineer",
+                            "estadio": "stadium",
+                            "primos": "cousins",
+                            "baloncesto": "basketball"
+                        }}
+                        highlightVocabulary={true}
+                    />
+                );
             case 'ex-mixto-5': return <ShortAnswerExercise onComplete={() => handleTopicComplete('ex-mixto-5')} />;
-            case 'ex-mixto-6': return <SimpleTranslationExercise course="a1" exerciseKey="mixed6" onComplete={() => handleTopicComplete('ex-mixto-6')} />;
+            case 'ex-mixto-6': 
+                return (
+                    <SimpleTranslationExercise 
+                        course="a1" 
+                        exerciseKey="mixed6" 
+                        onComplete={() => handleTopicComplete('ex-mixto-6')} 
+                        vocabulary={{
+                            "padrastro": "stepfather",
+                            "estante": "shelf",
+                            "escritorio": "desk",
+                            "iglesia": "church",
+                            "supermercado": "supermarket"
+                        }}
+                        highlightVocabulary={true}
+                    />
+                );
             default:
                 return (
                   <Card className="shadow-soft rounded-lg border-2 border-brand-purple min-h-[500px]">

@@ -342,7 +342,7 @@ const exercises = {
     c7_ex7: {
         title: 'a1class1.exercise',
         prompts: [
-            { spanish: 'YO QUIERO COMER UN BANANO CON LECHE', english: ["i want to eat a banana with milk"] },
+            { spanish: 'YO QUIERO COMER UN BANANO CON LECHE', english: ["i want to eat a banner with milk"] },
             { spanish: 'ELLA ES UNA INGENIERA', english: ["she is an engineer", "she's an engineer"] },
             { spanish: 'NOSOTROS TRABAJAMOS WITH UN PROFESOR EN LA UNIVERSIDAD', english: ["we work with a teacher at the university", "we work with a professor at the university"] },
             { spanish: 'ÉL ES UN ADOLESCENTE', english: ["he is a teenager", "he's a teenager"] },
@@ -364,7 +364,7 @@ const exercises = {
         title: 'a1class1.exercise',
         prompts: [
             { spanish: 'A LOS GATOS LES GUSTA LA CARNE', english: ["cats like meat"] },
-            { spanish: 'ESTE ES EL NOMBRE DEL RESTAURANTE CHINO', english: ["this is the name of the chinese restaurant"] },
+            { spanish: 'ESTE EL NOMBRE DEL RESTAURANTE CHINO', english: ["this is the name of the chinese restaurant"] },
             { spanish: 'A ELLA NO LE GUSTA EL TENNIS, A ELLA LE GUSTA EL FUTBOL', english: ["she doesn't like tennis, she likes football", "she doesn't like tennis, she likes soccer", "she does not like tennis, she likes football", "she does not like tennis, she likes football", "she does not like tennis, she likes soccer"] },
             { spanish: 'EL VASO ESTÁ LLENO (FULL) DE AGUA', english: ["the glass is full of water"] },
             { spanish: 'ME GUSTA EL ARTE', english: ["i like art"] },
@@ -670,7 +670,7 @@ const exercises = {
             { spanish: "ESTA ES SU FINCA (DE ELLA)", english: ["this is her farm", "this is her country house"] },
             { spanish: "ESTE NO ES EL MIO, ES EL TUYO", english: ["this is not mine, it is yours", "this isn't mine, it's yours", "this is not mine, it's yours"] },
             { spanish: "ELLOS NO ESTAN CONMIGO", english: ["they are not with me", "they aren't with me"] },
-            { spanish: "EL ES MI HERMANO, TIENE 33 AÑOS", english: ["he is my brother, he is 33 years old", "he's my brother, he is 33 years old", "he is my brother, he's 33 years old"] },
+            { spanish: "EL ES MY HERMANO, TIENE 33 AÑOS", english: ["he is my brother, he is 33 years old", "he's my brother, he is 33 years old", "he is my brother, he's 33 years old"] },
             { spanish: "YO VOY CON ELLA AL SUPERMERCADO", english: ["i go with her to the supermarket", "i'm going with her to the supermarket"] },
             { spanish: "¿ESTAS EN SU CASA? (DE ELLA)", english: ["are you in her house?", "are you at her house?"] },
             { spanish: "¿TU HIJO TOCA LA GUITARRA CON EL? –SI", english: ["does your son play the guitar with him? yes, he does", "does your son play the guitar with him? yes"] },
@@ -941,34 +941,17 @@ export function SimpleTranslationExercise({
     return (
         <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
             <CardHeader>
-                <div className="flex justify-between items-center">
-                    <CardTitle>{title}</CardTitle>
-                    <span className="text-sm font-medium text-muted-foreground">
-                        {currentPromptIndex + 1} / {exerciseData.prompts.length}
-                    </span>
-                </div>
-                <div className="flex items-center justify-between mt-4">
-                    <div className="flex items-center justify-start flex-wrap gap-2">
-                        {exerciseData.prompts.map((_, index) => (
-                            <button
-                                key={index}
-                                onClick={() => setCurrentPromptIndex(index)}
-                                className={cn(
-                                    "h-8 w-8 rounded-full flex items-center justify-center font-bold border-2 transition-all",
-                                    currentPromptIndex === index ? "border-primary ring-2 ring-primary" : "border-muted-foreground/50",
-                                    validationStates[index] === 'correct' && 'bg-green-500/20 border-green-500 text-green-700',
-                                    validationStates[index] === 'incorrect' && 'bg-red-500/20 border-destructive text-destructive',
-                                )}
-                                aria-label={`Ir al ejercicio ${index + 1}`}
-                            >
-                                {index + 1}
-                            </button>
-                        ))}
+                <div className="flex justify-between items-start">
+                    <div className="space-y-1">
+                        <CardTitle>{title}</CardTitle>
+                        <div className="text-sm font-medium text-muted-foreground">
+                            {currentPromptIndex + 1} / {exerciseData.prompts.length}
+                        </div>
                     </div>
                     {vocabulary && (
                         <Popover>
                             <PopoverTrigger asChild>
-                                <Button variant="outline" size="sm" className={cn("w-fit", highlightVocabulary && "border-2 border-brand-blue animate-border-pulse")}>
+                                <Button variant="outline" size="sm" className={cn("w-fit shrink-0", highlightVocabulary && "border-2 border-brand-blue animate-border-pulse")}>
                                     <BookText className="mr-2 h-4 w-4" />
                                     Vocabulario
                                 </Button>
@@ -993,6 +976,23 @@ export function SimpleTranslationExercise({
                             </PopoverContent>
                         </Popover>
                     )}
+                </div>
+                <div className="flex items-center justify-start flex-wrap gap-2 mt-4">
+                    {exerciseData.prompts.map((_, index) => (
+                        <button
+                            key={index}
+                            onClick={() => setCurrentPromptIndex(index)}
+                            className={cn(
+                                "h-8 w-8 rounded-full flex items-center justify-center font-bold border-2 transition-all",
+                                currentPromptIndex === index ? "border-primary ring-2 ring-primary" : "border-muted-foreground/50",
+                                validationStates[index] === 'correct' && 'bg-green-500/20 border-green-500 text-green-700',
+                                validationStates[index] === 'incorrect' && 'bg-red-500/20 border-destructive text-destructive',
+                            )}
+                            aria-label={`Ir al ejercicio ${index + 1}`}
+                        >
+                            {index + 1}
+                        </button>
+                    ))}
                 </div>
             </CardHeader>
             <CardContent className="space-y-6">
