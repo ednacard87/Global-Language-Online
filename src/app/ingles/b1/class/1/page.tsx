@@ -23,7 +23,8 @@ import {
     ListChecks,
     Check,
     HelpCircle,
-    XCircle
+    XCircle,
+    Globe
 } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
@@ -284,7 +285,7 @@ export default function EngB1Class1Page() {
                                 disabled={!canAdvancePhrasal && !isAdmin}
                                 className={cn(canAdvancePhrasal && "bg-green-600 hover:bg-green-700 shadow-lg")}
                             >
-                                Avanzar <ArrowRight className="ml-2 h-5 w-5" />
+                                Avanzar <ArrowRight className="ml-2 h-4 w-4" />
                             </Button>
                         </CardFooter>
                     </Card>
