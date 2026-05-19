@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -38,6 +37,14 @@ interface Student {
 const inglesCourseIds = ['a1', 'a2', 'b1', 'b2'];
 const espanolCourseIds = ['a1', 'a2'];
 const kidsCourseIds = ['a1', 'a2', 'b1'];
+
+const classCountsMap = {
+    a1: 16,
+    a2: 20,
+    b1: 20,
+    b2: 20,
+    es: 15, // Default for spanish if needed
+};
 
 const repasosCountMap = {
     a1: 3,
@@ -372,7 +379,7 @@ export default function AdminDashboardPage() {
                                                                         </DropdownMenuCheckboxItem>
                                                                     ))
                                                                 ) : (
-                                                                    Array.from({ length: 14 }, (_, i) => i + 2).map(classNum => { // Classes 2-15
+                                                                    Array.from({ length: ((classCountsMap as any)[course] || 15) - 1 }, (_, i) => i + 2).map(classNum => { // Dynamic class count starting from 2
                                                                         const classId = `${course}-${classNum}`;
                                                                         return (
                                                                             <DropdownMenuCheckboxItem
