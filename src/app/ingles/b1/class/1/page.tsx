@@ -315,23 +315,27 @@ export default function EngB1Class1Page() {
                             <div className="space-y-6">
                                 <div className="flex items-center gap-2">
                                     <div className="h-8 w-8 rounded-full bg-green-500 flex items-center justify-center text-white font-bold text-lg">+</div>
-                                    <h3 className="text-2xl font-black text-primary uppercase tracking-tighter">SOME</h3>
+                                    <h3 className="text-2xl font-black text-primary uppercase tracking-tighter">SOME (+) frases afirmativas</h3>
+                                </div>
+
+                                <div className="bg-primary/5 p-4 rounded-lg border border-dashed text-center">
+                                    <p className="font-bold text-lg uppercase tracking-widest text-primary">Countable and Uncountable</p>
                                 </div>
                                 
                                 <div className="grid md:grid-cols-2 gap-6">
                                     <div className="p-6 bg-brand-teal/10 rounded-2xl border-2 border-brand-teal space-y-3">
-                                        <h4 className="font-black text-brand-teal text-lg">COUNTABLE</h4>
+                                        <h4 className="font-black text-brand-teal text-lg uppercase">Countable</h4>
                                         <p className="text-sm">Significado: <strong>unos(as) - algunos(as)</strong></p>
-                                        <div className="flex items-center gap-2 text-xs font-bold bg-background p-2 rounded">
+                                        <div className="flex items-center gap-2 text-xs font-bold bg-background p-2 rounded border border-brand-teal/20">
                                             <Check className="h-4 w-4 text-green-500" />
                                             EL VERBO Y EL SUSTANTIVO VAN EN PLURAL
                                         </div>
                                     </div>
 
                                     <div className="p-6 bg-brand-purple/10 rounded-2xl border-2 border-brand-purple space-y-3">
-                                        <h4 className="font-black text-brand-purple text-lg">UNCOUNTABLE</h4>
+                                        <h4 className="font-black text-brand-purple text-lg uppercase">Uncountable</h4>
                                         <p className="text-sm">Significado: <strong>algo ó algo de</strong></p>
-                                        <div className="flex items-center gap-2 text-xs font-bold bg-background p-2 rounded">
+                                        <div className="flex items-center gap-2 text-xs font-bold bg-background p-2 rounded border border-brand-purple/20">
                                             <Check className="h-4 w-4 text-green-500" />
                                             EL VERBO Y EL SUSTANTIVO VA EN SINGULAR
                                         </div>
