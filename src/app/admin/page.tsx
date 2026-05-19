@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -13,12 +14,12 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { ShieldOff, Shield, Lock, Unlock, Loader2 } from 'lucide-react';
+import { ShieldOff, Shield, Lock, Unlock, Loader2, ChevronDown } from 'lucide-react';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuCheckboxItem } from '@/components/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuCheckboxItem, DropdownMenuLabel, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 
 interface Student {
   id: string;
@@ -28,11 +29,7 @@ interface Student {
   isBlocked?: boolean;
   profileImageUrl?: string;
   progress?: Record<string, number>;
-  unlockedQuizzes?: {
-    quiz1?: boolean;
-    quiz2?: boolean;
-    finalQuiz?: boolean;
-  };
+  unlockedQuizzes?: Record<string, boolean>;
   unlockedCourses?: string[];
   unlockedClasses?: string[];
   selectedCourse?: 'ingles' | 'espanol' | 'kids';
@@ -41,6 +38,15 @@ interface Student {
 const inglesCourseIds = ['a1', 'a2', 'b1', 'b2'];
 const espanolCourseIds = ['a1', 'a2'];
 const kidsCourseIds = ['a1', 'a2', 'b1'];
+
+const repasosCountMap = {
+    a1: 3,
+    a2: 4,
+    b1: 4,
+    b2: 4,
+    kids: 3,
+    espanol: 3,
+};
 
 const kidsClassesMap = {
     a1: [
@@ -130,23 +136,24 @@ export default function AdminDashboardPage() {
     }
   };
 
-  const handleToggleQuizAccess = async (studentId: string, quiz: 'quiz1' | 'quiz2' | 'finalQuiz', currentStatus: boolean) => {
+  const handleToggleRepasoAccess = async (studentId: string, repasoKey: string, currentStatus: boolean) => {
     if (!firestore) return;
     setUpdatingStudentId(studentId);
     const studentRef = doc(firestore, 'students', studentId);
-    const data = { unlockedQuizzes: { ...displayedStudents?.find(s => s.id === studentId)?.unlockedQuizzes, [quiz]: !currentStatus } };
+    const student = displayedStudents?.find(s => s.id === studentId);
+    const data = { unlockedQuizzes: { ...student?.unlockedQuizzes, [repasoKey]: !currentStatus } };
     try {
         await setDoc(studentRef, data, { merge: true });
         toast({
           title: "Acceso Actualizado",
-          description: `El acceso para el ${quiz} ha sido ${!currentStatus ? 'concedido' : 'revocado'}.`,
+          description: `El acceso al repaso ha sido ${!currentStatus ? 'concedido' : 'revocado'}.`,
         });
     } catch (error: any) {
-        console.error("Error updating quiz access:", error);
+        console.error("Error updating repaso access:", error);
         toast({
           variant: "destructive",
           title: "Error",
-          description: `No se pudo actualizar el acceso al quiz: ${error.message}`,
+          description: `No se pudo actualizar el acceso al repaso: ${error.message}`,
         });
     } finally {
         setUpdatingStudentId(null);
@@ -291,7 +298,7 @@ export default function AdminDashboardPage() {
                                     <TableHead>Curso Actual</TableHead>
                                     <TableHead>Acceso a Cursos</TableHead>
                                     <TableHead>Acceso a Clases</TableHead>
-                                    <TableHead>Acceso a Quizzes</TableHead>
+                                    <TableHead>Acceso a Repasos</TableHead>
                                     <TableHead className="text-right">Actions</TableHead>
                                 </TableRow>
                             </TableHeader>
@@ -301,6 +308,7 @@ export default function AdminDashboardPage() {
                                         student.selectedCourse === 'espanol' ? espanolCourseIds :
                                         student.selectedCourse === 'kids' ? kidsCourseIds :
                                         inglesCourseIds;
+
                                     return (
                                         <TableRow key={student.id}>
                                             <TableCell className="font-medium">
@@ -385,34 +393,81 @@ export default function AdminDashboardPage() {
                                             </TableCell>
                                             <TableCell>
                                                 <div className="flex flex-col gap-2 items-start">
-                                                    <Button
-                                                        size="sm"
-                                                        variant={student.unlockedQuizzes?.quiz1 ? 'secondary' : 'outline'}
-                                                        onClick={() => handleToggleQuizAccess(student.id, 'quiz1', !!student.unlockedQuizzes?.quiz1)}
-                                                        disabled={updatingStudentId === student.id}
-                                                    >
-                                                        {student.unlockedQuizzes?.quiz1 ? <Unlock className="mr-2 h-4 w-4" /> : <Lock className="mr-2 h-4 w-4" />}
-                                                        Quiz 1
-                                                    </Button>
-                                                    <Button
-                                                        size="sm"
-                                                        variant={student.unlockedQuizzes?.quiz2 ? 'secondary' : 'outline'}
-                                                        onClick={() => handleToggleQuizAccess(student.id, 'quiz2', !!student.unlockedQuizzes?.quiz2)}
-                                                        disabled={updatingStudentId === student.id}
-                                                    >
-                                                        {student.unlockedQuizzes?.quiz2 ? <Unlock className="mr-2 h-4 w-4" /> : <Lock className="mr-2 h-4 w-4" />}
-                                                        Quiz 2
-                                                    </Button>
-                                                    {student.selectedCourse === 'kids' && (
-                                                        <Button
-                                                            size="sm"
-                                                            variant={student.unlockedQuizzes?.finalQuiz ? 'secondary' : 'outline'}
-                                                            onClick={() => handleToggleQuizAccess(student.id, 'finalQuiz', !!student.unlockedQuizzes?.finalQuiz)}
-                                                            disabled={updatingStudentId === student.id}
-                                                        >
-                                                            {student.unlockedQuizzes?.finalQuiz ? <Unlock className="mr-2 h-4 w-4" /> : <Lock className="mr-2 h-4 w-4" />}
-                                                            Quiz Final
-                                                        </Button>
+                                                    {student.selectedCourse === 'kids' ? (
+                                                        <DropdownMenu>
+                                                            <DropdownMenuTrigger asChild>
+                                                                <Button variant="outline" size="sm" className="h-8 w-full">KIDS <ChevronDown className="ml-2 h-4 w-4"/></Button>
+                                                            </DropdownMenuTrigger>
+                                                            <DropdownMenuContent>
+                                                                {Array.from({ length: repasosCountMap.kids }, (_, i) => {
+                                                                    const key = `kids_r${i + 1}`;
+                                                                    const isUnlocked = student.unlockedQuizzes?.[key] || false;
+                                                                    return (
+                                                                        <DropdownMenuCheckboxItem
+                                                                            key={key}
+                                                                            checked={isUnlocked}
+                                                                            onCheckedChange={() => handleToggleRepasoAccess(student.id, key, isUnlocked)}
+                                                                            disabled={updatingStudentId === student.id}
+                                                                        >
+                                                                            Repaso {i + 1}
+                                                                        </DropdownMenuCheckboxItem>
+                                                                    );
+                                                                })}
+                                                            </DropdownMenuContent>
+                                                        </DropdownMenu>
+                                                    ) : student.selectedCourse === 'espanol' ? (
+                                                        <DropdownMenu>
+                                                            <DropdownMenuTrigger asChild>
+                                                                <Button variant="outline" size="sm" className="h-8 w-full">ESPAÑOL <ChevronDown className="ml-2 h-4 w-4"/></Button>
+                                                            </DropdownMenuTrigger>
+                                                            <DropdownMenuContent>
+                                                                {Array.from({ length: repasosCountMap.espanol }, (_, i) => {
+                                                                    const key = `es_r${i + 1}`;
+                                                                    const isUnlocked = student.unlockedQuizzes?.[key] || false;
+                                                                    return (
+                                                                        <DropdownMenuCheckboxItem
+                                                                            key={key}
+                                                                            checked={isUnlocked}
+                                                                            onCheckedChange={() => handleToggleRepasoAccess(student.id, key, isUnlocked)}
+                                                                            disabled={updatingStudentId === student.id}
+                                                                        >
+                                                                            Repaso {i + 1}
+                                                                        </DropdownMenuCheckboxItem>
+                                                                    );
+                                                                })}
+                                                            </DropdownMenuContent>
+                                                        </DropdownMenu>
+                                                    ) : (
+                                                        <div className="flex flex-wrap gap-1 max-w-[120px]">
+                                                            {(student.unlockedCourses || []).map(courseId => {
+                                                                const count = (repasosCountMap as any)[courseId] || 3;
+                                                                return (
+                                                                    <DropdownMenu key={`${student.id}-repaso-${courseId}`}>
+                                                                        <DropdownMenuTrigger asChild>
+                                                                            <Button variant="outline" size="sm" className="h-8 text-[10px]">{courseId.toUpperCase()}</Button>
+                                                                        </DropdownMenuTrigger>
+                                                                        <DropdownMenuContent>
+                                                                            <DropdownMenuLabel>Repasos {courseId.toUpperCase()}</DropdownMenuLabel>
+                                                                            <DropdownMenuSeparator />
+                                                                            {Array.from({ length: count }, (_, i) => {
+                                                                                const key = `${courseId}_r${i + 1}`;
+                                                                                const isUnlocked = student.unlockedQuizzes?.[key] || false;
+                                                                                return (
+                                                                                    <DropdownMenuCheckboxItem
+                                                                                        key={key}
+                                                                                        checked={isUnlocked}
+                                                                                        onCheckedChange={() => handleToggleRepasoAccess(student.id, key, isUnlocked)}
+                                                                                        disabled={updatingStudentId === student.id}
+                                                                                    >
+                                                                                        Repaso {i + 1}
+                                                                                    </DropdownMenuCheckboxItem>
+                                                                                );
+                                                                            })}
+                                                                        </DropdownMenuContent>
+                                                                    </DropdownMenu>
+                                                                );
+                                                            })}
+                                                        </div>
                                                     )}
                                                 </div>
                                             </TableCell>
@@ -441,4 +496,3 @@ export default function AdminDashboardPage() {
     </div>
   );
 }
-    

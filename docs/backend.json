@@ -1,3 +1,4 @@
+
 {
   "entities": {
     "Student": {
@@ -103,26 +104,11 @@
         },
         "unlockedQuizzes": {
             "type": "object",
-            "description": "Indicates which quizzes are unlocked for the student.",
-            "properties": {
-                "quiz1": {
-                    "type": "boolean",
-                    "default": false
-                },
-                "quiz2": {
-                    "type": "boolean",
-                    "default": false
-                },
-                "finalQuiz": {
-                    "type": "boolean",
-                    "default": false
-                }
+            "description": "Indicates which reviews (repasos) are unlocked for the student. Keys are course specific (e.g., 'a1_r1', 'kids_r1').",
+            "additionalProperties": {
+                "type": "boolean"
             },
-            "default": {
-                "quiz1": false,
-                "quiz2": false,
-                "finalQuiz": false
-            }
+            "default": {}
         },
         "unlockedClasses": {
             "type": "array",
