@@ -73,6 +73,15 @@ const exerciseSomeVocab = {
     "algo de dinero": "some money"
 };
 
+const exerciseAnyVocab = {
+    "papas": "potatoes",
+    "nevera": "fridge / kitchen",
+    "torta": "cake",
+    "plata": "money",
+    "azúcar": "sugar",
+    "afuera": "outside"
+};
+
 export default function EngB1Class1Page() {
     const { t } = useTranslation();
     const { toast } = useToast();
@@ -431,6 +440,16 @@ export default function EngB1Class1Page() {
                             </Button>
                         </CardFooter>
                     </Card>
+                );
+            case 'ex_any':
+                return (
+                    <SimpleTranslationExercise 
+                        exerciseKey="custom_ex_any"
+                        title="Exercise With Any"
+                        onComplete={() => handleTopicComplete('ex_any')}
+                        vocabulary={exerciseAnyVocab}
+                        course="b1"
+                    />
                 );
             default:
                 const isGrammar = topic.key.startsWith('grammar') || topic.key === 'rules';

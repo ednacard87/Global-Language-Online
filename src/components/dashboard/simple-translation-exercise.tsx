@@ -469,7 +469,7 @@ const exercises = {
             { spanish: 'TE GUSTA ESTA CAMISETA? ', english: ['do you like this t-shirt?', 'do you like this shirt?'] },
             { spanish: 'ME GUSTA ESA CHAQUETA', english: ['i like that jacket'] },
             { spanish: 'ESA MUCHACHA ES DANNY', english: ['that girl is danny'] },
-            { spanish: 'NOSOTROS CORREMOS EN ESOS LUGARES', english: ['we run in those places'] },
+            { spanish: 'NOSOTROS CORREMOS IN ESOS LUGARES', english: ['we run in those places'] },
             { spanish: 'A ELLAS LES ENCANTA ESE CANTANTE', english: ['they love that singer'] },
         ]
     },
@@ -767,7 +767,7 @@ const exercises = {
             { spanish: '1. ¿DONDE ESTA EL ARBOL MAS ALTO? (HIGH)', english: ["where is the highest tree?"] },
             { spanish: '2. EL PUEDE AYUDARNOS', english: ["he can help us"] },
             { spanish: '3. NOSOTROS NO ESTAMOS MANEJANDO UN CAMION', english: ["we are not driving a truck", "we're not driving a truck", "we aren't driving a truck"] },
-            { spanish: '4. ¿ELLA JUEGA CON EL?', english: ["does she play with him?"] },
+            { spanish: '4. ¿ELLA JUEGA con el?', english: ["does she play with him?"] },
             { spanish: '5. ¿BARRANQUILLA ES MAS CALIENTE QUE CARTAGENA?', english: ["is barranquilla hotter than cartagena?"] },
             { spanish: '6. ELLOS NO DESAYUNAN A LAS 9', english: ["they do not have breakfast at 9", "they don't have breakfast at 9", "they do not eat breakfast at 9", "they don't eat breakfast at 9"] },
             { spanish: '7. ELLA ESTA JUGANDO CON SU HIJO', english: ["she is playing with her son", "she's playing with her son"] },
@@ -785,6 +785,17 @@ const exercises = {
             { spanish: 'HAY UNAS CERVEZAS EN LA NEVERA', english: ["there are some beers in the fridge", "there are some beers in the refrigerator"] },
             { spanish: 'HAY ALGUNOS ARBOLES EN LA FINCA', english: ["there are some trees on the farm", "there are some trees in the country house", "there are some trees in the farm"] },
             { spanish: 'HAY ALGO DE DINERO EN LA MESA', english: ["there is some money on the table", "there's some money on the table"] },
+        ]
+    },
+    custom_ex_any: {
+        title: 'Exercise With Any',
+        prompts: [
+            { spanish: 'NO HAY NINGUNA PAPA EN LA NEVERA', english: ["there aren't any potatoes in the kitchen", "there are not any potatoes in the kitchen", "there aren't any potatoes in the fridge", "there are not any potatoes in the fridge"] },
+            { spanish: '¿TIENES ALGUNAS MANZANAS PARA LA TORTA?', english: ["do you have any apples for the cake?"] },
+            { spanish: 'NO TENGO PLATA -> NADA DE DINERO', english: ["i don't have any money", "i do not have any money", "i have no money"] },
+            { spanish: '¿HAY (ALGO DE) AZUCAR?', english: ["is there any sugar?"] },
+            { spanish: '¿HAY AGUA?', english: ["is there any water?"] },
+            { spanish: '¿NO HAY CARROS AFUERA?', english: ["aren't there any cars outside?", "are there not any cars outside?"] },
         ]
     }
 };
