@@ -123,6 +123,49 @@ const class2Exercise1Data = [
     }
 ];
 
+const positiveExercisesData = [
+    { spanish: 'yo bebo agua', answer: ["I drink water"] },
+    { spanish: 'nosotros jugamos futbol', answer: ["we play soccer", "we play football"] },
+    { spanish: 'ellos escuchan musica', answer: ["they listen to music"] },
+    { spanish: 'yo hablo ingles', answer: ["I speak English"] },
+    { spanish: 'tu abres la puerta', answer: ["you open the door"] },
+];
+
+const negativeExercisesData = [
+    { spanish: 'yo no bebo agua', answer: ["I do not drink water", "I don't drink water"] },
+    { spanish: 'nosotros no jugamos futbol', answer: ["we do not play soccer", "we don't play soccer", "we do not play football", "we don't play football"] },
+    { spanish: 'ellos no escuchan musica', answer: ["they do not listen to music", "they don't listen to music"] },
+    { spanish: 'yo no hablo ingles', answer: ["I do not speak English", "I don't speak English"] },
+    { spanish: 'tu no abres la puerta', answer: ["you do not open the door", "you don't open the door"] },
+];
+
+const interrogativeExercisesData = [
+    { spanish: '¿yo bebo agua?', answer: ["do I drink water?"] },
+    { spanish: '¿nosotros jugamos futbol?', answer: ["do we play soccer?", "do we play football?"] },
+    { spanish: '¿ellos escuchan musica?', answer: ["do they listen to music?"] },
+    { spanish: '¿yo hablo ingles?', answer: ["do I speak English?"] },
+    { spanish: '¿tu abres la puerta?', answer: ["do you open the door?"] },
+];
+
+const class2Exercise2Data = [
+    {
+        spanish: "YO JUEGO CON MI HERMANO",
+        answers: {
+            affirmative: ["i play with my brother"],
+            negative: ["i do not play with my brother", "i don't play with my brother"],
+            interrogative: ["do i play with my brother?"],
+        }
+    },
+    {
+        spanish: "ELLA TRABAJA EN EL HOSPITAL",
+        answers: {
+            affirmative: ["she works in the hospital"],
+            negative: ["she does not work in the hospital", "she doesn't work in the hospital"],
+            interrogative: ["does she work in the hospital?"],
+        }
+    },
+];
+
 type Topic = {
   key: string;
   name: string;
@@ -137,10 +180,20 @@ const ICONS = {
     completed: CheckCircle,
 };
 
+interface ClassContentProps {
+    t: any;
+    toast: any;
+    studentDocRef: any;
+    studentProfile: any;
+    isAdmin: boolean;
+    isProfileLoading: boolean;
+    isUserLoading: boolean;
+}
+
 // =================================================================
 //                 CLASS 1 COMPONENT
 // =================================================================
-const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isProfileLoading }: any) => {
+const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isProfileLoading, isUserLoading }: ClassContentProps) => {
     const progressStorageKey = `_eng_a1_class_1_v2_vocab`;
     const mainProgressKey = `progress_a1_eng_unit_1_class_1`;
 
@@ -729,7 +782,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
 // =================================================================
 //                 CLASS 2 COMPONENT
 // =================================================================
-const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isProfileLoading }: any) => {
+const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isProfileLoading, isUserLoading }: ClassContentProps) => {
     const progressStorageVersion = 'progress_a1_eng_unit_1_class_2_v5';
     const mainProgressKey = 'progress_a1_eng_unit_1_class_2';
     
@@ -840,7 +893,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
       }, [learningPath]);
     
       useEffect(() => {
-        if (isProfileLoading) return;
+        if (isProfileLoading || isUserLoading) return;
         if (learningPath.length > 0 && !isAdmin && studentDocRef) {
             const statusesToSave: Record<string, any> = {};
             learningPath.forEach(item => {
@@ -866,7 +919,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         if (progress >= 100) {
           window.dispatchEvent(new CustomEvent('progressUpdated'));
         }
-      }, [learningPath, isAdmin, progress, studentDocRef, progressStorageVersion, mainProgressKey, isProfileLoading]);
+      }, [learningPath, isAdmin, progress, studentDocRef, progressStorageVersion, mainProgressKey, isProfileLoading, isUserLoading]);
 
       useEffect(() => {
         if (!topicToComplete) return;
@@ -1158,7 +1211,18 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         }
     
         if (selectedTopic === 'reading') {
-            return <ReadingComprehensionExercise onComplete={() => handleTopicComplete('reading')} />;
+            return (
+                <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                    <CardHeader>
+                        <CardTitle>{t('kidsA1Class2.reading')}</CardTitle>
+                        <CardDescription>{t('kidsA1Class2.readingDescription')}</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <p>Contenido para lectura de Clase 2 vendrá aquí.</p>
+                        <Button onClick={() => handleTopicComplete('reading')} className="mt-4">Completar Lectura</Button>
+                    </CardContent>
+                </Card>
+            );
         }
     
         if (selectedTopic === 'listening') {
@@ -1360,7 +1424,7 @@ export default function EngA1ClassPage() {
     const classId = params.classId as string;
     const { t } = useTranslation();
     const { toast } = useToast();
-    const { user } = useUser();
+    const { user, isUserLoading } = useUser();
     const firestore = useFirestore();
     
     const studentDocRef = useMemoFirebase(
@@ -1374,7 +1438,7 @@ export default function EngA1ClassPage() {
         return studentProfile?.role === 'admin' || user.email === 'ednacard87@gmail.com';
     }, [user, studentProfile]);
 
-    const commonProps = { t, toast, studentDocRef, studentProfile, isAdmin, isProfileLoading };
+    const commonProps: ClassContentProps = { t, toast, studentDocRef, studentProfile, isAdmin, isProfileLoading, isUserLoading };
 
     if (classId === '1') {
         return <Class1Content {...commonProps} />;
@@ -1404,3 +1468,4 @@ export default function EngA1ClassPage() {
       </div>
     );
 }
+
