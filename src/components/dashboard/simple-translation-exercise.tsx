@@ -707,7 +707,7 @@ const exercises = {
             { spanish: "¿ELLA ES SU HIJA? (DE EL)- ELLA ES MUY ALTA", english: ["is she his daughter? she is very tall", "is she his daughter? she's very tall"] },
             { spanish: "ELLOS NO ME AYUDAN BECAUSE ELLOS ESTÁN OCUPADOS EN SU PROYECTO", english: ["they do not help me because they are busy in their project", "they don't help me because they're busy in their project"] },
             { spanish: "¿ESTUDIAS CON NOSOTROS? – NO,YO TENGO QUE LAVAR LOS PLATOS AHORA MISMO, MI MAMÁ ESTÁ ENOJADA", english: ["do you study with us? no, i have to wash the dishes right now, my mom is angry", "do you study with us? no, i have to wash the dishes right now, my mother is angry"] },
-            { spanish: "A ELLA LE GUSTA SU VESTIDO- A ELLA LE GUSTA EL SUYO (DE ELLA)", english: ["she does not like her dress, she does not like hers", "she doesn't like her dress, she doesn't like hers"] },
+            { spanish: "A ELLA LE GUSTA EL SUYO (DE ELLA)", english: ["she does not like her dress, she does not like hers", "she doesn't like her dress, she doesn't like hers"] },
             { spanish: "¿HABLAS CON EL? – NO, NOSOTROS NO HABLAMOS HACE UN AÑO", english: ["do you talk with him? no, we do not talk for a year", "do you talk to him? no, we don't talk for a year"] },
             { spanish: "¿ESTOS SON TUYOS O MIOS? - ESOS SON MIOS", english: ["are these yours or mine? those are mine"] },
             { spanish: "ELLOS SON MIS PRIMOS", english: ["they are my cousins", "they're my cousins"] },
@@ -823,13 +823,15 @@ export function SimpleTranslationExercise({
     onComplete,
     course,
     title: titleProp,
-    vocabulary
+    vocabulary,
+    highlightVocabulary = false,
 }: { 
     exerciseKey: string,
     onComplete?: () => void,
     course?: string,
     title?: string,
-    vocabulary?: Record<string, string>
+    vocabulary?: Record<string, string>,
+    highlightVocabulary?: boolean;
 }) {
     const { t } = useTranslation();
     const { toast } = useToast();
