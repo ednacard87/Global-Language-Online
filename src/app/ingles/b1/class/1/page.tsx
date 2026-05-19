@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -21,7 +20,8 @@ import {
     Pencil,
     MessageSquare,
     Info,
-    ListChecks
+    ListChecks,
+    Check
 } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
@@ -29,6 +29,7 @@ import { Progress } from '@/components/ui/progress';
 import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Input } from '@/components/ui/input';
+import { Separator } from '@/components/ui/separator';
 
 type Topic = {
   key: string;
@@ -268,6 +269,79 @@ export default function EngB1Class1Page() {
                                 className={cn(canAdvancePhrasal && "bg-green-600 hover:bg-green-700 shadow-lg")}
                             >
                                 Avanzar <ArrowRight className="ml-2 h-5 w-5" />
+                            </Button>
+                        </CardFooter>
+                    </Card>
+                );
+            case 'grammar_some':
+                return (
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                        <CardHeader className="bg-primary/10 border-b">
+                            <div className="flex items-center gap-3">
+                                <GraduationCap className="h-6 w-6 text-primary" />
+                                <CardTitle className="text-2xl font-black">USOS DE "SOME" Y "ANY"</CardTitle>
+                            </div>
+                        </CardHeader>
+                        <CardContent className="p-6 space-y-8">
+                            <div className="space-y-4">
+                                <p className="text-lg leading-relaxed">
+                                    El plural del artículo indeterminado <span className="font-bold">"A"</span> o <span className="font-bold">"AN"</span> es <span className="font-bold text-primary">"SOME"</span> o <span className="font-bold text-brand-purple">"ANY"</span>.
+                                </p>
+                                <p className="text-lg leading-relaxed">
+                                    <span className="font-bold">"SOME"</span> y <span className="font-bold">"ANY"</span> significan: <span className="italic">ALGÚN, ALGUNA, ALGUNOS, ALGUNAS, ALGO DE.</span>
+                                </p>
+                            </div>
+
+                            <div className="bg-muted/50 p-6 rounded-2xl border-2 border-dashed space-y-4">
+                                <h3 className="text-xl font-bold text-primary mb-3">EXAMPLES:</h3>
+                                <div className="space-y-3 font-mono text-base">
+                                    <div className="flex flex-col sm:flex-row sm:justify-between gap-1 p-2 bg-background rounded border">
+                                        <span className="font-bold">THERE ARE SOME BOOKS</span>
+                                        <span className="text-muted-foreground text-sm">(HAY UNOS LIBROS SOBRE LA MESA)</span>
+                                    </div>
+                                    <div className="flex flex-col sm:flex-row sm:justify-between gap-1 p-2 bg-background rounded border">
+                                        <span className="font-bold">THERE AREN'T ANY CHAIRS</span>
+                                        <span className="text-muted-foreground text-sm">(NO HAY NINGUNA SILLA EN ESE SALON)</span>
+                                    </div>
+                                    <div className="flex flex-col sm:flex-row sm:justify-between gap-1 p-2 bg-background rounded border">
+                                        <span className="font-bold">THERE ARE SOME BEERS IN THE FRIDGE</span>
+                                        <span className="text-muted-foreground text-sm">(HAY UNAS CERVESAS EN LA NEVERA)</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <Separator />
+
+                            <div className="space-y-6">
+                                <div className="flex items-center gap-2">
+                                    <div className="h-8 w-8 rounded-full bg-green-500 flex items-center justify-center text-white font-bold text-lg">+</div>
+                                    <h3 className="text-2xl font-black text-primary uppercase tracking-tighter">SOME</h3>
+                                </div>
+                                
+                                <div className="grid md:grid-cols-2 gap-6">
+                                    <div className="p-6 bg-brand-teal/10 rounded-2xl border-2 border-brand-teal space-y-3">
+                                        <h4 className="font-black text-brand-teal text-lg">COUNTABLE</h4>
+                                        <p className="text-sm">Significado: <strong>unos(as) - algunos(as)</strong></p>
+                                        <div className="flex items-center gap-2 text-xs font-bold bg-background p-2 rounded">
+                                            <Check className="h-4 w-4 text-green-500" />
+                                            EL VERBO Y EL SUSTANTIVO VAN EN PLURAL
+                                        </div>
+                                    </div>
+
+                                    <div className="p-6 bg-brand-purple/10 rounded-2xl border-2 border-brand-purple space-y-3">
+                                        <h4 className="font-black text-brand-purple text-lg">UNCOUNTABLE</h4>
+                                        <p className="text-sm">Significado: <strong>algo ó algo de</strong></p>
+                                        <div className="flex items-center gap-2 text-xs font-bold bg-background p-2 rounded">
+                                            <Check className="h-4 w-4 text-green-500" />
+                                            EL VERBO Y EL SUSTANTIVO VA EN SINGULAR
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </CardContent>
+                        <CardFooter className="justify-center border-t pt-6">
+                            <Button onClick={() => handleTopicComplete('grammar_some')} size="lg" className="px-16 font-bold h-14 text-xl">
+                                Entendido <ArrowRight className="ml-2 h-6 w-6" />
                             </Button>
                         </CardFooter>
                     </Card>
