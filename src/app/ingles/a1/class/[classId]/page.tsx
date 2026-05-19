@@ -4,9 +4,9 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { DashboardHeader } from '@/components/dashboard/header';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { BookOpen, PenSquare, Lock, GraduationCap, BrainCircuit, CheckCircle, Lightbulb, ChevronDown, Ear, Shirt, Loader2 } from 'lucide-react';
+import { BookOpen, PenSquare, Lock, GraduationCap, BrainCircuit, CheckCircle, Lightbulb, ChevronDown, Ear, Shirt, Loader2, XCircle } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
@@ -28,6 +28,8 @@ import { VerbVocabularyExercise } from '@/components/kids/exercises/verb-vocabul
 // Imports for Class 2
 import { VerbMemoryGame } from '@/components/kids/exercises/verb-memory-game';
 import { FillInTheBlanksExercise } from '@/components/kids/exercises/fill-in-the-blanks';
+import { SingleFormExercise } from '@/components/kids/exercises/single-form';
+import { PresentSimpleExercise } from '@/components/kids/exercises/present-simple';
 
 // Data for Class 1
 const verbToBeData = [
@@ -502,6 +504,8 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
     };
 
     const renderContent = () => {
+        const topic = learningPath.find(t => t.key === selectedTopic) || learningPath.flatMap(t => t.subItems || []).find(st => st?.key === selectedTopic);
+
         switch (selectedTopic) {
             case 'vocabulary':
                 return (
