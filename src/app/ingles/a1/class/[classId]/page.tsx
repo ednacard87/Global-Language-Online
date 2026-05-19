@@ -709,14 +709,14 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             <DashboardHeader />
             <main className="flex-1 p-4 md:p-8">
                 <div className="max-w-7xl mx-auto">
-                    <div className="mb-8">
-                        <Link href="/ingles/a1/unit/1" className="hover:underline text-sm text-muted-foreground">Volver a la unidad 1</Link>
-                        <h1 className="text-4xl font-bold dark:text-primary">Clase 1 (A1)</h1>
+                    <div className="mb-8 text-left">
+                        <Link href="/ingles/a1/unit/1" className="hover:underline text-sm text-white/80">Volver a la unidad 1</Link>
+                        <h1 className="text-4xl font-bold text-white dark:text-primary [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">Clase 1 (A1)</h1>
                     </div>
                     <div className="grid gap-8 md:grid-cols-12">
                         <div className="md:col-span-9">{renderContent()}</div>
-                        <div className="md:col-span-3">
-                            <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple">
+                        <div className="md:col-span-3 text-left">
+                            <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
                                 <CardHeader><CardTitle>Ruta de Aprendizaje</CardTitle></CardHeader>
                                 <CardContent>
                                     <nav>
@@ -727,7 +727,11 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                                                 <li key={item.key}>
                                                 {!item.subItems ? (
                                                     <div onClick={() => handleTopicSelect(item.key)}
-                                                    className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer', isLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === item.key && 'bg-muted text-primary font-semibold')}>
+                                                    className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer', 
+                                                        isLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', 
+                                                        selectedTopic === item.key && 'bg-muted text-primary font-semibold',
+                                                        item.status === 'active' && !isAdmin && "animate-pulse-glow"
+                                                    )}>
                                                     <div className="flex items-center gap-3">
                                                         {item.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500" /> : <item.icon className="h-5 w-5" />}
                                                         <span>{item.name}</span>
@@ -737,7 +741,11 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                                                 ) : (
                                                     <Collapsible defaultOpen={item.subItems.some(si => si.status !== 'locked')} disabled={isLocked}>
                                                     <CollapsibleTrigger className="w-full">
-                                                        <div className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors w-full', isLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'cursor-pointer hover:bg-muted', item.subItems.some(si => si.key === selectedTopic) && 'bg-muted text-primary font-semibold')}>
+                                                        <div className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors w-full cursor-pointer', 
+                                                            isLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', 
+                                                            item.subItems.some(si => si.key === selectedTopic) && 'bg-muted text-primary font-semibold',
+                                                            item.status === 'active' && !isAdmin && "animate-pulse-glow"
+                                                        )}>
                                                             <div className="flex items-center gap-3">
                                                             {item.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500" /> : <item.icon className="h-5 w-5" />}
                                                             <span>{item.name}</span>
@@ -749,7 +757,11 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                                                         <ul className="pl-8 pt-1 space-y-1">
                                                         {item.subItems.map((subItem) => (
                                                             <li key={subItem.key} onClick={() => handleTopicSelect(subItem.key)}
-                                                                className={cn('flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer', subItem.status === 'locked' && !isAdmin ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === subItem.key && 'bg-muted text-primary font-semibold')}>
+                                                                className={cn('flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer', 
+                                                                    subItem.status === 'locked' && !isAdmin ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', 
+                                                                    selectedTopic === subItem.key && 'bg-muted text-primary font-semibold',
+                                                                    subItem.status === 'active' && !isAdmin && "animate-pulse-glow"
+                                                                )}>
                                                                 <div className='flex items-center gap-3'>
                                                                     {subItem.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500" /> : <PenSquare className="h-5 w-5" />}
                                                                     <span>{subItem.name}</span>
@@ -787,12 +799,13 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
 //                 CLASS 2 COMPONENT
 // =================================================================
 const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isProfileLoading, isUserLoading }: ClassContentProps) => {
-    const progressStorageVersion = 'progress_a1_eng_unit_1_class_2_v5';
+    const progressStorageVersion = 'progress_a1_eng_unit_1_class_2_v7_save_fix';
     const mainProgressKey = 'progress_a1_eng_unit_1_class_2';
     
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
     const [selectedTopic, setSelectedTopic] = useState<string>('');
     const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
+    const [initialLoadComplete, setInitialLoadComplete] = useState(false);
 
     const [userAnswers, setUserAnswers] = useState<{[key: string]: string[]}>({});
     const [validationStatus, setValidationStatus] = useState<{[key: string]: ('correct' | 'incorrect' | 'unchecked')[]}>({});
@@ -855,32 +868,55 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
     }, [t]);
 
     useEffect(() => {
-        if (isProfileLoading) return;
-        const newPath = initialLearningPath.map(topic => {
-          const status = (isAdmin) ? 'completed' : 'active';
-          return {
+        if (isProfileLoading || initialLoadComplete) return;
+
+        let path = initialLearningPath.map(topic => ({
             ...topic,
-            status: status,
-            subItems: topic.subItems ? topic.subItems.map(sub => ({...sub, status: status })) : undefined,
-          };
-        });
-      
-        setLearningPath(newPath);
-        setSelectedTopic(newPath[0]?.key || '');
+            subItems: topic.subItems ? topic.subItems.map(sub => ({...sub})) : undefined,
+        }));
+
+        let savedSelectedTopic = '';
+
+        if (isAdmin) {
+          path.forEach(item => { 
+            item.status = 'completed';
+            if (item.subItems) item.subItems.forEach(sub => sub.status = 'completed');
+           });
+        } else if(studentProfile?.lessonProgress?.[progressStorageVersion]) {
+            const savedData = studentProfile.lessonProgress[progressStorageVersion];
+            path.forEach(item => {
+                if (savedData[item.key]) item.status = savedData[item.key];
+                if (item.subItems && savedData.subItems?.[item.key]) {
+                    item.subItems.forEach(subItem => {
+                        if (savedData.subItems[item.key][subItem.key]) {
+                            subItem.status = savedData.subItems[item.key][subItem.key];
+                        }
+                    });
+                }
+            });
+            savedSelectedTopic = savedData.lastSelectedTopic || '';
+        }
+
+        setLearningPath(path);
+        
+        if (!selectedTopic) {
+            const firstActive = path.find(p => p.status === 'active') || path.flatMap(p => p.subItems || []).find(sp => sp?.status === 'active');
+            setSelectedTopic(savedSelectedTopic || firstActive?.key || path[0].key);
+        }
 
         const newAnswers: {[key: string]: string[]} = {};
         const newValidation: {[key: string]: ('correct' | 'incorrect' | 'unchecked')[]} = {};
-
         for (const category in vocabularyData) {
             newAnswers[category] = Array((vocabularyData as any)[category].length).fill('');
             newValidation[category] = Array((vocabularyData as any)[category].length).fill('unchecked');
         }
-
         setUserAnswers(newAnswers);
         setValidationStatus(newValidation);
-    }, [isAdmin, initialLearningPath, isProfileLoading]);
+        setInitialLoadComplete(true);
 
-    const progress = useMemo(() => {
+    }, [isAdmin, initialLearningPath, studentProfile, progressStorageVersion, isProfileLoading, initialLoadComplete, selectedTopic]);
+
+    const progressValue = useMemo(() => {
         if (learningPath.length === 0) return 0;
         let totalTopics = 0;
         let completedTopics = 0;
@@ -893,71 +929,71 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                 if (t.status === 'completed') completedTopics++;
             }
         });
+    
         return totalTopics > 0 ? (completedTopics / totalTopics) * 100 : 0;
-      }, [learningPath]);
-    
-      useEffect(() => {
-        if (isProfileLoading || isUserLoading) return;
-        if (learningPath.length > 0 && !isAdmin && studentDocRef) {
-            const statusesToSave: Record<string, any> = {};
-            learningPath.forEach(item => {
-                statusesToSave[item.key] = item.status;
-                if (item.subItems) {
-                    if (!statusesToSave.subItems) statusesToSave.subItems = {};
-                    statusesToSave.subItems[item.key] = {};
-                    item.subItems.forEach(sub => {
-                        statusesToSave.subItems[item.key][sub.key] = sub.status;
-                    });
-                }
-            });
-            updateDocumentNonBlocking(studentDocRef, {
-                [`lessonProgress.${progressStorageVersion}`]: statusesToSave
-            });
-        }
-        if (studentDocRef) {
-            updateDocumentNonBlocking(studentDocRef, {
-                [`progress.${mainProgressKey}`]: Math.round(progress)
-            });
-        }
-    
-        if (progress >= 100) {
+    }, [learningPath]);
+
+
+    useEffect(() => {
+        if (!initialLoadComplete || isProfileLoading || isUserLoading || isAdmin || !studentDocRef || learningPath.length === 0) return;
+
+        const statusesToSave: Record<string, any> = {
+            lastSelectedTopic: selectedTopic
+        };
+
+        learningPath.forEach(item => {
+            statusesToSave[item.key] = item.status;
+            if (item.subItems) {
+                if (!statusesToSave.subItems) statusesToSave.subItems = {};
+                statusesToSave.subItems[item.key] = {};
+                item.subItems.forEach(sub => {
+                    statusesToSave.subItems[item.key][sub.key] = sub.status;
+                });
+            }
+        });
+
+        updateDocumentNonBlocking(studentDocRef, {
+            [`lessonProgress.${progressStorageVersion}`]: statusesToSave,
+            [`progress.${mainProgressKey}`]: Math.round(progressValue)
+        });
+
+        if (progressValue >= 100) {
           window.dispatchEvent(new CustomEvent('progressUpdated'));
         }
-      }, [learningPath, isAdmin, progress, studentDocRef, progressStorageVersion, mainProgressKey, isProfileLoading, isUserLoading]);
+    }, [learningPath, isAdmin, progressValue, studentDocRef, progressStorageVersion, mainProgressKey, isProfileLoading, isUserLoading, initialLoadComplete, selectedTopic]);
 
       useEffect(() => {
-        if (!topicToComplete) return;
-
+        if (!topicToComplete || isAdmin) {
+            if (topicToComplete) setTopicToComplete(null);
+            return;
+        }
+    
         setLearningPath(currentPath => {
-            const newPath = currentPath.map(topic => {
-                if (topic.subItems) {
-                    return {
-                        ...topic,
-                        subItems: topic.subItems.map(sub => ({...sub}))
-                    };
-                }
-                return {...topic};
-            });
-            
+            const newPath = currentPath.map(t => ({
+                ...t,
+                subItems: t.subItems ? t.subItems.map(s => ({...s})) : undefined,
+            }));
+          
             let nextSelectedTopic: string | null = null;
             let topicFound = false;
             let wasTopicUnlocked = false;
 
             for (let i = 0; i < newPath.length && !topicFound; i++) {
                 const currentTopic = newPath[i];
-            
+          
                 if (currentTopic.key === topicToComplete) {
                     if (currentTopic.status !== 'completed') {
                         currentTopic.status = 'completed';
                     }
-                    if (i + 1 < newPath.length && newPath[i+1].status === 'locked') {
-                        newPath[i+1].status = 'active';
+                    if (i + 1 < newPath.length && newPath[i + 1].status === 'locked') {
+                        const nextMainTopic = newPath[i + 1];
+                        nextMainTopic.status = 'active';
                         wasTopicUnlocked = true;
-                        if (newPath[i+1].subItems) {
-                            newPath[i+1].subItems![0].status = 'active';
-                            nextSelectedTopic = newPath[i+1].subItems![0].key;
+                        if (nextMainTopic.subItems && nextMainTopic.subItems.length > 0) {
+                            nextMainTopic.subItems[0].status = 'active';
+                            nextSelectedTopic = nextMainTopic.subItems[0].key;
                         } else {
-                            nextSelectedTopic = newPath[i+1].key;
+                            nextSelectedTopic = nextMainTopic.key;
                         }
                     }
                     topicFound = true;
@@ -977,14 +1013,15 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                             if (currentTopic.status !== 'completed') {
                                 currentTopic.status = 'completed';
                             }
-                            if (i + 1 < newPath.length && newPath[i+1].status === 'locked') {
-                                newPath[i+1].status = 'active';
+                            if (i + 1 < newPath.length && newPath[i + 1].status === 'locked') {
+                                const nextMainTopic = newPath[i + 1];
+                                nextMainTopic.status = 'active';
                                 wasTopicUnlocked = true;
-                                if (newPath[i+1].subItems) {
-                                    newPath[i+1].subItems![0].status = 'active';
-                                    nextSelectedTopic = newPath[i+1].subItems![0].key;
+                                if (nextMainTopic.subItems && nextMainTopic.subItems.length > 0) {
+                                    nextMainTopic.subItems[0].status = 'active';
+                                    nextSelectedTopic = nextMainTopic.subItems[0].key;
                                 } else {
-                                    nextSelectedTopic = newPath[i+1].key;
+                                    nextSelectedTopic = nextMainTopic.key;
                                 }
                             }
                         }
@@ -992,22 +1029,20 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                     }
                 }
             }
+        
+            if (nextSelectedTopic) {
+                setSelectedTopic(nextSelectedTopic);
+            }
 
             if (wasTopicUnlocked) {
-                 toast({
-                    title: "¡Siguiente tema desbloqueado!",
-                    description: "Puedes continuar con la aventura.",
-                });
+                toast({ title: "¡Siguiente tema desbloqueado!" });
             }
-            if (nextSelectedTopic) {
-              setSelectedTopic(nextSelectedTopic);
-            }
-            
+    
             return newPath;
         });
-
+      
         setTopicToComplete(null);
-    }, [topicToComplete, toast]);
+    }, [topicToComplete, toast, isAdmin]);
 
       const handleTopicComplete = (topicKey: string) => {
         setTopicToComplete(topicKey);
@@ -1318,18 +1353,18 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
           <DashboardHeader />
           <main className="flex-1 p-4 md:p-8">
             <div className="max-w-7xl mx-auto">
-              <div className="mb-8">
-                <Link href={`/ingles/a1`} className="hover:underline text-sm text-muted-foreground">
+              <div className="mb-8 text-left">
+                <Link href={`/ingles/a1/unit/1`} className="hover:underline text-sm text-white/80">
                     {t('a1course.backToA1')}
                 </Link>
-                <h1 className="text-4xl font-bold dark:text-primary">{pageTitle}</h1>
+                <h1 className="text-4xl font-bold text-white dark:text-primary [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">{pageTitle}</h1>
               </div>
               <div className="grid gap-8 md:grid-cols-12">
                 <div className="md:col-span-9">
                   {renderContentForClass2()}
                 </div>
-                <div className="md:col-span-3">
-                  <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple">
+                <div className="md:col-span-3 text-left">
+                  <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
                     <CardHeader><CardTitle>{t('a1class1.learningPath')}</CardTitle></CardHeader>
                     <CardContent>
                       <nav>
@@ -1345,7 +1380,8 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                                   className={cn(
                                     'flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer',
                                     isLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted',
-                                    selectedTopic === item.key && !isLocked && 'bg-muted text-primary font-semibold'
+                                    selectedTopic === item.key && !isLocked && 'bg-muted text-primary font-semibold',
+                                    item.status === 'active' && !isAdmin && "animate-pulse-glow"
                                   )}
                                 >
                                   <div className="flex items-center gap-3">
@@ -1360,7 +1396,8 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                                       <div className={cn(
                                           'flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors w-full cursor-pointer',
                                           isLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted',
-                                          (item.subItems?.some(si => si.key === selectedTopic)) && !isLocked && 'bg-muted text-primary font-semibold'
+                                          (item.subItems?.some(si => si.key === selectedTopic)) && !isLocked && 'bg-muted text-primary font-semibold',
+                                          item.status === 'active' && !isAdmin && "animate-pulse-glow"
                                         )}>
                                         <div className="flex items-center gap-3">
                                           {item.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500" /> : <Icon className="h-5 w-5" />}
@@ -1384,7 +1421,8 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                                               className={cn(
                                                 'flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer',
                                                 isSubLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted',
-                                                selectedTopic === subItem.key && !isSubLocked && 'bg-muted text-primary font-semibold'
+                                                selectedTopic === subItem.key && !isSubLocked && 'bg-muted text-primary font-semibold',
+                                                subItem.status === 'active' && !isAdmin && "animate-pulse-glow"
                                               )}
                                             >
                                               <div className="flex items-center gap-3">
@@ -1405,10 +1443,10 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                       </nav>
                        <div className="mt-6 pt-6 border-t">
                             <div className="flex justify-between items-center text-sm font-medium text-muted-foreground mb-2">
-                                <span>{t('intro1Page.progress')}</span>
-                                <span className="font-bold text-foreground">{Math.round(progress)}%</span>
+                                <span>Progreso</span>
+                                <span className="font-bold text-foreground">{Math.round(progressValue)}%</span>
                             </div>
-                            <Progress value={progress} className="h-2" />
+                            <Progress value={progressValue} className="h-2" />
                         </div>
                     </CardContent>
                   </Card>
@@ -1472,4 +1510,3 @@ export default function EngA1ClassPage() {
       </div>
     );
 }
-
