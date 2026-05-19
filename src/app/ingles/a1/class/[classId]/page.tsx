@@ -168,20 +168,6 @@ const class2Exercise2Data = [
     },
 ];
 
-type Topic = {
-  key: string;
-  name: string;
-  icon: React.ElementType;
-  status: 'locked' | 'active' | 'completed';
-  subItems?: { key: string; name: string; status: 'locked' | 'active' | 'completed', icon?: React.ElementType }[];
-};
-
-const ICONS = {
-    locked: Lock,
-    active: BookOpen,
-    completed: CheckCircle,
-};
-
 interface ClassContentProps {
     t: any;
     toast: any;
@@ -674,6 +660,9 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                                     <p><span className="font-bold text-lg text-green-500 mr-2">(+)</span> My mother is a nurse</p>
                                     <p><span className="font-bold text-lg text-red-500 mr-2">(-)</span> My mother is not a nurse</p>
                                     <p><span className="font-bold text-lg text-blue-500 mr-2">(?)</span> is my mother a nurse?</p>
+                                    <div className="border-t my-2 border-border/50" />
+                                    <p><span className="font-bold text-lg text-green-500 mr-2">(+A)</span> yes, she is</p>
+                                    <p><span className="font-bold text-lg text-red-500 mr-2">(-A)</span> no, she is not</p>
                                 </div>
                             </div>
                         </CardContent>
@@ -1132,7 +1121,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         if (selectedTopic === 'vocabulary') {
             return (
                 <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-                    <CardHeader><CardTitle>{t('kidsA1Class2.vocabulario')}</CardTitle></CardHeader>
+                    <CardHeader><CardTitle>Vocabulary - Class 2 (A1)</CardTitle></CardHeader>
                     <CardContent>
                       <Accordion type="multiple" className="w-full" defaultValue={['verbos', 'palabrasBasicas']}>
                         <AccordionItem value="verbos">
