@@ -174,7 +174,7 @@ const exercises = {
             { spanish: '¿DÓNDE ESTÁN TUS ZAPATOS?', english: ["where are your shoes?"] },
             { spanish: '¿DÓNDE ESTÁ SU CASA? - (DE ELLA)', english: ["where is her house?"] },
             { spanish: '¿ELLOS SON SUS PADRES? (DE ELLOS)', english: ["are they their parents?"] },
-            { spanish: 'ESTA ES MI CASA - ESA NO ES SU CASA- (DE EL)', english: ["this is my house - that is not his house", "this is my house - that isn't his house"] },
+            { spanish: 'ESTA ES MI CASA - ESA NO ES SU CASA- (DE EL)', english: ["this is my house - that is not his house", "this isn't my house - that's my house", "this is my house - that is not his house", "this is my house - that isn't his house"] },
             { spanish: '¿ELLA ES SU NOVIA? (DE EL)', english: ["is she his girlfriend?"] },
             { spanish: '¿ELLOS SON TUS AMIGOS?', english: ["are they your friends?"] },
         ]

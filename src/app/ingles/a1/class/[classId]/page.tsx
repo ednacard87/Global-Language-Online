@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -237,6 +236,10 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         }
     ], [t]);
 
+    const handleTopicComplete = useCallback((completedKey: string) => {
+        setTopicToComplete(completedKey);
+    }, []);
+
     // 1. CARGA DE DATOS (Mount)
     useEffect(() => {
         if (isProfileLoading || initialLoadComplete || isUserLoading) return;
@@ -343,8 +346,10 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         const currentSavedProgress = studentProfile?.progress?.[mainProgressKey] || 0;
         const newProgress = Math.round(progressValue);
 
-        // SOLO GUARDAR SI HAY CAMBIOS NUMÉRICOS O DE TEMA
-        if (newProgress === currentSavedProgress && studentProfile?.lessonProgress?.[progressStorageKey]?.lastSelectedTopic === selectedTopic) {
+        // Check if anything actually changed before writing
+        const currentSavedTopic = studentProfile?.lessonProgress?.[progressStorageKey]?.lastSelectedTopic;
+
+        if (newProgress === currentSavedProgress && currentSavedTopic === selectedTopic) {
             return;
         }
 
@@ -540,7 +545,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                                         <div className="font-bold p-3 bg-muted rounded-lg text-center">{t('common.english')}</div>
                                         {(items as {spanish:string, english:string}[]).map((item, index) => (
                                             <React.Fragment key={index}>
-                                                <div className="p-3 bg-card border rounded-lg flex items-center justify-center">{item.spanish}</div>
+                                                <div className="p-3 bg-card border rounded-lg flex items-center justify-center font-medium">{item.spanish}</div>
                                                 <div className="p-3 bg-card border rounded-lg flex items-center">
                                                     <Input 
                                                         value={userAnswers[category]?.[index] || ''}
@@ -981,6 +986,10 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         { key: 'final-vocab', name: t('kidsA1Class2.finalVocab'), icon: BookOpen, status: 'locked' },
     ], [t]);
 
+    const handleTopicComplete = useCallback((completedKey: string) => {
+        setTopicToComplete(completedKey);
+    }, []);
+
     // 1. CARGA DE DATOS
     useEffect(() => {
         if (isProfileLoading || initialLoadComplete || isUserLoading) return;
@@ -1273,7 +1282,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                                 <div className="font-bold p-3 bg-muted rounded-lg text-center">{t('common.english')}</div>
                                 {vocabularyData.verbos.map((item, index) => (
                                     <React.Fragment key={`verbos-${index}`}>
-                                        <div className="p-3 bg-card border rounded-lg flex items-center justify-center">{item.spanish}</div>
+                                        <div className="p-3 bg-card border rounded-lg flex items-center justify-center font-medium">{item.spanish}</div>
                                         <div className="p-3 bg-card border rounded-lg flex items-center">
                                             <Input 
                                                 value={userAnswers.verbos?.[index] || ''}
@@ -1295,7 +1304,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                                 <div className="font-bold p-3 bg-muted rounded-lg text-center">{t('common.english')}</div>
                                 {vocabularyData.palabrasBasicas.map((item, index) => (
                                     <React.Fragment key={`palabrasBasicas-${index}`}>
-                                        <div className="p-3 bg-card border rounded-lg flex items-center justify-center">{item.spanish}</div>
+                                        <div className="p-3 bg-card border rounded-lg flex items-center justify-center font-medium">{item.spanish}</div>
                                         <div className="p-3 bg-card border rounded-lg flex items-center">
                                             <Input 
                                                 value={userAnswers.palabrasBasicas?.[index] || ''}
