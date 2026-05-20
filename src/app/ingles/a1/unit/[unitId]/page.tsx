@@ -39,70 +39,60 @@ export default function A1EngUnitPage() {
   useEffect(() => {
     if (!isClient || !unitId || isProfileLoading) return;
 
-    const updatePath = () => {
-        const initialPath = getA1EngUnitPath(unitId, t);
-        
-        const updatedItems = initialPath.map(item => {
-          if (item.storageKey && studentProfile?.progress) {
-            const itemProgress = studentProfile.progress[item.storageKey] || 0;
-            return { ...item, progress: itemProgress };
-          }
-          return item;
-        });
-  
-        const itemsWithLockState = updatedItems.reduce((acc, item, index) => {
-            if (isAdmin) {
-                acc.push({ ...item, locked: false });
-                return acc;
-            }
-            
-            if (item.href && item.href !== '#') {
-                const classId = `a1-${item.href.split('/').pop()}`;
-                if (studentProfile?.unlockedClasses?.includes(classId)) {
-                    acc.push({ ...item, locked: false });
-                    return acc;
-                }
-            }
-            
-            if (index === 0) {
-                acc.push({ ...item, locked: false });
-                return acc;
-            }
+    const initialPath = getA1EngUnitPath(unitId, t);
+    
+    const updatedItems = initialPath.map(item => {
+      if (item.storageKey && studentProfile?.progress) {
+        const itemProgress = studentProfile.progress[item.storageKey] || 0;
+        return { ...item, progress: itemProgress };
+      }
+      return item;
+    });
 
-            const prevItem = acc[index - 1];
-            let isLocked = true;
-
-            if (prevItem.locked) {
-                isLocked = true;
-            } else {
-                if (prevItem.storageKey) {
-                    isLocked = (prevItem.progress ?? 0) < 100;
-                } else {
-                    isLocked = false;
-                }
-            }
-
-            acc.push({ ...item, locked: isLocked });
+    const itemsWithLockState = updatedItems.reduce((acc, item, index) => {
+        if (isAdmin) {
+            acc.push({ ...item, locked: false });
             return acc;
-        }, [] as PathItem[]);
-
-
-        itemsWithLockState.forEach(item => item.className = '');
-        const nextActiveItem = itemsWithLockState.find(item => !item.locked && (item.progress ?? 0) < 100 && (item.type === 'class' || item.type === 'practice'));
-        if(nextActiveItem) {
-          nextActiveItem.className = 'animate-pulse-glow';
+        }
+        
+        if (item.href && item.href !== '#') {
+            const classId = `a1-${item.href.split('/').pop()}`;
+            if (studentProfile?.unlockedClasses?.includes(classId)) {
+                acc.push({ ...item, locked: false });
+                return acc;
+            }
+        }
+        
+        if (index === 0) {
+            acc.push({ ...item, locked: false });
+            return acc;
         }
 
-        setPathItems(itemsWithLockState);
-    }
-    
-    updatePath();
+        const prevItem = acc[index - 1];
+        let isLocked = true;
 
-    window.addEventListener('progressUpdated', updatePath);
-    
-    return () => {
-      window.removeEventListener('progressUpdated', updatePath);
-    };
+        if (prevItem.locked) {
+            isLocked = true;
+        } else {
+            if (prevItem.storageKey) {
+                isLocked = (prevItem.progress ?? 0) < 100;
+            } else {
+                isLocked = false;
+            }
+        }
+
+        acc.push({ ...item, locked: isLocked });
+        return acc;
+    }, [] as PathItem[]);
+
+
+    itemsWithLockState.forEach(item => item.className = '');
+    const nextActiveItem = itemsWithLockState.find(item => !item.locked && (item.progress ?? 0) < 100 && (item.type === 'class' || item.type === 'practice'));
+    if(nextActiveItem) {
+      nextActiveItem.className = 'animate-pulse-glow';
+    }
+
+    setPathItems(itemsWithLockState);
   }, [t, unitId, isClient, isAdmin, studentProfile, isProfileLoading]);
 
   const unitProgress = useMemo(() => {
@@ -113,13 +103,17 @@ export default function A1EngUnitPage() {
   }, [pathItems]);
 
   useEffect(() => {
-    if (studentDocRef && unitId) {
-        updateDocumentNonBlocking(studentDocRef, {
-            [`progress.progress_a1_eng_unit_${unitId}`]: unitProgress
-        });
-        window.dispatchEvent(new CustomEvent('progressUpdated'));
+    if (!isProfileLoading && studentDocRef && unitId) {
+        const progressKey = `progress_a1_eng_unit_${unitId}`;
+        const currentSavedProgress = studentProfile?.progress?.[progressKey] || 0;
+        
+        if (unitProgress !== currentSavedProgress) {
+            updateDocumentNonBlocking(studentDocRef, {
+                [`progress.${progressKey}`]: unitProgress
+            });
+        }
     }
-  }, [unitProgress, unitId, studentDocRef]);
+  }, [unitProgress, unitId, studentDocRef, isProfileLoading, studentProfile]);
 
   return (
     <div className="flex w-full flex-col ingles-dashboard-bg min-h-screen">

@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -339,6 +340,14 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
     useEffect(() => {
         if (!initialLoadComplete || isProfileLoading || isUserLoading || isAdmin || !studentDocRef || learningPath.length === 0) return;
 
+        const currentSavedProgress = studentProfile?.progress?.[mainProgressKey] || 0;
+        const newProgress = Math.round(progressValue);
+
+        // SOLO GUARDAR SI HAY CAMBIOS NUMÉRICOS O DE TEMA
+        if (newProgress === currentSavedProgress && studentProfile?.lessonProgress?.[progressStorageKey]?.lastSelectedTopic === selectedTopic) {
+            return;
+        }
+
         const statusesToSave: Record<string, any> = {
             lastSelectedTopic: selectedTopic
         };
@@ -356,13 +365,9 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
 
         updateDocumentNonBlocking(studentDocRef, {
             [`lessonProgress.${progressStorageKey}`]: statusesToSave,
-            [`progress.${mainProgressKey}`]: Math.round(progressValue)
+            [`progress.${mainProgressKey}`]: newProgress
         });
-
-        if (progressValue >= 100) {
-          window.dispatchEvent(new CustomEvent('progressUpdated'));
-        }
-    }, [learningPath, isAdmin, progressValue, studentDocRef, progressStorageKey, mainProgressKey, isProfileLoading, isUserLoading, initialLoadComplete, selectedTopic]);
+    }, [learningPath, isAdmin, progressValue, studentDocRef, progressStorageKey, mainProgressKey, isProfileLoading, isUserLoading, initialLoadComplete, selectedTopic, studentProfile]);
     
     // 4. LÓGICA DE COMPLETITUD (Side Effect Safe)
     useEffect(() => {
@@ -1072,6 +1077,13 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
     useEffect(() => {
         if (!initialLoadComplete || isProfileLoading || isUserLoading || isAdmin || !studentDocRef || learningPath.length === 0) return;
 
+        const currentSavedProgress = studentProfile?.progress?.[mainProgressKey] || 0;
+        const newProgress = Math.round(progressValue);
+
+        if (newProgress === currentSavedProgress && studentProfile?.lessonProgress?.[progressStorageVersion]?.lastSelectedTopic === selectedTopic) {
+            return;
+        }
+
         const statusesToSave: Record<string, any> = {
             lastSelectedTopic: selectedTopic
         };
@@ -1089,13 +1101,9 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
 
         updateDocumentNonBlocking(studentDocRef, {
             [`lessonProgress.${progressStorageVersion}`]: statusesToSave,
-            [`progress.${mainProgressKey}`]: Math.round(progressValue)
+            [`progress.${mainProgressKey}`]: newProgress
         });
-
-        if (progressValue >= 100) {
-          window.dispatchEvent(new CustomEvent('progressUpdated'));
-        }
-    }, [learningPath, isAdmin, progressValue, studentDocRef, progressStorageVersion, mainProgressKey, isProfileLoading, isUserLoading, initialLoadComplete, selectedTopic]);
+    }, [learningPath, isAdmin, progressValue, studentDocRef, progressStorageVersion, mainProgressKey, isProfileLoading, isUserLoading, initialLoadComplete, selectedTopic, studentProfile]);
 
     // 4. LÓGICA DE COMPLETITUD (Side Effect Safe)
     useEffect(() => {

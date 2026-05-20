@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo } from "react";
@@ -40,71 +41,61 @@ export default function A2EngUnitPage() {
   useEffect(() => {
     if (!isClient || !unitId || isProfileLoading) return;
 
-    const updatePath = () => {
-        const initialPath = getA2EngUnitPath(unitId, t);
-        
-        const updatedItems = initialPath.map(item => {
-          if (item.storageKey && studentProfile?.progress) {
-            const itemProgress = studentProfile.progress[item.storageKey] || 0;
-            return { ...item, progress: itemProgress };
-          }
-          return item;
-        });
-  
-        const itemsWithLockState = updatedItems.reduce((acc, item, index) => {
-            if (isAdmin) {
-                acc.push({ ...item, locked: false });
-                return acc;
-            }
+    const initialPath = getA2EngUnitPath(unitId, t);
+    
+    const updatedItems = initialPath.map(item => {
+      if (item.storageKey && studentProfile?.progress) {
+        const itemProgress = studentProfile.progress[item.storageKey] || 0;
+        return { ...item, progress: itemProgress };
+      }
+      return item;
+    });
 
-            const classNumber = item.label.split(' ')[1];
-            if (classNumber && !isNaN(parseInt(classNumber))) {
-                const classId = `a2-${classNumber}`;
-                if (studentProfile?.unlockedClasses?.includes(classId)) {
-                    acc.push({ ...item, locked: false });
-                    return acc;
-                }
-            }
-            
-            if (index === 0) {
-                acc.push({ ...item, locked: false });
-                return acc;
-            }
-
-            const prevItem = acc[index - 1];
-            let isLocked = true;
-
-            if (prevItem.locked) {
-                isLocked = true;
-            } else {
-                if (prevItem.storageKey) {
-                    isLocked = (prevItem.progress ?? 0) < 100;
-                } else {
-                    isLocked = false;
-                }
-            }
-
-            acc.push({ ...item, locked: isLocked });
+    const itemsWithLockState = updatedItems.reduce((acc, item, index) => {
+        if (isAdmin) {
+            acc.push({ ...item, locked: false });
             return acc;
-        }, [] as PathItem[]);
-
-
-        itemsWithLockState.forEach(item => item.className = '');
-        const nextActiveItem = itemsWithLockState.find(item => !item.locked && (item.progress ?? 0) < 100 && (item.type === 'class' || item.type === 'practice'));
-        if(nextActiveItem) {
-          nextActiveItem.className = 'animate-pulse-glow';
         }
 
-        setPathItems(itemsWithLockState);
-    }
-    
-    updatePath();
+        const classNumber = item.label.split(' ')[1];
+        if (classNumber && !isNaN(parseInt(classNumber))) {
+            const classId = `a2-${classNumber}`;
+            if (studentProfile?.unlockedClasses?.includes(classId)) {
+                acc.push({ ...item, locked: false });
+                return acc;
+            }
+        }
+        
+        if (index === 0) {
+            acc.push({ ...item, locked: false });
+            return acc;
+        }
 
-    window.addEventListener('progressUpdated', updatePath);
-    
-    return () => {
-      window.removeEventListener('progressUpdated', updatePath);
-    };
+        const prevItem = acc[index - 1];
+        let isLocked = true;
+
+        if (prevItem.locked) {
+            isLocked = true;
+        } else {
+            if (prevItem.storageKey) {
+                isLocked = (prevItem.progress ?? 0) < 100;
+            } else {
+                isLocked = false;
+            }
+        }
+
+        acc.push({ ...item, locked: isLocked });
+        return acc;
+    }, [] as PathItem[]);
+
+
+    itemsWithLockState.forEach(item => item.className = '');
+    const nextActiveItem = itemsWithLockState.find(item => !item.locked && (item.progress ?? 0) < 100 && (item.type === 'class' || item.type === 'practice'));
+    if(nextActiveItem) {
+      nextActiveItem.className = 'animate-pulse-glow';
+    }
+
+    setPathItems(itemsWithLockState);
   }, [t, unitId, isClient, isAdmin, studentProfile, isProfileLoading]);
 
   const unitProgress = useMemo(() => {
@@ -115,14 +106,17 @@ export default function A2EngUnitPage() {
   }, [pathItems]);
 
   useEffect(() => {
-    if (isProfileLoading) return;
-    if (studentDocRef && unitId) {
-        updateDocumentNonBlocking(studentDocRef, {
-            [`progress.progress_a2_eng_unit_${unitId}`]: unitProgress
-        });
-        window.dispatchEvent(new CustomEvent('progressUpdated'));
+    if (!isProfileLoading && studentDocRef && unitId) {
+        const progressKey = `progress_a2_eng_unit_${unitId}`;
+        const currentSavedProgress = studentProfile?.progress?.[progressKey] || 0;
+        
+        if (unitProgress !== currentSavedProgress) {
+            updateDocumentNonBlocking(studentDocRef, {
+                [`progress.${progressKey}`]: unitProgress
+            });
+        }
     }
-  }, [unitProgress, unitId, studentDocRef, isProfileLoading]);
+  }, [unitProgress, unitId, studentDocRef, isProfileLoading, studentProfile]);
 
   return (
     <div className="flex w-full flex-col ingles-dashboard-bg min-h-screen">
