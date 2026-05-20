@@ -700,7 +700,24 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                         highlightVocabulary={true}
                     />
                 );
-            case 'ex-mixto-2': return <TranslationExercise key={selectedTopic} exerciseKey="qna2" formType="qna" onComplete={() => handleTopicComplete('ex-mixto-2')} />;
+            case 'ex-mixto-2': 
+                return (
+                    <TranslationExercise 
+                        key={selectedTopic} 
+                        exerciseKey="qna2" 
+                        formType="qna" 
+                        onComplete={() => handleTopicComplete('ex-mixto-2')}
+                        title="Ejercicio 2"
+                        vocabulary={{
+                            "cansado": "tired",
+                            "curiosos": "curious",
+                            "hambriento": "hungry",
+                            "compañeros de trabajo": "coworkers",
+                            "a tiempo": "on time"
+                        }}
+                        highlightVocabulary={true}
+                    />
+                );
             case 'ex-mixto-3': 
                 return (
                     <SimpleTranslationExercise 

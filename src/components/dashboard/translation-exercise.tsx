@@ -213,12 +213,14 @@ export function TranslationExercise({
     formType = 'full',
     vocabulary,
     highlightVocabulary = false,
+    title,
 }: {
     exerciseKey: 'exercises1' | 'exercises2' | 'exercises3' | 'qna2';
     onComplete?: () => void;
     formType?: 'full' | 'qna';
     vocabulary?: Record<string, string>;
     highlightVocabulary?: boolean;
+    title?: string;
 }) {
     const { t } = useTranslation();
     const { toast } = useToast();
@@ -403,7 +405,7 @@ export function TranslationExercise({
             <CardHeader>
                 <div className="flex justify-between items-start">
                     <div className="space-y-1">
-                        <CardTitle>{t(exerciseData.title, {number: exerciseKey.replace('exercises', '')})}</CardTitle>
+                        <CardTitle>{title || t(exerciseData.title, {number: exerciseKey.replace('exercises', '')})}</CardTitle>
                         <div className="text-sm font-medium text-muted-foreground">
                             {currentPromptIndex + 1} / {exerciseData.prompts.length}
                         </div>
@@ -448,9 +450,7 @@ export function TranslationExercise({
                      <div className="relative flex items-center">
                         <Progress 
                             value={progress} 
-                            className={cn(
-                                "h-6 rounded-full bg-destructive/20"
-                            )}
+                            className="h-6 rounded-full bg-destructive/20"
                             indicatorClassName={cn(
                                 "rounded-full transition-all duration-500 !bg-brand-blue",
                                 !isPristine && !allCurrentFieldsCorrect && "!bg-destructive",
