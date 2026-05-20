@@ -582,6 +582,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             case 'tobe-1-exercise':
                 return (
                     <TranslationExercise 
+                        key={selectedTopic}
                         exerciseKey="exercises1" 
                         onComplete={() => handleTopicComplete('tobe-1-exercise')} 
                         vocabulary={{'un- una': 'a / an', 'abogado': 'lawyer', 'enfermo': 'sick', 'enfermero': 'nurse'}}
@@ -635,6 +636,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             case 'tobe-2-exercise':
                 return (
                     <TranslationExercise 
+                        key={selectedTopic}
                         exerciseKey="exercises2" 
                         onComplete={() => handleTopicComplete('tobe-2-exercise')} 
                         vocabulary={{'amigo': 'friend', 'hijo': 'son', 'perro': 'dog'}}
@@ -671,6 +673,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             case 'tobe-3-exercise':
                 return (
                     <TranslationExercise 
+                        key={selectedTopic}
                         exerciseKey="exercises3" 
                         onComplete={() => handleTopicComplete('tobe-3-exercise')} 
                         vocabulary={{'enfermera': 'nurse', 'abuelos': 'grandparents', 'pensionado': 'retired', 'juguete': 'toy'}}
@@ -680,6 +683,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             case 'ex-mixto-1': 
                 return (
                     <SimpleTranslationExercise 
+                        key={selectedTopic}
                         course="a1" 
                         exerciseKey="mixed1" 
                         onComplete={() => handleTopicComplete('ex-mixto-1')} 
@@ -696,10 +700,11 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                         highlightVocabulary={true}
                     />
                 );
-            case 'ex-mixto-2': return <TranslationExercise exerciseKey="qna2" formType="qna" onComplete={() => handleTopicComplete('ex-mixto-2')} />;
+            case 'ex-mixto-2': return <TranslationExercise key={selectedTopic} exerciseKey="qna2" formType="qna" onComplete={() => handleTopicComplete('ex-mixto-2')} />;
             case 'ex-mixto-3': 
                 return (
                     <SimpleTranslationExercise 
+                        key={selectedTopic}
                         course="a1" 
                         exerciseKey="mixed3" 
                         onComplete={() => handleTopicComplete('ex-mixto-3')} 
@@ -719,6 +724,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             case 'ex-mixto-4': 
                 return (
                     <SimpleTranslationExercise 
+                        key={selectedTopic}
                         course="a1" 
                         exerciseKey="mixed4" 
                         onComplete={() => handleTopicComplete('ex-mixto-4')} 
@@ -732,10 +738,11 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                         highlightVocabulary={true}
                     />
                 );
-            case 'ex-mixto-5': return <ShortAnswerExercise onComplete={() => handleTopicComplete('ex-mixto-5')} />;
+            case 'ex-mixto-5': return <ShortAnswerExercise key={selectedTopic} onComplete={() => handleTopicComplete('ex-mixto-5')} />;
             case 'ex-mixto-6': 
                 return (
                     <SimpleTranslationExercise 
+                        key={selectedTopic}
                         course="a1" 
                         exerciseKey="mixed6" 
                         onComplete={() => handleTopicComplete('ex-mixto-6')} 
@@ -1244,7 +1251,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         }
     
         if (selectedTopic === 'memory-verbs') {
-            return <VerbMemoryGame data={vocabularyData.verbos} onComplete={() => handleTopicComplete('memory-verbs')} />;
+            return <VerbMemoryGame onComplete={() => handleTopicComplete('memory-verbs')} />;
         }
     
         if (selectedTopic === 'final-vocab') {
@@ -1380,10 +1387,10 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             return (
                 <Card className="shadow-soft rounded-lg border-2 border-brand-purple min-h-[600px]">
                   <CardHeader>
-                    <CardTitle>{topic?.name}</CardTitle>
+                    <CardTitle>{topic?.name || 'Cargando...'}</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p>Contenido para {topic?.name} vendrá aquí.</p>
+                    <p>Contenido para {topic?.name || 'este tema'} vendrá aquí.</p>
                   </CardContent>
                 </Card>
             );
@@ -1392,10 +1399,10 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         return (
           <Card className="shadow-soft rounded-lg border-2 border-brand-purple min-h-[600px]">
             <CardHeader>
-              <CardTitle>{topic?.name}</CardTitle>
+              <CardTitle>{topic?.name || 'Cargando...'}</CardTitle>
             </CardHeader>
             <CardContent>
-              <p>Contenido para {topic?.name} vendrá aquí.</p>
+              <p>Contenido para {topic?.name || 'este tema'} vendrá aquí.</p>
             </CardContent>
           </Card>
         );

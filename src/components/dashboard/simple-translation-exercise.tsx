@@ -202,7 +202,7 @@ const exercises = {
     c6_ex5: {
         title: 'a1class1.exercise',
         prompts: [
-            { spanish: 'YO TENGO UN RELOJ NUEVO- EL RELOJ ES MIO', english: ["i have a new watch - the watch is mine", "i have a new watch the watch is mine"] },
+            { spanish: 'YO TENGO UN EL RELOJ NUEVO- EL RELOJ ES MIO', english: ["i have a new watch - the watch is mine", "i have a new watch the watch is mine"] },
             { spanish: 'JANE TIENE UNA CASA VIEJA- LA CASA ES DE ELLA', english: ["jane has an old house - the house is hers", "jane has an old house the house is hers"] },
             { spanish: 'MARY TIENE UNA MASCOTA- LA MASCOTA ES DE ELLA', english: ["mary has a pet - the pet is hers", "mary has a pet the pet is hers"] },
             { spanish: 'TÚ TIENES ALGUNAS CAMISETAS NUEVAS- LAS CAMISETAS SON TUYAS', english: ["you have some new t-shirts - the t-shirts are yours", "you have some new t-shirts the t-shirts are yours"] },
@@ -401,12 +401,12 @@ const exercises = {
     c8_ex2: {
         title: 'a1class1.exercise',
         prompts: [
-            { spanish: 'ESTE NO ES MIO, ES TUYO', english: ["this is not mine, it is yours", "this isn't mine, it's yours", "this is not mine it is yours", "this isn't mine it's yours"] },
-            { spanish: '¿TE GUSTA EL COLOR DE SU CASA- (DE ELLA)', english: ["i like the color of her house"] },
-            { spanish: 'ESTE ES NUESTRO GATO', english: ["this is our heart"] },
-            { spanish: 'ESOS CUADROS SON TUYOS', english: ["those paintings are yours", "those pictures are yours"] },
-            { spanish: '¿ESTE ES SUYO? - (DE EL)', english: ["is this his?"] },
-            { spanish: '¿ESTOS SON SENS ZAPATOS? -(DE ELLA)', english: ["are these her shoes?"] },
+            { spanish: 'Este no es mío, es tuyo', english: ["this is not mine, it is yours", "this isn't mine, it's yours", "this is not mine it is yours", "this isn't mine it's yours"] },
+            { spanish: '¿Te gusta el color de su casa- (de ella)', english: ["i like the color of her house"] },
+            { spanish: 'Este es nuestro gato', english: ["this is our heart"] },
+            { spanish: 'Esos cuadros son tuyos', english: ["those paintings are yours", "those pictures are yours"] },
+            { spanish: '¿Este es suyo? - (de el)', english: ["is this his?"] },
+            { spanish: '¿Estos son sens zapatos? -(de ella)', english: ["are these her shoes?"] },
         ]
     },
     c8_ex3: {
@@ -861,7 +861,7 @@ export function SimpleTranslationExercise({
     const [validationStates, setValidationStates] = useState<ValidationStatus[]>(Array(totalPrompts).fill('unchecked'));
     const [showCompletionMessage, setShowCompletionMessage] = useState(false);
 
-    const currentPrompt = exerciseData.prompts[currentPromptIndex];
+    const currentPrompt = exerciseData.prompts[currentPromptIndex] || { spanish: '', english: [] };
     
     const defaultTitle = t(exerciseData.title, { number: exerciseNumber });
     const title = titleProp || defaultTitle;
@@ -878,7 +878,6 @@ export function SimpleTranslationExercise({
         newAnswers[currentPromptIndex] = value;
         setUserAnswers(newAnswers);
 
-        // If the current field was already validated, reset it to unchecked as the user is editing it.
         if (validationStates[currentPromptIndex] !== 'unchecked') {
             const newValidationStates = [...validationStates];
             newValidationStates[currentPromptIndex] = 'unchecked';
@@ -1010,7 +1009,7 @@ export function SimpleTranslationExercise({
                         />}
                         <div className="relative w-full">
                              <div className="bg-muted p-4 rounded-lg border">
-                                <p className="text-lg font-medium">{currentPrompt.spanish}</p>
+                                <p className="text-lg font-medium">{currentPrompt?.spanish}</p>
                              </div>
                         </div>
                     </div>
