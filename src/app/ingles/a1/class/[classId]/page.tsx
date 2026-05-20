@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -14,6 +13,7 @@ import { Progress } from '@/components/ui/progress';
 import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 // Imports for Exercises
 import { ToBeMemoryGame } from '@/components/kids/exercises/tobe-memory-game';
@@ -192,7 +192,7 @@ interface ClassContentProps {
 //                 CLASS 1 COMPONENT
 // =================================================================
 const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isProfileLoading, isUserLoading }: ClassContentProps) => {
-    const progressStorageKey = `_eng_a1_class_1_v10_stable_final`;
+    const progressStorageKey = `_eng_a1_class_1_v11_stable`;
     const mainProgressKey = `progress_a1_eng_unit_1_class_1`;
 
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
@@ -239,7 +239,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
     ], [t]);
 
     useEffect(() => {
-        if (isProfileLoading || initialLoadComplete) return;
+        if (isProfileLoading || initialLoadComplete || isUserLoading) return;
 
         let path = initialLearningPath.map(topic => ({
             ...topic,
@@ -268,7 +268,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             savedSelectedTopic = savedData.lastSelectedTopic || '';
         }
 
-        // Sequential repair logic: ensure next step is active if previous is completed
+        // Sequential repair logic: ensure path integrity
         for (let i = 0; i < path.length - 1; i++) {
             if (path[i].status === 'completed' && path[i+1].status === 'locked') {
                 path[i+1].status = 'active';
@@ -302,7 +302,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         setValidationStatus(newValidation);
         setInitialLoadComplete(true);
 
-    }, [isAdmin, initialLearningPath, studentProfile, progressStorageKey, isProfileLoading, initialLoadComplete]);
+    }, [isAdmin, initialLearningPath, studentProfile, progressStorageKey, isProfileLoading, isUserLoading, initialLoadComplete]);
 
     const progressValue = useMemo(() => {
         if (learningPath.length === 0) return 0;
@@ -894,7 +894,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
 //                 CLASS 2 COMPONENT
 // =================================================================
 const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isProfileLoading, isUserLoading }: ClassContentProps) => {
-    const progressStorageVersion = 'progress_a1_eng_unit_1_class_2_v15_stable_final';
+    const progressStorageVersion = 'progress_a1_eng_unit_1_class_2_v16_stable';
     const mainProgressKey = 'progress_a1_eng_unit_1_class_2';
     
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
@@ -963,7 +963,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
     }, [t]);
 
     useEffect(() => {
-        if (isProfileLoading || initialLoadComplete || !studentProfile) return;
+        if (isProfileLoading || initialLoadComplete || isUserLoading) return;
 
         let path = initialLearningPath.map(topic => ({
             ...topic,
@@ -992,7 +992,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             savedSelectedTopic = savedData.lastSelectedTopic || '';
         }
 
-        // Sequential repair logic: ensure next step is active if previous is completed
+        // Sequential repair logic: ensure path integrity
         for (let i = 0; i < path.length - 1; i++) {
             if (path[i].status === 'completed' && path[i+1].status === 'locked') {
                 path[i+1].status = 'active';
@@ -1026,7 +1026,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         setValidationStatus(newValidation);
         setInitialLoadComplete(true);
 
-    }, [isAdmin, initialLearningPath, studentProfile, progressStorageVersion, isProfileLoading, initialLoadComplete]);
+    }, [isAdmin, initialLearningPath, studentProfile, progressStorageVersion, isProfileLoading, isUserLoading, initialLoadComplete]);
 
     const progressValue = useMemo(() => {
         if (learningPath.length === 0) return 0;
@@ -1145,7 +1145,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         if (nextToSelect) setSelectedTopic(nextToSelect);
         if (wasUnlocked) toast({ title: "¡Siguiente tema desbloqueado!" });
         setTopicToComplete(null);
-    }, [topicToComplete, isAdmin, learningPath, toast]);
+    }, [topicToComplete, isAdmin, toast]);
 
       const handleTopicSelect = (topicKey: string) => {
         const mainTopic = learningPath.find(t => t.key === topicKey || t.subItems?.some(st => st.key === topicKey));
@@ -1604,4 +1604,3 @@ export default function EngA1ClassPage() {
       </div>
     );
 }
-
