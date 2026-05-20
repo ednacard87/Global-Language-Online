@@ -13,6 +13,7 @@ import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocki
 import { doc } from 'firebase/firestore';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Separator } from '@/components/ui/separator';
 import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
 import { PresentSimpleExercise, type ExercisePrompt } from '@/components/kids/exercises/present-simple';
 import { QAShortAnswerExercise, type QAShortAnswerPrompt } from '@/components/kids/exercises/q-a-short-answer-exercise';
@@ -33,7 +34,7 @@ const ICONS_CONFIG = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_a1_eng_u1_c3_v60_async';
+const progressStorageVersion = 'progress_a1_eng_u1_c3_v62_async';
 const mainProgressKey = 'progress_a1_eng_unit_1_class_3';
 
 const class3MixedExercise1Data: ExercisePrompt[] = [
@@ -150,7 +151,6 @@ export default function EngA1Class3Page() {
         },
     ], [t]);
     
-    // ASYNC FLOW 1: LOAD
     useEffect(() => {
         if (isProfileLoading || isUserLoading || !studentProfile || initialLoadComplete) return;
 
@@ -181,7 +181,6 @@ export default function EngA1Class3Page() {
             savedSelectedTopic = savedData.lastSelectedTopic || '';
         }
 
-        // Repair logic
         let lastDone = true;
         for(let i=0; i < path.length; i++) {
             if (lastDone && path[i].status === 'locked') {
@@ -224,7 +223,6 @@ export default function EngA1Class3Page() {
         return totalTopics > 0 ? (completedTopics / totalTopics) * 100 : 0;
     }, [learningPath]);
 
-    // ASYNC FLOW 2: SAVE
     useEffect(() => {
         if (!initialLoadComplete || isInitialLoading || isAdmin || !studentDocRef || learningPath.length === 0) return;
 
@@ -240,21 +238,18 @@ export default function EngA1Class3Page() {
             }
         });
 
-        const savedData = studentProfile?.lessonProgress?.[progressStorageVersion];
-        if (JSON.stringify(statusesToSave) !== JSON.stringify(savedData)) {
-            updateDocumentNonBlocking(studentDocRef, {
-                [`lessonProgress.${progressStorageVersion}`]: statusesToSave,
-                [`progress.${mainProgressKey}`]: Math.round(progressValue)
-            });
-        }
-    }, [learningPath, isAdmin, progressValue, studentDocRef, initialLoadComplete, selectedTopic, studentProfile, isInitialLoading]);
+        updateDocumentNonBlocking(studentDocRef, {
+            [`lessonProgress.${progressStorageVersion}`]: statusesToSave,
+            [`progress.${mainProgressKey}`]: Math.round(progressValue)
+        });
+    }, [learningPath, isAdmin, progressValue, studentDocRef, initialLoadComplete, selectedTopic, isInitialLoading]);
 
     const handleTopicComplete = useCallback((completedKey: string) => {
         if (isAdmin) return;
-        let wasUnlocked = false;
-        let nextToSelect: string | null = null;
-
+        
         setLearningPath(currentPath => {
+            let wasUnlocked = false;
+            let nextToSelect: string | null = null;
             const newPath = currentPath.map(t => ({
                 ...t,
                 subItems: t.subItems ? t.subItems.map(s => ({ ...s })) : undefined,
@@ -298,10 +293,12 @@ export default function EngA1Class3Page() {
                 }
             }
             
-            if (wasUnlocked) setTimeout(() => toast({ title: "¡Siguiente tema desbloqueado!" }), 0);
+            if (wasUnlocked) {
+                setTimeout(() => toast({ title: "¡Siguiente tema desbloqueado!" }), 100);
+            }
             if (nextToSelect) {
-                const finalToSelect = nextToSelect;
-                setTimeout(() => setSelectedTopic(finalToSelect!), 0);
+                const finalNext = nextToSelect;
+                setTimeout(() => setSelectedTopic(finalNext), 100);
             }
             
             return newPath;
