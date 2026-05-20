@@ -6,7 +6,7 @@ import { useParams } from 'next/navigation';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { BookOpen, PenSquare, Lock, GraduationCap, BrainCircuit, CheckCircle, Lightbulb, ChevronDown, Ear, Shirt, Loader2, XCircle } from 'lucide-react';
+import { BookOpen, PenSquare, Lock, GraduationCap, BrainCircuit, CheckCircle, Lightbulb, ChevronDown, Ear, Loader2, XCircle } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
@@ -14,6 +14,8 @@ import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocki
 import { doc } from 'firebase/firestore';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Input } from '@/components/ui/input';
+import { Separator } from '@/components/ui/separator';
 
 // Imports for Exercises
 import { ToBeMemoryGame } from '@/components/kids/exercises/tobe-memory-game';
@@ -192,7 +194,7 @@ interface ClassContentProps {
 //                 CLASS 1 COMPONENT
 // =================================================================
 const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isProfileLoading, isUserLoading }: ClassContentProps) => {
-    const progressStorageKey = `_eng_a1_class_1_v11_stable`;
+    const progressStorageKey = `_eng_a1_class_1_v12_robust`;
     const mainProgressKey = `progress_a1_eng_unit_1_class_1`;
 
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
@@ -201,6 +203,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
     const [validationStatus, setValidationStatus] = useState<{[key: string]: ('correct' | 'incorrect' | 'unchecked')[]}>({});
     const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
     const [initialLoadComplete, setInitialLoadComplete] = useState(false);
+    const [canAdvanceVocab, setCanAdvanceVocab] = useState(false);
     
     const initialLearningPath = useMemo((): Topic[] => [
         { key: 'vocabulary', name: t('a1class1.vocabulary'), icon: BookOpen, status: 'active' },
@@ -268,7 +271,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             savedSelectedTopic = savedData.lastSelectedTopic || '';
         }
 
-        // Sequential repair logic: ensure path integrity
+        // Sequential repair logic: ensures that if a topic is completed, the next one is at least active
         for (let i = 0; i < path.length - 1; i++) {
             if (path[i].status === 'completed' && path[i+1].status === 'locked') {
                 path[i+1].status = 'active';
@@ -462,6 +465,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             }
             return prevStatus;
         });
+        setCanAdvanceVocab(false);
     };
 
     const handleVocabCheckAnswers = () => {
@@ -483,17 +487,18 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         setValidationStatus(newValidationStatus);
         
         if (atLeastOneCorrect) {
-            toast({ title: '¡Bien hecho!', description: 'Has acertado al menos una. ¡Tema desbloqueado!' });
-            handleTopicComplete('vocabulary');
+            toast({ title: '¡Bien hecho!', description: 'Has acertado al menos una. ¡Ya puedes avanzar!' });
+            setCanAdvanceVocab(true);
         } else {
             toast({ 
                 variant: 'destructive', 
                 title: 'Sigue intentando', 
                 description: 'Revisa tus respuestas. ¡Necesitas al menos una correcta para continuar!' 
             });
+            setCanAdvanceVocab(false);
         }
     };
-    
+
     const getVocabInputClass = (category: string, index: number) => {
         const status = validationStatus[category]?.[index];
         if (status === 'correct') return 'border-green-500 focus-visible:ring-green-500';
@@ -537,8 +542,9 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                             ))}
                             </Accordion>
                         </CardContent>
-                        <CardFooter>
+                        <CardFooter className="flex justify-between">
                             <Button onClick={handleVocabCheckAnswers}>{t('vocabulary.check')}</Button>
+                            <Button onClick={() => handleTopicComplete('vocabulary')} disabled={!canAdvanceVocab && !isAdmin}>Avanzar</Button>
                         </CardFooter>
                     </Card>
                 );
@@ -894,7 +900,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
 //                 CLASS 2 COMPONENT
 // =================================================================
 const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isProfileLoading, isUserLoading }: ClassContentProps) => {
-    const progressStorageVersion = 'progress_a1_eng_unit_1_class_2_v16_stable';
+    const progressStorageVersion = 'progress_a1_eng_unit_1_class_2_v17_robust';
     const mainProgressKey = 'progress_a1_eng_unit_1_class_2';
     
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
@@ -983,8 +989,8 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                 if (savedData[item.key]) item.status = savedData[item.key];
                 if (item.subItems && savedData.subItems?.[item.key]) {
                     item.subItems.forEach(subItem => {
-                        if (savedData.subItems[item.key][subItem.key]) {
-                            subItem.status = savedData.subItems[item.key][subItem.key];
+                        if (savedStatuses[item.key][subItem.key]) {
+                            subItem.status = savedStatuses[item.key][subItem.key];
                         }
                     });
                 }
