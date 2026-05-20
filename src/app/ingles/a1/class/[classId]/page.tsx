@@ -15,6 +15,7 @@ import { doc } from 'firebase/firestore';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 
 // Imports for Exercises
@@ -174,12 +175,6 @@ interface Topic {
     subItems?: { key: string; name: string; status: 'locked' | 'active' | 'completed', icon?: React.ElementType }[];
 }
 
-const ICONS_CONFIG = {
-    locked: Lock,
-    active: BookOpen,
-    completed: CheckCircle,
-};
-
 interface ClassContentProps {
     t: any;
     toast: any;
@@ -194,7 +189,7 @@ interface ClassContentProps {
 //                 CLASS 1 COMPONENT
 // =================================================================
 const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isProfileLoading, isUserLoading }: ClassContentProps) => {
-    const progressStorageKey = `_eng_a1_class_1_v12_robust`;
+    const progressStorageKey = `_eng_a1_class_1_v15_final_stable`;
     const mainProgressKey = `progress_a1_eng_unit_1_class_1`;
 
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
@@ -271,7 +266,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             savedSelectedTopic = savedData.lastSelectedTopic || '';
         }
 
-        // Sequential repair logic: ensures that if a topic is completed, the next one is at least active
+        // Sequential repair logic: ensure path integrity
         for (let i = 0; i < path.length - 1; i++) {
             if (path[i].status === 'completed' && path[i+1].status === 'locked') {
                 path[i+1].status = 'active';
@@ -305,7 +300,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         setValidationStatus(newValidation);
         setInitialLoadComplete(true);
 
-    }, [isAdmin, initialLearningPath, studentProfile, progressStorageKey, isProfileLoading, isUserLoading, initialLoadComplete]);
+    }, [isAdmin, initialLearningPath, studentProfile, progressStorageKey, isProfileLoading, isUserLoading, initialLoadComplete, t]);
 
     const progressValue = useMemo(() => {
         if (learningPath.length === 0) return 0;
@@ -900,7 +895,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
 //                 CLASS 2 COMPONENT
 // =================================================================
 const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isProfileLoading, isUserLoading }: ClassContentProps) => {
-    const progressStorageVersion = 'progress_a1_eng_unit_1_class_2_v17_robust';
+    const progressStorageVersion = 'progress_a1_eng_unit_1_class_2_v18_final';
     const mainProgressKey = 'progress_a1_eng_unit_1_class_2';
     
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
@@ -910,6 +905,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
 
     const [userAnswers, setUserAnswers] = useState<{[key: string]: string[]}>({});
     const [validationStatus, setValidationStatus] = useState<{[key: string]: ('correct' | 'incorrect' | 'unchecked')[]}>({});
+    const [canAdvanceVocab, setCanAdvanceVocab] = useState(false);
     
     const vocabularyData = {
         verbos: [
@@ -989,8 +985,8 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                 if (savedData[item.key]) item.status = savedData[item.key];
                 if (item.subItems && savedData.subItems?.[item.key]) {
                     item.subItems.forEach(subItem => {
-                        if (savedStatuses[item.key][subItem.key]) {
-                            subItem.status = savedStatuses[item.key][subItem.key];
+                        if (savedData.subItems[item.key][subItem.key]) {
+                            subItem.status = savedData.subItems[item.key][subItem.key];
                         }
                     });
                 }
@@ -998,7 +994,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             savedSelectedTopic = savedData.lastSelectedTopic || '';
         }
 
-        // Sequential repair logic: ensure path integrity
+        // Sequential repair logic
         for (let i = 0; i < path.length - 1; i++) {
             if (path[i].status === 'completed' && path[i+1].status === 'locked') {
                 path[i+1].status = 'active';
@@ -1032,7 +1028,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         setValidationStatus(newValidation);
         setInitialLoadComplete(true);
 
-    }, [isAdmin, initialLearningPath, studentProfile, progressStorageVersion, isProfileLoading, isUserLoading, initialLoadComplete]);
+    }, [isAdmin, initialLearningPath, studentProfile, progressStorageVersion, isProfileLoading, isUserLoading, initialLoadComplete, t]);
 
     const progressValue = useMemo(() => {
         if (learningPath.length === 0) return 0;
@@ -1214,13 +1210,14 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         
         if (atLeastOneCorrect) {
             toast({ title: '¡Bien hecho!', description: 'Has acertado al menos una. ¡Tema desbloqueado!' });
-            handleTopicComplete('vocabulary');
+            setCanAdvanceVocab(true);
         } else {
             toast({ 
                 variant: 'destructive', 
                 title: 'Sigue intentando', 
                 description: 'Revisa tus respuestas. ¡Necesitas al menos una correcta para continuar!' 
             });
+            setCanAdvanceVocab(false);
         }
     };
     
@@ -1286,8 +1283,9 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                         </AccordionItem>
                       </Accordion>
                     </CardContent>
-                    <CardFooter>
+                    <CardFooter className="flex justify-between">
                         <Button onClick={handleVocabCheckAnswers}>{t('vocabulary.check')}</Button>
+                        <Button onClick={() => handleTopicComplete('vocabulary')} disabled={!canAdvanceVocab && !isAdmin}>Avanzar</Button>
                     </CardFooter>
                 </Card>
             );
@@ -1304,9 +1302,9 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         if (selectedTopic === 'grammar') {
             return (
                 <div className="space-y-6">
-                    <h2 className="text-3xl font-bold text-center">PRESENT SIMPLE</h2>
+                    <h2 className="text-3xl font-bold text-center text-white">PRESENT SIMPLE</h2>
     
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
                         <CardHeader>
                             <CardTitle>ESTRUCTURA</CardTitle>
                         </CardHeader>
@@ -1321,7 +1319,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                         </CardContent>
                     </Card>
     
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
                         <CardHeader>
                             <CardTitle>ESTRUCTURA DO/DOES</CardTitle>
                         </CardHeader>
@@ -1341,7 +1339,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                         </CardContent>
                     </Card>
     
-                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
                         <CardHeader>
                             <CardTitle>Conjugaciones</CardTitle>
                         </CardHeader>
@@ -1394,6 +1392,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         }
     
         if (selectedTopic.startsWith('ex-')) {
+            const exerciseKey = selectedTopic as any;
             if (selectedTopic === 'ex-positive') {
                 return <SingleFormExercise
                             key={selectedTopic}
@@ -1455,7 +1454,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             <div className="max-w-7xl mx-auto">
               <div className="mb-8 text-left">
                 <Link href={`/ingles/a1/unit/1`} className="hover:underline text-sm text-white/80">
-                    {t('a1course.backToA1')}
+                    Volver a la unidad 1
                 </Link>
                 <h1 className="text-4xl font-bold text-white dark:text-primary [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">{pageTitle}</h1>
               </div>
@@ -1472,6 +1471,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                           {learningPath.map((item) => {
                             const Icon = item.icon ?? BookOpen;
                             const isLocked = item.status === 'locked' && !isAdmin;
+                            const isSelected = selectedTopic === item.key || item.subItems?.some(si => si.key === selectedTopic);
                             return(
                             <li key={item.key}>
                               {!item.subItems ? (
@@ -1491,12 +1491,12 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                                   {isLocked && <Lock className="h-4 w-4 text-yellow-500" />}
                                 </div>
                               ) : (
-                                <Collapsible defaultOpen={item.subItems?.some(si => si.status !== 'locked')} disabled={isLocked}>
+                                <Collapsible defaultOpen={isSelected || item.subItems.some(si => si.status !== 'locked')} disabled={isLocked}>
                                   <CollapsibleTrigger className="w-full">
                                       <div className={cn(
                                           'flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors w-full cursor-pointer',
                                           isLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted',
-                                          (item.subItems?.some(si => si.key === selectedTopic)) && !isLocked && 'bg-muted text-primary font-semibold',
+                                          isSelected && 'bg-muted text-primary font-semibold',
                                           item.status === 'active' && !isAdmin && "animate-pulse-glow"
                                         )}>
                                         <div className="flex items-center gap-3">
@@ -1601,7 +1601,7 @@ export default function EngA1ClassPage() {
               </Link>
               <h1 className="text-4xl font-bold text-white dark:text-primary [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">Clase {classId}</h1>
             </div>
-            <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+            <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
               <CardHeader><CardTitle>Contenido Próximamente</CardTitle></CardHeader>
               <CardContent><p>El contenido para esta clase estará disponible pronto.</p></CardContent>
             </Card>
