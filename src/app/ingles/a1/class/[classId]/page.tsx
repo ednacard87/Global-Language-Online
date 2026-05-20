@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -29,7 +30,7 @@ import { VerbVocabularyExercise } from '@/components/kids/exercises/verb-vocabul
 import { VerbMemoryGame } from '@/components/kids/exercises/verb-memory-game';
 import { FillInTheBlanksExercise } from '@/components/kids/exercises/fill-in-the-blanks';
 import { SingleFormExercise } from '@/components/kids/exercises/single-form';
-import { PresentSimpleExercise } from '@/components/kids/exercises/present-simple';
+import { PresentSimpleExercise, presentSimpleExercises, presentSimpleExercises2 } from '@/components/kids/exercises/present-simple';
 
 // Data for Class 1
 const verbToBeData = [
@@ -128,9 +129,9 @@ const class2Exercise1Data = [
 const positiveExercisesData = [
     { spanish: 'yo bebo agua', answer: ["I drink water"] },
     { spanish: 'nosotros jugamos futbol', answer: ["we play soccer", "we play football"] },
-    { spanish: 'ellos escuchan musica', answer: ["they listen to music"] },
-    { spanish: 'yo hablo ingles', answer: ["I speak English"] },
-    { spanish: 'tu abres la puerta', answer: ["you open the door"] },
+    { spanish: 'ellos han escuchado musica', answer: ["they have listened to music"] },
+    { spanish: 'yo he hablado ingles', answer: ["I have spoken English"] },
+    { spanish: 'tu has abierto la puerta', answer: ["you have opened the door"] },
 ];
 
 const negativeExercisesData = [
@@ -337,81 +338,79 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             return;
         }
     
-        setLearningPath(currentPath => {
-            const newPath = currentPath.map(t => ({
-                ...t,
-                subItems: t.subItems ? t.subItems.map(s => ({...s})) : undefined,
-            }));
-          
-            let nextSelectedTopic: string | null = null;
-            let topicFound = false;
-            let wasTopicUnlocked = false;
+        let nextSelectedTopic: string | null = null;
+        let wasTopicUnlocked = false;
+        let topicFound = false;
 
-            for (let i = 0; i < newPath.length && !topicFound; i++) {
-                const currentTopic = newPath[i];
-          
-                if (currentTopic.key === topicToComplete) {
-                    if (currentTopic.status !== 'completed') {
-                        currentTopic.status = 'completed';
+        const newPath = learningPath.map(t => ({
+            ...t,
+            subItems: t.subItems ? t.subItems.map(s => ({ ...s })) : undefined,
+        }));
+
+        for (let i = 0; i < newPath.length && !topicFound; i++) {
+            const currentTopic = newPath[i];
+      
+            if (currentTopic.key === topicToComplete) {
+                if (currentTopic.status !== 'completed') {
+                    currentTopic.status = 'completed';
+                }
+                if (i + 1 < newPath.length && newPath[i + 1].status === 'locked') {
+                    const nextMainTopic = newPath[i + 1];
+                    nextMainTopic.status = 'active';
+                    wasTopicUnlocked = true;
+                    if (nextMainTopic.subItems && nextMainTopic.subItems.length > 0) {
+                        nextMainTopic.subItems[0].status = 'active';
+                        nextSelectedTopic = nextMainTopic.subItems[0].key;
+                    } else {
+                        nextSelectedTopic = nextMainTopic.key;
                     }
-                    if (i + 1 < newPath.length && newPath[i + 1].status === 'locked') {
-                        const nextMainTopic = newPath[i + 1];
-                        nextMainTopic.status = 'active';
+                }
+                topicFound = true;
+            } else if (currentTopic.subItems) {
+                const subItemIndex = currentTopic.subItems.findIndex((sub: any) => sub.key === topicToComplete);
+                if (subItemIndex !== -1) {
+                    if (currentTopic.subItems[subItemIndex].status !== 'completed') {
+                        currentTopic.subItems[subItemIndex].status = 'completed';
+                    }
+                    
+                    const nextSubItemIndex = subItemIndex + 1;
+                    if (nextSubItemIndex < currentTopic.subItems.length && currentTopic.subItems[nextSubItemIndex].status === 'locked') {
+                        currentTopic.subItems[nextSubItemIndex].status = 'active';
+                        nextSelectedTopic = currentTopic.subItems[nextSubItemIndex].key;
                         wasTopicUnlocked = true;
-                        if (nextMainTopic.subItems && nextMainTopic.subItems.length > 0) {
-                            nextMainTopic.subItems[0].status = 'active';
-                            nextSelectedTopic = nextMainTopic.subItems[0].key;
-                        } else {
-                            nextSelectedTopic = nextMainTopic.key;
+                    } else if (currentTopic.subItems.every((sub: any) => sub.status === 'completed')) {
+                        if (currentTopic.status !== 'completed') {
+                            currentTopic.status = 'completed';
+                        }
+                        if (i + 1 < newPath.length && newPath[i + 1].status === 'locked') {
+                            const nextMainTopic = newPath[i + 1];
+                            nextMainTopic.status = 'active';
+                            wasTopicUnlocked = true;
+                            if (nextMainTopic.subItems && nextMainTopic.subItems.length > 0) {
+                                nextMainTopic.subItems[0].status = 'active';
+                                nextSelectedTopic = nextMainTopic.subItems[0].key;
+                            } else {
+                                nextSelectedTopic = nextMainTopic.key;
+                            }
                         }
                     }
                     topicFound = true;
-                } else if (currentTopic.subItems) {
-                    const subItemIndex = currentTopic.subItems.findIndex((sub: any) => sub.key === topicToComplete);
-                    if (subItemIndex !== -1) {
-                        if (currentTopic.subItems[subItemIndex].status !== 'completed') {
-                            currentTopic.subItems[subItemIndex].status = 'completed';
-                        }
-                        
-                        const nextSubItemIndex = subItemIndex + 1;
-                        if (nextSubItemIndex < currentTopic.subItems.length && currentTopic.subItems[nextSubItemIndex].status === 'locked') {
-                            currentTopic.subItems[nextSubItemIndex].status = 'active';
-                            nextSelectedTopic = currentTopic.subItems[nextSubItemIndex].key;
-                            wasTopicUnlocked = true;
-                        } else if (currentTopic.subItems.every((sub: any) => sub.status === 'completed')) {
-                            if (currentTopic.status !== 'completed') {
-                                currentTopic.status = 'completed';
-                            }
-                            if (i + 1 < newPath.length && newPath[i + 1].status === 'locked') {
-                                const nextMainTopic = newPath[i + 1];
-                                nextMainTopic.status = 'active';
-                                wasTopicUnlocked = true;
-                                if (nextMainTopic.subItems && nextMainTopic.subItems.length > 0) {
-                                    nextMainTopic.subItems[0].status = 'active';
-                                    nextSelectedTopic = nextMainTopic.subItems[0].key;
-                                } else {
-                                    nextSelectedTopic = nextMainTopic.key;
-                                }
-                            }
-                        }
-                        topicFound = true;
-                    }
                 }
             }
-        
+        }
+    
+        if (topicFound) {
+            setLearningPath(newPath);
             if (nextSelectedTopic) {
                 setSelectedTopic(nextSelectedTopic);
             }
-
             if (wasTopicUnlocked) {
                 toast({ title: "¡Siguiente tema desbloqueado!" });
             }
-    
-            return newPath;
-        });
+        }
       
         setTopicToComplete(null);
-    }, [topicToComplete, toast, isAdmin, learningPath]);
+    }, [topicToComplete, isAdmin, learningPath, toast]);
 
     const handleTopicSelect = (topicKey: string) => {
         const mainTopic = learningPath.find(t => t.key === topicKey || t.subItems?.some(st => st.key === topicKey));
@@ -972,8 +971,8 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                 if (savedData[item.key]) item.status = savedData[item.key];
                 if (item.subItems && savedData.subItems?.[item.key]) {
                     item.subItems.forEach(subItem => {
-                        if (savedStatuses.subItems[item.key][subItem.key]) {
-                            subItem.status = savedStatuses.subItems[item.key][subItem.key];
+                        if (savedData.subItems[item.key][subItem.key]) {
+                            subItem.status = savedData.subItems[item.key][subItem.key];
                         }
                     });
                 }
@@ -1048,92 +1047,90 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         }
     }, [learningPath, isAdmin, progressValue, studentDocRef, progressStorageVersion, mainProgressKey, isProfileLoading, isUserLoading, initialLoadComplete, selectedTopic]);
 
+      const handleTopicComplete = useCallback((topicKey: string) => {
+        setTopicToComplete(topicKey);
+      }, []);
+
       useEffect(() => {
         if (!topicToComplete || isAdmin) {
             if (topicToComplete) setTopicToComplete(null);
             return;
         }
     
-        setLearningPath(currentPath => {
-            const newPath = currentPath.map(t => ({
-                ...t,
-                subItems: t.subItems ? t.subItems.map(s => ({...s})) : undefined,
-            }));
-          
-            let nextSelectedTopic: string | null = null;
-            let topicFound = false;
-            let wasTopicUnlocked = false;
+        let nextSelectedTopic: string | null = null;
+        let wasTopicUnlocked = false;
+        let topicFound = false;
 
-            for (let i = 0; i < newPath.length && !topicFound; i++) {
-                const currentTopic = newPath[i];
-          
-                if (currentTopic.key === topicToComplete) {
-                    if (currentTopic.status !== 'completed') {
-                        currentTopic.status = 'completed';
+        const newPath = learningPath.map(t => ({
+            ...t,
+            subItems: t.subItems ? t.subItems.map(s => ({...s})) : undefined,
+        }));
+
+        for (let i = 0; i < newPath.length && !topicFound; i++) {
+            const currentTopic = newPath[i];
+      
+            if (currentTopic.key === topicToComplete) {
+                if (currentTopic.status !== 'completed') {
+                    currentTopic.status = 'completed';
+                }
+                if (i + 1 < newPath.length && newPath[i + 1].status === 'locked') {
+                    const nextMainTopic = newPath[i + 1];
+                    nextMainTopic.status = 'active';
+                    wasTopicUnlocked = true;
+                    if (nextMainTopic.subItems && nextMainTopic.subItems.length > 0) {
+                        nextMainTopic.subItems[0].status = 'active';
+                        nextSelectedTopic = nextMainTopic.subItems[0].key;
+                    } else {
+                        nextSelectedTopic = nextMainTopic.key;
                     }
-                    if (i + 1 < newPath.length && newPath[i + 1].status === 'locked') {
-                        const nextMainTopic = newPath[i + 1];
-                        nextMainTopic.status = 'active';
+                }
+                topicFound = true;
+            } else if (currentTopic.subItems) {
+                const subItemIndex = currentTopic.subItems.findIndex((sub: any) => sub.key === topicToComplete);
+                if (subItemIndex !== -1) {
+                    if (currentTopic.subItems[subItemIndex].status !== 'completed') {
+                        currentTopic.subItems[subItemIndex].status = 'completed';
+                    }
+                    
+                    const nextSubItemIndex = subItemIndex + 1;
+                    if (nextSubItemIndex < currentTopic.subItems.length && currentTopic.subItems[nextSubItemIndex].status === 'locked') {
+                        currentTopic.subItems[nextSubItemIndex].status = 'active';
+                        nextSelectedTopic = currentTopic.subItems[nextSubItemIndex].key;
                         wasTopicUnlocked = true;
-                        if (nextMainTopic.subItems && nextMainTopic.subItems.length > 0) {
-                            nextMainTopic.subItems[0].status = 'active';
-                            nextSelectedTopic = nextMainTopic.subItems[0].key;
-                        } else {
-                            nextSelectedTopic = nextMainTopic.key;
+                    } else if (currentTopic.subItems.every((sub: any) => sub.status === 'completed')) {
+                        if (currentTopic.status !== 'completed') {
+                            currentTopic.status = 'completed';
+                        }
+                        if (i + 1 < newPath.length && newPath[i + 1].status === 'locked') {
+                            const nextMainTopic = newPath[i + 1];
+                            nextMainTopic.status = 'active';
+                            wasTopicUnlocked = true;
+                            if (nextMainTopic.subItems && nextMainTopic.subItems.length > 0) {
+                                nextMainTopic.subItems[0].status = 'active';
+                                nextSelectedTopic = nextMainTopic.subItems[0].key;
+                            } else {
+                                nextSelectedTopic = nextMainTopic.key;
+                            }
                         }
                     }
                     topicFound = true;
-                } else if (currentTopic.subItems) {
-                    const subItemIndex = currentTopic.subItems.findIndex((sub: any) => sub.key === topicToComplete);
-                    if (subItemIndex !== -1) {
-                        if (currentTopic.subItems[subItemIndex].status !== 'completed') {
-                            currentTopic.subItems[subItemIndex].status = 'completed';
-                        }
-                        
-                        const nextSubItemIndex = subItemIndex + 1;
-                        if (nextSubItemIndex < currentTopic.subItems.length && currentTopic.subItems[nextSubItemIndex].status === 'locked') {
-                            currentTopic.subItems[nextSubItemIndex].status = 'active';
-                            nextSelectedTopic = currentTopic.subItems[nextSubItemIndex].key;
-                            wasTopicUnlocked = true;
-                        } else if (currentTopic.subItems.every((sub: any) => sub.status === 'completed')) {
-                            if (currentTopic.status !== 'completed') {
-                                currentTopic.status = 'completed';
-                            }
-                            if (i + 1 < newPath.length && newPath[i + 1].status === 'locked') {
-                                const nextMainTopic = newPath[i + 1];
-                                nextMainTopic.status = 'active';
-                                wasTopicUnlocked = true;
-                                if (nextMainTopic.subItems && nextMainTopic.subItems.length > 0) {
-                                    nextMainTopic.subItems[0].status = 'active';
-                                    nextSelectedTopic = nextMainTopic.subItems[0].key;
-                                } else {
-                                    nextSelectedTopic = nextMainTopic.key;
-                                }
-                            }
-                        }
-                        topicFound = true;
-                    }
                 }
             }
-        
+        }
+    
+        if (topicFound) {
+            setLearningPath(newPath);
             if (nextSelectedTopic) {
                 setSelectedTopic(nextSelectedTopic);
             }
-
             if (wasTopicUnlocked) {
                 toast({ title: "¡Siguiente tema desbloqueado!" });
             }
-    
-            return newPath;
-        });
+        }
       
         setTopicToComplete(null);
-    }, [topicToComplete, toast, isAdmin, learningPath]);
+    }, [topicToComplete, isAdmin, learningPath, toast]);
 
-      const handleTopicComplete = (topicKey: string) => {
-        setTopicToComplete(topicKey);
-      };
-    
       const handleTopicSelect = (topicKey: string) => {
         const mainTopic = learningPath.find(t => t.key === topicKey || t.subItems?.some(st => st.key === topicKey));
         const subTopic = mainTopic?.subItems?.find(st => st.key === topicKey);
@@ -1599,3 +1596,4 @@ export default function EngA1ClassPage() {
       </div>
     );
 }
+
