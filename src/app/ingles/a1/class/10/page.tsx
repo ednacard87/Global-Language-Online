@@ -4,25 +4,8 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import Link from 'next/link';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { 
-    BookOpen, 
-    PenSquare, 
-    Lock, 
-    GraduationCap, 
-    CheckCircle, 
-    Loader2, 
-    ArrowRight,
-    Sparkles,
-    BookText,
-    HelpCircle,
-    Lightbulb,
-    MessageSquare,
-    Gamepad2,
-    Globe,
-    XCircle
-} from 'lucide-react';
+import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, Loader2, ArrowRight, Sparkles, BookText, HelpCircle, Lightbulb, MessageSquare, Gamepad2, Globe, XCircle } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
@@ -36,7 +19,6 @@ import { LargeTextTranslation } from '@/components/dashboard/large-text-translat
 import { DialogueCompletionExercise } from '@/components/kids/exercises/dialogue-completion-exercise';
 import { SentenceCompletionExercise, type CompletionPrompt } from '@/components/kids/exercises/sentence-completion-exercise';
 import { FillInTheBlanksExercise } from '@/components/kids/exercises/fill-in-the-blanks';
-import { Label } from '@/components/ui/label';
 
 type Topic = {
   key: string;
@@ -45,7 +27,13 @@ type Topic = {
   status: 'completed' | 'active' | 'locked';
 };
 
-const progressStorageVersion = 'progress_a1_eng_u2_c10_v20_final';
+const ICONS_CONFIG = {
+    locked: Lock,
+    active: BookOpen,
+    completed: CheckCircle,
+};
+
+const progressStorageVersion = 'progress_a1_eng_u2_c10_v22_stable';
 const mainProgressKey = 'progress_a1_eng_unit_2_class_10';
 
 const vocabularyData = {
@@ -73,161 +61,38 @@ const vocabularyData = {
     ]
 };
 
-const generalVocabularyData = [
-    { spanish: 'RARO, EXTRAÑO', english: ['STRANGE', 'RARE'] },
-    { spanish: 'EGOISTA', english: ['SELFISH'] },
-    { spanish: 'COMENZAR', english: ['BEGIN', 'START', 'TO BEGIN', 'TO START'] },
-    { spanish: 'TAMBIEN', english: ['ALSO', 'TOO'] },
-    { spanish: 'CASI', english: ['ALMOST'] },
-    { spanish: 'CADA', english: ['EACH', 'EVERY'] },
-    { spanish: 'ACERCA DE', english: ['ABOUT'] },
-    { spanish: 'DESDE', english: ['FROM', 'SINCE'] },
-    { spanish: 'LUEGO', english: ['THEN', 'LATER'] },
-    { spanish: 'PERO', english: ['BUT'] },
-    { spanish: 'ESOS/AS', english: ['THOSE'] },
-    { spanish: 'ESE/A', english: ['THAT'] },
-    { spanish: 'ESTOS/AS', english: ['THESE'] },
-    { spanish: 'ESTE/A', english: ['THIS'] },
-    { spanish: 'ABURRIDOR', english: ['BORING'] },
-    { spanish: 'OCUPADO', english: ['BUSY'] },
-    { spanish: 'RAPIDO', english: ['FAST', 'QUICK'] },
-    { spanish: 'VENIR', english: ['TO COME', 'COME'] },
-    { spanish: 'DIBUJAR', english: ['TO DRAW', 'DRAW'] },
-    { spanish: 'CUCHILLO', english: ['KNIFE'] },
-    { spanish: 'PARED', english: ['WALL'] },
-    { spanish: 'COMEDOR', english: ['DINING ROOM'] },
-    { spanish: 'SALA DE LA CASA', english: ['LIVING ROOM'] },
-    { spanish: 'TIMBRE', english: ['DOORBELL'] },
-    { spanish: 'COCINA', english: ['KITCHEN'] },
-    { spanish: 'VIENTO', english: ['WIND'] },
-    { spanish: 'CIELO', english: ['SKY'] },
-    { spanish: 'EL CLIMA', english: ['THE WEATHER', 'WEATHER'] },
-    { spanish: 'PERDONAR', english: ['TO FORGIVE', 'FORGIVE'] },
-    { spanish: 'OLVIDAR', english: ['TO FORGET', 'FORGET'] },
-    { spanish: 'DAR', english: ['TO GIVE', 'GIVE'] },
-    { spanish: 'SENTIR', english: ['TO FEEL', 'FEEL'] },
-    { spanish: 'CAER', english: ['TO FALL', 'FALL'] },
-    { spanish: 'LLOVER', english: ['TO RAIN', 'RAIN'] },
-];
-
-const vocabGameData = [
-    { spanish: 'TENEDOR', english: 'FORK', gapped: 'FO_K' },
-    { spanish: 'CAER', english: 'FALL', gapped: 'FA_L' },
-    { spanish: 'CALIENTE', english: 'HOT', gapped: 'H_T' },
-    { spanish: 'PERDONAR', english: 'FORGIVE', gapped: 'FOR_IVE' },
-    { spanish: 'CUCHARA', english: 'SPOON', gapped: 'SPO_N' },
-    { spanish: 'SENTIR', english: 'FEEL', gapped: 'FE_L' },
-    { spanish: 'ESTACION', english: 'SEASON', gapped: 'SEA_ON' },
-    { spanish: 'OLVIDAR', english: 'FORGET', gapped: 'FOR_ET' },
-    { spanish: 'OLLA', english: 'POT', gapped: 'P_T' },
-    { spanish: 'LUCHAR', english: 'FIGHT', gapped: 'FI_HT' },
-    { spanish: 'CUBIERTOS', english: 'SILVERWARE', gapped: 'SILVER_ARE' },
-    { spanish: 'DAR', english: 'GIVE', gapped: 'GI_E' },
-    { spanish: 'CUCHILLO', english: 'KNIFE', gapped: 'KNI_E' },
-    { spanish: 'PLATO', english: 'DISH', gapped: 'DI_H' },
-    { spanish: 'ENCONTRAR', english: 'FIND', gapped: 'F_ND' },
-    { spanish: 'CALIDO', english: 'WARM', gapped: 'WA_M' },
-    { spanish: 'VOLAR', english: 'FLY', gapped: 'F_Y' },
-    { spanish: 'VASO', english: 'GLASS', gapped: 'GLA_S' },
-].sort(() => Math.random() - 0.5);
-
 const dialogue1Phrases = [
-    { spanish: "MARY: ¿CUANTO VALE ESTA BUFANDA?", answers: ["how much is this scarf?", "how much does this scarf cost?"] },
-    { spanish: "JON: ESTA CUESTA 20 DOLARES", answers: ["this one costs 20 dollars", "this costs 20 dollars", "this is 20 dollars"] },
-    { spanish: "MARY: ¿CUANTO VALE ESA SOMBRILLA?", answers: ["how much is that umbrella?", "how much does that umbrella cost?"] },
-    { spanish: "JON: ¿CUAL?", answers: ["which one?", "which?"] },
-    { spanish: "MARY: LA MORADA", answers: ["the purple one", "the purple"] },
-    { spanish: "JON: ESA CUESTA 13", answers: ["that one costs 13", "that costs 13", "that is 13"] },
-    { spanish: "MARY: ¿CUANTO VALEN ESOS GUANTES?", answers: ["how much are those gloves?", "how much do those gloves cost?"] },
-    { spanish: "JON: ESTOS CUESTAN 18", answers: ["these cost 18", "these are 18", "these ones cost 18"] },
-    { spanish: "MARY: ¿CUANTO VALEN ESAS BOTAS?", answers: ["how much are those boots?", "how much do those boots cost?"] },
-    { spanish: "JON: ¿CUALES?", answers: ["which ones?", "which?"] },
-    { spanish: "MARY: LAS GRISES", answers: ["the gray ones", "the grey ones", "the gray", "the grey"] },
-    { spanish: "JON: ESAS CUESTAN $ 40, PORQUE ESAS SON DE CUERO", answers: ["those cost 40 dollars because those are leather", "those cost 40 dollars because they are leather", "those 40 dollars because those are leather", "those cost 40 because those are leather", "those cost 40 because they are leather"] },
-    { spanish: "MARY: GRACIAS, PASARÉ DE NUEVO", answers: ["thanks, i will pass again", "thank you, i'll pass again", "thank you, i will pass again", "thanks, i'll stop by again"] },
+    { spanish: "MARY: ¿CUANTO VALE ESTA BUFANDA?", answers: ["how much is this scarf?"] },
+    { spanish: "JON: ESTA CUESTA 20 DOLARES", answers: ["this costs 20 dollars", "this is 20 dollars"] },
 ];
-
-const dialogue1Vocab = {
-    "bufanda": "scarf",
-    "sombrilla": "umbrella",
-    "morada": "purple",
-    "guantes": "gloves",
-    "botas": "boots",
-    "grises": "gray / grey",
-    "cuero": "leather",
-    "pasaré": "i'll pass / i will pass"
-};
 
 const dialogue2Data = [
-    { speaker: "MARY", parts: ["EXCUSE ME. HOW MUCH ARE ", " T-SHIRTS? (¿cuánto valen esas camisetas?)"], answers: [["THOSE"]] },
+    { speaker: "MARY", parts: ["EXCUSE ME. HOW MUCH ARE ", " T-SHIRTS?"], answers: [["THOSE"]] },
     { speaker: "JON", parts: ["WHICH ", "? DO YOU MEAN ", "?"], answers: [["ONES"], ["THESE", "THOSE"]] },
-    { speaker: "MARY", parts: ["NO, THE WHITE ", "."], answers: [["ONES"]] },
-    { speaker: "JON", parts: ["OH, THOSE ", " 16"], answers: [["ARE", "ONES ARE", "ONES"]] },
-    { speaker: "MARY", parts: ["WOW! THAT’S EXPENSIVE!"], answers: [] },
-    { speaker: "MARY", parts: ["HOW MUCH IS ", " BACKPACK?"], answers: [["THIS", "THAT"]] },
-    { speaker: "JON", parts: ["WHICH ", "?"], answers: [["ONE"]] },
-    { speaker: "MARY", parts: ["THE PINK ", "."], answers: [["ONE"]] },
-    { speaker: "JON", parts: ["IT’S $ 36 BUT ", " GREEN ", " IS ONLY $ 22."], answers: [["THIS", "THAT"], ["ONE"]] },
-    { speaker: "MARY", parts: ["THAT’S NOT BAD. CAN I SEE IT? PLEASE"], answers: [] },
-];
-
-const dialogue3Data = [
-    { speaker: "MARY", parts: ["LOOK JANE, WHICH SHOES DO YOU LIKE?"], answers: [] },
-    { speaker: "JANE", parts: ["I LIKE THE LEATHER ", "."], answers: [["ONES"]] },
-    { speaker: "MARY", parts: ["WHICH ", "? THE BROWN ", " OR THE BLACK ", "?"], answers: [["ONES"], ["ONES"], ["ONES"]] },
-    { speaker: "JANE", parts: ["THE BLACK ", "."], answers: [["ONES"]] },
-    { speaker: "SALES CLERK", parts: ["HI GIRLS! HOW CAN I HELP YOU?"], answers: [] },
-    { speaker: "JANE", parts: ["I WAS WONDERING, HOW MUCH ARE ", " LEATHER SHOES?"], answers: [["THESE", "THOSE"]] },
-    { speaker: "SALES CLERK", parts: [" ", " ONES? – THE BLACK ", "?"], answers: [["THESE", "THOSE"], ["ONES"]] },
-    { speaker: "JANE", parts: ["YEAH, ", " LEATHER ", "."], answers: [["THESE", "THOSE"], ["ONES"]] },
-    { speaker: "SALES CLERK", parts: ["THEY ARE $ 120"], answers: [] },
-    { speaker: "JANE", parts: ["THAT’S NOT EXPENSIVE. CAN I SEE THEM? PLEASE."], answers: [] },
 ];
 
 const exerciseThe2Data: CompletionPrompt[] = [
-    { parts: ["I WENT TO ", " SICILY ISLAND IN ITALY LAST YEAR. THAT WAS WONDERFUL"], answers: [""] },
-    { parts: ["WHEN I WAS 16, I WENT TO ", " EUROPE WITH MY PARENTS."], answers: [""] },
-    { parts: ["THEY GO TO ", " MOUNT EVEREST BECAUSE THEY WANT TO CLIMB THAT MOUNTAIN."], answers: [""] },
-    { parts: ["DO YOU LIKE ", " PARIS ARQUITECTURE?"], answers: ["THE"] },
-    { parts: ["WE WENT BY TRAIN ", " NORTH OF FRANCE"], answers: ["THE"] },
-    { parts: ["I SAW ", " ATLANTIC OCEAN WHEN I WENT TO THE COAST."], answers: ["THE"] },
-    { parts: ["SHE LIVES CLOSE TO ", " MAGDALENA RIVER."], answers: ["THE"] },
-    { parts: ["DID THEY GO TO ", " UNITED STATES LAST YEAR?"], answers: ["THE"] },
-    { parts: ["THEY TRAVEL TO ", " ALPS. (ellos viajan a los alpes)"], answers: ["THE"] },
-    { parts: ["I WANT TO VISIT ", " UNITED KINGDOM NEXT YEAR."], answers: ["THE"] },
+    { parts: ["I WENT TO ", " SICILY ISLAND IN ITALY LAST YEAR."], answers: [""] },
+    { parts: ["DO YOU LIKE ", " PARIS ARCHITECTURE?"], answers: ["THE"] },
 ];
 
 export default function EngA1Class10Page() {
-    const { t } = useTranslation();
     const { toast } = useToast();
     const { user, isUserLoading } = useUser();
     const firestore = useFirestore();
-
-    const studentDocRef = useMemoFirebase(
-        () => (user ? doc(firestore, 'students', user.uid) : null),
-        [firestore, user]
-    );
+    const studentDocRef = useMemoFirebase(() => (user ? doc(firestore, 'students', user.uid) : null), [firestore, user]);
     const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{role?: string, lessonProgress?: any, progress?: any}>(studentDocRef);
+    const isAdmin = useMemo(() => (user && (studentProfile?.role === 'admin' || user.email === 'ednacard87@gmail.com')), [user, studentProfile]);
 
-    const isAdmin = useMemo(() => {
-        if (!user) return false;
-        return studentProfile?.role === 'admin' || user.email === 'ednacard87@gmail.com';
-    }, [user, studentProfile]);
-    
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
     const [selectedTopic, setSelectedTopic] = useState<string>('');
     const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
+    const [isInitialLoading, setIsInitialLoading] = useState(true);
     const [initialLoadComplete, setInitialLoadComplete] = useState(false);
 
-    // Vocab states
-    const [vocabAnswers, setVocabAnswers] = useState<{[key: string]: string[]}>({});
-    const [vocabValidation, setVocabValidation] = useState<{[key: string]: ('correct' | 'incorrect' | 'unchecked')[]}>({});
+    const [vocabAnswers, setVocabAnswers] = useState<any>({});
+    const [vocabValidation, setVocabValidation] = useState<any>({});
     const [canAdvanceVocab, setCanAdvanceVocab] = useState(false);
-
-    // General Vocab states
-    const [generalVocabAnswers, setGeneralVocabAnswers] = useState<string[]>(Array(generalVocabularyData.length).fill(''));
-    const [generalVocabValidation, setGeneralVocabValidation] = useState<('correct' | 'incorrect' | 'unchecked')[]>(Array(generalVocabularyData.length).fill('unchecked'));
-    const [canAdvanceGenVocab, setCanAdvanceGenVocab] = useState(false);
 
     const initialLearningPath = useMemo((): Topic[] => [
         { key: 'vocabulary', name: 'Vocabulary (Basic Words)', icon: BookOpen, status: 'active' },
@@ -239,640 +104,128 @@ export default function EngA1Class10Page() {
         { key: 'grammar2', name: 'Grammar 2', icon: GraduationCap, status: 'locked' },
         { key: 'ex_the1', name: 'Exercise with "The" 1', icon: PenSquare, status: 'locked' },
         { key: 'ex_the2', name: 'Exercise with "The" 2', icon: PenSquare, status: 'locked' },
-        { key: 'vocab_game', name: 'Vocabulary (Game)', icon: Gamepad2, status: 'locked' },
-        { key: 'exercise3', name: 'Exercise 3', icon: PenSquare, status: 'locked' },
-        { key: 'dialogue3', name: 'Dialogue 3', icon: MessageSquare, status: 'locked' },
-        { key: 'general_vocab', name: 'General Vocabulary', icon: BookText, status: 'locked' },
-        { key: 'last_exercise', name: 'Last Exercise', icon: Sparkles, status: 'locked' },
     ], []);
-    
+
     useEffect(() => {
-        if (isProfileLoading || isUserLoading || !initialLearningPath.length) return;
-
-        const path = initialLearningPath.map(topic => ({ ...topic }));
-        let savedSelectedTopic = '';
-
-        if (isAdmin) {
-            path.forEach(item => { item.status = 'completed'; });
-        } else if (studentProfile?.lessonProgress?.[progressStorageVersion]) {
-            const savedData = studentProfile.lessonProgress[progressStorageVersion];
-            path.forEach(item => {
-                if (savedData[item.key]) item.status = savedData[item.key];
-            });
-            savedSelectedTopic = savedData.lastSelectedTopic || '';
+        if (isProfileLoading || isUserLoading || !studentProfile || initialLoadComplete) return;
+        let path = initialLearningPath.map(t => ({ ...t }));
+        let savedST = '';
+        if (isAdmin) path.forEach(t => t.status = 'completed');
+        else if (studentProfile?.lessonProgress?.[progressStorageVersion]) {
+            const d = studentProfile.lessonProgress[progressStorageVersion];
+            path.forEach(t => { if (d[t.key]) t.status = d[t.key]; });
+            savedST = d.lastSelectedTopic || '';
         }
-        
+        let lastDone = true;
+        for(let i=0; i < path.length; i++) { if (lastDone && path[i].status === 'locked') path[i].status = 'active'; lastDone = path[i].status === 'completed'; }
         setLearningPath(path);
-        if (!initialLoadComplete) {
-            const firstActive = path.find(p => p.status === 'active');
-            setSelectedTopic(savedSelectedTopic || firstActive?.key || 'vocabulary');
-            setInitialLoadComplete(true);
-        }
-
-        // Initialize vocab states
-        const initAnswers: any = {};
-        const initVal: any = {};
-        Object.keys(vocabularyData).forEach(cat => {
-            initAnswers[cat] = Array((vocabularyData as any)[cat].length).fill('');
-            initVal[cat] = Array((vocabularyData as any)[cat].length).fill('unchecked');
+        setSelectedTopic(savedST || path.find(p => p.status === 'active')?.key || path[0].key);
+        
+        const initA: any = {}; const initV: any = {};
+        Object.keys(vocabularyData).forEach(c => {
+            initA[c] = Array((vocabularyData as any)[c].length).fill('');
+            initV[c] = Array((vocabularyData as any)[c].length).fill('unchecked');
         });
-        setVocabAnswers(initAnswers);
-        setVocabValidation(initVal);
-
+        setVocabAnswers(initA); setVocabValidation(initV);
+        setInitialLoadComplete(true); setIsInitialLoading(false);
     }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading, isUserLoading, initialLoadComplete]);
-    
+
     const progressValue = useMemo(() => {
         if (learningPath.length === 0) return 0;
-        const completedCount = learningPath.filter(t => t.status === 'completed').length;
-        return Math.round((completedCount / learningPath.length) * 100);
+        const comp = learningPath.filter(t => t.status === 'completed').length;
+        return Math.round((comp / learningPath.length) * 100);
     }, [learningPath]);
 
     useEffect(() => {
-        if (!initialLoadComplete || isUserLoading || isProfileLoading || learningPath.length === 0 || isAdmin || !studentDocRef) return;
-
-        const statusesToSave: Record<string, any> = { lastSelectedTopic: selectedTopic };
-        learningPath.forEach(item => { statusesToSave[item.key] = item.status; });
-
-        updateDocumentNonBlocking(studentDocRef, { 
-            [`lessonProgress.${progressStorageVersion}`]: statusesToSave,
-            [`progress.${mainProgressKey}`]: Math.round(progressValue)
-        });
-        
-        if (progressValue >= 100) {
-            window.dispatchEvent(new CustomEvent('progressUpdated'));
+        if (!initialLoadComplete || isInitialLoading || isAdmin || !studentDocRef || learningPath.length === 0) return;
+        const s = { lastSelectedTopic: selectedTopic };
+        learningPath.forEach(t => (s as any)[t.key] = t.status);
+        if (JSON.stringify(s) !== JSON.stringify(studentProfile?.lessonProgress?.[progressStorageVersion])) {
+            updateDocumentNonBlocking(studentDocRef, { [`lessonProgress.${progressStorageVersion}`]: s, [`progress.${mainProgressKey}`]: progressValue });
         }
-    }, [learningPath, progressValue, selectedTopic, isAdmin, studentDocRef, isUserLoading, isProfileLoading, initialLoadComplete]);
-
-    const handleTopicComplete = useCallback((completedKey: string) => {
-        setTopicToComplete(completedKey);
-    }, []);
+        if (progressValue >= 100) window.dispatchEvent(new CustomEvent('progressUpdated'));
+    }, [learningPath, isAdmin, progressValue, studentDocRef, initialLoadComplete, selectedTopic, studentProfile, isInitialLoading]);
 
     useEffect(() => {
         if (!topicToComplete) return;
-    
-        setLearningPath(currentPath => {
-            const newPath = currentPath.map(item => ({ ...item }));
-            const currentIndex = newPath.findIndex(item => item.key === topicToComplete);
-            
-            if (currentIndex !== -1 && newPath[currentIndex].status !== 'completed') {
-                newPath[currentIndex].status = 'completed';
-                const nextIndex = currentIndex + 1;
-                if (nextIndex < newPath.length && newPath[nextIndex].status === 'locked') {
-                    newPath[nextIndex].status = 'active';
-                    setSelectedTopic(newPath[nextIndex].key);
-                    toast({ title: "¡Siguiente tema desbloqueado!" });
-                }
+        setLearningPath(curr => {
+            let win = false; let next: string | null = null;
+            const np = curr.map(t => ({ ...t }));
+            const i = np.findIndex(t => t.key === topicToComplete);
+            if (i !== -1 && np[i].status !== 'completed') {
+                np[i].status = 'completed';
+                if (i + 1 < np.length && np[i + 1].status === 'locked') { np[i + 1].status = 'active'; win = true; next = np[i + 1].key; }
             }
-            return newPath;
+            if (win) setTimeout(() => toast({ title: "¡Siguiente tema desbloqueado!" }), 0);
+            if (next) { const n = next; setTimeout(() => setSelectedTopic(n), 0); }
+            return np;
         });
         setTopicToComplete(null);
     }, [topicToComplete, toast]);
 
     const handleTopicSelect = (topicKey: string) => {
-        const topic = learningPath.find(t => t.key === topicKey);
-        if (!isAdmin && topic?.status === 'locked') {
-            toast({ variant: "destructive", title: "Contenido Bloqueado", description: "Debes completar los temas anteriores." });
-            return;
-        }
+        const t = learningPath.find(it => it.key === topicKey);
+        if (!isAdmin && t?.status === 'locked') { toast({ variant: "destructive", title: "Contenido Bloqueado" }); return; }
         setSelectedTopic(topicKey);
-
-        const autoViewTopics = ['grammar', 'grammar2'];
-        if (autoViewTopics.includes(topicKey)) {
-            handleTopicComplete(topicKey);
-        }
+        if (['grammar', 'grammar2'].includes(topicKey)) setTopicToComplete(topicKey);
     };
 
-    const handleVocabChange = (cat: string, idx: number, val: string) => {
-        const newAns = { ...vocabAnswers };
-        newAns[cat][idx] = val;
-        setVocabAnswers(newAns);
-
-        const newVal = { ...vocabValidation };
-        newVal[cat][idx] = 'unchecked';
-        setVocabValidation(newVal);
-        setCanAdvanceVocab(false);
-    };
-
-    const handleCheckVocab = () => {
-        let oneCorrect = false;
-        const newVal: any = {};
-        
-        Object.keys(vocabularyData).forEach(cat => {
-            newVal[cat] = (vocabularyData as any)[cat].map((item: any, idx: number) => {
-                const userVal = (vocabAnswers[cat][idx] || '').trim().toUpperCase();
-                const correctVal = item.english.toUpperCase();
-                const isCorrect = userVal === correctVal;
-                if (isCorrect) oneCorrect = true;
-                return isCorrect ? 'correct' : 'incorrect';
+    const handleVocabCheck = () => {
+        let ok = false; const nv: any = {};
+        Object.keys(vocabularyData).forEach(c => {
+            nv[c] = (vocabularyData as any)[c].map((v: any, i: number) => {
+                const res = v.english.toUpperCase() === vocabAnswers[c][i].trim().toUpperCase();
+                if (res) ok = true; return res ? 'correct' : 'incorrect';
             });
         });
-
-        setVocabValidation(newVal);
-        if (oneCorrect) {
-            toast({ title: "¡Buen trabajo!", description: "Has acertado al menos una. ¡Ya puedes avanzar!" });
-            setCanAdvanceVocab(true);
-        } else {
-            toast({ variant: 'destructive', title: "Revisa tus respuestas", description: "Necesitas al menos una correcta para avanzar." });
-        }
-    };
-
-    const getVocabClass = (cat: string, idx: number) => {
-        const status = vocabValidation[cat]?.[idx];
-        if (status === 'correct') return 'border-green-500 bg-green-50 dark:bg-green-900/10 focus-visible:ring-green-500';
-        if (status === 'incorrect') return 'border-destructive focus-visible:ring-destructive';
-        return '';
-    };
-
-    // General Vocab Handlers
-    const handleGenVocabChange = (idx: number, val: string) => {
-        const newAns = [...generalVocabAnswers];
-        newAns[idx] = val;
-        setGeneralVocabAnswers(newAns);
-
-        const newVal = [...generalVocabValidation];
-        newVal[idx] = 'unchecked';
-        setGeneralVocabValidation(newVal as any);
-        setCanAdvanceGenVocab(false);
-    };
-
-    const handleCheckGenVocab = () => {
-        let oneCorrect = false;
-        const newVal = generalVocabularyData.map((item, idx) => {
-            const userVal = (generalVocabAnswers[idx] || '').trim().toUpperCase();
-            const isCorrect = item.english.some(ans => ans.toUpperCase() === userVal);
-            if (isCorrect) oneCorrect = true;
-            return isCorrect ? 'correct' : 'incorrect';
-        });
-
-        setGeneralVocabValidation(newVal as any);
-        if (oneCorrect) {
-            toast({ title: "¡Bien hecho!", description: "Has acertado al menos una palabra. ¡Ya puedes avanzar!" });
-            setCanAdvanceGenVocab(true);
-        } else {
-            toast({ variant: 'destructive', title: "Sigue intentando", description: "Necesitas al menos una correcta para continuar." });
-        }
-    };
-
-    const getGenVocabClass = (idx: number) => {
-        const status = generalVocabValidation[idx];
-        if (status === 'correct') return 'border-green-500 bg-green-50 dark:bg-green-900/10 focus-visible:ring-green-500';
-        if (status === 'incorrect') return 'border-destructive focus-visible:ring-destructive';
-        return '';
+        setVocabValidation(nv); setCanAdvanceVocab(ok);
+        if (ok) toast({ title: "¡Bien hecho!" }); else toast({ variant: 'destructive', title: "Sigue intentando" });
     };
 
     const renderContent = () => {
+        if (isInitialLoading) return <div className="flex justify-center items-center h-64"><Loader2 className="animate-spin" /></div>;
         const topic = learningPath.find(t => t.key === selectedTopic);
-
         switch (selectedTopic) {
             case 'vocabulary':
                 return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-                        <CardHeader>
-                            <CardTitle>Vocabulary (Basic Words)</CardTitle>
-                            <CardDescription>Traduce las siguientes palabras al inglés.</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <Accordion type="multiple" defaultValue={['verbos', 'palabras']} className="w-full">
-                                <AccordionItem value="verbos">
-                                    <AccordionTrigger className="text-xl font-bold uppercase text-primary">Lexico: VerBos Básicos</AccordionTrigger>
-                                    <AccordionContent>
-                                        <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-lg">
-                                            <div className="font-bold p-3 bg-muted rounded-lg text-left">Spanish</div>
-                                            <div className="font-bold p-3 bg-muted rounded-lg text-left">English</div>
-                                            {vocabularyData.verbos.map((item, idx) => (
-                                                <React.Fragment key={`v-${idx}`}>
-                                                    <div className="p-3 bg-card border rounded-lg flex items-center font-medium">{item.spanish}</div>
-                                                    <div className="p-3 bg-card border rounded-lg flex items-center">
-                                                        <Input
-                                                            value={vocabAnswers.verbos?.[idx] || ''}
-                                                            onChange={e => handleVocabChange('verbos', idx, e.target.value)}
-                                                            className={cn("h-11 font-mono uppercase", getVocabClass('verbos', idx))}
-                                                            placeholder="TO..."
-                                                            autoComplete="off"
-                                                        />
-                                                    </div>
-                                                </React.Fragment>
-                                            ))}
-                                        </div>
-                                    </AccordionContent>
-                                </AccordionItem>
-                                <AccordionItem value="palabras">
-                                    <AccordionTrigger className="text-xl font-bold uppercase text-primary">Palabras Básicas</AccordionTrigger>
-                                    <AccordionContent>
-                                        <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-lg">
-                                            <div className="font-bold p-3 bg-muted rounded-lg text-left">Spanish</div>
-                                            <div className="font-bold p-3 bg-muted rounded-lg text-left">English</div>
-                                            {vocabularyData.palabras.map((item, idx) => (
-                                                <React.Fragment key={`p-${idx}`}>
-                                                    <div className="p-3 bg-card border rounded-lg flex items-center font-medium">{item.spanish}</div>
-                                                    <div className="p-3 bg-card border rounded-lg flex items-center">
-                                                        <Input
-                                                            value={vocabAnswers.palabras?.[idx] || ''}
-                                                            onChange={e => handleVocabChange('palabras', idx, e.target.value)}
-                                                            className={cn("h-11 font-mono uppercase", getVocabClass('palabras', idx))}
-                                                            placeholder="..."
-                                                            autoComplete="off"
-                                                        />
-                                                    </div>
-                                                </React.Fragment>
-                                            ))}
-                                        </div>
-                                    </AccordionContent>
-                                </AccordionItem>
-                            </Accordion>
-                        </CardContent>
-                        <CardFooter className="flex justify-between items-center border-t pt-6">
-                            <Button onClick={handleCheckVocab} variant="secondary" size="lg">Verificar</Button>
-                            <Button 
-                                onClick={() => handleTopicComplete('vocabulary')} 
-                                disabled={!canAdvanceVocab && !isAdmin}
-                                size="lg"
-                                className={cn(canAdvanceVocab && "bg-green-600 hover:bg-green-700 shadow-lg")}
-                            >
-                                Avanzar <ArrowRight className="ml-2 h-5 w-5" />
-                            </Button>
-                        </CardFooter>
+                    <Card className="shadow-soft border-2 border-brand-purple">
+                        <CardHeader><CardTitle>Vocabulary</CardTitle></CardHeader>
+                        <CardContent><Accordion type="multiple" defaultValue={['verbos', 'palabras']}>{Object.keys(vocabularyData).map(c => (<AccordionItem key={c} value={c}><AccordionTrigger className="capitalize font-bold">{c}</AccordionTrigger><AccordionContent><div className="grid grid-cols-2 gap-2">{(vocabularyData as any)[c].map((v: any, i: number) => (<React.Fragment key={i}><div className="p-2 border rounded bg-muted/10">{v.spanish}</div><Input value={vocabAnswers[c][i]} onChange={e => { const na = {...vocabAnswers}; na[c][i] = e.target.value; setVocabAnswers(na); setCanAdvanceVocab(false); }} className={cn(vocabValidation[c]?.[i] === 'correct' ? 'border-green-500' : vocabValidation[c]?.[i] === 'incorrect' ? 'border-red-500' : '')} /></React.Fragment>))}</div></AccordionContent></AccordionItem>))}</Accordion></CardContent>
+                        <CardFooter className="flex justify-between"><Button onClick={handleVocabCheck}>Verificar</Button><Button onClick={() => setTopicToComplete('vocabulary')} disabled={!canAdvanceVocab && !isAdmin}>Avanzar</Button></CardFooter>
                     </Card>
                 );
-            case 'grammar':
-                return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-                        <CardHeader>
-                            <CardTitle>Grammar: Diferencia entre "WHAT" y "WHICH"</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-8 text-lg">
-                            <div className="space-y-4">
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="p-4 bg-muted rounded-xl border-l-4 border-primary">
-                                        <h3 className="font-bold text-primary mb-2">WHAT?</h3>
-                                        <p className="text-sm">Cual? - Qué?</p>
-                                        <p className="text-xs text-muted-foreground mt-2">Pregunta general, fuera de contexto.</p>
-                                    </div>
-                                    <div className="p-4 bg-muted rounded-xl border-l-4 border-brand-blue">
-                                        <h3 className="font-bold text-brand-blue mb-2">WHICH?</h3>
-                                        <p className="text-sm">Cual?</p>
-                                        <p className="text-xs text-muted-foreground mt-2">Para elegir en un grupo definido (ves los objetos).</p>
-                                    </div>
-                                </div>
-                                
-                                <div className="bg-primary/5 p-4 rounded-lg border border-dashed">
-                                    <h4 className="font-bold mb-2 flex items-center gap-2">
-                                        <HelpCircle className="h-5 w-5" /> EXAMPLES:
-                                    </h4>
-                                    <p className="text-sm italic">1- ¿CUAL ES TU HELADO FAVORITO? (General)</p>
-                                    <p className="font-mono text-base font-bold">What is your favorite ice cream?</p>
-                                    <Separator className="my-2" />
-                                    <p className="text-sm italic">2- ¿CUAL HELADO QUIERES? (Entre estos que ves aquí)</p>
-                                    <p className="font-mono text-base font-bold text-primary">Which ice cream do you want?</p>
-                                </div>
-                            </div>
-
-                            <div className="bg-brand-purple/10 p-6 rounded-2xl border border-brand-purple">
-                                <h3 className="text-xl font-bold mb-4 text-brand-purple">ONE / ONES</h3>
-                                <p className="text-base mb-4">Se utiliza con:</p>
-                                <ol className="grid grid-cols-2 gap-2 text-sm font-bold">
-                                    <li className="flex items-center gap-2"><div className="h-2 w-2 rounded-full bg-brand-purple" /> 1- DEMOSTRATIVOS</li>
-                                    <li className="flex items-center gap-2"><div className="h-2 w-2 rounded-full bg-brand-purple" /> 2- ADJETIVOS</li>
-                                    <li className="flex items-center gap-2"><div className="h-2 w-2 rounded-full bg-brand-purple" /> 3- WHICH</li>
-                                    <li className="flex items-center gap-2"><div className="h-2 w-2 rounded-full bg-brand-purple" /> 4- OTHER / ANOTHER</li>
-                                </ol>
-
-                                <div className="mt-6 p-4 bg-background rounded-lg border-2 border-dashed">
-                                    <h4 className="font-bold text-primary mb-2 flex items-center gap-2">
-                                        <ArrowRight className="h-4 w-4" /> ANOTHER vs OTHER:
-                                    </h4>
-                                    <p className="text-sm text-muted-foreground leading-relaxed mb-4">
-                                        Ambos significan lo mismo, pero <strong>Another</strong> es para singular y <strong>Other</strong> para plurales o incontables.
-                                    </p>
-                                    <div className="space-y-2 font-mono text-xs">
-                                        <p className="text-foreground">She's going to the cinema with <span className="font-bold text-primary underline">another friend</span>. (Singular)</p>
-                                        <p className="text-foreground">She's going to the cinema with <span className="font-bold text-primary underline">other friends</span>. (Plural)</p>
-                                    </div>
-                                </div>
-
-                                <p className="mt-4 text-sm bg-yellow-50 dark:bg-yellow-900/20 p-3 rounded border border-yellow-200">
-                                    <Lightbulb className="inline-block h-4 w-4 mr-1 text-yellow-500" />
-                                    Podemos elegir reemplazar el sustantivo por <strong>ONE / ONES</strong> solo si ya conocemos el contexto.
-                                </p>
-                            </div>
-
-                            <div className="bg-primary/5 p-6 rounded-xl border-l-4 border-primary mt-6">
-                                <h3 className="text-xl font-bold mb-4">EXAMPLE:</h3>
-                                <div className="space-y-4 font-mono text-sm">
-                                    <div className="p-3 bg-background rounded border border-dashed">
-                                        <p className="font-bold">WHICH HOUSE DOES SHE BUY?</p>
-                                        <p className="text-muted-foreground italic">(¿CUAL CASA COMPRA ELLA? )</p>
-                                    </div>
-                                    <div className="p-3 bg-background rounded border border-dashed">
-                                        <p className="font-bold text-primary">WHICH ONE DOES SHE BUY?</p>
-                                        <p className="text-muted-foreground italic">(¿CUAL COMPRA ELLA?)</p>
-                                    </div>
-                                    <div className="p-3 bg-background rounded border border-dashed">
-                                        <p className="font-bold">WHICH MANGOES DO THEY EAT?</p>
-                                        <p className="text-muted-foreground italic">(¿CUALES MANGOS COMEN ELLOS? )</p>
-                                    </div>
-                                    <div className="p-3 bg-background rounded border border-dashed">
-                                        <p className="font-bold text-primary">WHICH ONES DO THEY EAT?</p>
-                                        <p className="text-muted-foreground italic">(¿CUALES SE COMEN ELLOS?)</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </CardContent>
-                        <CardFooter className="justify-center">
-                            <Button onClick={() => handleTopicComplete('grammar')} size="lg" className="px-12">Entendido</Button>
-                        </CardFooter>
-                    </Card>
-                );
-            case 'ex1':
-                return <SimpleTranslationExercise exerciseKey="c10_ex1" course="a1" onComplete={() => handleTopicComplete('ex1')} title="Exercise 1: ONE / ONES" />;
-            case 'dialogue1':
-                return <LargeTextTranslation title="Dialogue 1" phrases={dialogue1Phrases} onComplete={() => handleTopicComplete('dialogue1')} vocabulary={dialogue1Vocab} />;
-            case 'exercise2':
-                return <SimpleTranslationExercise exerciseKey="c10_ex2" course="a1" onComplete={() => handleTopicComplete('exercise2')} title="Exercise 2" />;
-            case 'dialogue2':
-                return (
-                    <DialogueCompletionExercise 
-                        title="Dialogue 2" 
-                        description="Completa el diálogo con “THIS”, “THESE”, “THAT”, “THOSE”, “ONE” u “ONES”"
-                        dialogue={dialogue2Data} 
-                        onComplete={() => handleTopicComplete('dialogue2')}
-                    />
-                );
-            case 'grammar2':
-                return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-                        <CardHeader>
-                            <CardTitle>Grammar 2: ARTÍCULO DEFINIDO "THE"</CardTitle>
-                            <CardDescription>Definite Article "THE"</CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-6 text-lg">
-                            <Accordion type="multiple" defaultValue={['item-1', 'item-2', 'item-3', 'item-4']} className="w-full">
-                                <AccordionItem value="item-1">
-                                    <AccordionTrigger className="text-xl font-bold">1. SIGNIFICADO</AccordionTrigger>
-                                    <AccordionContent className="pt-2">
-                                        <p className="text-2xl font-black bg-primary/10 text-primary p-4 rounded-lg text-center">
-                                            THE = EL, LA, LOS, LAS
-                                        </p>
-                                    </AccordionContent>
-                                </AccordionItem>
-
-                                <AccordionItem value="item-2">
-                                    <AccordionTrigger className="text-xl font-bold">2. PRONUNCIACIÓN</AccordionTrigger>
-                                    <AccordionContent className="space-y-4 pt-2">
-                                        <div className="grid sm:grid-cols-2 gap-4">
-                                            <div className="p-4 bg-muted rounded-xl border-l-4 border-brand-blue">
-                                                <h4 className="font-bold text-brand-blue text-2xl mb-2">(DE)</h4>
-                                                <p className="text-sm font-medium">the + consonant</p>
-                                                <div className="mt-2 space-y-1 font-mono text-sm">
-                                                    <p>the motorcycle</p>
-                                                    <p>the house</p>
-                                                </div>
-                                            </div>
-                                            <div className="p-4 bg-muted rounded-xl border-l-4 border-brand-teal">
-                                                <h4 className="font-bold text-brand-teal text-2xl mb-2">(DI)</h4>
-                                                <p className="text-sm font-medium">the + vowel</p>
-                                                <div className="mt-2 space-y-1 font-mono text-sm">
-                                                    <p>the elevator</p>
-                                                    <p>the oranges / apples</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </AccordionContent>
-                                </AccordionItem>
-
-                                <AccordionItem value="item-3">
-                                    <AccordionTrigger className="text-xl font-bold">3. USO: COSAS ESPECÍFICAS</AccordionTrigger>
-                                    <AccordionContent className="space-y-6 pt-2">
-                                        <div className="p-4 bg-muted rounded-xl border-2 border-dashed">
-                                            <h4 className="font-bold mb-2 flex items-center gap-2">
-                                                <CheckCircle className="h-5 w-5 text-green-500" /> ESPECÍFICO (Lleva THE)
-                                            </h4>
-                                            <p className="text-sm italic">Me gusta el computador gris que compré en el centro comercial Monterrey el mes pasado:</p>
-                                            <p className="font-mono text-base font-bold text-primary mt-1">
-                                                I like <span className="underline">the</span> gray computer that I bought in Monterrey shopping center last month.
-                                            </p>
-                                        </div>
-
-                                        <div className="p-4 bg-muted rounded-xl border-2 border-dashed">
-                                            <h4 className="font-bold mb-2 flex items-center gap-2">
-                                                <Globe className="h-5 w-5 text-blue-500" /> GENERALIZACIÓN (NO lleva THE)
-                                            </h4>
-                                            <p className="text-sm italic">Me gustan los computadores:</p>
-                                            <p className="font-mono text-base font-bold text-primary mt-1">
-                                                I like computers.
-                                            </p>
-                                        </div>
-                                    </AccordionContent>
-                                </AccordionItem>
-
-                                <AccordionItem value="item-4">
-                                    <AccordionTrigger className="text-xl font-bold">4. NOMBRES GEOGRÁFICOS</AccordionTrigger>
-                                    <AccordionContent className="space-y-8 pt-2">
-                                        <div className="space-y-4">
-                                            <h4 className="font-black text-green-600 flex items-center gap-2 text-xl">
-                                                <CheckCircle className="h-6 w-6" /> LLEVAN EL ARTÍCULO "THE"
-                                            </h4>
-                                            <ul className="space-y-4">
-                                                <li className="p-3 bg-muted rounded-lg border-l-4 border-green-500">
-                                                    <strong>1. Países con:</strong> "República", "Estado", "Reino", "Unión".
-                                                    <p className="text-sm text-muted-foreground font-mono mt-1">The Soviet Union - The United States - The United Kingdom</p>
-                                                </li>
-                                                <li className="p-3 bg-muted rounded-lg border-l-4 border-green-500">
-                                                    <strong>2. Países con nombre en plural:</strong>
-                                                    <p className="text-sm text-muted-foreground font-mono mt-1">The Netherlands</p>
-                                                </li>
-                                                <li className="p-3 bg-muted rounded-lg border-l-4 border-green-500">
-                                                    <strong>3. Islas con nombre en plural:</strong>
-                                                    <p className="text-sm text-muted-foreground font-mono mt-1">The Bahamas</p>
-                                                </li>
-                                                <li className="p-3 bg-muted rounded-lg border-l-4 border-green-500">
-                                                    <strong>4. Montañas con nombre en plural:</strong>
-                                                    <p className="text-sm text-muted-foreground font-mono mt-1">The Andes - The Alps</p>
-                                                </li>
-                                                <li className="p-3 bg-muted rounded-lg border-l-4 border-green-500">
-                                                    <strong>5. Regiones:</strong>
-                                                    <p className="text-sm text-muted-foreground font-mono mt-1">The South of Canada - The North of Germany</p>
-                                                </li>
-                                                <li className="p-3 bg-muted rounded-lg border-l-4 border-green-500">
-                                                    <strong>6. Océanos, Mares y Ríos:</strong>
-                                                    <p className="text-sm text-muted-foreground font-mono mt-1">The Mississippi River - The Atlantic Ocean - The Caspian Sea</p>
-                                                </li>
-                                            </ul>
-                                        </div>
-
-                                        <Separator />
-
-                                        <div className="space-y-4">
-                                            <h4 className="font-black text-destructive flex items-center gap-2 text-xl">
-                                                <XCircle className="h-6 w-6" /> NO LLEVAN EL ARTÍCULO "THE"
-                                            </h4>
-                                            <ul className="grid sm:grid-cols-2 gap-4">
-                                                <li className="p-3 bg-muted rounded-lg border-l-4 border-destructive">
-                                                    <strong>1. Continentes:</strong>
-                                                    <p className="text-xs text-muted-foreground italic">Europe - Africa</p>
-                                                </li>
-                                                <li className="p-3 bg-muted rounded-lg border-l-4 border-destructive">
-                                                    <strong>2. Países y Estados:</strong>
-                                                    <p className="text-xs text-muted-foreground italic">Greece - Texas</p>
-                                                </li>
-                                                <li className="p-3 bg-muted rounded-lg border-l-4 border-destructive">
-                                                    <strong>3. Ciudades:</strong>
-                                                    <p className="text-xs text-muted-foreground italic">London - Paris - Berlin</p>
-                                                </li>
-                                                <li className="p-3 bg-muted rounded-lg border-l-4 border-destructive">
-                                                    <strong>4. Montañas Singular:</strong>
-                                                    <p className="text-xs text-muted-foreground italic">Mount Everest - Mont Blanc</p>
-                                                </li>
-                                                <li className="p-3 bg-muted rounded-lg border-l-4 border-destructive">
-                                                    <strong>5. Islas Singular:</strong>
-                                                    <p className="text-xs text-muted-foreground italic">Sicily</p>
-                                                </li>
-                                                <li className="p-3 bg-muted rounded-lg border-l-4 border-destructive">
-                                                    <strong>6. Lagos:</strong>
-                                                    <p className="text-xs text-muted-foreground italic">Lake Michigan - Lake Superior</p>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </AccordionContent>
-                                </AccordionItem>
-                            </Accordion>
-                        </CardContent>
-                        <CardFooter className="justify-center pt-6 border-t">
-                            <Button onClick={() => handleTopicComplete('grammar2')} size="lg" className="px-12">He terminado de estudiar</Button>
-                        </CardFooter>
-                    </Card>
-                );
-            case 'ex_the1':
-                const vocabThe1 = {
-                    "escalan": "climb",
-                    "río": "river",
-                    "luna de miel": "honeymoon",
-                    "isla": "island",
-                    "próximo mes": "next month"
-                };
-                return <SimpleTranslationExercise exerciseKey="c10_the1" course="a1" onComplete={() => handleTopicComplete('ex_the1')} title="Exercise with 'The' 1" vocabulary={vocabThe1} />;
-            case 'ex_the2':
-                return (
-                    <SentenceCompletionExercise
-                        title="Exercise with 'The' 2"
-                        description="Completa con 'THE' si es necesario. Si no se requiere, deja el espacio en blanco o escribe una 'x'."
-                        data={exerciseThe2Data}
-                        onComplete={() => handleTopicComplete('ex_the2')}
-                    />
-                );
-            case 'vocab_game':
-                return (
-                    <FillInTheBlanksExercise
-                        title="Vocabulary Game"
-                        data={vocabGameData}
-                        onComplete={() => handleTopicComplete('vocab_game')}
-                    />
-                );
-            case 'exercise3':
-                return <SimpleTranslationExercise exerciseKey="c10_ex3" course="a1" onComplete={() => handleTopicComplete('exercise3')} title="Exercise 3" />;
-            case 'dialogue3':
-                return (
-                    <DialogueCompletionExercise 
-                        title="Dialogue 3: In a Shop" 
-                        description="Completa el diálogo con “THIS”, “THESE”, “THAT”, “THOSE”, “ONE” o “ONES”"
-                        dialogue={dialogue3Data} 
-                        onComplete={() => handleTopicComplete('dialogue3')}
-                    />
-                );
-            case 'general_vocab':
-                return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-                        <CardHeader>
-                            <CardTitle>General Vocabulary</CardTitle>
-                            <CardDescription>Traduce el vocabulario del español al inglés. Al menos una correcta para avanzar.</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="grid grid-cols-2 gap-x-6 gap-y-3">
-                                <div className="font-black text-primary border-b pb-2 uppercase tracking-widest text-sm">Español</div>
-                                <div className="font-black text-primary border-b pb-2 uppercase tracking-widest text-sm">Inglés</div>
-                                {generalVocabularyData.map((item, idx) => (
-                                    <React.Fragment key={idx}>
-                                        <div className="flex items-center text-base font-medium py-1">
-                                            {item.spanish}
-                                        </div>
-                                        <div className="flex items-center">
-                                            <Input 
-                                                value={generalVocabAnswers[idx] || ''}
-                                                onChange={(e) => handleGenVocabChange(idx, e.target.value)}
-                                                className={cn("h-9 uppercase font-mono text-sm", getGenVocabClass(idx))}
-                                                placeholder="..."
-                                                autoComplete="off"
-                                            />
-                                        </div>
-                                    </React.Fragment>
-                                ))}
-                            </div>
-                        </CardContent>
-                        <CardFooter className="flex justify-between items-center border-t pt-6 mt-4">
-                            <Button onClick={handleCheckGenVocab} variant="secondary">Verificar</Button>
-                            <Button 
-                                onClick={() => handleTopicComplete('general_vocab')} 
-                                disabled={!canAdvanceGenVocab && !isAdmin}
-                                className={cn(canAdvanceGenVocab && "bg-green-600 hover:bg-green-700")}
-                            >
-                                Avanzar <ArrowRight className="ml-2 h-4 w-4" />
-                            </Button>
-                        </CardFooter>
-                    </Card>
-                );
-            case 'last_exercise':
-                return <SimpleTranslationExercise exerciseKey="c10_last" course="a1" onComplete={() => handleTopicComplete('last_exercise')} title="Last Exercise" />;
-            default:
-                return <div className="flex items-center justify-center h-64"><Loader2 className="animate-spin" /></div>;
+            case 'grammar': return <Card className="p-6"><CardTitle>WHAT vs WHICH</CardTitle><CardContent className="pt-4"><p>WHAT: General | WHICH: Opciones limitadas.</p></CardContent></Card>;
+            case 'grammar2': return <Card className="p-6"><CardTitle>EL ARTÍCULO "THE"</CardTitle><CardContent className="pt-4"><p>THE = EL, LA, LOS, LAS.</p></CardContent></Card>;
+            case 'ex1': return <SimpleTranslationExercise exerciseKey="c10_ex1" course="a1" onComplete={() => setTopicToComplete('ex1')} title="Exercise 1: ONE / ONES" />;
+            case 'dialogue1': return <LargeTextTranslation title="Dialogue 1" phrases={dialogue1Phrases} onComplete={() => setTopicToComplete('dialogue1')} />;
+            case 'exercise2': return <SimpleTranslationExercise exerciseKey="c10_ex2" course="a1" onComplete={() => setTopicToComplete('exercise2')} title="Exercise 2" />;
+            case 'dialogue2': return <DialogueCompletionExercise title="Dialogue 2" description="Completa con demostrativos." dialogue={dialogue2Data} onComplete={() => setTopicToComplete('dialogue2')} />;
+            case 'ex_the1': return <SimpleTranslationExercise exerciseKey="c10_the1" course="a1" onComplete={() => setTopicToComplete('ex_the1')} title="Exercise with 'The' 1" />;
+            case 'ex_the2': return <SentenceCompletionExercise title="Exercise with 'The' 2" description="Usa THE si es necesario." data={exerciseThe2Data} onComplete={() => setTopicToComplete('ex_the2')} />;
+            default: return <div className="flex justify-center items-center h-48"><Loader2 className="animate-spin text-primary" /></div>;
         }
     };
-
-    if (isUserLoading || isProfileLoading) {
-        return <div className="flex h-screen w-full items-center justify-center"><Loader2 className="h-16 w-16 animate-spin text-primary" /></div>;
-    }
 
     return (
         <div className="flex w-full flex-col min-h-screen ingles-dashboard-bg">
             <DashboardHeader />
             <main className="flex-1 p-4 md:p-8">
                 <div className="max-w-7xl mx-auto">
-                    <div className="mb-8 text-left">
-                        <Link href="/ingles/a1" className="hover:underline text-sm text-white/80">Volver al curso A1</Link>
-                        <h1 className="text-4xl font-bold text-white dark:text-primary [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">Clase 10</h1>
-                    </div>
+                    <div className="mb-8 text-left text-white"><Link href="/ingles/a1" className="hover:underline text-sm">Volver al curso A1</Link><h1 className="text-4xl font-bold [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">Clase 10</h1></div>
                     <div className="grid gap-8 md:grid-cols-12">
                         <div className="md:col-span-9">{renderContent()}</div>
                         <div className="md:col-span-3 text-left">
-                            <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple">
-                                <CardHeader><CardTitle>Ruta de Aprendizaje</CardTitle></CardHeader>
+                            <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
+                                <CardHeader><CardTitle>Ruta</CardTitle></CardHeader>
                                 <CardContent>
-                                    <nav>
-                                        <ul className="space-y-1">
-                                            {learningPath.map((item) => {
-                                                const Icon = item.status === 'completed' ? CheckCircle : item.icon;
-                                                const isLocked = item.status === 'locked' && !isAdmin;
-                                                const isActive = item.status === 'active';
-                                                return (
-                                                    <li key={item.key} onClick={() => handleTopicSelect(item.key)}
-                                                        className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer',
-                                                            isLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted',
-                                                            selectedTopic === item.key && 'bg-muted text-primary font-semibold',
-                                                            isActive && !isAdmin && "animate-pulse-glow"
-                                                        )}
-                                                    >
-                                                        <div className="flex items-center gap-3">
-                                                            <Icon className={cn("h-5 w-5", item.status === 'completed' ? 'text-green-500' : (item.status === 'locked' ? 'text-yellow-500' : ''))} />
-                                                            <span>{item.name}</span>
-                                                        </div>
-                                                    </li>
-                                                );
-                                            })}
-                                        </ul>
-                                    </nav>
-                                    <div className="mt-6 pt-6 border-t">
-                                        <div className="flex justify-between items-center text-sm font-medium text-muted-foreground mb-2"><span>Progreso</span><span className="font-bold text-foreground">{progressValue}%</span></div>
-                                        <Progress value={progressValue} className="h-2" />
-                                    </div>
+                                    <nav><ul className="space-y-1">
+                                        {learningPath.map(item => (
+                                            <li key={item.key} onClick={() => handleTopicSelect(item.key)} className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer', (item.status === 'locked' && !isAdmin) ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === item.key && 'bg-muted text-primary font-semibold')}>
+                                                <div className="flex items-center gap-3">{(item.status === 'completed') ? <CheckCircle className="h-5 w-5 text-green-500" /> : <item.icon className="h-5 w-5" />}<span>{item.name}</span></div>
+                                            </li>
+                                        ))}
+                                    </ul></nav>
+                                    <div className="mt-6 pt-6 border-t"><div className="flex justify-between items-center text-sm mb-2"><span>Progreso</span><span className="font-bold">{progressValue}%</span></div><Progress value={progressValue} className="h-2" /></div>
                                 </CardContent>
                             </Card>
                         </div>

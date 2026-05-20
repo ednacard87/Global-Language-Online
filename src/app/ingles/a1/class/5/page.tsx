@@ -1,11 +1,11 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import Link from 'next/link';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { BookOpen, PenSquare, Lock, Info, CheckCircle } from 'lucide-react';
+import { BookOpen, PenSquare, Lock, Info, CheckCircle, Loader2, ArrowRight } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
@@ -26,7 +26,13 @@ type Topic = {
   status: 'locked' | 'active' | 'completed';
 };
 
-const progressStorageVersion = 'progress_a1_eng_unit_1_class_5_v1';
+const ICONS_CONFIG = {
+    locked: Lock,
+    active: BookOpen,
+    completed: CheckCircle,
+};
+
+const progressStorageVersion = 'progress_a1_eng_unit_1_class_5_v5_stable';
 const mainProgressKey = 'progress_a1_eng_unit_1_class_5';
 
 const vocabularyData = {
@@ -115,86 +121,6 @@ const class5Exercise2Data: ExercisePrompt[] = [
             negative: ["you do not work on saturdays", "you don't work on saturdays"],
             interrogative: ["do you work on saturdays?"],
         }
-    },
-    {
-        spanish: "ELLA VE PELICULAS CON SU FAMILIA",
-        answers: {
-            affirmative: ["she watches movies with her family"],
-            negative: ["she does not watch movies with her family", "she doesn't watch movies with her family"],
-            interrogative: ["does she watch movies with her family?"],
-        }
-    },
-    {
-        spanish: "EL COME PIZZA CON SU NOVIA",
-        answers: {
-            affirmative: ["he eats pizza with his girlfriend"],
-            negative: ["he does not eat pizza with his girlfriend", "he doesn't eat pizza with his girlfriend"],
-            interrogative: ["does he eat pizza with his girlfriend?"],
-        }
-    },
-    {
-        spanish: "YO ESTUDIO INGLES DURANTE LA SEMANA",
-        answers: {
-            affirmative: ["i study english during the week"],
-            negative: ["i do not study english during the week", "i don't study english during the week"],
-            interrogative: ["do i study english during the week?"],
-        }
-    },
-    {
-        spanish: "A ELLA LE GUSTA VIAJAR",
-        answers: {
-            affirmative: ["she likes to travel"],
-            negative: ["she does not like to travel", "she doesn't like to travel"],
-            interrogative: ["does she like to travel?"],
-        }
-    },
-    {
-        spanish: "NOSOTROS COMPRAMOS UNA CASA",
-        answers: {
-            affirmative: ["we buy a house"],
-            negative: ["we do not buy a house", "we don't buy a house"],
-            interrogative: ["do we buy a house?"],
-        }
-    },
-    {
-        spanish: "ELLA COCINA PASTA",
-        answers: {
-            affirmative: ["she cooks pasta"],
-            negative: ["she does not cook pasta", "she doesn't cook pasta"],
-            interrogative: ["does she cook pasta?"],
-        }
-    },
-    {
-        spanish: "ELLOS SON TUS PRIMOS",
-        answers: {
-            affirmative: ["they are your cousins"],
-            negative: ["they are not your cousins", "they aren't your cousins"],
-            interrogative: ["are they your cousins?"],
-        }
-    },
-    {
-        spanish: "NOSOTROS VAMOS A LA ESCUELA",
-        answers: {
-            affirmative: ["we go to school"],
-            negative: ["we do not go to school", "we don't go to school"],
-            interrogative: ["do we go to school?"],
-        }
-    },
-    {
-        spanish: "ELLA ES SU ESPOSA (de él)",
-        answers: {
-            affirmative: ["she is his wife"],
-            negative: ["she is not his wife", "she isn't his wife"],
-            interrogative: ["is she his wife?"],
-        }
-    },
-    {
-        spanish: "ELLOS TRABAJAN EN LA MAÑANA",
-        answers: {
-            affirmative: ["they work in the morning"],
-            negative: ["they do not work in the morning", "they don't work in the morning"],
-            interrogative: ["do they work in the morning?"],
-        }
     }
 ];
 
@@ -218,12 +144,13 @@ export default function EngA1Class5Page() {
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
     const [selectedTopic, setSelectedTopic] = useState<string>('');
     const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
+    const [isInitialLoading, setIsInitialLoading] = useState(true);
+    const [initialLoadComplete, setInitialLoadComplete] = useState(false);
 
     // State for vocabulary exercise
     const [vocabAnswers, setVocabAnswers] = useState<{[key: string]: string[]}>({});
     const [vocabValidation, setVocabValidation] = useState<{[key: string]: ('correct' | 'incorrect' | 'unchecked')[]}>({});
-    const [canAdvance, setCanAdvance] = useState(false);
-
+    const [canAdvanceVocab, setCanAdvanceVocab] = useState(false);
 
     const initialLearningPath = useMemo((): Topic[] => [
         { key: 'vocabulary', name: 'Vocabulario', icon: BookOpen, status: 'active' },
@@ -236,82 +163,94 @@ export default function EngA1Class5Page() {
     ], []);
     
     useEffect(() => {
-        if (isProfileLoading || isUserLoading) return;
-        const newPath = initialLearningPath.map(topic => ({
-            ...topic,
-            status: isAdmin ? 'completed' : topic.status,
-        }));
-        
-        if (studentProfile?.lessonProgress?.[progressStorageVersion] && !isAdmin) {
-            const savedStatuses = studentProfile.lessonProgress[progressStorageVersion];
-            newPath.forEach(item => {
-                if (savedStatuses[item.key]) item.status = savedStatuses[item.key];
+        if (isProfileLoading || isUserLoading || !studentProfile || initialLoadComplete) return;
+
+        let path = initialLearningPath.map(topic => ({ ...topic }));
+        let savedSelectedTopic = '';
+
+        if (isAdmin) {
+          path.forEach(item => { item.status = 'completed'; });
+        } else if(studentProfile?.lessonProgress?.[progressStorageVersion]) {
+            const savedData = studentProfile.lessonProgress[progressStorageVersion];
+            path.forEach(item => {
+                if (savedData[item.key]) item.status = savedData[item.key];
             });
-        }
-        
-        setLearningPath(newPath);
-
-        const firstActive = newPath.find(p => p.status === 'active');
-        if (firstActive) {
-            setSelectedTopic(firstActive.key);
-        } else if (newPath.length > 0) {
-            setSelectedTopic(newPath[0].key);
+            savedSelectedTopic = savedData.lastSelectedTopic || '';
         }
 
-        // Initialize vocab answers state
-        const initialAnswers: { [key: string]: string[] } = {};
-        const initialValidation: { [key: string]: ('correct' | 'incorrect' | 'unchecked')[] } = {};
-        Object.keys(vocabularyData).forEach(category => {
-            const cat = category as keyof typeof vocabularyData;
-            initialAnswers[cat] = Array(vocabularyData[cat].length).fill('');
-            initialValidation[cat] = Array(vocabularyData[cat].length).fill('unchecked');
+        let lastDone = true;
+        for(let i=0; i < path.length; i++) {
+            if (lastDone && path[i].status === 'locked') path[i].status = 'active';
+            lastDone = path[i].status === 'completed';
+        }
+
+        setLearningPath(path);
+        const firstActive = path.find(p => p.status === 'active');
+        setSelectedTopic(savedSelectedTopic || firstActive?.key || path[0].key);
+
+        const initAnswers: any = {};
+        const initVal: any = {};
+        Object.keys(vocabularyData).forEach(cat => {
+            initAnswers[cat] = Array((vocabularyData as any)[cat].length).fill('');
+            initVal[cat] = Array((vocabularyData as any)[cat].length).fill('unchecked');
         });
-        setVocabAnswers(initialAnswers);
-        setVocabValidation(initialValidation);
-        setCanAdvance(false);
-    }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading, isUserLoading]);
+        setVocabAnswers(initAnswers);
+        setVocabValidation(initVal);
+
+        setInitialLoadComplete(true);
+        setIsInitialLoading(false);
+    }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading, isUserLoading, initialLoadComplete, t]);
     
-    const progress = useMemo(() => {
+    const progressValue = useMemo(() => {
         if (learningPath.length === 0) return 0;
-        const completedTopics = learningPath.filter(t => t.status === 'completed').length;
-        return Math.round((completedTopics / learningPath.length) * 100);
+        const completedCount = learningPath.filter(t => t.status === 'completed').length;
+        return Math.round((completedCount / learningPath.length) * 100);
     }, [learningPath]);
 
     useEffect(() => {
-        if (isProfileLoading || isUserLoading) return;
-        if (!isAdmin && studentDocRef && learningPath.length > 0) {
-            const statusesToSave: Record<string, any> = {};
-            learningPath.forEach(item => {
-                statusesToSave[item.key] = item.status;
+        if (!initialLoadComplete || isInitialLoading || isAdmin || !studentDocRef || learningPath.length === 0) return;
+
+        const statusesToSave: Record<string, any> = { lastSelectedTopic: selectedTopic };
+        learningPath.forEach(item => { statusesToSave[item.key] = item.status; });
+
+        const savedData = studentProfile?.lessonProgress?.[progressStorageVersion];
+        if (JSON.stringify(statusesToSave) !== JSON.stringify(savedData)) {
+            updateDocumentNonBlocking(studentDocRef, {
+                [`lessonProgress.${progressStorageVersion}`]: statusesToSave,
+                [`progress.${mainProgressKey}`]: Math.round(progressValue)
             });
-            updateDocumentNonBlocking(studentDocRef, { [`lessonProgress.${progressStorageVersion}`]: statusesToSave });
-            updateDocumentNonBlocking(studentDocRef, { [`progress.${mainProgressKey}`]: Math.round(progress) });
         }
-        if (progress >= 100) {
-          window.dispatchEvent(new CustomEvent('progressUpdated'));
-        }
-    }, [learningPath, isAdmin, progress, studentDocRef, isProfileLoading, isUserLoading]);
+    }, [learningPath, isAdmin, progressValue, studentDocRef, initialLoadComplete, selectedTopic, studentProfile, isInitialLoading]);
 
     useEffect(() => {
         if (!topicToComplete) return;
     
         setLearningPath(currentPath => {
-            const newPath = [...currentPath];
-            const currentIndex = newPath.findIndex(item => item.key === topicToComplete);
-            
-            if (currentIndex !== -1 && newPath[currentIndex].status !== 'completed') {
-                newPath[currentIndex].status = 'completed';
-                const nextIndex = currentIndex + 1;
-                if (nextIndex < newPath.length && newPath[nextIndex].status === 'locked') {
-                    newPath[nextIndex].status = 'active';
-                    setSelectedTopic(newPath[nextIndex].key);
-                     toast({ title: "¡Siguiente tema desbloqueado!" });
+            let wasUnlocked = false;
+            let nextToSelect: string | null = null;
+            const newPath = currentPath.map(t => ({ ...t }));
+          
+            let topicFound = false;
+            for (let i = 0; i < newPath.length && !topicFound; i++) {
+                if (newPath[i].key === topicToComplete) {
+                    if (newPath[i].status !== 'completed') newPath[i].status = 'completed';
+                    if (i + 1 < newPath.length && newPath[i + 1].status === 'locked') {
+                        newPath[i + 1].status = 'active';
+                        wasUnlocked = true;
+                        nextToSelect = newPath[i + 1].key;
+                    }
+                    topicFound = true;
                 }
+            }
+            if (wasUnlocked) setTimeout(() => toast({ title: "¡Siguiente tema desbloqueado!" }), 0);
+            if (nextToSelect) {
+                const finalNext = nextToSelect;
+                setTimeout(() => setSelectedTopic(finalNext), 0);
             }
             return newPath;
         });
         setTopicToComplete(null);
-    }, [topicToComplete, toast]);
+    }, [topicToComplete, toast, isAdmin]);
 
     const handleTopicComplete = (completedKey: string) => {
         setTopicToComplete(completedKey);
@@ -319,364 +258,115 @@ export default function EngA1Class5Page() {
 
     const handleTopicSelect = (topicKey: string) => {
         const topic = learningPath.find(t => t.key === topicKey);
-        
         if (!isAdmin && topic?.status === 'locked') {
             toast({ variant: "destructive", title: "Contenido Bloqueado" });
             return;
         }
         setSelectedTopic(topicKey);
 
-        const exerciseKeys = ['vocabulary', 'ejercicio-1', 'ejercicio-2', 'ejercicio-3', 'ejercicio-vocabulario', 'ejercicio-4'];
-        if (!exerciseKeys.includes(topicKey)) {
+        const autoViewTopics = ['nota-importante'];
+        if (autoViewTopics.includes(topicKey)) {
             handleTopicComplete(topicKey);
         }
     };
 
-    const handleVocabInputChange = (category: string, index: number, value: string) => {
-        setVocabAnswers(prev => ({
-            ...prev,
-            [category]: prev[category].map((ans, i) => (i === index ? value : ans)),
-        }));
-        const newValidation = { ...vocabValidation };
-        const catKey = category as keyof typeof vocabValidation;
-        if (newValidation[catKey]?.[index] !== 'unchecked') {
-            newValidation[catKey][index] = 'unchecked';
-            setVocabValidation(newValidation);
-        }
-        setCanAdvance(false);
+    const handleVocabChange = (cat: string, idx: number, val: string) => {
+        const newAns = { ...vocabAnswers };
+        newAns[cat][idx] = val;
+        setVocabAnswers(newAns);
+        const newVal = { ...vocabValidation };
+        newVal[cat][idx] = 'unchecked';
+        setVocabValidation(newVal);
+        setCanAdvanceVocab(false);
     };
 
     const handleCheckVocab = () => {
-        let atLeastOneCorrect = false;
-        const newValidationStatus: { [key: string]: ('correct' | 'incorrect' | 'unchecked')[] } = {};
-
-        Object.keys(vocabularyData).forEach(category => {
-            const cat = category as keyof typeof vocabularyData;
-            newValidationStatus[cat] = vocabularyData[cat].map((item, index) => {
-                const userAnswer = (vocabAnswers[cat]?.[index] || '').trim().toLowerCase();
-                const isCorrect = item.english.toLowerCase() === userAnswer;
-                if (isCorrect) {
-                    atLeastOneCorrect = true;
-                }
+        let oneCorrect = false;
+        const newVal: any = {};
+        Object.keys(vocabularyData).forEach(cat => {
+            newVal[cat] = (vocabularyData as any)[cat].map((item: any, idx: number) => {
+                const userVal = (vocabAnswers[cat][idx] || '').trim().toUpperCase();
+                const isCorrect = userVal === item.english.toUpperCase();
+                if (isCorrect) oneCorrect = true;
                 return isCorrect ? 'correct' : 'incorrect';
             });
         });
-
-        setValidationStatus(newValidationStatus);
-
-        if (atLeastOneCorrect) {
-            toast({ title: "¡Bien hecho!", description: "Has acertado al menos una. ¡Ya puedes avanzar!" });
-            setCanAdvance(true);
+        setVocabValidation(newVal);
+        if (oneCorrect) {
+            toast({ title: '¡Bien hecho!' });
+            setCanAdvanceVocab(true);
         } else {
-            toast({
-                variant: 'destructive',
-                title: "Sigue intentando",
-                description: "Revisa tus respuestas. ¡Necesitas al menos una correcta para continuar!",
-            });
-            setCanAdvance(false);
+            toast({ variant: 'destructive', title: 'Sigue intentando' });
         }
     };
-    
-    const getVocabInputClass = (category: string, index: number) => {
-        const status = vocabValidation[category as keyof typeof vocabValidation]?.[index];
-        if (status === 'correct') return 'border-green-500 focus-visible:ring-green-500';
-        if (status === 'incorrect') return 'border-destructive focus-visible:ring-destructive';
+
+    const getVocabClass = (cat: string, idx: number) => {
+        const status = vocabValidation[cat]?.[idx];
+        if (status === 'correct') return 'border-green-500 focus-visible:ring-green-500 bg-green-50 dark:bg-green-900/10';
+        if (status === 'incorrect') return 'border-destructive focus-visible:ring-destructive bg-destructive/5';
         return '';
     };
-    
+
     const renderContent = () => {
+        if (isInitialLoading) return <div className="flex justify-center items-center min-h-[400px]"><Loader2 className="h-12 w-12 animate-spin text-primary" /></div>;
+
         const topic = learningPath.find(t => t.key === selectedTopic);
 
-        if (selectedTopic === 'vocabulary') {
-            return (
-                <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-                    <CardHeader>
-                        <CardTitle>Vocabulario</CardTitle>
-                        <CardDescription>Escribe la traducción correcta en inglés para cada palabra.</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <Accordion type="multiple" defaultValue={['verbos', 'adjetivos']} className="w-full">
-                            <AccordionItem value="verbos">
-                                <AccordionTrigger className="text-lg font-semibold">Verbos</AccordionTrigger>
-                                <AccordionContent>
-                                    <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-lg">
-                                        <div className="font-bold p-3 bg-muted rounded-lg text-left">Español</div>
-                                        <div className="font-bold p-3 bg-muted rounded-lg text-left">Inglés</div>
-                                        {vocabularyData.verbos.map((word, index) => (
-                                            <React.Fragment key={`verbo-${index}`}>
-                                                <div className="p-3 bg-card border rounded-lg flex items-center">{word.spanish}</div>
-                                                <div className="p-3 bg-card border rounded-lg flex items-center">
-                                                     <Input
-                                                        value={vocabAnswers.verbos?.[index] || ''}
-                                                        onChange={(e) => handleVocabInputChange('verbos', index, e.target.value)}
-                                                        className={cn(getVocabInputClass('verbos', index))}
-                                                        autoComplete="off"
-                                                    />
-                                                </div>
-                                            </React.Fragment>
-                                        ))}
-                                    </div>
-                                </AccordionContent>
-                            </AccordionItem>
-                            <AccordionItem value="adjetivos">
-                                <AccordionTrigger className="text-lg font-semibold">Adjetivos Básicos</AccordionTrigger>
-                                <AccordionContent>
-                                    <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-lg">
-                                        <div className="font-bold p-3 bg-muted rounded-lg text-left">Español</div>
-                                        <div className="font-bold p-3 bg-muted rounded-lg text-left">Inglés</div>
-                                        {vocabularyData.adjetivos.map((word, index) => (
-                                            <React.Fragment key={`adj-${index}`}>
-                                                <div className="p-3 bg-card border rounded-lg flex items-center">{word.spanish}</div>
-                                                <div className="p-3 bg-card border rounded-lg flex items-center">
-                                                    <Input
-                                                        value={vocabAnswers.adjetivos?.[index] || ''}
-                                                        onChange={(e) => handleVocabInputChange('adjetivos', index, e.target.value)}
-                                                        className={cn(getVocabInputClass('adjetivos', index))}
-                                                        autoComplete="off"
-                                                    />
-                                                </div>
-                                            </React.Fragment>
-                                        ))}
-                                    </div>
-                                </AccordionContent>
-                            </AccordionItem>
-                        </Accordion>
-                    </CardContent>
-                    <CardFooter className="flex justify-between">
-                       <Button onClick={handleCheckVocab}>
-                           Verificar
-                       </Button>
-                       <Button onClick={() => handleTopicComplete('vocabulary')} disabled={!canAdvance}>
-                           Avanzar
-                       </Button>
-                   </CardFooter>
-                </Card>
-            );
+        switch (selectedTopic) {
+            case 'vocabulary':
+                return (
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                        <CardHeader><CardTitle>Vocabulario</CardTitle></CardHeader>
+                        <CardContent>
+                            <Accordion type="multiple" defaultValue={['verbos', 'adjetivos']} className="w-full">
+                                {Object.keys(vocabularyData).map(cat => (
+                                    <AccordionItem key={cat} value={cat}>
+                                        <AccordionTrigger className="text-lg font-semibold capitalize">{cat}</AccordionTrigger>
+                                        <AccordionContent>
+                                            <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-lg">
+                                                <div className="font-bold p-3 bg-muted rounded-lg text-left">Español</div>
+                                                <div className="font-bold p-3 bg-muted rounded-lg text-left">Inglés</div>
+                                                {(vocabularyData as any)[cat].map((word: any, index: number) => (
+                                                    <React.Fragment key={`${cat}-${index}`}>
+                                                        <div className="p-3 bg-card border rounded-lg flex items-center font-medium">{word.spanish}</div>
+                                                        <div className="p-3 bg-card border rounded-lg flex items-center">
+                                                             <Input value={vocabAnswers[cat]?.[index] || ''} onChange={e => handleVocabChange(cat, index, e.target.value)} className={cn(getVocabClass(cat, index))} autoComplete="off" />
+                                                        </div>
+                                                    </React.Fragment>
+                                                ))}
+                                            </div>
+                                        </AccordionContent>
+                                    </AccordionItem>
+                                ))}
+                            </Accordion>
+                        </CardContent>
+                        <CardFooter className="flex justify-between">
+                            <Button onClick={handleCheckVocab}>Verificar</Button>
+                            <Button onClick={() => handleTopicComplete('vocabulary')} disabled={!canAdvanceVocab && !isAdmin}>Avanzar</Button>
+                        </CardFooter>
+                    </Card>
+                );
+            case 'nota-importante':
+                return (
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                        <CardHeader><CardTitle>Notas Importantes</CardTitle></CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="p-4 bg-muted rounded-lg space-y-2 text-base">
+                                <p><strong>1. Dos verbos juntos:</strong> se agrega "TO" en la mitad.</p>
+                                <p><strong>2. Verbo "GO":</strong> "go to the + lugar" o "go + sin lugar".</p>
+                                <p><strong>3. ¡NUNCA!:</strong> Una frase tiene verbo TO BE y DO/DOES al tiempo.</p>
+                            </div>
+                        </CardContent>
+                        <CardFooter className="justify-center"><Button onClick={() => handleTopicComplete('nota-importante')} size="lg">Entendido</Button></CardFooter>
+                    </Card>
+                );
+            case 'ejercicio-1': return <ErrorCorrectionExercise exerciseData={exercise1Data} onComplete={() => handleTopicComplete('ejercicio-1')} title="Ejercicio 1" />;
+            case 'ejercicio-2': return <PresentSimpleExercise exerciseData={class5Exercise2Data} onComplete={() => handleTopicComplete('ejercicio-2')} title="Ejercicio 2" showShortAnswers={false} />;
+            case 'ejercicio-3': return <SimpleTranslationExercise course="a1" exerciseKey="c5_mixed3" onComplete={() => handleTopicComplete('ejercicio-3')} title="Ejercicio 3" />;
+            case 'ejercicio-vocabulario': return <Class5VocabExercise onComplete={() => handleTopicComplete('ejercicio-vocabulario')} />;
+            case 'ejercicio-4': return <SimpleTranslationExercise course="a1" exerciseKey="c5_mixed4" onComplete={() => handleTopicComplete('ejercicio-4')} title="Ejercicio 4" />;
+            default: return <div className="flex justify-center items-center h-48"><Loader2 className="animate-spin h-10 w-10 text-primary" /></div>;
         }
-        
-        if (selectedTopic === 'nota-importante') {
-            return (
-                <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-                    <CardHeader>
-                        <CardTitle>Notas Importantes</CardTitle>
-                        <CardDescription>Reglas y tips para recordar.</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <Accordion type="multiple" className="w-full" defaultValue={['item-1']}>
-                            <AccordionItem value="item-1">
-                                <AccordionTrigger>1. Dos verbos juntos</AccordionTrigger>
-                                <AccordionContent>
-                                    <p>Cuando tenemos dos verbos juntos, en la mitad se agrega "TO".</p>
-                                </AccordionContent>
-                            </AccordionItem>
-        
-                            <AccordionItem value="item-2">
-                                <AccordionTrigger>2. Verbo "GO"</AccordionTrigger>
-                                <AccordionContent>
-                                    <p className="font-mono">go to the + lugar especifico</p>
-                                    <p className="font-mono">go + cuando no tenemos un lugar</p>
-                                </AccordionContent>
-                            </AccordionItem>
-        
-                            <AccordionItem value="item-3">
-                                <AccordionTrigger>3. NUNCA PERO NUNCA</AccordionTrigger>
-                                <AccordionContent>
-                                    <p>Una frase tiene verbo TO BE y DO/DOES.</p>
-                                </AccordionContent>
-                            </AccordionItem>
-        
-                            <AccordionItem value="item-4">
-                                <AccordionTrigger>4. Genitivo Sajón</AccordionTrigger>
-                                <AccordionContent>
-                                    <p>Nunca tiene el artículo "THE" adelante de él.</p>
-                                    <div className="mt-2 p-3 bg-muted rounded-lg font-mono text-sm">
-                                        <p>la casa de maria</p>
-                                        <p className="text-green-600">Maria's house</p>
-                                        <p className="text-red-600">the Maria's house (incorrecto)</p>
-                                    </div>
-                                </AccordionContent>
-                            </AccordionItem>
-                            
-                            <AccordionItem value="item-5">
-                                <AccordionTrigger>5. Preposiciones Comunes</AccordionTrigger>
-                                <AccordionContent>
-                                   <div className="grid grid-cols-3 gap-4">
-                                        <div>
-                                            <h4 className="font-bold">IN</h4>
-                                            <ul className="list-disc list-inside text-sm">
-                                                <li>in the morning</li>
-                                                <li>in the afternoon</li>
-                                                <li>in + months</li>
-                                            </ul>
-                                        </div>
-                                       <div>
-                                            <h4 className="font-bold">AT</h4>
-                                             <ul className="list-disc list-inside text-sm">
-                                                <li>at night</li>
-                                                <li>at work</li>
-                                                <li>at school</li>
-                                                <li>at university</li>
-                                                <li>at home</li>
-                                            </ul>
-                                       </div>
-                                       <div>
-                                            <h4 className="font-bold">ON</h4>
-                                             <ul className="list-disc list-inside text-sm">
-                                                <li>on + dias de la semana</li>
-                                                <li>on weekend</li>
-                                                <li>on + month + day</li>
-                                            </ul>
-                                       </div>
-                                   </div>
-                                </AccordionContent>
-                            </AccordionItem>
-        
-                            <AccordionItem value="item-6">
-                                <AccordionTrigger>6. Diferencias entre TÚ y TU</AccordionTrigger>
-                                <AccordionContent>
-                                    <h4 className="font-bold">TÚ = PRONOUN</h4>
-                                    <p className="font-mono">PRONOUN = TÚ + VERB</p>
-                                    <div className="mt-2 p-3 bg-muted rounded-lg font-mono text-sm">
-                                        <p>tú eres = you are</p>
-                                        <p>tú estás = you are</p>
-                                        <p>tú vives = you live</p>
-                                    </div>
-        
-                                     <h4 className="font-bold mt-4">TU = POSSESSIVE</h4>
-                                    <p className="font-mono">POSSESSIVE = TU + NOUN</p>
-                                     <div className="mt-2 p-3 bg-muted rounded-lg font-mono text-sm">
-                                        <p>tu casa = your house</p>
-                                        <p>tu celular = your cellphone</p>
-                                        <p>tu perro = your dog</p>
-                                    </div>
-                                </AccordionContent>
-                            </AccordionItem>
-        
-                            <AccordionItem value="item-7">
-                                <AccordionTrigger>7. Explanation: Desde</AccordionTrigger>
-                                <AccordionContent>
-                                    <h4 className="font-bold">Since: Años</h4>
-                                    <p>Es un tiempo específico en el pasado hasta ahora.</p>
-                                    <div className="mt-2 p-3 bg-muted rounded-lg font-mono text-sm">
-                                        <p>yo trabajo en esa empresa desde 2022</p>
-                                        <p>i work in that company since 2022</p>
-                                    </div>
-                                    <h4 className="font-bold mt-4">From .... To /Until: Rango de tiempo</h4>
-                                    <div className="mt-2 p-3 bg-muted rounded-lg font-mono text-sm">
-                                        <p>yo trabajo desde las 8 a.m hasta las 7 p.m</p>
-                                        <p>i work from 8 a.m until 7 p.m</p>
-                                        <br/>
-                                        <p>yo trabajo de 8 a.m a 7 p.m</p>
-                                        <p>i work from 8 a.m to 7 p.m</p>
-                                    </div>
-                                     <h4 className="font-bold mt-4">de: from: Origen de una persona</h4>
-                                    <div className="mt-2 p-3 bg-muted rounded-lg font-mono text-sm">
-                                        <p>i am from Colombia</p>
-                                    </div>
-                                </AccordionContent>
-                            </AccordionItem>
-        
-                            <AccordionItem value="item-8">
-                                <AccordionTrigger>8. Adjectives: -ED vs -ING</AccordionTrigger>
-                                <AccordionContent>
-                                     <h4 className="font-bold">ED = Bored</h4>
-                                    <p>la persona lo siente desde adentro. (sentimientos, emociones)</p>
-                                    <div className="mt-2 p-3 bg-muted rounded-lg font-mono text-sm">
-                                        <p>yo estoy aburrida : i'm bored</p>
-                                        <p>él está aburrido : he's bored</p>
-                                    </div>
-                                     <h4 className="font-bold mt-4">ING = Boring</h4>
-                                    <p>caracteristicas de un sustantivo.</p>
-                                     <div className="mt-2 p-3 bg-muted rounded-lg font-mono text-sm">
-                                        <p>él es aburridor : he's boring</p>
-                                        <br/>
-                                        <p>esa pelicula es aburridora, no me gusta</p>
-                                        <p>that movie is boring, i don't like it</p>
-                                    </div>
-                                </AccordionContent>
-                            </AccordionItem>
-                            
-                            <AccordionItem value="item-9">
-                                <AccordionTrigger>9. Futuro en Ingles (WILL)</AccordionTrigger>
-                                <AccordionContent>
-                                    <div className="mt-2 p-3 bg-muted rounded-lg font-mono text-sm">
-                                        <p>yo llamaré</p>
-                                        <p>i will call you</p>
-                                        <br/>
-                                        <p>yo trabajaré el fin de semana</p>
-                                        <p>i will work on weekend</p>
-                                    </div>
-                                </AccordionContent>
-                            </AccordionItem>
-        
-                        </Accordion>
-                    </CardContent>
-                </Card>
-            );
-        }
-        
-        if (selectedTopic === 'ejercicio-1') {
-            return (
-                <ErrorCorrectionExercise
-                    exerciseData={exercise1Data}
-                    onComplete={() => handleTopicComplete('ejercicio-1')}
-                    title="Ejercicio 1: Encuentra el error"
-                />
-            );
-        }
-
-        if (selectedTopic === 'ejercicio-2') {
-            return (
-                <PresentSimpleExercise
-                    exerciseData={class5Exercise2Data}
-                    onComplete={() => handleTopicComplete('ejercicio-2')}
-                    title="Ejercicio 2: Transforma"
-                    showShortAnswers={false}
-                />
-            );
-        }
-
-        if (selectedTopic === 'ejercicio-3') {
-             return (
-                 <SimpleTranslationExercise
-                    course="a1"
-                    exerciseKey="c5_mixed3" 
-                    onComplete={() => handleTopicComplete('ejercicio-3')}
-                    title="Ejercicio 3: Adjetivos Posesivos"
-                />
-            );
-        }
-        
-        if (selectedTopic === 'ejercicio-vocabulario') {
-            return <Class5VocabExercise onComplete={() => handleTopicComplete('ejercicio-vocabulario')} />;
-        }
-
-        if (selectedTopic === 'ejercicio-4') {
-             return (
-                 <SimpleTranslationExercise
-                    course="a1"
-                    exerciseKey="c5_mixed4" 
-                    onComplete={() => handleTopicComplete('ejercicio-4')}
-                    title="Ejercicio 4"
-                />
-            );
-        }
-
-        return (
-            <Card className="shadow-soft rounded-lg border-2 border-brand-purple min-h-[500px]">
-              <CardHeader>
-                <CardTitle>{topic?.name || 'Cargando...'}</CardTitle>
-                <CardDescription>Contenido para este tema estará disponible pronto.</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {topic && topic.key.startsWith('ejercicio') && (
-                    <Button onClick={() => handleTopicComplete(topic.key)}>
-                        Completar Ejercicio (placeholder)
-                    </Button>
-                )}
-              </CardContent>
-            </Card>
-        );
     };
 
     return (
@@ -684,29 +374,30 @@ export default function EngA1Class5Page() {
             <DashboardHeader />
             <main className="flex-1 p-4 md:p-8">
                 <div className="max-w-7xl mx-auto">
-                    <div className="mb-8">
-                        <Link href="/ingles/a1/unit/1" className="hover:underline text-sm text-muted-foreground">Volver a la unidad 1</Link>
-                        <h1 className="text-4xl font-bold dark:text-primary">Clase 5</h1>
+                    <div className="mb-8 text-left text-white">
+                        <Link href="/ingles/a1/unit/1" className="hover:underline text-sm">Volver a la unidad 1</Link>
+                        <h1 className="text-4xl font-bold [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">Clase 5 (A1)</h1>
                     </div>
                     <div className="grid gap-8 md:grid-cols-12">
                         <div className="md:col-span-9">{renderContent()}</div>
-                        <div className="md:col-span-3">
-                            <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple">
+                        <div className="md:col-span-3 text-left">
+                            <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
                                 <CardHeader><CardTitle>Ruta de Aprendizaje</CardTitle></CardHeader>
                                 <CardContent>
                                     <nav>
                                         <ul className="space-y-1">
                                             {learningPath.map((item) => {
                                                 const Icon = item.status === 'completed' ? CheckCircle : (item.status === 'active' ? item.icon : Lock);
+                                                const isLocked = item.status === 'locked' && !isAdmin;
                                                 return (
                                                     <li key={item.key} onClick={() => handleTopicSelect(item.key)}
                                                         className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer',
-                                                            item.status === 'locked' && !isAdmin ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted',
+                                                            isLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted',
                                                             selectedTopic === item.key && 'bg-muted text-primary font-semibold'
                                                         )}
                                                     >
                                                         <div className="flex items-center gap-3">
-                                                            <Icon className={cn("h-5 w-5", item.status === 'completed' ? 'text-green-500' : (item.status === 'locked' ? 'text-yellow-500' : ''))} />
+                                                            <Icon className={cn("h-5 w-5", item.status === 'completed' ? 'text-green-500' : '')} />
                                                             <span>{item.name}</span>
                                                         </div>
                                                     </li>
@@ -715,8 +406,8 @@ export default function EngA1Class5Page() {
                                         </ul>
                                     </nav>
                                     <div className="mt-6 pt-6 border-t">
-                                        <div className="flex justify-between items-center text-sm font-medium text-muted-foreground mb-2"><span>Progreso</span><span className="font-bold text-foreground">{Math.round(progress)}%</span></div>
-                                        <Progress value={progress} className="h-2" />
+                                        <div className="flex justify-between items-center text-sm font-medium text-muted-foreground mb-2"><span>Progreso</span><span className="font-bold text-foreground">{progressValue}%</span></div>
+                                        <Progress value={progressValue} className="h-2" />
                                     </div>
                                 </CardContent>
                             </Card>
