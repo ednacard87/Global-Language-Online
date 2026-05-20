@@ -18,7 +18,6 @@ import { Label } from '@/components/ui/label';
 import { SingleFormExercise } from '@/components/kids/exercises/single-form';
 import { PresentSimpleExercise } from '@/components/kids/exercises/present-simple';
 
-
 type Topic = {
   key: string;
   name: string;
@@ -33,7 +32,7 @@ const ICONS = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_kids_b1_will_v4_stable';
+const progressStorageVersion = 'progress_kids_b1_will_v10_stable';
 const mainProgressKey = 'progress_kids_b1_will';
 
 const vocabularyData = [
@@ -44,32 +43,11 @@ const vocabularyData = [
     { english: 'Waste', spanish: 'Desperdicios / Residuos.' },
     { english: 'To melt', spanish: 'Derretirse.' },
     { english: 'To improve', spanish: 'Mejorar.' },
-    { english: 'Deforestation', spanish: 'Deforestación.' },
-    { english: 'Fossil fuels', spanish: 'Combustibles fósiles.' },
-    { english: 'Recycling', spanish: 'reciclaje' },
-    { english: 'Carbon footprint', spanish: 'Huella de carbono.' },
-    { english: 'Eco-system', spanish: 'Ecosistema.' },
 ];
 
 const willPositiveExercises = [
     { spanish: 'ella comerá pollo', answer: ["she will eat chicken"] },
     { spanish: 'el vivirá en Londres', answer: ["he will live in london"] },
-    { spanish: 'nosotros veremos la serie From', answer: ["we will watch the series from", "we will watch from series", "we will watch the show from", "we will watch from the series", "we will watch the serie from"] },
-    { spanish: 'ellos estudiaran ingles por 2 años', answer: ["they will study english for 2 years"] },
-];
-
-const willNegativeExercises = [
-    { spanish: 'ella no comerá pollo', answer: ["she will not eat chicken", "she won't eat chicken"] },
-    { spanish: 'el no vivirá en Londres', answer: ["he will not live in london", "he won't live in london"] },
-    { spanish: 'nosotros no veremos la serie From', answer: ["we will not watch the series from", "we won't watch the series from", "we will not watch from the series", "we won't watch from the series", "we will not watch the serie from", "we won't watch from the series"] },
-    { spanish: 'ellos no estudiaran ingles por 2 años', answer: ["they will not study english for 2 years", "they won't study english for 2 years"] },
-];
-
-const willInterrogativeExercises = [
-    { spanish: '¿ella comerá pollo?', answer: ["will she eat chicken?"] },
-    { spanish: '¿el vivirá en Londres?', answer: ["will he live in london?"] },
-    { spanish: '¿nosotros veremos la serie From?', answer: ["will we watch the series from?", "will we watch from the series?", "will we watch the serie from?"] },
-    { spanish: '¿ellos estudiaran ingles por 2 años?', answer: ["will they study english for 2 years?"] },
 ];
 
 const willMixedExercises = [
@@ -82,327 +60,8 @@ const willMixedExercises = [
             shortAffirmative: ["yes, I will"],
             shortNegative: ["no, I will not", "no, I won't"]
         }
-    },
-    {
-        spanish: "tu leerás el libro mañana",
-        answers: {
-            affirmative: ["you will read the book tomorrow", "you'll read the book tomorrow"],
-            negative: ["you will not read the book tomorrow", "you won't read the book tomorrow"],
-            interrogative: ["will you read the book tomorrow?"],
-            shortAffirmative: ["yes, I will"],
-            shortNegative: ["no, I will not", "no, I won't"]
-        }
-    },
-    {
-        spanish: "nosotros comeremos pizza esta noche",
-        answers: {
-            affirmative: ["we will eat pizza tonight", "we'll eat pizza tonight"],
-            negative: ["we will not eat pizza tonight", "we won't eat pizza tonight"],
-            interrogative: ["will we eat pizza tonight?"],
-            shortAffirmative: ["yes, we will"],
-            shortNegative: ["no, we will not", "no, we won't"]
-        }
-    },
-    {
-        spanish: "ellos jugaran video juegos",
-        answers: {
-            affirmative: ["they will play video games", "they'll play video games"],
-            negative: ["they will not play video games", "they won't play video games"],
-            interrogative: ["will they play video games?"],
-            shortAffirmative: ["yes, they will"],
-            shortNegative: ["no, we will not", "no, we won't"]
-        }
-    },
-    {
-        spanish: "él jugara futbol",
-        answers: {
-            affirmative: ["he will play football", "he'll play football", "he will play soccer", "he'll play soccer"],
-            negative: ["he will not play football", "he won't play football", "he will not play soccer", "he won't play soccer"],
-            interrogative: ["will he play football?", "will he play soccer?"],
-            shortAffirmative: ["yes, he will"],
-            shortNegative: ["no, he will not", "no, he won't"]
-        }
     }
 ];
-
-const FinalVocabularyExercise = ({ onComplete }: { onComplete: () => void }) => {
-    const { t } = useTranslation();
-    const { toast } = useToast();
-    const [userAnswers, setUserAnswers] = useState<Record<number, string>>({});
-    const [validationStatus, setValidationStatus] = useState<Record<number, 'correct' | 'incorrect' | 'unchecked'>>({});
-
-    const handleInputChange = (index: number, value: string) => {
-        setUserAnswers(prev => ({ ...prev, [index]: value }));
-        setValidationStatus(prev => ({ ...prev, [index]: 'unchecked' }));
-    };
-
-    const handleCheckAnswers = () => {
-        let allCorrect = true;
-        const newValidationStatus: Record<number, 'correct' | 'incorrect' | 'unchecked'> = {};
-        vocabularyData.forEach((item, index) => {
-            const userAnswer = userAnswers[index]?.trim().toLowerCase() || '';
-            const correctAnswer = item.english.toLowerCase();
-            if (userAnswer === correctAnswer) {
-                newValidationStatus[index] = 'correct';
-            } else {
-                newValidationStatus[index] = 'incorrect';
-                allCorrect = false;
-            }
-        });
-        setValidationStatus(newValidationStatus);
-
-        if (allCorrect) {
-            toast({ title: "¡Excelente!", description: "Has completado el vocabulario." });
-            onComplete();
-        } else {
-            toast({ variant: "destructive", title: "Sigue intentando", description: "Algunas respuestas son incorrectas." });
-        }
-    };
-    
-    const getInputClass = (status: 'correct' | 'incorrect' | 'unchecked') => {
-        if (status === 'correct') return 'border-green-500 focus-visible:ring-green-500';
-        if (status === 'incorrect') return 'border-destructive focus-visible:ring-destructive';
-        return '';
-    };
-
-    return (
-        <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-            <CardHeader>
-                <CardTitle>Vocabulario Final</CardTitle>
-                <CardDescription>Escribe la traducción correcta en inglés para cada término.</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-lg">
-                    <div className="font-bold p-3 bg-muted rounded-lg text-left">Español</div>
-                    <div className="font-bold p-3 bg-muted rounded-lg text-left">Inglés</div>
-                    {vocabularyData.map((item, index) => (
-                        <React.Fragment key={index}>
-                            <div className="p-3 bg-card border rounded-lg flex items-center">{item.spanish}</div>
-                            <div className="p-3 bg-card border rounded-lg flex items-center">
-                                <Input
-                                    value={userAnswers[index] || ''}
-                                    onChange={(e) => handleInputChange(index, e.target.value)}
-                                    className={cn(getInputClass(validationStatus[index]))}
-                                />
-                            </div>
-                        </React.Fragment>
-                    ))}
-                </div>
-            </CardContent>
-            <CardFooter>
-                <Button onClick={handleCheckAnswers}>Verificar</Button>
-            </CardFooter>
-        </Card>
-    );
-};
-
-const readingTextData = {
-    title: "kidsB1Will.readingTitle",
-    content: "Our planet is beautiful. We love our eco-system. But pollution from fossil fuels is a big problem. In the past, people didn't recycle much. Now, we know recycling is important. I think in the future, we will use more renewable energy. We will improve our habits to reduce our carbon footprint. My family and I will help stop deforestation by planting trees next weekend. What will you do to help?",
-    questions: [
-        { id: 'q1', question: "What is a big problem for our planet?", answers: ["pollution", "pollution from fossil fuels"] },
-        { id: 'q2', question: "What did people not do much in the past?", answers: ["recycle"] },
-        { id: 'q3', question: "What will we use more of in the future?", answers: ["renewable energy"] },
-        { id: 'q4', question: "What will the family do next weekend?", answers: ["plant trees", "help stop deforestation", "help stop deforestation by planting trees"] },
-        { id: 'q5', question: "What helps stop deforestation in the text?", answers: ["planting trees"] }
-    ]
-};
-
-const ReadingExercise = ({ onComplete }: { onComplete: () => void }) => {
-    const { t } = useTranslation();
-    const { toast } = useToast();
-    const [userAnswers, setUserAnswers] = useState<Record<string, string>>({});
-    const [validationStatus, setValidationStatus] = useState<Record<string, 'correct' | 'incorrect' | 'unchecked'>>({});
-
-    const handleInputChange = (questionId: string, value: string) => {
-        setUserAnswers(prev => ({ ...prev, [questionId]: value }));
-        setValidationStatus(prev => ({ ...prev, [questionId]: 'unchecked' }));
-    };
-
-    const handleCheckAnswers = () => {
-        let allCorrect = true;
-        const newValidationStatus: Record<string, 'correct' | 'incorrect' | 'unchecked'> = {};
-
-        readingTextData.questions.forEach(q => {
-            const userAnswer = userAnswers[q.id]?.trim().toLowerCase().replace(/[.?]/g, '') || '';
-            const correctAnswers = q.answers.map(a => a.toLowerCase().replace(/[.?]/g, ''));
-            
-            if (correctAnswers.includes(userAnswer)) {
-                newValidationStatus[q.id] = 'correct';
-            } else {
-                newValidationStatus[q.id] = 'incorrect';
-                allCorrect = false;
-            }
-        });
-
-        setValidationStatus(newValidationStatus);
-
-        if (allCorrect) {
-            toast({ title: t('kidsB1Will.readingCorrect'), description: t('kidsB1Will.readingAllCorrect') });
-            onComplete();
-        } else {
-            toast({
-                variant: 'destructive',
-                title: t('kidsB1Will.readingIncorrect'),
-                description: t('kidsB1Will.readingReview')
-            });
-        }
-    };
-    
-    const getInputClass = (questionId: string) => {
-        const status = validationStatus[questionId];
-        if (status === 'correct') return 'border-green-500 focus-visible:ring-green-500';
-        if (status === 'incorrect') return 'border-destructive focus-visible:ring-destructive';
-        return '';
-    };
-
-    return (
-        <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-            <CardHeader>
-                <CardTitle>{t('kidsB1Will.reading')}</CardTitle>
-                <CardDescription>{t('kidsB1Will.readingDescription')}</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-                <div className="p-4 bg-muted rounded-lg border">
-                    <h4 className="font-bold mb-2">{t(readingTextData.title)}</h4>
-                    <p className="text-base leading-relaxed">{readingTextData.content}</p>
-                </div>
-                <div className="space-y-4 pt-4 border-t">
-                    {readingTextData.questions.map(q => (
-                        <div key={q.id} className="grid gap-2">
-                            <Label htmlFor={q.id}>{q.question}</Label>
-                            <Input
-                                id={q.id}
-                                value={userAnswers[q.id] || ''}
-                                onChange={(e) => handleInputChange(q.id, e.target.value)}
-                                className={cn(getInputClass(q.id))}
-                                autoComplete="off"
-                            />
-                        </div>
-                    ))}
-                </div>
-            </CardContent>
-            <CardFooter>
-                <Button onClick={handleCheckAnswers}>{t('kidsB1Will.readingCheckAnswers')}</Button>
-            </CardFooter>
-        </Card>
-    );
-};
-
-const WordSearchGame = ({ onComplete }: { onComplete: () => void }) => {
-    const { t } = useTranslation();
-    const { toast } = useToast();
-    
-    const words = useMemo(() => vocabularyData.map(v => v.english.replace(/ /g, '').toUpperCase()), []);
-    const [grid, setGrid] = useState<string[][]>([]);
-    const [foundWords, setFoundWords] = useState<{ word: string, cells: { row: number, col: number }[] }[]>([]);
-    const [selection, setSelection] = useState<{row: number, col: number}[]>([]);
-    const [isSelecting, setIsSelecting] = useState(false);
-
-    useEffect(() => {
-        const gridSize = 18;
-        const newGrid: (string | null)[][] = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null));
-        const directions = [
-            { dr: 0, dc: 1 },  { dr: 1, dc: 0 },  { dr: 1, dc: 1 },  { dr: 0, dc: -1 }, 
-            { dr: -1, dc: 0 }, { dr: 1, dc: -1 }, { dr: -1, dc: 1 }, { dr: -1, dc: -1 },
-        ];
-
-        words.forEach(originalWord => {
-            let placed = false;
-            let attempts = 0;
-            while (!placed && attempts < 1000) {
-                attempts++;
-                const wordToPlace = Math.random() > 0.5 ? originalWord.split('').reverse().join('') : originalWord;
-                const dir = directions[Math.floor(Math.random() * directions.length)];
-                const startRow = Math.floor(Math.random() * gridSize);
-                const startCol = Math.floor(Math.random() * gridSize);
-                let canPlace = true;
-                for (let i = 0; i < wordToPlace.length; i++) {
-                    const newRow = startRow + i * dir.dr;
-                    const newCol = startCol + i * dir.dc;
-                    if (newRow < 0 || newRow >= gridSize || newCol < 0 || newCol >= gridSize || (newGrid[newRow][newCol] && newGrid[newRow][newCol] !== wordToPlace[i])) {
-                        canPlace = false; break;
-                    }
-                }
-                if (canPlace) {
-                    for (let i = 0; i < wordToPlace.length; i++) {
-                        const newRow = startRow + i * dir.dr;
-                        const newCol = startCol + i * dir.dc;
-                        newGrid[newRow][newCol] = wordToPlace[i];
-                    }
-                    placed = true;
-                }
-            }
-        });
-        
-        const finalGrid = newGrid.map(row => row.map(cell => cell || 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[Math.floor(Math.random() * 26)]));
-        setGrid(finalGrid);
-        setFoundWords([]);
-    }, [words]);
-
-    const handleMouseUp = () => {
-        if (!isSelecting || grid.length === 0) return;
-        setIsSelecting(false);
-        const selectedWord = selection.map(({ row, col }) => grid[row][col]).join('');
-        const reversedSelectedWord = selectedWord.split('').reverse().join('');
-        const wordFound = words.find(w => !foundWords.some(fw => fw.word === w) && (w === selectedWord || w === reversedSelectedWord));
-        if (wordFound) {
-            setFoundWords(prev => [...prev, { word: wordFound, cells: selection }]);
-            toast({ title: "¡Palabra encontrada!", description: `Has encontrado "${wordFound}".` });
-        }
-        setSelection([]);
-    };
-    
-    useEffect(() => {
-        if (words && foundWords.length === words.length && words.length > 0) {
-            onComplete();
-        }
-    }, [foundWords, words, onComplete]);
-
-
-    return (
-         <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-            <CardHeader>
-                <CardTitle>{t('wordSearch.title')}</CardTitle>
-                <CardDescription>{t('wordSearch.description')}</CardDescription>
-            </CardHeader>
-            <CardContent className="grid md:grid-cols-3 gap-8 items-start">
-                <div onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp} className="bg-muted p-2 rounded-lg md:col-span-2 overflow-auto">
-                    <div className="grid gap-1" style={{ gridTemplateColumns: `repeat(${grid.length > 0 ? grid.length : 1}, minmax(0, 1fr))` }}>
-                        {grid.map((row, rowIndex) => (
-                            row.map((cell, colIndex) => {
-                                const isSelected = selection.some(s => s.row === rowIndex && s.col === colIndex);
-                                const isFound = foundWords.some(fw => fw.cells.some(c => c.row === rowIndex && colIndex === colIndex));
-                                return (
-                                <div key={`${rowIndex}-${colIndex}`}
-                                    onMouseDown={() => { setIsSelecting(true); setSelection([{row: rowIndex, col: colIndex}]); }}
-                                    onMouseEnter={() => { if(isSelecting) setSelection(s => [...s, {row: rowIndex, col: colIndex}])}}
-                                    className={cn("flex items-center justify-center aspect-square select-none cursor-pointer rounded bg-background text-sm sm:text-base font-bold", 
-                                        isFound ? "bg-primary text-primary-foreground" : (isSelected ? "bg-primary/50" : "")
-                                    )}
-                                >
-                                    {cell}
-                                </div>
-                                )
-                            })
-                        ))}
-                    </div>
-                </div>
-                 <div className="md:col-span-1">
-                    <h3 className="font-semibold mb-2">{t('wordSearch.wordsToFind')}</h3>
-                    <ul className="space-y-1 text-sm">
-                        {words.map(word => (
-                            <li key={word} className={cn("transition-all", foundWords.some(fw => fw.word === word) && "line-through text-muted-foreground opacity-70")}>
-                                {word}
-                            </li>
-                        ))}
-                    </ul>
-                 </div>
-            </CardContent>
-        </Card>
-    );
-};
-
 
 export default function WillPage() {
     const { t } = useTranslation();
@@ -440,9 +99,6 @@ export default function WillPage() {
             ],
         },
         { key: 'mixedExercises', name: t('kidsB1Will.mixedExercises'), icon: PenSquare, status: 'locked' },
-        { key: 'game', name: t('kidsB1Will.game'), icon: Gamepad2, status: 'locked' },
-        { key: 'reading', name: t('kidsB1Will.reading'), icon: BookOpen, status: 'locked' },
-        { key: 'finalVocabulary', name: t('kidsB1Will.finalVocabulary'), icon: BookOpen, status: 'locked' },
     ], [t]);
     
     useEffect(() => {
@@ -454,84 +110,27 @@ export default function WillPage() {
         }));
 
         if (isAdmin) {
-            path.forEach(item => {
-                item.status = 'completed';
-                if (item.subItems) {
-                    item.subItems.forEach(sub => sub.status = 'completed');
-                }
-            });
+            path.forEach(item => { item.status = 'completed'; if (item.subItems) item.subItems.forEach(s => s.status = 'completed'); });
         } else if (studentProfile?.lessonProgress?.[progressStorageVersion]) {
             const savedStatuses = studentProfile.lessonProgress[progressStorageVersion];
             path.forEach(item => {
                 if (savedStatuses[item.key]) item.status = savedStatuses[item.key];
                 if (item.subItems && savedStatuses.subItems?.[item.key]) {
-                    item.subItems.forEach(subItem => {
-                        if (savedStatuses.subItems[item.key][subItem.key]) {
-                            subItem.status = savedStatuses.subItems[item.key][subItem.key];
-                        }
-                    });
+                    item.subItems.forEach(subItem => { if (savedStatuses.subItems[item.key][subItem.key]) subItem.status = savedStatuses.subItems[item.key][subItem.key]; });
                 }
             });
         }
 
         setLearningPath(path);
-
         if (!initialLoadComplete) {
             const firstActive = path.find(p => p.status === 'active') || path.flatMap(p => p.subItems || []).find(sp => sp?.status === 'active');
-            if (firstActive) {
-                if (firstActive.subItems) {
-                    const firstActiveSub = firstActive.subItems.find(si => si.status === 'active');
-                    setSelectedTopic(firstActiveSub?.key || firstActive.key);
-                } else {
-                    setSelectedTopic(firstActive.key);
-                }
-            } else {
-                setSelectedTopic(path[0]?.key || '');
-            }
+            setSelectedTopic(firstActive?.key || path[0].key);
             setInitialLoadComplete(true);
         }
-    
-    }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading, isUserLoading, initialLoadComplete]);
-
-    const progressValue = useMemo(() => {
-        if (!initialLoadComplete) return 0;
-        let totalTopics = 0;
-        let completedTopics = 0;
-        learningPath.forEach(t => {
-            if (t.subItems) {
-                totalTopics += t.subItems.length;
-                completedTopics += t.subItems.filter(st => st.status === 'completed').length;
-            } else {
-                totalTopics++;
-                if (t.status === 'completed') completedTopics++;
-            }
-        });
-        return totalTopics > 0 ? Math.round((completedTopics / totalTopics) * 100) : 0;
-    }, [learningPath, initialLoadComplete]);
-
-    useEffect(() => {
-        if (!initialLoadComplete || isUserLoading || isProfileLoading || learningPath.length === 0 || !studentDocRef) return;
-
-        if (!isAdmin) {
-            const statusesToSave: Record<string, any> = { lastSelectedTopic: selectedTopic };
-            learningPath.forEach(item => {
-                statusesToSave[item.key] = item.status;
-                if (item.subItems) {
-                    if (!statusesToSave.subItems) statusesToSave.subItems = {};
-                    statusesToSave.subItems[item.key] = {};
-                    item.subItems.forEach(sub => { statusesToSave.subItems[item.key][sub.key] = sub.status; });
-                }
-            });
-            updateDocumentNonBlocking(studentDocRef, { 
-                [`lessonProgress.${progressStorageVersion}`]: statusesToSave,
-                [`progress.${mainProgressKey}`]: Math.round(progressValue)
-            });
-        }
-    }, [learningPath, progressValue, isAdmin, studentDocRef, isUserLoading, isProfileLoading, initialLoadComplete, selectedTopic]);
+    }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading, isUserLoading, initialLoadComplete, t]);
 
     const handleTopicComplete = (completedKey: string) => {
         if (isAdmin) return;
-        
         let wasUnlocked = false;
         let nextToSelect: string | null = null;
 
@@ -544,21 +143,19 @@ export default function WillPage() {
             let found = false;
             for (let i = 0; i < newPath.length && !found; i++) {
                 const currentTopic = newPath[i];
-          
                 if (currentTopic.key === completedKey) {
                     if (currentTopic.status !== 'completed') currentTopic.status = 'completed';
                     if (i + 1 < newPath.length && newPath[i + 1].status === 'locked') {
-                        const next = newPath[i + 1];
-                        next.status = 'active';
+                        newPath[i + 1].status = 'active';
                         wasUnlocked = true;
-                        nextToSelect = next.subItems?.[0]?.key || next.key;
-                        if (next.subItems?.[0]) next.subItems[0].status = 'active';
+                        nextToSelect = newPath[i + 1].subItems?.[0]?.key || newPath[i + 1].key;
+                        if (newPath[i + 1].subItems?.[0]) newPath[i + 1].subItems![0].status = 'active';
                     }
                     found = true;
                 } else if (currentTopic.subItems) {
                     const subIndex = currentTopic.subItems.findIndex(s => s.key === completedKey);
                     if (subIndex !== -1) {
-                        if (currentTopic.subItems[subIndex].status !== 'completed') currentTopic.subItems[subIndex].status = 'completed';
+                        newPath[i].subItems![subIndex].status = 'completed';
                         const nextSubIndex = subIndex + 1;
                         if (nextSubIndex < currentTopic.subItems.length && currentTopic.subItems[nextSubIndex].status === 'locked') {
                             currentTopic.subItems[nextSubIndex].status = 'active';
@@ -567,188 +164,75 @@ export default function WillPage() {
                         } else if (currentTopic.subItems.every(s => s.status === 'completed')) {
                             if (currentTopic.status !== 'completed') currentTopic.status = 'completed';
                             if (i + 1 < newPath.length && newPath[i + 1].status === 'locked') {
-                                const next = newPath[i + 1];
-                                next.status = 'active';
+                                newPath[i + 1].status = 'active';
                                 wasUnlocked = true;
-                                nextToSelect = next.subItems?.[0]?.key || next.key;
-                                if (next.subItems?.[0]) next.subItems[0].status = 'active';
+                                nextToSelect = newPath[i + 1].subItems?.[0]?.key || newPath[i + 1].key;
+                                if (newPath[i + 1].subItems?.[0]) newPath[i + 1].subItems![0].status = 'active';
                             }
                         }
                         found = true;
                     }
                 }
             }
-
-            // Move side effects out of the pure state calculation using the task queue
-            if (wasUnlocked) {
-                setTimeout(() => toast({ title: "¡Siguiente tema desbloqueado!" }), 0);
-            }
-            if (nextToSelect) {
-                const finalToSelect = nextToSelect;
-                setTimeout(() => setSelectedTopic(finalToSelect!), 0);
-            }
-
             return newPath;
         });
+
+        if (wasUnlocked) setTimeout(() => toast({ title: "¡Siguiente tema desbloqueado!" }), 0);
+        if (nextToSelect) setSelectedTopic(nextToSelect);
     };
 
     const handleTopicSelect = (topicKey: string) => {
         const mainTopic = learningPath.find(t => t.key === topicKey || t.subItems?.some(st => st.key === topicKey));
         const subTopic = mainTopic?.subItems?.find(st => st.key === topicKey);
-        
         if (!isAdmin && ((subTopic && subTopic.status === 'locked') || (!subTopic && mainTopic?.status === 'locked'))) {
             toast({ variant: "destructive", title: "Contenido Bloqueado" });
             return;
         }
         setSelectedTopic(topicKey);
-
-        const autoViewTopics = ['vocabulary', 'grammar'];
-        if (autoViewTopics.includes(topicKey)) {
-             handleTopicComplete(topicKey);
-        }
+        if (topicKey === 'vocabulary' || topicKey === 'grammar') handleTopicComplete(topicKey);
     };
     
-    const renderContent = () => {
-        const topic = learningPath.find(t => t.key === selectedTopic) || learningPath.flatMap(t => t.subItems || []).find(st => st?.key === selectedTopic);
-
-        switch(selectedTopic) {
-            case 'vocabulary':
-                return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-                        <CardHeader>
-                            <CardTitle>{t('kidsB1Will.vocabulary')}</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-lg">
-                                <div className="font-bold p-3 bg-muted rounded-lg text-left">English</div>
-                                <div className="font-bold p-3 bg-muted rounded-lg text-left">Español</div>
-                                {vocabularyData.map((item, index) => (
-                                    <React.Fragment key={index}>
-                                        <div className="p-3 bg-card border rounded-lg flex items-center font-medium">{item.english}</div>
-                                        <div className="p-3 bg-card border rounded-lg flex items-center">{item.spanish}</div>
-                                    </React.Fragment>
-                                ))}
-                            </div>
-                        </CardContent>
-                        <CardFooter>
-                            <Button onClick={() => handleTopicComplete('vocabulary')}>Avanzar</Button>
-                        </CardFooter>
-                    </Card>
-                );
-            case 'grammar':
-                 return (
-                    <div className="space-y-6">
-                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-                            <CardHeader><CardTitle>¿Cuándo usamos WILL?</CardTitle></CardHeader>
-                            <CardContent className="space-y-2 text-lg">
-                                <p>Usamos <span className="font-bold text-primary">WILL</span> para hablar sobre el futuro. Es como hacer una promesa o una predicción.</p>
-                            </CardContent>
-                        </Card>
-                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-                            <CardHeader><CardTitle>Estructura de WILL</CardTitle></CardHeader>
-                            <CardContent className="space-y-2 font-mono text-base">
-                                <p><span className="font-bold text-lg text-green-500 mr-2">(+)</span> pronoun + WILL + Verb + Complement</p>
-                                <p><span className="font-bold text-lg text-red-500 mr-2">(-)</span> pronoun + WILL + NOT + Verb + Complement</p>
-                                <p><span className="font-bold text-lg text-blue-500 mr-2">(?)</span> WILL + pronoun + Verb + Complement?</p>
-                            </CardContent>
-                        </Card>
-                        <CardFooter className="justify-center">
-                            <Button onClick={() => handleTopicComplete('grammar')}>Entendido</Button>
-                        </CardFooter>
-                    </div>
-                );
-            case 'positive':
-                return <SingleFormExercise key="positive" onComplete={() => handleTopicComplete('positive')} exerciseData={willPositiveExercises} title="Ejercicios: Forma Positiva" description="Traduce las frases a su forma afirmativa usando 'will'." formType="affirmative" />;
-            case 'negative':
-                return <SingleFormExercise key="negative" onComplete={() => handleTopicComplete('negative')} exerciseData={willNegativeExercises} title="Ejercicios: Forma Negativa" description="Traduce las frases a su forma negativa usando 'will not' o 'won't'." formType="negative" />;
-            case 'interrogative':
-                return <SingleFormExercise key="interrogative" onComplete={() => handleTopicComplete('interrogative')} exerciseData={willInterrogativeExercises} title="Ejercicios: Forma Interrogativa" description="Convierte las frases en preguntas usando 'will'." formType="interrogative" />;
-            case 'mixedExercises':
-                return <PresentSimpleExercise onComplete={() => handleTopicComplete('mixedExercises')} exerciseData={willMixedExercises} title="Ejercicios Mixtos (Will)" showShortAnswers={true} />;
-            case 'reading':
-                return <ReadingExercise onComplete={() => handleTopicComplete('reading')} />;
-            case 'finalVocabulary':
-                return <FinalVocabularyExercise onComplete={() => handleTopicComplete('finalVocabulary')} />;
-            case 'game':
-                return <WordSearchGame onComplete={() => handleTopicComplete('game')} />;
-            default:
-                return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple min-h-[500px]">
-                        <CardContent className="flex items-center justify-center h-64">
-                            <Loader2 className="animate-spin h-10 w-10 text-primary" />
-                        </CardContent>
-                    </Card>
-                );
-        }
-    };
-
-    if (isUserLoading || isProfileLoading) {
-        return <div className="flex h-screen w-full items-center justify-center"><Loader2 className="h-16 w-16 animate-spin text-primary" /></div>;
-    }
-
     return (
         <div className="flex w-full flex-col min-h-screen will-lesson-bg">
             <DashboardHeader />
             <main className="flex-1 p-4 md:p-8">
                 <div className="max-w-7xl mx-auto">
-                    <div className="mb-8 text-left">
-                        <Link href="/kids/b1" className="hover:underline text-sm text-white/80">Volver al curso B1</Link>
-                        <h1 className="text-4xl font-bold text-white dark:text-primary">{t('kidsB1.will')}</h1>
+                    <div className="mb-8 text-white">
+                        <Link href="/kids/b1" className="hover:underline text-sm">Volver al curso B1</Link>
+                        <h1 className="text-4xl font-bold">{t('kidsB1.will')}</h1>
                     </div>
                     <div className="grid gap-8 md:grid-cols-12">
-                        <div className="md:col-span-9">{renderContent()}</div>
+                        <div className="md:col-span-9">
+                            {selectedTopic === 'vocabulary' && (
+                                <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                                    <CardHeader><CardTitle>{t('kidsB1Will.vocabulary')}</CardTitle></CardHeader>
+                                    <CardContent><div className="grid grid-cols-2 gap-4">{vocabularyData.map((v, i) => (<div key={i} className="p-3 bg-muted rounded-lg font-medium">{v.spanish} - {v.english}</div>))}</div></CardContent>
+                                    <CardFooter><Button onClick={() => handleTopicComplete('vocabulary')}>He terminado de repasar</Button></CardFooter>
+                                </Card>
+                            )}
+                            {selectedTopic === 'grammar' && (
+                                <Card className="shadow-soft border-2 border-brand-purple p-6"><CardTitle>Estructura WILL</CardTitle><CardContent className="pt-4 font-mono">(+) pronoun + WILL + Verb</CardContent><CardFooter><Button onClick={() => handleTopicComplete('grammar')}>Entendido</Button></CardFooter></Card>
+                            )}
+                            {selectedTopic === 'positive' && <SingleFormExercise onComplete={() => handleTopicComplete('positive')} exerciseData={willPositiveExercises} title="Positiva" description="Usa WILL" formType="affirmative" />}
+                            {selectedTopic === 'mixedExercises' && <PresentSimpleExercise onComplete={() => handleTopicComplete('mixedExercises')} exerciseData={willMixedExercises} title="Mixtos" />}
+                        </div>
                         <div className="md:col-span-3 text-left">
                             <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
-                                <CardHeader><CardTitle>Ruta de Aprendizaje</CardTitle></CardHeader>
+                                <CardHeader><CardTitle>Aventura</CardTitle></CardHeader>
                                 <CardContent>
-                                    <nav>
-                                        <ul className="space-y-1">
-                                            {learningPath.map((item) => (
-                                                <li key={item.key}>
-                                                    {!item.subItems ? (
-                                                        <div onClick={() => handleTopicSelect(item.key)}
-                                                            className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer', item.status === 'locked' && !isAdmin ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === item.key && 'bg-muted text-primary font-semibold')}>
-                                                            <div className="flex items-center gap-3">
-                                                                <item.icon className={cn("h-5 w-5", item.status === 'completed' ? 'text-green-500' : '')} />
-                                                                <span>{item.name}</span>
-                                                            </div>
-                                                            {item.status === 'locked' && !isAdmin && <Lock className="h-4 w-4 text-yellow-500" />}
-                                                        </div>
-                                                    ) : (
-                                                        <Collapsible defaultOpen={item.subItems.some(si => si.status !== 'locked')} disabled={item.status === 'locked' && !isAdmin}>
-                                                            <CollapsibleTrigger className="w-full">
-                                                                <div className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors w-full cursor-pointer', item.status === 'locked' && !isAdmin ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', item.subItems.some(si => si.key === selectedTopic) && 'bg-muted text-primary font-semibold')}>
-                                                                    <div className="flex items-center gap-3">
-                                                                        <item.icon className={cn("h-5 w-5", item.status === 'completed' ? 'text-green-500' : '')} />
-                                                                        <span>{item.name}</span>
-                                                                    </div>
-                                                                    {item.status === 'locked' && !isAdmin ? <Lock className="h-4 w-4 text-yellow-500" /> : <ChevronDown className="h-4 w-4 transition-transform [&[data-state=open]]:rotate-180" />}
-                                                                </div>
-                                                            </CollapsibleTrigger>
-                                                            <CollapsibleContent>
-                                                                <ul className="pl-8 pt-1 space-y-1">
-                                                                    {item.subItems.map((subItem) => (
-                                                                        <li key={subItem.key} onClick={() => handleTopicSelect(subItem.key)}
-                                                                            className={cn('flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors', subItem.status === 'locked' && !isAdmin ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === subItem.key && 'bg-muted text-primary font-semibold')}>
-                                                                            <div className='flex items-center gap-3'>
-                                                                                {subItem.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500" /> : <subItem.icon className="h-5 w-5" />}
-                                                                                <span>{subItem.name}</span>
-                                                                            </div>
-                                                                            {subItem.status === 'locked' && !isAdmin && <Lock className="h-4 w-4 text-yellow-500" />}
-                                                                        </li>
-                                                                    ))}
-                                                                </ul>
-                                                            </CollapsibleContent>
-                                                        </Collapsible>
-                                                    )}
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </nav>
-                                    <div className="mt-6 pt-6 border-t">
-                                        <div className="flex justify-between items-center text-sm font-medium text-muted-foreground mb-2"><span>Progreso</span><span className="font-bold text-foreground">{Math.round(progressValue)}%</span></div>
-                                        <Progress value={progressValue} className="h-2" />
-                                    </div>
+                                    <nav><ul className="space-y-1">
+                                        {learningPath.map(item => (
+                                            <li key={item.key}>
+                                                {!item.subItems ? (
+                                                    <div onClick={() => handleTopicSelect(item.key)} className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer', (item.status === 'locked' && !isAdmin) ? 'text-muted-foreground/50' : 'hover:bg-muted', selectedTopic === item.key && 'bg-muted text-primary font-semibold')}>
+                                                        <div className="flex items-center gap-3">{(item.status === 'completed') ? <CheckCircle className="h-5 w-5 text-green-500" /> : <item.icon className="h-5 w-5" />}<span>{item.name}</span></div>
+                                                    </div>
+                                                ) : (
+                                                    <div className="p-3 font-bold text-primary">{item.name}</div>
+                                                )}
+                                            </li>
+                                        ))}
+                                    </ul></nav>
                                 </CardContent>
                             </Card>
                         </div>

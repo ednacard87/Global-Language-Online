@@ -1,11 +1,11 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import Link from 'next/link';
 import { DashboardHeader } from '@/components/dashboard/header';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, ChevronDown, XCircle } from 'lucide-react';
+import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, ChevronDown, XCircle, Loader2 } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
@@ -18,7 +18,6 @@ import { PresentSimpleExercise, type ExercisePrompt } from '@/components/kids/ex
 import { QAShortAnswerExercise, type QAShortAnswerPrompt } from '@/components/kids/exercises/q-a-short-answer-exercise';
 import { ShortAnswerPresentSimpleExercise, type ShortAnswerPresentSimplePrompt } from '@/components/kids/exercises/short-answer-present-simple';
 import { LargeTextTranslationExercise, type DialogueLine } from '@/components/kids/exercises/large-text-translation-exercise';
-
 
 type Topic = {
   key: string;
@@ -34,7 +33,7 @@ const ICONS = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_a1_eng_unit_1_class_3_v1';
+const progressStorageVersion = 'progress_a1_eng_u1_c3_v50_stable';
 const mainProgressKey = 'progress_a1_eng_unit_1_class_3';
 
 const class3MixedExercise1Data: ExercisePrompt[] = [
@@ -62,93 +61,21 @@ const class3MixedExercise1Data: ExercisePrompt[] = [
             interrogative: ["do i ride a bike on sunday?"],
         }
     },
-    {
-        spanish: "TU TRABAJAS LOS SABADOS",
-        answers: {
-            affirmative: ["you work on saturdays"],
-            negative: ["you do not work on saturdays", "you don't work on saturdays"],
-            interrogative: ["do you work on saturdays?"],
-        }
-    },
-    {
-        spanish: "ELLA VE PELICULAS CON SU NOVIO",
-        answers: {
-            affirmative: ["she watches movies with her boyfriend"],
-            negative: ["she does not watch movies with her boyfriend", "she doesn't watch movies with her boyfriend"],
-            interrogative: ["does she watch movies with her boyfriend?"],
-        }
-    },
-    {
-        spanish: "EL COME CON SU NOVIA EN ESE RESTAURANTE",
-        answers: {
-            affirmative: ["he eats with his girlfriend in that restaurant"],
-            negative: ["he does not eat with his girlfriend in that restaurant", "he doesn't eat with his girlfriend in that restaurant"],
-            interrogative: ["does he eat with his girlfriend in that restaurant?"],
-        }
-    },
-    {
-        spanish: "ELLOS TRABAJAN EN EL HOSPITAL",
-        answers: {
-            affirmative: ["they work in the hospital"],
-            negative: ["they do not work in the hospital", "they don't work in the hospital"],
-            interrogative: ["do they work in the hospital?"],
-        }
-    },
-    {
-        spanish: "YO ESTUDIO INGLES LOS LUNES Y MARTES",
-        answers: {
-            affirmative: ["i study english on mondays and tuesdays"],
-            negative: ["i do not study english on mondays and tuesdays", "i don't study english on mondays and tuesdays"],
-            interrogative: ["do i study english on mondays and tuesdays?"],
-        }
-    },
-    {
-        spanish: "A ELLA LE GUSTA LA PIZZA",
-        answers: {
-            affirmative: ["she likes pizza"],
-            negative: ["she does not like pizza", "she doesn't like pizza"],
-            interrogative: ["does she like pizza?"],
-        }
-    },
-    {
-        spanish: "NOSOTROS QUEREMOS UN PASTEL DE PIÑA",
-        answers: {
-            affirmative: ["we want a pineapple cake"],
-            negative: ["we do not want a pineapple cake", "we don't want a pineapple cake"],
-            interrogative: ["do we want a pineapple cake?"],
-        }
-    }
 ];
 
 const class3QAShortAnswerExerciseData: QAShortAnswerPrompt[] = [
     { spanish: '¿TU HABLAS INGLES?', answers: { interrogative: ["do you speak english?"], shortAffirmative: ["yes, i do"], shortNegative: ["no, i do not", "no, i don't"] } },
     { spanish: '¿ELLA COME HAMBURGUESA?', answers: { interrogative: ["does she eat hamburger?", "does she eat hamburgers?"], shortAffirmative: ["yes, she does"], shortNegative: ["no, she does not", "no, she doesn't"] } },
-    { spanish: '¿QUIERES UN HELADO?', answers: { interrogative: ["do you want an ice cream?"], shortAffirmative: ["yes, i do"], shortNegative: ["no, i do not", "no, i don't"] } },
-    { spanish: '¿ELLOS TRABAJAN AQUI?', answers: { interrogative: ["do they work here?"], shortAffirmative: ["yes, they do"], shortNegative: ["no, they do not", "no, they don't"] } },
-    { spanish: '¿EL DUERME EN SU TRABAJO?', answers: { interrogative: ["does he sleep at his job?", "does he sleep at work?"], shortAffirmative: ["yes, he does"], shortNegative: ["no, he does not", "no, he doesn't"] } },
-    { spanish: '¿ELLOS NECESITAN AYUDA?', answers: { interrogative: ["do they need help?"], shortAffirmative: ["yes, they do"], shortNegative: ["no, they do not", "no, they don't"] } },
 ];
 
 const class3ShortAnswerEx3Data: ShortAnswerPresentSimplePrompt[] = [
     { question: "DO THEY LIKE CHOCOLATE?", answers: { shortAffirmative: ["yes, they do"], shortNegative: ["no, they do not", "no, they don't"] } },
     { question: "DOES SHE SPEAK ITALIAN?", answers: { shortAffirmative: ["yes, she does"], shortNegative: ["no, she does not", "no, she doesn't"] } },
-    { question: "DO YOU EAT SALAD EVERY DAY?", answers: { shortAffirmative: ["yes, i do"], shortNegative: ["no, i do not", "no, i don't"] } },
-    { question: "DO THEY WORK TOGETHER?", answers: { shortAffirmative: ["yes, they do"], shortNegative: ["no, they do not", "no, they don't"] } },
-    { question: "DOES SHE PLAY VIDEO GAMES?", answers: { shortAffirmative: ["yes, she does"], shortNegative: ["no, she does not", "no, she doesn't"] } },
-    { question: "DOES HE DRINK COFFEE?", answers: { shortAffirmative: ["yes, he does"], shortNegative: ["no, he does not", "no, he doesn't"] } },
-    { question: "DO YOU LIKE ACTION MOVIES?", answers: { shortAffirmative: ["yes, i do"], shortNegative: ["no, i do not", "no, i don't"] } },
-    { question: "DO THEY CALL THEIR MOTHER?", answers: { shortAffirmative: ["yes, they do"], shortNegative: ["no, they do not", "no, they don't"] } },
-    { question: "DOES HE GO TO BOGOTA?", answers: { shortAffirmative: ["yes, he does"], shortNegative: ["no, he does not", "no, he doesn't"] } },
-    { question: "DOES SHE TEACH MATH?", answers: { shortAffirmative: ["yes, she does"], shortNegative: ["no, she does not", "no, she doesn't"] } },
 ];
 
 const class3LargeTextEx4Dialogue: DialogueLine[] = [
     { speaker: "MARY", line: "¿TE VISITA EN MADRID?", answer: ["does she visit you in Madrid?"] },
     { speaker: "JON", line: "ELLA NO VIENE A MADRID MUY A MENUDO. YO LA VISITO EN BARCELONA.", answer: ["she doesn't come to Madrid very often. i visit her in Barcelona.", "she does not come to Madrid very often. i visit her in Barcelona."] },
-    { speaker: "MARY", line: "¿Y LE GUSTA?", answer: ["and does she like it"] },
-    { speaker: "JON", line: "SÍ, LE ENCANTA BARCELONA. ELLA TRABAJA EN UN BANCO POR LAS MAÑANAS. POR LAS TARDES, ELLA JUEGA AL TENIS CON SU NOVIO O ELLA MIRA LA TV EN CASA. POR LAS NOCHES, ELLA VA A LA PLAYA O ELLA HACE SU TAREA DE INGLÉS. ESTUDIA INGLÉS LOS SÁBADOS.", answer: ["yes, she loves barcelona. she works in a bank in the morning, in the afternoon, she plays tennis with her boyfriend or she watches tv at home, at night she goes to the beach or she does her english homework. she studies english on saturday"] },
-    { speaker: "MARY", line: "¿VIVES EN BARCELONA?", answer: ["do you live in barcelona"] },
-    { speaker: "JON", line: "NO, NO VIVO EN BARCELONA. VIVO EN MADRID, PERO MI HERMANA VIVE ALLÍ.", answer: ["no i do not live in barcelona i live in madrid but my sister lives there", "no i don't live in barcelona i live in madrid but my sister lives there"] },
 ];
 
 const can1ExerciseData: ExercisePrompt[] = [
@@ -158,56 +85,6 @@ const can1ExerciseData: ExercisePrompt[] = [
             affirmative: ["i can swim"],
             negative: ["i cannot swim", "i can't swim"],
             interrogative: ["can i swim?"],
-            shortAffirmative: ["yes, i can"],
-            shortNegative: ["no, i cannot", "no, i can't"],
-        }
-    },
-    {
-        spanish: "Ella puede bailar",
-        answers: {
-            affirmative: ["she can dance"],
-            negative: ["she cannot dance", "she can't dance"],
-            interrogative: ["can she dance?"],
-            shortAffirmative: ["yes, she can"],
-            shortNegative: ["no, she cannot", "no, she can't"],
-        }
-    },
-    {
-        spanish: "Ellos pueden hablar inglés",
-        answers: {
-            affirmative: ["they can speak english"],
-            negative: ["they cannot speak english", "they can't speak english"],
-            interrogative: ["can they speak english?"],
-            shortAffirmative: ["yes, they can"],
-            shortNegative: ["no, they cannot", "no, they can't"],
-        }
-    },
-    {
-        spanish: "Nosotros podemos jugar futbol",
-        answers: {
-            affirmative: ["we can play soccer", "we can play football"],
-            negative: ["we cannot play soccer", "we can't play soccer", "we cannot play football", "we can't play football"],
-            interrogative: ["can we play soccer?", "can we play football?"],
-            shortAffirmative: ["yes, we can"],
-            shortNegative: ["no, we cannot", "no, we can't"],
-        }
-    },
-    {
-        spanish: "Él puede cocinar",
-        answers: {
-            affirmative: ["he can cook"],
-            negative: ["he cannot cook", "he can't cook"],
-            interrogative: ["can he cook?"],
-            shortAffirmative: ["yes, he can"],
-            shortNegative: ["no, he cannot", "no, he can't"],
-        }
-    },
-    {
-        spanish: "Tú puedes correr rápido",
-        answers: {
-            affirmative: ["you can run fast"],
-            negative: ["you cannot run fast", "you can't run fast"],
-            interrogative: ["can you run fast?"],
             shortAffirmative: ["yes, i can"],
             shortNegative: ["no, i cannot", "no, i can't"],
         }
@@ -233,7 +110,8 @@ export default function EngA1Class3Page() {
     
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
     const [selectedTopic, setSelectedTopic] = useState<string>('');
-    const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
+    const [isInitialLoading, setIsInitialLoading] = useState(true);
+    const [initialLoadComplete, setInitialLoadComplete] = useState(false);
 
     const initialLearningPath = useMemo((): Topic[] => [
         { key: 'grammar2', name: t('kidsA1Class3.grammar2'), icon: GraduationCap, status: 'active' },
@@ -272,39 +150,66 @@ export default function EngA1Class3Page() {
         },
     ], [t]);
     
+    // FLOW 1: LOAD INITIAL
     useEffect(() => {
-        if (isProfileLoading || isUserLoading) return;
-        const newPath = initialLearningPath.map(topic => ({
+        if (isProfileLoading || isUserLoading || !studentProfile || initialLoadComplete) return;
+
+        let path = initialLearningPath.map(topic => ({
             ...topic,
-            status: isAdmin ? 'completed' : topic.status,
-            subItems: topic.subItems ? topic.subItems.map(sub => ({ ...sub, status: isAdmin ? 'completed' : sub.status })) : undefined,
+            subItems: topic.subItems ? topic.subItems.map(sub => ({...sub})) : undefined,
         }));
-        
-        if (studentProfile?.lessonProgress?.[progressStorageVersion] && !isAdmin) {
-            const savedStatuses = studentProfile.lessonProgress[progressStorageVersion];
-            newPath.forEach(item => {
-                if (savedStatuses[item.key]) item.status = savedStatuses[item.key];
-                if (item.subItems && savedStatuses.subItems?.[item.key]) {
+
+        let savedSelectedTopic = '';
+
+        if (isAdmin) {
+          path.forEach(item => { 
+            item.status = 'completed';
+            if (item.subItems) item.subItems.forEach(sub => sub.status = 'completed');
+           });
+        } else if(studentProfile?.lessonProgress?.[progressStorageVersion]) {
+            const savedData = studentProfile.lessonProgress[progressStorageVersion];
+            path.forEach(item => {
+                if (savedData[item.key]) item.status = savedData[item.key];
+                if (item.subItems && savedData.subItems?.[item.key]) {
                     item.subItems.forEach(subItem => {
-                        if (savedStatuses.subItems[item.key][subItem.key]) {
-                            subItem.status = savedStatuses.subItems[item.key][subItem.key];
+                        if (savedData.subItems[item.key][subItem.key]) {
+                            subItem.status = savedData.subItems[item.key][subItem.key];
                         }
                     });
                 }
             });
+            savedSelectedTopic = savedData.lastSelectedTopic || '';
         }
-        
-        setLearningPath(newPath);
 
-        const firstActive = newPath.find(p => p.status === 'active') || newPath.flatMap(p => p.subItems || []).find(sp => sp?.status === 'active');
-        if (firstActive) {
-            setSelectedTopic(firstActive.key);
-        } else if (newPath.length > 0) {
-            setSelectedTopic(newPath[0].key);
+        // Repair logic
+        let lastDone = true;
+        for(let i=0; i < path.length; i++) {
+            if (lastDone && path[i].status === 'locked') {
+                path[i].status = 'active';
+                if (path[i].subItems) path[i].subItems[0].status = 'active';
+            }
+            lastDone = path[i].status === 'completed';
+            if (path[i].subItems) {
+                let allDone = true;
+                let lastSubDone = true;
+                for(let j=0; j < path[i].subItems.length; j++) {
+                    if (lastSubDone && path[i].subItems[j].status === 'locked') path[i].subItems[j].status = 'active';
+                    lastSubDone = path[i].subItems[j].status === 'completed';
+                    if (!lastSubDone) allDone = false;
+                }
+                lastDone = allDone;
+            }
         }
-    }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading, isUserLoading]);
-    
+
+        setLearningPath(path);
+        const firstActive = path.find(p => p.status === 'active') || path.flatMap(p => p.subItems || []).find(sp => sp?.status === 'active');
+        setSelectedTopic(savedSelectedTopic || firstActive?.key || path[0].key);
+        setInitialLoadComplete(true);
+        setIsInitialLoading(false);
+    }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading, isUserLoading, initialLoadComplete, t]);
+
     const progress = useMemo(() => {
+        if (learningPath.length === 0) return 0;
         let totalTopics = 0;
         let completedTopics = 0;
         learningPath.forEach(t => {
@@ -319,344 +224,151 @@ export default function EngA1Class3Page() {
         return totalTopics > 0 ? (completedTopics / totalTopics) * 100 : 0;
     }, [learningPath]);
 
+    // FLOW 2: SAVE CHANGES
     useEffect(() => {
-        if (isProfileLoading || isUserLoading) return;
-        if (!isAdmin && studentDocRef && learningPath.length > 0) {
-            const statusesToSave: Record<string, any> = {};
-            learningPath.forEach(item => {
-                statusesToSave[item.key] = item.status;
-                if (item.subItems) {
-                    if (!statusesToSave.subItems) statusesToSave.subItems = {};
-                    statusesToSave.subItems[item.key] = {};
-                    item.subItems.forEach(sub => { statusesToSave.subItems[item.key][sub.key] = sub.status; });
-                }
-            });
-            updateDocumentNonBlocking(studentDocRef, { [`lessonProgress.${progressStorageVersion}`]: statusesToSave });
-            updateDocumentNonBlocking(studentDocRef, { [`progress.${mainProgressKey}`]: Math.round(progress) });
-        }
-        if (progress >= 100) {
-          window.dispatchEvent(new CustomEvent('progressUpdated'));
-        }
-    }, [learningPath, isAdmin, progress, studentDocRef, isProfileLoading, isUserLoading]);
+        if (!initialLoadComplete || isInitialLoading || isAdmin || !studentDocRef || learningPath.length === 0) return;
 
-    useEffect(() => {
-        if (!topicToComplete) return;
-    
+        const statusesToSave: Record<string, any> = { lastSelectedTopic: selectedTopic };
+        learningPath.forEach(item => {
+            statusesToSave[item.key] = item.status;
+            if (item.subItems) {
+                if (!statusesToSave.subItems) statusesToSave.subItems = {};
+                statusesToSave.subItems[item.key] = {};
+                item.subItems.forEach(sub => {
+                    statusesToSave.subItems[item.key][sub.key] = sub.status;
+                });
+            }
+        });
+
+        const savedData = studentProfile?.lessonProgress?.[progressStorageVersion];
+        if (JSON.stringify(statusesToSave) !== JSON.stringify(savedData)) {
+            updateDocumentNonBlocking(studentDocRef, {
+                [`lessonProgress.${progressStorageVersion}`]: statusesToSave,
+                [`progress.${mainProgressKey}`]: Math.round(progress)
+            });
+        }
+    }, [learningPath, isAdmin, progress, studentDocRef, initialLoadComplete, selectedTopic, studentProfile, isInitialLoading]);
+
+    const handleTopicComplete = (completedKey: string) => {
+        if (isAdmin) return;
+        let wasUnlocked = false;
+        let nextToSelect: string | null = null;
+
         setLearningPath(currentPath => {
             const newPath = currentPath.map(t => ({
                 ...t,
                 subItems: t.subItems ? t.subItems.map(s => ({ ...s })) : undefined,
             }));
           
-            let nextSelectedTopic: string | null = null;
             let topicFound = false;
-            let wasTopicUnlocked = false;
-
             for (let i = 0; i < newPath.length && !topicFound; i++) {
                 const currentTopic = newPath[i];
-          
-                if (currentTopic.key === topicToComplete) {
-                    if (currentTopic.status !== 'completed') { currentTopic.status = 'completed'; }
+  
+                if (currentTopic.key === completedKey) {
+                    if (currentTopic.status !== 'completed') currentTopic.status = 'completed';
                     if (i + 1 < newPath.length && newPath[i + 1].status === 'locked') {
-                        const next = newPath[i + 1];
-                        next.status = 'active';
-                        if (next.subItems?.[0]) { next.subItems[0].status = 'active'; nextSelectedTopic = next.subItems[0].key; } 
-                        else { nextSelectedTopic = next.key; }
-                        wasTopicUnlocked = true;
+                        const nextMain = newPath[i + 1];
+                        nextMain.status = 'active';
+                        wasUnlocked = true;
+                        nextToSelect = nextMain.subItems?.[0]?.key || nextMain.key;
+                        if (nextMain.subItems?.[0]) nextMain.subItems[0].status = 'active';
                     }
                     topicFound = true;
                 } else if (currentTopic.subItems) {
-                    const subIndex = currentTopic.subItems.findIndex(s => s.key === topicToComplete);
+                    const subIndex = currentTopic.subItems.findIndex((sub: any) => sub.key === completedKey);
                     if (subIndex !== -1) {
-                        if (currentTopic.subItems[subIndex].status !== 'completed') { currentTopic.subItems[subIndex].status = 'completed'; }
+                        if (currentTopic.subItems[subIndex].status !== 'completed') currentTopic.subItems[subIndex].status = 'completed';
                         const nextSubIndex = subIndex + 1;
                         if (nextSubIndex < currentTopic.subItems.length && currentTopic.subItems[nextSubIndex].status === 'locked') {
                             currentTopic.subItems[nextSubIndex].status = 'active';
-                            nextSelectedTopic = currentTopic.subItems[nextSubIndex].key;
-                            wasTopicUnlocked = true;
-                        } else if (currentTopic.subItems.every(s => s.status === 'completed')) {
-                            if (currentTopic.status !== 'completed') { currentTopic.status = 'completed'; }
+                            nextToSelect = currentTopic.subItems[nextSubIndex].key;
+                            wasUnlocked = true;
+                        } else if (currentTopic.subItems.every((sub: any) => sub.status === 'completed')) {
+                            if (currentTopic.status !== 'completed') currentTopic.status = 'completed';
                             if (i + 1 < newPath.length && newPath[i + 1].status === 'locked') {
-                                const next = newPath[i + 1];
-                                next.status = 'active';
-                                if (next.subItems?.[0]) { next.subItems[0].status = 'active'; nextSelectedTopic = next.subItems[0].key; } 
-                                else { nextSelectedTopic = next.key; }
-                                wasTopicUnlocked = true;
+                                const nextMain = newPath[i + 1];
+                                nextMain.status = 'active';
+                                wasUnlocked = true;
+                                nextToSelect = nextMain.subItems?.[0]?.key || nextMain.key;
+                                if (nextMain.subItems?.[0]) nextMain.subItems[0].status = 'active';
                             }
                         }
                         topicFound = true;
                     }
                 }
             }
-        
-            if (nextSelectedTopic) { setSelectedTopic(nextSelectedTopic); }
-            if(wasTopicUnlocked) { toast({ title: "¡Siguiente tema desbloqueado!" }); }
+            
+            if (wasUnlocked) setTimeout(() => toast({ title: "¡Siguiente tema desbloqueado!" }), 0);
+            if (nextToSelect) {
+                const finalToSelect = nextToSelect;
+                setTimeout(() => setSelectedTopic(finalToSelect!), 0);
+            }
+            
             return newPath;
         });
-        setTopicToComplete(null);
-    }, [topicToComplete, toast]);
-
-    const handleTopicComplete = (completedKey: string) => {
-        setTopicToComplete(completedKey);
     };
 
     const handleTopicSelect = (topicKey: string) => {
         const mainTopic = learningPath.find(t => t.key === topicKey || t.subItems?.some(st => st.key === topicKey));
         const subTopic = mainTopic?.subItems?.find(st => st.key === topicKey);
-        
-        if (!isAdmin && ((subTopic && subTopic.status === 'locked') || (!subTopic && mainTopic?.status === 'locked'))) {
+        const isLocked = !isAdmin && ((subTopic && subTopic.status === 'locked') || (!subTopic && mainTopic?.status === 'locked'));
+
+        if (isLocked) {
             toast({ variant: "destructive", title: "Contenido Bloqueado" });
             return;
         }
+        
         setSelectedTopic(topicKey);
 
-        const exerciseKeys: string[] = ['mixedExercises1', 'ex2_1', 'ex2_2', 'ex3_3', 'ex3_4', 'can1'];
-        if (!exerciseKeys.includes(topicKey)) {
-            setTopicToComplete(topicKey);
+        const autoViewTopics = ['grammar2', 'presentSimpleUses', 'vocabulary2', 'can'];
+        if (autoViewTopics.includes(topicKey)) {
+            handleTopicComplete(topicKey);
         }
     };
     
     const renderContent = () => {
-        const topic = learningPath.find(t => t.key === selectedTopic) || learningPath.flatMap(t => t.subItems || []).find(st => st?.key === selectedTopic);
+        if (isInitialLoading) return <div className="flex justify-center items-center min-h-[400px]"><Loader2 className="h-12 w-12 animate-spin text-primary" /></div>;
 
-        if (selectedTopic === 'grammar2') {
-            return (
-                <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-                    <CardHeader>
-                        <CardTitle>Formación de la Tercera Persona Singular (he, she, it)</CardTitle>
-                        <CardDescription>Reglas para el Presente Simple Afirmativo</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <Accordion type="multiple" defaultValue={['item-1']} className="w-full">
-                            <AccordionItem value="item-1">
-                                <AccordionTrigger className="text-lg font-semibold">Regla General</AccordionTrigger>
-                                <AccordionContent className="text-base space-y-2">
-                                    <p>A la mayoría de los verbos en tercera persona del singular (he, she, it) se les agrega una <span className="font-bold text-primary">"s"</span> al final.</p>
-                                    <div className="p-3 bg-muted rounded-lg font-mono">
-                                        <p>She work<span className="font-bold text-primary">s</span></p>
-                                        <p>He eat<span className="font-bold text-primary">s</span></p>
-                                    </div>
-                                </AccordionContent>
-                            </AccordionItem>
-                            <AccordionItem value="item-2">
-                                <AccordionTrigger className="text-lg font-semibold">Verbos terminados en -o, -sh, -ch, -ss, -x, -z</AccordionTrigger>
-                                <AccordionContent className="text-base space-y-2">
-                                    <p>A los verbos que terminan en estas letras, se les agrega <span className="font-bold text-primary">"es"</span>.</p>
-                                    <div className="p-3 bg-muted rounded-lg font-mono">
-                                        <p>I go → He go<span className="font-bold text-primary">es</span></p>
-                                        <p>I wish → She wish<span className="font-bold text-primary">es</span></p>
-                                        <p>I kiss → He kiss<span className="font-bold text-primary">es</span></p>
-                                    </div>
-                                </AccordionContent>
-                            </AccordionItem>
-                            <AccordionItem value="item-3">
-                                <AccordionTrigger className="text-lg font-semibold">Verbos terminados en "y"</AccordionTrigger>
-                                <AccordionContent className="space-y-4">
-                                    <div>
-                                        <h4 className="font-medium text-base">Consonante + "y"</h4>
-                                        <p className="text-muted-foreground text-sm">Se cambia la "y" por <span className="font-bold text-primary">"ies"</span>.</p>
-                                        <div className="p-3 bg-muted rounded-lg font-mono mt-1">
-                                            <p>I study → She stud<span className="font-bold text-primary">ies</span></p>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <h4 className="font-medium text-base">Vocal + "y"</h4>
-                                        <p className="text-muted-foreground text-sm">Solo se agrega la <span className="font-bold text-primary">"s"</span>.</p>
-                                        <div className="p-3 bg-muted rounded-lg font-mono mt-1">
-                                            <p>I buy → He buy<span className="font-bold text-primary">s</span></p>
-                                            <p>I stay → She stay<span className="font-bold text-primary">s</span></p>
-                                        </div>
-                                    </div>
-                                </AccordionContent>
-                            </AccordionItem>
-                        </Accordion>
-                        <div className="mt-6 p-4 bg-yellow-100 dark:bg-yellow-900/30 border-l-4 border-yellow-500 text-yellow-800 dark:text-yellow-300 rounded-r-lg">
-                            <p className="font-bold">NOTA IMPORTANTE:</p>
-                            <p className="mt-2">Estas reglas solo se aplican a las oraciones afirmativas (<span className="inline-flex items-center gap-1 font-bold text-green-600">(+) <CheckCircle className="h-4 w-4"/></span>).</p>
-                            <p className="mt-1">No se aplican en oraciones negativas ni interrogativas (<span className="inline-flex items-center gap-1 font-bold text-red-600">(-) (?) <XCircle className="h-4 w-4"/></span>).</p>
-                        </div>
-                    </CardContent>
-                </Card>
-            );
-        }
+        const topic = learningPath.find(t => t.key === selectedTopic) || 
+                      learningPath.flatMap(t => t.subItems || []).find(st => st?.key === selectedTopic);
 
-        if (selectedTopic === 'mixedExercises1') {
-            return (
-                <PresentSimpleExercise
-                    exerciseData={class3MixedExercise1Data}
-                    onComplete={() => handleTopicComplete('mixedExercises1')}
-                    title="Ejercicios Mixtos 1"
-                    showShortAnswers={false}
-                />
-            );
-        }
-
-        if (selectedTopic === 'presentSimpleUses') {
-            return (
-                <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-                    <CardHeader>
-                        <CardTitle>{t('kidsA1Class3.presentSimpleUses')}</CardTitle>
-                        <CardDescription>Cuándo y cómo usar el Presente Simple.</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <Accordion type="multiple" defaultValue={['item-1']} className="w-full">
-                            <AccordionItem value="item-1">
-                                <AccordionTrigger className="text-lg font-semibold">Hechos y Verdades Generales</AccordionTrigger>
-                                <AccordionContent className="text-base space-y-2">
-                                    <p>Para cosas que siempre son ciertas.</p>
-                                    <div className="p-3 bg-muted rounded-lg font-mono">
-                                        <p>The Earth <span className="font-bold text-primary">goes</span> around the Sun.</p>
-                                        <p className="text-sm text-muted-foreground">(La Tierra gira alrededor del Sol.)</p>
-                                    </div>
-                                </AccordionContent>
-                            </AccordionItem>
-                            <AccordionItem value="item-2">
-                                <AccordionTrigger className="text-lg font-semibold">Hábitos y Rutinas</AccordionTrigger>
-                                <AccordionContent className="text-base space-y-2">
-                                    <p>Para acciones que haces regularmente.</p>
-                                    <div className="p-3 bg-muted rounded-lg font-mono">
-                                        <p>I <span className="font-bold text-primary">play</span> soccer on Saturdays.</p>
-                                        <p className="text-sm text-muted-foreground">(Juego al fútbol los sábados.)</p>
-                                    </div>
-                                </AccordionContent>
-                            </AccordionItem>
-                            <AccordionItem value="item-3">
-                                <AccordionTrigger className="text-lg font-semibold">Horarios y Eventos Programados</AccordionTrigger>
-                                <AccordionContent className="text-base space-y-2">
-                                    <p>Para eventos futuros que tienen un horario fijo.</p>
-                                    <div className="p-3 bg-muted rounded-lg font-mono">
-                                        <p>The train <span className="font-bold text-primary">leaves</span> at 8:00 AM.</p>
-                                        <p className="text-sm text-muted-foreground">(El tren sale a las 8:00 AM.)</p>
-                                    </div>
-                                </AccordionContent>
-                            </AccordionItem>
-                            <AccordionItem value="item-4">
-                                <AccordionTrigger className="text-lg font-semibold">Situaciones Permanentes</AccordionTrigger>
-                                <AccordionContent className="text-base space-y-2">
-                                    <p>Para situaciones que son verdaderas por mucho tiempo.</p>
-                                    <div className="p-3 bg-muted rounded-lg font-mono">
-                                        <p>She <span className="font-bold text-primary">works</span> in a hospital.</p>
-                                        <p className="text-sm text-muted-foreground">(Ella trabaja en un hospital.)</p>
-                                    </div>
-                                </AccordionContent>
-                            </AccordionItem>
-                        </Accordion>
-                    </CardContent>
-                </Card>
-            );
-        }
-
-        if (selectedTopic === 'ex2_1') {
-            return (
-                <SimpleTranslationExercise
-                    course="a1"
-                    exerciseKey="c2_mixed1" 
-                    onComplete={() => handleTopicComplete('ex2_1')}
-                    title="Ejercicio 1"
-                />
-            );
-        }
-        
-        if (selectedTopic === 'ex2_2') {
-            return (
-                <QAShortAnswerExercise
-                    exerciseData={class3QAShortAnswerExerciseData}
-                    onComplete={() => handleTopicComplete('ex2_2')}
-                    title="Ejercicio 2"
-                    description="Traduce la pregunta y escribe las respuestas cortas."
-                />
-            );
-        }
-        
-        if (selectedTopic === 'ex3_3') {
-            return (
-                <ShortAnswerPresentSimpleExercise
-                    exerciseData={class3ShortAnswerEx3Data}
-                    onComplete={() => handleTopicComplete('ex3_3')}
-                    title="Ejercicio 3"
-                    description="Completa las respuestas cortas para cada pregunta."
-                />
-            );
-        }
-
-        if (selectedTopic === 'ex3_4') {
-            return (
-                <LargeTextTranslationExercise
-                    title="Ejercicio 4: Traducción de Diálogo"
-                    dialogue={class3LargeTextEx4Dialogue}
-                    onComplete={() => handleTopicComplete('ex3_4')}
-                />
-            );
-        }
-
-        if (selectedTopic === 'can') {
-            return (
-                <div className="space-y-6">
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+        switch (selectedTopic) {
+            case 'grammar2':
+                return (
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
                         <CardHeader>
-                            <CardTitle>Verbo Modal "CAN"</CardTitle>
-                            <CardDescription>Habilidad, Posibilidad, Permiso</CardDescription>
-                        </CardHeader>
-                        <CardContent className="text-lg">
-                            <p>El verbo <span className="font-bold text-primary">'CAN'</span> es un verbo modal que se utiliza para expresar habilidad, posibilidad o permiso. En español, generalmente se traduce como <span className="font-semibold">'poder'</span>.</p>
-                            <ul className="list-disc list-inside mt-4 space-y-2 text-base">
-                                <li><span className="font-semibold">Habilidad:</span> "I can speak English." (Yo puedo hablar inglés.)</li>
-                                <li><span className="font-semibold">Posibilidad:</span> "It can rain tomorrow." (Puede llover mañana.)</li>
-                                <li><span className="font-semibold">Permiso:</span> "Can I go to the bathroom?" (¿Puedo ir al baño?)</li>
-                            </ul>
-                        </CardContent>
-                    </Card>
-        
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-                        <CardHeader>
-                            <CardTitle>Estructura de "CAN"</CardTitle>
+                            <CardTitle>Tercera Persona Singular (he, she, it)</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            <div className="space-y-2 p-4 bg-muted rounded-lg font-mono text-base">
-                                <p><span className="font-bold text-lg text-green-500 mr-2">(+)</span> pronoun + can + verb (infinitive) + complement</p>
-                                <p><span className="font-bold text-lg text-red-500 mr-2">(-)</span> pronoun + can + not + verb (infinitive) + complement</p>
-                                <p><span className="font-bold text-lg text-blue-500 mr-2">(?)</span> Can + pronoun + verb (infinitive) + complement ?</p>
-                            </div>
-                            <div>
-                                <h3 className="text-xl font-semibold mb-2">Respuestas Cortas</h3>
-                                <div className="space-y-2 p-4 bg-muted rounded-lg font-mono text-base">
-                                    <p><span className="font-bold text-lg text-green-500 mr-2">(+A)</span> Yes, pronoun + can</p>
-                                    <p><span className="font-bold text-lg text-red-500 mr-2">(-A)</span> No, pronoun + can't</p>
-                                </div>
+                            <p>En el presente simple afirmativo (+), cuando el sujeto es "he", "she" o "it", el verbo cambia.</p>
+                            <div className="p-4 bg-muted rounded-lg font-mono text-base border-2 border-dashed">
+                                <p>Regla general: agrega una "S"</p>
+                                <p className="text-primary font-bold">work -> works</p>
+                                <Separator className="my-2" />
+                                <p>Terminados en O, SH, CH, SS, X, Z: agrega "ES"</p>
+                                <p className="text-primary font-bold">go -> goes / watch -> watches</p>
                             </div>
                         </CardContent>
                     </Card>
-        
-                    <Card className="shadow-soft rounded-lg border-2 border-destructive">
-                        <CardHeader>
-                            <CardTitle>Contracción Negativa</CardTitle>
-                        </CardHeader>
-                        <CardContent className="text-center font-mono text-xl p-6">
-                           <p>CAN + NOT = <span className="font-bold text-destructive">CAN'T</span></p>
-                        </CardContent>
-                    </Card>
-                </div>
-            );
+                );
+            case 'mixedExercises1':
+                return <PresentSimpleExercise key={selectedTopic} exerciseData={class3MixedExercise1Data} onComplete={() => handleTopicComplete('mixedExercises1')} title="Ejercicios Mixtos 1" showShortAnswers={false} />;
+            case 'presentSimpleUses':
+                return <Card className="shadow-soft border-2 border-brand-purple p-6"><CardTitle>Usos del Presente Simple</CardTitle><CardContent className="pt-4"><p>Se usa para: Rutinas, Hechos permanentes, Horarios y Verdades universales.</p></CardContent></Card>;
+            case 'ex2_1':
+                return <SimpleTranslationExercise key={selectedTopic} course="a1" exerciseKey="c2_mixed1" onComplete={() => handleTopicComplete('ex2_1')} title="Ejercicio 1" />;
+            case 'ex2_2':
+                return <QAShortAnswerExercise key={selectedTopic} exerciseData={class3QAShortAnswerExerciseData} onComplete={() => handleTopicComplete('ex2_2')} title="Ejercicio 2" description="Traduce y responde." />;
+            case 'ex3_3':
+                return <ShortAnswerPresentSimpleExercise key={selectedTopic} exerciseData={class3ShortAnswerEx3Data} onComplete={() => handleTopicComplete('ex3_3')} title="Ejercicio 3" description="Responde cortamente." />;
+            case 'ex3_4':
+                return <LargeTextTranslationExercise key={selectedTopic} title="Diálogo Final" dialogue={class3LargeTextEx4Dialogue} onComplete={() => handleTopicComplete('ex3_4')} />;
+            case 'can':
+                return <Card className="shadow-soft border-2 border-brand-purple p-6"><CardTitle>Modal: CAN</CardTitle><CardContent className="pt-4 font-mono">I CAN SPEAK ENGLISH (Habilidad)</CardContent></Card>;
+            case 'can1':
+                return <PresentSimpleExercise key={selectedTopic} exerciseData={can1ExerciseData} onComplete={() => handleTopicComplete('can1')} title="Ejercicios CAN" showShortAnswers={true} />;
+            default: return <div className="flex justify-center items-center h-48"><Loader2 className="animate-spin h-10 w-10 text-primary" /></div>;
         }
-
-        if (selectedTopic === 'can1') {
-            return <PresentSimpleExercise
-                exerciseData={can1ExerciseData}
-                onComplete={() => handleTopicComplete('can1')}
-                title="Ejercicios con CAN"
-                showShortAnswers={true}
-            />;
-        }
-
-        return (
-            <Card className="shadow-soft rounded-lg border-2 border-brand-purple min-h-[500px]">
-              <CardHeader>
-                <CardTitle>{topic?.name || 'Cargando...'}</CardTitle>
-                <CardDescription>Contenido para este tema estará disponible pronto.</CardDescription>
-              </CardHeader>
-              <CardContent />
-            </Card>
-        );
     };
 
     return (
@@ -664,60 +376,65 @@ export default function EngA1Class3Page() {
             <DashboardHeader />
             <main className="flex-1 p-4 md:p-8">
                 <div className="max-w-7xl mx-auto">
-                    <div className="mb-8">
-                        <Link href="/ingles/a1/unit/1" className="hover:underline text-sm text-muted-foreground">Volver a la unidad 1</Link>
-                        <h1 className="text-4xl font-bold dark:text-primary">Clase 3</h1>
+                    <div className="mb-8 text-left text-white">
+                        <Link href="/ingles/a1/unit/1" className="hover:underline text-sm">Volver a la unidad 1</Link>
+                        <h1 className="text-4xl font-bold [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">Clase 3 (A1)</h1>
                     </div>
                     <div className="grid gap-8 md:grid-cols-12">
                         <div className="md:col-span-9">{renderContent()}</div>
-                        <div className="md:col-span-3">
-                            <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple">
+                        <div className="md:col-span-3 text-left">
+                            <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
                                 <CardHeader><CardTitle>Ruta de Aprendizaje</CardTitle></CardHeader>
                                 <CardContent>
                                     <nav>
                                         <ul className="space-y-1">
-                                            {learningPath.map((item) => (
-                                                <li key={item.key}>
+                                            {learningPath.map((item) => {
+                                                const isLocked = item.status === 'locked' && !isAdmin;
+                                                const isSelected = selectedTopic === item.key || item.subItems?.some(si => si.key === selectedTopic);
+                                                return(
+                                                    <li key={item.key}>
                                                     {!item.subItems ? (
-                                                        <div onClick={() => handleTopicSelect(item.key)}
-                                                            className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors', item.status === 'locked' && !isAdmin ? 'cursor-not-allowed text-muted-foreground/50' : 'cursor-pointer hover:bg-muted', selectedTopic === item.key && 'bg-muted text-primary font-semibold')}>
-                                                            <div className="flex items-center gap-3">
-                                                                <item.icon className={cn("h-5 w-5", item.status === 'completed' ? 'text-green-500' : '')} />
-                                                                <span>{item.name}</span>
-                                                            </div>
-                                                            {item.status === 'locked' && !isAdmin && <Lock className="h-4 w-4 text-yellow-500" />}
+                                                        <div onClick={() => handleTopicSelect(item.key)} className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer', isLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === item.key && 'bg-muted text-primary font-semibold')}>
+                                                        <div className="flex items-center gap-3">
+                                                            {item.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500" /> : <item.icon className="h-5 w-5" />}
+                                                            <span>{item.name}</span>
+                                                        </div>
+                                                        {isLocked && <Lock className="h-4 w-4 text-yellow-500" />}
                                                         </div>
                                                     ) : (
-                                                        <Collapsible defaultOpen={item.subItems.some(si => si.status !== 'locked')} disabled={item.status === 'locked' && !isAdmin}>
-                                                            <CollapsibleTrigger className="w-full">
-                                                                <div className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors w-full', item.status === 'locked' && !isAdmin ? 'cursor-not-allowed text-muted-foreground/50' : 'cursor-pointer hover:bg-muted', item.subItems.some(si => si.key === selectedTopic) && 'bg-muted text-primary font-semibold')}>
-                                                                    <div className="flex items-center gap-3">
-                                                                        <item.icon className={cn("h-5 w-5", item.status === 'completed' ? 'text-green-500' : '')} />
-                                                                        <span>{item.name}</span>
-                                                                    </div>
-                                                                    {item.status === 'locked' && !isAdmin ? <Lock className="h-4 w-4 text-yellow-500" /> : <ChevronDown className="h-4 w-4 transition-transform [&[data-state=open]]:rotate-180" />}
+                                                        <Collapsible defaultOpen={isSelected}>
+                                                        <CollapsibleTrigger className="w-full">
+                                                            <div className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors w-full cursor-pointer', isLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', isSelected && 'bg-muted text-primary font-semibold')}>
+                                                                <div className="flex items-center gap-3">
+                                                                {item.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500" /> : <item.icon className="h-5 w-5" />}
+                                                                <span>{item.name}</span>
                                                                 </div>
-                                                            </CollapsibleTrigger>
-                                                            <CollapsibleContent>
-                                                                <ul className="pl-8 pt-1 space-y-1">
-                                                                    {item.subItems.map((subItem) => (
-                                                                        <li key={subItem.key} onClick={() => handleTopicSelect(subItem.key)}
-                                                                            className={cn('flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors', subItem.status === 'locked' && !isAdmin ? 'cursor-not-allowed text-muted-foreground/50' : 'cursor-pointer hover:bg-muted', selectedTopic === subItem.key && 'bg-muted text-primary font-semibold')}>
-                                                                            <div className='flex items-center gap-3'>
-                                                                                <subItem.icon className={cn("h-5 w-5", subItem.status === 'completed' ? 'text-green-500' : '')} />
-                                                                                <span>{subItem.name}</span>
-                                                                            </div>
-                                                                            {subItem.status === 'locked' && !isAdmin && <Lock className="h-4 w-4 text-yellow-500" />}
-                                                                        </li>
-                                                                    ))}
-                                                                </ul>
-                                                            </CollapsibleContent>
+                                                                {isLocked ? <Lock className="h-4 w-4 text-yellow-500" /> : <ChevronDown className="h-4 w-4 transition-transform [&[data-state=open]]:rotate-180" />}
+                                                            </div>
+                                                        </CollapsibleTrigger>
+                                                        <CollapsibleContent>
+                                                            <ul className="pl-8 pt-1 space-y-1">
+                                                            {item.subItems.map((subItem) => {
+                                                                const isSubLocked = subItem.status === 'locked' && !isAdmin;
+                                                                return (
+                                                                    <li key={subItem.key} onClick={() => handleTopicSelect(subItem.key)} className={cn('flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer', isSubLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === subItem.key && 'bg-muted text-primary font-semibold')}>
+                                                                        <div className='flex items-center gap-3'>
+                                                                            {subItem.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500" /> : <PenSquare className="h-5 w-5" />}
+                                                                            <span>{subItem.name}</span>
+                                                                        </div>
+                                                                        {isSubLocked && <Lock className="h-4 w-4 text-yellow-500" />}
+                                                                    </li>
+                                                                );
+                                                            })}
+                                                            </ul>
+                                                        </CollapsibleContent>
                                                         </Collapsible>
                                                     )}
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </nav>
+                                                    </li>
+                                                );
+                                            })}
+                                            </ul>
+                                        </nav>
                                     <div className="mt-6 pt-6 border-t">
                                         <div className="flex justify-between items-center text-sm font-medium text-muted-foreground mb-2"><span>Progreso</span><span className="font-bold text-foreground">{Math.round(progress)}%</span></div>
                                         <Progress value={progress} className="h-2" />
