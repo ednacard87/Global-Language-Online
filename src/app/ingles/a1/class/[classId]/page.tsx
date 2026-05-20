@@ -2,11 +2,11 @@
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { BookOpen, PenSquare, Lock, GraduationCap, BrainCircuit, CheckCircle, Lightbulb, ChevronDown, Ear, Loader2, XCircle } from 'lucide-react';
+import { BookOpen, PenSquare, Lock, GraduationCap, BrainCircuit, CheckCircle, ChevronDown, Loader2, XCircle } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
@@ -189,10 +189,9 @@ interface ClassContentProps {
 //                 CLASS 1 COMPONENT
 // =================================================================
 const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isProfileLoading, isUserLoading }: ClassContentProps) => {
-    const progressStorageKey = `_eng_a1_class_1_v35_async_flow`;
+    const progressStorageKey = `_eng_a1_class_1_v40_stable`;
     const mainProgressKey = `progress_a1_eng_unit_1_class_1`;
 
-    const [isInitialLoading, setIsInitialLoading] = useState(true);
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
     const [selectedTopic, setSelectedTopic] = useState<string>('');
     const [userAnswers, setUserAnswers] = useState<{[key: string]: string[]}>({});
@@ -241,11 +240,10 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         setTopicToComplete(completedKey);
     }, []);
 
-    // 1. CARGA DE DATOS ESTRICTA
+    // 1. CARGA DE DATOS ESTRICTA (Sin Bucles)
     useEffect(() => {
-        if (isProfileLoading || isUserLoading || !studentProfile) return;
+        if (isProfileLoading || isUserLoading || !studentProfile || initialLoadComplete) return;
 
-        const versionedKey = progressStorageKey;
         let path = initialLearningPath.map(topic => ({
             ...topic,
             subItems: topic.subItems ? topic.subItems.map(sub => ({...sub})) : undefined,
@@ -258,8 +256,8 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             item.status = 'completed';
             if (item.subItems) item.subItems.forEach(sub => sub.status = 'completed');
            });
-        } else if(studentProfile?.lessonProgress?.[versionedKey]) {
-            const savedData = studentProfile.lessonProgress[versionedKey];
+        } else if(studentProfile?.lessonProgress?.[progressStorageKey]) {
+            const savedData = studentProfile.lessonProgress[progressStorageKey];
             path.forEach(item => {
                 if (savedData[item.key]) item.status = savedData[item.key];
                 if (item.subItems && savedData.subItems?.[item.key]) {
@@ -273,7 +271,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             savedSelectedTopic = savedData.lastSelectedTopic || '';
         }
 
-        // Reparación de ruta secuencial preventiva
+        // Reparación de ruta secuencial
         let shouldBeActive = false;
         for (let i = 0; i < path.length; i++) {
             if (shouldBeActive && path[i].status === 'locked') {
@@ -315,7 +313,6 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         setValidationStatus(newValidation);
         
         setInitialLoadComplete(true);
-        setIsInitialLoading(false);
 
     }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading, isUserLoading, initialLoadComplete, t]);
 
@@ -338,12 +335,8 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
 
     // 3. GUARDADO EN FIREBASE ESTRICTO
     useEffect(() => {
-        if (!initialLoadComplete || isInitialLoading || isAdmin || !studentDocRef || learningPath.length === 0) return;
+        if (!initialLoadComplete || isAdmin || !studentDocRef || learningPath.length === 0) return;
 
-        const currentSavedProgress = studentProfile?.progress?.[mainProgressKey] || 0;
-        const newProgress = Math.round(progressValue);
-
-        // Solo guardamos si hay un cambio real
         const statusesToSave: Record<string, any> = { lastSelectedTopic: selectedTopic };
         learningPath.forEach(item => {
             statusesToSave[item.key] = item.status;
@@ -356,19 +349,16 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             }
         });
 
-        // Comparación para evitar escrituras redundantes
         const savedData = studentProfile?.lessonProgress?.[progressStorageKey];
-        const hasDataChanged = JSON.stringify(statusesToSave) !== JSON.stringify(savedData);
-
-        if (hasDataChanged || newProgress !== currentSavedProgress) {
+        if (JSON.stringify(statusesToSave) !== JSON.stringify(savedData)) {
             updateDocumentNonBlocking(studentDocRef, {
                 [`lessonProgress.${progressStorageKey}`]: statusesToSave,
-                [`progress.${mainProgressKey}`]: newProgress
+                [`progress.${mainProgressKey}`]: Math.round(progressValue)
             });
         }
-    }, [learningPath, isAdmin, progressValue, studentDocRef, initialLoadComplete, isInitialLoading, selectedTopic, studentProfile]);
+    }, [learningPath, isAdmin, progressValue, studentDocRef, initialLoadComplete, selectedTopic, studentProfile]);
     
-    // 4. LÓGICA DE COMPLETITUD (Side Effect Safe)
+    // 4. LÓGICA DE COMPLETITUD (Safe)
     useEffect(() => {
         if (!topicToComplete || isAdmin) {
             if (topicToComplete) setTopicToComplete(null);
@@ -504,7 +494,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
     };
 
     const renderContent = () => {
-        if (isInitialLoading) return <div className="flex justify-center items-center min-h-[400px]"><Loader2 className="h-12 w-12 animate-spin text-primary" /></div>;
+        if (!initialLoadComplete) return <div className="flex justify-center items-center min-h-[400px]"><Loader2 className="h-12 w-12 animate-spin text-primary" /></div>;
 
         const topic = learningPath.find(t => t.key === selectedTopic) || 
                       learningPath.flatMap(t => t.subItems || []).find(st => st?.key === selectedTopic);
@@ -629,7 +619,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                             <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
                                 <CardHeader><CardTitle>Ruta de Aprendizaje</CardTitle></CardHeader>
                                 <CardContent>
-                                    {isInitialLoading ? <Skeleton className="h-48 w-full" /> : (
+                                    {!initialLoadComplete ? <div className="h-48 w-full bg-muted animate-pulse rounded-md" /> : (
                                         <nav>
                                             <ul className="space-y-1">
                                             {learningPath.map((item) => {
@@ -698,10 +688,9 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
 //                 CLASS 2 COMPONENT
 // =================================================================
 const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isProfileLoading, isUserLoading }: ClassContentProps) => {
-    const progressStorageVersion = 'progress_a1_eng_unit_1_class_2_v35_strict_loading';
+    const progressStorageVersion = 'progress_a1_eng_unit_1_class_2_v40_stable';
     const mainProgressKey = 'progress_a1_eng_unit_1_class_2';
     
-    const [isInitialLoading, setIsInitialLoading] = useState(true);
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
     const [selectedTopic, setSelectedTopic] = useState<string>('');
     const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
@@ -771,9 +760,8 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
 
     // 1. CARGA DE DATOS ESTRICTA
     useEffect(() => {
-        if (isProfileLoading || isUserLoading || !studentProfile) return;
+        if (isProfileLoading || isUserLoading || !studentProfile || initialLoadComplete) return;
 
-        const versionedKey = progressStorageVersion;
         let path = initialLearningPath.map(topic => ({
             ...topic,
             subItems: topic.subItems ? topic.subItems.map(sub => ({...sub})) : undefined,
@@ -786,8 +774,8 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             item.status = 'completed';
             if (item.subItems) item.subItems.forEach(sub => sub.status = 'completed');
            });
-        } else if(studentProfile?.lessonProgress?.[versionedKey]) {
-            const savedData = studentProfile.lessonProgress[versionedKey];
+        } else if(studentProfile?.lessonProgress?.[progressStorageVersion]) {
+            const savedData = studentProfile.lessonProgress[progressStorageVersion];
             path.forEach(item => {
                 if (savedData[item.key]) item.status = savedData[item.key];
                 if (item.subItems && savedData.subItems?.[item.key]) {
@@ -801,7 +789,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             savedSelectedTopic = savedData.lastSelectedTopic || '';
         }
 
-        // Reparación preventiva
+        // Reparación de ruta
         let shouldUnlock = false;
         for (let i = 0; i < path.length; i++) {
             if (shouldUnlock && path[i].status === 'locked') {
@@ -842,7 +830,6 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         setValidationStatus(newValidation);
         
         setInitialLoadComplete(true);
-        setIsInitialLoading(false);
 
     }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading, isUserLoading, initialLoadComplete, t]);
 
@@ -863,13 +850,9 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         return totalTopics > 0 ? (completedTopics / totalTopics) * 100 : 0;
     }, [learningPath]);
 
-
     // 3. GUARDADO ESTRICTO
     useEffect(() => {
-        if (!initialLoadComplete || isInitialLoading || isAdmin || !studentDocRef || learningPath.length === 0) return;
-
-        const currentSavedProgress = studentProfile?.progress?.[mainProgressKey] || 0;
-        const newProgress = Math.round(progressValue);
+        if (!initialLoadComplete || isAdmin || !studentDocRef || learningPath.length === 0) return;
 
         const statusesToSave: Record<string, any> = { lastSelectedTopic: selectedTopic };
         learningPath.forEach(item => {
@@ -884,17 +867,15 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         });
 
         const savedData = studentProfile?.lessonProgress?.[progressStorageVersion];
-        const hasDataChanged = JSON.stringify(statusesToSave) !== JSON.stringify(savedData);
-
-        if (hasDataChanged || newProgress !== currentSavedProgress) {
+        if (JSON.stringify(statusesToSave) !== JSON.stringify(savedData)) {
             updateDocumentNonBlocking(studentDocRef, {
                 [`lessonProgress.${progressStorageVersion}`]: statusesToSave,
-                [`progress.${mainProgressKey}`]: newProgress
+                [`progress.${mainProgressKey}`]: Math.round(progressValue)
             });
         }
-    }, [learningPath, isAdmin, progressValue, studentDocRef, initialLoadComplete, isInitialLoading, selectedTopic, studentProfile]);
+    }, [learningPath, isAdmin, progressValue, studentDocRef, initialLoadComplete, selectedTopic, studentProfile]);
 
-    // 4. LÓGICA DE COMPLETITUD (Side Effect Safe)
+    // 4. LÓGICA DE COMPLETITUD (Safe)
     useEffect(() => {
         if (!topicToComplete || isAdmin) {
             if (topicToComplete) setTopicToComplete(null);
@@ -1030,7 +1011,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
     };
 
     const renderContentForClass2 = () => {
-        if (isInitialLoading) return <div className="flex justify-center items-center min-h-[400px]"><Loader2 className="h-12 w-12 animate-spin text-primary" /></div>;
+        if (!initialLoadComplete) return <div className="flex justify-center items-center min-h-[400px]"><Loader2 className="h-12 w-12 animate-spin text-primary" /></div>;
 
         const topic = learningPath.find(t => t.key === selectedTopic) || 
                       learningPath.flatMap(t => t.subItems || []).find(st => st?.key === selectedTopic);
@@ -1137,7 +1118,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                   <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
                     <CardHeader><CardTitle>Ruta de Aprendizaje</CardTitle></CardHeader>
                     <CardContent>
-                      {isInitialLoading ? <Skeleton className="h-48 w-full" /> : (
+                      {!initialLoadComplete ? <div className="h-48 w-full bg-muted animate-pulse rounded-md" /> : (
                         <nav>
                           <ul className="space-y-1">
                             {learningPath.map((item) => {
@@ -1166,15 +1147,17 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                                     </CollapsibleTrigger>
                                     <CollapsibleContent>
                                       <ul className="pl-8 pt-1 space-y-1">
-                                        {item.subItems.map((subItem) => (
-                                          <li key={subItem.key} onClick={() => handleTopicSelect(subItem.key)} className={cn('flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer', (subItem.status === 'locked' && !isAdmin) ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === subItem.key && 'bg-muted text-primary font-semibold')}>
+                                        {item.subItems.map((subItem) => {
+                                          const isSubLocked = subItem.status === 'locked' && !isAdmin;
+                                          return (
+                                          <li key={subItem.key} onClick={() => handleTopicSelect(subItem.key)} className={cn('flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer', isSubLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === subItem.key && 'bg-muted text-primary font-semibold')}>
                                             <div className="flex items-center gap-3">
                                               {subItem.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500" /> : <PenSquare className="h-5 w-5" />}
                                               <span>{subItem.name}</span>
                                             </div>
-                                            {subItem.status === 'locked' && !isAdmin && <Lock className="h-4 w-4 text-yellow-500" />}
+                                            {isSubLocked && <Lock className="h-4 w-4 text-yellow-500" />}
                                           </li>
-                                        ))}
+                                        )})}
                                       </ul>
                                     </CollapsibleContent>
                                   </Collapsible>
@@ -1222,8 +1205,4 @@ export default function EngA1ClassPage() {
         <main className="flex-1 p-4 md:p-8"><div className="max-w-7xl mx-auto"><h1 className="text-4xl font-bold text-white">Clase {classId} próximamente.</h1></div></main>
       </div>
     );
-}
-
-function Skeleton({ className }: { className?: string }) {
-    return <div className={cn("animate-pulse rounded-md bg-muted", className)} />;
 }
