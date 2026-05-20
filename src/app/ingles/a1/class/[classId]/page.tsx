@@ -6,7 +6,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { BookOpen, PenSquare, Lock, GraduationCap, BrainCircuit, CheckCircle, ChevronDown, Loader2, XCircle, Ear } from 'lucide-react';
+import { BookOpen, PenSquare, Lock, GraduationCap, BrainCircuit, CheckCircle, ChevronDown, Loader2, XCircle, Ear, ArrowRight } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
@@ -200,6 +200,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
 
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
     const [selectedTopic, setSelectedTopic] = useState<string>('');
+    const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
     const [userAnswers, setUserAnswers] = useState<{[key: string]: string[]}>({});
     const [validationStatus, setValidationStatus] = useState<{[key: string]: ('correct' | 'incorrect' | 'unchecked')[]}>({});
     
@@ -342,12 +343,13 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         }
     }, [learningPath, isAdmin, progressValue, studentDocRef, initialLoadComplete, selectedTopic, studentProfile, isInitialLoading]);
 
-    const handleTopicComplete = useCallback((completedKey: string) => {
-        if (isAdmin) return;
-        let wasUnlocked = false;
-        let nextToSelect: string | null = null;
-
+    // ASYNC FLOW 3: UNLOCKS (Toaster sanado)
+    useEffect(() => {
+        if (!topicToComplete) return;
+    
         setLearningPath(currentPath => {
+            let wasUnlocked = false;
+            let nextToSelect: string | null = null;
             const newPath = currentPath.map(t => ({
                 ...t,
                 subItems: t.subItems ? t.subItems.map(s => ({ ...s })) : undefined,
@@ -357,7 +359,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             for (let i = 0; i < newPath.length && !topicFound; i++) {
                 const currentTopic = newPath[i];
   
-                if (currentTopic.key === completedKey) {
+                if (currentTopic.key === topicToComplete) {
                     if (currentTopic.status !== 'completed') currentTopic.status = 'completed';
                     if (i + 1 < newPath.length && newPath[i + 1].status === 'locked') {
                         const nextMain = newPath[i + 1];
@@ -368,7 +370,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                     }
                     topicFound = true;
                 } else if (currentTopic.subItems) {
-                    const subIndex = currentTopic.subItems.findIndex((sub: any) => sub.key === completedKey);
+                    const subIndex = currentTopic.subItems.findIndex((sub: any) => sub.key === topicToComplete);
                     if (subIndex !== -1) {
                         if (currentTopic.subItems[subIndex].status !== 'completed') currentTopic.subItems[subIndex].status = 'completed';
                         const nextSubIndex = subIndex + 1;
@@ -401,7 +403,12 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             
             return newPath;
         });
-    }, [isAdmin, toast]);
+        setTopicToComplete(null);
+    }, [topicToComplete, toast, isAdmin]);
+
+    const handleTopicComplete = (completedKey: string) => {
+        setTopicToComplete(completedKey);
+    };
 
     const handleTopicSelect = (topicKey: string) => {
         const mainTopic = learningPath.find(t => t.key === topicKey || t.subItems?.some(st => st.key === topicKey));
@@ -524,10 +531,160 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             case 'ex-mixto-4': return <SimpleTranslationExercise key={selectedTopic} course="a1" exerciseKey="mixed4" onComplete={() => handleTopicComplete('ex-mixto-4')} vocabulary={{"profesor": "teacher", "ingeniero": "engineer"}} highlightVocabulary={true} />;
             case 'ex-mixto-5': return <ShortAnswerExercise key={selectedTopic} onComplete={() => handleTopicComplete('ex-mixto-5')} />;
             case 'ex-mixto-6': return <SimpleTranslationExercise key={selectedTopic} course="a1" exerciseKey="mixed6" onComplete={() => handleTopicComplete('ex-mixto-6')} vocabulary={{"padrastro": "stepfather", "estante": "shelf"}} highlightVocabulary={true} />;
-            case 'tobe':
             case 'tobe-1-grammar':
+                return (
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
+                        <CardHeader>
+                            <CardTitle className="text-3xl font-bold text-primary">To be 1</CardTitle>
+                            <CardDescription className="text-base">Aprende la estructura básica del verbo To be.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-8">
+                            <div className="space-y-4">
+                                <h3 className="text-2xl font-bold text-foreground">Estructura Verbo To be</h3>
+                                <div className="bg-blue-50/50 dark:bg-blue-900/10 p-6 rounded-3xl border border-blue-100 dark:border-blue-800 space-y-4 font-mono text-lg">
+                                    <div className="flex items-center gap-4">
+                                        <span className="text-green-500 font-bold text-2xl w-8 text-center">(+)</span>
+                                        <span>pronoun + to be + complement</span>
+                                    </div>
+                                    <div className="flex items-center gap-4">
+                                        <span className="text-red-500 font-bold text-2xl w-8 text-center">(-)</span>
+                                        <span>pronoun + to be + not + complement</span>
+                                    </div>
+                                    <div className="flex items-center gap-4">
+                                        <span className="text-blue-500 font-bold text-2xl w-8 text-center">(?)</span>
+                                        <span>to be + pronoun + complement ?</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="space-y-4">
+                                <h3 className="text-2xl font-bold text-foreground">Ejemplo: "ellos son estudiantes"</h3>
+                                <div className="bg-blue-50/50 dark:bg-blue-900/10 p-6 rounded-3xl border border-blue-100 dark:border-blue-800 space-y-4 font-mono text-lg">
+                                    <div className="flex items-center gap-4">
+                                        <span className="text-green-500 font-bold text-2xl w-8 text-center">(+)</span>
+                                        <span>They are students</span>
+                                    </div>
+                                    <div className="flex items-center gap-4">
+                                        <span className="text-red-500 font-bold text-2xl w-8 text-center">(-)</span>
+                                        <span>They are not students</span>
+                                    </div>
+                                    <div className="flex items-center gap-4">
+                                        <span className="text-blue-500 font-bold text-2xl w-8 text-center">(?)</span>
+                                        <span>are they students?</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </CardContent>
+                        <CardFooter className="justify-center border-t pt-6">
+                            <Button onClick={() => handleTopicComplete(selectedTopic)} size="lg" className="px-16 font-bold h-12 text-xl">
+                                Continuar <ArrowRight className="ml-2 h-6 w-6" />
+                            </Button>
+                        </CardFooter>
+                    </Card>
+                );
             case 'tobe-2-grammar':
+                return (
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
+                        <CardHeader>
+                            <CardTitle className="text-3xl font-bold text-primary">To be 2</CardTitle>
+                            <CardDescription className="text-base">Estructura con adjetivos posesivos.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-8">
+                            <div className="space-y-4">
+                                <h3 className="text-2xl font-bold text-foreground">Estructura Verbo To be</h3>
+                                <div className="bg-blue-50/50 dark:bg-blue-900/10 p-6 rounded-3xl border border-blue-100 dark:border-blue-800 space-y-4 font-mono text-lg">
+                                    <div className="flex items-center gap-4">
+                                        <span className="text-green-500 font-bold text-2xl w-8 text-center">(+)</span>
+                                        <span>pronoun + To be + possessive + noun + complement</span>
+                                    </div>
+                                    <div className="flex items-center gap-4">
+                                        <span className="text-red-500 font-bold text-2xl w-8 text-center">(-)</span>
+                                        <span>pronoun + To be + Not + possessive + noun + complement</span>
+                                    </div>
+                                    <div className="flex items-center gap-4">
+                                        <span className="text-blue-500 font-bold text-2xl w-8 text-center">(?)</span>
+                                        <span>To be + pronoun + possessive + noun + complement ?</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="space-y-4">
+                                <h3 className="text-2xl font-bold text-foreground">Ejemplo: "Ellos son mis amigos"</h3>
+                                <div className="bg-blue-50/50 dark:bg-blue-900/10 p-6 rounded-3xl border border-blue-100 dark:border-blue-800 space-y-4 font-mono text-lg">
+                                    <div className="flex items-center gap-4">
+                                        <span className="text-green-500 font-bold text-2xl w-8 text-center">(+)</span>
+                                        <span>They are my friends</span>
+                                    </div>
+                                    <div className="flex items-center gap-4">
+                                        <span className="text-red-500 font-bold text-2xl w-8 text-center">(-)</span>
+                                        <span>They are not my friends</span>
+                                    </div>
+                                    <div className="flex items-center gap-4">
+                                        <span className="text-blue-500 font-bold text-2xl w-8 text-center">(?)</span>
+                                        <span>are they my friends?</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </CardContent>
+                        <CardFooter className="justify-center border-t pt-6">
+                            <Button onClick={() => handleTopicComplete(selectedTopic)} size="lg" className="px-16 font-bold h-12 text-xl">
+                                Continuar <ArrowRight className="ml-2 h-6 w-6" />
+                            </Button>
+                        </CardFooter>
+                    </Card>
+                );
             case 'tobe-3-grammar':
+                return (
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
+                        <CardHeader>
+                            <CardTitle className="text-3xl font-bold text-primary">To be 3</CardTitle>
+                            <CardDescription className="text-base">Estructura iniciando con adjetivos posesivos.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-8">
+                            <div className="space-y-4">
+                                <h3 className="text-2xl font-bold text-foreground">Estructura Verbo To be</h3>
+                                <div className="bg-blue-50/50 dark:bg-blue-900/10 p-6 rounded-3xl border border-blue-100 dark:border-blue-800 space-y-4 font-mono text-lg">
+                                    <div className="flex items-center gap-4">
+                                        <span className="text-green-500 font-bold text-2xl w-8 text-center">(+)</span>
+                                        <span>possessive + noun + to be + complement</span>
+                                    </div>
+                                    <div className="flex items-center gap-4">
+                                        <span className="text-red-500 font-bold text-2xl w-8 text-center">(-)</span>
+                                        <span>possessive + noun + to be + Not + complement</span>
+                                    </div>
+                                    <div className="flex items-center gap-4">
+                                        <span className="text-blue-500 font-bold text-2xl w-8 text-center">(?)</span>
+                                        <span>To be + possessive + noun + complement ?</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="space-y-4">
+                                <h3 className="text-2xl font-bold text-foreground">Ejemplo: "Mi mamá es una enfermera"</h3>
+                                <div className="bg-blue-50/50 dark:bg-blue-900/10 p-6 rounded-3xl border border-blue-100 dark:border-blue-800 space-y-4 font-mono text-lg">
+                                    <div className="flex items-center gap-4">
+                                        <span className="text-green-500 font-bold text-2xl w-8 text-center">(+)</span>
+                                        <span>My mother is a nurse</span>
+                                    </div>
+                                    <div className="flex items-center gap-4">
+                                        <span className="text-red-500 font-bold text-2xl w-8 text-center">(-)</span>
+                                        <span>My mother is not a nurse</span>
+                                    </div>
+                                    <div className="flex items-center gap-4">
+                                        <span className="text-blue-500 font-bold text-2xl w-8 text-center">(?)</span>
+                                        <span>is my mother a nurse?</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </CardContent>
+                        <CardFooter className="justify-center border-t pt-6">
+                            <Button onClick={() => handleTopicComplete(selectedTopic)} size="lg" className="px-16 font-bold h-12 text-xl">
+                                Continuar <ArrowRight className="ml-2 h-6 w-6" />
+                            </Button>
+                        </CardFooter>
+                    </Card>
+                );
+            case 'tobe':
             case 'possessives':
                 return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
@@ -557,16 +714,6 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                                             <div className="p-3 bg-card border rounded-lg text-center">{item.spanish}</div>
                                         </React.Fragment>
                                     ))}
-                                </div>
-                            )}
-                            {selectedTopic.includes('grammar') && (
-                                <div className="space-y-4">
-                                    <h3 className="text-xl font-semibold">Estructura Gramatical</h3>
-                                    <div className="p-4 bg-muted rounded-lg font-mono text-base border-2 border-dashed">
-                                        {selectedTopic === 'tobe-1-grammar' && <><p>(+) pronoun + to be + complement</p><p>(-) pronoun + to be + not + complement</p><p>(?) to be + pronoun + complement ?</p></>}
-                                        {selectedTopic === 'tobe-2-grammar' && <><p>(+) pronoun + to be + possessive + noun + complement</p><p>(-) pronoun + to be + not + possessive + noun + complement</p></>}
-                                        {selectedTopic === 'tobe-3-grammar' && <><p>(+) possessive + noun + to be + complement</p><p>(?) to be + possessive + noun + complement ?</p></>}
-                                    </div>
                                 </div>
                             )}
                         </CardContent>
@@ -670,6 +817,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
     
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
     const [selectedTopic, setSelectedTopic] = useState<string>('');
+    const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
     const [userAnswers, setUserAnswers] = useState<{[key: string]: string[]}>({});
     const [validationStatus, setValidationStatus] = useState<{[key: string]: ('correct' | 'incorrect' | 'unchecked')[]}>({});
     
@@ -1053,7 +1201,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                               return(
                                 <li key={item.key}>
                                 {!item.subItems ? (
-                                  <div onClick={() => handleTopicSelect(item.key)} className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer', isLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === item.key && 'bg-muted text-primary font-semibold')}>
+                                  <div onClick={() => handleTopicSelect(item.key)} className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer', isLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === item.key && (item.status !== 'locked' || isAdmin) && 'bg-muted text-primary font-semibold')}>
                                     <div className="flex items-center gap-3">
                                         <StatusIcon className={cn("h-5 w-5", item.status === 'completed' ? 'text-green-500' : '')} />
                                         <span>{item.name}</span>
