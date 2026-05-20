@@ -178,11 +178,27 @@ interface ClassContentProps {
     isUserLoading: boolean;
 }
 
+const ICONS = {
+    locked: Lock,
+    active: BookOpen,
+    completed: CheckCircle,
+};
+
+type TopicStatus = 'locked' | 'active' | 'completed';
+
+type Topic = {
+  key: string;
+  name: string;
+  icon: React.ElementType;
+  status: TopicStatus;
+  subItems?: { key: string; name: string; status: TopicStatus, icon?: React.ElementType }[];
+};
+
 // =================================================================
 //                 CLASS 1 COMPONENT
 // =================================================================
 const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isProfileLoading, isUserLoading }: ClassContentProps) => {
-    const progressStorageKey = `_eng_a1_class_1_v2_vocab`;
+    const progressStorageKey = `_eng_a1_class_1_v3_session_fix`;
     const mainProgressKey = `progress_a1_eng_unit_1_class_1`;
 
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
@@ -231,7 +247,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
     }, [t]);
 
     useEffect(() => {
-        if (isProfileLoading || initialLoadComplete) return;
+        if (isProfileLoading || initialLoadComplete || !studentProfile) return;
 
         let path = initialLearningPath.map(topic => ({
             ...topic,
@@ -262,9 +278,11 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
 
         setLearningPath(path);
         
-        if (!selectedTopic) {
+        if (savedSelectedTopic) {
+            setSelectedTopic(savedSelectedTopic);
+        } else {
             const firstActive = path.find(p => p.status === 'active') || path.flatMap(p => p.subItems || []).find(sp => sp?.status === 'active');
-            setSelectedTopic(savedSelectedTopic || firstActive?.key || path[0].key);
+            setSelectedTopic(firstActive?.key || path[0].key);
         }
 
         const newAnswers: {[key: string]: string[]} = {};
@@ -277,7 +295,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         setValidationStatus(newValidation);
         setInitialLoadComplete(true);
 
-    }, [isAdmin, initialLearningPath, studentProfile, progressStorageKey, isProfileLoading, initialLoadComplete, selectedTopic]);
+    }, [isAdmin, initialLearningPath, studentProfile, progressStorageKey, isProfileLoading, initialLoadComplete]);
 
     const progressValue = useMemo(() => {
         if (learningPath.length === 0) return 0;
@@ -582,7 +600,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             case 'tobe-1-exercise':
                 return (
                     <TranslationExercise 
-                        key={selectedTopic}
+                        key="tobe-1-exercise"
                         exerciseKey="exercises1" 
                         onComplete={() => handleTopicComplete('tobe-1-exercise')} 
                         vocabulary={{'un- una': 'a / an', 'abogado': 'lawyer', 'enfermo': 'sick', 'enfermero': 'nurse'}}
@@ -636,7 +654,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             case 'tobe-2-exercise':
                 return (
                     <TranslationExercise 
-                        key={selectedTopic}
+                        key="tobe-2-exercise"
                         exerciseKey="exercises2" 
                         onComplete={() => handleTopicComplete('tobe-2-exercise')} 
                         vocabulary={{'amigo': 'friend', 'hijo': 'son', 'perro': 'dog'}}
@@ -673,7 +691,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             case 'tobe-3-exercise':
                 return (
                     <TranslationExercise 
-                        key={selectedTopic}
+                        key="tobe-3-exercise"
                         exerciseKey="exercises3" 
                         onComplete={() => handleTopicComplete('tobe-3-exercise')} 
                         vocabulary={{'enfermera': 'nurse', 'abuelos': 'grandparents', 'pensionado': 'retired', 'juguete': 'toy'}}
@@ -683,7 +701,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             case 'ex-mixto-1': 
                 return (
                     <SimpleTranslationExercise 
-                        key={selectedTopic}
+                        key="ex-mixto-1"
                         course="a1" 
                         exerciseKey="mixed1" 
                         onComplete={() => handleTopicComplete('ex-mixto-1')} 
@@ -703,7 +721,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             case 'ex-mixto-2': 
                 return (
                     <TranslationExercise 
-                        key={selectedTopic} 
+                        key="ex-mixto-2" 
                         exerciseKey="qna2" 
                         formType="qna" 
                         onComplete={() => handleTopicComplete('ex-mixto-2')}
@@ -721,7 +739,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             case 'ex-mixto-3': 
                 return (
                     <SimpleTranslationExercise 
-                        key={selectedTopic}
+                        key="ex-mixto-3"
                         course="a1" 
                         exerciseKey="mixed3" 
                         onComplete={() => handleTopicComplete('ex-mixto-3')} 
@@ -741,7 +759,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             case 'ex-mixto-4': 
                 return (
                     <SimpleTranslationExercise 
-                        key={selectedTopic}
+                        key="ex-mixto-4"
                         course="a1" 
                         exerciseKey="mixed4" 
                         onComplete={() => handleTopicComplete('ex-mixto-4')} 
@@ -755,11 +773,11 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                         highlightVocabulary={true}
                     />
                 );
-            case 'ex-mixto-5': return <ShortAnswerExercise key={selectedTopic} onComplete={() => handleTopicComplete('ex-mixto-5')} />;
+            case 'ex-mixto-5': return <ShortAnswerExercise key="ex-mixto-5" onComplete={() => handleTopicComplete('ex-mixto-5')} />;
             case 'ex-mixto-6': 
                 return (
                     <SimpleTranslationExercise 
-                        key={selectedTopic}
+                        key="ex-mixto-6"
                         course="a1" 
                         exerciseKey="mixed6" 
                         onComplete={() => handleTopicComplete('ex-mixto-6')} 
@@ -845,7 +863,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                                                                     {subItem.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500" /> : <PenSquare className="h-5 w-5" />}
                                                                     <span>{subItem.name}</span>
                                                                 </div>
-                                                                {subItem.status === 'locked' && !isAdmin && <Lock className="h-4 w-4 text-yellow-500" />}
+                                                                {isSubLocked && <Lock className="h-4 w-4 text-yellow-500" />}
                                                             </li>
                                                         ))}
                                                         </ul>
@@ -878,7 +896,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
 //                 CLASS 2 COMPONENT
 // =================================================================
 const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isProfileLoading, isUserLoading }: ClassContentProps) => {
-    const progressStorageVersion = 'progress_a1_eng_unit_1_class_2_v7_save_fix';
+    const progressStorageVersion = 'progress_a1_eng_unit_1_class_2_v8_final';
     const mainProgressKey = 'progress_a1_eng_unit_1_class_2';
     
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
@@ -947,7 +965,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
     }, [t]);
 
     useEffect(() => {
-        if (isProfileLoading || initialLoadComplete) return;
+        if (isProfileLoading || initialLoadComplete || !studentProfile) return;
 
         let path = initialLearningPath.map(topic => ({
             ...topic,
@@ -978,9 +996,11 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
 
         setLearningPath(path);
         
-        if (!selectedTopic) {
+        if (savedSelectedTopic) {
+            setSelectedTopic(savedSelectedTopic);
+        } else {
             const firstActive = path.find(p => p.status === 'active') || path.flatMap(p => p.subItems || []).find(sp => sp?.status === 'active');
-            setSelectedTopic(savedSelectedTopic || firstActive?.key || path[0].key);
+            setSelectedTopic(firstActive?.key || path[0].key);
         }
 
         const newAnswers: {[key: string]: string[]} = {};
@@ -993,7 +1013,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         setValidationStatus(newValidation);
         setInitialLoadComplete(true);
 
-    }, [isAdmin, initialLearningPath, studentProfile, progressStorageVersion, isProfileLoading, initialLoadComplete, selectedTopic]);
+    }, [isAdmin, initialLearningPath, studentProfile, progressStorageVersion, isProfileLoading, initialLoadComplete]);
 
     const progressValue = useMemo(() => {
         if (learningPath.length === 0) return 0;
@@ -1370,6 +1390,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         if (selectedTopic.startsWith('ex-')) {
             if (selectedTopic === 'ex-positive') {
                 return <SingleFormExercise
+                            key="ex-positive"
                             onComplete={() => handleTopicComplete('ex-positive')}
                             exerciseData={positiveExercisesData}
                             title={t('kidsA1Class2.exercisePositive')}
@@ -1379,6 +1400,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             }
             if (selectedTopic === 'ex-negative') {
                  return <SingleFormExercise
+                            key="ex-negative"
                             onComplete={() => handleTopicComplete('ex-negative')}
                             exerciseData={negativeExercisesData}
                             title={t('kidsA1Class2.exerciseNegative')}
@@ -1388,6 +1410,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             }
             if (selectedTopic === 'ex-interrogative') {
                 return <SingleFormExercise
+                            key="ex-interrogative"
                             onComplete={() => handleTopicComplete('ex-interrogative')}
                             exerciseData={interrogativeExercisesData}
                             title={t('kidsA1Class2.exerciseInterrogative')}
@@ -1396,10 +1419,10 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                         />;
             }
             if (selectedTopic === 'ex-mixed-1-1') {
-                return <PresentSimpleExercise onComplete={() => handleTopicComplete('ex-mixed-1-1')} exerciseData={class2Exercise1Data} title={t('kidsA1Class2.exercisesMixed1')} showShortAnswers={false} />;
+                return <PresentSimpleExercise key="ex-mixed-1-1" onComplete={() => handleTopicComplete('ex-mixed-1-1')} exerciseData={class2Exercise1Data} title={t('kidsA1Class2.exercisesMixed1')} showShortAnswers={false} />;
             }
             if (selectedTopic === 'ex-mixed-1-2') {
-                return <PresentSimpleExercise onComplete={() => handleTopicComplete('ex-mixed-1-2')} exerciseData={class2Exercise2Data} title={t('a1class1.exercise', {number: 2})} showShortAnswers={false} />;
+                return <PresentSimpleExercise key="ex-mixed-1-2" onComplete={() => handleTopicComplete('ex-mixed-1-2')} exerciseData={class2Exercise2Data} title={t('a1class1.exercise', {number: 2})} showShortAnswers={false} />;
             }
             return (
                 <Card className="shadow-soft rounded-lg border-2 border-brand-purple min-h-[600px]">
