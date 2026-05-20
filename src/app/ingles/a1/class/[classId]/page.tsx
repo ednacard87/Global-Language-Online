@@ -18,19 +18,17 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
-// Imports for Class 1
+// Imports for Exercises
 import { ToBeMemoryGame } from '@/components/kids/exercises/tobe-memory-game';
 import { PossessivesMemoryGame } from '@/components/kids/exercises/possessives-memory-game';
 import { TranslationExercise } from '@/components/dashboard/translation-exercise';
 import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
 import { ShortAnswerExercise } from '@/components/dashboard/short-answer-exercise';
 import { VerbVocabularyExercise } from '@/components/kids/exercises/verb-vocabulary';
-
-// Imports for Class 2
 import { VerbMemoryGame } from '@/components/kids/exercises/verb-memory-game';
 import { FillInTheBlanksExercise } from '@/components/kids/exercises/fill-in-the-blanks';
 import { SingleFormExercise } from '@/components/kids/exercises/single-form';
-import { PresentSimpleExercise, presentSimpleExercises, presentSimpleExercises2 } from '@/components/kids/exercises/present-simple';
+import { PresentSimpleExercise } from '@/components/kids/exercises/present-simple';
 
 // Data for Class 1
 const verbToBeData = [
@@ -169,6 +167,20 @@ const class2Exercise2Data = [
     },
 ];
 
+interface Topic {
+    key: string;
+    name: string;
+    icon: React.ElementType;
+    status: 'locked' | 'active' | 'completed';
+    subItems?: { key: string; name: string; status: 'locked' | 'active' | 'completed', icon?: React.ElementType }[];
+}
+
+const ICONS = {
+    locked: Lock,
+    active: BookOpen,
+    completed: CheckCircle,
+};
+
 interface ClassContentProps {
     t: any;
     toast: any;
@@ -183,7 +195,7 @@ interface ClassContentProps {
 //                 CLASS 1 COMPONENT
 // =================================================================
 const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isProfileLoading, isUserLoading }: ClassContentProps) => {
-    const progressStorageKey = `_eng_a1_class_1_v8_stable_save`;
+    const progressStorageKey = `_eng_a1_class_1_v10_stable_final`;
     const mainProgressKey = `progress_a1_eng_unit_1_class_1`;
 
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
@@ -193,43 +205,41 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
     const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
     const [initialLoadComplete, setInitialLoadComplete] = useState(false);
     
-    const initialLearningPath = useMemo((): Topic[] => {
-        return [
-            { key: 'vocabulary', name: t('a1class1.vocabulary'), icon: BookOpen, status: 'active' },
-            { key: 'tobe', name: t('kidsA1.toBe'), icon: GraduationCap, status: 'locked' },
-            { key: 'memory-tobe', name: t('kidsA1.memoryToBe'), icon: BrainCircuit, status: 'locked' },
-            { key: 'tobe-1-grammar', name: t('kidsA1.toBe1Grammar'), icon: GraduationCap, status: 'locked' },
-            { key: 'tobe-1-exercise', name: t('kidsA1.toBe1Exercise'), icon: PenSquare, status: 'locked' },
-            { key: 'possessives', name: t('kidsA1.possessives'), icon: GraduationCap, status: 'locked' },
-            { key: 'memory-possessives', name: t('kidsA1.memoryPossessives'), icon: BrainCircuit, status: 'locked' },
-            { key: 'tobe-2-grammar', name: t('kidsA1.toBe2Grammar'), icon: GraduationCap, status: 'locked' },
-            { key: 'tobe-2-exercise', name: t('kidsA1.toBe2Exercise'), icon: PenSquare, status: 'locked' },
-            { key: 'tobe-3-grammar', name: t('kidsA1.toBe3Grammar'), icon: GraduationCap, status: 'locked' },
-            { key: 'tobe-3-exercise', name: t('kidsA1.toBe3Exercise'), icon: PenSquare, status: 'locked' },
-            {
-                key: 'mixto-1',
-                name: 'Mixto 1',
-                icon: PenSquare,
-                status: 'locked',
-                subItems: [
-                    { key: 'ex-mixto-1', name: 'Ejercicio 1', status: 'locked' },
-                    { key: 'ex-mixto-2', name: 'Ejercicio 2', status: 'locked' },
-                    { key: 'ex-mixto-3', name: 'Ejercicio 3', status: 'locked' },
-                ]
-            },
-            {
-                key: 'mixto-final',
-                name: 'Mixto Final',
-                icon: PenSquare,
-                status: 'locked',
-                subItems: [
-                    { key: 'ex-mixto-4', name: 'Ejercicio 4', status: 'locked' },
-                    { key: 'ex-mixto-5', name: 'Ejercicio 5', status: 'locked' },
-                    { key: 'ex-mixto-6', name: 'Ejercicio 6', status: 'locked' },
-                ]
-            }
-        ];
-    }, [t]);
+    const initialLearningPath = useMemo((): Topic[] => [
+        { key: 'vocabulary', name: t('a1class1.vocabulary'), icon: BookOpen, status: 'active' },
+        { key: 'tobe', name: t('kidsA1.toBe'), icon: GraduationCap, status: 'locked' },
+        { key: 'memory-tobe', name: t('kidsA1.memoryToBe'), icon: BrainCircuit, status: 'locked' },
+        { key: 'tobe-1-grammar', name: t('kidsA1.toBe1Grammar'), icon: GraduationCap, status: 'locked' },
+        { key: 'tobe-1-exercise', name: t('kidsA1.toBe1Exercise'), icon: PenSquare, status: 'locked' },
+        { key: 'possessives', name: t('kidsA1.possessives'), icon: GraduationCap, status: 'locked' },
+        { key: 'memory-possessives', name: t('kidsA1.memoryPossessives'), icon: BrainCircuit, status: 'locked' },
+        { key: 'tobe-2-grammar', name: t('kidsA1.toBe2Grammar'), icon: GraduationCap, status: 'locked' },
+        { key: 'tobe-2-exercise', name: t('kidsA1.toBe2Exercise'), icon: PenSquare, status: 'locked' },
+        { key: 'tobe-3-grammar', name: t('kidsA1.toBe3Grammar'), icon: GraduationCap, status: 'locked' },
+        { key: 'tobe-3-exercise', name: t('kidsA1.toBe3Exercise'), icon: PenSquare, status: 'locked' },
+        {
+            key: 'mixto-1',
+            name: 'Mixto 1',
+            icon: PenSquare,
+            status: 'locked',
+            subItems: [
+                { key: 'ex-mixto-1', name: 'Ejercicio 1', status: 'locked' },
+                { key: 'ex-mixto-2', name: 'Ejercicio 2', status: 'locked' },
+                { key: 'ex-mixto-3', name: 'Ejercicio 3', status: 'locked' },
+            ]
+        },
+        {
+            key: 'mixto-final',
+            name: 'Mixto Final',
+            icon: PenSquare,
+            status: 'locked',
+            subItems: [
+                { key: 'ex-mixto-4', name: 'Ejercicio 4', status: 'locked' },
+                { key: 'ex-mixto-5', name: 'Ejercicio 5', status: 'locked' },
+                { key: 'ex-mixto-6', name: 'Ejercicio 6', status: 'locked' },
+            ]
+        }
+    ], [t]);
 
     useEffect(() => {
         if (isProfileLoading || initialLoadComplete) return;
@@ -259,6 +269,21 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                 }
             });
             savedSelectedTopic = savedData.lastSelectedTopic || '';
+        }
+
+        // Sequential repair logic: if a topic is completed, the next one should be at least active
+        for (let i = 0; i < path.length - 1; i++) {
+            if (path[i].status === 'completed' && path[i+1].status === 'locked') {
+                path[i+1].status = 'active';
+                if (path[i+1].subItems) path[i+1].subItems[0].status = 'active';
+            }
+            if (path[i].subItems) {
+                for (let j = 0; j < path[i].subItems.length - 1; j++) {
+                    if (path[i].subItems[j].status === 'completed' && path[i].subItems[j+1].status === 'locked') {
+                        path[i].subItems[j+1].status = 'active';
+                    }
+                }
+            }
         }
 
         setLearningPath(path);
@@ -295,7 +320,6 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                 if (t.status === 'completed') completedTopics++;
             }
         });
-    
         return totalTopics > 0 ? (completedTopics / totalTopics) * 100 : 0;
     }, [learningPath]);
 
@@ -430,7 +454,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         
         setSelectedTopic(topicKey);
 
-        const autoViewTopics = ['tobe', 'possessives', 'tobe-1-grammar', 'tobe-2-grammar', 'tobe-3-grammar', 'demonstratives'];
+        const autoViewTopics = ['tobe', 'possessives', 'tobe-1-grammar', 'tobe-2-grammar', 'tobe-3-grammar'];
         if (autoViewTopics.includes(topicKey)) {
             handleTopicComplete(topicKey);
         }
@@ -803,6 +827,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                                         <ul className="space-y-1">
                                         {learningPath.map((item) => {
                                             const isLocked = item.status === 'locked' && !isAdmin;
+                                            const isSelected = selectedTopic === item.key || item.subItems?.some(si => si.key === selectedTopic);
                                             return(
                                                 <li key={item.key}>
                                                 {!item.subItems ? (
@@ -819,11 +844,11 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                                                     {isLocked && <Lock className="h-4 w-4 text-yellow-500" />}
                                                     </div>
                                                 ) : (
-                                                    <Collapsible defaultOpen={item.subItems.some(si => si.status !== 'locked')} disabled={isLocked}>
+                                                    <Collapsible defaultOpen={isSelected || item.subItems.some(si => si.status !== 'locked')} disabled={isLocked}>
                                                     <CollapsibleTrigger className="w-full">
                                                         <div className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors w-full cursor-pointer', 
                                                             isLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', 
-                                                            item.subItems.some(si => si.key === selectedTopic) && 'bg-muted text-primary font-semibold',
+                                                            isSelected && 'bg-muted text-primary font-semibold',
                                                             item.status === 'active' && !isAdmin && "animate-pulse-glow"
                                                         )}>
                                                             <div className="flex items-center gap-3">
@@ -878,13 +903,11 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
     );
 };
 
-// ... Rest of the file (Class2Content and EngA1ClassPage) remains the same ...
-
 // =================================================================
 //                 CLASS 2 COMPONENT
 // =================================================================
 const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isProfileLoading, isUserLoading }: ClassContentProps) => {
-    const progressStorageVersion = 'progress_a1_eng_unit_1_class_2_v11_organized';
+    const progressStorageVersion = 'progress_a1_eng_unit_1_class_2_v15_stable_final';
     const mainProgressKey = 'progress_a1_eng_unit_1_class_2';
     
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
@@ -982,6 +1005,21 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             savedSelectedTopic = savedData.lastSelectedTopic || '';
         }
 
+        // Sequential repair
+        for (let i = 0; i < path.length - 1; i++) {
+            if (path[i].status === 'completed' && path[i+1].status === 'locked') {
+                path[i+1].status = 'active';
+                if (path[i+1].subItems) path[i+1].subItems[0].status = 'active';
+            }
+            if (path[i].subItems) {
+                for (let j = 0; j < path[i].subItems.length - 1; j++) {
+                    if (path[i].subItems[j].status === 'completed' && path[i].subItems[j+1].status === 'locked') {
+                        path[i].subItems[j+1].status = 'active';
+                    }
+                }
+            }
+        }
+
         setLearningPath(path);
         
         if (savedSelectedTopic) {
@@ -1016,7 +1054,6 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                 if (t.status === 'completed') completedTopics++;
             }
         });
-    
         return totalTopics > 0 ? (completedTopics / totalTopics) * 100 : 0;
     }, [learningPath]);
 
@@ -1410,16 +1447,6 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             if (selectedTopic === 'ex-mixed-1-2') {
                 return <PresentSimpleExercise key={selectedTopic} onComplete={() => handleTopicComplete('ex-mixed-1-2')} exerciseData={class2Exercise2Data} title={t('a1class1.exercise', {number: 2})} showShortAnswers={false} />;
             }
-            return (
-                <Card className="shadow-soft rounded-lg border-2 border-brand-purple min-h-[600px]">
-                  <CardHeader>
-                    <CardTitle>{topic?.name || 'Cargando...'}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p>Contenido para {topic?.name || 'este tema'} vendrá aquí.</p>
-                  </CardContent>
-                </Card>
-            );
         }
     
         return (
@@ -1428,7 +1455,9 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
               <CardTitle>{topic?.name || 'Cargando...'}</CardTitle>
             </CardHeader>
             <CardContent>
-              <p>Contenido para {topic?.name || 'este tema'} vendrá aquí.</p>
+              <div className="flex justify-center items-center h-48">
+                <Loader2 className="animate-spin h-10 w-10 text-primary" />
+              </div>
             </CardContent>
           </Card>
         );
@@ -1531,7 +1560,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                       </nav>
                        <div className="mt-6 pt-6 border-t">
                             <div className="flex justify-between items-center text-sm font-medium text-muted-foreground mb-2">
-                                <span>Progreso</span>
+                                <span>Progreso de la Clase</span>
                                 <span className="font-bold text-foreground">{Math.round(progressValue)}%</span>
                             </div>
                             <Progress value={progressValue} className="h-2" />
