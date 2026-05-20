@@ -61,7 +61,7 @@ const willPositiveExercises = [
 const willNegativeExercises = [
     { spanish: 'ella no comerá pollo', answer: ["she will not eat chicken", "she won't eat chicken"] },
     { spanish: 'el no vivirá en Londres', answer: ["he will not live in london", "he won't live in london"] },
-    { spanish: 'nosotros no veremos la serie From', answer: ["we will not watch the series from", "we won't watch the series from", "we will not watch from the series", "we won't watch from the series", "we will not watch the serie from", "we won't watch the serie from"] },
+    { spanish: 'nosotros no veremos la serie From', answer: ["we will not watch the series from", "we won't watch the series from", "we will not watch from the series", "we won't watch from the series", "we will not watch the serie from", "we won't watch from the series"] },
     { spanish: 'ellos no estudiaran ingles por 2 años', answer: ["they will not study english for 2 years", "they won't study english for 2 years"] },
 ];
 
@@ -423,12 +423,7 @@ export default function WillPage() {
     
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
     const [selectedTopic, setSelectedTopic] = useState<string>('');
-    const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
     const [initialLoadComplete, setInitialLoadComplete] = useState(false);
-
-    // States for non-blocking UI updates (to avoid rendering issues)
-    const [unlockedTopicName, setUnlockedTopicName] = useState<string | null>(null);
-    const [topicToSelect, setTopicToSelect] = useState<string | null>(null);
 
     const initialLearningPath = useMemo((): Topic[] => [
         { key: 'vocabulary', name: t('kidsB1Will.vocabulary'), icon: BookOpen, status: 'active' },
@@ -491,7 +486,7 @@ export default function WillPage() {
                     setSelectedTopic(firstActive.key);
                 }
             } else {
-                setSelectedTopic(newPath[0]?.key || '');
+                setSelectedTopic(path[0]?.key || '');
             }
             setInitialLoadComplete(true);
         }
@@ -534,28 +529,11 @@ export default function WillPage() {
         }
     }, [learningPath, progressValue, isAdmin, studentDocRef, isUserLoading, isProfileLoading, initialLoadComplete, selectedTopic]);
 
-    // Side-Effect Handler: This moves state changes and UI calls out of the render cycle
-    useEffect(() => {
-        if (!unlockedTopicName && !topicToSelect) return;
-
-        if (unlockedTopicName) {
-            toast({ title: "¡Siguiente tema desbloqueado!" });
-            setUnlockedTopicName(null);
-        }
-
-        if (topicToSelect) {
-            setSelectedTopic(topicToSelect);
-            setTopicToSelect(null);
-        }
-    }, [unlockedTopicName, topicToSelect, toast]);
-
-    const handleTopicComplete = useCallback((completedKey: string) => {
-        setTopicToComplete(completedKey);
-    }, []);
-
-    // Main completion logic effect
-    useEffect(() => {
-        if (!topicToComplete) return;
+    const handleTopicComplete = (completedKey: string) => {
+        if (isAdmin) return;
+        
+        let wasUnlocked = false;
+        let nextToSelect: string | null = null;
 
         setLearningPath(currentPath => {
             const newPath = currentPath.map(t => ({
@@ -567,41 +545,33 @@ export default function WillPage() {
             for (let i = 0; i < newPath.length && !found; i++) {
                 const currentTopic = newPath[i];
           
-                if (currentTopic.key === topicToComplete) {
-                    if (currentTopic.status !== 'completed') { currentTopic.status = 'completed'; }
+                if (currentTopic.key === completedKey) {
+                    if (currentTopic.status !== 'completed') currentTopic.status = 'completed';
                     if (i + 1 < newPath.length && newPath[i + 1].status === 'locked') {
                         const next = newPath[i + 1];
                         next.status = 'active';
-                        if (next.subItems?.[0]) { 
-                            next.subItems[0].status = 'active'; 
-                            setTopicToSelect(next.subItems[0].key); 
-                        } else { 
-                            setTopicToSelect(next.key); 
-                        }
-                        setUnlockedTopicName(next.name);
+                        wasUnlocked = true;
+                        nextToSelect = next.subItems?.[0]?.key || next.key;
+                        if (next.subItems?.[0]) next.subItems[0].status = 'active';
                     }
                     found = true;
                 } else if (currentTopic.subItems) {
-                    const subIndex = currentTopic.subItems.findIndex(s => s.key === topicToComplete);
+                    const subIndex = currentTopic.subItems.findIndex(s => s.key === completedKey);
                     if (subIndex !== -1) {
-                        if (currentTopic.subItems[subIndex].status !== 'completed') { currentTopic.subItems[subIndex].status = 'completed'; }
+                        if (currentTopic.subItems[subIndex].status !== 'completed') currentTopic.subItems[subIndex].status = 'completed';
                         const nextSubIndex = subIndex + 1;
                         if (nextSubIndex < currentTopic.subItems.length && currentTopic.subItems[nextSubIndex].status === 'locked') {
                             currentTopic.subItems[nextSubIndex].status = 'active';
-                            setTopicToSelect(currentTopic.subItems[nextSubIndex].key);
-                            setUnlockedTopicName(currentTopic.subItems[nextSubIndex].name);
+                            nextToSelect = currentTopic.subItems[nextSubIndex].key;
+                            wasUnlocked = true;
                         } else if (currentTopic.subItems.every(s => s.status === 'completed')) {
-                            if (currentTopic.status !== 'completed') { currentTopic.status = 'completed'; }
+                            if (currentTopic.status !== 'completed') currentTopic.status = 'completed';
                             if (i + 1 < newPath.length && newPath[i + 1].status === 'locked') {
                                 const next = newPath[i + 1];
                                 next.status = 'active';
-                                if (next.subItems?.[0]) { 
-                                    next.subItems[0].status = 'active'; 
-                                    setTopicToSelect(next.subItems[0].key); 
-                                } else { 
-                                    setTopicToSelect(next.key); 
-                                }
-                                setUnlockedTopicName(next.name);
+                                wasUnlocked = true;
+                                nextToSelect = next.subItems?.[0]?.key || next.key;
+                                if (next.subItems?.[0]) next.subItems[0].status = 'active';
                             }
                         }
                         found = true;
@@ -611,8 +581,9 @@ export default function WillPage() {
             return newPath;
         });
 
-        setTopicToComplete(null);
-    }, [topicToComplete]);
+        if (wasUnlocked) toast({ title: "¡Siguiente tema desbloqueado!" });
+        if (nextToSelect) setSelectedTopic(nextToSelect);
+    };
 
     const handleTopicSelect = (topicKey: string) => {
         const mainTopic = learningPath.find(t => t.key === topicKey || t.subItems?.some(st => st.key === topicKey));

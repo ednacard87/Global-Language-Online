@@ -1,13 +1,12 @@
-
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import Link from 'next/link';
 import { DashboardHeader } from "@/components/dashboard/header";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, Gamepad2, ChevronDown, Trophy, BookText } from 'lucide-react';
+import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, Gamepad2, ChevronDown, Trophy, BookText, Loader2, ArrowRight } from 'lucide-react';
 import { useTranslation } from "@/context/language-context";
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
@@ -20,6 +19,9 @@ import { SingleFormExercise } from '@/components/kids/exercises/single-form';
 import { PresentSimpleExercise } from '@/components/kids/exercises/present-simple';
 
 // --- Data & Constants ---
+
+const progressStorageVersion = 'progress_kids_b1_may_v4_stable';
+const mainProgressKey = 'progress_kids_b1_may';
 
 const lifeGoalsVocab = [
     { spanish: "Solicitar una beca.", english: "Apply for a scholarship" },
@@ -312,14 +314,15 @@ const ICONS = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_kids_b1_may_v4';
-const mainProgressKey = 'progress_kids_b1_may';
-
 export default function MayPage() {
     const { t } = useTranslation();
     const { toast } = useToast();
     const { user, isUserLoading } = useUser();
     const firestore = useFirestore();
+
+    const [learningPath, setLearningPath] = useState<Topic[]>([]);
+    const [selectedTopic, setSelectedTopic] = useState<string>('');
+    const [initialLoadComplete, setInitialLoadComplete] = useState(false);
 
     const studentDocRef = useMemoFirebase(
         () => (user ? doc(firestore, 'students', user.uid) : null),
@@ -331,11 +334,6 @@ export default function MayPage() {
         if (!user) return false;
         return studentProfile?.role === 'admin' || user.email === 'ednacard87@gmail.com';
     }, [user, studentProfile]);
-
-    const [learningPath, setLearningPath] = useState<Topic[]>([]);
-    const [selectedTopic, setSelectedTopic] = useState<string>('');
-    const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
-    const [initialLoadComplete, setInitialLoadComplete] = useState(false);
 
     const initialLearningPath = useMemo((): Topic[] => [
         { key: 'vocabulary', name: 'Vocabulario (Life Goals)', icon: BookOpen, status: 'active' },
@@ -394,19 +392,13 @@ export default function MayPage() {
             if (savedSelectedTopic) {
                 setSelectedTopic(savedSelectedTopic);
             } else {
-                const firstActiveItem = newPath.find(p => p.status === 'active' && !p.subItems) || newPath.find(p => p.subItems?.some(sp => sp.status === 'active'));
-
-                if (firstActiveItem?.subItems) {
-                    const firstActiveSubItem = firstActiveItem.subItems.find(sp => sp.status === 'active');
-                    setSelectedTopic(firstActiveSubItem?.key || firstActiveItem.key);
-                } else {
-                    setSelectedTopic(firstActiveItem?.key || newPath[0]?.key || '');
-                }
+                const firstActiveItem = newPath.find(p => p.status === 'active') || newPath.flatMap(p => p.subItems || []).find(sp => sp?.status === 'active');
+                setSelectedTopic(firstActiveItem?.key || newPath[0].key);
             }
             setInitialLoadComplete(true);
         }
 
-    }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading, isUserLoading, initialLoadComplete]);
+    }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading, isUserLoading, initialLoadComplete, t]);
 
     const progressPercent = useMemo(() => {
         if (!initialLoadComplete) return 0;
@@ -421,16 +413,13 @@ export default function MayPage() {
                 if (t.status === 'completed') completedTopics++;
             }
         });
-        return totalTopics > 0 ? (completedTopics / totalTopics) * 100 : 0;
+        return totalTopics > 0 ? Math.round((completedTopics / totalTopics) * 100) : 0;
     }, [learningPath, initialLoadComplete]);
 
     useEffect(() => {
         if (!initialLoadComplete || isUserLoading || isProfileLoading || learningPath.length === 0 || isAdmin || !studentDocRef) return;
 
-        const statusesToSave: Record<string, any> = {
-            lastSelectedTopic: selectedTopic
-        };
-
+        const statusesToSave: Record<string, any> = { lastSelectedTopic: selectedTopic };
         learningPath.forEach(item => {
             statusesToSave[item.key] = item.status;
             if (item.subItems) {
@@ -446,47 +435,38 @@ export default function MayPage() {
             [`lessonProgress.${progressStorageVersion}`]: statusesToSave,
             [`progress.${mainProgressKey}`]: Math.round(progressPercent)
         });
-
-        if (progressPercent >= 100) {
-            window.dispatchEvent(new CustomEvent('progressUpdated'));
-        }
     }, [learningPath, progressPercent, selectedTopic, isAdmin, studentDocRef, isUserLoading, isProfileLoading, initialLoadComplete]);
 
-    useEffect(() => {
-        if (!topicToComplete) return;
+    const handleTopicComplete = (completedKey: string) => {
+        if (isAdmin) return;
+        
+        let wasUnlocked = false;
+        let nextToSelect: string | null = null;
 
-        // Perform computation first to avoid triggering side effects during render
-        const { updatedPath, newlyUnlockedTopic, nextTopicToSelect } = (() => {
-            let wasTopicUnlocked = false;
-            let nextSelectedTopic: string | null = null;
-            let topicFound = false;
-
-            const newPath = learningPath.map(t => ({
+        setLearningPath(currentPath => {
+            const newPath = currentPath.map(t => ({
                 ...t,
                 subItems: t.subItems ? t.subItems.map(s => ({ ...s })) : undefined,
             }));
-
+          
+            let topicFound = false;
             for (let i = 0; i < newPath.length && !topicFound; i++) {
                 const currentTopic = newPath[i];
 
-                if (currentTopic.key === topicToComplete) {
+                if (currentTopic.key === completedKey) {
                     if (currentTopic.status !== 'completed') {
                         currentTopic.status = 'completed';
                     }
                     if (i + 1 < newPath.length && newPath[i + 1].status === 'locked') {
                         const next = newPath[i + 1];
                         next.status = 'active';
-                        if (next.subItems?.[0]) {
-                            next.subItems[0].status = 'active';
-                            nextSelectedTopic = next.subItems[0].key;
-                        } else {
-                            nextSelectedTopic = next.key;
-                        }
-                        wasTopicUnlocked = true;
+                        wasUnlocked = true;
+                        nextToSelect = next.subItems?.[0]?.key || next.key;
+                        if (next.subItems?.[0]) next.subItems[0].status = 'active';
                     }
                     topicFound = true;
                 } else if (currentTopic.subItems) {
-                    const subIndex = currentTopic.subItems.findIndex(s => s.key === topicToComplete);
+                    const subIndex = currentTopic.subItems.findIndex(s => s.key === completedKey);
                     if (subIndex !== -1) {
                         if (currentTopic.subItems[subIndex].status !== 'completed') {
                             currentTopic.subItems[subIndex].status = 'completed';
@@ -494,8 +474,8 @@ export default function MayPage() {
                         const nextSubIndex = subIndex + 1;
                         if (nextSubIndex < currentTopic.subItems.length && currentTopic.subItems[nextSubIndex].status === 'locked') {
                             currentTopic.subItems[nextSubIndex].status = 'active';
-                            nextSelectedTopic = currentTopic.subItems[nextSubIndex].key;
-                            wasTopicUnlocked = true;
+                            nextToSelect = currentTopic.subItems[nextSubIndex].key;
+                            wasUnlocked = true;
                         } else if (currentTopic.subItems.every(s => s.status === 'completed')) {
                             if (currentTopic.status !== 'completed') {
                                 currentTopic.status = 'completed';
@@ -503,40 +483,20 @@ export default function MayPage() {
                             if (i + 1 < newPath.length && newPath[i + 1].status === 'locked') {
                                 const next = newPath[i + 1];
                                 next.status = 'active';
-                                if (next.subItems?.[0]) {
-                                    next.subItems[0].status = 'active';
-                                    nextSelectedTopic = next.subItems[0].key;
-                                } else {
-                                    nextSelectedTopic = next.key;
-                                }
-                                wasTopicUnlocked = true;
+                                wasUnlocked = true;
+                                nextToSelect = next.subItems?.[0]?.key || next.key;
+                                if (next.subItems?.[0]) next.subItems[0].status = 'active';
                             }
                         }
                         topicFound = true;
                     }
                 }
             }
-            return { updatedPath: newPath, newlyUnlockedTopic: wasTopicUnlocked, nextTopicToSelect: nextSelectedTopic };
-        })();
+            return newPath;
+        });
 
-        // Apply state updates and side effects outside of the calculation block
-        setLearningPath(updatedPath);
-        if (nextTopicToSelect) {
-            setSelectedTopic(nextTopicToSelect);
-        }
-        if (newlyUnlockedTopic) {
-            toast({ title: "¡Siguiente tema desbloqueado!" });
-        }
-        setTopicToComplete(null);
-    }, [topicToComplete, learningPath, toast]);
-
-    const handleTopicComplete = (completedKey: string) => {
-        setTopicToComplete(completedKey);
-    };
-
-    const handleContinueToGrammar = () => {
-        handleTopicComplete('vocabulary');
-        setSelectedTopic('grammar');
+        if (wasUnlocked) toast({ title: "¡Siguiente tema desbloqueado!" });
+        if (nextToSelect) setSelectedTopic(nextToSelect);
     };
 
     const handleTopicSelect = (topicKey: string) => {
@@ -549,8 +509,8 @@ export default function MayPage() {
         }
         setSelectedTopic(topicKey);
 
-        const exerciseKeys = ['positive-ex', 'negative-ex', 'interrogative-ex', 'mixedExercises', 'finalVocabulary', 'reading'];
-        if (!exerciseKeys.includes(topicKey)) {
+        const autoViewTopics = ['vocabulary', 'grammar'];
+        if (autoViewTopics.includes(topicKey)) {
             handleTopicComplete(topicKey);
         }
     };
@@ -578,8 +538,8 @@ export default function MayPage() {
                             </div>
                         </CardContent>
                         <CardFooter>
-                            <Button onClick={handleContinueToGrammar}>
-                                Continuar con Gramática
+                            <Button onClick={() => handleTopicComplete('vocabulary')}>
+                                Continuar
                             </Button>
                         </CardFooter>
                     </Card>
@@ -601,7 +561,6 @@ export default function MayPage() {
                                         <li>Es más formal y educado.</li>
                                         <li>Se usa para pedir permiso formal (Ej: "May I come in?").</li>
                                     </ul>
-                                    <p className="mt-2 p-3 bg-muted rounded-lg font-mono text-base">"I have good grades, so I may get a degree next year." (Es probable).</p>
                                 </div>
                                 <div className="space-y-2">
                                     <h4 className="font-bold text-primary">MIGHT (30% de probabilidad)</h4>
@@ -609,13 +568,7 @@ export default function MayPage() {
                                         <li>Significa: Podría / Tal vez (pero con menos probabilidad).</li>
                                         <li>Indica que la acción es más un "sueño" o algo difícil.</li>
                                         <li>Es un poco más informal/común en conversación.</li>
-                                        <li>Casi nunca se usa para pedir permiso.</li>
                                     </ul>
-                                    <p className="mt-2 p-3 bg-muted rounded-lg font-mono text-base">"I don't have much money, but I might move abroad someday." (Es un sueño lejano).</p>
-                                </div>
-                                <div className="border-t pt-4">
-                                    <h4 className="font-bold">En resumen:</h4>
-                                    <p className="text-muted-foreground mt-1 text-base">Si crees que hay un buen chance, usa <span className="font-semibold text-primary">May</span>. Si es algo que ves difícil o muy incierto, usa <span className="font-semibold text-primary">Might</span>.</p>
                                 </div>
                             </CardContent>
                         </Card>
@@ -628,21 +581,11 @@ export default function MayPage() {
                                 <p><span className="font-bold text-lg text-green-500 mr-2">(+)</span> pronoun + may/might + verb + complement</p>
                                 <p><span className="font-bold text-lg text-red-500 mr-2">(-)</span> pronoun + may/might + not + verb + complement</p>
                                 <p><span className="font-bold text-lg text-blue-500 mr-2">(?)</span> May/Might + pronoun + verb + complement?</p>
-                                <div className="border-t my-2" />
-                                <p className="font-sans font-semibold pt-2">Respuestas Cortas</p>
-                                <p><span className="font-bold text-lg text-green-500 mr-2">(+A)</span> Yes, pronoun + may/might.</p>
-                                <p><span className="font-bold text-lg text-red-500 mr-2">(-A)</span> No, pronoun + may/might not.</p>
                             </CardContent>
-
-                            <Card className="shadow-soft rounded-lg border-2 border-destructive bg-white dark:bg-card">
-                                <CardHeader>
-                                    <CardTitle className="text-destructive dark:text-destructive">Nota Importante</CardTitle>
-                                </CardHeader>
-                                <CardContent className="text-center font-mono text-xl p-6 bg-brand-lilac dark:bg-muted rounded-b-lg">
-                                    <p>No se suelen usar contracciones (como <code className="p-1 rounded bg-background">mightn't</code>) en el inglés moderno; es mejor decir <code className="p-1 rounded bg-background">might not</code>.</p>
-                                </CardContent>
-                            </Card>
                         </Card>
+                        <CardFooter className="justify-center">
+                            <Button onClick={() => handleTopicComplete('grammar')}>Entendido</Button>
+                        </CardFooter>
                     </div>
                 );
             case 'positive-ex':
@@ -660,33 +603,31 @@ export default function MayPage() {
             default:
                 return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple min-h-[500px]">
-                        <CardHeader>
-                            <CardTitle>{topic?.name || 'Cargando...'}</CardTitle>
-                            <CardDescription>Contenido para este tema estará disponible pronto.</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="flex items-center justify-center h-64">
-                                <Trophy className="w-24 h-24 text-yellow-300" />
-                            </div>
+                        <CardContent className="flex items-center justify-center h-64">
+                            <Loader2 className="animate-spin h-10 w-10 text-primary" />
                         </CardContent>
                     </Card>
                 );
         }
     };
 
+    if (isUserLoading || isProfileLoading) {
+        return <div className="flex h-screen w-full items-center justify-center"><Loader2 className="h-16 w-16 animate-spin text-primary" /></div>;
+    }
+
     return (
         <div className="flex w-full flex-col min-h-screen will-lesson-bg">
             <DashboardHeader />
             <main className="flex-1 p-4 md:p-8">
                 <div className="max-w-7xl mx-auto">
-                    <div className="mb-8">
-                        <Link href="/kids/b1" className="hover:underline text-sm text-muted-foreground">Volver al curso B1</Link>
+                    <div className="mb-8 text-left">
+                        <Link href="/kids/b1" className="hover:underline text-sm text-white/80">Volver al curso B1</Link>
                         <h1 className="text-4xl font-bold text-white dark:text-primary">May and Might</h1>
                     </div>
                     <div className="grid gap-8 md:grid-cols-12">
                         <div className="md:col-span-9">{renderContent()}</div>
-                        <div className="md:col-span-3">
-                            <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple">
+                        <div className="md:col-span-3 text-left">
+                            <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
                                 <CardHeader><CardTitle>Ruta de Aprendizaje</CardTitle></CardHeader>
                                 <CardContent>
                                     <nav>
@@ -695,7 +636,7 @@ export default function MayPage() {
                                                 <li key={item.key}>
                                                     {!item.subItems ? (
                                                         <div onClick={() => handleTopicSelect(item.key)}
-                                                            className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors', item.status === 'locked' && !isAdmin ? 'cursor-not-allowed text-muted-foreground/50' : 'cursor-pointer hover:bg-muted', selectedTopic === item.key && 'bg-muted text-primary font-semibold')}>
+                                                            className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer', item.status === 'locked' && !isAdmin ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === item.key && 'bg-muted text-primary font-semibold')}>
                                                             <div className="flex items-center gap-3">
                                                                 <item.icon className={cn("h-5 w-5", item.status === 'completed' ? 'text-green-500' : '')} />
                                                                 <span>{item.name}</span>
@@ -705,7 +646,7 @@ export default function MayPage() {
                                                     ) : (
                                                         <Collapsible defaultOpen={item.subItems.some(si => si.status !== 'locked')} disabled={item.status === 'locked' && !isAdmin}>
                                                             <CollapsibleTrigger className="w-full">
-                                                                <div className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors w-full', item.status === 'locked' && !isAdmin ? 'cursor-not-allowed text-muted-foreground/50' : 'cursor-pointer hover:bg-muted', item.subItems.some(si => si.key === selectedTopic) && 'bg-muted text-primary font-semibold')}>
+                                                                <div className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors w-full cursor-pointer', item.status === 'locked' && !isAdmin ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', item.subItems.some(si => si.key === selectedTopic) && 'bg-muted text-primary font-semibold')}>
                                                                     <div className="flex items-center gap-3">
                                                                         <item.icon className={cn("h-5 w-5", item.status === 'completed' ? 'text-green-500' : '')} />
                                                                         <span>{item.name}</span>
@@ -717,9 +658,9 @@ export default function MayPage() {
                                                                 <ul className="pl-8 pt-1 space-y-1">
                                                                     {item.subItems.map((subItem) => (
                                                                         <li key={subItem.key} onClick={() => handleTopicSelect(subItem.key)}
-                                                                            className={cn('flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors', subItem.status === 'locked' && !isAdmin ? 'cursor-not-allowed text-muted-foreground/50' : 'cursor-pointer hover:bg-muted', selectedTopic === subItem.key && 'bg-muted text-primary font-semibold')}>
+                                                                            className={cn('flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors', subItem.status === 'locked' && !isAdmin ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === subItem.key && 'bg-muted text-primary font-semibold')}>
                                                                             <div className='flex items-center gap-3'>
-                                                                                <subItem.icon className={cn("h-5 w-5", subItem.status === 'completed' ? 'text-green-500' : '')} />
+                                                                                {subItem.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500" /> : <subItem.icon className="h-5 w-5" />}
                                                                                 <span>{subItem.name}</span>
                                                                             </div>
                                                                             {subItem.status === 'locked' && !isAdmin && <Lock className="h-4 w-4 text-yellow-500" />}
@@ -746,4 +687,3 @@ export default function MayPage() {
         </div>
     );
 }
-    

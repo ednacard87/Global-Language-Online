@@ -163,7 +163,6 @@ export default function BeGoingToPage() {
 
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
     const [selectedTopic, setSelectedTopic] = useState<string>('');
-    const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
     const [initialLoadComplete, setInitialLoadComplete] = useState(false);
 
     // Final Vocabulary Exercise State
@@ -267,12 +266,69 @@ export default function BeGoingToPage() {
             [`lessonProgress.${progressStorageKey}`]: statusesToSave,
             [`progress.${mainProgressKey}`]: progressPercent
         });
-        window.dispatchEvent(new CustomEvent('progressUpdated'));
     }, [learningPath, progressPercent, selectedTopic, isAdmin, studentDocRef, isUserLoading, isProfileLoading, initialLoadComplete]);
 
-    const handleTopicComplete = useCallback((key: string) => {
-        setTopicToComplete(key);
-    }, []);
+    const handleTopicComplete = (completedKey: string) => {
+        if (isAdmin) return;
+        
+        let wasUnlocked = false;
+        let nextToSelect: string | null = null;
+
+        setLearningPath(currentPath => {
+            const newPath = currentPath.map(t => ({
+                ...t,
+                subItems: t.subItems ? t.subItems.map(s => ({ ...s })) : undefined,
+            }));
+          
+            let topicFound = false;
+            for (let i = 0; i < newPath.length && !topicFound; i++) {
+                const currentTopic = newPath[i];
+
+                if (currentTopic.key === completedKey) {
+                    if (currentTopic.status !== 'completed') {
+                        currentTopic.status = 'completed';
+                    }
+                    if (i + 1 < newPath.length && newPath[i + 1].status === 'locked') {
+                        const next = newPath[i + 1];
+                        next.status = 'active';
+                        wasUnlocked = true;
+                        nextToSelect = next.subItems?.[0]?.key || next.key;
+                        if (next.subItems?.[0]) next.subItems[0].status = 'active';
+                    }
+                    topicFound = true;
+                } else if (currentTopic.subItems) {
+                    const subIndex = currentTopic.subItems.findIndex(s => s.key === completedKey);
+                    if (subIndex !== -1) {
+                        if (currentTopic.subItems[subIndex].status !== 'completed') {
+                            currentTopic.subItems[subIndex].status = 'completed';
+                        }
+                        const nextSubIndex = subIndex + 1;
+                        if (nextSubIndex < currentTopic.subItems.length && currentTopic.subItems[nextSubIndex].status === 'locked') {
+                            currentTopic.subItems[nextSubIndex].status = 'active';
+                            nextToSelect = currentTopic.subItems[nextSubIndex].key;
+                            wasUnlocked = true;
+                        } else if (currentTopic.subItems.every(s => s.status === 'completed')) {
+                            if (currentTopic.status !== 'completed') {
+                                currentTopic.status = 'completed';
+                            }
+                            if (i + 1 < newPath.length && newPath[i + 1].status === 'locked') {
+                                const next = newPath[i + 1];
+                                next.status = 'active';
+                                wasUnlocked = true;
+                                nextToSelect = next.subItems?.[0]?.key || next.key;
+                                if (next.subItems?.[0]) next.subItems[0].status = 'active';
+                            }
+                        }
+                        topicFound = true;
+                    }
+                }
+            }
+            return newPath;
+        });
+
+        if (wasUnlocked) toast({ title: "¡Siguiente tema desbloqueado!" });
+        if (nextToSelect) setSelectedTopic(nextToSelect);
+    };
 
     const handleTopicSelect = (topicKey: string) => {
         const mainTopic = learningPath.find(t => t.key === topicKey || t.subItems?.some(st => st.key === topicKey));
@@ -302,81 +358,6 @@ export default function BeGoingToPage() {
             handleTopicComplete(topicKey);
         }
     };
-
-    useEffect(() => {
-        if (!topicToComplete) return;
-
-        setLearningPath(currentPath => {
-            const newPath = currentPath.map(t => ({
-                ...t,
-                subItems: t.subItems ? t.subItems.map(s => ({ ...s })) : undefined,
-            }));
-          
-            let nextSelectedTopic: string | null = null;
-            let topicFound = false;
-            let wasTopicUnlocked = false;
-
-            for (let i = 0; i < newPath.length && !topicFound; i++) {
-                const currentTopic = newPath[i];
-
-                if (currentTopic.key === topicToComplete) {
-                    if (currentTopic.status !== 'completed') {
-                        currentTopic.status = 'completed';
-                    }
-                    if (i + 1 < newPath.length && newPath[i + 1].status === 'locked') {
-                        const next = newPath[i + 1];
-                        next.status = 'active';
-                        if (next.subItems?.[0]) {
-                            next.subItems[0].status = 'active';
-                            nextSelectedTopic = next.subItems[0].key;
-                        } else {
-                            nextSelectedTopic = next.key;
-                        }
-                        wasTopicUnlocked = true;
-                    }
-                    topicFound = true;
-                } else if (currentTopic.subItems) {
-                    const subIndex = currentTopic.subItems.findIndex(s => s.key === topicToComplete);
-                    if (subIndex !== -1) {
-                        if (currentTopic.subItems[subIndex].status !== 'completed') {
-                            currentTopic.subItems[subIndex].status = 'completed';
-                        }
-                        const nextSubIndex = subIndex + 1;
-                        if (nextSubIndex < currentTopic.subItems.length && currentTopic.subItems[nextSubIndex].status === 'locked') {
-                            currentTopic.subItems[nextSubIndex].status = 'active';
-                            nextSelectedTopic = currentTopic.subItems[nextSubIndex].key;
-                            wasTopicUnlocked = true;
-                        } else if (currentTopic.subItems.every(s => s.status === 'completed')) {
-                            if (currentTopic.status !== 'completed') {
-                                currentTopic.status = 'completed';
-                            }
-                            if (i + 1 < newPath.length && newPath[i + 1].status === 'locked') {
-                                const next = newPath[i + 1];
-                                next.status = 'active';
-                                if (next.subItems?.[0]) {
-                                    next.subItems[0].status = 'active';
-                                    nextSelectedTopic = next.subItems[0].key;
-                                } else {
-                                    nextSelectedTopic = next.key;
-                                }
-                                wasTopicUnlocked = true;
-                            }
-                        }
-                        topicFound = true;
-                    }
-                }
-            }
-            if (nextSelectedTopic) {
-                setSelectedTopic(nextSelectedTopic);
-            }
-            if (wasTopicUnlocked) {
-                toast({ title: "¡Siguiente tema desbloqueado!", description: "Puedes continuar con la aventura." });
-            }
-            return newPath;
-        });
-        setTopicToComplete(null);
-    }, [topicToComplete, toast]);
-
 
     // Final Vocab Logic
     const handleFinalVocabInputChange = (index: number, value: string) => {
