@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -189,7 +190,7 @@ interface ClassContentProps {
 //                 CLASS 1 COMPONENT
 // =================================================================
 const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isProfileLoading, isUserLoading }: ClassContentProps) => {
-    const progressStorageKey = `_eng_a1_class_1_v15_final_stable`;
+    const progressStorageKey = `_eng_a1_class_1_v20_persistence_fix`;
     const mainProgressKey = `progress_a1_eng_unit_1_class_1`;
 
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
@@ -236,6 +237,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         }
     ], [t]);
 
+    // 1. CARGA DE DATOS (Mount)
     useEffect(() => {
         if (isProfileLoading || initialLoadComplete || isUserLoading) return;
 
@@ -266,17 +268,33 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             savedSelectedTopic = savedData.lastSelectedTopic || '';
         }
 
-        // Sequential repair logic: ensure path integrity
-        for (let i = 0; i < path.length - 1; i++) {
-            if (path[i].status === 'completed' && path[i+1].status === 'locked') {
-                path[i+1].status = 'active';
-                if (path[i+1].subItems) path[i+1].subItems[0].status = 'active';
+        // Lógica de Reparación Secuencial: Asegurar que si A terminó, B está activo
+        let shouldUnlockNext = false;
+        for (let i = 0; i < path.length; i++) {
+            if (shouldUnlockNext && path[i].status === 'locked') {
+                path[i].status = 'active';
+                if (path[i].subItems) path[i].subItems[0].status = 'active';
+                shouldUnlockNext = false;
             }
+            if (path[i].status === 'completed') {
+                shouldUnlockNext = true;
+            }
+            
+            // Reparar sub-items
             if (path[i].subItems) {
-                for (let j = 0; j < path[i].subItems.length - 1; j++) {
-                    if (path[i].subItems[j].status === 'completed' && path[i].subItems[j+1].status === 'locked') {
-                        path[i].subItems[j+1].status = 'active';
+                let shouldUnlockSub = false;
+                for (let j = 0; j < path[i].subItems.length; j++) {
+                    if (shouldUnlockSub && path[i].subItems[j].status === 'locked') {
+                        path[i].subItems[j].status = 'active';
+                        shouldUnlockSub = false;
                     }
+                    if (path[i].subItems[j].status === 'completed') {
+                        shouldUnlockSub = true;
+                    }
+                }
+                // Si todos los subs terminaron, el siguiente principal debe activarse
+                if (path[i].subItems.every(s => s.status === 'completed')) {
+                    shouldUnlockNext = true;
                 }
             }
         }
@@ -290,6 +308,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             setSelectedTopic(firstActive?.key || path[0].key);
         }
 
+        // Init vocab
         const newAnswers: {[key: string]: string[]} = {};
         const newValidation: {[key: string]: ('correct' | 'incorrect' | 'unchecked')[]} = {};
         for (const category in classVocabularyData) {
@@ -302,6 +321,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
 
     }, [isAdmin, initialLearningPath, studentProfile, progressStorageKey, isProfileLoading, isUserLoading, initialLoadComplete, t]);
 
+    // 2. CÁLCULO DE PROGRESO
     const progressValue = useMemo(() => {
         if (learningPath.length === 0) return 0;
         let totalTopics = 0;
@@ -318,7 +338,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         return totalTopics > 0 ? (completedTopics / totalTopics) * 100 : 0;
     }, [learningPath]);
 
-
+    // 3. GUARDADO EN FIREBASE (Triggered by state changes after initial load)
     useEffect(() => {
         if (!initialLoadComplete || isProfileLoading || isUserLoading || isAdmin || !studentDocRef || learningPath.length === 0) return;
 
@@ -337,6 +357,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             }
         });
 
+        // Actualizamos Firebase. Usamos la función no bloqueante para persistencia offline fluida.
         updateDocumentNonBlocking(studentDocRef, {
             [`lessonProgress.${progressStorageKey}`]: statusesToSave,
             [`progress.${mainProgressKey}`]: Math.round(progressValue)
@@ -347,6 +368,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         }
     }, [learningPath, isAdmin, progressValue, studentDocRef, progressStorageKey, mainProgressKey, isProfileLoading, isUserLoading, initialLoadComplete, selectedTopic]);
     
+    // 4. LÓGICA DE COMPLETITUD (Side Effect Free logic calculation)
     const handleTopicComplete = useCallback((completedKey: string) => {
         setTopicToComplete(completedKey);
     }, []);
@@ -357,10 +379,10 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             return;
         }
     
-        let nextToSelect: string | null = null;
-        let wasUnlocked = false;
-
         setLearningPath(currentPath => {
+            let nextToSelect: string | null = null;
+            let wasUnlocked = false;
+
             const newPath = currentPath.map(t => ({
                 ...t,
                 subItems: t.subItems ? t.subItems.map(s => ({ ...s })) : undefined,
@@ -413,11 +435,13 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                     }
                 }
             }
+            
+            if (nextToSelect) setSelectedTopic(nextToSelect);
+            if (wasUnlocked) toast({ title: "¡Siguiente tema desbloqueado!" });
+            
             return newPath;
         });
 
-        if (nextToSelect) setSelectedTopic(nextToSelect);
-        if (wasUnlocked) toast({ title: "¡Siguiente tema desbloqueado!" });
         setTopicToComplete(null);
     }, [topicToComplete, isAdmin, toast]);
 
@@ -507,7 +531,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         switch (selectedTopic) {
             case 'vocabulary':
                 return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
                         <CardHeader><CardTitle>{t('a1class1.vocabulary')}</CardTitle></CardHeader>
                         <CardContent>
                             <Accordion type="multiple" className="w-full">
@@ -545,7 +569,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                 );
             case 'tobe':
                 return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
                         <CardHeader><CardTitle>Pronombres + To Be</CardTitle></CardHeader>
                         <CardContent>
                             <div className="grid grid-cols-3 gap-x-4 gap-y-2 text-lg">
@@ -567,7 +591,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                 return <ToBeMemoryGame key={selectedTopic} onGameComplete={() => handleTopicComplete('memory-tobe')} />;
             case 'tobe-1-grammar':
                 return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
                         <CardHeader>
                             <CardTitle>To be 1</CardTitle>
                             <CardDescription>Aprende la estructura básica del verbo To be.</CardDescription>
@@ -604,7 +628,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                 );
             case 'possessives':
                  return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
                         <CardHeader><CardTitle>Posesivos</CardTitle></CardHeader>
                         <CardContent>
                             <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-lg">
@@ -624,7 +648,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                 return <PossessivesMemoryGame key={selectedTopic} onGameComplete={() => handleTopicComplete('memory-possessives')} />;
             case 'tobe-2-grammar':
                 return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
                         <CardHeader><CardTitle>To be 2</CardTitle></CardHeader>
                         <CardContent className="space-y-6">
                              <div>
@@ -658,7 +682,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                 );
             case 'tobe-3-grammar':
                 return (
-                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
                         <CardHeader><CardTitle>To be 3</CardTitle></CardHeader>
                         <CardContent className="space-y-6">
                             <div>
@@ -895,7 +919,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
 //                 CLASS 2 COMPONENT
 // =================================================================
 const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isProfileLoading, isUserLoading }: ClassContentProps) => {
-    const progressStorageVersion = 'progress_a1_eng_unit_1_class_2_v18_final';
+    const progressStorageVersion = 'progress_a1_eng_unit_1_class_2_v20_persistence_fix';
     const mainProgressKey = 'progress_a1_eng_unit_1_class_2';
     
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
@@ -931,39 +955,37 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         ]
     }
 
-    const initialLearningPath = useMemo((): Topic[] => {
-        const path: Topic[] = [
-            { key: 'vocabulary', name: t('a1class1.vocabulary'), icon: BookOpen, status: 'active' },
-            { key: 'grammar', name: t('kidsA1Class2.grammar'), icon: GraduationCap, status: 'locked' },
-            {
-                key: 'exercises',
-                name: t('kidsA1Class2.exercises'),
-                icon: PenSquare,
-                status: 'locked',
-                subItems: [
-                    { key: 'ex-positive', name: t('kidsA1Class2.exercisesPositive'), status: 'locked', icon: PenSquare },
-                    { key: 'ex-negative', name: t('kidsA1Class2.exercisesNegative'), status: 'locked', icon: PenSquare },
-                    { key: 'ex-interrogative', name: t('kidsA1Class2.exercisesInterrogative'), status: 'locked', icon: PenSquare },
-                ]
-            },
-            { key: 'memory-verbs', name: t('kidsA1Class2.memoryVerbs'), icon: BrainCircuit, status: 'locked' },
-            {
-                key: 'mixed-exercises-1',
-                name: t('a1class1.exercise', { number: 1 }),
-                icon: PenSquare,
-                status: 'locked',
-                subItems: [
-                    { key: 'ex-mixed-1-1', name: t('a1class1.exercise', { number: 1 }), status: 'locked', icon: PenSquare },
-                    { key: 'ex-mixed-1-2', name: t('a1class1.exercise', { number: 2 }), status: 'locked', icon: PenSquare },
-                ]
-            },
-            { key: 'reading', name: t('kidsA1Class2.reading'), icon: BookOpen, status: 'locked' },
-            { key: 'listening', name: t('kidsA1Class2.listening'), icon: Ear, status: 'locked' },
-            { key: 'final-vocab', name: t('kidsA1Class2.finalVocab'), icon: BookOpen, status: 'locked' },
-        ];
-        return path;
-    }, [t]);
+    const initialLearningPath = useMemo((): Topic[] => [
+        { key: 'vocabulary', name: t('a1class1.vocabulary'), icon: BookOpen, status: 'active' },
+        { key: 'grammar', name: t('kidsA1Class2.grammar'), icon: GraduationCap, status: 'locked' },
+        {
+            key: 'exercises',
+            name: t('kidsA1Class2.exercises'),
+            icon: PenSquare,
+            status: 'locked',
+            subItems: [
+                { key: 'ex-positive', name: t('kidsA1Class2.exercisesPositive'), status: 'locked', icon: PenSquare },
+                { key: 'ex-negative', name: t('kidsA1Class2.exercisesNegative'), status: 'locked', icon: PenSquare },
+                { key: 'ex-interrogative', name: t('kidsA1Class2.exercisesInterrogative'), status: 'locked', icon: PenSquare },
+            ]
+        },
+        { key: 'memory-verbs', name: t('kidsA1Class2.memoryVerbs'), icon: BrainCircuit, status: 'locked' },
+        {
+            key: 'mixed-exercises-1',
+            name: t('a1class1.exercise', { number: 1 }),
+            icon: PenSquare,
+            status: 'locked',
+            subItems: [
+                { key: 'ex-mixed-1-1', name: t('a1class1.exercise', { number: 1 }), status: 'locked', icon: PenSquare },
+                { key: 'ex-mixed-1-2', name: t('a1class1.exercise', { number: 2 }), status: 'locked', icon: PenSquare },
+            ]
+        },
+        { key: 'reading', name: t('kidsA1Class2.reading'), icon: BookOpen, status: 'locked' },
+        { key: 'listening', name: t('kidsA1Class2.listening'), icon: Ear, status: 'locked' },
+        { key: 'final-vocab', name: t('kidsA1Class2.finalVocab'), icon: BookOpen, status: 'locked' },
+    ], [t]);
 
+    // 1. CARGA DE DATOS
     useEffect(() => {
         if (isProfileLoading || initialLoadComplete || isUserLoading) return;
 
@@ -994,18 +1016,25 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             savedSelectedTopic = savedData.lastSelectedTopic || '';
         }
 
-        // Sequential repair logic
-        for (let i = 0; i < path.length - 1; i++) {
-            if (path[i].status === 'completed' && path[i+1].status === 'locked') {
-                path[i+1].status = 'active';
-                if (path[i+1].subItems) path[i+1].subItems[0].status = 'active';
+        // Lógica de Reparación
+        let shouldUnlock = false;
+        for (let i = 0; i < path.length; i++) {
+            if (shouldUnlock && path[i].status === 'locked') {
+                path[i].status = 'active';
+                if (path[i].subItems) path[i].subItems[0].status = 'active';
+                shouldUnlock = false;
             }
+            if (path[i].status === 'completed') shouldUnlock = true;
             if (path[i].subItems) {
-                for (let j = 0; j < path[i].subItems.length - 1; j++) {
-                    if (path[i].subItems[j].status === 'completed' && path[i].subItems[j+1].status === 'locked') {
-                        path[i].subItems[j+1].status = 'active';
+                let subUnlock = false;
+                for (let j = 0; j < path[i].subItems.length; j++) {
+                    if (subUnlock && path[i].subItems[j].status === 'locked') {
+                        path[i].subItems[j].status = 'active';
+                        subUnlock = false;
                     }
+                    if (path[i].subItems[j].status === 'completed') subUnlock = true;
                 }
+                if (path[i].subItems.every(s => s.status === 'completed')) shouldUnlock = true;
             }
         }
 
@@ -1030,6 +1059,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
 
     }, [isAdmin, initialLearningPath, studentProfile, progressStorageVersion, isProfileLoading, isUserLoading, initialLoadComplete, t]);
 
+    // 2. CÁLCULO PROGRESO
     const progressValue = useMemo(() => {
         if (learningPath.length === 0) return 0;
         let totalTopics = 0;
@@ -1047,6 +1077,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
     }, [learningPath]);
 
 
+    // 3. GUARDADO
     useEffect(() => {
         if (!initialLoadComplete || isProfileLoading || isUserLoading || isAdmin || !studentDocRef || learningPath.length === 0) return;
 
@@ -1075,20 +1106,20 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         }
     }, [learningPath, isAdmin, progressValue, studentDocRef, progressStorageVersion, mainProgressKey, isProfileLoading, isUserLoading, initialLoadComplete, selectedTopic]);
 
-      const handleTopicComplete = useCallback((topicKey: string) => {
+    const handleTopicComplete = useCallback((topicKey: string) => {
         setTopicToComplete(topicKey);
-      }, []);
+    }, []);
 
-      useEffect(() => {
+    useEffect(() => {
         if (!topicToComplete || isAdmin) {
             if (topicToComplete) setTopicToComplete(null);
             return;
         }
     
-        let nextToSelect: string | null = null;
-        let wasUnlocked = false;
-
         setLearningPath(currentPath => {
+            let nextToSelect: string | null = null;
+            let wasUnlocked = false;
+
             const newPath = currentPath.map(t => ({
                 ...t,
                 subItems: t.subItems ? t.subItems.map(s => ({...s})) : undefined,
@@ -1141,11 +1172,11 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                     }
                 }
             }
+            if (nextToSelect) setSelectedTopic(nextToSelect);
+            if (wasUnlocked) toast({ title: "¡Siguiente tema desbloqueado!" });
             return newPath;
         });
 
-        if (nextToSelect) setSelectedTopic(nextToSelect);
-        if (wasUnlocked) toast({ title: "¡Siguiente tema desbloqueado!" });
         setTopicToComplete(null);
     }, [topicToComplete, isAdmin, toast]);
 
@@ -1167,8 +1198,8 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         
         setSelectedTopic(topicKey);
     
-        const exerciseTopics = ['memory-verbs', 'final-vocab', 'ex-positive', 'ex-negative', 'ex-interrogative', 'ex-mixed-1-1', 'ex-mixed-1-2', 'reading', 'listening'];
-        if (!exerciseTopics.includes(topicKey)) {
+        const autoViewTopics = ['grammar'];
+        if (autoViewTopics.includes(topicKey)) {
             handleTopicComplete(topicKey);
         }
     };
@@ -1233,7 +1264,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
 
         if (selectedTopic === 'vocabulary') {
             return (
-                <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
                     <CardHeader><CardTitle>Vocabulary - Class 2 (A1)</CardTitle></CardHeader>
                     <CardContent>
                       <Accordion type="multiple" className="w-full" defaultValue={['verbos', 'palabrasBasicas']}>
@@ -1354,7 +1385,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
     
         if (selectedTopic === 'reading') {
             return (
-                <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
                     <CardHeader>
                         <CardTitle>{t('kidsA1Class2.reading')}</CardTitle>
                         <CardDescription>{t('kidsA1Class2.readingDescription')}</CardDescription>
@@ -1369,7 +1400,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
     
         if (selectedTopic === 'listening') {
             return (
-                <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
                     <CardHeader>
                         <CardTitle>{t('kidsA1Class2.listening')}</CardTitle>
                         <CardDescription>Escucha la frase y escríbela.</CardDescription>
@@ -1432,7 +1463,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         }
     
         return (
-          <Card className="shadow-soft rounded-lg border-2 border-brand-purple min-h-[600px]">
+          <Card className="shadow-soft rounded-lg border-2 border-brand-purple min-h-[600px] bg-card/95 backdrop-blur-sm">
             <CardHeader>
               <CardTitle>{topic?.name || 'Cargando...'}</CardTitle>
             </CardHeader>
