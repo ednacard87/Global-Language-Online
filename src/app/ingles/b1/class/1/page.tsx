@@ -43,7 +43,13 @@ type Topic = {
   status: 'completed' | 'active' | 'locked';
 };
 
-const progressStorageVersion = 'progress_b1_eng_u1_c1_v2_full_path';
+const ICONS_CONFIG = {
+    locked: Lock,
+    active: BookOpen,
+    completed: CheckCircle,
+};
+
+const progressStorageVersion = 'progress_b1_eng_u1_c1_v5_stable';
 const mainProgressKey = 'progress_b1_eng_unit_1_class_1';
 
 const phrasalVerbsData = [
@@ -114,6 +120,7 @@ export default function EngB1Class1Page() {
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
     const [selectedTopic, setSelectedTopic] = useState<string>('');
     const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
+    const [isInitialLoading, setIsInitialLoading] = useState(true);
     const [initialLoadComplete, setInitialLoadComplete] = useState(false);
 
     // Vocab states
@@ -142,77 +149,104 @@ export default function EngB1Class1Page() {
         { key: 'ex_mix_4', name: 'Exercise Mix 4', icon: PenSquare, status: 'locked' },
     ], []);
     
+    // ASYNC FLOW 1: Carga inicial de Firestore
     useEffect(() => {
-        if (isProfileLoading || isUserLoading || !initialLearningPath.length) return;
+        if (isProfileLoading || isUserLoading || !studentProfile || initialLoadComplete) return;
 
-        const path = initialLearningPath.map(topic => ({ ...topic }));
+        let path = initialLearningPath.map(topic => ({ ...topic }));
         let savedSelectedTopic = '';
 
         if (isAdmin) {
-            path.forEach(item => { item.status = 'completed'; });
-        } else if (studentProfile?.lessonProgress?.[progressStorageVersion]) {
+          path.forEach(item => { item.status = 'completed'; });
+        } else if(studentProfile?.lessonProgress?.[progressStorageVersion]) {
             const savedData = studentProfile.lessonProgress[progressStorageVersion];
             path.forEach(item => {
                 if (savedData[item.key]) item.status = savedData[item.key];
             });
             savedSelectedTopic = savedData.lastSelectedTopic || '';
         }
-        
-        setLearningPath(path);
-        if (!initialLoadComplete) {
-            const firstActive = path.find(p => p.status === 'active');
-            setSelectedTopic(savedSelectedTopic || firstActive?.key || 'vocabulary_phrasal');
-            setInitialLoadComplete(true);
+
+        // Reparación de ruta: Si uno está completado, el siguiente DEBE estar al menos activo
+        let lastDone = true;
+        for(let i=0; i < path.length; i++) {
+            if (lastDone && path[i].status === 'locked') {
+                path[i].status = 'active';
+            }
+            lastDone = path[i].status === 'completed';
         }
 
+        setLearningPath(path);
+        const firstActive = path.find(p => p.status === 'active');
+        setSelectedTopic(savedSelectedTopic || firstActive?.key || path[0].key);
+        setInitialLoadComplete(true);
+        setIsInitialLoading(false);
     }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading, isUserLoading, initialLoadComplete]);
-    
+
     const progressValue = useMemo(() => {
         if (learningPath.length === 0) return 0;
         const completedCount = learningPath.filter(t => t.status === 'completed').length;
         return Math.round((completedCount / learningPath.length) * 100);
     }, [learningPath]);
 
+    // ASYNC FLOW 2: Guardado automático en Firestore
     useEffect(() => {
-        if (!initialLoadComplete || isUserLoading || isProfileLoading || learningPath.length === 0 || isAdmin || !studentDocRef) return;
+        if (!initialLoadComplete || isInitialLoading || isAdmin || !studentDocRef || learningPath.length === 0) return;
 
         const statusesToSave: Record<string, any> = { lastSelectedTopic: selectedTopic };
         learningPath.forEach(item => { statusesToSave[item.key] = item.status; });
 
-        updateDocumentNonBlocking(studentDocRef, { 
-            [`lessonProgress.${progressStorageVersion}`]: statusesToSave,
-            [`progress.${mainProgressKey}`]: Math.round(progressValue)
-        });
-        
-        if (progressValue >= 100) {
-            window.dispatchEvent(new CustomEvent('progressUpdated'));
+        // Solo guardamos si hay un cambio real para no agotar la banda ancha
+        const savedData = studentProfile?.lessonProgress?.[progressStorageVersion];
+        if (JSON.stringify(statusesToSave) !== JSON.stringify(savedData)) {
+            updateDocumentNonBlocking(studentDocRef, {
+                [`lessonProgress.${progressStorageVersion}`]: statusesToSave,
+                [`progress.${mainProgressKey}`]: progressValue
+            });
         }
-    }, [learningPath, progressValue, selectedTopic, isAdmin, studentDocRef, isUserLoading, isProfileLoading, initialLoadComplete]);
+    }, [learningPath, isAdmin, progressValue, studentDocRef, initialLoadComplete, selectedTopic, studentProfile, isInitialLoading]);
 
-    const handleTopicComplete = useCallback((completedKey: string) => {
-        setTopicToComplete(completedKey);
-    }, []);
-
+    // ASYNC FLOW 3: Manejo de desbloqueos (Toaster sanado)
     useEffect(() => {
         if (!topicToComplete) return;
     
         setLearningPath(currentPath => {
-            const newPath = currentPath.map(item => ({ ...item }));
-            const currentIndex = newPath.findIndex(item => item.key === topicToComplete);
-            
-            if (currentIndex !== -1 && newPath[currentIndex].status !== 'completed') {
-                newPath[currentIndex].status = 'completed';
-                const nextIndex = currentIndex + 1;
-                if (nextIndex < newPath.length && newPath[nextIndex].status === 'locked') {
-                    newPath[nextIndex].status = 'active';
-                    setSelectedTopic(newPath[nextIndex].key);
-                    toast({ title: "¡Siguiente tema desbloqueado!" });
+            let wasUnlocked = false;
+            let nextToSelect: string | null = null;
+            const newPath = currentPath.map(t => ({ ...t }));
+          
+            let topicFound = false;
+            for (let i = 0; i < newPath.length && !topicFound; i++) {
+                if (newPath[i].key === topicToComplete) {
+                    if (newPath[i].status !== 'completed') {
+                        newPath[i].status = 'completed';
+                    }
+                    if (i + 1 < newPath.length && newPath[i + 1].status === 'locked') {
+                        newPath[i + 1].status = 'active';
+                        wasUnlocked = true;
+                        nextToSelect = newPath[i + 1].key;
+                    }
+                    topicFound = true;
                 }
             }
+            
+            if (wasUnlocked) {
+                // Notificación diferida para evitar error de renderizado
+                setTimeout(() => toast({ title: "¡Siguiente tema desbloqueado!" }), 0);
+            }
+            if (nextToSelect) {
+                const finalNext = nextToSelect;
+                setTimeout(() => setSelectedTopic(finalNext), 0);
+            }
+            
             return newPath;
         });
+
         setTopicToComplete(null);
     }, [topicToComplete, toast]);
+
+    const handleTopicComplete = (completedKey: string) => {
+        setTopicToComplete(completedKey);
+    };
 
     const handleTopicSelect = (topicKey: string) => {
         const topic = learningPath.find(t => t.key === topicKey);
@@ -266,6 +300,15 @@ export default function EngB1Class1Page() {
     };
 
     const renderContent = () => {
+        if (isInitialLoading) {
+            return (
+                <Card className="flex flex-col items-center justify-center min-h-[400px] border-2 border-brand-purple">
+                    <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
+                    <p className="text-muted-foreground animate-pulse">Recuperando tu progreso...</p>
+                </Card>
+            );
+        }
+
         const topic = learningPath.find(t => t.key === selectedTopic);
         if (!topic) return null;
 
@@ -275,7 +318,7 @@ export default function EngB1Class1Page() {
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
                         <CardHeader>
                             <CardTitle>Vocabulary (Phrasal Verbs)</CardTitle>
-                            <CardDescription>Traduce los phrasal verbs al inglés.</CardDescription>
+                            <CardDescription>Traduce los phrasal verbs al inglés. Necesitas al menos uno correcto para desbloquear la ruta.</CardDescription>
                         </CardHeader>
                         <CardContent>
                             <div className="grid grid-cols-2 gap-x-6 gap-y-3 text-lg">
@@ -320,7 +363,7 @@ export default function EngB1Class1Page() {
                                 <CardTitle className="text-2xl font-black">USOS DE "SOME" Y "ANY"</CardTitle>
                             </div>
                         </CardHeader>
-                        <CardContent className="p-6 space-y-8">
+                        <CardContent className="p-6 space-y-8 text-left">
                             <div className="space-y-4">
                                 <p className="text-lg leading-relaxed">
                                     El plural del artículo indeterminado <span className="font-bold">"A"</span> o <span className="font-bold">"AN"</span> es <span className="font-bold text-primary">"SOME"</span> o <span className="font-bold text-brand-purple">"ANY"</span>.
@@ -331,7 +374,7 @@ export default function EngB1Class1Page() {
                             </div>
 
                             <div className="bg-muted/50 p-6 rounded-2xl border-2 border-dashed space-y-4">
-                                <h3 className="text-xl font-bold text-primary mb-3">EXAMPLES:</h3>
+                                <h3 className="text-xl font-bold text-primary mb-3 uppercase">Ejemplos:</h3>
                                 <div className="space-y-3 font-mono text-base">
                                     <div className="flex flex-col sm:flex-row sm:justify-between gap-1 p-2 bg-background rounded border">
                                         <span className="font-bold">THERE ARE SOME BOOKS</span>
@@ -407,7 +450,7 @@ export default function EngB1Class1Page() {
                                 <CardTitle className="text-2xl font-black">ANY</CardTitle>
                             </div>
                         </CardHeader>
-                        <CardContent className="p-6 space-y-8">
+                        <CardContent className="p-6 space-y-8 text-left">
                             <div className="bg-muted/50 p-6 rounded-2xl border-2 border-dashed space-y-6">
                                 <div className="space-y-4">
                                     <h3 className="text-xl font-bold flex items-center gap-2">
@@ -472,10 +515,9 @@ export default function EngB1Class1Page() {
                                 <CardTitle className="text-2xl font-black">SOME AND ANY - USOS ESPECIALES</CardTitle>
                             </div>
                         </CardHeader>
-                        <CardContent className="p-6 space-y-8">
-                            {/* Section 1: Recap */}
+                        <CardContent className="p-6 space-y-8 text-left">
                             <div className="space-y-4">
-                                <h3 className="text-xl font-bold text-primary flex items-center gap-2">
+                                <h3 className="text-xl font-bold text-primary flex items-center gap-2 uppercase">
                                     <Info className="h-5 w-5" /> 1. Repaso General
                                 </h3>
                                 <div className="grid grid-cols-2 gap-4">
@@ -492,9 +534,8 @@ export default function EngB1Class1Page() {
 
                             <Separator />
 
-                            {/* Section 2: Some in Questions */}
                             <div className="space-y-4">
-                                <h3 className="text-xl font-bold text-primary flex items-center gap-2">
+                                <h3 className="text-xl font-bold text-primary flex items-center gap-2 uppercase">
                                     <HelpCircle className="h-5 w-5" /> 2. SOME en preguntas (?)
                                 </h3>
                                 <p className="text-muted-foreground">Usamos <span className="font-bold text-primary">SOME</span> en preguntas cuando se trata de ofrecimientos (Offer) o peticiones (Request):</p>
@@ -515,9 +556,8 @@ export default function EngB1Class1Page() {
 
                             <Separator />
 
-                            {/* Section 3: Any in Affirmative */}
                             <div className="space-y-4">
-                                <h3 className="text-xl font-bold text-primary flex items-center gap-2">
+                                <h3 className="text-xl font-bold text-primary flex items-center gap-2 uppercase">
                                     <CheckCircle className="h-5 w-5" /> 3. ANY en frases afirmativas (+)
                                 </h3>
                                 <div className="space-y-4">
@@ -529,7 +569,7 @@ export default function EngB1Class1Page() {
 
                                     <div className="p-4 bg-muted rounded-xl border">
                                         <h4 className="font-bold text-foreground flex items-center gap-2">
-                                            Aparentemente (+) pero con significado negativo
+                                            Significado Negativo
                                         </h4>
                                         <p className="text-sm text-muted-foreground mb-2">
                                             Se trata de frases que contienen palabras negativas como <span className="font-bold">Never</span>, <span className="font-bold">Hardly ever</span>, etc.
@@ -593,10 +633,6 @@ export default function EngB1Class1Page() {
         }
     };
 
-    if (isUserLoading || isProfileLoading) {
-        return <div className="flex h-screen w-full items-center justify-center"><Loader2 className="h-16 w-16 animate-spin text-primary" /></div>;
-    }
-
     return (
         <div className="flex w-full flex-col min-h-screen ingles-dashboard-bg">
             <DashboardHeader />
@@ -613,29 +649,37 @@ export default function EngB1Class1Page() {
                                 <CardHeader className="pb-4"><CardTitle className="text-lg">Ruta de Aprendizaje</CardTitle></CardHeader>
                                 <CardContent className="p-0">
                                     <div className="max-h-[60vh] overflow-y-auto px-6 pb-6">
-                                        <nav>
-                                            <ul className="space-y-1">
-                                                {learningPath.map((item) => {
-                                                    const Icon = item.status === 'completed' ? CheckCircle : item.icon;
-                                                    const isLocked = item.status === 'locked' && !isAdmin;
-                                                    const isActive = item.status === 'active';
-                                                    return (
-                                                        <li key={item.key} onClick={() => handleTopicSelect(item.key)}
-                                                            className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer',
-                                                                isLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted',
-                                                                selectedTopic === item.key && 'bg-muted text-primary font-semibold',
-                                                                isActive && !isAdmin && "animate-pulse-glow"
-                                                            )}
-                                                        >
-                                                            <div className="flex items-center gap-3">
-                                                                <Icon className={cn("h-5 w-5", item.status === 'completed' ? 'text-green-500' : (item.status === 'locked' ? 'text-yellow-500' : ''))} />
-                                                                <span className="truncate max-w-[150px]">{item.name}</span>
-                                                            </div>
-                                                        </li>
-                                                    );
-                                                })}
-                                            </ul>
-                                        </nav>
+                                        {isInitialLoading ? (
+                                            <div className="space-y-2">
+                                                {Array.from({ length: 6 }).map((_, i) => (
+                                                    <div key={i} className="h-10 bg-muted animate-pulse rounded-lg" />
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            <nav>
+                                                <ul className="space-y-1">
+                                                    {learningPath.map((item) => {
+                                                        const Icon = item.status === 'completed' ? CheckCircle : item.icon;
+                                                        const isLocked = item.status === 'locked' && !isAdmin;
+                                                        const isActive = item.status === 'active';
+                                                        return (
+                                                            <li key={item.key} onClick={() => handleTopicSelect(item.key)}
+                                                                className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer',
+                                                                    isLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted',
+                                                                    selectedTopic === item.key && 'bg-muted text-primary font-semibold',
+                                                                    isActive && !isAdmin && "animate-pulse-glow"
+                                                                )}
+                                                            >
+                                                                <div className="flex items-center gap-3">
+                                                                    <Icon className={cn("h-5 w-5", item.status === 'completed' ? 'text-green-500' : (item.status === 'locked' ? 'text-yellow-500' : ''))} />
+                                                                    <span className="truncate max-w-[150px]">{item.name}</span>
+                                                                </div>
+                                                            </li>
+                                                        );
+                                                    })}
+                                                </ul>
+                                            </nav>
+                                        )}
                                     </div>
                                     <div className="p-6 border-t">
                                         <div className="flex justify-between items-center text-sm font-medium text-muted-foreground mb-2"><span>Progreso</span><span className="font-bold text-foreground">{progressValue}%</span></div>
