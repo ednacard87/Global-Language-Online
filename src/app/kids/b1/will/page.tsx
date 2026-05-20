@@ -33,7 +33,7 @@ const ICONS = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_kids_b1_will_v3_stable';
+const progressStorageVersion = 'progress_kids_b1_will_v4_stable';
 const mainProgressKey = 'progress_kids_b1_will';
 
 const vocabularyData = [
@@ -367,7 +367,7 @@ const WordSearchGame = ({ onComplete }: { onComplete: () => void }) => {
                 <CardDescription>{t('wordSearch.description')}</CardDescription>
             </CardHeader>
             <CardContent className="grid md:grid-cols-3 gap-8 items-start">
-                <div onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp} className="bg-muted p-2 rounded-lg md:col-span-2">
+                <div onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp} className="bg-muted p-2 rounded-lg md:col-span-2 overflow-auto">
                     <div className="grid gap-1" style={{ gridTemplateColumns: `repeat(${grid.length > 0 ? grid.length : 1}, minmax(0, 1fr))` }}>
                         {grid.map((row, rowIndex) => (
                             row.map((cell, colIndex) => {
@@ -410,6 +410,10 @@ export default function WillPage() {
     const { user, isUserLoading } = useUser();
     const firestore = useFirestore();
 
+    const [learningPath, setLearningPath] = useState<Topic[]>([]);
+    const [selectedTopic, setSelectedTopic] = useState<string>('');
+    const [initialLoadComplete, setInitialLoadComplete] = useState(false);
+
     const studentDocRef = useMemoFirebase(
         () => (user ? doc(firestore, 'students', user.uid) : null),
         [firestore, user]
@@ -421,10 +425,6 @@ export default function WillPage() {
         return studentProfile?.role === 'admin' || user.email === 'ednacard87@gmail.com';
     }, [user, studentProfile]);
     
-    const [learningPath, setLearningPath] = useState<Topic[]>([]);
-    const [selectedTopic, setSelectedTopic] = useState<string>('');
-    const [initialLoadComplete, setInitialLoadComplete] = useState(false);
-
     const initialLearningPath = useMemo((): Topic[] => [
         { key: 'vocabulary', name: t('kidsB1Will.vocabulary'), icon: BookOpen, status: 'active' },
         { key: 'grammar', name: t('kidsB1Will.grammar'), icon: GraduationCap, status: 'locked' },
@@ -506,7 +506,7 @@ export default function WillPage() {
                 if (t.status === 'completed') completedTopics++;
             }
         });
-        return totalTopics > 0 ? (completedTopics / totalTopics) * 100 : 0;
+        return totalTopics > 0 ? Math.round((completedTopics / totalTopics) * 100) : 0;
     }, [learningPath, initialLoadComplete]);
 
     useEffect(() => {
@@ -578,11 +578,18 @@ export default function WillPage() {
                     }
                 }
             }
+
+            // Move side effects out of the pure state calculation using the task queue
+            if (wasUnlocked) {
+                setTimeout(() => toast({ title: "¡Siguiente tema desbloqueado!" }), 0);
+            }
+            if (nextToSelect) {
+                const finalToSelect = nextToSelect;
+                setTimeout(() => setSelectedTopic(finalToSelect!), 0);
+            }
+
             return newPath;
         });
-
-        if (wasUnlocked) toast({ title: "¡Siguiente tema desbloqueado!" });
-        if (nextToSelect) setSelectedTopic(nextToSelect);
     };
 
     const handleTopicSelect = (topicKey: string) => {
@@ -617,7 +624,7 @@ export default function WillPage() {
                                 <div className="font-bold p-3 bg-muted rounded-lg text-left">Español</div>
                                 {vocabularyData.map((item, index) => (
                                     <React.Fragment key={index}>
-                                        <div className="p-3 bg-card border rounded-lg flex items-center">{item.english}</div>
+                                        <div className="p-3 bg-card border rounded-lg flex items-center font-medium">{item.english}</div>
                                         <div className="p-3 bg-card border rounded-lg flex items-center">{item.spanish}</div>
                                     </React.Fragment>
                                 ))}
@@ -700,7 +707,7 @@ export default function WillPage() {
                                                 <li key={item.key}>
                                                     {!item.subItems ? (
                                                         <div onClick={() => handleTopicSelect(item.key)}
-                                                            className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors', item.status === 'locked' && !isAdmin ? 'cursor-not-allowed text-muted-foreground/50' : 'cursor-pointer hover:bg-muted', selectedTopic === item.key && 'bg-muted text-primary font-semibold')}>
+                                                            className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer', item.status === 'locked' && !isAdmin ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === item.key && 'bg-muted text-primary font-semibold')}>
                                                             <div className="flex items-center gap-3">
                                                                 <item.icon className={cn("h-5 w-5", item.status === 'completed' ? 'text-green-500' : '')} />
                                                                 <span>{item.name}</span>
@@ -710,7 +717,7 @@ export default function WillPage() {
                                                     ) : (
                                                         <Collapsible defaultOpen={item.subItems.some(si => si.status !== 'locked')} disabled={item.status === 'locked' && !isAdmin}>
                                                             <CollapsibleTrigger className="w-full">
-                                                                <div className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors w-full', item.status === 'locked' && !isAdmin ? 'cursor-not-allowed text-muted-foreground/50' : 'cursor-pointer hover:bg-muted', item.subItems.some(si => si.key === selectedTopic) && 'bg-muted text-primary font-semibold')}>
+                                                                <div className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors w-full cursor-pointer', item.status === 'locked' && !isAdmin ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', item.subItems.some(si => si.key === selectedTopic) && 'bg-muted text-primary font-semibold')}>
                                                                     <div className="flex items-center gap-3">
                                                                         <item.icon className={cn("h-5 w-5", item.status === 'completed' ? 'text-green-500' : '')} />
                                                                         <span>{item.name}</span>
@@ -722,7 +729,7 @@ export default function WillPage() {
                                                                 <ul className="pl-8 pt-1 space-y-1">
                                                                     {item.subItems.map((subItem) => (
                                                                         <li key={subItem.key} onClick={() => handleTopicSelect(subItem.key)}
-                                                                            className={cn('flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors', subItem.status === 'locked' && !isAdmin ? 'cursor-not-allowed text-muted-foreground/50' : 'cursor-pointer hover:bg-muted', selectedTopic === subItem.key && 'bg-muted text-primary font-semibold')}>
+                                                                            className={cn('flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors', subItem.status === 'locked' && !isAdmin ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === subItem.key && 'bg-muted text-primary font-semibold')}>
                                                                             <div className='flex items-center gap-3'>
                                                                                 {subItem.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500" /> : <subItem.icon className="h-5 w-5" />}
                                                                                 <span>{subItem.name}</span>

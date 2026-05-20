@@ -6,7 +6,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { BookOpen, PenSquare, Lock, GraduationCap, BrainCircuit, CheckCircle, ChevronDown, Loader2, XCircle } from 'lucide-react';
+import { BookOpen, PenSquare, Lock, GraduationCap, BrainCircuit, CheckCircle, ChevronDown, Loader2, XCircle, Ear } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
@@ -24,6 +24,11 @@ import { PossessivesMemoryGame } from '@/components/kids/exercises/possessives-m
 import { TranslationExercise } from '@/components/dashboard/translation-exercise';
 import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
 import { ShortAnswerExercise } from '@/components/dashboard/short-answer-exercise';
+import { VerbMemoryGame } from '@/components/kids/exercises/verb-memory-game';
+import { VerbVocabularyExercise } from '@/components/kids/exercises/verb-vocabulary';
+import { SingleFormExercise, positiveExercisesData, negativeExercisesData, interrogativeExercisesData } from '@/components/kids/exercises/single-form';
+import { PresentSimpleExercise } from '@/components/kids/exercises/present-simple';
+import { ReadingComprehensionExercise } from '@/components/kids/exercises/reading-comprehension';
 
 // Data for Class 1
 const verbToBeData = [
@@ -319,7 +324,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         }
     }, [learningPath, isAdmin, progressValue, studentDocRef, initialLoadComplete, selectedTopic, studentProfile, isInitialLoading]);
     
-    // Flow 3: Complete logic (Pure computation + effect for side effects)
+    // Flow 3: Complete logic (Pure computation + side effects handled by state update)
     const handleTopicComplete = (completedKey: string) => {
         if (isAdmin) return;
 
@@ -369,11 +374,18 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                     }
                 }
             }
+
+            // Move side effects out of the pure state calculation
+            if (wasUnlocked) {
+                setTimeout(() => toast({ title: "¡Siguiente tema desbloqueado!" }), 0);
+            }
+            if (nextToSelect) {
+                const finalToSelect = nextToSelect;
+                setTimeout(() => setSelectedTopic(finalToSelect!), 0);
+            }
+
             return newPath;
         });
-
-        if (wasUnlocked) toast({ title: "¡Siguiente tema desbloqueado!" });
-        if (nextToSelect) setSelectedTopic(nextToSelect);
     };
 
     const handleTopicSelect = (topicKey: string) => {
@@ -636,7 +648,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
 //                 CLASS 2 COMPONENT
 // =================================================================
 const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isProfileLoading, isUserLoading }: ClassContentProps) => {
-    const progressStorageVersion = 'progress_a1_eng_unit_1_class_2_v42_stable';
+    const progressStorageVersion = 'progress_a1_eng_unit_1_class_2_v43_final';
     const mainProgressKey = 'progress_a1_eng_unit_1_class_2';
     
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
@@ -669,7 +681,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             { spanish: 'DESAYUNO', english: 'breakfast' }, { spanish: 'ALMUERZO', english: 'lunch' },
             { spanish: 'CENA', english: 'dinner' }, { spanish: 'SIN', english: 'without' },
         ]
-    }
+    };
 
     const initialLearningPath = useMemo((): Topic[] => [
         { key: 'vocabulary', name: t('a1class1.vocabulary'), icon: BookOpen, status: 'active' },
@@ -861,11 +873,15 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                     }
                 }
             }
+            
+            if (wasUnlocked) setTimeout(() => toast({ title: "¡Siguiente tema desbloqueado!" }), 0);
+            if (nextToSelect) {
+                const finalToSelect = nextToSelect;
+                setTimeout(() => setSelectedTopic(finalToSelect!), 0);
+            }
+            
             return newPath;
         });
-
-        if (wasUnlocked) toast({ title: "¡Siguiente tema desbloqueado!" });
-        if (nextToSelect) setSelectedTopic(nextToSelect);
     };
 
     const handleTopicSelect = (topicKey: string) => {
@@ -1022,6 +1038,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             case 'ex-interrogative': return <SingleFormExercise key={selectedTopic} onComplete={() => handleTopicComplete('ex-interrogative')} exerciseData={interrogativeExercisesData} title={t('kidsA1Class2.exerciseInterrogative')} description={t('kidsA1Class2.exerciseInterrogativeDescription')} formType="interrogative" />;
             case 'ex-mixed-1-1': return <PresentSimpleExercise key={selectedTopic} onComplete={() => handleTopicComplete('ex-mixed-1-1')} exerciseData={class2Exercise1Data} title={t('kidsA1Class2.exercisesMixed1')} showShortAnswers={false} />;
             case 'ex-mixed-1-2': return <PresentSimpleExercise key={selectedTopic} onComplete={() => handleTopicComplete('ex-mixed-1-2')} exerciseData={class2Exercise2Data} title={t('a1class1.exercise', {number: 2})} showShortAnswers={false} />;
+            case 'reading': return <ReadingComprehensionExercise key={selectedTopic} onComplete={() => handleTopicComplete('reading')} />;
             default: return <div className="flex justify-center items-center h-48"><Loader2 className="animate-spin h-10 w-10 text-primary" /></div>;
         }
     };
