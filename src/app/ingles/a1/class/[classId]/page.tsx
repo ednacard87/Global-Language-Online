@@ -189,9 +189,10 @@ interface ClassContentProps {
 //                 CLASS 1 COMPONENT
 // =================================================================
 const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isProfileLoading, isUserLoading }: ClassContentProps) => {
-    const progressStorageKey = `_eng_a1_class_1_v20_persistence_fix`;
+    const progressStorageKey = `_eng_a1_class_1_v30_strict_loading`;
     const mainProgressKey = `progress_a1_eng_unit_1_class_1`;
 
+    const [isInitialLoading, setIsInitialLoading] = useState(true);
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
     const [selectedTopic, setSelectedTopic] = useState<string>('');
     const [userAnswers, setUserAnswers] = useState<{[key: string]: string[]}>({});
@@ -240,10 +241,11 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         setTopicToComplete(completedKey);
     }, []);
 
-    // 1. CARGA DE DATOS (Mount)
+    // 1. CARGA DE DATOS ESTRICTA
     useEffect(() => {
-        if (isProfileLoading || initialLoadComplete || isUserLoading) return;
+        if (isProfileLoading || isUserLoading || !studentProfile) return;
 
+        const versionedKey = progressStorageKey;
         let path = initialLearningPath.map(topic => ({
             ...topic,
             subItems: topic.subItems ? topic.subItems.map(sub => ({...sub})) : undefined,
@@ -256,8 +258,8 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             item.status = 'completed';
             if (item.subItems) item.subItems.forEach(sub => sub.status = 'completed');
            });
-        } else if(studentProfile?.lessonProgress?.[progressStorageKey]) {
-            const savedData = studentProfile.lessonProgress[progressStorageKey];
+        } else if(studentProfile?.lessonProgress?.[versionedKey]) {
+            const savedData = studentProfile.lessonProgress[versionedKey];
             path.forEach(item => {
                 if (savedData[item.key]) item.status = savedData[item.key];
                 if (item.subItems && savedData.subItems?.[item.key]) {
@@ -271,32 +273,25 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             savedSelectedTopic = savedData.lastSelectedTopic || '';
         }
 
-        // Lógica de Reparación Secuencial
-        let shouldUnlockNext = false;
+        // Reparación de ruta secuencial preventiva
+        let shouldBeActive = false;
         for (let i = 0; i < path.length; i++) {
-            if (shouldUnlockNext && path[i].status === 'locked') {
+            if (shouldBeActive && path[i].status === 'locked') {
                 path[i].status = 'active';
                 if (path[i].subItems) path[i].subItems[0].status = 'active';
-                shouldUnlockNext = false;
+                shouldBeActive = false;
             }
-            if (path[i].status === 'completed') {
-                shouldUnlockNext = true;
-            }
-            
+            if (path[i].status === 'completed') shouldBeActive = true;
             if (path[i].subItems) {
-                let shouldUnlockSub = false;
+                let subActive = false;
                 for (let j = 0; j < path[i].subItems.length; j++) {
-                    if (shouldUnlockSub && path[i].subItems[j].status === 'locked') {
+                    if (subActive && path[i].subItems[j].status === 'locked') {
                         path[i].subItems[j].status = 'active';
-                        shouldUnlockSub = false;
+                        subActive = false;
                     }
-                    if (path[i].subItems[j].status === 'completed') {
-                        shouldUnlockSub = true;
-                    }
+                    if (path[i].subItems[j].status === 'completed') subActive = true;
                 }
-                if (path[i].subItems.every(s => s.status === 'completed')) {
-                    shouldUnlockNext = true;
-                }
+                if (path[i].subItems.every(s => s.status === 'completed')) shouldBeActive = true;
             }
         }
 
@@ -318,9 +313,11 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         }
         setUserAnswers(newAnswers);
         setValidationStatus(newValidation);
+        
         setInitialLoadComplete(true);
+        setIsInitialLoading(false);
 
-    }, [isAdmin, initialLearningPath, studentProfile, progressStorageKey, isProfileLoading, isUserLoading, initialLoadComplete, t]);
+    }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading, isUserLoading, initialLoadComplete, t]);
 
     // 2. CÁLCULO DE PROGRESO
     const progressValue = useMemo(() => {
@@ -339,24 +336,15 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         return totalTopics > 0 ? (completedTopics / totalTopics) * 100 : 0;
     }, [learningPath]);
 
-    // 3. GUARDADO EN FIREBASE
+    // 3. GUARDADO EN FIREBASE ESTRICTO
     useEffect(() => {
-        if (!initialLoadComplete || isProfileLoading || isUserLoading || isAdmin || !studentDocRef || learningPath.length === 0) return;
+        if (!initialLoadComplete || isInitialLoading || isAdmin || !studentDocRef || learningPath.length === 0) return;
 
         const currentSavedProgress = studentProfile?.progress?.[mainProgressKey] || 0;
         const newProgress = Math.round(progressValue);
 
-        // Check if anything actually changed before writing
-        const currentSavedTopic = studentProfile?.lessonProgress?.[progressStorageKey]?.lastSelectedTopic;
-
-        if (newProgress === currentSavedProgress && currentSavedTopic === selectedTopic) {
-            return;
-        }
-
-        const statusesToSave: Record<string, any> = {
-            lastSelectedTopic: selectedTopic
-        };
-
+        // Solo guardamos si hay un cambio real
+        const statusesToSave: Record<string, any> = { lastSelectedTopic: selectedTopic };
         learningPath.forEach(item => {
             statusesToSave[item.key] = item.status;
             if (item.subItems) {
@@ -368,11 +356,17 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             }
         });
 
-        updateDocumentNonBlocking(studentDocRef, {
-            [`lessonProgress.${progressStorageKey}`]: statusesToSave,
-            [`progress.${mainProgressKey}`]: newProgress
-        });
-    }, [learningPath, isAdmin, progressValue, studentDocRef, progressStorageKey, mainProgressKey, isProfileLoading, isUserLoading, initialLoadComplete, selectedTopic, studentProfile]);
+        // Comparación para evitar escrituras redundantes
+        const savedData = studentProfile?.lessonProgress?.[progressStorageKey];
+        const hasDataChanged = JSON.stringify(statusesToSave) !== JSON.stringify(savedData);
+
+        if (hasDataChanged || newProgress !== currentSavedProgress) {
+            updateDocumentNonBlocking(studentDocRef, {
+                [`lessonProgress.${progressStorageKey}`]: statusesToSave,
+                [`progress.${mainProgressKey}`]: newProgress
+            });
+        }
+    }, [learningPath, isAdmin, progressValue, studentDocRef, initialLoadComplete, isInitialLoading, selectedTopic, studentProfile]);
     
     // 4. LÓGICA DE COMPLETITUD (Side Effect Safe)
     useEffect(() => {
@@ -381,84 +375,76 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             return;
         }
 
-        // Calculate changes
-        let nextToSelect: string | null = null;
         let wasUnlocked = false;
+        let nextToSelect: string | null = null;
 
-        const newPath = learningPath.map(t => ({
-            ...t,
-            subItems: t.subItems ? t.subItems.map(s => ({ ...s })) : undefined,
-        }));
-      
-        let topicFound = false;
-
-        for (let i = 0; i < newPath.length && !topicFound; i++) {
-            const currentTopic = newPath[i];
-      
-            if (currentTopic.key === topicToComplete) {
-                if (currentTopic.status !== 'completed') currentTopic.status = 'completed';
-                if (i + 1 < newPath.length && newPath[i + 1].status === 'locked') {
-                    const nextMain = newPath[i + 1];
-                    nextMain.status = 'active';
-                    wasUnlocked = true;
-                    if (nextMain.subItems && nextMain.subItems.length > 0) {
-                        nextMain.subItems[0].status = 'active';
-                        nextToSelect = nextMain.subItems[0].key;
-                    } else {
-                        nextToSelect = nextMain.key;
-                    }
-                }
-                topicFound = true;
-            } else if (currentTopic.subItems) {
-                const subIndex = currentTopic.subItems.findIndex((sub: any) => sub.key === topicToComplete);
-                if (subIndex !== -1) {
-                    if (currentTopic.subItems[subIndex].status !== 'completed') currentTopic.subItems[subIndex].status = 'completed';
-                    
-                    const nextSubIndex = subIndex + 1;
-                    if (nextSubIndex < currentTopic.subItems.length && currentTopic.subItems[nextSubIndex].status === 'locked') {
-                        currentTopic.subItems[nextSubIndex].status = 'active';
-                        nextToSelect = currentTopic.subItems[nextSubIndex].key;
+        setLearningPath(currentPath => {
+            const newPath = currentPath.map(t => ({
+                ...t,
+                subItems: t.subItems ? t.subItems.map(s => ({ ...s })) : undefined,
+            }));
+          
+            let topicFound = false;
+            for (let i = 0; i < newPath.length && !topicFound; i++) {
+                const currentTopic = newPath[i];
+          
+                if (currentTopic.key === topicToComplete) {
+                    if (currentTopic.status !== 'completed') currentTopic.status = 'completed';
+                    if (i + 1 < newPath.length && newPath[i + 1].status === 'locked') {
+                        const nextMain = newPath[i + 1];
+                        nextMain.status = 'active';
                         wasUnlocked = true;
-                    } else if (currentTopic.subItems.every((sub: any) => sub.status === 'completed')) {
-                        if (currentTopic.status !== 'completed') currentTopic.status = 'completed';
-                        if (i + 1 < newPath.length && newPath[i + 1].status === 'locked') {
-                            const nextMain = newPath[i + 1];
-                            nextMain.status = 'active';
-                            wasUnlocked = true;
-                            if (nextMain.subItems && nextMain.subItems.length > 0) {
-                                nextMain.subItems[0].status = 'active';
-                                nextToSelect = nextMain.subItems[0].key;
-                            } else {
-                                nextToSelect = nextMain.key;
-                            }
+                        if (nextMain.subItems?.[0]) {
+                            nextMain.subItems[0].status = 'active';
+                            nextToSelect = nextMain.subItems[0].key;
+                        } else {
+                            nextToSelect = nextMain.key;
                         }
                     }
                     topicFound = true;
+                } else if (currentTopic.subItems) {
+                    const subIndex = currentTopic.subItems.findIndex((sub: any) => sub.key === topicToComplete);
+                    if (subIndex !== -1) {
+                        if (currentTopic.subItems[subIndex].status !== 'completed') currentTopic.subItems[subIndex].status = 'completed';
+                        const nextSubIndex = subIndex + 1;
+                        if (nextSubIndex < currentTopic.subItems.length && currentTopic.subItems[nextSubIndex].status === 'locked') {
+                            currentTopic.subItems[nextSubIndex].status = 'active';
+                            nextToSelect = currentTopic.subItems[nextSubIndex].key;
+                            wasUnlocked = true;
+                        } else if (currentTopic.subItems.every((sub: any) => sub.status === 'completed')) {
+                            if (currentTopic.status !== 'completed') currentTopic.status = 'completed';
+                            if (i + 1 < newPath.length && newPath[i + 1].status === 'locked') {
+                                const nextMain = newPath[i + 1];
+                                nextMain.status = 'active';
+                                wasUnlocked = true;
+                                if (nextMain.subItems?.[0]) {
+                                    nextMain.subItems[0].status = 'active';
+                                    nextToSelect = nextMain.subItems[0].key;
+                                } else {
+                                    nextToSelect = nextMain.key;
+                                }
+                            }
+                        }
+                        topicFound = true;
+                    }
                 }
             }
-        }
+            return newPath;
+        });
 
-        // Apply changes
-        setLearningPath(newPath);
-        if (nextToSelect) setSelectedTopic(nextToSelect);
         if (wasUnlocked) toast({ title: "¡Siguiente tema desbloqueado!" });
+        if (nextToSelect) setSelectedTopic(nextToSelect);
 
         setTopicToComplete(null);
-    }, [topicToComplete, isAdmin, toast, learningPath]);
+    }, [topicToComplete, isAdmin, toast]);
 
     const handleTopicSelect = (topicKey: string) => {
         const mainTopic = learningPath.find(t => t.key === topicKey || t.subItems?.some(st => st.key === topicKey));
         const subTopic = mainTopic?.subItems?.find(st => st.key === topicKey);
-    
-        const topicStatus = mainTopic?.status ?? 'locked';
-        const subTopicStatus = subTopic?.status ?? 'locked';
+        const isLocked = !isAdmin && ((subTopic && subTopic.status === 'locked') || (!subTopic && mainTopic?.status === 'locked'));
 
-        if (!isAdmin && (topicStatus === 'locked' || (subTopic && subTopicStatus === 'locked'))) {
-            toast({
-                variant: "destructive",
-                title: "Contenido Bloqueado",
-                description: "Debes completar los pasos anteriores para desbloquear este tema.",
-            });
+        if (isLocked) {
+            toast({ variant: "destructive", title: "Contenido Bloqueado" });
             return;
         }
         
@@ -476,7 +462,6 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             newCategoryAnswers[index] = value;
             return { ...prevAnswers, [category]: newCategoryAnswers };
         });
-    
         setValidationStatus(prevStatus => {
             if (prevStatus[category]?.[index] !== 'unchecked') {
                 const newCategoryStatus = [...(prevStatus[category] || [])];
@@ -496,38 +481,30 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             const items = (classVocabularyData as any)[category];
             newValidationStatus[category] = items.map((item: {english: string}, index: number) => {
                 const userAnswer = (userAnswers[category]?.[index] || '').trim().toLowerCase();
-                const correctAnswer = item.english.toLowerCase();
-                const isCorrect = userAnswer === correctAnswer;
-                if (isCorrect) {
-                    atLeastOneCorrect = true;
-                }
+                const isCorrect = userAnswer === item.english.toLowerCase();
+                if (isCorrect) atLeastOneCorrect = true;
                 return isCorrect ? 'correct' : 'incorrect';
             });
         }
         setValidationStatus(newValidationStatus);
-        
         if (atLeastOneCorrect) {
-            toast({ title: '¡Bien hecho!', description: 'Has acertado al menos una. ¡Ya puedes avanzar!' });
+            toast({ title: '¡Bien hecho!' });
             setCanAdvanceVocab(true);
         } else {
-            toast({ 
-                variant: 'destructive', 
-                title: 'Sigue intentando', 
-                description: 'Revisa tus respuestas. ¡Necesitas al menos una correcta para continuar!' 
-            });
+            toast({ variant: 'destructive', title: 'Sigue intentando' });
             setCanAdvanceVocab(false);
         }
     };
 
     const getVocabInputClass = (category: string, index: number) => {
         const status = validationStatus[category]?.[index];
-        if (status === 'correct') return 'border-green-500 focus-visible:ring-green-500';
-        if (status === 'incorrect') return 'border-destructive focus-visible:ring-destructive';
+        if (status === 'correct') return 'border-green-500 focus-visible:ring-green-500 bg-green-50 dark:bg-green-900/10';
+        if (status === 'incorrect') return 'border-destructive focus-visible:ring-destructive bg-destructive/5';
         return '';
     };
 
     const renderContent = () => {
-        const topic = learningPath.find(t => t.key === selectedTopic) || learningPath.flatMap(t => t.subItems || []).find(st => st?.key === selectedTopic);
+        if (isInitialLoading) return <div className="flex justify-center items-center min-h-[400px]"><Loader2 className="h-12 w-12 animate-spin text-primary" /></div>;
 
         switch (selectedTopic) {
             case 'vocabulary':
@@ -547,12 +524,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                                             <React.Fragment key={index}>
                                                 <div className="p-3 bg-card border rounded-lg flex items-center justify-center font-medium">{item.spanish}</div>
                                                 <div className="p-3 bg-card border rounded-lg flex items-center">
-                                                    <Input 
-                                                        value={userAnswers[category]?.[index] || ''}
-                                                        onChange={(e) => handleVocabInputChange(category, index, e.target.value)}
-                                                        className={cn(getVocabInputClass(category, index))}
-                                                        autoComplete="off"
-                                                    />
+                                                    <Input value={userAnswers[category]?.[index] || ''} onChange={(e) => handleVocabInputChange(category, index, e.target.value)} className={cn(getVocabInputClass(category, index))} autoComplete="off" />
                                                 </div>
                                             </React.Fragment>
                                         ))}
@@ -568,256 +540,66 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                         </CardFooter>
                     </Card>
                 );
-            case 'tobe':
-                return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
-                        <CardHeader><CardTitle>Pronombres + To Be</CardTitle></CardHeader>
-                        <CardContent>
-                            <div className="grid grid-cols-3 gap-x-4 gap-y-2 text-lg">
-                                <div className="font-bold p-3 bg-muted rounded-lg text-center">SER</div>
-                                <div className="font-bold p-3 bg-muted rounded-lg text-center">TO BE</div>
-                                <div className="font-bold p-3 bg-muted rounded-lg text-center">ESTAR</div>
-                                {verbToBeData.map((item, index) => (
-                                    <React.Fragment key={index}>
-                                        <div className="p-3 bg-card border rounded-lg text-center">{item.ser}</div>
-                                        <div className="p-3 bg-card border rounded-lg font-medium text-center">{item.tobe}</div>
-                                        <div className="p-3 bg-card border rounded-lg text-center">{item.estar}</div>
-                                    </React.Fragment>
-                                ))}
-                            </div>
-                        </CardContent>
-                    </Card>
-                );
-            case 'memory-tobe':
-                return <ToBeMemoryGame key={selectedTopic} onGameComplete={() => handleTopicComplete('memory-tobe')} />;
-            case 'tobe-1-grammar':
-                return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
-                        <CardHeader>
-                            <CardTitle>To be 1</CardTitle>
-                            <CardDescription>Aprende la estructura básica del verbo To be.</CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-6">
-                            <div>
-                                <h3 className="text-xl font-semibold mb-2">Estructura Verbo To be</h3>
-                                <div className="space-y-2 p-4 bg-muted rounded-lg font-mono text-base">
-                                    <p><span className="font-bold text-lg text-green-500 mr-2">(+)</span> pronoun + to be + complement</p>
-                                    <p><span className="font-bold text-lg text-red-500 mr-2">(-)</span> pronoun + to be + not + complement</p>
-                                    <p><span className="font-bold text-lg text-blue-500 mr-2">(?)</span> to be + pronoun + complement ?</p>
-                                </div>
-                            </div>
-                            <div>
-                                <h3 className="text-xl font-semibold mb-2">Ejemplo: "ellos son estudiantes"</h3>
-                                <div className="space-y-2 p-4 bg-muted rounded-lg font-mono text-base">
-                                    <p><span className="font-bold text-lg text-green-500 mr-2">(+)</span> They are students</p>
-                                    <p><span className="font-bold text-lg text-red-500 mr-2">(-)</span> They are not students</p>
-                                    <p><span className="font-bold text-lg text-blue-500 mr-2">(?)</span> are they students?</p>
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-                );
-            case 'tobe-1-exercise':
-                return (
-                    <TranslationExercise 
-                        key={selectedTopic}
-                        exerciseKey="exercises1" 
-                        onComplete={() => handleTopicComplete('tobe-1-exercise')} 
-                        vocabulary={{'un- una': 'a / an', 'abogado': 'lawyer', 'enfermo': 'sick', 'enfermero': 'nurse'}}
-                        highlightVocabulary={true}
-                    />
-                );
-            case 'possessives':
-                 return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
-                        <CardHeader><CardTitle>Posesivos</CardTitle></CardHeader>
-                        <CardContent>
-                            <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-lg">
-                                <div className="font-bold p-3 bg-muted rounded-lg text-center">Inglés</div>
-                                <div className="font-bold p-3 bg-muted rounded-lg text-center">Español</div>
-                                {possessivesData.map((item, index) => (
-                                    <React.Fragment key={index}>
-                                        <div className="p-3 bg-card border rounded-lg font-medium text-center">{item.english}</div>
-                                        <div className="p-3 bg-card border rounded-lg text-center">{item.spanish}</div>
-                                    </React.Fragment>
-                                ))}
-                            </div>
-                        </CardContent>
-                    </Card>
-                );
-            case 'memory-possessives':
-                return <PossessivesMemoryGame key={selectedTopic} onGameComplete={() => handleTopicComplete('memory-possessives')} />;
-            case 'tobe-2-grammar':
-                return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
-                        <CardHeader><CardTitle>To be 2</CardTitle></CardHeader>
-                        <CardContent className="space-y-6">
-                             <div>
-                                <h3 className="text-xl font-semibold mb-2">Estructura Verbo To be</h3>
-                                <div className="space-y-2 p-4 bg-muted rounded-lg font-mono text-base">
-                                    <p><span className="font-bold text-lg text-green-500 mr-2">(+)</span> pronoun + To be + possessive + noun + complement</p>
-                                    <p><span className="font-bold text-lg text-red-500 mr-2">(-)</span> pronoun + To be + Not + possessive + noun + complement</p>
-                                    <p><span className="font-bold text-lg text-blue-500 mr-2">(?)</span> To be + pronoun + possessive + noun + complement ?</p>
-                                </div>
-                            </div>
-                            <div>
-                                <h3 className="text-xl font-semibold mb-2">Ejemplo: "Ellos son mis amigos"</h3>
-                                <div className="space-y-2 p-4 bg-muted rounded-lg font-mono text-base">
-                                    <p><span className="font-bold text-lg text-green-500 mr-2">(+)</span> They are my friends</p>
-                                    <p><span className="font-bold text-lg text-red-500 mr-2">(-)</span> They are not my friends</p>
-                                    <p><span className="font-bold text-lg text-blue-500 mr-2">(?)</span> are they my friends?</p>
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-                );
-            case 'tobe-2-exercise':
-                return (
-                    <TranslationExercise 
-                        key={selectedTopic}
-                        exerciseKey="exercises2" 
-                        onComplete={() => handleTopicComplete('tobe-2-exercise')} 
-                        vocabulary={{'amigo': 'friend', 'hijo': 'son', 'perro': 'dog'}}
-                        highlightVocabulary={true}
-                    />
-                );
-            case 'tobe-3-grammar':
-                return (
-                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
-                        <CardHeader><CardTitle>To be 3</CardTitle></CardHeader>
-                        <CardContent className="space-y-6">
-                            <div>
-                                <h3 className="text-xl font-semibold mb-2">Estructura Verbo To be</h3>
-                                <div className="space-y-2 p-4 bg-muted rounded-lg font-mono text-base">
-                                    <p><span className="font-bold text-lg text-green-500 mr-2">(+)</span> possessive + noun + to be + complement</p>
-                                    <p><span className="font-bold text-lg text-red-500 mr-2">(-)</span> possessive + noun + to be + Not + complement</p>
-                                    <p><span className="font-bold text-lg text-blue-500 mr-2">(?)</span> To be + possessive + noun + complement ?</p>
-                                </div>
-                            </div>
-                            <div>
-                                <h3 className="text-xl font-semibold mb-2">Ejemplo: "Mi mamá es una enfermera"</h3>
-                                <div className="space-y-2 p-4 bg-muted rounded-lg font-mono text-base">
-                                    <p><span className="font-bold text-lg text-green-500 mr-2">(+)</span> My mother is a nurse</p>
-                                    <p><span className="font-bold text-lg text-red-500 mr-2">(-)</span> My mother is not a nurse</p>
-                                    <p><span className="font-bold text-lg text-blue-500 mr-2">(?)</span> is my mother a nurse?</p>
-                                    <div className="border-t my-2 border-border/50" />
-                                    <p><span className="font-bold text-lg text-green-500 mr-2">(+A)</span> yes, she is</p>
-                                    <p><span className="font-bold text-lg text-red-500 mr-2">(-A)</span> no, she is not</p>
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-                );
-            case 'tobe-3-exercise':
-                return (
-                    <TranslationExercise 
-                        key={selectedTopic}
-                        exerciseKey="exercises3" 
-                        onComplete={() => handleTopicComplete('tobe-3-exercise')} 
-                        vocabulary={{'enfermera': 'nurse', 'abuelos': 'grandparents', 'pensionado': 'retired', 'juguete': 'toy'}}
-                        highlightVocabulary={true}
-                    />
-                );
-            case 'ex-mixto-1': 
-                return (
-                    <SimpleTranslationExercise 
-                        key={selectedTopic}
-                        course="a1" 
-                        exerciseKey="mixed1" 
-                        onComplete={() => handleTopicComplete('ex-mixto-1')} 
-                        vocabulary={{
-                            "estudiante": "student",
-                            "amigos": "friends",
-                            "padres": "parents",
-                            "hermana": "sister",
-                            "abogados": "lawyers",
-                            "Inglaterra": "England",
-                            "de ellos": "their",
-                            "de él": "his"
-                        }}
-                        highlightVocabulary={true}
-                    />
-                );
-            case 'ex-mixto-2': 
-                return (
-                    <TranslationExercise 
-                        key={selectedTopic}
-                        exerciseKey="qna2" 
-                        formType="qna" 
-                        onComplete={() => handleTopicComplete('ex-mixto-2')}
-                        title="Ejercicio 2"
-                        vocabulary={{
-                            "cansado": "tired",
-                            "curiosos": "curious",
-                            "hambriento": "hungry",
-                            "compañeros de trabajo": "coworkers",
-                            "a tiempo": "on time"
-                        }}
-                        highlightVocabulary={true}
-                    />
-                );
-            case 'ex-mixto-3': 
-                return (
-                    <SimpleTranslationExercise 
-                        key={selectedTopic}
-                        course="a1" 
-                        exerciseKey="mixed3" 
-                        onComplete={() => handleTopicComplete('ex-mixto-3')} 
-                        vocabulary={{
-                            "estudiantes": "students",
-                            "amigos": "friends",
-                            "mamá": "mother / mom",
-                            "padres": "parents",
-                            "abuela": "grandmother / grandma",
-                            "hermanas": "sisters",
-                            "enojados": "angry",
-                            "preocupados": "worried"
-                        }}
-                        highlightVocabulary={true}
-                    />
-                );
-            case 'ex-mixto-4': 
-                return (
-                    <SimpleTranslationExercise 
-                        key={selectedTopic}
-                        course="a1" 
-                        exerciseKey="mixed4" 
-                        onComplete={() => handleTopicComplete('ex-mixto-4')} 
-                        vocabulary={{
-                            "profesor": "teacher",
-                            "ingeniero": "engineer",
-                            "estadio": "stadium",
-                            "primos": "cousins",
-                            "baloncesto": "basketball"
-                        }}
-                        highlightVocabulary={true}
-                    />
-                );
+            case 'memory-tobe': return <ToBeMemoryGame key={selectedTopic} onGameComplete={() => handleTopicComplete('memory-tobe')} />;
+            case 'tobe-1-exercise': return <TranslationExercise key={selectedTopic} exerciseKey="exercises1" onComplete={() => handleTopicComplete('tobe-1-exercise')} vocabulary={{'un- una': 'a / an', 'abogado': 'lawyer', 'enfermo': 'sick', 'enfermero': 'nurse'}} highlightVocabulary={true} />;
+            case 'memory-possessives': return <PossessivesMemoryGame key={selectedTopic} onGameComplete={() => handleTopicComplete('memory-possessives')} />;
+            case 'tobe-2-exercise': return <TranslationExercise key={selectedTopic} exerciseKey="exercises2" onComplete={() => handleTopicComplete('tobe-2-exercise')} vocabulary={{'amigo': 'friend', 'hijo': 'son', 'perro': 'dog'}} highlightVocabulary={true} />;
+            case 'tobe-3-exercise': return <TranslationExercise key={selectedTopic} exerciseKey="exercises3" onComplete={() => handleTopicComplete('tobe-3-exercise')} vocabulary={{'enfermera': 'nurse', 'abuelos': 'grandparents', 'pensionado': 'retired', 'juguete': 'toy'}} highlightVocabulary={true} />;
+            case 'ex-mixto-1': return <SimpleTranslationExercise key={selectedTopic} course="a1" exerciseKey="mixed1" onComplete={() => handleTopicComplete('ex-mixto-1')} vocabulary={{"estudiante": "student", "amigos": "friends", "padres": "parents", "hermana": "sister"}} highlightVocabulary={true} />;
+            case 'ex-mixto-2': return <TranslationExercise key={selectedTopic} exerciseKey="qna2" formType="qna" onComplete={() => handleTopicComplete('ex-mixto-2')} title="Ejercicio 2" vocabulary={{"cansado": "tired", "curiosos": "curious", "hambriento": "hungry"}} highlightVocabulary={true} />;
+            case 'ex-mixto-3': return <SimpleTranslationExercise key={selectedTopic} course="a1" exerciseKey="mixed3" onComplete={() => handleTopicComplete('ex-mixto-3')} vocabulary={{"estudiantes": "students", "mamá": "mother / mom"}} highlightVocabulary={true} />;
+            case 'ex-mixto-4': return <SimpleTranslationExercise key={selectedTopic} course="a1" exerciseKey="mixed4" onComplete={() => handleTopicComplete('ex-mixto-4')} vocabulary={{"profesor": "teacher", "ingeniero": "engineer"}} highlightVocabulary={true} />;
             case 'ex-mixto-5': return <ShortAnswerExercise key={selectedTopic} onComplete={() => handleTopicComplete('ex-mixto-5')} />;
-            case 'ex-mixto-6': 
+            case 'ex-mixto-6': return <SimpleTranslationExercise key={selectedTopic} course="a1" exerciseKey="mixed6" onComplete={() => handleTopicComplete('ex-mixto-6')} vocabulary={{"padrastro": "stepfather", "estante": "shelf"}} highlightVocabulary={true} />;
+            case 'tobe':
+            case 'tobe-1-grammar':
+            case 'tobe-2-grammar':
+            case 'tobe-3-grammar':
+            case 'possessives':
                 return (
-                    <SimpleTranslationExercise 
-                        key={selectedTopic}
-                        course="a1" 
-                        exerciseKey="mixed6" 
-                        onComplete={() => handleTopicComplete('ex-mixto-6')} 
-                        vocabulary={{
-                            "padrastro": "stepfather",
-                            "estante": "shelf",
-                            "escritorio": "desk",
-                            "iglesia": "church",
-                            "supermercado": "supermarket"
-                        }}
-                        highlightVocabulary={true}
-                    />
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
+                        <CardHeader><CardTitle>{topic?.name}</CardTitle></CardHeader>
+                        <CardContent className="space-y-4">
+                            {selectedTopic === 'tobe' && (
+                                <div className="grid grid-cols-3 gap-x-4 gap-y-2 text-lg">
+                                    <div className="font-bold p-3 bg-muted rounded-lg text-center">SER</div>
+                                    <div className="font-bold p-3 bg-muted rounded-lg text-center">TO BE</div>
+                                    <div className="font-bold p-3 bg-muted rounded-lg text-center">ESTAR</div>
+                                    {verbToBeData.map((item, index) => (
+                                        <React.Fragment key={index}>
+                                            <div className="p-3 bg-card border rounded-lg text-center">{item.ser}</div>
+                                            <div className="p-3 bg-card border rounded-lg font-medium text-center">{item.tobe}</div>
+                                            <div className="p-3 bg-card border rounded-lg text-center">{item.estar}</div>
+                                        </React.Fragment>
+                                    ))}
+                                </div>
+                            )}
+                            {selectedTopic === 'possessives' && (
+                                <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-lg">
+                                    <div className="font-bold p-3 bg-muted rounded-lg text-center">Inglés</div>
+                                    <div className="font-bold p-3 bg-muted rounded-lg text-center">Español</div>
+                                    {possessivesData.map((item, index) => (
+                                        <React.Fragment key={index}>
+                                            <div className="p-3 bg-card border rounded-lg font-medium text-center">{item.english}</div>
+                                            <div className="p-3 bg-card border rounded-lg text-center">{item.spanish}</div>
+                                        </React.Fragment>
+                                    ))}
+                                </div>
+                            )}
+                            {selectedTopic.includes('grammar') && (
+                                <div className="space-y-4">
+                                    <h3 className="text-xl font-semibold">Estructura Gramatical</h3>
+                                    <div className="p-4 bg-muted rounded-lg font-mono text-base border-2 border-dashed">
+                                        {selectedTopic === 'tobe-1-grammar' && <><p>(+) pronoun + to be + complement</p><p>(-) pronoun + to be + not + complement</p><p>(?) to be + pronoun + complement ?</p></>}
+                                        {selectedTopic === 'tobe-2-grammar' && <><p>(+) pronoun + to be + possessive + noun + complement</p><p>(-) pronoun + to be + not + possessive + noun + complement</p></>}
+                                        {selectedTopic === 'tobe-3-grammar' && <><p>(+) possessive + noun + to be + complement</p><p>(?) to be + possessive + noun + complement ?</p></>}
+                                    </div>
+                                </div>
+                            )}
+                        </CardContent>
+                    </Card>
                 );
-            default:
-                return (
-                  <Card className="shadow-soft rounded-lg border-2 border-brand-purple min-h-[500px]">
-                    <CardHeader><CardTitle>{topic?.name || 'Cargando...'}</CardTitle></CardHeader>
-                    <CardContent className="flex justify-center items-center h-48"><Loader2 className="animate-spin h-10 w-10 text-primary" /></CardContent>
-                  </Card>
-                );
+            default: return <div className="flex justify-center items-center h-48"><Loader2 className="animate-spin h-10 w-10 text-primary" /></div>;
         }
     };
     
@@ -836,76 +618,58 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                             <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
                                 <CardHeader><CardTitle>Ruta de Aprendizaje</CardTitle></CardHeader>
                                 <CardContent>
-                                    <nav>
-                                        <ul className="space-y-1">
-                                        {learningPath.map((item) => {
-                                            const isLocked = item.status === 'locked' && !isAdmin;
-                                            const isSelected = selectedTopic === item.key || item.subItems?.some(si => si.key === selectedTopic);
-                                            return(
-                                                <li key={item.key}>
-                                                {!item.subItems ? (
-                                                    <div onClick={() => handleTopicSelect(item.key)}
-                                                    className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer', 
-                                                        isLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', 
-                                                        selectedTopic === item.key && 'bg-muted text-primary font-semibold',
-                                                        item.status === 'active' && !isAdmin && "animate-pulse-glow"
-                                                    )}>
-                                                    <div className="flex items-center gap-3">
-                                                        {item.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500" /> : <item.icon className="h-5 w-5" />}
-                                                        <span>{item.name}</span>
-                                                    </div>
-                                                    {isLocked && <Lock className="h-4 w-4 text-yellow-500" />}
-                                                    </div>
-                                                ) : (
-                                                    <Collapsible defaultOpen={isSelected || item.subItems.some(si => si.status !== 'locked')} disabled={isLocked}>
-                                                    <CollapsibleTrigger className="w-full">
-                                                        <div className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors w-full cursor-pointer', 
-                                                            isLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', 
-                                                            isSelected && 'bg-muted text-primary font-semibold',
-                                                            item.status === 'active' && !isAdmin && "animate-pulse-glow"
-                                                        )}>
-                                                            <div className="flex items-center gap-3">
+                                    {isInitialLoading ? <Skeleton className="h-48 w-full" /> : (
+                                        <nav>
+                                            <ul className="space-y-1">
+                                            {learningPath.map((item) => {
+                                                const isLocked = item.status === 'locked' && !isAdmin;
+                                                const isSelected = selectedTopic === item.key || item.subItems?.some(si => si.key === selectedTopic);
+                                                return(
+                                                    <li key={item.key}>
+                                                    {!item.subItems ? (
+                                                        <div onClick={() => handleTopicSelect(item.key)} className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer', isLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === item.key && 'bg-muted text-primary font-semibold')}>
+                                                        <div className="flex items-center gap-3">
                                                             {item.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500" /> : <item.icon className="h-5 w-5" />}
                                                             <span>{item.name}</span>
-                                                            </div>
-                                                            {isLocked ? <Lock className="h-4 w-4 text-yellow-500" /> : <ChevronDown className="h-4 w-4 transition-transform [&[data-state=open]]:rotate-180" />}
                                                         </div>
-                                                    </CollapsibleTrigger>
-                                                    <CollapsibleContent>
-                                                        <ul className="pl-8 pt-1 space-y-1">
-                                                        {item.subItems.map((subItem) => {
-                                                            const isSubLocked = subItem.status === 'locked' && !isAdmin;
-                                                            return (
-                                                                <li key={subItem.key} onClick={() => handleTopicSelect(subItem.key)}
-                                                                    className={cn('flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer', 
-                                                                        isSubLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', 
-                                                                        selectedTopic === subItem.key && 'bg-muted text-primary font-semibold',
-                                                                        subItem.status === 'active' && !isAdmin && "animate-pulse-glow"
-                                                                    )}>
+                                                        {isLocked && <Lock className="h-4 w-4 text-yellow-500" />}
+                                                        </div>
+                                                    ) : (
+                                                        <Collapsible defaultOpen={isSelected}>
+                                                        <CollapsibleTrigger className="w-full">
+                                                            <div className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors w-full cursor-pointer', isLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', isSelected && 'bg-muted text-primary font-semibold')}>
+                                                                <div className="flex items-center gap-3">
+                                                                {item.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500" /> : <item.icon className="h-5 w-5" />}
+                                                                <span>{item.name}</span>
+                                                                </div>
+                                                                {isLocked ? <Lock className="h-4 w-4 text-yellow-500" /> : <ChevronDown className="h-4 w-4 transition-transform [&[data-state=open]]:rotate-180" />}
+                                                            </div>
+                                                        </CollapsibleTrigger>
+                                                        <CollapsibleContent>
+                                                            <ul className="pl-8 pt-1 space-y-1">
+                                                            {item.subItems.map((subItem) => (
+                                                                <li key={subItem.key} onClick={() => handleTopicSelect(subItem.key)} className={cn('flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer', (subItem.status === 'locked' && !isAdmin) ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === subItem.key && 'bg-muted text-primary font-semibold')}>
                                                                     <div className='flex items-center gap-3'>
                                                                         {subItem.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500" /> : <PenSquare className="h-5 w-5" />}
                                                                         <span>{subItem.name}</span>
                                                                     </div>
-                                                                    {isSubLocked && <Lock className="h-4 w-4 text-yellow-500" />}
+                                                                    {subItem.status === 'locked' && !isAdmin && <Lock className="h-4 w-4 text-yellow-500" />}
                                                                 </li>
-                                                            );
-                                                        })}
-                                                        </ul>
-                                                    </CollapsibleContent>
-                                                    </Collapsible>
-                                                )}
-                                                </li>
-                                            );
-                                        })}
-                                        </ul>
-                                    </nav>
+                                                            ))}
+                                                            </ul>
+                                                        </CollapsibleContent>
+                                                        </Collapsible>
+                                                    )}
+                                                    </li>
+                                                );
+                                            })}
+                                            </ul>
+                                        </nav>
+                                    )}
                                     <div className="mt-6 pt-6 border-t">
-                                            <div className="flex justify-between items-center text-sm font-medium text-muted-foreground mb-2">
-                                                <span>Progreso de la Clase</span>
-                                                <span className="font-bold text-foreground">{Math.round(progressValue)}%</span>
-                                            </div>
-                                            <Progress value={progressValue} className="h-2" />
-                                        </div>
+                                        <div className="flex justify-between items-center text-sm font-medium text-muted-foreground mb-2"><span>Progreso</span><span className="font-bold text-foreground">{Math.round(progressValue)}%</span></div>
+                                        <Progress value={progressValue} className="h-2" />
+                                    </div>
                                 </CardContent>
                             </Card>
                         </div>
@@ -920,9 +684,10 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
 //                 CLASS 2 COMPONENT
 // =================================================================
 const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isProfileLoading, isUserLoading }: ClassContentProps) => {
-    const progressStorageVersion = 'progress_a1_eng_unit_1_class_2_v20_persistence_fix';
+    const progressStorageVersion = 'progress_a1_eng_unit_1_class_2_v30_strict_loading';
     const mainProgressKey = 'progress_a1_eng_unit_1_class_2';
     
+    const [isInitialLoading, setIsInitialLoading] = useState(true);
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
     const [selectedTopic, setSelectedTopic] = useState<string>('');
     const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
@@ -990,10 +755,11 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         setTopicToComplete(completedKey);
     }, []);
 
-    // 1. CARGA DE DATOS
+    // 1. CARGA DE DATOS ESTRICTA
     useEffect(() => {
-        if (isProfileLoading || initialLoadComplete || isUserLoading) return;
+        if (isProfileLoading || isUserLoading || !studentProfile) return;
 
+        const versionedKey = progressStorageVersion;
         let path = initialLearningPath.map(topic => ({
             ...topic,
             subItems: topic.subItems ? topic.subItems.map(sub => ({...sub})) : undefined,
@@ -1006,8 +772,8 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             item.status = 'completed';
             if (item.subItems) item.subItems.forEach(sub => sub.status = 'completed');
            });
-        } else if(studentProfile?.lessonProgress?.[progressStorageVersion]) {
-            const savedData = studentProfile.lessonProgress[progressStorageVersion];
+        } else if(studentProfile?.lessonProgress?.[versionedKey]) {
+            const savedData = studentProfile.lessonProgress[versionedKey];
             path.forEach(item => {
                 if (savedData[item.key]) item.status = savedData[item.key];
                 if (item.subItems && savedData.subItems?.[item.key]) {
@@ -1021,7 +787,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             savedSelectedTopic = savedData.lastSelectedTopic || '';
         }
 
-        // Lógica de Reparación
+        // Reparación preventiva
         let shouldUnlock = false;
         for (let i = 0; i < path.length; i++) {
             if (shouldUnlock && path[i].status === 'locked') {
@@ -1060,9 +826,11 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         }
         setUserAnswers(newAnswers);
         setValidationStatus(newValidation);
+        
         setInitialLoadComplete(true);
+        setIsInitialLoading(false);
 
-    }, [isAdmin, initialLearningPath, studentProfile, progressStorageVersion, isProfileLoading, isUserLoading, initialLoadComplete, t]);
+    }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading, isUserLoading, initialLoadComplete, t]);
 
     // 2. CÁLCULO PROGRESO
     const progressValue = useMemo(() => {
@@ -1082,21 +850,14 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
     }, [learningPath]);
 
 
-    // 3. GUARDADO
+    // 3. GUARDADO ESTRICTO
     useEffect(() => {
-        if (!initialLoadComplete || isProfileLoading || isUserLoading || isAdmin || !studentDocRef || learningPath.length === 0) return;
+        if (!initialLoadComplete || isInitialLoading || isAdmin || !studentDocRef || learningPath.length === 0) return;
 
         const currentSavedProgress = studentProfile?.progress?.[mainProgressKey] || 0;
         const newProgress = Math.round(progressValue);
 
-        if (newProgress === currentSavedProgress && studentProfile?.lessonProgress?.[progressStorageVersion]?.lastSelectedTopic === selectedTopic) {
-            return;
-        }
-
-        const statusesToSave: Record<string, any> = {
-            lastSelectedTopic: selectedTopic
-        };
-
+        const statusesToSave: Record<string, any> = { lastSelectedTopic: selectedTopic };
         learningPath.forEach(item => {
             statusesToSave[item.key] = item.status;
             if (item.subItems) {
@@ -1108,11 +869,16 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             }
         });
 
-        updateDocumentNonBlocking(studentDocRef, {
-            [`lessonProgress.${progressStorageVersion}`]: statusesToSave,
-            [`progress.${mainProgressKey}`]: newProgress
-        });
-    }, [learningPath, isAdmin, progressValue, studentDocRef, progressStorageVersion, mainProgressKey, isProfileLoading, isUserLoading, initialLoadComplete, selectedTopic, studentProfile]);
+        const savedData = studentProfile?.lessonProgress?.[progressStorageVersion];
+        const hasDataChanged = JSON.stringify(statusesToSave) !== JSON.stringify(savedData);
+
+        if (hasDataChanged || newProgress !== currentSavedProgress) {
+            updateDocumentNonBlocking(studentDocRef, {
+                [`lessonProgress.${progressStorageVersion}`]: statusesToSave,
+                [`progress.${mainProgressKey}`]: newProgress
+            });
+        }
+    }, [learningPath, isAdmin, progressValue, studentDocRef, initialLoadComplete, isInitialLoading, selectedTopic, studentProfile]);
 
     // 4. LÓGICA DE COMPLETITUD (Side Effect Safe)
     useEffect(() => {
@@ -1121,84 +887,76 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             return;
         }
     
-        // Calculate changes
-        let nextToSelect: string | null = null;
         let wasUnlocked = false;
+        let nextToSelect: string | null = null;
 
-        const newPath = learningPath.map(t => ({
-            ...t,
-            subItems: t.subItems ? t.subItems.map(s => ({...s})) : undefined,
-        }));
-      
-        let topicFound = false;
-
-        for (let i = 0; i < newPath.length && !topicFound; i++) {
-            const currentTopic = newPath[i];
+        setLearningPath(currentPath => {
+            const newPath = currentPath.map(t => ({
+                ...t,
+                subItems: t.subItems ? t.subItems.map(s => ({...s})) : undefined,
+            }));
+          
+            let topicFound = false;
+            for (let i = 0; i < newPath.length && !topicFound; i++) {
+                const currentTopic = newPath[i];
   
-            if (currentTopic.key === topicToComplete) {
-                if (currentTopic.status !== 'completed') currentTopic.status = 'completed';
-                if (i + 1 < newPath.length && newPath[i + 1].status === 'locked') {
-                    const nextMain = newPath[i + 1];
-                    nextMain.status = 'active';
-                    wasUnlocked = true;
-                    if (nextMain.subItems && nextMain.subItems.length > 0) {
-                        nextMain.subItems[0].status = 'active';
-                        nextToSelect = nextMain.subItems[0].key;
-                    } else {
-                        nextToSelect = nextMain.key;
-                    }
-                }
-                topicFound = true;
-            } else if (currentTopic.subItems) {
-                const subIndex = currentTopic.subItems.findIndex((sub: any) => sub.key === topicToComplete);
-                if (subIndex !== -1) {
-                    if (currentTopic.subItems[subIndex].status !== 'completed') currentTopic.subItems[subIndex].status = 'completed';
-                    
-                    const nextSubIndex = subIndex + 1;
-                    if (nextSubIndex < currentTopic.subItems.length && currentTopic.subItems[nextSubIndex].status === 'locked') {
-                        currentTopic.subItems[nextSubIndex].status = 'active';
-                        nextToSelect = currentTopic.subItems[nextSubIndex].key;
+                if (currentTopic.key === topicToComplete) {
+                    if (currentTopic.status !== 'completed') currentTopic.status = 'completed';
+                    if (i + 1 < newPath.length && newPath[i + 1].status === 'locked') {
+                        const nextMain = newPath[i + 1];
+                        nextMain.status = 'active';
                         wasUnlocked = true;
-                    } else if (currentTopic.subItems.every((sub: any) => sub.status === 'completed')) {
-                        if (currentTopic.status !== 'completed') currentTopic.status = 'completed';
-                        if (i + 1 < newPath.length && newPath[i + 1].status === 'locked') {
-                            const nextMain = newPath[i + 1];
-                            nextMain.status = 'active';
-                            wasUnlocked = true;
-                            if (nextMain.subItems && nextMain.subItems.length > 0) {
-                                nextMain.subItems[0].status = 'active';
-                                nextToSelect = nextMain.subItems[0].key;
-                            } else {
-                                nextToSelect = nextMain.key;
-                            }
+                        if (nextMain.subItems?.[0]) {
+                            nextMain.subItems[0].status = 'active';
+                            nextToSelect = nextMain.subItems[0].key;
+                        } else {
+                            nextToSelect = nextMain.key;
                         }
                     }
                     topicFound = true;
+                } else if (currentTopic.subItems) {
+                    const subIndex = currentTopic.subItems.findIndex((sub: any) => sub.key === topicToComplete);
+                    if (subIndex !== -1) {
+                        if (currentTopic.subItems[subIndex].status !== 'completed') currentTopic.subItems[subIndex].status = 'completed';
+                        const nextSubIndex = subIndex + 1;
+                        if (nextSubIndex < currentTopic.subItems.length && currentTopic.subItems[nextSubIndex].status === 'locked') {
+                            currentTopic.subItems[nextSubIndex].status = 'active';
+                            nextToSelect = currentTopic.subItems[nextSubIndex].key;
+                            wasUnlocked = true;
+                        } else if (currentTopic.subItems.every((sub: any) => sub.status === 'completed')) {
+                            if (currentTopic.status !== 'completed') currentTopic.status = 'completed';
+                            if (i + 1 < newPath.length && newPath[i + 1].status === 'locked') {
+                                const nextMain = newPath[i + 1];
+                                nextMain.status = 'active';
+                                wasUnlocked = true;
+                                if (nextMain.subItems?.[0]) {
+                                    nextMain.subItems[0].status = 'active';
+                                    nextToSelect = nextMain.subItems[0].key;
+                                } else {
+                                    nextToSelect = nextMain.key;
+                                }
+                            }
+                        }
+                        topicFound = true;
+                    }
                 }
             }
-        }
+            return newPath;
+        });
 
-        // Apply changes
-        setLearningPath(newPath);
-        if (nextToSelect) setSelectedTopic(nextToSelect);
         if (wasUnlocked) toast({ title: "¡Siguiente tema desbloqueado!" });
+        if (nextToSelect) setSelectedTopic(nextToSelect);
 
         setTopicToComplete(null);
-    }, [topicToComplete, isAdmin, toast, learningPath]);
+    }, [topicToComplete, isAdmin, toast]);
 
       const handleTopicSelect = (topicKey: string) => {
         const mainTopic = learningPath.find(t => t.key === topicKey || t.subItems?.some(st => st.key === topicKey));
         const subTopic = mainTopic?.subItems?.find(st => st.key === topicKey);
-    
-        const topicStatus = mainTopic?.status ?? 'locked';
-        const subTopicStatus = subTopic?.status ?? 'locked';
+        const isLocked = !isAdmin && ((subTopic && subTopic.status === 'locked') || (!subTopic && mainTopic?.status === 'locked'));
 
-        if (!isAdmin && (topicStatus === 'locked' || (subTopic && subTopicStatus === 'locked'))) {
-            toast({
-                variant: "destructive",
-                title: "Contenido Bloqueado",
-                description: "Debes completar los pasos anteriores para desbloquear este tema.",
-            });
+        if (isLocked) {
+            toast({ variant: "destructive", title: "Contenido Bloqueado" });
             return;
         }
         
@@ -1216,7 +974,6 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             newCategoryAnswers[index] = value;
             return { ...prevAnswers, [category]: newCategoryAnswers };
         });
-    
         setValidationStatus(prevStatus => {
             if (prevStatus[category]?.[index] !== 'unchecked') {
                 const newCategoryStatus = [...(prevStatus[category] || [])];
@@ -1225,6 +982,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             }
             return prevStatus;
         });
+        setCanAdvanceVocab(false);
     };
 
     const handleVocabCheckAnswers = () => {
@@ -1235,354 +993,179 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             const items = vocabularyData[category as keyof typeof vocabularyData];
             newValidationStatus[category] = items.map((item, index) => {
                 const userAnswer = (userAnswers[category]?.[index] || '').trim().toLowerCase();
-                const correctAnswer = item.english.toLowerCase();
-                const isCorrect = userAnswer === correctAnswer;
-                if (isCorrect) {
-                    atLeastOneCorrect = true;
-                }
+                const isCorrect = userAnswer === item.english.toLowerCase();
+                if (isCorrect) atLeastOneCorrect = true;
                 return isCorrect ? 'correct' : 'incorrect';
             });
         }
         setValidationStatus(newValidationStatus);
-        
         if (atLeastOneCorrect) {
-            toast({ title: '¡Bien hecho!', description: 'Has acertado al menos una. ¡Tema desbloqueado!' });
+            toast({ title: '¡Bien hecho!' });
             setCanAdvanceVocab(true);
         } else {
-            toast({ 
-                variant: 'destructive', 
-                title: 'Sigue intentando', 
-                description: 'Revisa tus respuestas. ¡Necesitas al menos una correcta para continuar!' 
-            });
+            toast({ variant: 'destructive', title: 'Sigue intentando' });
             setCanAdvanceVocab(false);
         }
     };
     
     const getVocabInputClass = (category: string, index: number) => {
         const status = validationStatus[category]?.[index];
-        if (status === 'correct') return 'border-green-500 focus-visible:ring-green-500';
-        if (status === 'incorrect') return 'border-destructive focus-visible:ring-destructive';
+        if (status === 'correct') return 'border-green-500 focus-visible:ring-green-500 bg-green-50 dark:bg-green-900/10';
+        if (status === 'incorrect') return 'border-destructive focus-visible:ring-destructive bg-destructive/5';
         return '';
     };
 
     const renderContentForClass2 = () => {
-        const topic = learningPath.find(t => t.key === selectedTopic) || learningPath.flatMap(t => t.subItems || []).find(st => st?.key === selectedTopic);
+        if (isInitialLoading) return <div className="flex justify-center items-center min-h-[400px]"><Loader2 className="h-12 w-12 animate-spin text-primary" /></div>;
 
-        if (selectedTopic === 'vocabulary') {
-            return (
-                <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
-                    <CardHeader><CardTitle>Vocabulary - Class 2 (A1)</CardTitle></CardHeader>
-                    <CardContent>
-                      <Accordion type="multiple" className="w-full" defaultValue={['verbos', 'palabrasBasicas']}>
-                        <AccordionItem value="verbos">
-                          <AccordionTrigger>{t('kidsA1Class2.verbos')}</AccordionTrigger>
-                          <AccordionContent>
-                            <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-lg">
-                                <div className="font-bold p-3 bg-muted rounded-lg text-center">{t('common.spanish')}</div>
-                                <div className="font-bold p-3 bg-muted rounded-lg text-center">{t('common.english')}</div>
-                                {vocabularyData.verbos.map((item, index) => (
-                                    <React.Fragment key={`verbos-${index}`}>
-                                        <div className="p-3 bg-card border rounded-lg flex items-center justify-center font-medium">{item.spanish}</div>
-                                        <div className="p-3 bg-card border rounded-lg flex items-center">
-                                            <Input 
-                                                value={userAnswers.verbos?.[index] || ''}
-                                                onChange={(e) => handleVocabInputChange('verbos', index, e.target.value)}
-                                                className={cn(getVocabInputClass('verbos', index))}
-                                                autoComplete="off"
-                                            />
-                                        </div>
-                                    </React.Fragment>
-                                ))}
-                            </div>
-                          </AccordionContent>
-                        </AccordionItem>
-                        <AccordionItem value="palabrasBasicas">
-                          <AccordionTrigger>{t('kidsA1Class2.palabrasBasicas')}</AccordionTrigger>
-                          <AccordionContent>
-                             <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-lg">
-                                <div className="font-bold p-3 bg-muted rounded-lg text-center">{t('common.spanish')}</div>
-                                <div className="font-bold p-3 bg-muted rounded-lg text-center">{t('common.english')}</div>
-                                {vocabularyData.palabrasBasicas.map((item, index) => (
-                                    <React.Fragment key={`palabrasBasicas-${index}`}>
-                                        <div className="p-3 bg-card border rounded-lg flex items-center justify-center font-medium">{item.spanish}</div>
-                                        <div className="p-3 bg-card border rounded-lg flex items-center">
-                                            <Input 
-                                                value={userAnswers.palabrasBasicas?.[index] || ''}
-                                                onChange={(e) => handleVocabInputChange('palabrasBasicas', index, e.target.value)}
-                                                className={cn(getVocabInputClass('palabrasBasicas', index))}
-                                                autoComplete="off"
-                                            />
-                                        </div>
-                                    </React.Fragment>
-                                ))}
-                            </div>
-                          </AccordionContent>
-                        </AccordionItem>
-                      </Accordion>
-                    </CardContent>
-                    <CardFooter className="flex justify-between">
-                        <Button onClick={handleVocabCheckAnswers}>{t('vocabulary.check')}</Button>
-                        <Button onClick={() => handleTopicComplete('vocabulary')} disabled={!canAdvanceVocab && !isAdmin}>Avanzar</Button>
-                    </CardFooter>
-                </Card>
-            );
-        }
-    
-        if (selectedTopic === 'memory-verbs') {
-            return <VerbMemoryGame key={selectedTopic} onComplete={() => handleTopicComplete('memory-verbs')} />;
-        }
-    
-        if (selectedTopic === 'final-vocab') {
-             return <VerbVocabularyExercise key={selectedTopic} data={vocabularyData.verbos} onComplete={() => handleTopicComplete('final-vocab')} />;
-        }
-    
-        if (selectedTopic === 'grammar') {
-            return (
-                <div className="space-y-6">
-                    <h2 className="text-3xl font-bold text-center text-white">PRESENT SIMPLE</h2>
-    
+        switch (selectedTopic) {
+            case 'vocabulary':
+                return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
-                        <CardHeader>
-                            <CardTitle>ESTRUCTURA</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-2 font-mono text-base">
-                            <p><span className="font-bold text-lg text-green-500 mr-2">(+)</span> = Afirmativa</p>
-                            <p><span className="font-bold text-lg text-red-500 mr-2">(-)</span> = Negativa</p>
-                            <p><span className="font-bold text-lg text-blue-500 mr-2">(?)</span> = interrogativa ?</p>
-                            <div className="border-t my-2" />
-                            <p className="font-sans font-semibold pt-2">Short Answers = Respuestas Cortas</p>
-                            <p><span className="font-bold text-lg text-green-500 mr-2">(+A)</span> = Respuesta corta positiva</p>
-                            <p><span className="font-bold text-lg text-red-500 mr-2">(-A)</span> =  Respuesta corta Negativa</p>
-                        </CardContent>
-                    </Card>
-    
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
-                        <CardHeader>
-                            <CardTitle>ESTRUCTURA DO/DOES</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="space-y-2 p-4 bg-muted rounded-lg font-mono text-base">
-                                <p><span className="font-bold text-lg text-green-500 mr-2">(+)</span> pronoun + verb + Complement</p>
-                                <p><span className="font-bold text-lg text-red-500 mr-2">(-)</span> pronoun + Do/Does + Not +verb + Complement</p>
-                                <p><span className="font-bold text-lg text-blue-500 mr-2">(?)</span> Do/Does + pronoun + verb + Complement ?</p>
-                            </div>
-                             <div>
-                                <h3 className="text-xl font-semibold mb-2">Short Answers = Respuestas Cortas</h3>
-                                <div className="space-y-2 p-4 bg-muted rounded-lg font-mono text-base">
-                                    <p><span className="font-bold text-lg text-green-500 mr-2">(+A)</span> Yes, pronoun + Do/Does</p>
-                                    <p><span className="font-bold text-lg text-red-500 mr-2">(-A)</span> No, pronoun + Do/Does + Not</p>
+                        <CardHeader><CardTitle>Vocabulary - Class 2 (A1)</CardTitle></CardHeader>
+                        <CardContent>
+                          <Accordion type="multiple" className="w-full" defaultValue={['verbos', 'palabrasBasicas']}>
+                            <AccordionItem value="verbos">
+                              <AccordionTrigger>{t('kidsA1Class2.verbos')}</AccordionTrigger>
+                              <AccordionContent>
+                                <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-lg">
+                                    <div className="font-bold p-3 bg-muted rounded-lg text-center">{t('common.spanish')}</div>
+                                    <div className="font-bold p-3 bg-muted rounded-lg text-center">{t('common.english')}</div>
+                                    {vocabularyData.verbos.map((item, index) => (
+                                        <React.Fragment key={`verbos-${index}`}>
+                                            <div className="p-3 bg-card border rounded-lg flex items-center justify-center font-medium">{item.spanish}</div>
+                                            <div className="p-3 bg-card border rounded-lg flex items-center">
+                                                <Input value={userAnswers.verbos?.[index] || ''} onChange={(e) => handleVocabInputChange('verbos', index, e.target.value)} className={cn(getVocabInputClass('verbos', index))} autoComplete="off" />
+                                            </div>
+                                        </React.Fragment>
+                                    ))}
                                 </div>
-                            </div>
+                              </AccordionContent>
+                            </AccordionItem>
+                            <AccordionItem value="palabrasBasicas">
+                              <AccordionTrigger>{t('kidsA1Class2.palabrasBasicas')}</AccordionTrigger>
+                              <AccordionContent>
+                                 <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-lg">
+                                    <div className="font-bold p-3 bg-muted rounded-lg text-center">{t('common.spanish')}</div>
+                                    <div className="font-bold p-3 bg-muted rounded-lg text-center">{t('common.english')}</div>
+                                    {vocabularyData.palabrasBasicas.map((item, index) => (
+                                        <React.Fragment key={`palabrasBasicas-${index}`}>
+                                            <div className="p-3 bg-card border rounded-lg flex items-center justify-center font-medium">{item.spanish}</div>
+                                            <div className="p-3 bg-card border rounded-lg flex items-center">
+                                                <Input value={userAnswers.palabrasBasicas?.[index] || ''} onChange={(e) => handleVocabInputChange('palabrasBasicas', index, e.target.value)} className={cn(getVocabInputClass('palabrasBasicas', index))} autoComplete="off" />
+                                            </div>
+                                        </React.Fragment>
+                                    ))}
+                                </div>
+                              </AccordionContent>
+                            </AccordionItem>
+                          </Accordion>
                         </CardContent>
+                        <CardFooter className="flex justify-between">
+                            <Button onClick={handleVocabCheckAnswers}>{t('vocabulary.check')}</Button>
+                            <Button onClick={() => handleTopicComplete('vocabulary')} disabled={!canAdvanceVocab && !isAdmin}>Avanzar</Button>
+                        </CardFooter>
                     </Card>
-    
-                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
-                        <CardHeader>
-                            <CardTitle>Conjugaciones</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-2 font-mono text-lg text-center">
-                            <p className="p-2 bg-muted rounded-md"><span className="font-bold">DO</span> = I - YOU - WE - THEY</p>
-                            <p className="p-2 bg-muted rounded-md"><span className="font-bold">DOES</span> = HE - SHE - IT</p>
+                );
+            case 'memory-verbs': return <VerbMemoryGame key={selectedTopic} onComplete={() => handleTopicComplete('memory-verbs')} />;
+            case 'final-vocab': return <VerbVocabularyExercise key={selectedTopic} data={vocabularyData.verbos} onComplete={() => handleTopicComplete('final-vocab')} />;
+            case 'grammar':
+                return (
+                    <div className="space-y-6">
+                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
+                            <CardHeader><CardTitle>PRESENT SIMPLE - ESTRUCTURA</CardTitle></CardHeader>
+                            <CardContent className="space-y-2 font-mono text-base">
+                                <p><span className="font-bold text-lg text-green-500 mr-2">(+)</span> = pronoun + verb + Complement</p>
+                                <p><span className="font-bold text-lg text-red-500 mr-2">(-)</span> = pronoun + Do/Does + Not +verb + Complement</p>
+                                <p><span className="font-bold text-lg text-blue-500 mr-2">(?)</span> = Do/Does + pronoun + verb + Complement ?</p>
+                            </CardContent>
+                        </Card>
+                    </div>
+                )
+            case 'listening':
+                return (
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
+                        <CardHeader><CardTitle>{t('kidsA1Class2.listening')}</CardTitle></CardHeader>
+                        <CardContent className="flex flex-col items-center justify-center gap-4">
+                             <p className="text-muted-foreground text-center">Haz clic en el enlace para ir a tu ejercicio de escucha y escritura.</p>
+                            <Button asChild><Link href="https://dailydictation.com/exercises/short-stories/5-my-house.8/listen-and-type" target="_blank" rel="noopener noreferrer">Ir al ejercicio</Link></Button>
                         </CardContent>
+                        <CardFooter className="justify-center"><Button onClick={() => handleTopicComplete('listening')}>He completado el ejercicio</Button></CardFooter>
                     </Card>
-                </div>
-            )
+                );
+            case 'ex-positive': return <SingleFormExercise key={selectedTopic} onComplete={() => handleTopicComplete('ex-positive')} exerciseData={positiveExercisesData} title={t('kidsA1Class2.exercisePositive')} description={t('kidsA1Class2.exercisePositiveDescription')} formType="affirmative" />;
+            case 'ex-negative': return <SingleFormExercise key={selectedTopic} onComplete={() => handleTopicComplete('ex-negative')} exerciseData={negativeExercisesData} title={t('kidsA1Class2.exerciseNegative')} description={t('kidsA1Class2.exerciseNegativeDescription')} formType="negative" />;
+            case 'ex-interrogative': return <SingleFormExercise key={selectedTopic} onComplete={() => handleTopicComplete('ex-interrogative')} exerciseData={interrogativeExercisesData} title={t('kidsA1Class2.exerciseInterrogative')} description={t('kidsA1Class2.exerciseInterrogativeDescription')} formType="interrogative" />;
+            case 'ex-mixed-1-1': return <PresentSimpleExercise key={selectedTopic} onComplete={() => handleTopicComplete('ex-mixed-1-1')} exerciseData={class2Exercise1Data} title={t('kidsA1Class2.exercisesMixed1')} showShortAnswers={false} />;
+            case 'ex-mixed-1-2': return <PresentSimpleExercise key={selectedTopic} onComplete={() => handleTopicComplete('ex-mixed-1-2')} exerciseData={class2Exercise2Data} title={t('a1class1.exercise', {number: 2})} showShortAnswers={false} />;
+            default: return <div className="flex justify-center items-center h-48"><Loader2 className="animate-spin h-10 w-10 text-primary" /></div>;
         }
+    };
     
-        if (selectedTopic === 'reading') {
-            return (
-                <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
-                    <CardHeader>
-                        <CardTitle>{t('kidsA1Class2.reading')}</CardTitle>
-                        <CardDescription>{t('kidsA1Class2.readingDescription')}</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <p>Contenido para lectura de Clase 2 vendrá aquí.</p>
-                        <Button onClick={() => handleTopicComplete('reading')} className="mt-4">Completar Lectura</Button>
-                    </CardContent>
-                </Card>
-            );
-        }
-    
-        if (selectedTopic === 'listening') {
-            return (
-                <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
-                    <CardHeader>
-                        <CardTitle>{t('kidsA1Class2.listening')}</CardTitle>
-                        <CardDescription>Escucha la frase y escríbela.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="flex flex-col items-center justify-center gap-4">
-                         <p className="text-muted-foreground text-center">
-                            Haz clic en el siguiente enlace para ir a tu ejercicio de escucha y escritura.
-                         </p>
-                        <Button asChild>
-                            <Link href="https://dailydictation.com/exercises/short-stories/5-my-house.8/listen-and-type" target="_blank" rel="noopener noreferrer">
-                                Ir al ejercicio de Daily Dictation
-                            </Link>
-                        </Button>
-                    </CardContent>
-                    <CardFooter className="justify-center">
-                        <Button onClick={() => handleTopicComplete('listening')}>He completado el ejercicio</Button>
-                    </CardFooter>
-                </Card>
-            );
-        }
-    
-        if (selectedTopic.startsWith('ex-')) {
-            const exerciseKey = selectedTopic as any;
-            if (selectedTopic === 'ex-positive') {
-                return <SingleFormExercise
-                            key={selectedTopic}
-                            onComplete={() => handleTopicComplete('ex-positive')}
-                            exerciseData={positiveExercisesData}
-                            title={t('kidsA1Class2.exercisePositive')}
-                            description={t('kidsA1Class2.exercisePositiveDescription')}
-                            formType="affirmative"
-                        />;
-            }
-            if (selectedTopic === 'ex-negative') {
-                 return <SingleFormExercise
-                            key={selectedTopic}
-                            onComplete={() => handleTopicComplete('ex-negative')}
-                            exerciseData={negativeExercisesData}
-                            title={t('kidsA1Class2.exerciseNegative')}
-                            description={t('kidsA1Class2.exerciseNegativeDescription')}
-                            formType="negative"
-                        />;
-            }
-            if (selectedTopic === 'ex-interrogative') {
-                return <SingleFormExercise
-                            key={selectedTopic}
-                            onComplete={() => handleTopicComplete('ex-interrogative')}
-                            exerciseData={interrogativeExercisesData}
-                            title={t('kidsA1Class2.exerciseInterrogative')}
-                            description={t('kidsA1Class2.exerciseInterrogativeDescription')}
-                            formType="interrogative"
-                        />;
-            }
-            if (selectedTopic === 'ex-mixed-1-1') {
-                return <PresentSimpleExercise key={selectedTopic} onComplete={() => handleTopicComplete('ex-mixed-1-1')} exerciseData={class2Exercise1Data} title={t('kidsA1Class2.exercisesMixed1')} showShortAnswers={false} />;
-            }
-            if (selectedTopic === 'ex-mixed-1-2') {
-                return <PresentSimpleExercise key={selectedTopic} onComplete={() => handleTopicComplete('ex-mixed-1-2')} exerciseData={class2Exercise2Data} title={t('a1class1.exercise', {number: 2})} showShortAnswers={false} />;
-            }
-        }
-    
-        return (
-          <Card className="shadow-soft rounded-lg border-2 border-brand-purple min-h-[600px] bg-card/95 backdrop-blur-sm">
-            <CardHeader>
-              <CardTitle>{topic?.name || 'Cargando...'}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex justify-center items-center h-48">
-                <Loader2 className="animate-spin h-10 w-10 text-primary" />
-              </div>
-            </CardContent>
-          </Card>
-        );
-      };
-      
-      const pageTitle = t('classPage.title', { course: 'A1', class: '2' });
-    
-      return (
+    return (
         <div className="flex w-full flex-col min-h-screen ingles-dashboard-bg">
           <DashboardHeader />
           <main className="flex-1 p-4 md:p-8">
             <div className="max-w-7xl mx-auto">
               <div className="mb-8 text-left">
-                <Link href={`/ingles/a1/unit/1`} className="hover:underline text-sm text-white/80">
-                    Volver a la unidad 1
-                </Link>
-                <h1 className="text-4xl font-bold text-white dark:text-primary [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">{pageTitle}</h1>
+                <Link href={`/ingles/a1/unit/1`} className="hover:underline text-sm text-white/80">Volver a la unidad 1</Link>
+                <h1 className="text-4xl font-bold text-white dark:text-primary [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">Clase 2 (A1)</h1>
               </div>
               <div className="grid gap-8 md:grid-cols-12">
-                <div className="md:col-span-9">
-                  {renderContentForClass2()}
-                </div>
+                <div className="md:col-span-9">{renderContentForClass2()}</div>
                 <div className="md:col-span-3 text-left">
                   <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
-                    <CardHeader><CardTitle>{t('a1class1.learningPath')}</CardTitle></CardHeader>
+                    <CardHeader><CardTitle>Ruta de Aprendizaje</CardTitle></CardHeader>
                     <CardContent>
-                      <nav>
-                        <ul className="space-y-1">
-                          {learningPath.map((item) => {
-                            const Icon = item.icon ?? BookOpen;
-                            const isLocked = item.status === 'locked' && !isAdmin;
-                            const isSelected = selectedTopic === item.key || item.subItems?.some(si => si.key === selectedTopic);
-                            return(
-                            <li key={item.key}>
-                              {!item.subItems ? (
-                                <div
-                                  onClick={() => handleTopicSelect(item.key)}
-                                  className={cn(
-                                    'flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer',
-                                    isLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted',
-                                    selectedTopic === item.key && !isLocked && 'bg-muted text-primary font-semibold',
-                                    item.status === 'active' && !isAdmin && "animate-pulse-glow"
-                                  )}
-                                >
-                                  <div className="flex items-center gap-3">
-                                      {item.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500" /> : <Icon className="h-5 w-5" />}
-                                      <span>{item.name}</span>
+                      {isInitialLoading ? <Skeleton className="h-48 w-full" /> : (
+                        <nav>
+                          <ul className="space-y-1">
+                            {learningPath.map((item) => {
+                              const isLocked = item.status === 'locked' && !isAdmin;
+                              const isSelected = selectedTopic === item.key || item.subItems?.some(si => si.key === selectedTopic);
+                              return(
+                                <li key={item.key}>
+                                {!item.subItems ? (
+                                  <div onClick={() => handleTopicSelect(item.key)} className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer', isLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === item.key && 'bg-muted text-primary font-semibold')}>
+                                    <div className="flex items-center gap-3">
+                                        {item.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500" /> : <item.icon className="h-5 w-5" />}
+                                        <span>{item.name}</span>
+                                    </div>
+                                    {isLocked && <Lock className="h-4 w-4 text-yellow-500" />}
                                   </div>
-                                  {isLocked && <Lock className="h-4 w-4 text-yellow-500" />}
-                                </div>
-                              ) : (
-                                <Collapsible defaultOpen={isSelected || item.subItems.some(si => si.status !== 'locked')} disabled={isLocked}>
-                                  <CollapsibleTrigger className="w-full">
-                                      <div className={cn(
-                                          'flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors w-full cursor-pointer',
-                                          isLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted',
-                                          isSelected && 'bg-muted text-primary font-semibold',
-                                          item.status === 'active' && !isAdmin && "animate-pulse-glow"
-                                        )}>
-                                        <div className="flex items-center gap-3">
-                                          {item.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500" /> : <Icon className="h-5 w-5" />}
-                                          <span>{item.name}</span>
+                                ) : (
+                                  <Collapsible defaultOpen={isSelected}>
+                                    <CollapsibleTrigger className="w-full">
+                                        <div className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors w-full cursor-pointer', isLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', isSelected && 'bg-muted text-primary font-semibold')}>
+                                          <div className="flex items-center gap-3">
+                                            {item.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500" /> : <item.icon className="h-5 w-5" />}
+                                            <span>{item.name}</span>
+                                          </div>
+                                          {isLocked ? <Lock className="h-4 w-4 text-yellow-500" /> : <ChevronDown className="h-4 w-4 transition-transform [&[data-state=open]]:rotate-180" />}
                                         </div>
-                                        {isLocked ? (
-                                            <Lock className="h-4 w-4 text-yellow-500" />
-                                        ) : (
-                                            <ChevronDown className="h-4 w-4 transition-transform [&[data-state=open]]:rotate-180" />
-                                        )}
-                                      </div>
-                                  </CollapsibleTrigger>
-                                  <CollapsibleContent>
-                                    <ul className="pl-8 pt-1 space-y-1">
-                                      {item.subItems.map((subItem) => {
-                                          const isSubLocked = subItem.status === 'locked' && !isAdmin;
-                                          return (
-                                            <li
-                                              key={subItem.key}
-                                              onClick={() => handleTopicSelect(subItem.key)}
-                                              className={cn(
-                                                'flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer',
-                                                isSubLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted',
-                                                selectedTopic === subItem.key && !isSubLocked && 'bg-muted text-primary font-semibold',
-                                                subItem.status === 'active' && !isAdmin && "animate-pulse-glow"
-                                              )}
-                                            >
-                                              <div className="flex items-center gap-3">
-                                                {subItem.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500" /> : <PenSquare className="h-5 w-5" />}
-                                                <span>{subItem.name}</span>
-                                              </div>
-                                              {isSubLocked && <Lock className="h-4 w-4 text-yellow-500" />}
-                                            </li>
-                                          )
-                                      })}
-                                    </ul>
-                                  </CollapsibleContent>
-                                </Collapsible>
-                              )}
-                            </li>
-                          )})}
-                        </ul>
-                      </nav>
+                                    </CollapsibleTrigger>
+                                    <CollapsibleContent>
+                                      <ul className="pl-8 pt-1 space-y-1">
+                                        {item.subItems.map((subItem) => (
+                                          <li key={subItem.key} onClick={() => handleTopicSelect(subItem.key)} className={cn('flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer', (subItem.status === 'locked' && !isAdmin) ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === subItem.key && 'bg-muted text-primary font-semibold')}>
+                                            <div className="flex items-center gap-3">
+                                              {subItem.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500" /> : <PenSquare className="h-5 w-5" />}
+                                              <span>{subItem.name}</span>
+                                            </div>
+                                            {subItem.status === 'locked' && !isAdmin && <Lock className="h-4 w-4 text-yellow-500" />}
+                                          </li>
+                                        ))}
+                                      </ul>
+                                    </CollapsibleContent>
+                                  </Collapsible>
+                                )}
+                                </li>
+                              )})}
+                          </ul>
+                        </nav>
+                      )}
                        <div className="mt-6 pt-6 border-t">
-                            <div className="flex justify-between items-center text-sm font-medium text-muted-foreground mb-2">
-                                <span>Progreso de la Clase</span>
-                                <span className="font-bold text-foreground">{Math.round(progressValue)}%</span>
-                            </div>
+                            <div className="flex justify-between items-center text-sm font-medium text-muted-foreground mb-2"><span>Progreso</span><span className="font-bold text-foreground">{Math.round(progressValue)}%</span></div>
                             <Progress value={progressValue} className="h-2" />
                         </div>
                     </CardContent>
@@ -1595,9 +1178,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
     );
 };
 
-// =================================================================
-//                 MAIN ROUTER COMPONENT
-// =================================================================
+// --- Main Router ---
 export default function EngA1ClassPage() {
     const params = useParams();
     const classId = params.classId as string;
@@ -1606,44 +1187,23 @@ export default function EngA1ClassPage() {
     const { user, isUserLoading } = useUser();
     const firestore = useFirestore();
     
-    const studentDocRef = useMemoFirebase(
-        () => (user ? doc(firestore, 'students', user.uid) : null),
-        [firestore, user]
-    );
-    const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{role?: string, lessonProgress?: any, progress?: any}>(studentDocRef);
-
-    const isAdmin = useMemo(() => {
-        if (!user) return false;
-        return studentProfile?.role === 'admin' || user.email === 'ednacard87@gmail.com';
-    }, [user, studentProfile]);
+    const studentDocRef = useMemoFirebase(() => (user ? doc(firestore, 'students', user.uid) : null), [firestore, user]);
+    const { data: studentProfile, isLoading: isProfileLoading } = useDoc<Student>(studentDocRef);
+    const isAdmin = useMemo(() => (user && (studentProfile?.role === 'admin' || user.email === 'ednacard87@gmail.com')), [user, studentProfile]);
 
     const commonProps: ClassContentProps = { t, toast, studentDocRef, studentProfile, isAdmin, isProfileLoading, isUserLoading };
 
-    if (classId === '1') {
-        return <Class1Content {...commonProps} />;
-    }
-    
-    if (classId === '2') {
-        return <Class2Content {...commonProps} />;
-    }
+    if (classId === '1') return <Class1Content {...commonProps} />;
+    if (classId === '2') return <Class2Content {...commonProps} />;
 
     return (
       <div className="flex w-full flex-col min-h-screen ingles-dashboard-bg">
         <DashboardHeader />
-        <main className="flex-1 p-4 md:p-8">
-          <div className="max-w-7xl mx-auto">
-            <div className="mb-8 text-left">
-              <Link href="/ingles/a1/unit/1" className="hover:underline text-sm text-white/80">
-                  Volver a la unidad 1
-              </Link>
-              <h1 className="text-4xl font-bold text-white dark:text-primary [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">Clase {classId}</h1>
-            </div>
-            <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
-              <CardHeader><CardTitle>Contenido Próximamente</CardTitle></CardHeader>
-              <CardContent><p>El contenido para esta clase estará disponible pronto.</p></CardContent>
-            </Card>
-          </div>
-        </main>
+        <main className="flex-1 p-4 md:p-8"><div className="max-w-7xl mx-auto"><h1 className="text-4xl font-bold text-white">Clase {classId} próximamente.</h1></div></main>
       </div>
     );
+}
+
+function Skeleton({ className }: { className?: string }) {
+    return <div className={cn("animate-pulse rounded-md bg-muted", className)} />;
 }

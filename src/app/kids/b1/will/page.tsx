@@ -1,12 +1,12 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import Link from 'next/link';
 import { DashboardHeader } from "@/components/dashboard/header";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, Gamepad2, ChevronDown, Trophy } from 'lucide-react';
+import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, Gamepad2, ChevronDown, Trophy, Loader2, ArrowRight } from 'lucide-react';
 import { useTranslation } from "@/context/language-context";
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
@@ -33,7 +33,7 @@ const ICONS = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_kids_b1_will_v2';
+const progressStorageVersion = 'progress_kids_b1_will_v3_stable';
 const mainProgressKey = 'progress_kids_b1_will';
 
 const vocabularyData = [
@@ -110,7 +110,7 @@ const willMixedExercises = [
             negative: ["they will not play video games", "they won't play video games"],
             interrogative: ["will they play video games?"],
             shortAffirmative: ["yes, they will"],
-            shortNegative: ["no, they will not", "no, they won't"]
+            shortNegative: ["no, we will not", "no, we won't"]
         }
     },
     {
@@ -303,14 +303,8 @@ const WordSearchGame = ({ onComplete }: { onComplete: () => void }) => {
         const gridSize = 18;
         const newGrid: (string | null)[][] = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null));
         const directions = [
-            { dr: 0, dc: 1 },  // Horizontal (right)
-            { dr: 1, dc: 0 },  // Vertical (down)
-            { dr: 1, dc: 1 },  // Diagonal (down-right)
-            { dr: 0, dc: -1 }, // Horizontal (left)
-            { dr: -1, dc: 0 }, // Vertical (up)
-            { dr: 1, dc: -1 }, // Diagonal (down-left)
-            { dr: -1, dc: 1 }, // Diagonal (up-right)
-            { dr: -1, dc: -1 },// Diagonal (up-left)
+            { dr: 0, dc: 1 },  { dr: 1, dc: 0 },  { dr: 1, dc: 1 },  { dr: 0, dc: -1 }, 
+            { dr: -1, dc: 0 }, { dr: 1, dc: -1 }, { dr: -1, dc: 1 }, { dr: -1, dc: -1 },
         ];
 
         words.forEach(originalWord => {
@@ -318,30 +312,18 @@ const WordSearchGame = ({ onComplete }: { onComplete: () => void }) => {
             let attempts = 0;
             while (!placed && attempts < 1000) {
                 attempts++;
-                
                 const wordToPlace = Math.random() > 0.5 ? originalWord.split('').reverse().join('') : originalWord;
                 const dir = directions[Math.floor(Math.random() * directions.length)];
-                
                 const startRow = Math.floor(Math.random() * gridSize);
                 const startCol = Math.floor(Math.random() * gridSize);
-
                 let canPlace = true;
-                
                 for (let i = 0; i < wordToPlace.length; i++) {
                     const newRow = startRow + i * dir.dr;
                     const newCol = startCol + i * dir.dc;
-
-                    if (newRow < 0 || newRow >= gridSize || newCol < 0 || newCol >= gridSize) {
-                        canPlace = false;
-                        break;
-                    }
-                    
-                    if (newGrid[newRow][newCol] && newGrid[newRow][newCol] !== wordToPlace[i]) {
-                        canPlace = false;
-                        break;
+                    if (newRow < 0 || newRow >= gridSize || newCol < 0 || newCol >= gridSize || (newGrid[newRow][newCol] && newGrid[newRow][newCol] !== wordToPlace[i])) {
+                        canPlace = false; break;
                     }
                 }
-
                 if (canPlace) {
                     for (let i = 0; i < wordToPlace.length; i++) {
                         const newRow = startRow + i * dir.dr;
@@ -350,9 +332,6 @@ const WordSearchGame = ({ onComplete }: { onComplete: () => void }) => {
                     }
                     placed = true;
                 }
-            }
-            if (!placed) {
-                console.warn(`Could not place word: ${originalWord}`);
             }
         });
         
@@ -364,17 +343,13 @@ const WordSearchGame = ({ onComplete }: { onComplete: () => void }) => {
     const handleMouseUp = () => {
         if (!isSelecting || grid.length === 0) return;
         setIsSelecting(false);
-
         const selectedWord = selection.map(({ row, col }) => grid[row][col]).join('');
         const reversedSelectedWord = selectedWord.split('').reverse().join('');
-        
         const wordFound = words.find(w => !foundWords.some(fw => fw.word === w) && (w === selectedWord || w === reversedSelectedWord));
-
         if (wordFound) {
             setFoundWords(prev => [...prev, { word: wordFound, cells: selection }]);
             toast({ title: "¡Palabra encontrada!", description: `Has encontrado "${wordFound}".` });
         }
-        
         setSelection([]);
     };
     
@@ -397,7 +372,7 @@ const WordSearchGame = ({ onComplete }: { onComplete: () => void }) => {
                         {grid.map((row, rowIndex) => (
                             row.map((cell, colIndex) => {
                                 const isSelected = selection.some(s => s.row === rowIndex && s.col === colIndex);
-                                const isFound = foundWords.some(fw => fw.cells.some(c => c.row === rowIndex && c.col === colIndex));
+                                const isFound = foundWords.some(fw => fw.cells.some(c => c.row === rowIndex && colIndex === colIndex));
                                 return (
                                 <div key={`${rowIndex}-${colIndex}`}
                                     onMouseDown={() => { setIsSelecting(true); setSelection([{row: rowIndex, col: colIndex}]); }}
@@ -424,14 +399,6 @@ const WordSearchGame = ({ onComplete }: { onComplete: () => void }) => {
                     </ul>
                  </div>
             </CardContent>
-             {foundWords.length === words.length && words.length > 0 && (
-                <CardFooter className="justify-center">
-                    <div className="text-center p-4">
-                        <Trophy className="h-12 w-12 text-yellow-400 mx-auto mb-2" />
-                        <h3 className="text-xl font-bold">{t('wordSearch.allWordsFound')}</h3>
-                    </div>
-                </CardFooter>
-            )}
         </Card>
     );
 };
@@ -480,9 +447,7 @@ export default function WillPage() {
     ], [t]);
     
     useEffect(() => {
-        if (isUserLoading || isProfileLoading) {
-            return;
-        }
+        if (isUserLoading || isProfileLoading || !initialLearningPath.length) return;
 
         const newPath = initialLearningPath.map(topic => ({
             ...topic,
@@ -529,13 +494,12 @@ export default function WillPage() {
     
     }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading, isUserLoading, initialLoadComplete]);
 
-    
-    const progress = useMemo(() => {
+    const progressValue = useMemo(() => {
         if (!initialLoadComplete) return 0;
         let totalTopics = 0;
         let completedTopics = 0;
         learningPath.forEach(t => {
-            if(t.subItems) {
+            if (t.subItems) {
                 totalTopics += t.subItems.length;
                 completedTopics += t.subItems.filter(st => st.status === 'completed').length;
             } else {
@@ -547,10 +511,10 @@ export default function WillPage() {
     }, [learningPath, initialLoadComplete]);
 
     useEffect(() => {
-        if (!initialLoadComplete || isUserLoading || isProfileLoading || learningPath.length === 0) return;
+        if (!initialLoadComplete || isUserLoading || isProfileLoading || learningPath.length === 0 || !studentDocRef) return;
 
-        if (!isAdmin && studentDocRef) {
-            const statusesToSave: Record<string, any> = {};
+        if (!isAdmin) {
+            const statusesToSave: Record<string, any> = { lastSelectedTopic: selectedTopic };
             learningPath.forEach(item => {
                 statusesToSave[item.key] = item.status;
                 if (item.subItems) {
@@ -559,28 +523,28 @@ export default function WillPage() {
                     item.subItems.forEach(sub => { statusesToSave.subItems[item.key][sub.key] = sub.status; });
                 }
             });
-            updateDocumentNonBlocking(studentDocRef, { [`lessonProgress.${progressStorageVersion}`]: statusesToSave });
-            updateDocumentNonBlocking(studentDocRef, { [`progress.${mainProgressKey}`]: Math.round(progress) });
+            updateDocumentNonBlocking(studentDocRef, { 
+                [`lessonProgress.${progressStorageVersion}`]: statusesToSave,
+                [`progress.${mainProgressKey}`]: Math.round(progressValue)
+            });
         }
-        if (progress >= 100) {
-          window.dispatchEvent(new CustomEvent('progressUpdated'));
-        }
-    }, [learningPath, isAdmin, progress, studentDocRef, isUserLoading, isProfileLoading, initialLoadComplete]);
+    }, [learningPath, progressValue, isAdmin, studentDocRef, isUserLoading, isProfileLoading, initialLoadComplete, selectedTopic]);
 
+    // Handle unlocking in a separate effect to avoid state update during render
     useEffect(() => {
         if (!topicToComplete) return;
-    
+
+        let wasUnlocked = false;
+        let nextSelectedTopic: string | null = null;
+        
         setLearningPath(currentPath => {
             const newPath = currentPath.map(t => ({
                 ...t,
                 subItems: t.subItems ? t.subItems.map(s => ({ ...s })) : undefined,
             }));
           
-            let nextSelectedTopic: string | null = null;
-            let topicFound = false;
-            let wasTopicUnlocked = false;
-
-            for (let i = 0; i < newPath.length && !topicFound; i++) {
+            let found = false;
+            for (let i = 0; i < newPath.length && !found; i++) {
                 const currentTopic = newPath[i];
           
                 if (currentTopic.key === topicToComplete) {
@@ -590,9 +554,9 @@ export default function WillPage() {
                         next.status = 'active';
                         if (next.subItems?.[0]) { next.subItems[0].status = 'active'; nextSelectedTopic = next.subItems[0].key; } 
                         else { nextSelectedTopic = next.key; }
-                        wasTopicUnlocked = true;
+                        wasUnlocked = true;
                     }
-                    topicFound = true;
+                    found = true;
                 } else if (currentTopic.subItems) {
                     const subIndex = currentTopic.subItems.findIndex(s => s.key === topicToComplete);
                     if (subIndex !== -1) {
@@ -601,7 +565,7 @@ export default function WillPage() {
                         if (nextSubIndex < currentTopic.subItems.length && currentTopic.subItems[nextSubIndex].status === 'locked') {
                             currentTopic.subItems[nextSubIndex].status = 'active';
                             nextSelectedTopic = currentTopic.subItems[nextSubIndex].key;
-                            wasTopicUnlocked = true;
+                            wasUnlocked = true;
                         } else if (currentTopic.subItems.every(s => s.status === 'completed')) {
                             if (currentTopic.status !== 'completed') { currentTopic.status = 'completed'; }
                             if (i + 1 < newPath.length && newPath[i + 1].status === 'locked') {
@@ -609,29 +573,22 @@ export default function WillPage() {
                                 next.status = 'active';
                                 if (next.subItems?.[0]) { next.subItems[0].status = 'active'; nextSelectedTopic = next.subItems[0].key; } 
                                 else { nextSelectedTopic = next.key; }
-                                wasTopicUnlocked = true;
+                                wasUnlocked = true;
                             }
                         }
-                        topicFound = true;
+                        found = true;
                     }
                 }
             }
-        
-            if (nextSelectedTopic) { setSelectedTopic(nextSelectedTopic); }
-            if(wasTopicUnlocked) { toast({ title: "¡Siguiente tema desbloqueado!" }); }
             return newPath;
         });
+
+        // Trigger side effects outside of the update function
+        if (nextSelectedTopic) setSelectedTopic(nextSelectedTopic);
+        if (wasUnlocked) toast({ title: "¡Siguiente tema desbloqueado!" });
+        
         setTopicToComplete(null);
     }, [topicToComplete, toast]);
-
-    const handleTopicComplete = (completedKey: string) => {
-        setTopicToComplete(completedKey);
-    };
-
-    const handleContinueToGrammar = () => {
-        handleTopicComplete('vocabulary');
-        setSelectedTopic('grammar');
-    };
 
     const handleTopicSelect = (topicKey: string) => {
         const mainTopic = learningPath.find(t => t.key === topicKey || t.subItems?.some(st => st.key === topicKey));
@@ -643,9 +600,9 @@ export default function WillPage() {
         }
         setSelectedTopic(topicKey);
 
-        const exerciseKeys = ['positive', 'negative', 'interrogative', 'mixedExercises', 'finalVocabulary', 'reading', 'game'];
-        if (!exerciseKeys.includes(topicKey)) {
-             handleTopicComplete(topicKey);
+        const autoViewTopics = ['vocabulary', 'grammar'];
+        if (autoViewTopics.includes(topicKey)) {
+             setTopicToComplete(topicKey);
         }
     };
     
@@ -658,7 +615,6 @@ export default function WillPage() {
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
                         <CardHeader>
                             <CardTitle>{t('kidsB1Will.vocabulary')}</CardTitle>
-                            <CardDescription>Vocabulario del Medio Ambiente</CardDescription>
                         </CardHeader>
                         <CardContent>
                             <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-lg">
@@ -673,9 +629,7 @@ export default function WillPage() {
                             </div>
                         </CardContent>
                         <CardFooter>
-                            <Button onClick={handleContinueToGrammar}>
-                                Continuar con Gramática
-                            </Button>
+                            <Button onClick={() => setTopicToComplete('vocabulary')}>Avanzar</Button>
                         </CardFooter>
                     </Card>
                 );
@@ -683,72 +637,52 @@ export default function WillPage() {
                  return (
                     <div className="space-y-6">
                         <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-                            <CardHeader>
-                                <CardTitle>¿Cuándo usamos WILL?</CardTitle>
-                            </CardHeader>
+                            <CardHeader><CardTitle>¿Cuándo usamos WILL?</CardTitle></CardHeader>
                             <CardContent className="space-y-2 text-lg">
                                 <p>Usamos <span className="font-bold text-primary">WILL</span> para hablar sobre el futuro. Es como hacer una promesa o una predicción.</p>
-                                <ul className="list-disc list-inside text-muted-foreground space-y-1 pl-2">
-                                    <li>Para decisiones que tomas en el momento. (Ej: "I will have the chicken.")</li>
-                                    <li>Para predecir algo que crees que pasará. (Ej: "It will rain tomorrow.")</li>
-                                    <li>Para hacer promesas u ofrecimientos. (Ej: "I will help you.")</li>
-                                </ul>
                             </CardContent>
                         </Card>
                         <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-                            <CardHeader>
-                                <CardTitle>Estructura de WILL</CardTitle>
-                            </CardHeader>
+                            <CardHeader><CardTitle>Estructura de WILL</CardTitle></CardHeader>
                             <CardContent className="space-y-2 font-mono text-base">
                                 <p><span className="font-bold text-lg text-green-500 mr-2">(+)</span> pronoun + WILL + Verb + Complement</p>
                                 <p><span className="font-bold text-lg text-red-500 mr-2">(-)</span> pronoun + WILL + NOT + Verb + Complement</p>
                                 <p><span className="font-bold text-lg text-blue-500 mr-2">(?)</span> WILL + pronoun + Verb + Complement?</p>
-                                <div className="border-t my-2" />
-                                <p className="font-sans font-semibold pt-2">Respuestas Cortas</p>
-                                <p><span className="font-bold text-lg text-green-500 mr-2">(+A)</span> Yes, pronoun + WILL</p>
-                                <p><span className="font-bold text-lg text-red-500 mr-2">(-A)</span> No, pronoun + WILL + NOT</p>
                             </CardContent>
                         </Card>
-                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-                            <CardHeader>
-                                <CardTitle>Contracción Negativa</CardTitle>
-                            </CardHeader>
-                            <CardContent className="text-center font-mono text-xl p-6">
-                                <p>WILL + NOT = <span className="font-bold text-red-500">WON'T</span></p>
-                            </CardContent>
-                        </Card>
+                        <CardFooter className="justify-center">
+                            <Button onClick={() => setTopicToComplete('grammar')}>Entendido</Button>
+                        </CardFooter>
                     </div>
                 );
             case 'positive':
-                return <SingleFormExercise key="positive" onComplete={() => handleTopicComplete('positive')} exerciseData={willPositiveExercises} title="Ejercicios: Forma Positiva" description="Traduce las frases a su forma afirmativa usando 'will'." formType="affirmative" />;
+                return <SingleFormExercise key="positive" onComplete={() => setTopicToComplete('positive')} exerciseData={willPositiveExercises} title="Ejercicios: Forma Positiva" description="Traduce las frases a su forma afirmativa usando 'will'." formType="affirmative" />;
             case 'negative':
-                return <SingleFormExercise key="negative" onComplete={() => handleTopicComplete('negative')} exerciseData={willNegativeExercises} title="Ejercicios: Forma Negativa" description="Traduce las frases a su forma negativa usando 'will not' o 'won't'." formType="negative" />;
+                return <SingleFormExercise key="negative" onComplete={() => setTopicToComplete('negative')} exerciseData={willNegativeExercises} title="Ejercicios: Forma Negativa" description="Traduce las frases a su forma negativa usando 'will not' o 'won't'." formType="negative" />;
             case 'interrogative':
-                return <SingleFormExercise key="interrogative" onComplete={() => handleTopicComplete('interrogative')} exerciseData={willInterrogativeExercises} title="Ejercicios: Forma Interrogativa" description="Convierte las frases en preguntas usando 'will'." formType="interrogative" />;
+                return <SingleFormExercise key="interrogative" onComplete={() => setTopicToComplete('interrogative')} exerciseData={willInterrogativeExercises} title="Ejercicios: Forma Interrogativa" description="Convierte las frases en preguntas usando 'will'." formType="interrogative" />;
             case 'mixedExercises':
-                return <PresentSimpleExercise onComplete={() => handleTopicComplete('mixedExercises')} exerciseData={willMixedExercises} title="Ejercicios Mixtos (Will)" showShortAnswers={true} />;
+                return <PresentSimpleExercise onComplete={() => setTopicToComplete('mixedExercises')} exerciseData={willMixedExercises} title="Ejercicios Mixtos (Will)" showShortAnswers={true} />;
             case 'reading':
-                return <ReadingExercise onComplete={() => handleTopicComplete('reading')} />;
+                return <ReadingExercise onComplete={() => setTopicToComplete('reading')} />;
             case 'finalVocabulary':
-                return <FinalVocabularyExercise onComplete={() => handleTopicComplete('finalVocabulary')} />;
+                return <FinalVocabularyExercise onComplete={() => setTopicToComplete('finalVocabulary')} />;
             case 'game':
-                return <WordSearchGame onComplete={() => handleTopicComplete('game')} />;
+                return <WordSearchGame onComplete={() => setTopicToComplete('game')} />;
             default:
                 return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple min-h-[500px]">
-                        <CardHeader>
-                            <CardTitle>{topic?.name || 'Cargando...'}</CardTitle>
-                            <CardDescription>Contenido para este tema estará disponible pronto.</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="flex items-center justify-center h-64">
-                                <Trophy className="w-24 h-24 text-yellow-300" />
-                            </div>
+                        <CardContent className="flex items-center justify-center h-64">
+                            <Loader2 className="animate-spin h-10 w-10 text-primary" />
                         </CardContent>
                     </Card>
                 );
         }
     };
+
+    if (isUserLoading || isProfileLoading) {
+        return <div className="flex h-screen w-full items-center justify-center"><Loader2 className="h-16 w-16 animate-spin text-primary" /></div>;
+    }
 
     return (
         <div className="flex w-full flex-col min-h-screen will-lesson-bg">
@@ -756,12 +690,12 @@ export default function WillPage() {
             <main className="flex-1 p-4 md:p-8">
                 <div className="max-w-7xl mx-auto">
                     <div className="mb-8">
-                        <Link href="/kids/b1" className="hover:underline text-sm text-muted-foreground">Volver al curso B1</Link>
+                        <Link href="/kids/b1" className="hover:underline text-sm text-white/80">Volver al curso B1</Link>
                         <h1 className="text-4xl font-bold text-white dark:text-primary">{t('kidsB1.will')}</h1>
                     </div>
                     <div className="grid gap-8 md:grid-cols-12">
                         <div className="md:col-span-9">{renderContent()}</div>
-                        <div className="md:col-span-3">
+                        <div className="md:col-span-3 text-left">
                             <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple">
                                 <CardHeader><CardTitle>Ruta de Aprendizaje</CardTitle></CardHeader>
                                 <CardContent>
@@ -810,8 +744,8 @@ export default function WillPage() {
                                         </ul>
                                     </nav>
                                     <div className="mt-6 pt-6 border-t">
-                                        <div className="flex justify-between items-center text-sm font-medium text-muted-foreground mb-2"><span>Progreso</span><span className="font-bold text-foreground">{Math.round(progress)}%</span></div>
-                                        <Progress value={progress} className="h-2" />
+                                        <div className="flex justify-between items-center text-sm font-medium text-muted-foreground mb-2"><span>Progreso</span><span className="font-bold text-foreground">{Math.round(progressValue)}%</span></div>
+                                        <Progress value={progressValue} className="h-2" />
                                     </div>
                                 </CardContent>
                             </Card>
