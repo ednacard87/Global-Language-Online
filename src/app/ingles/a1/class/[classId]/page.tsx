@@ -13,9 +13,6 @@ import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
 import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
 import { doc } from 'firebase/firestore';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 // Imports for Exercises
@@ -24,7 +21,7 @@ import { PossessivesMemoryGame } from '@/components/kids/exercises/possessives-m
 import { TranslationExercise } from '@/components/dashboard/translation-exercise';
 import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
 import { ShortAnswerExercise } from '@/components/dashboard/short-answer-exercise';
-import { VerbVocabularyExercise } from '@/components/kids/exercises/verb-vocabulary';
+import { VerbVocabularyExercise, verbVocabularyData } from '@/components/kids/exercises/verb-vocabulary';
 import { VerbMemoryGame } from '@/components/kids/exercises/verb-memory-game';
 import { FillInTheBlanksExercise } from '@/components/kids/exercises/fill-in-the-blanks';
 import { SingleFormExercise } from '@/components/kids/exercises/single-form';
@@ -175,7 +172,7 @@ interface Topic {
     subItems?: { key: string; name: string; status: 'locked' | 'active' | 'completed', icon?: React.ElementType }[];
 }
 
-const ICONS = {
+const ICONS_CONFIG = {
     locked: Lock,
     active: BookOpen,
     completed: CheckCircle,
@@ -271,7 +268,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             savedSelectedTopic = savedData.lastSelectedTopic || '';
         }
 
-        // Sequential repair logic: if a topic is completed, the next one should be at least active
+        // Sequential repair logic: ensure next step is active if previous is completed
         for (let i = 0; i < path.length - 1; i++) {
             if (path[i].status === 'completed' && path[i+1].status === 'locked') {
                 path[i+1].status = 'active';
@@ -362,79 +359,69 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             return;
         }
     
-        let nextSelectedTopic: string | null = null;
-        let wasTopicUnlocked = false;
-        let topicFound = false;
+        let nextToSelect: string | null = null;
+        let wasUnlocked = false;
 
-        const newPath = learningPath.map(t => ({
-            ...t,
-            subItems: t.subItems ? t.subItems.map(s => ({ ...s })) : undefined,
-        }));
+        setLearningPath(currentPath => {
+            const newPath = currentPath.map(t => ({
+                ...t,
+                subItems: t.subItems ? t.subItems.map(s => ({ ...s })) : undefined,
+            }));
+          
+            let topicFound = false;
 
-        for (let i = 0; i < newPath.length && !topicFound; i++) {
-            const currentTopic = newPath[i];
-      
-            if (currentTopic.key === topicToComplete) {
-                if (currentTopic.status !== 'completed') {
-                    currentTopic.status = 'completed';
-                }
-                if (i + 1 < newPath.length && newPath[i + 1].status === 'locked') {
-                    const nextMainTopic = newPath[i + 1];
-                    nextMainTopic.status = 'active';
-                    wasTopicUnlocked = true;
-                    if (nextMainTopic.subItems && nextMainTopic.subItems.length > 0) {
-                        nextMainTopic.subItems[0].status = 'active';
-                        nextSelectedTopic = nextMainTopic.subItems[0].key;
-                    } else {
-                        nextSelectedTopic = nextMainTopic.key;
-                    }
-                }
-                topicFound = true;
-            } else if (currentTopic.subItems) {
-                const subItemIndex = currentTopic.subItems.findIndex((sub: any) => sub.key === topicToComplete);
-                if (subItemIndex !== -1) {
-                    if (currentTopic.subItems[subItemIndex].status !== 'completed') {
-                        currentTopic.subItems[subItemIndex].status = 'completed';
-                    }
-                    
-                    const nextSubItemIndex = subItemIndex + 1;
-                    if (nextSubItemIndex < currentTopic.subItems.length && currentTopic.subItems[nextSubItemIndex].status === 'locked') {
-                        currentTopic.subItems[nextSubItemIndex].status = 'active';
-                        nextSelectedTopic = currentTopic.subItems[nextSubItemIndex].key;
-                        wasTopicUnlocked = true;
-                    } else if (currentTopic.subItems.every((sub: any) => sub.status === 'completed')) {
-                        if (currentTopic.status !== 'completed') {
-                            currentTopic.status = 'completed';
-                        }
-                        if (i + 1 < newPath.length && newPath[i + 1].status === 'locked') {
-                            const nextMainTopic = newPath[i + 1];
-                            nextMainTopic.status = 'active';
-                            wasTopicUnlocked = true;
-                            if (nextMainTopic.subItems && nextMainTopic.subItems.length > 0) {
-                                nextMainTopic.subItems[0].status = 'active';
-                                nextSelectedTopic = nextMainTopic.subItems[0].key;
-                            } else {
-                                nextSelectedTopic = nextMainTopic.key;
-                            }
+            for (let i = 0; i < newPath.length && !topicFound; i++) {
+                const currentTopic = newPath[i];
+          
+                if (currentTopic.key === topicToComplete) {
+                    if (currentTopic.status !== 'completed') currentTopic.status = 'completed';
+                    if (i + 1 < newPath.length && newPath[i + 1].status === 'locked') {
+                        const nextMain = newPath[i + 1];
+                        nextMain.status = 'active';
+                        wasUnlocked = true;
+                        if (nextMain.subItems && nextMain.subItems.length > 0) {
+                            nextMain.subItems[0].status = 'active';
+                            nextToSelect = nextMain.subItems[0].key;
+                        } else {
+                            nextToSelect = nextMain.key;
                         }
                     }
                     topicFound = true;
+                } else if (currentTopic.subItems) {
+                    const subIndex = currentTopic.subItems.findIndex((sub: any) => sub.key === topicToComplete);
+                    if (subIndex !== -1) {
+                        if (currentTopic.subItems[subIndex].status !== 'completed') currentTopic.subItems[subIndex].status = 'completed';
+                        
+                        const nextSubIndex = subIndex + 1;
+                        if (nextSubIndex < currentTopic.subItems.length && currentTopic.subItems[nextSubIndex].status === 'locked') {
+                            currentTopic.subItems[nextSubIndex].status = 'active';
+                            nextToSelect = currentTopic.subItems[nextSubIndex].key;
+                            wasUnlocked = true;
+                        } else if (currentTopic.subItems.every((sub: any) => sub.status === 'completed')) {
+                            if (currentTopic.status !== 'completed') currentTopic.status = 'completed';
+                            if (i + 1 < newPath.length && newPath[i + 1].status === 'locked') {
+                                const nextMain = newPath[i + 1];
+                                nextMain.status = 'active';
+                                wasUnlocked = true;
+                                if (nextMain.subItems && nextMain.subItems.length > 0) {
+                                    nextMain.subItems[0].status = 'active';
+                                    nextToSelect = nextMain.subItems[0].key;
+                                } else {
+                                    nextToSelect = nextMain.key;
+                                }
+                            }
+                        }
+                        topicFound = true;
+                    }
                 }
             }
-        }
-    
-        if (topicFound) {
-            setLearningPath(newPath);
-            if (nextSelectedTopic) {
-                setSelectedTopic(nextSelectedTopic);
-            }
-            if (wasTopicUnlocked) {
-                toast({ title: "¡Siguiente tema desbloqueado!" });
-            }
-        }
-      
+            return newPath;
+        });
+
+        if (nextToSelect) setSelectedTopic(nextToSelect);
+        if (wasUnlocked) toast({ title: "¡Siguiente tema desbloqueado!" });
         setTopicToComplete(null);
-    }, [topicToComplete, isAdmin, learningPath, toast]);
+    }, [topicToComplete, isAdmin, toast]);
 
     const handleTopicSelect = (topicKey: string) => {
         const mainTopic = learningPath.find(t => t.key === topicKey || t.subItems?.some(st => st.key === topicKey));
@@ -1005,7 +992,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             savedSelectedTopic = savedData.lastSelectedTopic || '';
         }
 
-        // Sequential repair
+        // Sequential repair logic: ensure next step is active if previous is completed
         for (let i = 0; i < path.length - 1; i++) {
             if (path[i].status === 'completed' && path[i+1].status === 'locked') {
                 path[i+1].status = 'active';
@@ -1096,77 +1083,67 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             return;
         }
     
-        let nextSelectedTopic: string | null = null;
-        let wasTopicUnlocked = false;
-        let topicFound = false;
+        let nextToSelect: string | null = null;
+        let wasUnlocked = false;
 
-        const newPath = learningPath.map(t => ({
-            ...t,
-            subItems: t.subItems ? t.subItems.map(s => ({...s})) : undefined,
-        }));
+        setLearningPath(currentPath => {
+            const newPath = currentPath.map(t => ({
+                ...t,
+                subItems: t.subItems ? t.subItems.map(s => ({...s})) : undefined,
+            }));
+          
+            let topicFound = false;
 
-        for (let i = 0; i < newPath.length && !topicFound; i++) {
-            const currentTopic = newPath[i];
+            for (let i = 0; i < newPath.length && !topicFound; i++) {
+                const currentTopic = newPath[i];
       
-            if (currentTopic.key === topicToComplete) {
-                if (currentTopic.status !== 'completed') {
-                    currentTopic.status = 'completed';
-                }
-                if (i + 1 < newPath.length && newPath[i + 1].status === 'locked') {
-                    const nextMainTopic = newPath[i + 1];
-                    nextMainTopic.status = 'active';
-                    wasTopicUnlocked = true;
-                    if (nextMainTopic.subItems && nextMainTopic.subItems.length > 0) {
-                        nextMainTopic.subItems[0].status = 'active';
-                        nextSelectedTopic = nextMainTopic.subItems[0].key;
-                    } else {
-                        nextSelectedTopic = nextMainTopic.key;
-                    }
-                }
-                topicFound = true;
-            } else if (currentTopic.subItems) {
-                const subItemIndex = currentTopic.subItems.findIndex((sub: any) => sub.key === topicToComplete);
-                if (subItemIndex !== -1) {
-                    if (currentTopic.subItems[subItemIndex].status !== 'completed') {
-                        currentTopic.subItems[subItemIndex].status = 'completed';
-                    }
-                    
-                    const nextSubItemIndex = subItemIndex + 1;
-                    if (nextSubItemIndex < currentTopic.subItems.length && currentTopic.subItems[nextSubItemIndex].status === 'locked') {
-                        currentTopic.subItems[nextSubItemIndex].status = 'active';
-                        nextSelectedTopic = currentTopic.subItems[nextSubItemIndex].key;
-                        wasTopicUnlocked = true;
-                    } else if (currentTopic.subItems.every((sub: any) => sub.status === 'completed')) {
-                        if (currentTopic.status !== 'completed') {
-                            currentTopic.status = 'completed';
-                        }
-                        if (i + 1 < newPath.length && newPath[i + 1].status === 'locked') {
-                            const nextMainTopic = newPath[i + 1];
-                            nextMainTopic.status = 'active';
-                            wasTopicUnlocked = true;
-                            if (nextMainTopic.subItems && nextMainTopic.subItems.length > 0) {
-                                nextMainTopic.subItems[0].status = 'active';
-                                nextSelectedTopic = nextMainTopic.subItems[0].key;
-                            } else {
-                                nextSelectedTopic = nextMainTopic.key;
-                            }
+                if (currentTopic.key === topicToComplete) {
+                    if (currentTopic.status !== 'completed') currentTopic.status = 'completed';
+                    if (i + 1 < newPath.length && newPath[i + 1].status === 'locked') {
+                        const nextMain = newPath[i + 1];
+                        nextMain.status = 'active';
+                        wasUnlocked = true;
+                        if (nextMain.subItems && nextMain.subItems.length > 0) {
+                            nextMain.subItems[0].status = 'active';
+                            nextToSelect = nextMain.subItems[0].key;
+                        } else {
+                            nextToSelect = nextMain.key;
                         }
                     }
                     topicFound = true;
+                } else if (currentTopic.subItems) {
+                    const subIndex = currentTopic.subItems.findIndex((sub: any) => sub.key === topicToComplete);
+                    if (subIndex !== -1) {
+                        if (currentTopic.subItems[subIndex].status !== 'completed') currentTopic.subItems[subIndex].status = 'completed';
+                        
+                        const nextSubIndex = subIndex + 1;
+                        if (nextSubIndex < currentTopic.subItems.length && currentTopic.subItems[nextSubIndex].status === 'locked') {
+                            currentTopic.subItems[nextSubIndex].status = 'active';
+                            nextToSelect = currentTopic.subItems[nextSubIndex].key;
+                            wasUnlocked = true;
+                        } else if (currentTopic.subItems.every((sub: any) => sub.status === 'completed')) {
+                            if (currentTopic.status !== 'completed') currentTopic.status = 'completed';
+                            if (i + 1 < newPath.length && newPath[i + 1].status === 'locked') {
+                                const nextMain = newPath[i + 1];
+                                nextMain.status = 'active';
+                                wasUnlocked = true;
+                                if (nextMain.subItems && nextMain.subItems.length > 0) {
+                                    nextMain.subItems[0].status = 'active';
+                                    nextToSelect = nextMain.subItems[0].key;
+                                } else {
+                                    nextToSelect = nextMain.key;
+                                }
+                            }
+                        }
+                        topicFound = true;
+                    }
                 }
             }
-        }
-    
-        if (topicFound) {
-            setLearningPath(newPath);
-            if (nextSelectedTopic) {
-                setSelectedTopic(nextSelectedTopic);
-            }
-            if (wasTopicUnlocked) {
-                toast({ title: "¡Siguiente tema desbloqueado!" });
-            }
-        }
-      
+            return newPath;
+        });
+
+        if (nextToSelect) setSelectedTopic(nextToSelect);
+        if (wasUnlocked) toast({ title: "¡Siguiente tema desbloqueado!" });
         setTopicToComplete(null);
     }, [topicToComplete, isAdmin, learningPath, toast]);
 
@@ -1612,13 +1589,13 @@ export default function EngA1ClassPage() {
         <DashboardHeader />
         <main className="flex-1 p-4 md:p-8">
           <div className="max-w-7xl mx-auto">
-            <div className="mb-8">
-              <Link href="/ingles/a1/unit/1" className="hover:underline text-sm text-muted-foreground">
+            <div className="mb-8 text-left">
+              <Link href="/ingles/a1/unit/1" className="hover:underline text-sm text-white/80">
                   Volver a la unidad 1
               </Link>
-              <h1 className="text-4xl font-bold dark:text-primary">Clase {classId}</h1>
+              <h1 className="text-4xl font-bold text-white dark:text-primary [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">Clase {classId}</h1>
             </div>
-            <Card>
+            <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
               <CardHeader><CardTitle>Contenido Próximamente</CardTitle></CardHeader>
               <CardContent><p>El contenido para esta clase estará disponible pronto.</p></CardContent>
             </Card>
@@ -1627,3 +1604,4 @@ export default function EngA1ClassPage() {
       </div>
     );
 }
+

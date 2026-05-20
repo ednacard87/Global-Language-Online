@@ -97,13 +97,21 @@ const exercises = {
                 "is your mother at home? no, she is in the church", 
                 "is your mother at home? no, she's in the church", 
                 "is your mom at home? no, she's in the church", 
-                "is your mom at home? no, she is in the church"
+                "is your mom at home? no, she is in the church",
+                "is your mother at home? no she is in the church", 
+                "is your mother at home? no she's in the church", 
+                "is your mom at home? no she's in the church", 
+                "is your mom at home? no she is in the church"
             ] },
             { spanish: '¿TUS HERMANOS ESTÁN EN LA UNIVERSIDAD? – NO', english: [
                 "are your siblings at university? no, they are not", 
                 "are your siblings at university? no, they aren't", 
                 "are your brothers at university? no, they are not", 
-                "are your brothers at university? no, they aren't"
+                "are your brothers at university? no, they aren't",
+                "are your siblings at the university? no, they are not", 
+                "are your siblings at the university? no, they aren't", 
+                "are your brothers at the university? no, they are not", 
+                "are your brothers at the university? no, they aren't"
             ] },
             { spanish: '¿TU HERMANA ESTÁ EN EL PARQUE? – NO, ELLA ESTÁ EN EL SUPERMERCADO', english: ["Is your sister at the park? No, she is at the supermarket."] },
         ]
@@ -1055,3 +1063,4 @@ export function SimpleTranslationExercise({
         </Card>
     );
 }
+
