@@ -10,7 +10,7 @@ import { BookOpen, PenSquare, Lock, GraduationCap, BrainCircuit, CheckCircle, Ch
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
-import { useUser, useAuth, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
+import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -167,7 +167,7 @@ const class2VocabularyData = {
     ]
 };
 
-const ICONS = {
+const ICONS_CONFIG = {
     locked: Lock,
     active: BookOpen,
     completed: CheckCircle,
@@ -195,7 +195,7 @@ interface ClassContentProps {
 //                 CLASS 1 COMPONENT
 // =================================================================
 const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isProfileLoading, isUserLoading }: ClassContentProps) => {
-    const progressStorageKey = `progress_a1_eng_u1_c1_v50_stable`;
+    const progressStorageKey = `progress_a1_eng_u1_c1_v60_async`;
     const mainProgressKey = `progress_a1_eng_unit_1_class_1`;
 
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
@@ -243,7 +243,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         }
     ], [t]);
 
-    // FLOW 1: LOAD AND INITIALIZE
+    // ASYNC FLOW 1: LOAD
     useEffect(() => {
         if (isProfileLoading || isUserLoading || !studentProfile || initialLoadComplete) return;
 
@@ -274,7 +274,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             savedSelectedTopic = savedData.lastSelectedTopic || '';
         }
 
-        // Repair logic: ensure sequential integrity
+        // Repair logic
         let lastDone = true;
         for(let i=0; i < path.length; i++) {
             if (lastDone && path[i].status === 'locked') {
@@ -317,7 +317,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         return totalTopics > 0 ? (completedTopics / totalTopics) * 100 : 0;
     }, [learningPath]);
 
-    // FLOW 2: SAVE CHANGES TO FIRESTORE
+    // ASYNC FLOW 2: SAVE
     useEffect(() => {
         if (!initialLoadComplete || isInitialLoading || isAdmin || !studentDocRef || learningPath.length === 0) return;
 
@@ -333,7 +333,6 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             }
         });
 
-        // Only update if there is a real change
         const savedData = studentProfile?.lessonProgress?.[progressStorageKey];
         if (JSON.stringify(statusesToSave) !== JSON.stringify(savedData)) {
             updateDocumentNonBlocking(studentDocRef, {
@@ -343,9 +342,8 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         }
     }, [learningPath, isAdmin, progressValue, studentDocRef, initialLoadComplete, selectedTopic, studentProfile, isInitialLoading]);
 
-    const handleTopicComplete = (completedKey: string) => {
+    const handleTopicComplete = useCallback((completedKey: string) => {
         if (isAdmin) return;
-
         let wasUnlocked = false;
         let nextToSelect: string | null = null;
 
@@ -392,12 +390,18 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                     }
                 }
             }
+            
+            if (wasUnlocked) {
+                setTimeout(() => toast({ title: "¡Siguiente tema desbloqueado!" }), 0);
+            }
+            if (nextToSelect) {
+                const finalNext = nextToSelect;
+                setTimeout(() => setSelectedTopic(finalNext), 0);
+            }
+            
             return newPath;
         });
-
-        if (wasUnlocked) toast({ title: "¡Siguiente tema desbloqueado!" });
-        if (nextToSelect) setSelectedTopic(nextToSelect);
-    };
+    }, [isAdmin, toast]);
 
     const handleTopicSelect = (topicKey: string) => {
         const mainTopic = learningPath.find(t => t.key === topicKey || t.subItems?.some(st => st.key === topicKey));
@@ -596,12 +600,13 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                                             {learningPath.map((item) => {
                                                 const isLocked = item.status === 'locked' && !isAdmin;
                                                 const isSelected = selectedTopic === item.key || item.subItems?.some(si => si.key === selectedTopic);
+                                                const StatusIcon = ICONS_CONFIG[item.status] || BookOpen;
                                                 return(
                                                     <li key={item.key}>
                                                     {!item.subItems ? (
                                                         <div onClick={() => handleTopicSelect(item.key)} className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer', isLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === item.key && 'bg-muted text-primary font-semibold')}>
                                                         <div className="flex items-center gap-3">
-                                                            {item.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500" /> : <item.icon className="h-5 w-5" />}
+                                                            <StatusIcon className={cn("h-5 w-5", item.status === 'completed' ? 'text-green-500' : '')} />
                                                             <span>{item.name}</span>
                                                         </div>
                                                         {isLocked && <Lock className="h-4 w-4 text-yellow-500" />}
@@ -611,7 +616,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                                                         <CollapsibleTrigger className="w-full">
                                                             <div className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors w-full cursor-pointer', isLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', isSelected && 'bg-muted text-primary font-semibold')}>
                                                                 <div className="flex items-center gap-3">
-                                                                {item.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500" /> : <item.icon className="h-5 w-5" />}
+                                                                <StatusIcon className={cn("h-5 w-5", item.status === 'completed' ? 'text-green-500' : '')} />
                                                                 <span>{item.name}</span>
                                                                 </div>
                                                                 {isLocked ? <Lock className="h-4 w-4 text-yellow-500" /> : <ChevronDown className="h-4 w-4 transition-transform [&[data-state=open]]:rotate-180" />}
@@ -621,10 +626,11 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                                                             <ul className="pl-8 pt-1 space-y-1">
                                                             {item.subItems.map((subItem) => {
                                                                 const isSubLocked = subItem.status === 'locked' && !isAdmin;
+                                                                const SubIcon = ICONS_CONFIG[subItem.status] || PenSquare;
                                                                 return (
                                                                     <li key={subItem.key} onClick={() => handleTopicSelect(subItem.key)} className={cn('flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer', isSubLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === subItem.key && 'bg-muted text-primary font-semibold')}>
                                                                         <div className='flex items-center gap-3'>
-                                                                            {subItem.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500" /> : <PenSquare className="h-5 w-5" />}
+                                                                            <SubIcon className={cn("h-5 w-5", subItem.status === 'completed' ? 'text-green-500' : '')} />
                                                                             <span>{subItem.name}</span>
                                                                         </div>
                                                                         {isSubLocked && <Lock className="h-4 w-4 text-yellow-500" />}
@@ -659,7 +665,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
 //                 CLASS 2 COMPONENT
 // =================================================================
 const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isProfileLoading, isUserLoading }: ClassContentProps) => {
-    const progressStorageVersion = 'progress_a1_eng_u1_c2_v51_stable';
+    const progressStorageVersion = 'progress_a1_eng_u1_c2_v61_async';
     const mainProgressKey = 'progress_a1_eng_unit_1_class_2';
     
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
@@ -701,7 +707,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         { key: 'final-vocab', name: t('kidsA1Class2.finalVocab'), icon: BookOpen, status: 'locked' },
     ], [t]);
 
-    // FLOW 1: LOAD AND INITIALIZE
+    // FLOW 1: LOAD
     useEffect(() => {
         if (isProfileLoading || isUserLoading || !studentProfile || initialLoadComplete) return;
 
@@ -723,8 +729,8 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                 if (savedData[item.key]) item.status = savedData[item.key];
                 if (item.subItems && savedData.subItems?.[item.key]) {
                     item.subItems.forEach(subItem => {
-                        if (savedStatuses.subItems[item.key][subItem.key]) {
-                            subItem.status = savedStatuses.subItems[item.key][subItem.key];
+                        if (savedData.subItems[item.key][subItem.key]) {
+                            subItem.status = savedData.subItems[item.key][subItem.key];
                         }
                     });
                 }
@@ -732,7 +738,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             savedSelectedTopic = savedData.lastSelectedTopic || '';
         }
 
-        // Repair integrity
+        // Repair
         let lastDone = true;
         for(let i=0; i < path.length; i++) {
             if (lastDone && path[i].status === 'locked') {
@@ -785,7 +791,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         return totalTopics > 0 ? (completedTopics / totalTopics) * 100 : 0;
     }, [learningPath]);
 
-    // FLOW 2: SAVE CHANGES
+    // FLOW 2: SAVE
     useEffect(() => {
         if (!initialLoadComplete || isInitialLoading || isAdmin || !studentDocRef || learningPath.length === 0) return;
 
@@ -810,7 +816,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         }
     }, [learningPath, isAdmin, progressValue, studentDocRef, initialLoadComplete, selectedTopic, studentProfile, isInitialLoading]);
 
-    const handleTopicComplete = (completedKey: string) => {
+    const handleTopicComplete = useCallback((completedKey: string) => {
         if (isAdmin) return;
         let wasUnlocked = false;
         let nextToSelect: string | null = null;
@@ -857,11 +863,14 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                     }
                 }
             }
+            if (wasUnlocked) setTimeout(() => toast({ title: "¡Siguiente tema desbloqueado!" }), 0);
+            if (nextToSelect) {
+                const finalNext = nextToSelect;
+                setTimeout(() => setSelectedTopic(finalNext), 0);
+            }
             return newPath;
         });
-        if (wasUnlocked) setTimeout(() => toast({ title: "¡Siguiente tema desbloqueado!" }), 0);
-        if (nextToSelect) setSelectedTopic(nextToSelect);
-    };
+    }, [isAdmin, toast]);
 
     const handleTopicSelect = (topicKey: string) => {
         const mainTopic = learningPath.find(t => t.key === topicKey || t.subItems?.some(st => st.key === topicKey));
@@ -1040,12 +1049,13 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                             {learningPath.map((item) => {
                               const isLocked = item.status === 'locked' && !isAdmin;
                               const isSelected = selectedTopic === item.key || item.subItems?.some(si => si.key === selectedTopic);
+                              const StatusIcon = ICONS_CONFIG[item.status] || BookOpen;
                               return(
                                 <li key={item.key}>
                                 {!item.subItems ? (
                                   <div onClick={() => handleTopicSelect(item.key)} className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer', isLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === item.key && 'bg-muted text-primary font-semibold')}>
                                     <div className="flex items-center gap-3">
-                                        {item.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500" /> : <item.icon className="h-5 w-5" />}
+                                        <StatusIcon className={cn("h-5 w-5", item.status === 'completed' ? 'text-green-500' : '')} />
                                         <span>{item.name}</span>
                                     </div>
                                     {isLocked && <Lock className="h-4 w-4 text-yellow-500" />}
@@ -1055,7 +1065,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                                     <CollapsibleTrigger className="w-full">
                                         <div className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors w-full cursor-pointer', isLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', isSelected && 'bg-muted text-primary font-semibold')}>
                                           <div className="flex items-center gap-3">
-                                            {item.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500" /> : <item.icon className="h-5 w-5" />}
+                                            <StatusIcon className={cn("h-5 w-5", item.status === 'completed' ? 'text-green-500' : '')} />
                                             <span>{item.name}</span>
                                           </div>
                                           {isLocked ? <Lock className="h-4 w-4 text-yellow-500" /> : <ChevronDown className="h-4 w-4 transition-transform [&[data-state=open]]:rotate-180" />}
@@ -1065,10 +1075,11 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                                       <ul className="pl-8 pt-1 space-y-1">
                                         {item.subItems.map((subItem) => {
                                           const isSubLocked = subItem.status === 'locked' && !isAdmin;
+                                          const SubIcon = ICONS_CONFIG[subItem.status] || PenSquare;
                                           return (
                                           <li key={subItem.key} onClick={() => handleTopicSelect(subItem.key)} className={cn('flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer', isSubLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === subItem.key && 'bg-muted text-primary font-semibold')}>
                                             <div className="flex items-center gap-3">
-                                              {subItem.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500" /> : <PenSquare className="h-5 w-5" />}
+                                              <SubIcon className={cn("h-5 w-5", subItem.status === 'completed' ? 'text-green-500' : '')} />
                                               <span>{subItem.name}</span>
                                             </div>
                                             {isSubLocked && <Lock className="h-4 w-4 text-yellow-500" />}

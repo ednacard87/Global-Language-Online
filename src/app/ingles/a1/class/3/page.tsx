@@ -27,13 +27,13 @@ type Topic = {
   subItems?: { key: string; name: string; status: 'locked' | 'active' | 'completed', icon?: React.ElementType }[];
 };
 
-const ICONS = {
+const ICONS_CONFIG = {
     locked: Lock,
     active: BookOpen,
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_a1_eng_u1_c3_v50_stable';
+const progressStorageVersion = 'progress_a1_eng_u1_c3_v60_async';
 const mainProgressKey = 'progress_a1_eng_unit_1_class_3';
 
 const class3MixedExercise1Data: ExercisePrompt[] = [
@@ -150,7 +150,7 @@ export default function EngA1Class3Page() {
         },
     ], [t]);
     
-    // FLOW 1: LOAD INITIAL
+    // ASYNC FLOW 1: LOAD
     useEffect(() => {
         if (isProfileLoading || isUserLoading || !studentProfile || initialLoadComplete) return;
 
@@ -208,7 +208,7 @@ export default function EngA1Class3Page() {
         setIsInitialLoading(false);
     }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading, isUserLoading, initialLoadComplete, t]);
 
-    const progress = useMemo(() => {
+    const progressValue = useMemo(() => {
         if (learningPath.length === 0) return 0;
         let totalTopics = 0;
         let completedTopics = 0;
@@ -224,7 +224,7 @@ export default function EngA1Class3Page() {
         return totalTopics > 0 ? (completedTopics / totalTopics) * 100 : 0;
     }, [learningPath]);
 
-    // FLOW 2: SAVE CHANGES
+    // ASYNC FLOW 2: SAVE
     useEffect(() => {
         if (!initialLoadComplete || isInitialLoading || isAdmin || !studentDocRef || learningPath.length === 0) return;
 
@@ -244,12 +244,12 @@ export default function EngA1Class3Page() {
         if (JSON.stringify(statusesToSave) !== JSON.stringify(savedData)) {
             updateDocumentNonBlocking(studentDocRef, {
                 [`lessonProgress.${progressStorageVersion}`]: statusesToSave,
-                [`progress.${mainProgressKey}`]: Math.round(progress)
+                [`progress.${mainProgressKey}`]: Math.round(progressValue)
             });
         }
-    }, [learningPath, isAdmin, progress, studentDocRef, initialLoadComplete, selectedTopic, studentProfile, isInitialLoading]);
+    }, [learningPath, isAdmin, progressValue, studentDocRef, initialLoadComplete, selectedTopic, studentProfile, isInitialLoading]);
 
-    const handleTopicComplete = (completedKey: string) => {
+    const handleTopicComplete = useCallback((completedKey: string) => {
         if (isAdmin) return;
         let wasUnlocked = false;
         let nextToSelect: string | null = null;
@@ -306,7 +306,7 @@ export default function EngA1Class3Page() {
             
             return newPath;
         });
-    };
+    }, [isAdmin, toast]);
 
     const handleTopicSelect = (topicKey: string) => {
         const mainTopic = learningPath.find(t => t.key === topicKey || t.subItems?.some(st => st.key === topicKey));
@@ -343,10 +343,10 @@ export default function EngA1Class3Page() {
                             <p>En el presente simple afirmativo (+), cuando el sujeto es "he", "she" o "it", el verbo cambia.</p>
                             <div className="p-4 bg-muted rounded-lg font-mono text-base border-2 border-dashed">
                                 <p>Regla general: agrega una "S"</p>
-                                <p className="text-primary font-bold">work -> works</p>
+                                <p className="text-primary font-bold">work &rarr; works</p>
                                 <Separator className="my-2" />
                                 <p>Terminados en O, SH, CH, SS, X, Z: agrega "ES"</p>
-                                <p className="text-primary font-bold">go -> goes / watch -> watches</p>
+                                <p className="text-primary font-bold">go &rarr; goes / watch &rarr; watches</p>
                             </div>
                         </CardContent>
                     </Card>
@@ -391,12 +391,13 @@ export default function EngA1Class3Page() {
                                             {learningPath.map((item) => {
                                                 const isLocked = item.status === 'locked' && !isAdmin;
                                                 const isSelected = selectedTopic === item.key || item.subItems?.some(si => si.key === selectedTopic);
+                                                const StatusIcon = ICONS_CONFIG[item.status] || BookOpen;
                                                 return(
                                                     <li key={item.key}>
                                                     {!item.subItems ? (
                                                         <div onClick={() => handleTopicSelect(item.key)} className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer', isLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === item.key && 'bg-muted text-primary font-semibold')}>
                                                         <div className="flex items-center gap-3">
-                                                            {item.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500" /> : <item.icon className="h-5 w-5" />}
+                                                            <StatusIcon className={cn("h-5 w-5", item.status === 'completed' ? 'text-green-500' : '')} />
                                                             <span>{item.name}</span>
                                                         </div>
                                                         {isLocked && <Lock className="h-4 w-4 text-yellow-500" />}
@@ -406,7 +407,7 @@ export default function EngA1Class3Page() {
                                                         <CollapsibleTrigger className="w-full">
                                                             <div className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors w-full cursor-pointer', isLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', isSelected && 'bg-muted text-primary font-semibold')}>
                                                                 <div className="flex items-center gap-3">
-                                                                {item.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500" /> : <item.icon className="h-5 w-5" />}
+                                                                <StatusIcon className={cn("h-5 w-5", item.status === 'completed' ? 'text-green-500' : '')} />
                                                                 <span>{item.name}</span>
                                                                 </div>
                                                                 {isLocked ? <Lock className="h-4 w-4 text-yellow-500" /> : <ChevronDown className="h-4 w-4 transition-transform [&[data-state=open]]:rotate-180" />}
@@ -416,10 +417,11 @@ export default function EngA1Class3Page() {
                                                             <ul className="pl-8 pt-1 space-y-1">
                                                             {item.subItems.map((subItem) => {
                                                                 const isSubLocked = subItem.status === 'locked' && !isAdmin;
+                                                                const SubIcon = ICONS_CONFIG[subItem.status] || PenSquare;
                                                                 return (
                                                                     <li key={subItem.key} onClick={() => handleTopicSelect(subItem.key)} className={cn('flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer', isSubLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === subItem.key && 'bg-muted text-primary font-semibold')}>
                                                                         <div className='flex items-center gap-3'>
-                                                                            {subItem.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500" /> : <PenSquare className="h-5 w-5" />}
+                                                                            <SubIcon className={cn("h-5 w-5", subItem.status === 'completed' ? 'text-green-500' : '')} />
                                                                             <span>{subItem.name}</span>
                                                                         </div>
                                                                         {isSubLocked && <Lock className="h-4 w-4 text-yellow-500" />}
@@ -436,8 +438,8 @@ export default function EngA1Class3Page() {
                                             </ul>
                                         </nav>
                                     <div className="mt-6 pt-6 border-t">
-                                        <div className="flex justify-between items-center text-sm font-medium text-muted-foreground mb-2"><span>Progreso</span><span className="font-bold text-foreground">{Math.round(progress)}%</span></div>
-                                        <Progress value={progress} className="h-2" />
+                                        <div className="flex justify-between items-center text-sm font-medium text-muted-foreground mb-2"><span>Progreso</span><span className="font-bold text-foreground">{Math.round(progressValue)}%</span></div>
+                                        <Progress value={progressValue} className="h-2" />
                                     </div>
                                 </CardContent>
                             </Card>
