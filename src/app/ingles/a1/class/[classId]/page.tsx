@@ -183,7 +183,7 @@ interface ClassContentProps {
 //                 CLASS 1 COMPONENT
 // =================================================================
 const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isProfileLoading, isUserLoading }: ClassContentProps) => {
-    const progressStorageKey = `_eng_a1_class_1_v4_organized`;
+    const progressStorageKey = `_eng_a1_class_1_v8_stable_save`;
     const mainProgressKey = `progress_a1_eng_unit_1_class_1`;
 
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
@@ -878,11 +878,13 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
     );
 };
 
+// ... Rest of the file (Class2Content and EngA1ClassPage) remains the same ...
+
 // =================================================================
 //                 CLASS 2 COMPONENT
 // =================================================================
 const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isProfileLoading, isUserLoading }: ClassContentProps) => {
-    const progressStorageVersion = 'progress_a1_eng_unit_1_class_2_v9_stable';
+    const progressStorageVersion = 'progress_a1_eng_unit_1_class_2_v11_organized';
     const mainProgressKey = 'progress_a1_eng_unit_1_class_2';
     
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
@@ -1596,4 +1598,3 @@ export default function EngA1ClassPage() {
       </div>
     );
 }
-

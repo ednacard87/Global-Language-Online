@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -92,8 +93,18 @@ const exercises = {
             { spanish: '¿ÉL ES TU PAPÁ? –NO, EL ES MI PADRASTRO', english: ["Is he your dad? No, he is my stepfather.", "Is he your father? No, he is my stepfather."] },
             { spanish: '¿TU PRIMO ESTÁ EN CALI? – NO, EL EL ESTÁ EN MIAMI', english: ["Is your cousin in Cali? No, he is in Miami."] },
             { spanish: '¿TUS LIBROS ESTAN SOBRE EL ESTANTE? – NO, ESTAN SOBRE EL ESCRITORIO', english: ["Are your books on the shelf? No, they are on the desk."] },
-            { spanish: '¿TU MAMA ESTA EN LA CASA? NO, ELLA ESTA EN LA IGLESIA', english: ["is your mother at home? No, she is in the church", "is your mother at home? No, she's in the church", "is your mom at home? No, she's in the church", "is your mom at home? No, she is in the church"] },
-            { spanish: '¿TUS HERMANOS ESTÁN EN LA UNIVERSIDAD? – NO', english: ["are your siblings at university? No, they are not", "are your siblings at university? No, they aren't", "are your brothers at university? No, they are not", "are your brothers at university? No, they aren't"] },
+            { spanish: '¿TU MAMA ESTA EN LA CASA? NO, ELLA ESTA EN LA IGLESIA', english: [
+                "is your mother at home? no, she is in the church", 
+                "is your mother at home? no, she's in the church", 
+                "is your mom at home? no, she's in the church", 
+                "is your mom at home? no, she is in the church"
+            ] },
+            { spanish: '¿TUS HERMANOS ESTÁN EN LA UNIVERSIDAD? – NO', english: [
+                "are your siblings at university? no, they are not", 
+                "are your siblings at university? no, they aren't", 
+                "are your brothers at university? no, they are not", 
+                "are your brothers at university? no, they aren't"
+            ] },
             { spanish: '¿TU HERMANA ESTÁ EN EL PARQUE? – NO, ELLA ESTÁ EN EL SUPERMERCADO', english: ["Is your sister at the park? No, she is at the supermarket."] },
         ]
     },
