@@ -178,27 +178,11 @@ interface ClassContentProps {
     isUserLoading: boolean;
 }
 
-const ICONS = {
-    locked: Lock,
-    active: BookOpen,
-    completed: CheckCircle,
-};
-
-type TopicStatus = 'locked' | 'active' | 'completed';
-
-type Topic = {
-  key: string;
-  name: string;
-  icon: React.ElementType;
-  status: TopicStatus;
-  subItems?: { key: string; name: string; status: TopicStatus, icon?: React.ElementType }[];
-};
-
 // =================================================================
 //                 CLASS 1 COMPONENT
 // =================================================================
 const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isProfileLoading, isUserLoading }: ClassContentProps) => {
-    const progressStorageKey = `_eng_a1_class_1_v3_session_fix`;
+    const progressStorageKey = `_eng_a1_class_1_v4_organized`;
     const mainProgressKey = `progress_a1_eng_unit_1_class_1`;
 
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
@@ -247,7 +231,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
     }, [t]);
 
     useEffect(() => {
-        if (isProfileLoading || initialLoadComplete || !studentProfile) return;
+        if (isProfileLoading || initialLoadComplete) return;
 
         let path = initialLearningPath.map(topic => ({
             ...topic,
@@ -427,7 +411,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         });
       
         setTopicToComplete(null);
-    }, [topicToComplete, toast, isAdmin]);
+    }, [topicToComplete, toast, isAdmin, learningPath]);
 
     const handleTopicSelect = (topicKey: string) => {
         const mainTopic = learningPath.find(t => t.key === topicKey || t.subItems?.some(st => st.key === topicKey));
@@ -569,7 +553,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                     </Card>
                 );
             case 'memory-tobe':
-                return <ToBeMemoryGame onGameComplete={() => handleTopicComplete('memory-tobe')} />;
+                return <ToBeMemoryGame key={selectedTopic} onGameComplete={() => handleTopicComplete('memory-tobe')} />;
             case 'tobe-1-grammar':
                 return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
@@ -600,7 +584,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             case 'tobe-1-exercise':
                 return (
                     <TranslationExercise 
-                        key="tobe-1-exercise"
+                        key={selectedTopic}
                         exerciseKey="exercises1" 
                         onComplete={() => handleTopicComplete('tobe-1-exercise')} 
                         vocabulary={{'un- una': 'a / an', 'abogado': 'lawyer', 'enfermo': 'sick', 'enfermero': 'nurse'}}
@@ -626,7 +610,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                     </Card>
                 );
             case 'memory-possessives':
-                return <PossessivesMemoryGame onGameComplete={() => handleTopicComplete('memory-possessives')} />;
+                return <PossessivesMemoryGame key={selectedTopic} onGameComplete={() => handleTopicComplete('memory-possessives')} />;
             case 'tobe-2-grammar':
                 return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
@@ -654,7 +638,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             case 'tobe-2-exercise':
                 return (
                     <TranslationExercise 
-                        key="tobe-2-exercise"
+                        key={selectedTopic}
                         exerciseKey="exercises2" 
                         onComplete={() => handleTopicComplete('tobe-2-exercise')} 
                         vocabulary={{'amigo': 'friend', 'hijo': 'son', 'perro': 'dog'}}
@@ -691,7 +675,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             case 'tobe-3-exercise':
                 return (
                     <TranslationExercise 
-                        key="tobe-3-exercise"
+                        key={selectedTopic}
                         exerciseKey="exercises3" 
                         onComplete={() => handleTopicComplete('tobe-3-exercise')} 
                         vocabulary={{'enfermera': 'nurse', 'abuelos': 'grandparents', 'pensionado': 'retired', 'juguete': 'toy'}}
@@ -701,7 +685,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             case 'ex-mixto-1': 
                 return (
                     <SimpleTranslationExercise 
-                        key="ex-mixto-1"
+                        key={selectedTopic}
                         course="a1" 
                         exerciseKey="mixed1" 
                         onComplete={() => handleTopicComplete('ex-mixto-1')} 
@@ -721,7 +705,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             case 'ex-mixto-2': 
                 return (
                     <TranslationExercise 
-                        key="ex-mixto-2" 
+                        key={selectedTopic}
                         exerciseKey="qna2" 
                         formType="qna" 
                         onComplete={() => handleTopicComplete('ex-mixto-2')}
@@ -739,7 +723,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             case 'ex-mixto-3': 
                 return (
                     <SimpleTranslationExercise 
-                        key="ex-mixto-3"
+                        key={selectedTopic}
                         course="a1" 
                         exerciseKey="mixed3" 
                         onComplete={() => handleTopicComplete('ex-mixto-3')} 
@@ -759,7 +743,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             case 'ex-mixto-4': 
                 return (
                     <SimpleTranslationExercise 
-                        key="ex-mixto-4"
+                        key={selectedTopic}
                         course="a1" 
                         exerciseKey="mixed4" 
                         onComplete={() => handleTopicComplete('ex-mixto-4')} 
@@ -773,11 +757,11 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                         highlightVocabulary={true}
                     />
                 );
-            case 'ex-mixto-5': return <ShortAnswerExercise key="ex-mixto-5" onComplete={() => handleTopicComplete('ex-mixto-5')} />;
+            case 'ex-mixto-5': return <ShortAnswerExercise key={selectedTopic} onComplete={() => handleTopicComplete('ex-mixto-5')} />;
             case 'ex-mixto-6': 
                 return (
                     <SimpleTranslationExercise 
-                        key="ex-mixto-6"
+                        key={selectedTopic}
                         course="a1" 
                         exerciseKey="mixed6" 
                         onComplete={() => handleTopicComplete('ex-mixto-6')} 
@@ -852,20 +836,23 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                                                     </CollapsibleTrigger>
                                                     <CollapsibleContent>
                                                         <ul className="pl-8 pt-1 space-y-1">
-                                                        {item.subItems.map((subItem) => (
-                                                            <li key={subItem.key} onClick={() => handleTopicSelect(subItem.key)}
-                                                                className={cn('flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer', 
-                                                                    subItem.status === 'locked' && !isAdmin ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', 
-                                                                    selectedTopic === subItem.key && 'bg-muted text-primary font-semibold',
-                                                                    subItem.status === 'active' && !isAdmin && "animate-pulse-glow"
-                                                                )}>
-                                                                <div className='flex items-center gap-3'>
-                                                                    {subItem.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500" /> : <PenSquare className="h-5 w-5" />}
-                                                                    <span>{subItem.name}</span>
-                                                                </div>
-                                                                {isSubLocked && <Lock className="h-4 w-4 text-yellow-500" />}
-                                                            </li>
-                                                        ))}
+                                                        {item.subItems.map((subItem) => {
+                                                            const isSubLocked = subItem.status === 'locked' && !isAdmin;
+                                                            return (
+                                                                <li key={subItem.key} onClick={() => handleTopicSelect(subItem.key)}
+                                                                    className={cn('flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer', 
+                                                                        isSubLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', 
+                                                                        selectedTopic === subItem.key && 'bg-muted text-primary font-semibold',
+                                                                        subItem.status === 'active' && !isAdmin && "animate-pulse-glow"
+                                                                    )}>
+                                                                    <div className='flex items-center gap-3'>
+                                                                        {subItem.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500" /> : <PenSquare className="h-5 w-5" />}
+                                                                        <span>{subItem.name}</span>
+                                                                    </div>
+                                                                    {isSubLocked && <Lock className="h-4 w-4 text-yellow-500" />}
+                                                                </li>
+                                                            );
+                                                        })}
                                                         </ul>
                                                     </CollapsibleContent>
                                                     </Collapsible>
@@ -896,7 +883,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
 //                 CLASS 2 COMPONENT
 // =================================================================
 const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isProfileLoading, isUserLoading }: ClassContentProps) => {
-    const progressStorageVersion = 'progress_a1_eng_unit_1_class_2_v8_final';
+    const progressStorageVersion = 'progress_a1_eng_unit_1_class_2_v9_stable';
     const mainProgressKey = 'progress_a1_eng_unit_1_class_2';
     
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
@@ -985,8 +972,8 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                 if (savedData[item.key]) item.status = savedData[item.key];
                 if (item.subItems && savedData.subItems?.[item.key]) {
                     item.subItems.forEach(subItem => {
-                        if (savedData.subItems[item.key][subItem.key]) {
-                            subItem.status = savedData.subItems[item.key][subItem.key];
+                        if (savedStatuses.subItems[item.key][subItem.key]) {
+                            subItem.status = savedStatuses.subItems[item.key][subItem.key];
                         }
                     });
                 }
@@ -1141,7 +1128,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         });
       
         setTopicToComplete(null);
-    }, [topicToComplete, toast, isAdmin]);
+    }, [topicToComplete, toast, isAdmin, learningPath]);
 
       const handleTopicComplete = (topicKey: string) => {
         setTopicToComplete(topicKey);
@@ -1288,11 +1275,11 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         }
     
         if (selectedTopic === 'memory-verbs') {
-            return <VerbMemoryGame onComplete={() => handleTopicComplete('memory-verbs')} />;
+            return <VerbMemoryGame key={selectedTopic} onComplete={() => handleTopicComplete('memory-verbs')} />;
         }
     
         if (selectedTopic === 'final-vocab') {
-             return <VerbVocabularyExercise data={vocabularyData.verbos} onComplete={() => handleTopicComplete('final-vocab')} />;
+             return <VerbVocabularyExercise key={selectedTopic} data={vocabularyData.verbos} onComplete={() => handleTopicComplete('final-vocab')} />;
         }
     
         if (selectedTopic === 'grammar') {
@@ -1390,7 +1377,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         if (selectedTopic.startsWith('ex-')) {
             if (selectedTopic === 'ex-positive') {
                 return <SingleFormExercise
-                            key="ex-positive"
+                            key={selectedTopic}
                             onComplete={() => handleTopicComplete('ex-positive')}
                             exerciseData={positiveExercisesData}
                             title={t('kidsA1Class2.exercisePositive')}
@@ -1400,7 +1387,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             }
             if (selectedTopic === 'ex-negative') {
                  return <SingleFormExercise
-                            key="ex-negative"
+                            key={selectedTopic}
                             onComplete={() => handleTopicComplete('ex-negative')}
                             exerciseData={negativeExercisesData}
                             title={t('kidsA1Class2.exerciseNegative')}
@@ -1410,7 +1397,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             }
             if (selectedTopic === 'ex-interrogative') {
                 return <SingleFormExercise
-                            key="ex-interrogative"
+                            key={selectedTopic}
                             onComplete={() => handleTopicComplete('ex-interrogative')}
                             exerciseData={interrogativeExercisesData}
                             title={t('kidsA1Class2.exerciseInterrogative')}
@@ -1419,10 +1406,10 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                         />;
             }
             if (selectedTopic === 'ex-mixed-1-1') {
-                return <PresentSimpleExercise key="ex-mixed-1-1" onComplete={() => handleTopicComplete('ex-mixed-1-1')} exerciseData={class2Exercise1Data} title={t('kidsA1Class2.exercisesMixed1')} showShortAnswers={false} />;
+                return <PresentSimpleExercise key={selectedTopic} onComplete={() => handleTopicComplete('ex-mixed-1-1')} exerciseData={class2Exercise1Data} title={t('kidsA1Class2.exercisesMixed1')} showShortAnswers={false} />;
             }
             if (selectedTopic === 'ex-mixed-1-2') {
-                return <PresentSimpleExercise key="ex-mixed-1-2" onComplete={() => handleTopicComplete('ex-mixed-1-2')} exerciseData={class2Exercise2Data} title={t('a1class1.exercise', {number: 2})} showShortAnswers={false} />;
+                return <PresentSimpleExercise key={selectedTopic} onComplete={() => handleTopicComplete('ex-mixed-1-2')} exerciseData={class2Exercise2Data} title={t('a1class1.exercise', {number: 2})} showShortAnswers={false} />;
             }
             return (
                 <Card className="shadow-soft rounded-lg border-2 border-brand-purple min-h-[600px]">
