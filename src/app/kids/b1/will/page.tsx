@@ -426,6 +426,10 @@ export default function WillPage() {
     const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
     const [initialLoadComplete, setInitialLoadComplete] = useState(false);
 
+    // States for non-blocking UI updates (to avoid rendering issues)
+    const [unlockedTopicName, setUnlockedTopicName] = useState<string | null>(null);
+    const [topicToSelect, setTopicToSelect] = useState<string | null>(null);
+
     const initialLearningPath = useMemo((): Topic[] => [
         { key: 'vocabulary', name: t('kidsB1Will.vocabulary'), icon: BookOpen, status: 'active' },
         { key: 'grammar', name: t('kidsB1Will.grammar'), icon: GraduationCap, status: 'locked' },
@@ -449,13 +453,13 @@ export default function WillPage() {
     useEffect(() => {
         if (isUserLoading || isProfileLoading || !initialLearningPath.length) return;
 
-        const newPath = initialLearningPath.map(topic => ({
+        const path = initialLearningPath.map(topic => ({
             ...topic,
             subItems: topic.subItems ? topic.subItems.map(sub => ({ ...sub })) : undefined,
         }));
 
         if (isAdmin) {
-            newPath.forEach(item => {
+            path.forEach(item => {
                 item.status = 'completed';
                 if (item.subItems) {
                     item.subItems.forEach(sub => sub.status = 'completed');
@@ -463,7 +467,7 @@ export default function WillPage() {
             });
         } else if (studentProfile?.lessonProgress?.[progressStorageVersion]) {
             const savedStatuses = studentProfile.lessonProgress[progressStorageVersion];
-            newPath.forEach(item => {
+            path.forEach(item => {
                 if (savedStatuses[item.key]) item.status = savedStatuses[item.key];
                 if (item.subItems && savedStatuses.subItems?.[item.key]) {
                     item.subItems.forEach(subItem => {
@@ -475,10 +479,10 @@ export default function WillPage() {
             });
         }
 
-        setLearningPath(newPath);
+        setLearningPath(path);
 
         if (!initialLoadComplete) {
-            const firstActive = newPath.find(p => p.status === 'active') || newPath.flatMap(p => p.subItems || []).find(sp => sp?.status === 'active');
+            const firstActive = path.find(p => p.status === 'active') || path.flatMap(p => p.subItems || []).find(sp => sp?.status === 'active');
             if (firstActive) {
                 if (firstActive.subItems) {
                     const firstActiveSub = firstActive.subItems.find(si => si.status === 'active');
@@ -530,13 +534,29 @@ export default function WillPage() {
         }
     }, [learningPath, progressValue, isAdmin, studentDocRef, isUserLoading, isProfileLoading, initialLoadComplete, selectedTopic]);
 
-    // Handle unlocking in a separate effect to avoid state update during render
+    // Side-Effect Handler: This moves state changes and UI calls out of the render cycle
+    useEffect(() => {
+        if (!unlockedTopicName && !topicToSelect) return;
+
+        if (unlockedTopicName) {
+            toast({ title: "¡Siguiente tema desbloqueado!" });
+            setUnlockedTopicName(null);
+        }
+
+        if (topicToSelect) {
+            setSelectedTopic(topicToSelect);
+            setTopicToSelect(null);
+        }
+    }, [unlockedTopicName, topicToSelect, toast]);
+
+    const handleTopicComplete = useCallback((completedKey: string) => {
+        setTopicToComplete(completedKey);
+    }, []);
+
+    // Main completion logic effect
     useEffect(() => {
         if (!topicToComplete) return;
 
-        let wasUnlocked = false;
-        let nextSelectedTopic: string | null = null;
-        
         setLearningPath(currentPath => {
             const newPath = currentPath.map(t => ({
                 ...t,
@@ -552,9 +572,13 @@ export default function WillPage() {
                     if (i + 1 < newPath.length && newPath[i + 1].status === 'locked') {
                         const next = newPath[i + 1];
                         next.status = 'active';
-                        if (next.subItems?.[0]) { next.subItems[0].status = 'active'; nextSelectedTopic = next.subItems[0].key; } 
-                        else { nextSelectedTopic = next.key; }
-                        wasUnlocked = true;
+                        if (next.subItems?.[0]) { 
+                            next.subItems[0].status = 'active'; 
+                            setTopicToSelect(next.subItems[0].key); 
+                        } else { 
+                            setTopicToSelect(next.key); 
+                        }
+                        setUnlockedTopicName(next.name);
                     }
                     found = true;
                 } else if (currentTopic.subItems) {
@@ -564,16 +588,20 @@ export default function WillPage() {
                         const nextSubIndex = subIndex + 1;
                         if (nextSubIndex < currentTopic.subItems.length && currentTopic.subItems[nextSubIndex].status === 'locked') {
                             currentTopic.subItems[nextSubIndex].status = 'active';
-                            nextSelectedTopic = currentTopic.subItems[nextSubIndex].key;
-                            wasUnlocked = true;
+                            setTopicToSelect(currentTopic.subItems[nextSubIndex].key);
+                            setUnlockedTopicName(currentTopic.subItems[nextSubIndex].name);
                         } else if (currentTopic.subItems.every(s => s.status === 'completed')) {
                             if (currentTopic.status !== 'completed') { currentTopic.status = 'completed'; }
                             if (i + 1 < newPath.length && newPath[i + 1].status === 'locked') {
                                 const next = newPath[i + 1];
                                 next.status = 'active';
-                                if (next.subItems?.[0]) { next.subItems[0].status = 'active'; nextSelectedTopic = next.subItems[0].key; } 
-                                else { nextSelectedTopic = next.key; }
-                                wasUnlocked = true;
+                                if (next.subItems?.[0]) { 
+                                    next.subItems[0].status = 'active'; 
+                                    setTopicToSelect(next.subItems[0].key); 
+                                } else { 
+                                    setTopicToSelect(next.key); 
+                                }
+                                setUnlockedTopicName(next.name);
                             }
                         }
                         found = true;
@@ -583,12 +611,8 @@ export default function WillPage() {
             return newPath;
         });
 
-        // Trigger side effects outside of the update function
-        if (nextSelectedTopic) setSelectedTopic(nextSelectedTopic);
-        if (wasUnlocked) toast({ title: "¡Siguiente tema desbloqueado!" });
-        
         setTopicToComplete(null);
-    }, [topicToComplete, toast]);
+    }, [topicToComplete]);
 
     const handleTopicSelect = (topicKey: string) => {
         const mainTopic = learningPath.find(t => t.key === topicKey || t.subItems?.some(st => st.key === topicKey));
@@ -602,7 +626,7 @@ export default function WillPage() {
 
         const autoViewTopics = ['vocabulary', 'grammar'];
         if (autoViewTopics.includes(topicKey)) {
-             setTopicToComplete(topicKey);
+             handleTopicComplete(topicKey);
         }
     };
     
@@ -629,7 +653,7 @@ export default function WillPage() {
                             </div>
                         </CardContent>
                         <CardFooter>
-                            <Button onClick={() => setTopicToComplete('vocabulary')}>Avanzar</Button>
+                            <Button onClick={() => handleTopicComplete('vocabulary')}>Avanzar</Button>
                         </CardFooter>
                     </Card>
                 );
@@ -651,24 +675,24 @@ export default function WillPage() {
                             </CardContent>
                         </Card>
                         <CardFooter className="justify-center">
-                            <Button onClick={() => setTopicToComplete('grammar')}>Entendido</Button>
+                            <Button onClick={() => handleTopicComplete('grammar')}>Entendido</Button>
                         </CardFooter>
                     </div>
                 );
             case 'positive':
-                return <SingleFormExercise key="positive" onComplete={() => setTopicToComplete('positive')} exerciseData={willPositiveExercises} title="Ejercicios: Forma Positiva" description="Traduce las frases a su forma afirmativa usando 'will'." formType="affirmative" />;
+                return <SingleFormExercise key="positive" onComplete={() => handleTopicComplete('positive')} exerciseData={willPositiveExercises} title="Ejercicios: Forma Positiva" description="Traduce las frases a su forma afirmativa usando 'will'." formType="affirmative" />;
             case 'negative':
-                return <SingleFormExercise key="negative" onComplete={() => setTopicToComplete('negative')} exerciseData={willNegativeExercises} title="Ejercicios: Forma Negativa" description="Traduce las frases a su forma negativa usando 'will not' o 'won't'." formType="negative" />;
+                return <SingleFormExercise key="negative" onComplete={() => handleTopicComplete('negative')} exerciseData={willNegativeExercises} title="Ejercicios: Forma Negativa" description="Traduce las frases a su forma negativa usando 'will not' o 'won't'." formType="negative" />;
             case 'interrogative':
-                return <SingleFormExercise key="interrogative" onComplete={() => setTopicToComplete('interrogative')} exerciseData={willInterrogativeExercises} title="Ejercicios: Forma Interrogativa" description="Convierte las frases en preguntas usando 'will'." formType="interrogative" />;
+                return <SingleFormExercise key="interrogative" onComplete={() => handleTopicComplete('interrogative')} exerciseData={willInterrogativeExercises} title="Ejercicios: Forma Interrogativa" description="Convierte las frases en preguntas usando 'will'." formType="interrogative" />;
             case 'mixedExercises':
-                return <PresentSimpleExercise onComplete={() => setTopicToComplete('mixedExercises')} exerciseData={willMixedExercises} title="Ejercicios Mixtos (Will)" showShortAnswers={true} />;
+                return <PresentSimpleExercise onComplete={() => handleTopicComplete('mixedExercises')} exerciseData={willMixedExercises} title="Ejercicios Mixtos (Will)" showShortAnswers={true} />;
             case 'reading':
-                return <ReadingExercise onComplete={() => setTopicToComplete('reading')} />;
+                return <ReadingExercise onComplete={() => handleTopicComplete('reading')} />;
             case 'finalVocabulary':
-                return <FinalVocabularyExercise onComplete={() => setTopicToComplete('finalVocabulary')} />;
+                return <FinalVocabularyExercise onComplete={() => handleTopicComplete('finalVocabulary')} />;
             case 'game':
-                return <WordSearchGame onComplete={() => setTopicToComplete('game')} />;
+                return <WordSearchGame onComplete={() => handleTopicComplete('game')} />;
             default:
                 return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple min-h-[500px]">
@@ -689,14 +713,14 @@ export default function WillPage() {
             <DashboardHeader />
             <main className="flex-1 p-4 md:p-8">
                 <div className="max-w-7xl mx-auto">
-                    <div className="mb-8">
+                    <div className="mb-8 text-left">
                         <Link href="/kids/b1" className="hover:underline text-sm text-white/80">Volver al curso B1</Link>
                         <h1 className="text-4xl font-bold text-white dark:text-primary">{t('kidsB1.will')}</h1>
                     </div>
                     <div className="grid gap-8 md:grid-cols-12">
                         <div className="md:col-span-9">{renderContent()}</div>
                         <div className="md:col-span-3 text-left">
-                            <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple">
+                            <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
                                 <CardHeader><CardTitle>Ruta de Aprendizaje</CardTitle></CardHeader>
                                 <CardContent>
                                     <nav>
@@ -729,7 +753,7 @@ export default function WillPage() {
                                                                         <li key={subItem.key} onClick={() => handleTopicSelect(subItem.key)}
                                                                             className={cn('flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors', subItem.status === 'locked' && !isAdmin ? 'cursor-not-allowed text-muted-foreground/50' : 'cursor-pointer hover:bg-muted', selectedTopic === subItem.key && 'bg-muted text-primary font-semibold')}>
                                                                             <div className='flex items-center gap-3'>
-                                                                                <subItem.icon className={cn("h-5 w-5", subItem.status === 'completed' ? 'text-green-500' : '')} />
+                                                                                {subItem.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500" /> : <subItem.icon className="h-5 w-5" />}
                                                                                 <span>{subItem.name}</span>
                                                                             </div>
                                                                             {subItem.status === 'locked' && !isAdmin && <Lock className="h-4 w-4 text-yellow-500" />}

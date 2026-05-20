@@ -189,7 +189,7 @@ interface ClassContentProps {
 //                 CLASS 1 COMPONENT
 // =================================================================
 const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isProfileLoading, isUserLoading }: ClassContentProps) => {
-    const progressStorageKey = `_eng_a1_class_1_v30_strict_loading`;
+    const progressStorageKey = `_eng_a1_class_1_v35_async_flow`;
     const mainProgressKey = `progress_a1_eng_unit_1_class_1`;
 
     const [isInitialLoading, setIsInitialLoading] = useState(true);
@@ -506,6 +506,9 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
     const renderContent = () => {
         if (isInitialLoading) return <div className="flex justify-center items-center min-h-[400px]"><Loader2 className="h-12 w-12 animate-spin text-primary" /></div>;
 
+        const topic = learningPath.find(t => t.key === selectedTopic) || 
+                      learningPath.flatMap(t => t.subItems || []).find(st => st?.key === selectedTopic);
+
         switch (selectedTopic) {
             case 'vocabulary':
                 return (
@@ -524,7 +527,12 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                                             <React.Fragment key={index}>
                                                 <div className="p-3 bg-card border rounded-lg flex items-center justify-center font-medium">{item.spanish}</div>
                                                 <div className="p-3 bg-card border rounded-lg flex items-center">
-                                                    <Input value={userAnswers[category]?.[index] || ''} onChange={(e) => handleVocabInputChange(category, index, e.target.value)} className={cn(getVocabInputClass(category, index))} autoComplete="off" />
+                                                    <Input 
+                                                        value={userAnswers[category]?.[index] || ''} 
+                                                        onChange={(e) => handleVocabInputChange(category, index, e.target.value)} 
+                                                        className={cn(getVocabInputClass(category, index))} 
+                                                        autoComplete="off" 
+                                                    />
                                                 </div>
                                             </React.Fragment>
                                         ))}
@@ -597,6 +605,9 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                                 </div>
                             )}
                         </CardContent>
+                        <CardFooter className="justify-center border-t pt-6">
+                            <Button onClick={() => handleTopicComplete(selectedTopic)} size="lg">Continuar</Button>
+                        </CardFooter>
                     </Card>
                 );
             default: return <div className="flex justify-center items-center h-48"><Loader2 className="animate-spin h-10 w-10 text-primary" /></div>;
@@ -647,15 +658,18 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                                                         </CollapsibleTrigger>
                                                         <CollapsibleContent>
                                                             <ul className="pl-8 pt-1 space-y-1">
-                                                            {item.subItems.map((subItem) => (
-                                                                <li key={subItem.key} onClick={() => handleTopicSelect(subItem.key)} className={cn('flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer', (subItem.status === 'locked' && !isAdmin) ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === subItem.key && 'bg-muted text-primary font-semibold')}>
-                                                                    <div className='flex items-center gap-3'>
-                                                                        {subItem.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500" /> : <PenSquare className="h-5 w-5" />}
-                                                                        <span>{subItem.name}</span>
-                                                                    </div>
-                                                                    {subItem.status === 'locked' && !isAdmin && <Lock className="h-4 w-4 text-yellow-500" />}
-                                                                </li>
-                                                            ))}
+                                                            {item.subItems.map((subItem) => {
+                                                                const isSubLocked = subItem.status === 'locked' && !isAdmin;
+                                                                return (
+                                                                    <li key={subItem.key} onClick={() => handleTopicSelect(subItem.key)} className={cn('flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer', isSubLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === subItem.key && 'bg-muted text-primary font-semibold')}>
+                                                                        <div className='flex items-center gap-3'>
+                                                                            {subItem.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500" /> : <PenSquare className="h-5 w-5" />}
+                                                                            <span>{subItem.name}</span>
+                                                                        </div>
+                                                                        {isSubLocked && <Lock className="h-4 w-4 text-yellow-500" />}
+                                                                    </li>
+                                                                );
+                                                            })}
                                                             </ul>
                                                         </CollapsibleContent>
                                                         </Collapsible>
@@ -684,7 +698,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
 //                 CLASS 2 COMPONENT
 // =================================================================
 const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isProfileLoading, isUserLoading }: ClassContentProps) => {
-    const progressStorageVersion = 'progress_a1_eng_unit_1_class_2_v30_strict_loading';
+    const progressStorageVersion = 'progress_a1_eng_unit_1_class_2_v35_strict_loading';
     const mainProgressKey = 'progress_a1_eng_unit_1_class_2';
     
     const [isInitialLoading, setIsInitialLoading] = useState(true);
@@ -1018,6 +1032,9 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
     const renderContentForClass2 = () => {
         if (isInitialLoading) return <div className="flex justify-center items-center min-h-[400px]"><Loader2 className="h-12 w-12 animate-spin text-primary" /></div>;
 
+        const topic = learningPath.find(t => t.key === selectedTopic) || 
+                      learningPath.flatMap(t => t.subItems || []).find(st => st?.key === selectedTopic);
+
         switch (selectedTopic) {
             case 'vocabulary':
                 return (
@@ -1079,6 +1096,9 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                                 <p><span className="font-bold text-lg text-red-500 mr-2">(-)</span> = pronoun + Do/Does + Not +verb + Complement</p>
                                 <p><span className="font-bold text-lg text-blue-500 mr-2">(?)</span> = Do/Does + pronoun + verb + Complement ?</p>
                             </CardContent>
+                            <CardFooter className="justify-center pt-6 border-t">
+                                <Button onClick={() => handleTopicComplete('grammar')} size="lg">Entendido</Button>
+                            </CardFooter>
                         </Card>
                     </div>
                 )
@@ -1188,7 +1208,7 @@ export default function EngA1ClassPage() {
     const firestore = useFirestore();
     
     const studentDocRef = useMemoFirebase(() => (user ? doc(firestore, 'students', user.uid) : null), [firestore, user]);
-    const { data: studentProfile, isLoading: isProfileLoading } = useDoc<Student>(studentDocRef);
+    const { data: studentProfile, isLoading: isProfileLoading } = useDoc(studentDocRef);
     const isAdmin = useMemo(() => (user && (studentProfile?.role === 'admin' || user.email === 'ednacard87@gmail.com')), [user, studentProfile]);
 
     const commonProps: ClassContentProps = { t, toast, studentDocRef, studentProfile, isAdmin, isProfileLoading, isUserLoading };
