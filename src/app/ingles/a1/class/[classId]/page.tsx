@@ -195,7 +195,7 @@ interface ClassContentProps {
 //                 CLASS 1 COMPONENT
 // =================================================================
 const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isProfileLoading, isUserLoading }: ClassContentProps) => {
-    const progressStorageKey = `progress_a1_eng_u1_c1_v60_async`;
+    const progressStorageKey = `progress_a1_eng_u1_c1_v61_async`;
     const mainProgressKey = `progress_a1_eng_unit_1_class_1`;
 
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
@@ -298,6 +298,17 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         setLearningPath(path);
         const firstActive = path.find(p => p.status === 'active') || path.flatMap(p => p.subItems || []).find(sp => sp?.status === 'active');
         setSelectedTopic(savedSelectedTopic || firstActive?.key || path[0].key);
+
+        // Init vocab state
+        const newAnswers: {[key: string]: string[]} = {};
+        const newValidation: {[key: string]: ('correct' | 'incorrect' | 'unchecked')[]} = {};
+        for (const category in classVocabularyData) {
+            newAnswers[category] = Array((classVocabularyData as any)[category].length).fill('');
+            newValidation[category] = Array((classVocabularyData as any)[category].length).fill('unchecked');
+        }
+        setUserAnswers(newAnswers);
+        setValidationStatus(newValidation);
+
         setInitialLoadComplete(true);
         setIsInitialLoading(false);
     }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading, isUserLoading, initialLoadComplete, t]);
@@ -343,7 +354,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         }
     }, [learningPath, isAdmin, progressValue, studentDocRef, initialLoadComplete, selectedTopic, studentProfile, isInitialLoading]);
 
-    // ASYNC FLOW 3: UNLOCKS (Toaster sanado)
+    // ASYNC FLOW 3: UNLOCKS
     useEffect(() => {
         if (!topicToComplete) return;
     
@@ -538,7 +549,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                             <CardTitle className="text-3xl font-bold text-primary">To be 1</CardTitle>
                             <CardDescription className="text-base">Aprende la estructura básica del verbo To be.</CardDescription>
                         </CardHeader>
-                        <CardContent className="space-y-8">
+                        <CardContent className="space-y-8 text-left">
                             <div className="space-y-4">
                                 <h3 className="text-2xl font-bold text-foreground">Estructura Verbo To be</h3>
                                 <div className="bg-blue-50/50 dark:bg-blue-900/10 p-6 rounded-3xl border border-blue-100 dark:border-blue-800 space-y-4 font-mono text-lg">
@@ -572,6 +583,16 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                                         <span className="text-blue-500 font-bold text-2xl w-8 text-center">(?)</span>
                                         <span>are they students?</span>
                                     </div>
+                                    <div className="pt-2 space-y-4">
+                                        <div className="flex items-center gap-4">
+                                            <span className="text-green-500 font-bold text-2xl w-8 text-center">(+A)</span>
+                                            <span>Yes, they are</span>
+                                        </div>
+                                        <div className="flex items-center gap-4">
+                                            <span className="text-red-500 font-bold text-2xl w-8 text-center">(-A)</span>
+                                            <span>No, they are not</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </CardContent>
@@ -589,7 +610,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                             <CardTitle className="text-3xl font-bold text-primary">To be 2</CardTitle>
                             <CardDescription className="text-base">Estructura con adjetivos posesivos.</CardDescription>
                         </CardHeader>
-                        <CardContent className="space-y-8">
+                        <CardContent className="space-y-8 text-left">
                             <div className="space-y-4">
                                 <h3 className="text-2xl font-bold text-foreground">Estructura Verbo To be</h3>
                                 <div className="bg-blue-50/50 dark:bg-blue-900/10 p-6 rounded-3xl border border-blue-100 dark:border-blue-800 space-y-4 font-mono text-lg">
@@ -623,6 +644,16 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                                         <span className="text-blue-500 font-bold text-2xl w-8 text-center">(?)</span>
                                         <span>are they my friends?</span>
                                     </div>
+                                    <div className="pt-2 space-y-4">
+                                        <div className="flex items-center gap-4">
+                                            <span className="text-green-500 font-bold text-2xl w-8 text-center">(+A)</span>
+                                            <span>Yes, they are</span>
+                                        </div>
+                                        <div className="flex items-center gap-4">
+                                            <span className="text-red-500 font-bold text-2xl w-8 text-center">(-A)</span>
+                                            <span>No, they are not</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </CardContent>
@@ -640,7 +671,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                             <CardTitle className="text-3xl font-bold text-primary">To be 3</CardTitle>
                             <CardDescription className="text-base">Estructura iniciando con adjetivos posesivos.</CardDescription>
                         </CardHeader>
-                        <CardContent className="space-y-8">
+                        <CardContent className="space-y-8 text-left">
                             <div className="space-y-4">
                                 <h3 className="text-2xl font-bold text-foreground">Estructura Verbo To be</h3>
                                 <div className="bg-blue-50/50 dark:bg-blue-900/10 p-6 rounded-3xl border border-blue-100 dark:border-blue-800 space-y-4 font-mono text-lg">
@@ -673,6 +704,16 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                                     <div className="flex items-center gap-4">
                                         <span className="text-blue-500 font-bold text-2xl w-8 text-center">(?)</span>
                                         <span>is my mother a nurse?</span>
+                                    </div>
+                                    <div className="pt-2 space-y-4">
+                                        <div className="flex items-center gap-4">
+                                            <span className="text-green-500 font-bold text-2xl w-8 text-center">(+A)</span>
+                                            <span>yes, she is</span>
+                                        </div>
+                                        <div className="flex items-center gap-4">
+                                            <span className="text-red-500 font-bold text-2xl w-8 text-center">(-A)</span>
+                                            <span>no, she is not</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -732,7 +773,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             <main className="flex-1 p-4 md:p-8">
                 <div className="max-w-7xl mx-auto">
                     <div className="mb-8 text-left">
-                        <Link href="/ingles/a1/unit/1" className="hover:underline text-sm text-white/80">Volver a la unidad 1</Link>
+                        <Link href="/ingles/a1" className="hover:underline text-sm text-white/80">Volver al curso A1</Link>
                         <h1 className="text-4xl font-bold text-white dark:text-primary [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">Clase 1 (A1)</h1>
                     </div>
                     <div className="grid gap-8 md:grid-cols-12">
