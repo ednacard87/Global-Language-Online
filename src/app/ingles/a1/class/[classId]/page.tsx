@@ -544,193 +544,181 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             case 'ex-mixto-6': return <SimpleTranslationExercise key={selectedTopic} course="a1" exerciseKey="mixed6" onComplete={() => handleTopicComplete('ex-mixto-6')} vocabulary={{"padrastro": "stepfather", "estante": "shelf"}} highlightVocabulary={true} />;
             case 'tobe-1-grammar':
                 return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
-                        <CardHeader>
-                            <CardTitle className="text-3xl font-bold text-primary">To be 1</CardTitle>
-                            <CardDescription className="text-base">Aprende la estructura básica del verbo To be.</CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-8 text-left">
-                            <div className="space-y-4">
-                                <h3 className="text-2xl font-bold text-foreground">Estructura Verbo To be</h3>
-                                <div className="bg-blue-50/50 dark:bg-blue-900/10 p-6 rounded-3xl border border-blue-100 dark:border-blue-800 space-y-4 font-mono text-lg">
-                                    <div className="flex items-center gap-4">
-                                        <span className="text-green-500 font-bold text-2xl w-8 text-center">(+)</span>
-                                        <span>pronoun + to be + complement</span>
-                                    </div>
-                                    <div className="flex items-center gap-4">
-                                        <span className="text-red-500 font-bold text-2xl w-8 text-center">(-)</span>
-                                        <span>pronoun + to be + not + complement</span>
-                                    </div>
-                                    <div className="flex items-center gap-4">
-                                        <span className="text-blue-500 font-bold text-2xl w-8 text-center">(?)</span>
-                                        <span>to be + pronoun + complement ?</span>
-                                    </div>
+                    <div className="space-y-8 text-left">
+                        <h2 className="text-3xl font-bold">To be 1</h2>
+                        
+                        <div className="space-y-4">
+                            <h3 className="text-xl font-bold text-foreground">Estructura Verbo To be</h3>
+                            <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 font-mono text-base sm:text-lg">
+                                <div className="flex items-center gap-4">
+                                    <span className="text-green-500 font-bold w-12">(+)</span>
+                                    <span>pronoun + to be + complement</span>
+                                </div>
+                                <div className="flex items-center gap-4">
+                                    <span className="text-red-500 font-bold w-12">(-)</span>
+                                    <span>pronoun + to be + not + complement</span>
+                                </div>
+                                <div className="flex items-center gap-4">
+                                    <span className="text-blue-500 font-bold w-12">(?)</span>
+                                    <span>to be + pronoun + complement ?</span>
                                 </div>
                             </div>
+                        </div>
 
-                            <div className="space-y-4">
-                                <h3 className="text-2xl font-bold text-foreground">Ejemplo: "ellos son estudiantes"</h3>
-                                <div className="bg-blue-50/50 dark:bg-blue-900/10 p-6 rounded-3xl border border-blue-100 dark:border-blue-800 space-y-4 font-mono text-lg">
+                        <div className="space-y-4">
+                            <h3 className="text-xl font-bold text-foreground">Ejemplo: "ellos son estudiantes"</h3>
+                            <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 font-mono text-base sm:text-lg">
+                                <div className="flex items-center gap-4">
+                                    <span className="text-green-500 font-bold w-12">(+)</span>
+                                    <span>They are students</span>
+                                </div>
+                                <div className="flex items-center gap-4">
+                                    <span className="text-red-500 font-bold w-12">(-)</span>
+                                    <span>They are not students</span>
+                                </div>
+                                <div className="flex items-center gap-4">
+                                    <span className="text-blue-500 font-bold w-12">(?)</span>
+                                    <span>are they students?</span>
+                                </div>
+                                <div className="pt-4 space-y-3 border-t border-slate-200 dark:border-slate-700">
                                     <div className="flex items-center gap-4">
-                                        <span className="text-green-500 font-bold text-2xl w-8 text-center">(+)</span>
-                                        <span>They are students</span>
+                                        <span className="text-green-500 font-bold w-12">(+A)</span>
+                                        <span>Yes, they are</span>
                                     </div>
                                     <div className="flex items-center gap-4">
-                                        <span className="text-red-500 font-bold text-2xl w-8 text-center">(-)</span>
-                                        <span>They are not students</span>
-                                    </div>
-                                    <div className="flex items-center gap-4">
-                                        <span className="text-blue-500 font-bold text-2xl w-8 text-center">(?)</span>
-                                        <span>are they students?</span>
-                                    </div>
-                                    <div className="pt-2 space-y-4">
-                                        <div className="flex items-center gap-4">
-                                            <span className="text-green-500 font-bold text-2xl w-8 text-center">(+A)</span>
-                                            <span>Yes, they are</span>
-                                        </div>
-                                        <div className="flex items-center gap-4">
-                                            <span className="text-red-500 font-bold text-2xl w-8 text-center">(-A)</span>
-                                            <span>No, they are not</span>
-                                        </div>
+                                        <span className="text-red-500 font-bold w-12">(-A)</span>
+                                        <span>No, they are not</span>
                                     </div>
                                 </div>
                             </div>
-                        </CardContent>
-                        <CardFooter className="justify-center border-t pt-6">
-                            <Button onClick={() => handleTopicComplete(selectedTopic)} size="lg" className="px-16 font-bold h-12 text-xl">
-                                Continuar <ArrowRight className="ml-2 h-6 w-6" />
+                        </div>
+                        <div className="flex justify-center pt-4">
+                            <Button onClick={() => handleTopicComplete(selectedTopic)} size="lg" className="px-12">
+                                Continuar
                             </Button>
-                        </CardFooter>
-                    </Card>
+                        </div>
+                    </div>
                 );
             case 'tobe-2-grammar':
                 return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
-                        <CardHeader>
-                            <CardTitle className="text-3xl font-bold text-primary">To be 2</CardTitle>
-                            <CardDescription className="text-base">Estructura con adjetivos posesivos.</CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-8 text-left">
-                            <div className="space-y-4">
-                                <h3 className="text-2xl font-bold text-foreground">Estructura Verbo To be</h3>
-                                <div className="bg-blue-50/50 dark:bg-blue-900/10 p-6 rounded-3xl border border-blue-100 dark:border-blue-800 space-y-4 font-mono text-lg">
-                                    <div className="flex items-center gap-4">
-                                        <span className="text-green-500 font-bold text-2xl w-8 text-center">(+)</span>
-                                        <span>pronoun + To be + possessive + noun + complement</span>
-                                    </div>
-                                    <div className="flex items-center gap-4">
-                                        <span className="text-red-500 font-bold text-2xl w-8 text-center">(-)</span>
-                                        <span>pronoun + To be + Not + possessive + noun + complement</span>
-                                    </div>
-                                    <div className="flex items-center gap-4">
-                                        <span className="text-blue-500 font-bold text-2xl w-8 text-center">(?)</span>
-                                        <span>To be + pronoun + possessive + noun + complement ?</span>
-                                    </div>
+                    <div className="space-y-8 text-left">
+                        <h2 className="text-3xl font-bold">To be 2</h2>
+                        
+                        <div className="space-y-4">
+                            <h3 className="text-xl font-bold text-foreground">Estructura Verbo To be</h3>
+                            <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 font-mono text-base sm:text-lg">
+                                <div className="flex items-center gap-4">
+                                    <span className="text-green-500 font-bold w-12">(+)</span>
+                                    <span>pronoun + To be + possessive + noun + complement</span>
+                                </div>
+                                <div className="flex items-center gap-4">
+                                    <span className="text-red-500 font-bold w-12">(-)</span>
+                                    <span>pronoun + To be + Not + possessive + noun + complement</span>
+                                </div>
+                                <div className="flex items-center gap-4">
+                                    <span className="text-blue-500 font-bold w-12">(?)</span>
+                                    <span>To be + pronoun + possessive + noun + complement ?</span>
                                 </div>
                             </div>
+                        </div>
 
-                            <div className="space-y-4">
-                                <h3 className="text-2xl font-bold text-foreground">Ejemplo: "Ellos son mis amigos"</h3>
-                                <div className="bg-blue-50/50 dark:bg-blue-900/10 p-6 rounded-3xl border border-blue-100 dark:border-blue-800 space-y-4 font-mono text-lg">
+                        <div className="space-y-4">
+                            <h3 className="text-xl font-bold text-foreground">Ejemplo: "Ellos son mis amigos"</h3>
+                            <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 font-mono text-base sm:text-lg">
+                                <div className="flex items-center gap-4">
+                                    <span className="text-green-500 font-bold w-12">(+)</span>
+                                    <span>They are my friends</span>
+                                </div>
+                                <div className="flex items-center gap-4">
+                                    <span className="text-red-500 font-bold w-12">(-)</span>
+                                    <span>They are not my friends</span>
+                                </div>
+                                <div className="flex items-center gap-4">
+                                    <span className="text-blue-500 font-bold w-12">(?)</span>
+                                    <span>are they my friends?</span>
+                                </div>
+                                <div className="pt-4 space-y-3 border-t border-slate-200 dark:border-slate-700">
                                     <div className="flex items-center gap-4">
-                                        <span className="text-green-500 font-bold text-2xl w-8 text-center">(+)</span>
-                                        <span>They are my friends</span>
+                                        <span className="text-green-500 font-bold w-12">(+A)</span>
+                                        <span>Yes, they are</span>
                                     </div>
                                     <div className="flex items-center gap-4">
-                                        <span className="text-red-500 font-bold text-2xl w-8 text-center">(-)</span>
-                                        <span>They are not my friends</span>
-                                    </div>
-                                    <div className="flex items-center gap-4">
-                                        <span className="text-blue-500 font-bold text-2xl w-8 text-center">(?)</span>
-                                        <span>are they my friends?</span>
-                                    </div>
-                                    <div className="pt-2 space-y-4">
-                                        <div className="flex items-center gap-4">
-                                            <span className="text-green-500 font-bold text-2xl w-8 text-center">(+A)</span>
-                                            <span>Yes, they are</span>
-                                        </div>
-                                        <div className="flex items-center gap-4">
-                                            <span className="text-red-500 font-bold text-2xl w-8 text-center">(-A)</span>
-                                            <span>No, they are not</span>
-                                        </div>
+                                        <span className="text-red-500 font-bold w-12">(-A)</span>
+                                        <span>No, they are not</span>
                                     </div>
                                 </div>
                             </div>
-                        </CardContent>
-                        <CardFooter className="justify-center border-t pt-6">
-                            <Button onClick={() => handleTopicComplete(selectedTopic)} size="lg" className="px-16 font-bold h-12 text-xl">
-                                Continuar <ArrowRight className="ml-2 h-6 w-6" />
+                        </div>
+                        <div className="flex justify-center pt-4">
+                            <Button onClick={() => handleTopicComplete(selectedTopic)} size="lg" className="px-12">
+                                Continuar
                             </Button>
-                        </CardFooter>
-                    </Card>
+                        </div>
+                    </div>
                 );
             case 'tobe-3-grammar':
                 return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
-                        <CardHeader>
-                            <CardTitle className="text-3xl font-bold text-primary">To be 3</CardTitle>
-                            <CardDescription className="text-base">Estructura iniciando con adjetivos posesivos.</CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-8 text-left">
-                            <div className="space-y-4">
-                                <h3 className="text-2xl font-bold text-foreground">Estructura Verbo To be</h3>
-                                <div className="bg-blue-50/50 dark:bg-blue-900/10 p-6 rounded-3xl border border-blue-100 dark:border-blue-800 space-y-4 font-mono text-lg">
-                                    <div className="flex items-center gap-4">
-                                        <span className="text-green-500 font-bold text-2xl w-8 text-center">(+)</span>
-                                        <span>possessive + noun + to be + complement</span>
-                                    </div>
-                                    <div className="flex items-center gap-4">
-                                        <span className="text-red-500 font-bold text-2xl w-8 text-center">(-)</span>
-                                        <span>possessive + noun + to be + Not + complement</span>
-                                    </div>
-                                    <div className="flex items-center gap-4">
-                                        <span className="text-blue-500 font-bold text-2xl w-8 text-center">(?)</span>
-                                        <span>To be + possessive + noun + complement ?</span>
-                                    </div>
+                    <div className="space-y-8 text-left">
+                        <h2 className="text-3xl font-bold">To be 3</h2>
+                        
+                        <div className="space-y-4">
+                            <h3 className="text-xl font-bold text-foreground">Estructura Verbo To be</h3>
+                            <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 font-mono text-base sm:text-lg">
+                                <div className="flex items-center gap-4">
+                                    <span className="text-green-500 font-bold w-12">(+)</span>
+                                    <span>possessive + noun + to be + complement</span>
+                                </div>
+                                <div className="flex items-center gap-4">
+                                    <span className="text-red-500 font-bold w-12">(-)</span>
+                                    <span>possessive + noun + to be + Not + complement</span>
+                                </div>
+                                <div className="flex items-center gap-4">
+                                    <span className="text-blue-500 font-bold w-12">(?)</span>
+                                    <span>To be + possessive + noun + complement ?</span>
                                 </div>
                             </div>
+                        </div>
 
-                            <div className="space-y-4">
-                                <h3 className="text-2xl font-bold text-foreground">Ejemplo: "Mi mamá es una enfermera"</h3>
-                                <div className="bg-blue-50/50 dark:bg-blue-900/10 p-6 rounded-3xl border border-blue-100 dark:border-blue-800 space-y-4 font-mono text-lg">
+                        <div className="space-y-4">
+                            <h3 className="text-xl font-bold text-foreground">Ejemplo: "Mi mamá es una enfermera"</h3>
+                            <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 font-mono text-base sm:text-lg">
+                                <div className="flex items-center gap-4">
+                                    <span className="text-green-500 font-bold w-12">(+)</span>
+                                    <span>My mother is a nurse</span>
+                                </div>
+                                <div className="flex items-center gap-4">
+                                    <span className="text-red-500 font-bold w-12">(-)</span>
+                                    <span>My mother is not a nurse</span>
+                                </div>
+                                <div className="flex items-center gap-4">
+                                    <span className="text-blue-500 font-bold w-12">(?)</span>
+                                    <span>is my mother a nurse?</span>
+                                </div>
+                                <div className="pt-4 space-y-3 border-t border-slate-200 dark:border-slate-700">
                                     <div className="flex items-center gap-4">
-                                        <span className="text-green-500 font-bold text-2xl w-8 text-center">(+)</span>
-                                        <span>My mother is a nurse</span>
+                                        <span className="text-green-500 font-bold w-12">(+A)</span>
+                                        <span>yes, she is</span>
                                     </div>
                                     <div className="flex items-center gap-4">
-                                        <span className="text-red-500 font-bold text-2xl w-8 text-center">(-)</span>
-                                        <span>My mother is not a nurse</span>
-                                    </div>
-                                    <div className="flex items-center gap-4">
-                                        <span className="text-blue-500 font-bold text-2xl w-8 text-center">(?)</span>
-                                        <span>is my mother a nurse?</span>
-                                    </div>
-                                    <div className="pt-2 space-y-4">
-                                        <div className="flex items-center gap-4">
-                                            <span className="text-green-500 font-bold text-2xl w-8 text-center">(+A)</span>
-                                            <span>yes, she is</span>
-                                        </div>
-                                        <div className="flex items-center gap-4">
-                                            <span className="text-red-500 font-bold text-2xl w-8 text-center">(-A)</span>
-                                            <span>no, she is not</span>
-                                        </div>
+                                        <span className="text-red-500 font-bold w-12">(-A)</span>
+                                        <span>no, she is not</span>
                                     </div>
                                 </div>
                             </div>
-                        </CardContent>
-                        <CardFooter className="justify-center border-t pt-6">
-                            <Button onClick={() => handleTopicComplete(selectedTopic)} size="lg" className="px-16 font-bold h-12 text-xl">
-                                Continuar <ArrowRight className="ml-2 h-6 w-6" />
+                        </div>
+                        <div className="flex justify-center pt-4">
+                            <Button onClick={() => handleTopicComplete(selectedTopic)} size="lg" className="px-12">
+                                Continuar
                             </Button>
-                        </CardFooter>
-                    </Card>
+                        </div>
+                    </div>
                 );
             case 'tobe':
             case 'possessives':
                 return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
                         <CardHeader><CardTitle>{topic?.name}</CardTitle></CardHeader>
-                        <CardContent className="space-y-4">
+                        <CardContent className="space-y-4 text-left">
                             {selectedTopic === 'tobe' && (
                                 <div className="grid grid-cols-3 gap-x-4 gap-y-2 text-lg">
                                     <div className="font-bold p-3 bg-muted rounded-lg text-center">SER</div>
@@ -1038,7 +1026,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                             currentTopic.subItems[nextSubIndex].status = 'active';
                             nextToSelect = currentTopic.subItems[nextSubIndex].key;
                             wasUnlocked = true;
-                        } else if (currentTopic.subItems.every((sub: any) => sub.status === 'completed')) {
+                        } else if (currentTopic.subItems.every(s => s.status === 'completed')) {
                             if (currentTopic.status !== 'completed') currentTopic.status = 'completed';
                             if (i + 1 < newPath.length && newPath[i + 1].status === 'locked') {
                                 const nextMain = newPath[i + 1];
