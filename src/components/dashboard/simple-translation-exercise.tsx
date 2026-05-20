@@ -92,8 +92,8 @@ const exercises = {
             { spanish: '¿ÉL ES TU PAPÁ? –NO, EL ES MI PADRASTRO', english: ["Is he your dad? No, he is my stepfather.", "Is he your father? No, he is my stepfather."] },
             { spanish: '¿TU PRIMO ESTÁ EN CALI? – NO, EL EL ESTÁ EN MIAMI', english: ["Is your cousin in Cali? No, he is in Miami."] },
             { spanish: '¿TUS LIBROS ESTAN SOBRE EL ESTANTE? – NO, ESTAN SOBRE EL ESCRITORIO', english: ["Are your books on the shelf? No, they are on the desk."] },
-            { spanish: '¿TU MAMA ESTA EN LA CASA? NO, ELLA ESTA EN LA IGLESIA', english: ["Is your mom at home? No, she is at the church.", "Is your mother at home? No, she is at the church."] },
-            { spanish: '¿TUS HERMANOS ESTÁN EN LA UNIVERSIDAD? – NO', english: ["Are your brothers at the university? No, they are not.", "Are your brothers at the university? No, they aren't."] },
+            { spanish: '¿TU MAMA ESTA EN LA CASA? NO, ELLA ESTA EN LA IGLESIA', english: ["is your mother at home? No, she is in the church", "is your mother at home? No, she's in the church", "is your mom at home? No, she's in the church", "is your mom at home? No, she is in the church", "Is your mother at home? No, she is in the church", "Is your mother at home? No, she's in the church", "Is your mom at home? No, she's in the church", "Is your mom at home? No, she is in the church"] },
+            { spanish: '¿TUS HERMANOS ESTÁN EN LA UNIVERSIDAD? – NO', english: ["are your siblings at university? No, they are not", "are your siblings at university? No, they aren't", "are your brothers at university? No, they are not", "are your brothers at university? No, they aren't", "Are your siblings at university? No, they are not", "Are your siblings at university? No, they aren't", "Are your brothers at university? No, they are not", "Are your brothers at university? No, they aren't"] },
             { spanish: '¿TU HERMANA ESTÁ EN EL PARQUE? – NO, ELLA ESTÁ EN EL SUPERMERCADO', english: ["Is your sister at the park? No, she is at the supermarket."] },
         ]
     },
@@ -230,7 +230,7 @@ const exercises = {
     c6_ex7: {
         title: 'a1class1.exercise',
         prompts: [
-            { spanish: 'ESTE ES SU BOLSO Y EL OTRO ES MÍO (DE ELLA)', english: ["this is her bag and the other one is mine", "this is her bag and the other is mine"] },
+            { spanish: 'ESTE ES SU BOLSO Y EL OTRO ES MÍO (DE ELLA)', english: ["this is her window", "this is her bag and the other one is mine", "this is her bag and the other is mine"] },
             { spanish: 'TU ERES FRANCÉS, TU FAMILIA VIVE EN FRANCIA', english: ["you are french, your family lives in france", "you're french, your family lives in france"] },
             { spanish: '¿ESTA CAMISETA ES TUYA O MÍA?', english: ["is this t-shirt yours or mine?", "is this shirt yours or mine?"] },
             { spanish: '¿DONDE ESTÁ SU CELULAR? - (DE EL)', english: ["where is his cellphone?", "where is his phone?", "where's his cellphone?", "where's his phone?"] },
@@ -550,7 +550,7 @@ const exercises = {
     c10_ex2: {
         title: 'a1class1.exercise',
         prompts: [
-            { spanish: 'ME GUSTA ESTE JUEGO Y A TI TE GUSTA ESE.', english: ["i like this game and you like that one"] },
+            { spanish: 'ME GUSTA EL JUEGO Y A TI TE GUSTA ESE.', english: ["i like this game and you like that one"] },
             { spanish: 'NO ME GUSTAN ESTAS GAFAS – NO ME GUSTAN ESAS.', english: ["i don't like these glasses - i don't like those ones", "i do not like these glasses - i do not like those ones"] },
             { spanish: 'ESTOS RELOJES SON VIEJOS- ESTOS SON VIEJOS', english: ["these watches are old - these ones are old"] },
             { spanish: 'ME GUSTA ESTA SERIE - ME GUSTA ESA:', english: ["i like this series - i like that one"] },
@@ -713,7 +713,7 @@ const exercises = {
             { spanish: "ELLOS SON MIS PRIMOS", english: ["they are my cousins", "they're my cousins"] },
             { spanish: "ESTA ES SU CANCION (SONG) (DE ELLOS)", english: ["this is their song"] },
             { spanish: "¿NOSOTROS VAMOS CON ELLOS? -NO", english: ["do we go with them? no", "are we going with them? no"] },
-            { spanish: "EL NO VIVE CONMIGO- EL VIVE CON SU MADRE", english: ["he does not live with me, he lives with his mother", "he doesn't live with me, he lives with his mom"] },
+            { spanish: "EL NO VIVE CONMIGO- EL VIVE CON SU MADRE", english: ["he does not live with me, he lives with his mother", "he doesn't feel comfortable living with his mother", "he doesn't live with me, he lives with his mom"] },
             { spanish: "¿VIENES CON NOSOTROS? –POR SUPUESTO", english: ["do you come with us? of course", "are you coming with us? of course"] },
             { spanish: "ELLA NO COME CON EL- ELLA COME SOLA", english: ["she does not eat with him, she eats alone", "she doesn't eat with him, she alone"] },
         ]
