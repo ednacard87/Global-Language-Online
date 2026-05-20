@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -535,7 +534,7 @@ const exercises = {
         title: 'a1class1.exercise',
         prompts: [
             { spanish: 'ESE CARRO ES AZUL MIENTRAS QUE ESTE ES GRIS', english: ["that car is blue while this one is gray", "that car is blue while this one is grey"] },
-            { spanish: 'ESTE ES EL REGALO QUE COMPRE PARA MARY', english: ["this is the gift that i bought for mary", "this is the present i bought for mary"] },
+            { spanish: 'ESTE ES THE REGALO QUE COMPRE PARA MARY', english: ["this is the gift that i bought for mary", "this is the present i bought for mary"] },
             { spanish: 'ESA CASA ES CARA MIENTRAS ESTA ES BARATA', english: ["that house is expensive while this one is cheap"] },
             { spanish: 'ESA MUJER ES SU MAMA Y LA OTRA ES SU TIA (DE EL)', english: ["that woman is his mother and the other one is his aunt", "that woman is his mom and the other one is his aunt"] },
             { spanish: 'ESTOS HOMBRES SON MIS AMIGOS', english: ["these men are my friends"] },
@@ -1063,4 +1062,3 @@ export function SimpleTranslationExercise({
         </Card>
     );
 }
-
