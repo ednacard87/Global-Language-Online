@@ -235,13 +235,35 @@ export default function AdminDashboardPage() {
   };
 
   const getReadableProgress = (student: Student): React.ReactNode => {
-    const progress = student.progress;
+    const { progress, selectedCourse } = student;
     if (!progress || Object.keys(progress).length === 0) {
       return <span className="text-xs text-muted-foreground">Sin progreso</span>;
     }
 
+    // Filter progress entries to only show those relevant to the selected course
+    const filteredProgress = Object.entries(progress).filter(([key]) => {
+      const lowerKey = key.toLowerCase();
+      if (selectedCourse === 'ingles') {
+        // Exclude anything explicitly for kids or spanish
+        return !lowerKey.includes('kids') && !lowerKey.includes('espanol') && !lowerKey.startsWith('progress_es_');
+      }
+      if (selectedCourse === 'kids') {
+        // Only include kids-related keys
+        return lowerKey.includes('kids');
+      }
+      if (selectedCourse === 'espanol') {
+        // Only include spanish-related keys
+        return lowerKey.includes('espanol') || lowerKey.startsWith('progress_es_');
+      }
+      return true;
+    });
+
+    if (filteredProgress.length === 0) {
+      return <span className="text-xs text-muted-foreground">Sin progreso</span>;
+    }
+
     // Find the lesson with the highest progress that is less than 100
-    const activeLesson = Object.entries(progress)
+    const activeLesson = filteredProgress
       .filter(([, value]) => value < 100)
       .sort((a, b) => b[1] - a[1])[0]; // Get the one with highest progress
 
@@ -254,6 +276,7 @@ export default function AdminDashboardPage() {
         .replace('class', 'Clase')
         .replace('kids', 'Niños')
         .replace('intro', 'Intro ')
+        .replace('Progress', '')
         .split(' ')
         .map(word => word.charAt(0).toUpperCase() + word.slice(1))
         .join(' ');
@@ -266,7 +289,7 @@ export default function AdminDashboardPage() {
       );
     }
 
-    const hasCompletedSomething = Object.values(progress).some(v => v >= 100);
+    const hasCompletedSomething = filteredProgress.some(([, v]) => v >= 100);
     if (hasCompletedSomething) {
       return <span className="text-xs text-green-600 font-medium">Completado</span>;
     }
@@ -301,8 +324,8 @@ export default function AdminDashboardPage() {
                                     <TableHead>Student</TableHead>
                                     <TableHead>Email</TableHead>
                                     <TableHead>Status</TableHead>
-                                    <TableHead>Curso</TableHead>
-                                    <TableHead>Curso Actual</TableHead>
+                                    <TableHead>Programa</TableHead>
+                                    <TableHead>Misión Actual</TableHead>
                                     <TableHead>Acceso a Cursos</TableHead>
                                     <TableHead>Acceso a Clases</TableHead>
                                     <TableHead>Acceso a Repasos</TableHead>
@@ -337,7 +360,7 @@ export default function AdminDashboardPage() {
                                                 </Badge>
                                             </TableCell>
                                             <TableCell>
-                                                <Badge variant="outline" className="capitalize">{student.selectedCourse}</Badge>
+                                                <Badge variant="outline" className="capitalize">{student.selectedCourse || 'No asignado'}</Badge>
                                             </TableCell>
                                             <TableCell>
                                               {getReadableProgress(student)}
