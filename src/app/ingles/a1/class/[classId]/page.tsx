@@ -26,6 +26,13 @@ import { TranslationExercise } from '@/components/dashboard/translation-exercise
 import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
 import { ShortAnswerExercise } from '@/components/dashboard/short-answer-exercise';
 
+// --- Constants ---
+const ICONS_CONFIG = {
+    locked: Lock,
+    active: BookOpen,
+    completed: CheckCircle,
+};
+
 // Data for Class 1
 const verbToBeData = [
     { ser: 'Yo soy', tobe: 'I am', estar: 'Yo estoy' },
@@ -198,12 +205,29 @@ const class2Exercise2Data = [
     }
 ];
 
+interface Topic {
+  key: string;
+  name: string;
+  icon: React.ElementType;
+  status: 'locked' | 'active' | 'completed';
+  subItems?: { key: string; name: string; status: 'locked' | 'active' | 'completed', icon?: React.ElementType }[];
+}
+
+interface ClassContentProps {
+    t: any;
+    toast: any;
+    studentDocRef: any;
+    studentProfile: any;
+    isAdmin: boolean;
+    isProfileLoading: boolean;
+    isUserLoading: boolean;
+}
 
 // =================================================================
 //                 CLASS 1 COMPONENT
 // =================================================================
 const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isProfileLoading, isUserLoading }: ClassContentProps) => {
-    const progressStorageKey = `progress_a1_eng_u1_c1_v63_blindada`;
+    const progressStorageKey = `progress_a1_eng_u1_c1_v65_stable`;
     const mainProgressKey = `progress_a1_eng_unit_1_class_1`;
 
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
@@ -252,7 +276,6 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         }
     ], [t]);
 
-    // GATEKEEPER: Carga asíncrona blindada
     useEffect(() => {
         if (isProfileLoading || isUserLoading || !studentProfile || initialLoadComplete) return;
 
@@ -283,7 +306,6 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             savedSelectedTopic = savedData.lastSelectedTopic || '';
         }
 
-        // Reparación de integridad secuencial
         let lastDone = true;
         for(let i=0; i < path.length; i++) {
             if (lastDone && path[i].status === 'locked') {
@@ -336,7 +358,6 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         return totalTopics > 0 ? (completedTopics / totalTopics) * 100 : 0;
     }, [learningPath]);
 
-    // Persistencia Blindada
     useEffect(() => {
         if (!initialLoadComplete || isInitialLoading || isAdmin || !studentDocRef || learningPath.length === 0) return;
 
@@ -352,7 +373,6 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             }
         });
 
-        // Solo guardar si hay cambio real
         const savedData = studentProfile?.lessonProgress?.[progressStorageKey];
         if (JSON.stringify(statusesToSave) !== JSON.stringify(savedData)) {
             updateDocumentNonBlocking(studentDocRef, {
@@ -362,7 +382,6 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         }
     }, [learningPath, isAdmin, progressValue, studentDocRef, initialLoadComplete, selectedTopic, studentProfile, isInitialLoading]);
 
-    // SANACIÓN DE TOASTER: Manejo de efectos secundarios fuera del render
     useEffect(() => {
         if (!topicToComplete) return;
     
@@ -555,46 +574,46 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                             <CardDescription>Aprende la estructura básica del verbo To be.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-8">
-                            <div className="space-y-4">
-                                <h3 className="text-xl font-bold text-foreground">Estructura Verbo To be</h3>
-                                <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 font-mono text-base sm:text-lg">
+                            <div className="space-y-3">
+                                <h3 className="text-lg font-bold text-foreground pl-1">Estructura</h3>
+                                <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 font-mono text-base border">
                                     <div className="flex items-center gap-4">
-                                        <span className="text-green-500 font-bold w-12 text-center text-lg">(+)</span>
-                                        <span>pronoun + to be + complement</span>
+                                        <span className="text-green-500 font-bold w-10 text-center text-lg">(+)</span>
+                                        <span className="text-muted-foreground">pronoun + to be + complement</span>
                                     </div>
                                     <div className="flex items-center gap-4">
-                                        <span className="text-red-500 font-bold w-12 text-center text-lg">(-)</span>
-                                        <span>pronoun + to be + not + complement</span>
+                                        <span className="text-red-500 font-bold w-10 text-center text-lg">(-)</span>
+                                        <span className="text-muted-foreground">pronoun + to be + not + complement</span>
                                     </div>
                                     <div className="flex items-center gap-4">
-                                        <span className="text-blue-500 font-bold w-12 text-center text-lg">(?)</span>
-                                        <span>to be + pronoun + complement ?</span>
+                                        <span className="text-blue-500 font-bold w-10 text-center text-lg">(?)</span>
+                                        <span className="text-muted-foreground">to be + pronoun + complement ?</span>
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="space-y-4">
-                                <h3 className="text-xl font-bold text-foreground">Ejemplo: "ellos son estudiantes"</h3>
-                                <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 font-mono text-base sm:text-lg">
+                            <div className="space-y-3">
+                                <h3 className="text-lg font-bold text-foreground pl-1">Ejemplo: "ellos son estudiantes"</h3>
+                                <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 font-mono text-base border">
                                     <div className="flex items-center gap-4">
-                                        <span className="text-green-500 font-bold w-12 text-center text-lg">(+)</span>
+                                        <span className="text-green-500 font-bold w-10 text-center text-lg">(+)</span>
                                         <span>They are students</span>
                                     </div>
                                     <div className="flex items-center gap-4">
-                                        <span className="text-red-500 font-bold w-12 text-center text-lg">(-)</span>
+                                        <span className="text-red-500 font-bold w-10 text-center text-lg">(-)</span>
                                         <span>They are not students</span>
                                     </div>
                                     <div className="flex items-center gap-4">
-                                        <span className="text-blue-500 font-bold w-12 text-center text-lg">(?)</span>
+                                        <span className="text-blue-500 font-bold w-10 text-center text-lg">(?)</span>
                                         <span>are they students?</span>
                                     </div>
                                     <div className="pt-4 space-y-3 border-t border-slate-200 dark:border-slate-700">
                                         <div className="flex items-center gap-4">
-                                            <span className="text-green-500 font-bold w-12 text-center text-lg">(+A)</span>
+                                            <span className="text-green-500 font-bold w-10 text-center text-lg">(+A)</span>
                                             <span>Yes, they are</span>
                                         </div>
                                         <div className="flex items-center gap-4">
-                                            <span className="text-red-500 font-bold w-12 text-center text-lg">(-A)</span>
+                                            <span className="text-red-500 font-bold w-10 text-center text-lg">(-A)</span>
                                             <span>No, they are not</span>
                                         </div>
                                     </div>
@@ -611,46 +630,46 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                             <CardDescription>Uso de adjetivos posesivos con el verbo To be.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-8">
-                            <div className="space-y-4">
-                                <h3 className="text-xl font-bold text-foreground">Estructura Verbo To be</h3>
-                                <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 font-mono text-base sm:text-lg">
+                            <div className="space-y-3">
+                                <h3 className="text-lg font-bold text-foreground pl-1">Estructura</h3>
+                                <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 font-mono text-base border">
                                     <div className="flex items-center gap-4">
-                                        <span className="text-green-500 font-bold w-12 text-center text-lg">(+)</span>
-                                        <span>pronoun + To be + possessive + noun + complement</span>
+                                        <span className="text-green-500 font-bold w-10 text-center text-lg">(+)</span>
+                                        <span className="text-muted-foreground">pronoun + To be + possessive + noun + complement</span>
                                     </div>
                                     <div className="flex items-center gap-4">
-                                        <span className="text-red-500 font-bold w-12 text-center text-lg">(-)</span>
-                                        <span>pronoun + To be + Not + possessive + noun + complement</span>
+                                        <span className="text-red-500 font-bold w-10 text-center text-lg">(-)</span>
+                                        <span className="text-muted-foreground">pronoun + To be + Not + possessive + noun + complement</span>
                                     </div>
                                     <div className="flex items-center gap-4">
-                                        <span className="text-blue-500 font-bold w-12 text-center text-lg">(?)</span>
-                                        <span>To be + pronoun + possessive + noun + complement ?</span>
+                                        <span className="text-blue-500 font-bold w-10 text-center text-lg">(?)</span>
+                                        <span className="text-muted-foreground">To be + pronoun + possessive + noun + complement ?</span>
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="space-y-4">
-                                <h3 className="text-xl font-bold text-foreground">Ejemplo: "Ellos son mis amigos"</h3>
-                                <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 font-mono text-base sm:text-lg">
+                            <div className="space-y-3">
+                                <h3 className="text-lg font-bold text-foreground pl-1">Ejemplo: "Ellos son mis amigos"</h3>
+                                <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 font-mono text-base border">
                                     <div className="flex items-center gap-4">
-                                        <span className="text-green-500 font-bold w-12 text-center text-lg">(+)</span>
+                                        <span className="text-green-500 font-bold w-10 text-center text-lg">(+)</span>
                                         <span>They are my friends</span>
                                     </div>
                                     <div className="flex items-center gap-4">
-                                        <span className="text-red-500 font-bold w-12 text-center text-lg">(-)</span>
+                                        <span className="text-red-500 font-bold w-10 text-center text-lg">(-)</span>
                                         <span>They are not my friends</span>
                                     </div>
                                     <div className="flex items-center gap-4">
-                                        <span className="text-blue-500 font-bold w-12 text-center text-lg">(?)</span>
+                                        <span className="text-blue-500 font-bold w-10 text-center text-lg">(?)</span>
                                         <span>are they my friends?</span>
                                     </div>
                                     <div className="pt-4 space-y-3 border-t border-slate-200 dark:border-slate-700">
                                         <div className="flex items-center gap-4">
-                                            <span className="text-green-500 font-bold w-12 text-center text-lg">(+A)</span>
+                                            <span className="text-green-500 font-bold w-10 text-center text-lg">(+A)</span>
                                             <span>Yes, they are</span>
                                         </div>
                                         <div className="flex items-center gap-4">
-                                            <span className="text-red-500 font-bold w-12 text-center text-lg">(-A)</span>
+                                            <span className="text-red-500 font-bold w-10 text-center text-lg">(-A)</span>
                                             <span>No, they are not</span>
                                         </div>
                                     </div>
@@ -667,46 +686,46 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                             <CardDescription>Sujetos compuestos por poseedor y objeto.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-8">
-                            <div className="space-y-4">
-                                <h3 className="text-xl font-bold text-foreground">Estructura Verbo To be</h3>
-                                <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 font-mono text-base sm:text-lg">
+                            <div className="space-y-3">
+                                <h3 className="text-lg font-bold text-foreground pl-1">Estructura</h3>
+                                <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 font-mono text-base border">
                                     <div className="flex items-center gap-4">
-                                        <span className="text-green-500 font-bold w-12 text-center text-lg">(+)</span>
-                                        <span>possessive + noun + to be + complement</span>
+                                        <span className="text-green-500 font-bold w-10 text-center text-lg">(+)</span>
+                                        <span className="text-muted-foreground">possessive + noun + to be + complement</span>
                                     </div>
                                     <div className="flex items-center gap-4">
-                                        <span className="text-red-500 font-bold w-12 text-center text-lg">(-)</span>
-                                        <span>possessive + noun + to be + Not + complement</span>
+                                        <span className="text-red-500 font-bold w-10 text-center text-lg">(-)</span>
+                                        <span className="text-muted-foreground">possessive + noun + to be + Not + complement</span>
                                     </div>
                                     <div className="flex items-center gap-4">
-                                        <span className="text-blue-500 font-bold w-12 text-center text-lg">(?)</span>
-                                        <span>To be + possessive + noun + complement ?</span>
+                                        <span className="text-blue-500 font-bold w-10 text-center text-lg">(?)</span>
+                                        <span className="text-muted-foreground">To be + possessive + noun + complement ?</span>
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="space-y-4">
-                                <h3 className="text-xl font-bold text-foreground">Ejemplo: "Mi mamá es una enfermera"</h3>
-                                <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 font-mono text-base sm:text-lg">
+                            <div className="space-y-3">
+                                <h3 className="text-lg font-bold text-foreground pl-1">Ejemplo: "Mi mamá es una enfermera"</h3>
+                                <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 font-mono text-base border">
                                     <div className="flex items-center gap-4">
-                                        <span className="text-green-500 font-bold w-12 text-center text-lg">(+)</span>
+                                        <span className="text-green-500 font-bold w-10 text-center text-lg">(+)</span>
                                         <span>My mother is a nurse</span>
                                     </div>
                                     <div className="flex items-center gap-4">
-                                        <span className="text-red-500 font-bold w-12 text-center text-lg">(-)</span>
+                                        <span className="text-red-500 font-bold w-10 text-center text-lg">(-)</span>
                                         <span>My mother is not a nurse</span>
                                     </div>
                                     <div className="flex items-center gap-4">
-                                        <span className="text-blue-500 font-bold w-12 text-center text-lg">(?)</span>
+                                        <span className="text-blue-500 font-bold w-10 text-center text-lg">(?)</span>
                                         <span>is my mother a nurse?</span>
                                     </div>
                                     <div className="pt-4 space-y-3 border-t border-slate-200 dark:border-slate-700">
                                         <div className="flex items-center gap-4">
-                                            <span className="text-green-500 font-bold w-12 text-center text-lg">(+A)</span>
+                                            <span className="text-green-500 font-bold w-10 text-center text-lg">(+A)</span>
                                             <span>yes, she is</span>
                                         </div>
                                         <div className="flex items-center gap-4">
-                                            <span className="text-red-500 font-bold w-12 text-center text-lg">(-A)</span>
+                                            <span className="text-red-500 font-bold w-10 text-center text-lg">(-A)</span>
                                             <span>no, she is not</span>
                                         </div>
                                     </div>
@@ -840,7 +859,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
 //                 CLASS 2 COMPONENT
 // =================================================================
 const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isProfileLoading, isUserLoading }: ClassContentProps) => {
-    const progressStorageVersion = 'progress_a1_eng_u1_c2_v63_blindada';
+    const progressStorageVersion = 'progress_a1_eng_u1_c2_v65_stable';
     const mainProgressKey = 'progress_a1_eng_unit_1_class_2';
     
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
@@ -883,7 +902,6 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         { key: 'final-vocab', name: t('kidsA1Class2.finalVocab'), icon: BookOpen, status: 'locked' },
     ], [t]);
 
-    // GATEKEEPER: Carga asíncrona blindada
     useEffect(() => {
         if (isProfileLoading || isUserLoading || !studentProfile || initialLoadComplete) return;
 
@@ -966,7 +984,6 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         return totalTopics > 0 ? (completedTopics / totalTopics) * 100 : 0;
     }, [learningPath]);
 
-    // Persistencia Blindada
     useEffect(() => {
         if (!initialLoadComplete || isInitialLoading || isAdmin || !studentDocRef || learningPath.length === 0) return;
 
@@ -991,7 +1008,6 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         }
     }, [learningPath, isAdmin, progressValue, studentDocRef, initialLoadComplete, selectedTopic, studentProfile, isInitialLoading]);
 
-    // SANACIÓN DE TOASTER
     useEffect(() => {
         if (!topicToComplete) return;
     
@@ -1309,14 +1325,4 @@ export default function EngA1ClassPage() {
         <main className="flex-1 p-4 md:p-8"><div className="max-w-7xl mx-auto text-white text-left"><h1 className="text-4xl font-bold">Clase {classId} próximamente.</h1></div></main>
       </div>
     );
-}
-
-interface ClassContentProps {
-    t: any;
-    toast: any;
-    studentDocRef: any;
-    studentProfile: any;
-    isAdmin: boolean;
-    isProfileLoading: boolean;
-    isUserLoading: boolean;
 }
