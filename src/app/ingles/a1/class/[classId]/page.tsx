@@ -265,7 +265,7 @@ interface ClassContentProps {
 //                 CLASS 1 COMPONENT (BLINDADA)
 // =================================================================
 const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isProfileLoading, isUserLoading }: ClassContentProps) => {
-    const progressStorageKey = `progress_a1_eng_u1_c1_v71_stable`;
+    const progressStorageKey = `progress_a1_eng_u1_c1_v73_stable`;
     const mainProgressKey = `progress_a1_eng_unit_1_class_1`;
 
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
@@ -282,13 +282,13 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         { key: 'vocabulary', name: t('a1class1.vocabulary'), icon: BookOpen, status: 'active' },
         { key: 'tobe', name: 'Grammar: To Be', icon: GraduationCap, status: 'locked' },
         { key: 'memory-tobe', name: 'Memory: To Be', icon: BrainCircuit, status: 'locked' },
-        { key: 'tobe-1-grammar', name: 'Structure: To Be 1', icon: GraduationCap, status: 'locked' },
+        { key: 'tobe-1-grammar', name: 'To be 1', icon: GraduationCap, status: 'locked' },
         { key: 'tobe-1-exercise', name: 'Exercise: To Be 1', icon: PenSquare, status: 'locked' },
         { key: 'possessives', name: 'Grammar: Possessives', icon: GraduationCap, status: 'locked' },
         { key: 'memory-possessives', name: 'Memory: Possessives', icon: BrainCircuit, status: 'locked' },
-        { key: 'tobe-2-grammar', name: 'Structure: To Be 2', icon: GraduationCap, status: 'locked' },
+        { key: 'tobe-2-grammar', name: 'To be 2', icon: GraduationCap, status: 'locked' },
         { key: 'tobe-2-exercise', name: 'Exercise: To Be 2', icon: PenSquare, status: 'locked' },
-        { key: 'tobe-3-grammar', name: 'Structure: To Be 3', icon: GraduationCap, status: 'locked' },
+        { key: 'tobe-3-grammar', name: 'To be 3', icon: GraduationCap, status: 'locked' },
         { key: 'tobe-3-exercise', name: 'Exercise: To Be 3', icon: PenSquare, status: 'locked' },
         {
             key: 'mixto-1',
@@ -559,7 +559,9 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             case 'vocabulary':
                 return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left text-foreground">
-                        <CardHeader><CardTitle>{t('a1class1.vocabulary')}</CardTitle></CardHeader>
+                        <CardHeader>
+                            <CardTitle>{t('a1class1.vocabulary')}</CardTitle>
+                        </CardHeader>
                         <CardContent>
                             <Accordion type="multiple" className="w-full">
                             {Object.entries(class1VocabularyData).map(([category, items]) => (
@@ -618,20 +620,33 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             case 'tobe-1-grammar':
                 return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left text-foreground">
-                        <CardHeader><CardTitle>Structure: To Be 1</CardTitle></CardHeader>
+                        <CardHeader>
+                            <CardTitle>To be 1</CardTitle>
+                            <CardDescription>Aprende la estructura básica del verbo To be.</CardDescription>
+                        </CardHeader>
                         <CardContent className="space-y-6">
-                            <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 font-mono text-base border">
-                                <p><span className="text-green-500 font-bold">(+)</span> pronoun + to be + complement</p>
-                                <p><span className="text-red-500 font-bold">(-)</span> pronoun + to be + not + complement</p>
-                                <p><span className="text-blue-500 font-bold">(?)</span> to be + pronoun + complement ?</p>
+                            <div>
+                                <h3 className="text-xl font-bold text-foreground mb-4">Estructura Verbo To be</h3>
+                                <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 font-mono text-base border">
+                                    <p><span className="text-green-500 font-bold text-lg mr-2">(+)</span> pronoun + to be + complement</p>
+                                    <p><span className="text-red-500 font-bold text-lg mr-2">(-)</span> pronoun + to be + not + complement</p>
+                                    <p><span className="text-blue-500 font-bold text-lg mr-2">(?)</span> to be + pronoun + complement ?</p>
+                                </div>
                             </div>
-                            <Separator />
-                            <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-2 font-mono text-base border">
-                                <p><span className="font-bold">Short Answers:</span></p>
-                                <p><span className="text-green-500 font-bold">(+A)</span> Yes, pronoun + to be</p>
-                                <p><span className="text-red-500 font-bold">(-A)</span> No, pronoun + to be + not</p>
+                            <div>
+                                <h3 className="text-xl font-bold text-foreground mb-4">Ejemplo: "ellos son estudiantes"</h3>
+                                <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 font-mono text-lg border">
+                                    <p><span className="text-green-500 font-bold mr-2">(+)</span> They are students</p>
+                                    <p><span className="text-red-500 font-bold mr-2">(-)</span> They are not students</p>
+                                    <p><span className="text-blue-500 font-bold mr-2">(?)</span> are they students?</p>
+                                </div>
                             </div>
                         </CardContent>
+                        <CardFooter className="justify-center border-t pt-6">
+                            <Button onClick={() => handleTopicComplete('tobe-1-grammar')} size="lg" className="px-16 font-bold h-14 text-xl">
+                                Entendido <ArrowRight className="ml-2 h-6 w-6" />
+                            </Button>
+                        </CardFooter>
                     </Card>
                 );
             case 'tobe-1-exercise': return <TranslationExercise exerciseKey="exercises1" onComplete={() => handleTopicComplete('tobe-1-exercise')} />;
@@ -657,28 +672,67 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             case 'tobe-2-grammar':
                 return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left text-foreground">
-                        <CardHeader><CardTitle>Structure: To Be 2</CardTitle></CardHeader>
+                        <CardHeader>
+                            <CardTitle>To be 2</CardTitle>
+                        </CardHeader>
                         <CardContent className="space-y-6">
-                            <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 font-mono text-base border">
-                                <p><span className="text-green-500 font-bold">(+)</span> pronoun + to be + possessive + noun + complement</p>
-                                <p><span className="text-red-500 font-bold">(-)</span> pronoun + to be + not + possessive + noun + complement</p>
-                                <p><span className="text-blue-500 font-bold">(?)</span> to be + pronoun + possessive + noun + complement ?</p>
+                            <div>
+                                <h3 className="text-xl font-bold text-foreground mb-4">Estructura Verbo To be 2</h3>
+                                <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 font-mono text-base border">
+                                    <p><span className="text-green-500 font-bold text-lg mr-2">(+)</span> pronoun + To be + possessive + noun + complement</p>
+                                    <p><span className="text-red-500 font-bold text-lg mr-2">(-)</span> pronoun + To be + Not + possessive + noun + complement</p>
+                                    <p><span className="text-blue-500 font-bold text-lg mr-2">(?)</span> To be + pronoun + possessive + noun + complement ?</p>
+                                </div>
+                            </div>
+                            <div>
+                                <h3 className="text-xl font-bold text-foreground mb-4">Ejemplo: "Ellos son mis amigos"</h3>
+                                <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 font-mono text-lg border">
+                                    <p><span className="text-green-500 font-bold mr-2">(+)</span> They are my friends</p>
+                                    <p><span className="text-red-500 font-bold mr-2">(-)</span> They are not my friends</p>
+                                    <p><span className="text-blue-500 font-bold mr-2">(?)</span> are they my friends ?</p>
+                                </div>
                             </div>
                         </CardContent>
+                        <CardFooter className="justify-center border-t pt-6">
+                            <Button onClick={() => handleTopicComplete('tobe-2-grammar')} size="lg" className="px-16 font-bold h-14 text-xl">
+                                Entendido <ArrowRight className="ml-2 h-6 w-6" />
+                            </Button>
+                        </CardFooter>
                     </Card>
                 );
             case 'tobe-2-exercise': return <TranslationExercise exerciseKey="exercises2" onComplete={() => handleTopicComplete('tobe-2-exercise')} />;
             case 'tobe-3-grammar':
                 return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left text-foreground">
-                        <CardHeader><CardTitle>Structure: To Be 3</CardTitle></CardHeader>
+                        <CardHeader>
+                            <CardTitle>To be 3</CardTitle>
+                        </CardHeader>
                         <CardContent className="space-y-6">
-                            <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 font-mono text-base border">
-                                <p><span className="text-green-500 font-bold">(+)</span> possessive + noun + to be + complement</p>
-                                <p><span className="text-red-500 font-bold">(-)</span> possessive + noun + to be + not + complement</p>
-                                <p><span className="text-blue-500 font-bold">(?)</span> to be + possessive + noun + complement ?</p>
+                            <div>
+                                <h3 className="text-xl font-bold text-foreground mb-4">Estructura Verbo To be 3</h3>
+                                <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 font-mono text-base border">
+                                    <p><span className="text-green-500 font-bold text-lg mr-2">(+)</span> possessive + noun + to be + complement</p>
+                                    <p><span className="text-red-500 font-bold text-lg mr-2">(-)</span> possessive + noun + to be + Not + complement</p>
+                                    <p><span className="text-blue-500 font-bold text-lg mr-2">(?)</span> To be + possessive + noun + complement ?</p>
+                                </div>
+                            </div>
+                            <div>
+                                <h3 className="text-xl font-bold text-foreground mb-4">Ejemplo: "Mi mamá es una enfermera"</h3>
+                                <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 font-mono text-lg border">
+                                    <p><span className="text-green-500 font-bold mr-2">(+)</span> My mother is a nurse</p>
+                                    <p><span className="text-red-500 font-bold mr-2">(-)</span> My mother is not a nurse</p>
+                                    <p><span className="text-blue-500 font-bold mr-2">(?)</span> is my mother a nurse?</p>
+                                    <Separator className="my-2 bg-border/50" />
+                                    <p><span className="text-green-500 font-bold mr-2">(+A)</span> yes, she is</p>
+                                    <p><span className="text-red-500 font-bold mr-2">(-A)</span> no, she is not</p>
+                                </div>
                             </div>
                         </CardContent>
+                        <CardFooter className="justify-center border-t pt-6">
+                            <Button onClick={() => handleTopicComplete('tobe-3-grammar')} size="lg" className="px-16 font-bold h-14 text-xl">
+                                Entendido <ArrowRight className="ml-2 h-6 w-6" />
+                            </Button>
+                        </CardFooter>
                     </Card>
                 );
             case 'tobe-3-exercise': return <TranslationExercise exerciseKey="exercises3" onComplete={() => handleTopicComplete('tobe-3-exercise')} />;
