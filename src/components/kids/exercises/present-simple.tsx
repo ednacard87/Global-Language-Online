@@ -9,8 +9,9 @@ import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
-import { ArrowRight, Trophy } from 'lucide-react';
+import { ArrowRight, Trophy, BookText } from 'lucide-react';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 export type ExercisePrompt = {
     spanish: string;
@@ -160,12 +161,14 @@ export const PresentSimpleExercise = ({
     onComplete,
     exerciseData,
     title,
-    showShortAnswers = true
+    showShortAnswers = true,
+    vocabulary
 }: {
     onComplete: () => void,
     exerciseData: ExercisePrompt[],
     title?: string,
-    showShortAnswers?: boolean
+    showShortAnswers?: boolean,
+    vocabulary?: Record<string, string>
 }) => {
     const { toast } = useToast();
     
@@ -267,8 +270,35 @@ export const PresentSimpleExercise = ({
     return (
         <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
             <CardHeader>
-                <CardTitle>{title || 'Ejercicios (Presente Simple)'}</CardTitle>
-                <CardDescription>Traduce la frase a todas sus formas.</CardDescription>
+                <div className="flex justify-between items-start">
+                    <div>
+                        <CardTitle>{title || 'Ejercicios (Presente Simple)'}</CardTitle>
+                        <CardDescription>Traduce la frase a todas sus formas.</CardDescription>
+                    </div>
+                    {vocabulary && (
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button variant="outline" size="sm" className="border-2 border-brand-blue animate-border-pulse">
+                                    <BookText className="mr-2 h-4 w-4" />
+                                    Vocabulary
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-64">
+                                <div className="space-y-2">
+                                    <h4 className="font-bold border-b pb-1 text-primary">Vocabulario de apoyo</h4>
+                                    <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
+                                        {Object.entries(vocabulary).map(([es, en]) => (
+                                            <React.Fragment key={es}>
+                                                <span className="text-muted-foreground capitalize">{es}:</span>
+                                                <span className="font-semibold text-right">{en}</span>
+                                            </React.Fragment>
+                                        ))}
+                                    </div>
+                                </div>
+                            </PopoverContent>
+                        </Popover>
+                    )}
+                </div>
                 <div className="pt-4 space-y-2">
                     <div className="flex justify-between items-center px-1">
                         <span className="text-sm font-medium text-muted-foreground">Progreso del Ejercicio</span>
