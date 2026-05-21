@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -31,7 +30,6 @@ import { VerbVocabularyExercise } from '@/components/kids/exercises/verb-vocabul
 import { SingleFormExercise } from '@/components/kids/exercises/single-form';
 import { PresentSimpleExercise } from '@/components/kids/exercises/present-simple';
 import { ReadingComprehensionExercise } from '@/components/kids/exercises/reading-comprehension';
-import { FillInTheBlanksExercise } from '@/components/kids/exercises/fill-in-the-blanks';
 
 // --- Constants ---
 const ICONS_CONFIG = {
@@ -148,6 +146,91 @@ const possessivesData = [
     { english: 'Their', spanish: 'Su / Sus (de ellos/as)' },
 ];
 
+// Exercise Data for Class 2
+const positiveExercisesData = [
+    { spanish: 'yo bebo agua', answer: ["I drink water"] },
+    { spanish: 'nosotros jugamos futbol', answer: ["we play soccer", "we play football"] },
+    { spanish: 'ellos escuchan musica', answer: ["they listen to music"] },
+    { spanish: 'yo hablo ingles', answer: ["I speak English"] },
+    { spanish: 'tu abres la puerta', answer: ["you open the door"] },
+];
+const negativeExercisesData = [
+    { spanish: 'yo no bebo agua', answer: ["I do not drink water", "I don't drink water"] },
+    { spanish: 'nosotros no jugamos futbol', answer: ["we do not play soccer", "we don't play soccer", "we do not play football", "we don't play football"] },
+    { spanish: 'ellos no escuchan musica', answer: ["they do not listen to music", "they don't listen to music"] },
+    { spanish: 'yo no hablo ingles', answer: ["I do not speak English", "I don't speak English"] },
+    { spanish: 'tu no abres la puerta', answer: ["you do not open the door", "you don't open the door"] },
+];
+const interrogativeExercisesData = [
+    { spanish: '¿yo bebo agua?', answer: ["do I drink water?"] },
+    { spanish: '¿nosotros jugamos futbol?', answer: ["do we play soccer?", "do we play football?"] },
+    { spanish: '¿ellos escuchan musica?', answer: ["do they listen to music?"] },
+    { spanish: '¿yo hablo ingles?', answer: ["do I speak English?"] },
+    { spanish: '¿tu abres la puerta?', answer: ["do you open the door?"] },
+];
+const class2Exercise1Data = [
+    {
+        spanish: "yo camino en el parque el sabado",
+        answers: {
+            affirmative: ["i walk in the park on saturday"],
+            negative: ["i do not walk in the park on saturday", "i don't walk in the park on saturday"],
+            interrogative: ["do i walk in the park on saturday?"],
+        }
+    },
+    {
+        spanish: "nosotros caminamos en la universidad los domingos",
+        answers: {
+            affirmative: ["we walk at the university on sundays"],
+            negative: ["we do not walk at the university on sundays", "we don't walk at the university on sundays"],
+            interrogative: ["do we walk at the university on sundays?"],
+        }
+    }
+];
+const class2Exercise2Data = [
+    {
+        spanish: "tu duermes en la tarde",
+        answers: {
+            affirmative: ["you sleep in the afternoon"],
+            negative: ["you do not sleep in the afternoon", "you don't sleep in the afternoon"],
+            interrogative: ["do you sleep in the afternoon?"],
+        }
+    },
+    {
+        spanish: "nosotros comemos carne y ensalada",
+        answers: {
+            affirmative: ["we eat meat and salad"],
+            negative: ["we do not eat meat and salad", "we don't eat meat and salad"],
+            interrogative: ["do we eat meat and salad?"],
+        }
+    },
+    {
+        spanish: "ellos beben cerveza",
+        answers: {
+            affirmative: ["they drink beer"],
+            negative: ["they do not drink beer", "they don't drink beer"],
+            interrogative: ["do they drink beer?"],
+        }
+    }
+];
+const class2Exercise3Data = [
+    {
+        spanish: "Tu haces la tarea",
+        answers: {
+            affirmative: ["you do the homework", "you do your homework"],
+            negative: ["you do not do the homework", "you don't do the homework", "you do not do your homework", "you don't do your homework"],
+            interrogative: ["do you do the homework?", "do you do your homework?"],
+        }
+    },
+    {
+        spanish: "ella hace ejercicio",
+        answers: {
+            affirmative: ["she does exercise", "she does exercises"],
+            negative: ["she does not do exercise", "she doesn't do exercise", "she does not do exercises", "she doesn't do exercises"],
+            interrogative: ["does she do exercise?", "does she do exercises?"],
+        }
+    }
+];
+
 interface Topic {
   key: string;
   name: string;
@@ -170,7 +253,7 @@ interface ClassContentProps {
 //                 CLASS 1 COMPONENT
 // =================================================================
 const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isProfileLoading, isUserLoading }: ClassContentProps) => {
-    const progressStorageKey = `progress_a1_eng_u1_c1_v78_stable`;
+    const progressStorageKey = `progress_a1_eng_u1_c1_v80_stable`;
     const mainProgressKey = `progress_a1_eng_unit_1_class_1`;
 
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
@@ -528,11 +611,10 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                         <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground">
                             <CardHeader>
                                 <CardTitle className="text-2xl font-black text-primary uppercase tracking-tight">To be 1</CardTitle>
-                                <CardDescription className="font-bold text-foreground">Estructura del Verbo To be 1</CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-6">
                                 <div className="p-6 bg-slate-100 rounded-[2rem] border border-border/50">
-                                    <h3 className="text-xl font-bold text-primary mb-4">Estructura</h3>
+                                    <h3 className="text-xl font-bold text-primary mb-4">Estructura Verbo To be 1</h3>
                                     <div className="space-y-3 font-mono text-base">
                                         <p><span className="text-green-500 font-bold text-lg mr-2">(+)</span> pronoun + to be + complement</p>
                                         <p><span className="text-red-500 font-bold text-lg mr-2">(-)</span> pronoun + to be + not + complement</p>
@@ -551,7 +633,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                         </Card>
                     </div>
                 );
-            case 'exercises1': return <TranslationExercise exerciseKey="exercises1" onComplete={() => handleTopicComplete('exercises1')} vocabulary={{'un- una': 'a / an', 'abogado': 'lawyer', 'enfermo': 'sick', 'enfermero': 'nurse'}} highlightVocabulary={true} />;
+            case 'exercises1': return <TranslationExercise exerciseKey="exercises1" onComplete={() => handleTopicComplete('exercises1')} vocabulary={{'un- una': 'a / an', 'abogado': 'lawyer', 'enfermo': 'sick', 'enfermero': 'nurse'}} highlightVocabulary={true} title="Exercise 1" />;
             case 'possessives':
                 return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left text-foreground">
@@ -577,11 +659,10 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                         <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground">
                             <CardHeader>
                                 <CardTitle className="text-2xl font-black text-primary uppercase tracking-tight">To be 2</CardTitle>
-                                <CardDescription className="font-bold text-foreground">Estructura del Verbo To be 2</CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-6">
                                 <div className="p-6 bg-slate-100 rounded-[2rem] border border-border/50">
-                                    <h3 className="text-xl font-bold text-primary mb-4">Estructura</h3>
+                                    <h3 className="text-xl font-bold text-primary mb-4">Estructura Verbo To be 2</h3>
                                     <div className="space-y-3 font-mono text-base">
                                         <p><span className="text-green-500 font-bold text-lg mr-2">(+)</span> pronoun + To be + possessive + noun + complement</p>
                                         <p><span className="text-red-500 font-bold text-lg mr-2">(-)</span> pronoun + To be + Not + possessive + noun + complement</p>
@@ -600,18 +681,17 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                         </Card>
                     </div>
                 );
-            case 'exercises2': return <TranslationExercise exerciseKey="exercises2" onComplete={() => handleTopicComplete('exercises2')} vocabulary={{'amigo': 'friend', 'hijo': 'son', 'perro': 'dog'}} highlightVocabulary={true} />;
+            case 'exercises2': return <TranslationExercise exerciseKey="exercises2" onComplete={() => handleTopicComplete('exercises2')} vocabulary={{'amigo': 'friend', 'hijo': 'son', 'perro': 'dog'}} highlightVocabulary={true} title="Exercise 2" />;
             case 'tobe-3':
                 return (
                     <div className="space-y-6 text-left">
                         <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground">
                             <CardHeader>
                                 <CardTitle className="text-2xl font-black text-primary uppercase tracking-tight">To be 3</CardTitle>
-                                <CardDescription className="font-bold text-foreground">Estructura del Verbo To be 3</CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-6">
                                 <div className="p-6 bg-slate-100 rounded-[2rem] border border-border/50">
-                                    <h3 className="text-xl font-bold text-primary mb-4">Estructura</h3>
+                                    <h3 className="text-xl font-bold text-primary mb-4">Estructura Verbo To be 3</h3>
                                     <div className="space-y-3 font-mono text-base">
                                         <p><span className="text-green-500 font-bold text-lg mr-2">(+)</span> possessive + noun + to be + complement</p>
                                         <p><span className="text-red-500 font-bold text-lg mr-2">(-)</span> possessive + noun + to be + Not + complement</p>
@@ -633,7 +713,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                         </Card>
                     </div>
                 );
-            case 'exercises3': return <TranslationExercise exerciseKey="exercises3" onComplete={() => handleTopicComplete('exercises3')} vocabulary={{'enfermera': 'nurse', 'abuelos': 'grandparents', 'pensionado': 'retired', 'juguete': 'toy'}} highlightVocabulary={true} />;
+            case 'exercises3': return <TranslationExercise exerciseKey="exercises3" onComplete={() => handleTopicComplete('exercises3')} vocabulary={{'enfermera': 'nurse', 'abuelos': 'grandparents', 'pensionado': 'retired', 'juguete': 'toy'}} highlightVocabulary={true} title="Exercise 3" />;
             case 'ex-mixto-1': return <SimpleTranslationExercise course="a1" exerciseKey="mixed1" onComplete={() => handleTopicComplete('ex-mixto-1')} title="Exercise 1" vocabulary={{'estudiante': 'student', 'amigos': 'friends', 'padres': 'parents', 'hermana': 'sister', 'abogados': 'lawyers', 'de': 'from'}} highlightVocabulary={true} />;
             case 'ex-mixto-2': return <TranslationExercise exerciseKey="qna2" formType="qna" onComplete={() => handleTopicComplete('ex-mixto-2')} title="Exercise 2" vocabulary={{'cansado': 'tired', 'amiga': 'friend', 'estudiantes': 'students', 'feliz': 'happy', 'curiosos': 'curious', 'novia': 'girlfriend', 'ocupada': 'busy', 'libres': 'free', 'hambriento': 'hungry', 'compañeros de trabajo': 'coworkers', 'a tiempo': 'on time'}} highlightVocabulary={true} />;
             case 'ex-mixto-3': return <SimpleTranslationExercise course="a1" exerciseKey="mixed3" onComplete={() => handleTopicComplete('ex-mixto-3')} title="Exercise 3" vocabulary={{'estudiantes': 'students', 'amigos': 'friends', 'mamá': 'mother/mom', 'padres': 'parents', 'viejos': 'old', 'prima': 'cousin', 'abuela': 'grandmother', 'hermanas': 'sisters', 'cansado': 'tired', 'aburridos': 'bored', 'profesores': 'teachers', 'enojados': 'angry', 'alta': 'tall', 'preocupados': 'worried'}} highlightVocabulary={true} />;
@@ -729,7 +809,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
 //                 CLASS 2 COMPONENT
 // =================================================================
 const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isProfileLoading, isUserLoading }: ClassContentProps) => {
-    const progressStorageVersion = 'progress_a1_eng_u1_c2_v88_stable';
+    const progressStorageVersion = 'progress_a1_eng_u1_c2_v89_stable';
     const mainProgressKey = 'progress_a1_eng_unit_1_class_2';
     
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
@@ -1113,7 +1193,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                             </CardContent>
                             <CardFooter className="justify-center border-t pt-6">
                                 <Button onClick={() => handleTopicComplete('grammar')} size="lg" className="px-16 font-bold h-14 text-xl">
-                                    Entendido <ArrowRight className="ml-2 h-6 w-6" />
+                                    Entendido <ArrowRight className="ml-6 w-6 h-6" />
                                 </Button>
                             </CardFooter>
                         </Card>
