@@ -777,7 +777,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
 //                 CLASS 2 COMPONENT (BLINDADA)
 // =================================================================
 const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isProfileLoading, isUserLoading }: ClassContentProps) => {
-    const progressStorageVersion = 'progress_a1_eng_u1_c2_v79_stable';
+    const progressStorageVersion = 'progress_a1_eng_u1_c2_v82_stable';
     const mainProgressKey = 'progress_a1_eng_unit_1_class_2';
     
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
@@ -792,6 +792,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
 
     const initialLearningPath = useMemo((): Topic[] => [
         { key: 'vocabulary', name: t('a1class1.vocabulary'), icon: BookOpen, status: 'active' },
+        { key: 'tobe-structure', name: 'Structure: To be 1', icon: GraduationCap, status: 'locked' },
         { key: 'grammar', name: 'Grammar: Present Simple', icon: GraduationCap, status: 'locked' },
         {
             key: 'exercises',
@@ -927,7 +928,6 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                 [`lessonProgress.${progressStorageVersion}`]: statusesToSave,
                 [`progress.${mainProgressKey}`]: Math.round(progressValue)
             });
-            // Notificamos globalmente que el progreso ha cambiado
             window.dispatchEvent(new CustomEvent('progressUpdated'));
         }
     }, [learningPath, isAdmin, progressValue, studentDocRef, initialLoadComplete, selectedTopic, studentProfile, isInitialLoading]);
@@ -1001,7 +1001,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         
         setSelectedTopic(topicKey);
 
-        const autoViewTopics = ['grammar'];
+        const autoViewTopics = ['grammar', 'tobe-structure'];
         if (autoViewTopics.includes(topicKey)) {
             handleTopicComplete(topicKey);
         }
@@ -1109,14 +1109,62 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                         </CardFooter>
                     </Card>
                 );
+            case 'tobe-structure':
+                return (
+                    <div className="space-y-6">
+                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left overflow-hidden text-foreground">
+                            <CardHeader className="pb-4 bg-primary/10">
+                                <CardTitle className="text-2xl font-black text-primary uppercase">VERB TO BE STRUCTURE</CardTitle>
+                                <CardDescription className='font-bold text-foreground'>Estructura para formar oraciones</CardDescription>
+                            </CardHeader>
+                            <CardContent className='pt-6'>
+                                <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 font-mono text-base border">
+                                    <p><span className="text-green-500 font-bold text-lg mr-2">(+)</span> pronoun + to be + complement</p>
+                                    <p><span className="text-red-500 font-bold text-lg mr-2">(-)</span> pronoun + to be + not + complement</p>
+                                    <p><span className="text-blue-500 font-bold text-lg mr-2">(?)</span> to be + pronoun + complement ?</p>
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left overflow-hidden text-foreground">
+                            <CardHeader className="pb-4 bg-primary/10">
+                                <CardTitle className="text-xl font-bold">Respuestas Cortas</CardTitle>
+                            </CardHeader>
+                            <CardContent className='pt-6'>
+                                <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 font-mono text-base border">
+                                    <p><span className="text-green-500 font-bold text-lg mr-2">(+A)</span> Yes, pronoun + to be</p>
+                                    <p><span className="text-red-500 font-bold text-lg mr-2">(-A)</span> No, pronoun + to be + not</p>
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left overflow-hidden text-foreground">
+                            <CardHeader className="pb-4 bg-primary/10">
+                                <CardTitle className="text-xl font-bold">Ejemplo: "Ellos son mis amigos"</CardTitle>
+                            </CardHeader>
+                            <CardContent className='pt-6'>
+                                <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 font-mono text-lg border">
+                                    <p><span className="text-green-500 font-bold mr-2">(+)</span> They are my friends</p>
+                                    <p><span className="text-red-500 font-bold mr-2">(-)</span> They are not my friends</p>
+                                    <p><span className="text-blue-500 font-bold mr-2">(?)</span> Are they my friends?</p>
+                                </div>
+                            </CardContent>
+                            <CardFooter className="justify-center border-t pt-6">
+                                <Button onClick={() => handleTopicComplete('tobe-structure')} size="lg" className="px-16 font-bold h-14 text-xl">
+                                    Entendido <ArrowRight className="ml-2 h-6 w-6" />
+                                </Button>
+                            </CardFooter>
+                        </Card>
+                    </div>
+                );
             case 'grammar':
                 return (
                     <div className="space-y-6">
                         <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left overflow-hidden text-foreground">
-                            <CardHeader className="pb-4">
+                            <CardHeader className="pb-4 bg-primary/10">
                                 <CardTitle className="text-2xl font-black text-primary uppercase">PRESENT SIMPLE STRUCTURE</CardTitle>
                             </CardHeader>
-                            <CardContent>
+                            <CardContent className='pt-6'>
                                 <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 font-mono text-base border">
                                     <div className="flex items-center gap-4">
                                         <span className="text-green-500 font-bold w-12 text-center text-lg">(+)</span>
