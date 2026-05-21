@@ -245,8 +245,8 @@ const class2Exercise3Data = [
 ];
 
 const class2Ex3Vocab = {
-    "hacer la tarea": "to do the homework",
-    "hacer ejercicio": "to do exercise"
+    "tarea": "homework",
+    "ejercicio": "exercise"
 };
 
 interface Topic {
@@ -1436,6 +1436,10 @@ export default function EngA1ClassPage() {
     const studentDocRef = useMemoFirebase(() => (user ? doc(firestore, 'students', user.uid) : null), [firestore, user]);
     const { data: studentProfile, isLoading: isProfileLoading } = useDoc(studentDocRef);
     const isAdmin = useMemo(() => (user && (studentProfile?.role === 'admin' || user.email === 'ednacard87@gmail.com')), [user, studentProfile]);
+
+    const handleTopicComplete = useCallback((topicKey: string) => {
+        // Defined here for correction
+    }, []);
 
     const commonProps: ClassContentProps = { t, toast, studentDocRef, studentProfile, isAdmin, isProfileLoading, isUserLoading };
 
