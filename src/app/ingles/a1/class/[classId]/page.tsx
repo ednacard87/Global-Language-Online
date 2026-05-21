@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -104,6 +103,8 @@ const classVocabularyData = {
         { spanish: 'Blanco', english: 'White' },
         { spanish: 'Gris', english: 'Gray' },
         { spanish: 'Marrón', english: 'Brown' },
+        { spanish: 'Azul claro', english: 'Light blue' },
+        { spanish: 'Azul oscuro', english: 'Dark blue' },
     ]
 };
 
@@ -465,7 +466,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
 
         const autoViewTopics = ['tobe', 'possessives', 'tobe-1-grammar', 'tobe-2-grammar', 'tobe-3-grammar'];
         if (autoViewTopics.includes(topicKey)) {
-            setTopicToComplete(topicKey);
+            handleTopicComplete(topicKey);
         }
     };
     
@@ -1043,7 +1044,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                 } else if (currentTopic.subItems) {
                     const subIndex = currentTopic.subItems.findIndex((sub: any) => sub.key === topicToComplete);
                     if (subIndex !== -1) {
-                        if (currentTopic.subItems[subIndex].status !== 'completed') currentTopic.subItems[subIndex].status = 'completed';
+                        if (currentTopic.subItems[subIndex].status !== 'completed') currentTopic.subItems[subItemIndex].status = 'completed';
                         const nextSubIndex = subIndex + 1;
                         if (nextSubIndex < currentTopic.subItems.length && currentTopic.subItems[nextSubIndex].status === 'locked') {
                             currentTopic.subItems[nextSubIndex].status = 'active';
