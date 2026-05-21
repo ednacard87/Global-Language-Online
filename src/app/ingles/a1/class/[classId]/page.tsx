@@ -15,9 +15,8 @@ import { doc } from 'firebase/firestore';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
 import { Label } from '@/components/ui/label';
+import { Separator } from '@/components/ui/separator';
 
 // Imports for Exercises
 import { ToBeMemoryGame } from '@/components/kids/exercises/tobe-memory-game';
@@ -147,6 +146,103 @@ const possessivesData = [
     { english: 'Their', spanish: 'Su / Sus (de ellos/as)' },
 ];
 
+// Exercises data for Class 2
+const positiveExercisesData = [
+    { spanish: 'yo bebo agua', answer: ["I drink water"] },
+    { spanish: 'nosotros jugamos futbol', answer: ["we play soccer", "we play football"] },
+    { spanish: 'ellos escuchan musica', answer: ["they listen to music"] },
+    { spanish: 'yo hablo ingles', answer: ["I speak English"] },
+    { spanish: 'tu abres la puerta', answer: ["you open the door"] },
+];
+const negativeExercisesData = [
+    { spanish: 'yo no bebo agua', answer: ["I do not drink water", "I don't drink water"] },
+    { spanish: 'nosotros no jugamos futbol', answer: ["we do not play soccer", "we don't play soccer", "we do not play football", "we don't play football"] },
+    { spanish: 'ellos no escuchan musica', answer: ["they do not listen to music", "they don't listen to music"] },
+    { spanish: 'yo no hablo ingles', answer: ["I do not speak English", "I don't speak English"] },
+    { spanish: 'tu no abres la puerta', answer: ["you do not open the door", "you don't open the door"] },
+];
+const interrogativeExercisesData = [
+    { spanish: '¿yo bebo agua?', answer: ["do I drink water?"] },
+    { spanish: '¿nosotros jugamos futbol?', answer: ["do we play soccer?", "do we play football?"] },
+    { spanish: '¿ellos escuchan musica?', answer: ["do they listen to music?"] },
+    { spanish: '¿yo hablo ingles?', answer: ["do I speak English?"] },
+    { spanish: '¿tu abres la puerta?', answer: ["do you open the door?"] },
+];
+
+const class2Exercise1Data = [
+    {
+        spanish: "NOSOTROS CAMINAMOS EN EL PARQUE",
+        answers: {
+            affirmative: ["we walk in the park"],
+            negative: ["we do not walk in the park", "we don't walk in the park"],
+            interrogative: ["do we walk in the park?"],
+        }
+    },
+    {
+        spanish: "ELLOS VAN A LA UNIVERSIDAD EL SABADO.",
+        answers: {
+            affirmative: ["they go to the university on saturday"],
+            negative: ["they do not go to the university on saturday", "they don't go to the university on saturday"],
+            interrogative: ["do they go to the university on saturday?"],
+        }
+    },
+    {
+        spanish: "NOSOTROS TRABAJAMOS LOS DOMINGOS.",
+        answers: {
+            affirmative: ["we work on sundays"],
+            negative: ["we do not work on sundays", "we don't work on sundays"],
+            interrogative: ["do we work on sundays?"],
+        }
+    }
+];
+
+const class2Exercise2Data = [
+    {
+        spanish: "TÚ DUERMES EN LA TARDE",
+        answers: {
+            affirmative: ["you sleep in the afternoon"],
+            negative: ["you do not sleep in the afternoon", "you don't sleep in the afternoon"],
+            interrogative: ["do you sleep in the afternoon?"],
+        }
+    },
+    {
+        spanish: "NOSOTROS COMEMOS CARNE Y ENSALADA",
+        answers: {
+            affirmative: ["we eat meat and salad"],
+            negative: ["we do not eat meat and salad", "we don't eat meat and salad"],
+            interrogative: ["do we eat meat and salad?"],
+        }
+    },
+    {
+        spanish: "ELLOS BEBEN CERVEZA",
+        answers: {
+            affirmative: ["they drink beer"],
+            negative: ["they do not drink beer", "they don't drink beer"],
+            interrogative: ["do they drink beer?"],
+        }
+    }
+];
+
+const class2Exercise3Data = [
+    {
+        spanish: "tu haces la tarea",
+        answers: {
+            affirmative: ["you do the homework"],
+            negative: ["you do not do the homework", "you don't do the homework"],
+            interrogative: ["do you do the homework?"],
+        }
+    },
+    {
+        spanish: "ella hace ejercicio",
+        answers: {
+            affirmative: ["she does exercise"],
+            negative: ["she does not do exercise", "she doesn't do exercise"],
+            interrogative: ["does she do exercise?"],
+        }
+    }
+];
+
+
 interface Topic {
   key: string;
   name: string;
@@ -169,7 +265,7 @@ interface ClassContentProps {
 //                 CLASS 1 COMPONENT (BLINDADA)
 // =================================================================
 const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isProfileLoading, isUserLoading }: ClassContentProps) => {
-    const progressStorageKey = `progress_a1_eng_u1_c1_v70_stable`;
+    const progressStorageKey = `progress_a1_eng_u1_c1_v71_stable`;
     const mainProgressKey = `progress_a1_eng_unit_1_class_1`;
 
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
@@ -325,6 +421,8 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                 [`lessonProgress.${progressStorageKey}`]: statusesToSave,
                 [`progress.${mainProgressKey}`]: Math.round(progressValue)
             });
+            // Notificamos globalmente que el progreso ha cambiado
+            window.dispatchEvent(new CustomEvent('progressUpdated'));
         }
     }, [learningPath, isAdmin, progressValue, studentDocRef, initialLoadComplete, selectedTopic, isInitialLoading, studentProfile]);
 
@@ -382,7 +480,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             }
             if (nextToSelect) {
                 const finalNext = nextToSelect;
-                setTimeout(() => setSelectedTopic(finalNext), 0);
+                setTimeout(() => setSelectedTopic(finalNext), 100);
             }
             
             return newPath;
@@ -680,7 +778,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
 //                 CLASS 2 COMPONENT (BLINDADA)
 // =================================================================
 const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isProfileLoading, isUserLoading }: ClassContentProps) => {
-    const progressStorageVersion = 'progress_a1_eng_u1_c2_v78_stable';
+    const progressStorageVersion = 'progress_a1_eng_u1_c2_v79_stable';
     const mainProgressKey = 'progress_a1_eng_unit_1_class_2';
     
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
@@ -830,6 +928,8 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                 [`lessonProgress.${progressStorageVersion}`]: statusesToSave,
                 [`progress.${mainProgressKey}`]: Math.round(progressValue)
             });
+            // Notificamos globalmente que el progreso ha cambiado
+            window.dispatchEvent(new CustomEvent('progressUpdated'));
         }
     }, [learningPath, isAdmin, progressValue, studentDocRef, initialLoadComplete, selectedTopic, studentProfile, isInitialLoading]);
 
