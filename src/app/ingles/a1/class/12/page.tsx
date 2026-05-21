@@ -125,7 +125,7 @@ export default function EngA1Class12Page() {
     };
 
     const renderContent = () => {
-        if (isInitialLoading) return <div className="flex justify-center items-center h-64"><Loader2 className="animate-spin" /></div>;
+        if (isInitialLoading) return <div className="flex justify-center items-center h-64"><Loader2 className="animate-spin text-primary" /></div>;
         const topic = learningPath.find(t => t.key === selectedTopic);
         switch (selectedTopic) {
             case 'vocabulary':
@@ -136,11 +136,34 @@ export default function EngA1Class12Page() {
                         <CardFooter className="flex justify-between"><Button onClick={() => { let ok = false; const nv = timeExpressionsData.map((v, i) => { const cor = v.english.some(e => e.toUpperCase() === vocabAnswers[i].trim().toUpperCase()); if (cor) ok = true; return cor ? 'correct' : 'incorrect'; }); setVocabValidation(nv); setCanAdvanceVocab(ok); if (ok) toast({ title: "¡Bien hecho!" }); }}>Verificar</Button><Button onClick={() => setTopicToComplete('vocabulary')} disabled={!canAdvanceVocab && !isAdmin}>Avanzar</Button></CardFooter>
                     </Card>
                 );
-            case 'grammar': return <Card className="p-6"><CardTitle>PRESENT CONTINUOUS</CardTitle><CardContent className="pt-4"><p>Acciones ocurriendo AHORA (-ING).</p></CardContent></Card>;
-            case 'ex1': return <SimpleTranslationExercise exerciseKey="c12_ex1" course="a1" onComplete={() => setTopicToComplete('ex1')} />;
-            case 'grammar2': return <Card className="p-6"><CardTitle>ING Rules</CardTitle><CardContent className="pt-4"><p>Take -> Taking | Stop -> Stopping.</p></CardContent></Card>;
-            case 'ex2': return <SimpleTranslationExercise exerciseKey="c12_ex2" course="a1" onComplete={() => setTopicToComplete('ex2')} />;
-            default: return <div className="flex justify-center items-center h-48"><Loader2 className="animate-spin text-primary" /></div>;
+            case 'grammar':
+                return (
+                    <Card className="p-6">
+                        <CardHeader>
+                            <CardTitle>PRESENT CONTINUOUS</CardTitle>
+                        </CardHeader>
+                        <CardContent className="pt-4">
+                            <p>Acciones ocurriendo AHORA (-ING).</p>
+                        </CardContent>
+                    </Card>
+                );
+            case 'ex1':
+                return <SimpleTranslationExercise exerciseKey="c12_ex1" course="a1" onComplete={() => setTopicToComplete('ex1')} />;
+            case 'grammar2':
+                return (
+                    <Card className="p-6">
+                        <CardHeader>
+                            <CardTitle>{"ING Rules"}</CardTitle>
+                        </CardHeader>
+                        <CardContent className="pt-4">
+                            <p>{"Take -> Taking | Stop -> Stopping."}</p>
+                        </CardContent>
+                    </Card>
+                );
+            case 'ex2':
+                return <SimpleTranslationExercise exerciseKey="c12_ex2" course="a1" onComplete={() => setTopicToComplete('ex2')} />;
+            default:
+                return <div className="flex justify-center items-center h-48"><Loader2 className="animate-spin text-primary" /></div>;
         }
     };
 
@@ -149,21 +172,38 @@ export default function EngA1Class12Page() {
             <DashboardHeader />
             <main className="flex-1 p-4 md:p-8">
                 <div className="max-w-7xl mx-auto">
-                    <div className="mb-8 text-left text-white"><Link href="/ingles/a1" className="hover:underline text-sm">Volver al curso A1</Link><h1 className="text-4xl font-bold [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">Clase 12</h1></div>
+                    <div className="mb-8 text-left text-white">
+                        <Link href="/ingles/a1" className="hover:underline text-sm">Volver al curso A1</Link>
+                        <h1 className="text-4xl font-bold [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">Clase 12</h1>
+                    </div>
                     <div className="grid gap-8 md:grid-cols-12">
                         <div className="md:col-span-9">{renderContent()}</div>
                         <div className="md:col-span-3 text-left">
                             <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
                                 <CardHeader><CardTitle>Ruta</CardTitle></CardHeader>
                                 <CardContent>
-                                    <nav><ul className="space-y-1">
-                                        {learningPath.map(item => (
-                                            <li key={item.key} onClick={() => handleTopicSelect(item.key)} className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer', (item.status === 'locked' && !isAdmin) ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === item.key && 'bg-muted text-primary font-semibold')}>
-                                                <div className="flex items-center gap-3">{(item.status === 'completed') ? <CheckCircle className="h-5 w-5 text-green-500" /> : <item.icon className="h-5 w-5" />}<span>{item.name}</span></div>
-                                            </li>
-                                        ))}
-                                    </ul></nav>
-                                    <div className="mt-6 pt-6 border-t"><div className="flex justify-between items-center text-sm mb-2"><span>Progreso</span><span className="font-bold">{progressValue}%</span></div><Progress value={progressValue} className="h-2" /></div>
+                                    <nav>
+                                        <ul className="space-y-1">
+                                            {learningPath.map(item => {
+                                                const Icon = item.status === 'completed' ? CheckCircle : item.icon;
+                                                return (
+                                                    <li key={item.key} onClick={() => handleTopicSelect(item.key)} className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer', (item.status === 'locked' && !isAdmin) ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === item.key && 'bg-muted text-primary font-semibold')}>
+                                                        <div className="flex items-center gap-3">
+                                                            <Icon className={cn("h-5 w-5", item.status === 'completed' ? 'text-green-500' : '')} />
+                                                            <span>{item.name}</span>
+                                                        </div>
+                                                    </li>
+                                                );
+                                            })}
+                                        </ul>
+                                    </nav>
+                                    <div className="mt-6 pt-6 border-t">
+                                        <div className="flex justify-between items-center text-sm mb-2">
+                                            <span>Progreso</span>
+                                            <span className="font-bold">{progressValue}%</span>
+                                        </div>
+                                        <Progress value={progressValue} className="h-2" />
+                                    </div>
                                 </CardContent>
                             </Card>
                         </div>
