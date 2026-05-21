@@ -323,7 +323,7 @@ export default function EngA1Class3Page() {
         
         setSelectedTopic(topicKey);
 
-        const autoViewTopics = ['presentSimpleUses', 'vocabulary2', 'can'];
+        const autoViewTopics = ['vocabulary2', 'can'];
         if (autoViewTopics.includes(topicKey)) {
             handleTopicComplete(topicKey);
         }
@@ -408,13 +408,80 @@ export default function EngA1Class3Page() {
                                     Entendido <ArrowRight className="ml-2 h-6 w-6" />
                                 </Button>
                             </CardFooter>
-                        </Card>
+                        </div>
                     </div>
                 );
             case 'mixedExercises1':
                 return <PresentSimpleExercise key={selectedTopic} exerciseData={class3MixedExercise1Data} onComplete={() => handleTopicComplete('mixedExercises1')} title="Ejercicios Mixtos 1" showShortAnswers={false} />;
             case 'presentSimpleUses':
-                return <Card className="shadow-soft border-2 border-brand-purple p-6"><CardTitle>Usos del Presente Simple</CardTitle><CardContent className="pt-4"><p>Se usa para: Rutinas, Hechos permanentes, Horarios y Verdades universales.</p></CardContent></Card>;
+                return (
+                    <div className="space-y-6">
+                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left text-foreground">
+                            <CardHeader>
+                                <CardTitle className="text-2xl font-black text-primary uppercase">Usos del Presente Simple</CardTitle>
+                                <CardDescription className="font-bold text-foreground">Cuándo y cómo usar el Presente Simple.</CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-6">
+                                
+                                <div className="space-y-4">
+                                    <h3 className="text-xl font-bold text-primary uppercase tracking-tight">Hechos y Verdades Generales</h3>
+                                    <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 border">
+                                        <p className="text-muted-foreground mb-2">Para cosas que siempre son ciertas.</p>
+                                        <div className="font-mono text-lg space-y-1">
+                                            <p className="font-black text-primary">The Earth goes around the Sun.</p>
+                                            <p className="text-sm text-muted-foreground italic">(La Tierra gira alrededor del Sol.)</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <Separator className="opacity-50" />
+
+                                <div className="space-y-4">
+                                    <h3 className="text-xl font-bold text-primary uppercase tracking-tight">Hábitos y Rutinas</h3>
+                                    <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 border">
+                                        <p className="text-muted-foreground mb-2">Para acciones que haces regularmente.</p>
+                                        <div className="font-mono text-lg space-y-1">
+                                            <p className="font-black text-primary">I play soccer on Saturdays.</p>
+                                            <p className="text-sm text-muted-foreground italic">(Juego al fútbol los sábados.)</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <Separator className="opacity-50" />
+
+                                <div className="space-y-4">
+                                    <h3 className="text-xl font-bold text-primary uppercase tracking-tight">Horarios y Eventos Programados</h3>
+                                    <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 border">
+                                        <p className="text-muted-foreground mb-2">Para eventos futuros que tienen un horario fijo.</p>
+                                        <div className="font-mono text-lg space-y-1">
+                                            <p className="font-black text-primary">The train leaves at 8:00 AM.</p>
+                                            <p className="text-sm text-muted-foreground italic">(El tren sale a las 8:00 AM.)</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <Separator className="opacity-50" />
+
+                                <div className="space-y-4">
+                                    <h3 className="text-xl font-bold text-primary uppercase tracking-tight">Situaciones Permanentes</h3>
+                                    <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 border">
+                                        <p className="text-muted-foreground mb-2">Para situaciones que son verdaderas por mucho tiempo.</p>
+                                        <div className="font-mono text-lg space-y-1">
+                                            <p className="font-black text-primary">She works in a hospital.</p>
+                                            <p className="text-sm text-muted-foreground italic">(Ella trabaja en un hospital.)</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </CardContent>
+                            <CardFooter className="justify-center border-t pt-6">
+                                <Button onClick={() => handleTopicComplete('presentSimpleUses')} size="lg" className="px-16 font-bold h-14 text-xl">
+                                    Continuar <ArrowRight className="ml-2 h-6 w-6" />
+                                </Button>
+                            </CardFooter>
+                        </Card>
+                    </div>
+                );
             case 'ex2_1':
                 return <SimpleTranslationExercise key={selectedTopic} course="a1" exerciseKey="c2_mixed1" onComplete={() => handleTopicComplete('ex2_1')} title="Ejercicio 1" />;
             case 'ex2_2':
