@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { BookOpen, PenSquare, Lock, GraduationCap, BrainCircuit, CheckCircle, ChevronDown, Loader2, XCircle, Ear, ArrowRight, BookText } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
@@ -242,7 +243,6 @@ const class2Exercise3Data = [
     }
 ];
 
-
 interface Topic {
   key: string;
   name: string;
@@ -421,7 +421,6 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                 [`lessonProgress.${progressStorageKey}`]: statusesToSave,
                 [`progress.${mainProgressKey}`]: Math.round(progressValue)
             });
-            // Notificamos globalmente que el progreso ha cambiado
             window.dispatchEvent(new CustomEvent('progressUpdated'));
         }
     }, [learningPath, isAdmin, progressValue, studentDocRef, initialLoadComplete, selectedTopic, isInitialLoading, studentProfile]);
@@ -476,7 +475,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             }
             
             if (wasUnlocked) {
-                setTimeout(() => toast({ title: "¡Siguiente tema desbloqueado!" }), 0);
+                setTimeout(() => toast({ title: "¡Siguiente tema desbloqueado!" }), 100);
             }
             if (nextToSelect) {
                 const finalNext = nextToSelect;
