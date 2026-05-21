@@ -6,7 +6,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { BookOpen, PenSquare, Lock, GraduationCap, BrainCircuit, CheckCircle, ChevronDown, Loader2, XCircle, Ear, ArrowRight } from 'lucide-react';
+import { BookOpen, PenSquare, Lock, GraduationCap, BrainCircuit, CheckCircle, ChevronDown, Loader2, XCircle, Ear, ArrowRight, BookText } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
@@ -146,9 +146,9 @@ const negativeExercisesData = [
 const interrogativeExercisesData = [
     { spanish: '¿yo bebo agua?', answer: ["do I drink water?"] },
     { spanish: '¿nosotros jugamos futbol?', answer: ["do we play soccer?", "do we play football?"] },
-    { spanish: '¿ellos han escuchado musica?', answer: ["have they listened to music?"] },
-    { spanish: '¿yo he hablado ingles?', answer: ["have I spoken English?"] },
-    { spanish: '¿tu has abierto la puerta?', answer: ["have you opened the door?"] },
+    { spanish: '¿ellos escuchan musica?', answer: ["do they listen to music?"] },
+    { spanish: '¿yo hablo ingles?', answer: ["do I speak English?"] },
+    { spanish: '¿tu abres la puerta?', answer: ["do you open the door?"] },
 ];
 
 const class2Exercise1Data = [
@@ -560,7 +560,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             case 'tobe-2-exercise': return <TranslationExercise key={selectedTopic} exerciseKey="exercises2" onComplete={() => setTopicToComplete('tobe-2-exercise')} vocabulary={{'amigo': 'friend', 'hijo': 'son', 'perro': 'dog'}} highlightVocabulary={true} />;
             case 'tobe-3-exercise': return <TranslationExercise key={selectedTopic} exerciseKey="exercises3" onComplete={() => setTopicToComplete('tobe-3-exercise')} vocabulary={{'enfermera': 'nurse', 'abuelos': 'grandparents', 'pensionado': 'retired', 'juguete': 'toy'}} highlightVocabulary={true} />;
             case 'ex-mixto-1': return <SimpleTranslationExercise key={selectedTopic} course="a1" exerciseKey="mixed1" onComplete={() => setTopicToComplete('ex-mixto-1')} vocabulary={{"estudiante": "student", "amigos": "friends", "padres": "parents", "hermana": "sister"}} highlightVocabulary={true} />;
-            case 'ex-mixto-2': return <TranslationExercise key={selectedTopic} exerciseKey="qna2" formType="qna" onComplete={() => setTopicToComplete('ex-mixto-2')} title="Ejercicio 2" vocabulary={{"cansado": "tired", "curiosos": "curious", "hambriento": "hungry"}} highlightVocabulary={true} />;
+            case 'ex-mixto-2': return <TranslationExercise key={selectedTopic} exerciseKey="qna2" formType="qna" onComplete={() => setTopicToComplete('ex-mixto-2')} title="Ejercicio 2" vocabulary={{"cansado": "tired", "curiosos": "curious", "hambriento": "hungry", "compañeros de trabajo": "coworkers", "a tiempo": "on time"}} highlightVocabulary={true} />;
             case 'ex-mixto-3': return <SimpleTranslationExercise key={selectedTopic} course="a1" exerciseKey="mixed3" onComplete={() => setTopicToComplete('ex-mixto-3')} vocabulary={{"estudiantes": "students", "mamá": "mother / mom"}} highlightVocabulary={true} />;
             case 'ex-mixto-4': return <SimpleTranslationExercise key={selectedTopic} course="a1" exerciseKey="mixed4" onComplete={() => setTopicToComplete('ex-mixto-4')} vocabulary={{"profesor": "teacher", "ingeniero": "engineer"}} highlightVocabulary={true} />;
             case 'ex-mixto-5': return <ShortAnswerExercise key={selectedTopic} onComplete={() => setTopicToComplete('ex-mixto-5')} />;
@@ -571,11 +571,10 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left">
                         <CardHeader>
                             <CardTitle>To be 1</CardTitle>
-                            <CardDescription>Aprende la estructura básica del verbo To be.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-8">
                             <div className="space-y-3">
-                                <h3 className="text-lg font-bold text-foreground pl-1">Estructura</h3>
+                                <h3 className="text-lg font-bold text-foreground">Estructura</h3>
                                 <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 font-mono text-base border">
                                     <div className="flex items-center gap-4">
                                         <span className="text-green-500 font-bold w-10 text-center text-lg">(+)</span>
@@ -593,7 +592,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                             </div>
 
                             <div className="space-y-3">
-                                <h3 className="text-lg font-bold text-foreground pl-1">Ejemplo: "ellos son estudiantes"</h3>
+                                <h3 className="text-lg font-bold text-foreground">Ejemplo: "ellos son estudiantes"</h3>
                                 <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 font-mono text-base border">
                                     <div className="flex items-center gap-4">
                                         <span className="text-green-500 font-bold w-10 text-center text-lg">(+)</span>
@@ -627,11 +626,10 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left">
                         <CardHeader>
                             <CardTitle>To be 2</CardTitle>
-                            <CardDescription>Uso de adjetivos posesivos con el verbo To be.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-8">
                             <div className="space-y-3">
-                                <h3 className="text-lg font-bold text-foreground pl-1">Estructura</h3>
+                                <h3 className="text-lg font-bold text-foreground">Estructura</h3>
                                 <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 font-mono text-base border">
                                     <div className="flex items-center gap-4">
                                         <span className="text-green-500 font-bold w-10 text-center text-lg">(+)</span>
@@ -649,7 +647,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                             </div>
 
                             <div className="space-y-3">
-                                <h3 className="text-lg font-bold text-foreground pl-1">Ejemplo: "Ellos son mis amigos"</h3>
+                                <h3 className="text-lg font-bold text-foreground">Ejemplo: "Ellos son mis amigos"</h3>
                                 <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 font-mono text-base border">
                                     <div className="flex items-center gap-4">
                                         <span className="text-green-500 font-bold w-10 text-center text-lg">(+)</span>
@@ -683,11 +681,10 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left">
                         <CardHeader>
                             <CardTitle>To be 3</CardTitle>
-                            <CardDescription>Sujetos compuestos por poseedor y objeto.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-8">
                             <div className="space-y-3">
-                                <h3 className="text-lg font-bold text-foreground pl-1">Estructura</h3>
+                                <h3 className="text-lg font-bold text-foreground">Estructura</h3>
                                 <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 font-mono text-base border">
                                     <div className="flex items-center gap-4">
                                         <span className="text-green-500 font-bold w-10 text-center text-lg">(+)</span>
@@ -705,7 +702,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                             </div>
 
                             <div className="space-y-3">
-                                <h3 className="text-lg font-bold text-foreground pl-1">Ejemplo: "Mi mamá es una enfermera"</h3>
+                                <h3 className="text-lg font-bold text-foreground">Ejemplo: "Mi mamá es una enfermera"</h3>
                                 <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 font-mono text-base border">
                                     <div className="flex items-center gap-4">
                                         <span className="text-green-500 font-bold w-10 text-center text-lg">(+)</span>
