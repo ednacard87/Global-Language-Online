@@ -6,14 +6,13 @@ import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, ChevronDown, XCircle, Loader2, ArrowRight } from 'lucide-react';
+import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, ChevronDown, Loader2, ArrowRight } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
 import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Separator } from '@/components/ui/separator';
 import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
 import { PresentSimpleExercise, type ExercisePrompt } from '@/components/kids/exercises/present-simple';
@@ -35,7 +34,7 @@ const ICONS_CONFIG = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_a1_eng_u1_c3_v65_stable';
+const progressStorageVersion = 'progress_a1_eng_u1_c3_v66_stable';
 const mainProgressKey = 'progress_a1_eng_unit_1_class_3';
 
 const class3MixedExercise1Data: ExercisePrompt[] = [
@@ -117,41 +116,41 @@ export default function EngA1Class3Page() {
     const [initialLoadComplete, setInitialLoadComplete] = useState(false);
 
     const initialLearningPath = useMemo((): Topic[] => [
-        { key: 'grammar2', name: t('kidsA1Class3.grammar2'), icon: GraduationCap, status: 'active' },
-        { key: 'mixedExercises1', name: t('kidsA1Class3.mixedExercises1'), icon: PenSquare, status: 'locked' },
-        { key: 'presentSimpleUses', name: t('kidsA1Class3.presentSimpleUses'), icon: BookOpen, status: 'locked' },
+        { key: 'grammar2', name: 'Gramática 2', icon: GraduationCap, status: 'active' },
+        { key: 'mixedExercises1', name: 'Ejercicios Mixtos 1', icon: PenSquare, status: 'locked' },
+        { key: 'presentSimpleUses', name: 'Usos del Presente Simple', icon: BookOpen, status: 'locked' },
         {
             key: 'mixedExercises2',
-            name: t('kidsA1Class3.mixedExercises2'),
+            name: 'Ejercicios Mixtos 2',
             icon: PenSquare,
             status: 'locked',
             subItems: [
-                { key: 'ex2_1', name: t('kidsA1Class3.exercise1'), icon: PenSquare, status: 'locked' },
-                { key: 'ex2_2', name: t('kidsA1Class3.exercise2'), icon: PenSquare, status: 'locked' },
+                { key: 'ex2_1', name: 'Ejercicio 1', icon: PenSquare, status: 'locked' },
+                { key: 'ex2_2', name: 'Ejercicio 2', icon: PenSquare, status: 'locked' },
             ],
         },
-        { key: 'vocabulary2', name: t('kidsA1Class3.vocabulary2'), icon: BookOpen, status: 'locked' },
+        { key: 'vocabulary2', name: 'Vocabulario 2', icon: BookOpen, status: 'locked' },
         {
             key: 'mixedExercises3',
-            name: t('kidsA1Class3.mixedExercises3'),
+            name: 'Ejercicios Mixtos 3',
             icon: PenSquare,
             status: 'locked',
             subItems: [
-                { key: 'ex3_3', name: t('kidsA1Class3.exercise3'), icon: PenSquare, status: 'locked' },
-                { key: 'ex3_4', name: t('kidsA1Class3.exercise4'), icon: PenSquare, status: 'locked' },
+                { key: 'ex3_3', name: 'Ejercicio 3', icon: PenSquare, status: 'locked' },
+                { key: 'ex3_4', name: 'Ejercicio 4', icon: PenSquare, status: 'locked' },
             ],
         },
-        { key: 'can', name: t('kidsA1Class3.can'), icon: GraduationCap, status: 'locked' },
+        { key: 'can', name: 'CAN', icon: GraduationCap, status: 'locked' },
         {
             key: 'canExercises',
-            name: t('kidsA1Class3.canExercises'),
+            name: 'Ejercicios CAN',
             icon: PenSquare,
             status: 'locked',
             subItems: [
                 { key: 'can1', name: 'Ejercicios con CAN', icon: PenSquare, status: 'locked' },
             ],
         },
-    ], [t]);
+    ], []);
     
     useEffect(() => {
         if (isProfileLoading || isUserLoading || !studentProfile || initialLoadComplete) return;
@@ -207,7 +206,7 @@ export default function EngA1Class3Page() {
         setSelectedTopic(savedSelectedTopic || firstActive?.key || path[0].key);
         setInitialLoadComplete(true);
         setIsInitialLoading(false);
-    }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading, isUserLoading, initialLoadComplete, t]);
+    }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading, isUserLoading, initialLoadComplete]);
 
     const progressValue = useMemo(() => {
         if (learningPath.length === 0) return 0;
@@ -246,9 +245,9 @@ export default function EngA1Class3Page() {
         });
     }, [learningPath, isAdmin, progressValue, studentDocRef, initialLoadComplete, selectedTopic, isInitialLoading, studentProfile]);
 
-    const handleTopicComplete = (completedKey: string) => {
+    const handleTopicComplete = useCallback((completedKey: string) => {
         setTopicToComplete(completedKey);
-    };
+    }, []);
 
     useEffect(() => {
         if (!topicToComplete) return;
@@ -309,7 +308,7 @@ export default function EngA1Class3Page() {
             return newPath;
         });
         setTopicToComplete(null);
-    }, [topicToComplete, toast, isAdmin]);
+    }, [topicToComplete, toast]);
 
     const handleTopicSelect = (topicKey: string) => {
         const mainTopic = learningPath.find(t => t.key === topicKey || t.subItems?.some(st => st.key === topicKey));
@@ -408,7 +407,7 @@ export default function EngA1Class3Page() {
                                     Entendido <ArrowRight className="ml-2 h-6 w-6" />
                                 </Button>
                             </CardFooter>
-                        </div>
+                        </Card>
                     </div>
                 );
             case 'mixedExercises1':
