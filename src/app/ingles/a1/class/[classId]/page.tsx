@@ -39,30 +39,7 @@ const ICONS_CONFIG = {
     completed: CheckCircle,
 };
 
-// Data for Class 1
-const verbToBeData = [
-    { ser: 'Yo soy', tobe: 'I am', estar: 'Yo estoy' },
-    { ser: 'Tú eres / usted es', tobe: 'You are', estar: 'Tú estás / usted está' },
-    { ser: 'Él es', tobe: 'He is', estar: 'Él está' },
-    { ser: 'Ella es', tobe: 'She is', estar: 'Ella está' },
-    { ser: 'Esto es', tobe: 'It is', estar: 'Esto está' },
-    { ser: 'Nosotros somos', tobe: 'We are', estar: 'Nosotros estamos' },
-    { ser: 'Ustedes son', tobe: 'You are', estar: 'Ustedes están' },
-    { ser: 'Ellos son', tobe: 'They are', estar: 'Ellos están' },
-];
-
-const possessivesData = [
-    { english: 'My', spanish: 'Mi / Mis' },
-    { english: 'Your', spanish: 'Tu / Tus (de ti)' },
-    { english: 'His', spanish: 'Su / Sus (de él)' },
-    { english: 'Her', spanish: 'Su / Sus (de ella)' },
-    { english: 'Its', spanish: 'Su / Sus (de eso)' },
-    { english: 'Our', spanish: 'Nuestro / Nuestra / Nuestros / Nuestras' },
-    { english: 'Your', spanish: 'Su / Sus (de ustedes)' },
-    { english: 'Their', spanish: 'Su / Sus (de ellos/as)' },
-];
-
-const classVocabularyData = {
+const class1VocabularyData = {
     weekdays: [
         { spanish: 'Lunes', english: 'Monday' },
         { spanish: 'Martes', english: 'Tuesday' },
@@ -108,7 +85,6 @@ const classVocabularyData = {
     ]
 };
 
-// Data for Class 2
 const class2VocabularyData = {
     verbos: [
         { spanish: 'JUGAR', english: 'Play' },
@@ -149,105 +125,27 @@ const class2VocabularyData = {
     ]
 };
 
-const positiveExercisesData = [
-    { spanish: 'yo bebo agua', answer: ["I drink water"] },
-    { spanish: 'nosotros jugamos futbol', answer: ["we play soccer", "we play football"] },
-    { spanish: 'ellos escuchan musica', answer: ["they listen to music"] },
-    { spanish: 'yo hablo ingles', answer: ["I speak English"] },
-    { spanish: 'tu abres la puerta', answer: ["you open the door"] },
-];
-const negativeExercisesData = [
-    { spanish: 'yo no bebo agua', answer: ["I do not drink water", "I don't drink water"] },
-    { spanish: 'nosotros no jugamos futbol', answer: ["we do not play soccer", "we don't play soccer", "we do not play football", "we don't play football"] },
-    { spanish: 'ellos no escuchan musica', answer: ["they do not listen to music", "they don't listen to music"] },
-    { spanish: 'yo no hablo ingles', answer: ["I do not speak English", "I don't speak English"] },
-    { spanish: 'tu no abres la puerta', answer: ["you do not open the door", "you don't open the door"] },
-];
-const interrogativeExercisesData = [
-    { spanish: '¿yo bebo agua?', answer: ["do I drink water?"] },
-    { spanish: '¿nosotros jugamos futbol?', answer: ["do we play soccer?", "do we play football?"] },
-    { spanish: '¿ellos escuchan musica?', answer: ["do they listen to music?"] },
-    { spanish: '¿yo hablo ingles?', answer: ["do I speak English?"] },
-    { spanish: '¿tu abres la puerta?', answer: ["do you open the door?"] },
+const verbToBeData = [
+    { ser: 'Yo soy', tobe: 'I am', estar: 'Yo estoy' },
+    { ser: 'Tú eres / usted es', tobe: 'You are', estar: 'Tú estás / usted está' },
+    { ser: 'Él es', tobe: 'He is', estar: 'Él está' },
+    { ser: 'Ella es', tobe: 'She is', estar: 'Ella está' },
+    { ser: 'Esto es', tobe: 'It is', estar: 'Esto está' },
+    { ser: 'Nosotros somos', tobe: 'We are', estar: 'Nosotros estamos' },
+    { ser: 'Ustedes son', tobe: 'You are', estar: 'Ustedes están' },
+    { ser: 'Ellos son', tobe: 'They are', estar: 'Ellos están' },
 ];
 
-const class2Exercise1Data = [
-    {
-        spanish: "NOSOTROS CAMINAMOS EN EL PARQUE",
-        answers: {
-            affirmative: ["we walk in the park"],
-            negative: ["we do not walk in the park", "we don't walk in the park"],
-            interrogative: ["do we walk in the park?"],
-        }
-    },
-    {
-        spanish: "ELLOS VAN A LA UNIVERSIDAD EL SABADO.",
-        answers: {
-            affirmative: ["they go to the university on saturday"],
-            negative: ["they do not go to the university on saturday", "they don't go to the university on saturday"],
-            interrogative: ["do they go to the university on saturday?"],
-        }
-    },
-    {
-        spanish: "NOSOTROS TRABAJAMOS LOS DOMINGOS.",
-        answers: {
-            affirmative: ["we work on sundays"],
-            negative: ["we do not work on sundays", "we don't work on sundays"],
-            interrogative: ["do we work on sundays?"],
-        }
-    }
+const possessivesData = [
+    { english: 'My', spanish: 'Mi / Mis' },
+    { english: 'Your', spanish: 'Tu / Tus (de ti)' },
+    { english: 'His', spanish: 'Su / Sus (de él)' },
+    { english: 'Her', spanish: 'Su / Sus (de ella)' },
+    { english: 'Its', spanish: 'Su / Sus (de eso)' },
+    { english: 'Our', spanish: 'Nuestro / Nuestra / Nuestros / Nuestras' },
+    { english: 'Your', spanish: 'Su / Sus (de ustedes)' },
+    { english: 'Their', spanish: 'Su / Sus (de ellos/as)' },
 ];
-
-const class2Exercise2Data = [
-    {
-        spanish: "TÚ DUERMES EN LA TARDE",
-        answers: {
-            affirmative: ["you sleep in the afternoon"],
-            negative: ["you do not sleep in the afternoon", "you don't sleep in the afternoon"],
-            interrogative: ["do you sleep in the afternoon?"],
-        }
-    },
-    {
-        spanish: "NOSOTROS COMEMOS CARNE Y ENSALADA",
-        answers: {
-            affirmative: ["we eat meat and salad"],
-            negative: ["we do not eat meat and salad", "we don't eat meat and salad"],
-            interrogative: ["do we eat meat and salad?"],
-        }
-    },
-    {
-        spanish: "ELLOS BEBEN CERVEZA",
-        answers: {
-            affirmative: ["they drink beer"],
-            negative: ["they do not drink beer", "they don't drink beer"],
-            interrogative: ["do they drink beer?"],
-        }
-    }
-];
-
-const class2Exercise3Data = [
-    {
-        spanish: "TU HACES LA TAREA",
-        answers: {
-            affirmative: ["you do the homework"],
-            negative: ["you do not do the homework", "you don't do the homework"],
-            interrogative: ["do you do the homework?"],
-        }
-    },
-    {
-        spanish: "ELLA HACE EJERCICIO",
-        answers: {
-            affirmative: ["she does exercise"],
-            negative: ["she does not do exercise", "she doesn't do exercise"],
-            interrogative: ["does she do exercise?"],
-        }
-    }
-];
-
-const class2Ex3Vocab = {
-    "tarea": "homework",
-    "ejercicio": "exercise"
-};
 
 interface Topic {
   key: string;
@@ -268,10 +166,10 @@ interface ClassContentProps {
 }
 
 // =================================================================
-//                 CLASS 1 COMPONENT
+//                 CLASS 1 COMPONENT (BLINDADA)
 // =================================================================
 const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isProfileLoading, isUserLoading }: ClassContentProps) => {
-    const progressStorageKey = `progress_a1_eng_u1_c1_v66_stable`;
+    const progressStorageKey = `progress_a1_eng_u1_c1_v70_stable`;
     const mainProgressKey = `progress_a1_eng_unit_1_class_1`;
 
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
@@ -286,36 +184,36 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
     
     const initialLearningPath = useMemo((): Topic[] => [
         { key: 'vocabulary', name: t('a1class1.vocabulary'), icon: BookOpen, status: 'active' },
-        { key: 'tobe', name: t('kidsA1.toBe'), icon: GraduationCap, status: 'locked' },
-        { key: 'memory-tobe', name: t('kidsA1.memoryToBe'), icon: BrainCircuit, status: 'locked' },
-        { key: 'tobe-1-grammar', name: t('kidsA1.toBe1Grammar'), icon: GraduationCap, status: 'locked' },
-        { key: 'tobe-1-exercise', name: t('kidsA1.toBe1Exercise'), icon: PenSquare, status: 'locked' },
-        { key: 'possessives', name: t('kidsA1.possessives'), icon: GraduationCap, status: 'locked' },
-        { key: 'memory-possessives', name: t('kidsA1.memoryPossessives'), icon: BrainCircuit, status: 'locked' },
-        { key: 'tobe-2-grammar', name: t('kidsA1.toBe2Grammar'), icon: GraduationCap, status: 'locked' },
-        { key: 'tobe-2-exercise', name: t('kidsA1.toBe2Exercise'), icon: PenSquare, status: 'locked' },
-        { key: 'tobe-3-grammar', name: t('kidsA1.toBe3Grammar'), icon: GraduationCap, status: 'locked' },
-        { key: 'tobe-3-exercise', name: t('kidsA1.toBe3Exercise'), icon: PenSquare, status: 'locked' },
+        { key: 'tobe', name: 'Grammar: To Be', icon: GraduationCap, status: 'locked' },
+        { key: 'memory-tobe', name: 'Memory: To Be', icon: BrainCircuit, status: 'locked' },
+        { key: 'tobe-1-grammar', name: 'Structure: To Be 1', icon: GraduationCap, status: 'locked' },
+        { key: 'tobe-1-exercise', name: 'Exercise: To Be 1', icon: PenSquare, status: 'locked' },
+        { key: 'possessives', name: 'Grammar: Possessives', icon: GraduationCap, status: 'locked' },
+        { key: 'memory-possessives', name: 'Memory: Possessives', icon: BrainCircuit, status: 'locked' },
+        { key: 'tobe-2-grammar', name: 'Structure: To Be 2', icon: GraduationCap, status: 'locked' },
+        { key: 'tobe-2-exercise', name: 'Exercise: To Be 2', icon: PenSquare, status: 'locked' },
+        { key: 'tobe-3-grammar', name: 'Structure: To Be 3', icon: GraduationCap, status: 'locked' },
+        { key: 'tobe-3-exercise', name: 'Exercise: To Be 3', icon: PenSquare, status: 'locked' },
         {
             key: 'mixto-1',
-            name: 'Mixto 1',
+            name: 'Mixed Exercises 1',
             icon: PenSquare,
             status: 'locked',
             subItems: [
-                { key: 'ex-mixto-1', name: 'Ejercicio 1', status: 'locked' },
-                { key: 'ex-mixto-2', name: 'Ejercicio 2', status: 'locked' },
-                { key: 'ex-mixto-3', name: 'Ejercicio 3', status: 'locked' },
+                { key: 'ex-mixto-1', name: 'Exercise 1', status: 'locked' },
+                { key: 'ex-mixto-2', name: 'Exercise 2', status: 'locked' },
+                { key: 'ex-mixto-3', name: 'Exercise 3', status: 'locked' },
             ]
         },
         {
             key: 'mixto-final',
-            name: 'Mixto Final',
+            name: 'Final Challenges',
             icon: PenSquare,
             status: 'locked',
             subItems: [
-                { key: 'ex-mixto-4', name: 'Ejercicio 4', status: 'locked' },
-                { key: 'ex-mixto-5', name: 'Ejercicio 5', status: 'locked' },
-                { key: 'ex-mixto-6', name: 'Ejercicio 6', status: 'locked' },
+                { key: 'ex-mixto-4', name: 'Exercise 4', status: 'locked' },
+                { key: 'ex-mixto-5', name: 'Exercise 5', status: 'locked' },
+                { key: 'ex-mixto-6', name: 'Exercise 6', status: 'locked' },
             ]
         }
     ], [t]);
@@ -379,9 +277,9 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
 
         const newAnswers: {[key: string]: string[]} = {};
         const newValidation: {[key: string]: ('correct' | 'incorrect' | 'unchecked')[]} = {};
-        for (const category in classVocabularyData) {
-            newAnswers[category] = Array((classVocabularyData as any)[category].length).fill('');
-            newValidation[category] = Array((classVocabularyData as any)[category].length).fill('unchecked');
+        for (const category in class1VocabularyData) {
+            newAnswers[category] = Array((class1VocabularyData as any)[category].length).fill('');
+            newValidation[category] = Array((class1VocabularyData as any)[category].length).fill('unchecked');
         }
         setUserAnswers(newAnswers);
         setValidationStatus(newValidation);
@@ -428,7 +326,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                 [`progress.${mainProgressKey}`]: Math.round(progressValue)
             });
         }
-    }, [learningPath, isAdmin, progressValue, studentDocRef, initialLoadComplete, selectedTopic, studentProfile, isInitialLoading]);
+    }, [learningPath, isAdmin, progressValue, studentDocRef, initialLoadComplete, selectedTopic, isInitialLoading, studentProfile]);
 
     useEffect(() => {
         if (!topicToComplete) return;
@@ -480,11 +378,11 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             }
             
             if (wasUnlocked) {
-                setTimeout(() => toast({ title: "¡Siguiente tema desbloqueado!" }), 100);
+                setTimeout(() => toast({ title: "¡Siguiente tema desbloqueado!" }), 0);
             }
             if (nextToSelect) {
                 const finalNext = nextToSelect;
-                setTimeout(() => setSelectedTopic(finalNext), 100);
+                setTimeout(() => setSelectedTopic(finalNext), 0);
             }
             
             return newPath;
@@ -531,8 +429,8 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         let atLeastOneCorrect = false;
         const newValidationStatus: {[key: string]: ('correct' | 'incorrect' | 'unchecked')[]} = {};
 
-        for (const category in classVocabularyData) {
-            const items = (classVocabularyData as any)[category];
+        for (const category in class1VocabularyData) {
+            const items = (class1VocabularyData as any)[category];
             newValidationStatus[category] = items.map((item: {english: string}, index: number) => {
                 const userAnswer = (userAnswers[category]?.[index] || '').trim().toLowerCase();
                 const isCorrect = userAnswer === item.english.toLowerCase();
@@ -558,10 +456,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
     };
 
     const renderContent = () => {
-        if (isInitialLoading) return <div className="flex justify-center items-center min-h-[400px]"><Loader2 className="h-12 w-12 animate-spin text-primary" /></div>;
-
-        const topic = learningPath.find(t => t.key === selectedTopic) || 
-                      learningPath.flatMap(t => t.subItems || []).find(st => st?.key === selectedTopic);
+        if (isInitialLoading) return <div className="flex justify-center items-center min-h-[400px] border-2 border-brand-purple rounded-xl"><Loader2 className="h-12 w-12 animate-spin text-primary" /></div>;
 
         switch (selectedTopic) {
             case 'vocabulary':
@@ -570,7 +465,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                         <CardHeader><CardTitle>{t('a1class1.vocabulary')}</CardTitle></CardHeader>
                         <CardContent>
                             <Accordion type="multiple" className="w-full">
-                            {Object.entries(classVocabularyData).map(([category, items]) => (
+                            {Object.entries(class1VocabularyData).map(([category, items]) => (
                                 <AccordionItem key={category} value={category}>
                                     <AccordionTrigger className="text-lg font-semibold">{t(`a1class1.${category}`)}</AccordionTrigger>
                                     <AccordionContent>
@@ -602,218 +497,101 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                         </CardFooter>
                     </Card>
                 );
-            case 'memory-tobe': return <ToBeMemoryGame key={selectedTopic} onGameComplete={() => handleTopicComplete('memory-tobe')} />;
-            case 'tobe-1-exercise': return <TranslationExercise key={selectedTopic} exerciseKey="exercises1" onComplete={() => handleTopicComplete('tobe-1-exercise')} vocabulary={{'un- una': 'a / an', 'abogado': 'lawyer', 'enfermo': 'sick', 'enfermero': 'nurse'}} highlightVocabulary={true} />;
-            case 'memory-possessives': return <PossessivesMemoryGame key={selectedTopic} onGameComplete={() => handleTopicComplete('memory-possessives')} />;
-            case 'tobe-2-exercise': return <TranslationExercise key={selectedTopic} exerciseKey="exercises2" onComplete={() => handleTopicComplete('tobe-2-exercise')} vocabulary={{'amigo': 'friend', 'hijo': 'son', 'perro': 'dog'}} highlightVocabulary={true} />;
-            case 'tobe-3-exercise': return <TranslationExercise key={selectedTopic} exerciseKey="exercises3" onComplete={() => handleTopicComplete('tobe-3-exercise')} vocabulary={{'enfermera': 'nurse', 'abuelos': 'grandparents', 'pensionado': 'retired', 'juguete': 'toy'}} highlightVocabulary={true} />;
-            case 'ex-mixto-1': return <SimpleTranslationExercise key={selectedTopic} course="a1" exerciseKey="mixed1" onComplete={() => handleTopicComplete('ex-mixto-1')} vocabulary={{"estudiante": "student", "amigos": "friends", "padres": "parents", "hermana": "sister", "abogados": "lawyers", "de": "from"}} highlightVocabulary={true} />;
-            case 'ex-mixto-2': return <TranslationExercise key={selectedTopic} exerciseKey="qna2" formType="qna" onComplete={() => handleTopicComplete('ex-mixto-2')} title="Ejercicio 2" vocabulary={{"cansado": "tired", "curiosos": "curious", "hambriento": "hungry", "compañeros de trabajo": "coworkers", "a tiempo": "on time"}} highlightVocabulary={true} />;
-            case 'ex-mixto-3': return <SimpleTranslationExercise key={selectedTopic} course="a1" exerciseKey="mixed3" onComplete={() => handleTopicComplete('ex-mixto-3')} vocabulary={{"estudiantes": "students", "mamá": "mother / mom", "abuela": "grandmother", "hermanas": "sisters", "cansado": "tired", "aburridos": "bored", "enojados": "angry", "preocupados": "worried"}} highlightVocabulary={true} />;
-            case 'ex-mixto-4': return <SimpleTranslationExercise key={selectedTopic} course="a1" exerciseKey="mixed4" onComplete={() => handleTopicComplete('ex-mixto-4')} vocabulary={{"profesor": "teacher", "ingeniero": "engineer", "americano": "american", "en casa": "at home", "sobre": "on", "interesado": "interested", "estadio": "stadium"}} highlightVocabulary={true} />;
-            case 'ex-mixto-5': return <ShortAnswerExercise key={selectedTopic} onComplete={() => handleTopicComplete('ex-mixto-5')} />;
-            case 'ex-mixto-6': return <SimpleTranslationExercise key={selectedTopic} course="a1" exerciseKey="mixed6" onComplete={() => handleTopicComplete('ex-mixto-6')} vocabulary={{"padrastro": "stepfather", "estante": "shelf", "escritorio": "desk", "en el trabajo": "at work", "iglesia": "church", "supermercado": "supermarket"}} highlightVocabulary={true} />;
-            
+            case 'tobe':
+                return (
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left text-foreground">
+                        <CardHeader><CardTitle>Grammar: To Be</CardTitle></CardHeader>
+                        <CardContent>
+                            <div className="grid grid-cols-3 gap-x-4 gap-y-2 text-lg">
+                                <div className="font-bold p-3 bg-muted rounded-lg text-center">SER</div>
+                                <div className="font-bold p-3 bg-muted rounded-lg text-center">TO BE</div>
+                                <div className="font-bold p-3 bg-muted rounded-lg text-center">ESTAR</div>
+                                {verbToBeData.map((item, index) => (
+                                    <React.Fragment key={index}>
+                                        <div className="p-3 bg-card border rounded-lg text-center">{item.ser}</div>
+                                        <div className="p-3 bg-card border rounded-lg font-medium text-center">{item.tobe}</div>
+                                        <div className="p-3 bg-card border rounded-lg text-center">{item.estar}</div>
+                                    </React.Fragment>
+                                ))}
+                            </div>
+                        </CardContent>
+                    </Card>
+                );
+            case 'memory-tobe': return <ToBeMemoryGame onGameComplete={() => handleTopicComplete('memory-tobe')} />;
             case 'tobe-1-grammar':
                 return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left text-foreground">
-                        <CardHeader>
-                            <CardTitle>To be 1</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-8">
-                            <div className="space-y-3">
-                                <h3 className="text-lg font-bold text-foreground">Estructura</h3>
-                                <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 font-mono text-base border">
-                                    <div className="flex items-center gap-4">
-                                        <span className="text-green-500 font-bold w-10 text-center text-lg">(+)</span>
-                                        <span className="text-muted-foreground">pronoun + to be + complement</span>
-                                    </div>
-                                    <div className="flex items-center gap-4">
-                                        <span className="text-red-500 font-bold w-10 text-center text-lg">(-)</span>
-                                        <span className="text-muted-foreground">pronoun + to be + not + complement</span>
-                                    </div>
-                                    <div className="flex items-center gap-4">
-                                        <span className="text-blue-500 font-bold w-10 text-center text-lg">(?)</span>
-                                        <span className="text-muted-foreground">to be + pronoun + complement ?</span>
-                                    </div>
-                                </div>
+                        <CardHeader><CardTitle>Structure: To Be 1</CardTitle></CardHeader>
+                        <CardContent className="space-y-6">
+                            <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 font-mono text-base border">
+                                <p><span className="text-green-500 font-bold">(+)</span> pronoun + to be + complement</p>
+                                <p><span className="text-red-500 font-bold">(-)</span> pronoun + to be + not + complement</p>
+                                <p><span className="text-blue-500 font-bold">(?)</span> to be + pronoun + complement ?</p>
                             </div>
-
-                            <div className="space-y-3">
-                                <h3 className="text-lg font-bold text-foreground">Ejemplo: "ellos son estudiantes"</h3>
-                                <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 font-mono text-base border">
-                                    <div className="flex items-center gap-4">
-                                        <span className="text-green-500 font-bold w-10 text-center text-lg">(+)</span>
-                                        <span>They are students</span>
-                                    </div>
-                                    <div className="flex items-center gap-4">
-                                        <span className="text-red-500 font-bold w-10 text-center text-lg">(-)</span>
-                                        <span>They are not students</span>
-                                    </div>
-                                    <div className="flex items-center gap-4">
-                                        <span className="text-blue-500 font-bold w-10 text-center text-lg">(?)</span>
-                                        <span>are they students?</span>
-                                    </div>
-                                    <div className="pt-4 space-y-3 border-t border-slate-200 dark:border-slate-700">
-                                        <div className="flex items-center gap-4">
-                                            <span className="text-green-500 font-bold w-10 text-center text-lg">(+A)</span>
-                                            <span>Yes, they are</span>
-                                        </div>
-                                        <div className="flex items-center gap-4">
-                                            <span className="text-red-500 font-bold w-10 text-center text-lg">(-A)</span>
-                                            <span>No, they are not</span>
-                                        </div>
-                                    </div>
-                                </div>
+                            <Separator />
+                            <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-2 font-mono text-base border">
+                                <p><span className="font-bold">Short Answers:</span></p>
+                                <p><span className="text-green-500 font-bold">(+A)</span> Yes, pronoun + to be</p>
+                                <p><span className="text-red-500 font-bold">(-A)</span> No, pronoun + to be + not</p>
                             </div>
                         </CardContent>
                     </Card>
                 );
-            case 'tobe-2-grammar':
-                return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left text-foreground">
-                        <CardHeader>
-                            <CardTitle>To be 2</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-8">
-                            <div className="space-y-3">
-                                <h3 className="text-lg font-bold text-foreground">Estructura</h3>
-                                <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 font-mono text-base border">
-                                    <div className="flex items-center gap-4">
-                                        <span className="text-green-500 font-bold w-10 text-center text-lg">(+)</span>
-                                        <span className="text-muted-foreground">pronoun + To be + possessive + noun + complement</span>
-                                    </div>
-                                    <div className="flex items-center gap-4">
-                                        <span className="text-red-500 font-bold w-10 text-center text-lg">(-)</span>
-                                        <span className="text-muted-foreground">pronoun + To be + Not + possessive + noun + complement</span>
-                                    </div>
-                                    <div className="flex items-center gap-4">
-                                        <span className="text-blue-500 font-bold w-10 text-center text-lg">(?)</span>
-                                        <span className="text-muted-foreground">To be + pronoun + possessive + noun + complement ?</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="space-y-3">
-                                <h3 className="text-lg font-bold text-foreground">Ejemplo: "Ellos son mis amigos"</h3>
-                                <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 font-mono text-base border">
-                                    <div className="flex items-center gap-4">
-                                        <span className="text-green-500 font-bold w-10 text-center text-lg">(+)</span>
-                                        <span>They are my friends</span>
-                                    </div>
-                                    <div className="flex items-center gap-4">
-                                        <span className="text-red-500 font-bold w-10 text-center text-lg">(-)</span>
-                                        <span>They are not my friends</span>
-                                    </div>
-                                    <div className="flex items-center gap-4">
-                                        <span className="text-blue-500 font-bold w-10 text-center text-lg">(?)</span>
-                                        <span>are they my friends?</span>
-                                    </div>
-                                    <div className="pt-4 space-y-3 border-t border-slate-200 dark:border-slate-700">
-                                        <div className="flex items-center gap-4">
-                                            <span className="text-green-500 font-bold w-10 text-center text-lg">(+A)</span>
-                                            <span>Yes, they are</span>
-                                        </div>
-                                        <div className="flex items-center gap-4">
-                                            <span className="text-red-500 font-bold w-10 text-center text-lg">(-A)</span>
-                                            <span>No, they are not</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-                );
-            case 'tobe-3-grammar':
-                return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left text-foreground">
-                        <CardHeader>
-                            <CardTitle>To be 3</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-8">
-                            <div className="space-y-3">
-                                <h3 className="text-lg font-bold text-foreground">Estructura</h3>
-                                <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 font-mono text-base border">
-                                    <div className="flex items-center gap-4">
-                                        <span className="text-green-500 font-bold w-10 text-center text-lg">(+)</span>
-                                        <span className="text-muted-foreground">possessive + noun + to be + complement</span>
-                                    </div>
-                                    <div className="flex items-center gap-4">
-                                        <span className="text-red-500 font-bold w-10 text-center text-lg">(-)</span>
-                                        <span className="text-muted-foreground">possessive + noun + to be + Not + complement</span>
-                                    </div>
-                                    <div className="flex items-center gap-4">
-                                        <span className="text-blue-500 font-bold w-10 text-center text-lg">(?)</span>
-                                        <span className="text-muted-foreground">To be + possessive + noun + complement ?</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="space-y-3">
-                                <h3 className="text-lg font-bold text-foreground">Ejemplo: "Mi mamá es una enfermera"</h3>
-                                <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 font-mono text-base border">
-                                    <div className="flex items-center gap-4">
-                                        <span className="text-green-500 font-bold w-10 text-center text-lg">(+)</span>
-                                        <span>My mother is a nurse</span>
-                                    </div>
-                                    <div className="flex items-center gap-4">
-                                        <span className="text-red-500 font-bold w-10 text-center text-lg">(-)</span>
-                                        <span>My mother is not a nurse</span>
-                                    </div>
-                                    <div className="flex items-center gap-4">
-                                        <span className="text-blue-500 font-bold w-10 text-center text-lg">(?)</span>
-                                        <span>is my mother a nurse?</span>
-                                    </div>
-                                    <div className="pt-4 space-y-3 border-t border-slate-200 dark:border-slate-700">
-                                        <div className="flex items-center gap-4">
-                                            <span className="text-green-500 font-bold w-10 text-center text-lg">(+A)</span>
-                                            <span>yes, she is</span>
-                                        </div>
-                                        <div className="flex items-center gap-4">
-                                            <span className="text-red-500 font-bold w-10 text-center text-lg">(-A)</span>
-                                            <span>no, she is not</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-                );
-            case 'tobe':
+            case 'tobe-1-exercise': return <TranslationExercise exerciseKey="exercises1" onComplete={() => handleTopicComplete('tobe-1-exercise')} />;
             case 'possessives':
                 return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left text-foreground">
-                        <CardHeader><CardTitle>{topic?.name}</CardTitle></CardHeader>
-                        <CardContent className="space-y-4">
-                            {selectedTopic === 'tobe' && (
-                                <div className="grid grid-cols-3 gap-x-4 gap-y-2 text-lg">
-                                    <div className="font-bold p-3 bg-muted rounded-lg text-center">SER</div>
-                                    <div className="font-bold p-3 bg-muted rounded-lg text-center">TO BE</div>
-                                    <div className="font-bold p-3 bg-muted rounded-lg text-center">ESTAR</div>
-                                    {verbToBeData.map((item, index) => (
-                                        <React.Fragment key={index}>
-                                            <div className="p-3 bg-card border rounded-lg text-center">{item.ser}</div>
-                                            <div className="p-3 bg-card border rounded-lg font-medium text-center">{item.tobe}</div>
-                                            <div className="p-3 bg-card border rounded-lg text-center">{item.estar}</div>
-                                        </React.Fragment>
-                                    ))}
-                                </div>
-                            )}
-                            {selectedTopic === 'possessives' && (
-                                <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-lg">
-                                    <div className="font-bold p-3 bg-muted rounded-lg text-center">Inglés</div>
-                                    <div className="font-bold p-3 bg-muted rounded-lg text-center">Español</div>
-                                    {possessivesData.map((item, index) => (
-                                        <React.Fragment key={index}>
-                                            <div className="p-3 bg-card border rounded-lg font-medium text-center">{item.english}</div>
-                                            <div className="p-3 bg-card border rounded-lg text-center">{item.spanish}</div>
-                                        </React.Fragment>
-                                    ))}
-                                </div>
-                            )}
+                        <CardHeader><CardTitle>Grammar: Possessives</CardTitle></CardHeader>
+                        <CardContent>
+                            <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-lg">
+                                <div className="font-bold p-3 bg-muted rounded-lg text-center">Inglés</div>
+                                <div className="font-bold p-3 bg-muted rounded-lg text-center">Español</div>
+                                {possessivesData.map((item, index) => (
+                                    <React.Fragment key={index}>
+                                        <div className="p-3 bg-card border rounded-lg font-medium text-center">{item.english}</div>
+                                        <div className="p-3 bg-card border rounded-lg text-center">{item.spanish}</div>
+                                    </React.Fragment>
+                                ))}
+                            </div>
                         </CardContent>
                     </Card>
                 );
+            case 'memory-possessives': return <PossessivesMemoryGame onGameComplete={() => handleTopicComplete('memory-possessives')} />;
+            case 'tobe-2-grammar':
+                return (
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left text-foreground">
+                        <CardHeader><CardTitle>Structure: To Be 2</CardTitle></CardHeader>
+                        <CardContent className="space-y-6">
+                            <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 font-mono text-base border">
+                                <p><span className="text-green-500 font-bold">(+)</span> pronoun + to be + possessive + noun + complement</p>
+                                <p><span className="text-red-500 font-bold">(-)</span> pronoun + to be + not + possessive + noun + complement</p>
+                                <p><span className="text-blue-500 font-bold">(?)</span> to be + pronoun + possessive + noun + complement ?</p>
+                            </div>
+                        </CardContent>
+                    </Card>
+                );
+            case 'tobe-2-exercise': return <TranslationExercise exerciseKey="exercises2" onComplete={() => handleTopicComplete('tobe-2-exercise')} />;
+            case 'tobe-3-grammar':
+                return (
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left text-foreground">
+                        <CardHeader><CardTitle>Structure: To Be 3</CardTitle></CardHeader>
+                        <CardContent className="space-y-6">
+                            <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 font-mono text-base border">
+                                <p><span className="text-green-500 font-bold">(+)</span> possessive + noun + to be + complement</p>
+                                <p><span className="text-red-500 font-bold">(-)</span> possessive + noun + to be + not + complement</p>
+                                <p><span className="text-blue-500 font-bold">(?)</span> to be + possessive + noun + complement ?</p>
+                            </div>
+                        </CardContent>
+                    </Card>
+                );
+            case 'tobe-3-exercise': return <TranslationExercise exerciseKey="exercises3" onComplete={() => handleTopicComplete('tobe-3-exercise')} />;
+            case 'ex-mixto-1': return <SimpleTranslationExercise course="a1" exerciseKey="mixed1" onComplete={() => handleTopicComplete('ex-mixto-1')} />;
+            case 'ex-mixto-2': return <TranslationExercise exerciseKey="qna2" formType="qna" onComplete={() => handleTopicComplete('ex-mixto-2')} />;
+            case 'ex-mixto-3': return <SimpleTranslationExercise course="a1" exerciseKey="mixed3" onComplete={() => handleTopicComplete('ex-mixto-3')} />;
+            case 'ex-mixto-4': return <SimpleTranslationExercise course="a1" exerciseKey="mixed4" onComplete={() => handleTopicComplete('ex-mixto-4')} />;
+            case 'ex-mixto-5': return <ShortAnswerExercise onComplete={() => handleTopicComplete('ex-mixto-5')} />;
+            case 'ex-mixto-6': return <SimpleTranslationExercise course="a1" exerciseKey="mixed6" onComplete={() => handleTopicComplete('ex-mixto-6')} />;
+            
             default: return <div className="flex justify-center items-center h-48"><Loader2 className="animate-spin h-10 w-10 text-primary" /></div>;
         }
     };
@@ -833,9 +611,8 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                             <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
                                 <CardHeader><CardTitle>Ruta de Aprendizaje</CardTitle></CardHeader>
                                 <CardContent>
-                                    {isInitialLoading ? <div className="h-48 w-full bg-muted animate-pulse rounded-md" /> : (
-                                        <nav>
-                                            <ul className="space-y-1">
+                                    <nav>
+                                        <ul className="space-y-1">
                                             {learningPath.map((item) => {
                                                 const isLocked = item.status === 'locked' && !isAdmin;
                                                 const isSelected = selectedTopic === item.key || item.subItems?.some(si => si.key === selectedTopic);
@@ -885,7 +662,6 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                                             })}
                                             </ul>
                                         </nav>
-                                    )}
                                     <div className="mt-6 pt-6 border-t">
                                         <div className="flex justify-between items-center text-sm font-medium text-muted-foreground mb-2"><span>Progreso</span><span className="font-bold text-foreground">{Math.round(progressValue)}%</span></div>
                                         <Progress value={progressValue} className="h-2" />
@@ -901,10 +677,10 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
 };
 
 // =================================================================
-//                 CLASS 2 COMPONENT
+//                 CLASS 2 COMPONENT (BLINDADA)
 // =================================================================
 const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isProfileLoading, isUserLoading }: ClassContentProps) => {
-    const progressStorageVersion = 'progress_a1_eng_u1_c2_v76_stable';
+    const progressStorageVersion = 'progress_a1_eng_u1_c2_v78_stable';
     const mainProgressKey = 'progress_a1_eng_unit_1_class_2';
     
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
@@ -919,32 +695,32 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
 
     const initialLearningPath = useMemo((): Topic[] => [
         { key: 'vocabulary', name: t('a1class1.vocabulary'), icon: BookOpen, status: 'active' },
-        { key: 'grammar', name: t('kidsA1Class2.grammar'), icon: GraduationCap, status: 'locked' },
+        { key: 'grammar', name: 'Grammar: Present Simple', icon: GraduationCap, status: 'locked' },
         {
             key: 'exercises',
-            name: t('kidsA1Class2.exercises'),
+            name: 'Verb Forms Practice',
             icon: PenSquare,
             status: 'locked',
             subItems: [
-                { key: 'ex-positive', name: t('kidsA1Class2.exercisesPositive'), status: 'locked', icon: PenSquare },
-                { key: 'ex-negative', name: t('kidsA1Class2.exercisesNegative'), status: 'locked', icon: PenSquare },
-                { key: 'ex-interrogative', name: t('kidsA1Class2.exercisesInterrogative'), status: 'locked', icon: PenSquare },
+                { key: 'ex-positive', name: 'Affirmative (+)', status: 'locked', icon: PenSquare },
+                { key: 'ex-negative', name: 'Negative (-)', status: 'locked', icon: PenSquare },
+                { key: 'ex-interrogative', name: 'Interrogative (?)', status: 'locked', icon: PenSquare },
             ]
         },
-        { key: 'memory-verbs', name: t('kidsA1Class2.memoryVerbs'), icon: BrainCircuit, status: 'locked' },
+        { key: 'memory-verbs', name: 'Memory: Verbs', icon: BrainCircuit, status: 'locked' },
         {
             key: 'mixed-exercises-1',
-            name: 'Ejercicios Mixtos',
+            name: 'Mixed Exercises',
             icon: PenSquare,
             status: 'locked',
             subItems: [
-                { key: 'ex-mixed-1-1', name: t('a1class1.exercise', { number: 1 }), status: 'locked', icon: PenSquare },
-                { key: 'ex-mixed-1-2', name: t('a1class1.exercise', { number: 2 }), status: 'locked', icon: PenSquare },
-                { key: 'ex-mixed-1-3', name: t('a1class1.exercise', { number: 3 }), status: 'locked', icon: PenSquare },
+                { key: 'ex-mixed-1-1', name: 'Exercise 1', status: 'locked', icon: PenSquare },
+                { key: 'ex-mixed-1-2', name: 'Exercise 2', status: 'locked', icon: PenSquare },
+                { key: 'ex-mixed-1-3', name: 'Exercise 3', status: 'locked', icon: PenSquare },
             ]
         },
-        { key: 'reading', name: t('kidsA1Class2.reading'), icon: BookOpen, status: 'locked' },
-        { key: 'final-vocab', name: t('kidsA1Class2.finalVocab'), icon: BookOpen, status: 'locked' },
+        { key: 'reading', name: 'Reading: Comprehension', icon: BookOpen, status: 'locked' },
+        { key: 'final-vocab', name: 'Final Review', icon: BookOpen, status: 'locked' },
     ], [t]);
 
     const handleTopicComplete = useCallback((completedKey: string) => {
@@ -1180,7 +956,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
     };
 
     const renderContentForClass2 = () => {
-        if (isInitialLoading) return <div className="flex justify-center items-center min-h-[400px]"><Loader2 className="h-12 w-12 animate-spin text-primary" /></div>;
+        if (isInitialLoading) return <div className="flex justify-center items-center min-h-[400px] border-2 border-brand-purple rounded-xl"><Loader2 className="h-12 w-12 animate-spin text-primary" /></div>;
 
         const topic = learningPath.find(t => t.key === selectedTopic) || 
                       learningPath.flatMap(t => t.subItems || []).find(st => st?.key === selectedTopic);
@@ -1237,46 +1013,9 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             case 'grammar':
                 return (
                     <div className="space-y-6">
-                        <h2 className="text-3xl font-bold text-center text-white mb-8 [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">PRESENT SIMPLE</h2>
-                        
                         <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left overflow-hidden text-foreground">
                             <CardHeader className="pb-4">
-                                <CardTitle className="text-2xl font-black text-primary uppercase">ESTRUCTURA</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 font-mono text-base border">
-                                    <div className="flex items-center gap-4">
-                                        <span className="text-green-500 font-bold w-12 text-center text-lg">(+)</span>
-                                        <span>= Afirmativa</span>
-                                    </div>
-                                    <div className="flex items-center gap-4">
-                                        <span className="text-red-500 font-bold w-12 text-center text-lg">(-)</span>
-                                        <span>= Negativa</span>
-                                    </div>
-                                    <div className="flex items-center gap-4">
-                                        <span className="text-blue-500 font-bold w-12 text-center text-lg">(?)</span>
-                                        <span>= interrogativa ?</span>
-                                    </div>
-                                    <div className="pt-4 mt-4 border-t">
-                                        <h4 className="font-bold mb-3 text-foreground">Short Answers = Respuestas Cortas</h4>
-                                        <div className="space-y-3">
-                                            <div className="flex items-center gap-4">
-                                                <span className="text-green-500 font-bold w-12 text-center text-lg">(+A)</span>
-                                                <span>= Respuesta corta positiva</span>
-                                            </div>
-                                            <div className="flex items-center gap-4">
-                                                <span className="text-red-500 font-bold w-12 text-center text-lg">(-A)</span>
-                                                <span>= Respuesta corta Negativa</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </CardContent>
-                        </Card>
-
-                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left overflow-hidden text-foreground">
-                            <CardHeader className="pb-4">
-                                <CardTitle className="text-2xl font-black text-primary uppercase">ESTRUCTURA DO/DOES</CardTitle>
+                                <CardTitle className="text-2xl font-black text-primary uppercase">PRESENT SIMPLE STRUCTURE</CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 font-mono text-base border">
@@ -1293,7 +1032,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                                         <span>Do/Does + pronoun + verb + Complement ?</span>
                                     </div>
                                     <div className="pt-4 mt-4 border-t">
-                                        <h4 className="font-bold mb-3 text-foreground">Short Answers = Respuestas Cortas</h4>
+                                        <h4 className="font-bold mb-3 text-foreground">Short Answers</h4>
                                         <div className="space-y-3">
                                             <div className="flex items-center gap-4">
                                                 <span className="text-green-500 font-bold w-12 text-center text-lg">(+A)</span>
@@ -1307,22 +1046,6 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                                     </div>
                                 </div>
                             </CardContent>
-                        </Card>
-
-                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left overflow-hidden text-foreground">
-                            <CardHeader className="pb-4">
-                                <CardTitle className="text-2xl font-black text-primary uppercase">Conjugaciones</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-4 font-mono text-lg border">
-                                    <div className="p-4 bg-background rounded-xl border border-primary/20 text-center">
-                                        <span className="font-bold text-primary">DO</span> = I - YOU - WE - THEY
-                                    </div>
-                                    <div className="p-4 bg-background rounded-xl border border-brand-purple/20 text-center">
-                                        <span className="font-bold text-brand-purple">DOES</span> = HE - SHE - IT
-                                    </div>
-                                </div>
-                            </CardContent>
                             <CardFooter className="justify-center border-t pt-6">
                                 <Button onClick={() => handleTopicComplete('grammar')} size="lg" className="px-16 font-bold h-14 text-xl">
                                     Entendido <ArrowRight className="ml-2 h-6 w-6" />
@@ -1333,12 +1056,12 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                 );
             case 'memory-verbs': return <VerbMemoryGame key={selectedTopic} onComplete={() => handleTopicComplete('memory-verbs')} />;
             case 'final-vocab': return <VerbVocabularyExercise key={selectedTopic} data={class2VocabularyData.verbos} onComplete={() => handleTopicComplete('final-vocab')} />;
-            case 'ex-positive': return <SingleFormExercise key={selectedTopic} onComplete={() => handleTopicComplete('ex-positive')} exerciseData={positiveExercisesData} title={t('kidsA1Class2.exercisePositive')} description={t('kidsA1Class2.exercisePositiveDescription')} formType="affirmative" />;
-            case 'ex-negative': return <SingleFormExercise key={selectedTopic} onComplete={() => handleTopicComplete('ex-negative')} exerciseData={negativeExercisesData} title={t('kidsA1Class2.exerciseNegative')} description={t('kidsA1Class2.exerciseNegativeDescription')} formType="negative" />;
-            case 'ex-interrogative': return <SingleFormExercise key={selectedTopic} onComplete={() => handleTopicComplete('ex-interrogative')} exerciseData={interrogativeExercisesData} title={t('kidsA1Class2.exerciseInterrogative')} description={t('kidsA1Class2.exerciseInterrogativeDescription')} formType="interrogative" />;
-            case 'ex-mixed-1-1': return <PresentSimpleExercise key={selectedTopic} onComplete={() => handleTopicComplete('ex-mixed-1-1')} exerciseData={class2Exercise1Data} title="Ejercicios Mixtos 1" showShortAnswers={false} />;
-            case 'ex-mixed-1-2': return <PresentSimpleExercise key={selectedTopic} onComplete={() => handleTopicComplete('ex-mixed-1-2')} exerciseData={class2Exercise2Data} title={t('a1class1.exercise', {number: 2})} showShortAnswers={false} />;
-            case 'ex-mixed-1-3': return <PresentSimpleExercise key={selectedTopic} onComplete={() => handleTopicComplete('ex-mixed-1-3')} exerciseData={class2Exercise3Data} title={t('a1class1.exercise', {number: 3})} showShortAnswers={false} vocabulary={class2Ex3Vocab} />;
+            case 'ex-positive': return <SingleFormExercise key={selectedTopic} onComplete={() => handleTopicComplete('ex-positive')} exerciseData={positiveExercisesData} title="Positive Form" description="Translate the sentence to its affirmative form." formType="affirmative" />;
+            case 'ex-negative': return <SingleFormExercise key={selectedTopic} onComplete={() => handleTopicComplete('ex-negative')} exerciseData={negativeExercisesData} title="Negative Form" description="Translate the sentence to its negative form." formType="negative" />;
+            case 'ex-interrogative': return <SingleFormExercise key={selectedTopic} onComplete={() => handleTopicComplete('ex-interrogative')} exerciseData={interrogativeExercisesData} title="Interrogative Form" description="Translate the sentence to its interrogative form." formType="interrogative" />;
+            case 'ex-mixed-1-1': return <PresentSimpleExercise key={selectedTopic} onComplete={() => handleTopicComplete('ex-mixed-1-1')} exerciseData={class2Exercise1Data} title="Mixed Exercises 1" showShortAnswers={false} />;
+            case 'ex-mixed-1-2': return <PresentSimpleExercise key={selectedTopic} onComplete={() => handleTopicComplete('ex-mixed-1-2')} exerciseData={class2Exercise2Data} title="Mixed Exercises 2" showShortAnswers={false} />;
+            case 'ex-mixed-1-3': return <PresentSimpleExercise key={selectedTopic} onComplete={() => handleTopicComplete('ex-mixed-1-3')} exerciseData={class2Exercise3Data} title="Mixed Exercises 3" showShortAnswers={false} vocabulary={{"tarea": "homework", "ejercicio": "exercise"}} />;
             case 'reading': return <ReadingComprehensionExercise key={selectedTopic} onComplete={() => handleTopicComplete('reading')} />;
             default: return <div className="flex justify-center items-center h-48"><Loader2 className="animate-spin h-10 w-10 text-primary" /></div>;
         }
@@ -1359,7 +1082,6 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                   <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
                     <CardHeader><CardTitle>Ruta de Aprendizaje</CardTitle></CardHeader>
                     <CardContent>
-                      {isInitialLoading ? <div className="h-48 w-full bg-muted animate-pulse rounded-md" /> : (
                         <nav>
                           <ul className="space-y-1">
                             {learningPath.map((item) => {
@@ -1409,7 +1131,6 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                               )})}
                           </ul>
                         </nav>
-                      )}
                        <div className="mt-6 pt-6 border-t">
                             <div className="flex justify-between items-center text-sm font-medium text-muted-foreground mb-2"><span>Progreso</span><span className="font-bold text-foreground">{Math.round(progressValue)}%</span></div>
                             <Progress value={progressValue} className="h-2" />
@@ -1436,10 +1157,6 @@ export default function EngA1ClassPage() {
     const studentDocRef = useMemoFirebase(() => (user ? doc(firestore, 'students', user.uid) : null), [firestore, user]);
     const { data: studentProfile, isLoading: isProfileLoading } = useDoc(studentDocRef);
     const isAdmin = useMemo(() => (user && (studentProfile?.role === 'admin' || user.email === 'ednacard87@gmail.com')), [user, studentProfile]);
-
-    const handleTopicComplete = useCallback((topicKey: string) => {
-        // Defined here for correction
-    }, []);
 
     const commonProps: ClassContentProps = { t, toast, studentDocRef, studentProfile, isAdmin, isProfileLoading, isUserLoading };
 
