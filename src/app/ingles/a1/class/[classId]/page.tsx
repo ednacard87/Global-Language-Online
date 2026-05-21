@@ -439,11 +439,11 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             }
             
             if (wasUnlocked) {
-                setTimeout(() => toast({ title: "¡Siguiente tema desbloqueado!" }), 0);
+                setTimeout(() => toast({ title: "¡Siguiente tema desbloqueado!" }), 100);
             }
             if (nextToSelect) {
                 const finalNext = nextToSelect;
-                setTimeout(() => setSelectedTopic(finalNext), 0);
+                setTimeout(() => setSelectedTopic(finalNext), 100);
             }
             
             return newPath;
@@ -906,6 +906,10 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         { key: 'final-vocab', name: t('kidsA1Class2.finalVocab'), icon: BookOpen, status: 'locked' },
     ], [t]);
 
+    const handleTopicComplete = (topicKey: string) => {
+        setTopicToComplete(topicKey);
+    };
+
     useEffect(() => {
         if (isProfileLoading || isUserLoading || !studentProfile || initialLoadComplete) return;
 
@@ -1180,7 +1184,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                         </CardContent>
                         <CardFooter className="flex justify-between">
                             <Button onClick={handleVocabCheckAnswers}>{t('vocabulary.check')}</Button>
-                            <Button onClick={() => setTopicToComplete('vocabulary')} disabled={!canAdvanceVocab && !isAdmin}>Avanzar</Button>
+                            <Button onClick={() => handleTopicComplete('vocabulary')} disabled={!canAdvanceVocab && !isAdmin}>Avanzar</Button>
                         </CardFooter>
                     </Card>
                 );
@@ -1353,7 +1357,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                                           const isSubLocked = subItem.status === 'locked' && !isAdmin;
                                           const SubIcon = ICONS_CONFIG[subItem.status] || PenSquare;
                                           return (
-                                          <li key={subItem.key} onClick={() => handleTopicSelect(subItem.key)} className={cn('flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer text-foreground', isSubLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === subItem.key && 'bg-muted text-primary font-semibold')}>
+                                          <li key={subItem.key} onClick={() => handleTopicSelect(subItem.key)} className={cn('flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer text-foreground', isSubLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === subItem.key && (subItem.status !== 'locked' || isAdmin) && 'bg-muted text-primary font-semibold')}>
                                             <div className="flex items-center gap-3">
                                               <SubIcon className={cn("h-5 w-5", subItem.status === 'completed' ? 'text-green-500' : '')} />
                                               <span>{subItem.name}</span>
@@ -1409,4 +1413,3 @@ export default function EngA1ClassPage() {
       </div>
     );
 }
-
