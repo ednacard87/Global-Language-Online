@@ -77,6 +77,10 @@ const class3ShortAnswerEx3Data: ShortAnswerPresentSimplePrompt[] = [
 const class3LargeTextEx4Dialogue: DialogueLine[] = [
     { speaker: "MARY", line: "¿TE VISITA EN MADRID?", answer: ["does she visit you in Madrid?"] },
     { speaker: "JON", line: "ELLA NO VIENE A MADRID MUY A MENUDO. YO LA VISITO EN BARCELONA.", answer: ["she doesn't come to Madrid very often. i visit her in Barcelona.", "she does not come to Madrid very often. i visit her in Barcelona."] },
+    { speaker: "MARY", line: "¿Y LE GUSTA?", answer: ["and does she like it?", "and does she like?"] },
+    { speaker: "JON", line: "SÍ, LE ENCANTA BARCELONA. ELLA TRABAJA EN UN BANCO POR LAS MAÑANAS. POR LAS TARDES, ELLA JUEGA AL TENIS CON SU NOVIO O ELLA MIRA LA TV EN CASA. POR LAS NOCHES, ELLA VA A LA PLAYA O ELLA HACE SU TAREA DE INGLÉS. ESTUDIA INGLÉS LOS SÁBADOS.", answer: ["yes, she loves barcelona. she works in a bank in the mornings. in the afternoons, she plays tennis with her boyfriend or she watches tv at home. in the evenings, she goes to the beach or she does her english homework. she studies english on saturdays."] },
+    { speaker: "MARY", line: "¿VIVES EN BARCELONA?", answer: ["do you live in Barcelona?"] },
+    { speaker: "JON", line: "NO, NO VIVO EN BARCELONA. VIVO EN MADRID, PERO MI HERMANA VIVE ALLÍ.", answer: ["no, i don't live in barcelona. i live in madrid, but my sister lives there.", "no, i do not live in barcelona. i live in madrid, but my sister lives there."] },
 ];
 
 const can1ExerciseData: ExercisePrompt[] = [
@@ -341,65 +345,55 @@ export default function EngA1Class3Page() {
                                 <CardDescription className="font-bold text-foreground">Reglas para el Presente Simple Afirmativo</CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
-                                <h3 className="text-lg font-bold text-primary">Regla General</h3>
-                                <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 font-mono text-base border">
-                                    <p>A la mayoría de los verbos en tercera persona del singular (he, she, it) se les agrega una <span className="font-bold text-primary">"s"</span> al final.</p>
-                                    <div className="pt-2 space-y-1">
-                                        <p className="font-bold text-lg">She works</p>
-                                        <p className="font-bold text-lg">He eats</p>
-                                    </div>
-                                </div>
-                            </CardContent>
-                        </Card>
-
-                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left text-foreground">
-                            <CardHeader>
-                                <CardTitle className="text-2xl font-black text-primary uppercase">Verbos terminados en -o, -sh, -ch, -ss, -x, -z</CardTitle>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                                <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 font-mono text-base border">
-                                    <p>A los verbos que terminan en estas letras, se les agrega <span className="font-bold text-primary">"es"</span>.</p>
-                                    <div className="pt-2 space-y-2">
-                                        <p className="font-bold">I go &rarr; <span className="text-primary">He goes</span></p>
-                                        <p className="font-bold">I wish &rarr; <span className="text-primary">She wishes</span></p>
-                                        <p className="font-bold">I kiss &rarr; <span className="text-primary">He kisses</span></p>
-                                    </div>
-                                </div>
-                            </CardContent>
-                        </Card>
-
-                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left text-foreground">
-                            <CardHeader>
-                                <CardTitle className="text-2xl font-black text-primary uppercase">Verbos terminados en "y"</CardTitle>
-                            </CardHeader>
-                            <CardContent className="space-y-6">
-                                <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-4 font-mono text-base border">
-                                    <div>
-                                        <h4 className="font-bold text-primary mb-1">Consonante + "y"</h4>
-                                        <p className="text-sm mb-2">Se cambia la "y" por <span className="font-bold text-primary">"ies"</span>.</p>
-                                        <p className="font-bold">I study &rarr; <span className="text-primary">She studies</span></p>
-                                    </div>
-                                    <Separator className="bg-border/50" />
-                                    <div>
-                                        <h4 className="font-bold text-primary mb-1">Vocal + "y"</h4>
-                                        <p className="text-sm mb-2">Solo se agrega la <span className="font-bold text-primary">"s"</span>.</p>
-                                        <div className="space-y-1">
-                                            <p className="font-bold">I buy &rarr; <span className="text-primary">He buys</span></p>
-                                            <p className="font-bold">I stay &rarr; <span className="text-primary">She stays</span></p>
+                                <div className="p-6 bg-slate-50 dark:bg-slate-900/50 rounded-[2rem] border border-border/50">
+                                    <h3 className="text-lg font-bold text-primary mb-3">Regla General</h3>
+                                    <div className="space-y-3 font-mono text-base">
+                                        <p>A la mayoría de los verbos en tercera persona del singular (he, she, it) se les agrega una <span className="font-bold text-primary">"s"</span> al final.</p>
+                                        <div className="pt-2 space-y-1">
+                                            <p className="font-bold text-lg">She works</p>
+                                            <p className="font-bold text-lg">He eats</p>
                                         </div>
                                     </div>
                                 </div>
-                            </CardContent>
-                        </Card>
 
-                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left text-foreground">
-                            <CardHeader>
-                                <CardTitle className="text-2xl font-black text-destructive uppercase">NOTA IMPORTANTE</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="bg-destructive/5 p-6 rounded-[2rem] space-y-3 font-mono text-base border-2 border-dashed border-destructive/20">
-                                    <p>Estas reglas solo se aplican a las oraciones afirmativas <span className="font-bold text-green-500 font-sans">(+)</span>.</p>
-                                    <p>No se aplican en oraciones negativas ni interrogativas <span className="font-bold text-red-500 font-sans">(-)</span> <span className="font-bold text-blue-500 font-sans">(?)</span>.</p>
+                                <div className="p-6 bg-slate-50 dark:bg-slate-900/50 rounded-[2rem] border border-border/50">
+                                    <h3 className="text-lg font-bold text-primary mb-3">Verbos terminados en -o, -sh, -ch, -ss, -x, -z</h3>
+                                    <div className="space-y-3 font-mono text-base">
+                                        <p>A los verbos que terminan en estas letras, se les agrega <span className="font-bold text-primary">"es"</span>.</p>
+                                        <div className="pt-2 space-y-2">
+                                            <p className="font-bold">I go &rarr; <span className="text-primary">He goes</span></p>
+                                            <p className="font-bold">I wish &rarr; <span className="text-primary">She wishes</span></p>
+                                            <p className="font-bold">I kiss &rarr; <span className="text-primary">He kisses</span></p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="p-6 bg-slate-50 dark:bg-slate-900/50 rounded-[2rem] border border-border/50">
+                                    <h3 className="text-lg font-bold text-primary mb-3">Verbos terminados en "y"</h3>
+                                    <div className="space-y-6 font-mono text-base">
+                                        <div className="space-y-2">
+                                            <h4 className="font-bold text-foreground">Consonante + "y"</h4>
+                                            <p className="text-sm">Se cambia la "y" por <span className="font-bold text-primary">"ies"</span>.</p>
+                                            <p className="font-bold">I study &rarr; <span className="text-primary">She studies</span></p>
+                                        </div>
+                                        <Separator className="bg-border/50" />
+                                        <div className="space-y-2">
+                                            <h4 className="font-bold text-foreground">Vocal + "y"</h4>
+                                            <p className="text-sm">Solo se agrega la <span className="font-bold text-primary">"s"</span>.</p>
+                                            <div className="space-y-1">
+                                                <p className="font-bold">I buy &rarr; <span className="text-primary">He buys</span></p>
+                                                <p className="font-bold">I stay &rarr; <span className="text-primary">She stays</span></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="p-6 bg-destructive/5 rounded-[2rem] border-2 border-dashed border-destructive/20">
+                                    <h3 className="text-lg font-black text-destructive uppercase mb-2 text-center">NOTA IMPORTANTE</h3>
+                                    <div className="space-y-3 font-mono text-base text-center">
+                                        <p>Estas reglas solo se aplican a las oraciones afirmativas <span className="font-bold text-green-500 font-sans">(+)</span>.</p>
+                                        <p>No se aplican en oraciones negativas ni interrogativas <span className="font-bold text-red-500 font-sans">(-)</span> <span className="font-bold text-blue-500 font-sans">(?)</span>.</p>
+                                    </div>
                                 </div>
                             </CardContent>
                             <CardFooter className="justify-center border-t pt-6">
@@ -424,8 +418,8 @@ export default function EngA1Class3Page() {
                                 
                                 <div className="space-y-4">
                                     <h3 className="text-xl font-bold text-primary uppercase tracking-tight">Hechos y Verdades Generales</h3>
-                                    <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 border">
-                                        <p className="text-muted-foreground mb-2">Para cosas que siempre son ciertas.</p>
+                                    <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] border border-border/50">
+                                        <p className="text-muted-foreground mb-3 font-medium">Para cosas que siempre son ciertas.</p>
                                         <div className="font-mono text-lg space-y-1">
                                             <p className="font-black text-primary">The Earth goes around the Sun.</p>
                                             <p className="text-sm text-muted-foreground italic">(La Tierra gira alrededor del Sol.)</p>
@@ -437,8 +431,8 @@ export default function EngA1Class3Page() {
 
                                 <div className="space-y-4">
                                     <h3 className="text-xl font-bold text-primary uppercase tracking-tight">Hábitos y Rutinas</h3>
-                                    <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 border">
-                                        <p className="text-muted-foreground mb-2">Para acciones que haces regularmente.</p>
+                                    <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] border border-border/50">
+                                        <p className="text-muted-foreground mb-3 font-medium">Para acciones que haces regularmente.</p>
                                         <div className="font-mono text-lg space-y-1">
                                             <p className="font-black text-primary">I play soccer on Saturdays.</p>
                                             <p className="text-sm text-muted-foreground italic">(Juego al fútbol los sábados.)</p>
@@ -450,8 +444,8 @@ export default function EngA1Class3Page() {
 
                                 <div className="space-y-4">
                                     <h3 className="text-xl font-bold text-primary uppercase tracking-tight">Horarios y Eventos Programados</h3>
-                                    <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 border">
-                                        <p className="text-muted-foreground mb-2">Para eventos futuros que tienen un horario fijo.</p>
+                                    <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] border border-border/50">
+                                        <p className="text-muted-foreground mb-3 font-medium">Para eventos futuros que tienen un horario fijo.</p>
                                         <div className="font-mono text-lg space-y-1">
                                             <p className="font-black text-primary">The train leaves at 8:00 AM.</p>
                                             <p className="text-sm text-muted-foreground italic">(El tren sale a las 8:00 AM.)</p>
@@ -463,8 +457,8 @@ export default function EngA1Class3Page() {
 
                                 <div className="space-y-4">
                                     <h3 className="text-xl font-bold text-primary uppercase tracking-tight">Situaciones Permanentes</h3>
-                                    <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 border">
-                                        <p className="text-muted-foreground mb-2">Para situaciones que son verdaderas por mucho tiempo.</p>
+                                    <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] border border-border/50">
+                                        <p className="text-muted-foreground mb-3 font-medium">Para situaciones que son verdaderas por mucho tiempo.</p>
                                         <div className="font-mono text-lg space-y-1">
                                             <p className="font-black text-primary">She works in a hospital.</p>
                                             <p className="text-sm text-muted-foreground italic">(Ella trabaja en un hospital.)</p>
@@ -488,7 +482,7 @@ export default function EngA1Class3Page() {
             case 'ex3_3':
                 return <ShortAnswerPresentSimpleExercise key={selectedTopic} exerciseData={class3ShortAnswerEx3Data} onComplete={() => handleTopicComplete('ex3_3')} title="Ejercicio 3" description="Responde cortamente." />;
             case 'ex3_4':
-                return <LargeTextTranslationExercise key={selectedTopic} title="Diálogo Final" dialogue={class3LargeTextEx4Dialogue} onComplete={() => handleTopicComplete('ex3_4')} />;
+                return <LargeTextTranslationExercise key={selectedTopic} title="Ejercicio 4: Diálogo" dialogue={class3LargeTextEx4Dialogue} onComplete={() => handleTopicComplete('ex3_4')} />;
             case 'can':
                 return <Card className="shadow-soft border-2 border-brand-purple p-6"><CardTitle>Modal: CAN</CardTitle><CardContent className="pt-4 font-mono">I CAN SPEAK ENGLISH (Habilidad)</CardContent></Card>;
             case 'can1':
