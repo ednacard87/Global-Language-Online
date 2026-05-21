@@ -34,7 +34,7 @@ const ICONS_CONFIG = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_a1_eng_u1_c3_v66_stable';
+const progressStorageVersion = 'progress_a1_eng_u1_c3_v67_stable';
 const mainProgressKey = 'progress_a1_eng_unit_1_class_3';
 
 const class3MixedExercise1Data: ExercisePrompt[] = [
@@ -154,7 +154,11 @@ export default function EngA1Class3Page() {
                 { key: 'can1', name: 'Ejercicios con CAN', icon: PenSquare, status: 'locked' },
             ],
         },
-    ], []);
+    ], [t]);
+
+    const handleTopicComplete = useCallback((completedKey: string) => {
+        setTopicToComplete(completedKey);
+    }, []);
     
     useEffect(() => {
         if (isProfileLoading || isUserLoading || !studentProfile || initialLoadComplete) return;
@@ -249,10 +253,6 @@ export default function EngA1Class3Page() {
         });
     }, [learningPath, isAdmin, progressValue, studentDocRef, initialLoadComplete, selectedTopic, isInitialLoading, studentProfile]);
 
-    const handleTopicComplete = useCallback((completedKey: string) => {
-        setTopicToComplete(completedKey);
-    }, []);
-
     useEffect(() => {
         if (!topicToComplete) return;
         setLearningPath(currentPath => {
@@ -326,7 +326,7 @@ export default function EngA1Class3Page() {
         
         setSelectedTopic(topicKey);
 
-        const autoViewTopics = ['vocabulary2', 'can'];
+        const autoViewTopics = ['vocabulary2'];
         if (autoViewTopics.includes(topicKey)) {
             handleTopicComplete(topicKey);
         }
@@ -338,10 +338,10 @@ export default function EngA1Class3Page() {
         switch (selectedTopic) {
             case 'grammar2':
                 return (
-                    <div className="space-y-6">
-                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left text-foreground">
+                    <div className="space-y-6 text-left">
+                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground">
                             <CardHeader>
-                                <CardTitle className="text-2xl font-black text-primary uppercase">Formación de la Tercera Persona Singular (he, she, it)</CardTitle>
+                                <CardTitle className="text-2xl font-black text-primary uppercase tracking-tight">Formación de la Tercera Persona Singular (he, she, it)</CardTitle>
                                 <CardDescription className="font-bold text-foreground">Reglas para el Presente Simple Afirmativo</CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
@@ -408,14 +408,13 @@ export default function EngA1Class3Page() {
                 return <PresentSimpleExercise key={selectedTopic} exerciseData={class3MixedExercise1Data} onComplete={() => handleTopicComplete('mixedExercises1')} title="Ejercicios Mixtos 1" showShortAnswers={false} />;
             case 'presentSimpleUses':
                 return (
-                    <div className="space-y-6">
-                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left text-foreground">
+                    <div className="space-y-6 text-left">
+                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground">
                             <CardHeader>
-                                <CardTitle className="text-2xl font-black text-primary uppercase">Usos del Presente Simple</CardTitle>
+                                <CardTitle className="text-2xl font-black text-primary uppercase tracking-tight">Usos del Presente Simple</CardTitle>
                                 <CardDescription className="font-bold text-foreground">Cuándo y cómo usar el Presente Simple.</CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-6">
-                                
                                 <div className="space-y-4">
                                     <h3 className="text-xl font-bold text-primary uppercase tracking-tight">Hechos y Verdades Generales</h3>
                                     <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] border border-border/50">
@@ -465,7 +464,6 @@ export default function EngA1Class3Page() {
                                         </div>
                                     </div>
                                 </div>
-
                             </CardContent>
                             <CardFooter className="justify-center border-t pt-6">
                                 <Button onClick={() => handleTopicComplete('presentSimpleUses')} size="lg" className="px-16 font-bold h-14 text-xl">
@@ -484,9 +482,100 @@ export default function EngA1Class3Page() {
             case 'ex3_4':
                 return <LargeTextTranslationExercise key={selectedTopic} title="Ejercicio 4: Diálogo" dialogue={class3LargeTextEx4Dialogue} onComplete={() => handleTopicComplete('ex3_4')} />;
             case 'can':
-                return <Card className="shadow-soft border-2 border-brand-purple p-6"><CardTitle>Modal: CAN</CardTitle><CardContent className="pt-4 font-mono">I CAN SPEAK ENGLISH (Habilidad)</CardContent></Card>;
+                return (
+                    <div className="space-y-6 text-left">
+                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground">
+                            <CardHeader>
+                                <CardTitle className="text-2xl font-black text-primary uppercase tracking-tight">Verbo Modal "CAN"</CardTitle>
+                                <CardDescription className="font-bold text-foreground">Habilidad, Posibilidad, Permiso</CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                <p className="text-lg leading-relaxed">El verbo <span className="font-bold text-primary">'CAN'</span> es un verbo modal que se utiliza para expresar habilidad, posibilidad o permiso. En español, generalmente se traduce como <span className="italic">'poder'</span>.</p>
+                                
+                                <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-4 border">
+                                    <div className="font-mono text-lg space-y-3">
+                                        <div>
+                                            <p className="font-black text-primary">Habilidad:</p>
+                                            <p>"I can speak English." <span className="text-sm text-muted-foreground italic">(Yo puedo hablar inglés.)</span></p>
+                                        </div>
+                                        <div>
+                                            <p className="font-black text-primary">Posibilidad:</p>
+                                            <p>"It can rain tomorrow." <span className="text-sm text-muted-foreground italic">(Puede llover mañana.)</span></p>
+                                        </div>
+                                        <div>
+                                            <p className="font-black text-primary">Permiso:</p>
+                                            <p>"Can I go to the bathroom?" <span className="text-sm text-muted-foreground italic">(¿Puedo ir al baño?)</span></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground">
+                            <CardHeader>
+                                <CardTitle className="text-2xl font-black text-primary uppercase tracking-tight">Estructura de "CAN"</CardTitle>
+                            </CardHeader>
+                            <CardContent className="space-y-6">
+                                <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 font-mono text-base border">
+                                    <div className="flex items-center gap-4">
+                                        <span className="text-green-500 font-bold w-10 text-center text-lg">(+)</span>
+                                        <span className="text-muted-foreground">pronoun + can + verb (infinitive) + complement</span>
+                                    </div>
+                                    <div className="flex items-center gap-4">
+                                        <span className="text-red-500 font-bold w-10 text-center text-lg">(-)</span>
+                                        <span className="text-muted-foreground">pronoun + can + not + verb (infinitive) + complement</span>
+                                    </div>
+                                    <div className="flex items-center gap-4">
+                                        <span className="text-blue-500 font-bold w-10 text-center text-lg">(?)</span>
+                                        <span className="text-muted-foreground">Can + pronoun + verb (infinitive) + complement ?</span>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-3">
+                                    <h3 className="text-lg font-bold text-foreground">Respuestas Cortas</h3>
+                                    <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 font-mono text-base border">
+                                        <div className="flex items-center gap-4">
+                                            <span className="text-green-500 font-bold w-10 text-center text-lg">(+A)</span>
+                                            <span>Yes, pronoun + can</span>
+                                        </div>
+                                        <div className="flex items-center gap-4">
+                                            <span className="text-red-500 font-bold w-10 text-center text-lg">(-A)</span>
+                                            <span>No, pronoun + can't</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground">
+                            <CardHeader>
+                                <CardTitle className="text-2xl font-black text-primary uppercase tracking-tight">Contracción Negativa</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="p-6 bg-slate-50 dark:bg-slate-900/50 rounded-[2rem] border text-center">
+                                    <p className="text-2xl font-black font-mono tracking-tighter text-primary">CAN + NOT = <span className="text-destructive">CAN'T</span></p>
+                                </div>
+                            </CardContent>
+                            <CardFooter className="justify-center border-t pt-6">
+                                <Button onClick={() => handleTopicComplete('can')} size="lg" className="px-16 font-bold h-14 text-xl">
+                                    Entendido <ArrowRight className="ml-2 h-6 w-6" />
+                                </Button>
+                            </CardFooter>
+                        </Card>
+                    </div>
+                );
             case 'can1':
                 return <PresentSimpleExercise key={selectedTopic} exerciseData={can1ExerciseData} onComplete={() => handleTopicComplete('can1')} title="Ejercicios CAN" showShortAnswers={true} />;
+            case 'vocabulary2':
+                 return (
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple p-6">
+                        <CardHeader><CardTitle>Vocabulario 2</CardTitle></CardHeader>
+                        <CardContent>
+                            <p className='text-lg'>Estudia los nuevos términos presentados en esta unidad para mejorar tu fluidez.</p>
+                        </CardContent>
+                        <CardFooter><Button onClick={() => handleTopicComplete('vocabulary2')}>Continuar</Button></CardFooter>
+                    </Card>
+                 );
             default: return <div className="flex justify-center items-center h-48"><Loader2 className="animate-spin h-10 w-10 text-primary" /></div>;
         }
     };
