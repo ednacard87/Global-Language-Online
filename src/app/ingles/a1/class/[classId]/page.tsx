@@ -236,7 +236,7 @@ interface ClassContentProps {
 //                 CLASS 1 COMPONENT
 // =================================================================
 const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isProfileLoading, isUserLoading }: ClassContentProps) => {
-    const progressStorageKey = `progress_a1_eng_u1_c1_v65_stable`;
+    const progressStorageKey = `progress_a1_eng_u1_c1_v66_stable`;
     const mainProgressKey = `progress_a1_eng_unit_1_class_1`;
 
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
@@ -284,6 +284,10 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             ]
         }
     ], [t]);
+
+    const handleTopicComplete = useCallback((completedKey: string) => {
+        setTopicToComplete(completedKey);
+    }, []);
 
     useEffect(() => {
         if (isProfileLoading || isUserLoading || !studentProfile || initialLoadComplete) return;
@@ -382,7 +386,6 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             }
         });
 
-        // Refuerzo de Blindaje: Verificar igualdad profunda antes de guardar
         const savedData = studentProfile?.lessonProgress?.[progressStorageKey];
         if (JSON.stringify(statusesToSave) !== JSON.stringify(savedData)) {
             updateDocumentNonBlocking(studentDocRef, {
@@ -560,21 +563,21 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                         </CardContent>
                         <CardFooter className="flex justify-between">
                             <Button onClick={handleVocabCheckAnswers}>{t('vocabulary.check')}</Button>
-                            <Button onClick={() => setTopicToComplete('vocabulary')} disabled={!canAdvanceVocab && !isAdmin}>Avanzar</Button>
+                            <Button onClick={() => handleTopicComplete('vocabulary')} disabled={!canAdvanceVocab && !isAdmin}>Avanzar</Button>
                         </CardFooter>
                     </Card>
                 );
-            case 'memory-tobe': return <ToBeMemoryGame key={selectedTopic} onGameComplete={() => setTopicToComplete('memory-tobe')} />;
-            case 'tobe-1-exercise': return <TranslationExercise key={selectedTopic} exerciseKey="exercises1" onComplete={() => setTopicToComplete('tobe-1-exercise')} vocabulary={{'un- una': 'a / an', 'abogado': 'lawyer', 'enfermo': 'sick', 'enfermero': 'nurse'}} highlightVocabulary={true} />;
-            case 'memory-possessives': return <PossessivesMemoryGame key={selectedTopic} onGameComplete={() => setTopicToComplete('memory-possessives')} />;
-            case 'tobe-2-exercise': return <TranslationExercise key={selectedTopic} exerciseKey="exercises2" onComplete={() => setTopicToComplete('tobe-2-exercise')} vocabulary={{'amigo': 'friend', 'hijo': 'son', 'perro': 'dog'}} highlightVocabulary={true} />;
-            case 'tobe-3-exercise': return <TranslationExercise key={selectedTopic} exerciseKey="exercises3" onComplete={() => setTopicToComplete('tobe-3-exercise')} vocabulary={{'enfermera': 'nurse', 'abuelos': 'grandparents', 'pensionado': 'retired', 'juguete': 'toy'}} highlightVocabulary={true} />;
-            case 'ex-mixto-1': return <SimpleTranslationExercise key={selectedTopic} course="a1" exerciseKey="mixed1" onComplete={() => setTopicToComplete('ex-mixto-1')} vocabulary={{"estudiante": "student", "amigos": "friends", "padres": "parents", "hermana": "sister", "abogados": "lawyers", "de": "from"}} highlightVocabulary={true} />;
-            case 'ex-mixto-2': return <TranslationExercise key={selectedTopic} exerciseKey="qna2" formType="qna" onComplete={() => setTopicToComplete('ex-mixto-2')} title="Ejercicio 2" vocabulary={{"cansado": "tired", "curiosos": "curious", "hambriento": "hungry", "compañeros de trabajo": "coworkers", "a tiempo": "on time"}} highlightVocabulary={true} />;
-            case 'ex-mixto-3': return <SimpleTranslationExercise key={selectedTopic} course="a1" exerciseKey="mixed3" onComplete={() => setTopicToComplete('ex-mixto-3')} vocabulary={{"estudiantes": "students", "mamá": "mother / mom", "abuela": "grandmother", "hermanas": "sisters", "cansado": "tired", "aburridos": "bored", "enojados": "angry", "preocupados": "worried"}} highlightVocabulary={true} />;
-            case 'ex-mixto-4': return <SimpleTranslationExercise key={selectedTopic} course="a1" exerciseKey="mixed4" onComplete={() => setTopicToComplete('ex-mixto-4')} vocabulary={{"profesor": "teacher", "ingeniero": "engineer", "americano": "american", "en casa": "at home", "sobre": "on", "interesado": "interested", "estadio": "stadium"}} highlightVocabulary={true} />;
-            case 'ex-mixto-5': return <ShortAnswerExercise key={selectedTopic} onComplete={() => setTopicToComplete('ex-mixto-5')} />;
-            case 'ex-mixto-6': return <SimpleTranslationExercise key={selectedTopic} course="a1" exerciseKey="mixed6" onComplete={() => setTopicToComplete('ex-mixto-6')} vocabulary={{"padrastro": "stepfather", "estante": "shelf", "escritorio": "desk", "en el trabajo": "at work", "iglesia": "church", "supermercado": "supermarket"}} highlightVocabulary={true} />;
+            case 'memory-tobe': return <ToBeMemoryGame key={selectedTopic} onGameComplete={() => handleTopicComplete('memory-tobe')} />;
+            case 'tobe-1-exercise': return <TranslationExercise key={selectedTopic} exerciseKey="exercises1" onComplete={() => handleTopicComplete('tobe-1-exercise')} vocabulary={{'un- una': 'a / an', 'abogado': 'lawyer', 'enfermo': 'sick', 'enfermero': 'nurse'}} highlightVocabulary={true} />;
+            case 'memory-possessives': return <PossessivesMemoryGame key={selectedTopic} onGameComplete={() => handleTopicComplete('memory-possessives')} />;
+            case 'tobe-2-exercise': return <TranslationExercise key={selectedTopic} exerciseKey="exercises2" onComplete={() => handleTopicComplete('tobe-2-exercise')} vocabulary={{'amigo': 'friend', 'hijo': 'son', 'perro': 'dog'}} highlightVocabulary={true} />;
+            case 'tobe-3-exercise': return <TranslationExercise key={selectedTopic} exerciseKey="exercises3" onComplete={() => handleTopicComplete('tobe-3-exercise')} vocabulary={{'enfermera': 'nurse', 'abuelos': 'grandparents', 'pensionado': 'retired', 'juguete': 'toy'}} highlightVocabulary={true} />;
+            case 'ex-mixto-1': return <SimpleTranslationExercise key={selectedTopic} course="a1" exerciseKey="mixed1" onComplete={() => handleTopicComplete('ex-mixto-1')} vocabulary={{"estudiante": "student", "amigos": "friends", "padres": "parents", "hermana": "sister", "abogados": "lawyers", "de": "from"}} highlightVocabulary={true} />;
+            case 'ex-mixto-2': return <TranslationExercise key={selectedTopic} exerciseKey="qna2" formType="qna" onComplete={() => handleTopicComplete('ex-mixto-2')} title="Ejercicio 2" vocabulary={{"cansado": "tired", "curiosos": "curious", "hambriento": "hungry", "compañeros de trabajo": "coworkers", "a tiempo": "on time"}} highlightVocabulary={true} />;
+            case 'ex-mixto-3': return <SimpleTranslationExercise key={selectedTopic} course="a1" exerciseKey="mixed3" onComplete={() => handleTopicComplete('ex-mixto-3')} vocabulary={{"estudiantes": "students", "mamá": "mother / mom", "abuela": "grandmother", "hermanas": "sisters", "cansado": "tired", "aburridos": "bored", "enojados": "angry", "preocupados": "worried"}} highlightVocabulary={true} />;
+            case 'ex-mixto-4': return <SimpleTranslationExercise key={selectedTopic} course="a1" exerciseKey="mixed4" onComplete={() => handleTopicComplete('ex-mixto-4')} vocabulary={{"profesor": "teacher", "ingeniero": "engineer", "americano": "american", "en casa": "at home", "sobre": "on", "interesado": "interested", "estadio": "stadium"}} highlightVocabulary={true} />;
+            case 'ex-mixto-5': return <ShortAnswerExercise key={selectedTopic} onComplete={() => handleTopicComplete('ex-mixto-5')} />;
+            case 'ex-mixto-6': return <SimpleTranslationExercise key={selectedTopic} course="a1" exerciseKey="mixed6" onComplete={() => handleTopicComplete('ex-mixto-6')} vocabulary={{"padrastro": "stepfather", "estante": "shelf", "escritorio": "desk", "en el trabajo": "at work", "iglesia": "church", "supermercado": "supermarket"}} highlightVocabulary={true} />;
             
             case 'tobe-1-grammar':
                 return (
@@ -1416,4 +1419,3 @@ export default function EngA1ClassPage() {
       </div>
     );
 }
-
