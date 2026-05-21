@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -25,6 +26,12 @@ import { PossessivesMemoryGame } from '@/components/kids/exercises/possessives-m
 import { TranslationExercise } from '@/components/dashboard/translation-exercise';
 import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
 import { ShortAnswerExercise } from '@/components/dashboard/short-answer-exercise';
+import { VerbMemoryGame } from '@/components/kids/exercises/verb-memory-game';
+import { VerbVocabularyExercise } from '@/components/kids/exercises/verb-vocabulary';
+import { SingleFormExercise } from '@/components/kids/exercises/single-form';
+import { PresentSimpleExercise } from '@/components/kids/exercises/present-simple';
+import { ReadingComprehensionExercise } from '@/components/kids/exercises/reading-comprehension';
+import { FillInTheBlanksExercise } from '@/components/kids/exercises/fill-in-the-blanks';
 
 // --- Constants ---
 const ICONS_CONFIG = {
@@ -518,7 +525,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         switch (selectedTopic) {
             case 'vocabulary':
                 return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left">
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left text-foreground">
                         <CardHeader><CardTitle>{t('a1class1.vocabulary')}</CardTitle></CardHeader>
                         <CardContent>
                             <Accordion type="multiple" className="w-full">
@@ -568,7 +575,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             
             case 'tobe-1-grammar':
                 return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left">
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left text-foreground">
                         <CardHeader>
                             <CardTitle>To be 1</CardTitle>
                         </CardHeader>
@@ -623,7 +630,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                 );
             case 'tobe-2-grammar':
                 return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left">
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left text-foreground">
                         <CardHeader>
                             <CardTitle>To be 2</CardTitle>
                         </CardHeader>
@@ -678,7 +685,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                 );
             case 'tobe-3-grammar':
                 return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left">
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left text-foreground">
                         <CardHeader>
                             <CardTitle>To be 3</CardTitle>
                         </CardHeader>
@@ -734,7 +741,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             case 'tobe':
             case 'possessives':
                 return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left">
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left text-foreground">
                         <CardHeader><CardTitle>{topic?.name}</CardTitle></CardHeader>
                         <CardContent className="space-y-4">
                             {selectedTopic === 'tobe' && (
@@ -856,7 +863,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
 //                 CLASS 2 COMPONENT
 // =================================================================
 const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isProfileLoading, isUserLoading }: ClassContentProps) => {
-    const progressStorageVersion = 'progress_a1_eng_u1_c2_v65_stable';
+    const progressStorageVersion = 'progress_a1_eng_u1_c2_v75_stable';
     const mainProgressKey = 'progress_a1_eng_unit_1_class_2';
     
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
@@ -1073,10 +1080,6 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         }
         
         setSelectedTopic(topicKey);
-        const autoViewTopics = ['grammar'];
-        if (autoViewTopics.includes(topicKey)) {
-            setTopicToComplete(topicKey);
-        }
     };
 
     const handleVocabInputChange = (category: string, index: number, value: string) => {
@@ -1135,12 +1138,12 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         switch (selectedTopic) {
             case 'vocabulary':
                 return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left">
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left text-foreground">
                         <CardHeader><CardTitle>Vocabulary - Class 2 (A1)</CardTitle></CardHeader>
                         <CardContent>
                           <Accordion type="multiple" className="w-full" defaultValue={['verbos', 'palabrasBasicas']}>
                             <AccordionItem value="verbos">
-                              <AccordionTrigger>{t('kidsA1Class2.verbos')}</AccordionTrigger>
+                              <AccordionTrigger className="text-lg font-semibold">Verbos</AccordionTrigger>
                               <AccordionContent>
                                 <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-lg">
                                     <div className="font-bold p-3 bg-muted rounded-lg text-center">{t('common.spanish')}</div>
@@ -1157,7 +1160,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                               </AccordionContent>
                             </AccordionItem>
                             <AccordionItem value="palabrasBasicas">
-                              <AccordionTrigger>{t('kidsA1Class2.palabrasBasicas')}</AccordionTrigger>
+                              <AccordionTrigger className="text-lg font-semibold">Palabras Básicas</AccordionTrigger>
                               <AccordionContent>
                                  <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-lg">
                                     <div className="font-bold p-3 bg-muted rounded-lg text-center">{t('common.spanish')}</div>
@@ -1183,37 +1186,120 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                 );
             case 'grammar':
                 return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left">
-                        <CardHeader><CardTitle>{topic?.name}</CardTitle></CardHeader>
-                        <CardContent className="space-y-2 font-mono text-base">
-                            <p><span className="font-bold text-lg text-green-500 mr-2">(+)</span> = pronoun + verb + Complement</p>
-                            <p><span className="font-bold text-lg text-red-500 mr-2">(-)</span> = pronoun + Do/Does + Not +verb + Complement</p>
-                            <p><span className="font-bold text-lg text-blue-500 mr-2">(?)</span> =  Do/Does + pronoun + verb + Complement ?</p>
-                        </CardContent>
-                        <CardFooter className="justify-center pt-6 border-t">
-                            <Button onClick={() => setTopicToComplete('grammar')} size="lg">Entendido</Button>
-                        </CardFooter>
-                    </Card>
+                    <div className="space-y-6">
+                        <h2 className="text-3xl font-bold text-center text-white mb-8 [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">PRESENT SIMPLE</h2>
+                        
+                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left overflow-hidden text-foreground">
+                            <CardHeader className="pb-4">
+                                <CardTitle className="text-2xl font-black text-primary uppercase">ESTRUCTURA</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 font-mono text-base border">
+                                    <div className="flex items-center gap-4">
+                                        <span className="text-green-500 font-bold w-12 text-center text-lg">(+)</span>
+                                        <span>= Afirmativa</span>
+                                    </div>
+                                    <div className="flex items-center gap-4">
+                                        <span className="text-red-500 font-bold w-12 text-center text-lg">(-)</span>
+                                        <span>= Negativa</span>
+                                    </div>
+                                    <div className="flex items-center gap-4">
+                                        <span className="text-blue-500 font-bold w-12 text-center text-lg">(?)</span>
+                                        <span>= interrogativa ?</span>
+                                    </div>
+                                    <div className="pt-4 mt-4 border-t">
+                                        <h4 className="font-bold mb-3 text-foreground">Short Answers = Respuestas Cortas</h4>
+                                        <div className="space-y-3">
+                                            <div className="flex items-center gap-4">
+                                                <span className="text-green-500 font-bold w-12 text-center text-lg">(+A)</span>
+                                                <span>= Respuesta corta positiva</span>
+                                            </div>
+                                            <div className="flex items-center gap-4">
+                                                <span className="text-red-500 font-bold w-12 text-center text-lg">(-A)</span>
+                                                <span>= Respuesta corta Negativa</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left overflow-hidden text-foreground">
+                            <CardHeader className="pb-4">
+                                <CardTitle className="text-2xl font-black text-primary uppercase">ESTRUCTURA DO/DOES</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 font-mono text-base border">
+                                    <div className="flex items-center gap-4">
+                                        <span className="text-green-500 font-bold w-12 text-center text-lg">(+)</span>
+                                        <span>pronoun + verb + Complement</span>
+                                    </div>
+                                    <div className="flex items-center gap-4">
+                                        <span className="text-red-500 font-bold w-12 text-center text-lg">(-)</span>
+                                        <span>pronoun + Do/Does + Not +verb + Complement</span>
+                                    </div>
+                                    <div className="flex items-center gap-4">
+                                        <span className="text-blue-500 font-bold w-12 text-center text-lg">(?)</span>
+                                        <span>Do/Does + pronoun + verb + Complement ?</span>
+                                    </div>
+                                    <div className="pt-4 mt-4 border-t">
+                                        <h4 className="font-bold mb-3 text-foreground">Short Answers = Respuestas Cortas</h4>
+                                        <div className="space-y-3">
+                                            <div className="flex items-center gap-4">
+                                                <span className="text-green-500 font-bold w-12 text-center text-lg">(+A)</span>
+                                                <span>Yes, pronoun + Do/Does</span>
+                                            </div>
+                                            <div className="flex items-center gap-4">
+                                                <span className="text-red-500 font-bold w-12 text-center text-lg">(-A)</span>
+                                                <span>No, pronoun + Do/Does + Not</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left overflow-hidden text-foreground">
+                            <CardHeader className="pb-4">
+                                <CardTitle className="text-2xl font-black text-primary uppercase">Conjugaciones</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-4 font-mono text-lg border">
+                                    <div className="p-4 bg-background rounded-xl border border-primary/20 text-center">
+                                        <span className="font-bold text-primary">DO</span> = I - YOU - WE - THEY
+                                    </div>
+                                    <div className="p-4 bg-background rounded-xl border border-brand-purple/20 text-center">
+                                        <span className="font-bold text-brand-purple">DOES</span> = HE - SHE - IT
+                                    </div>
+                                </div>
+                            </CardContent>
+                            <CardFooter className="justify-center border-t pt-6">
+                                <Button onClick={() => handleTopicComplete('grammar')} size="lg" className="px-16 font-bold h-14 text-xl">
+                                    Entendido <ArrowRight className="ml-2 h-6 w-6" />
+                                </Button>
+                            </CardFooter>
+                        </Card>
+                    </div>
                 )
-            case 'memory-verbs': return <VerbMemoryGame key={selectedTopic} onComplete={() => setTopicToComplete('memory-verbs')} />;
-            case 'final-vocab': return <VerbVocabularyExercise key={selectedTopic} data={class2VocabularyData.verbos} onComplete={() => setTopicToComplete('final-vocab')} />;
+            case 'memory-verbs': return <VerbMemoryGame key={selectedTopic} onComplete={() => handleTopicComplete('memory-verbs')} />;
+            case 'final-vocab': return <VerbVocabularyExercise key={selectedTopic} data={class2VocabularyData.verbos} onComplete={() => handleTopicComplete('final-vocab')} />;
             case 'listening':
                 return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left">
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left text-foreground">
                         <CardHeader><CardTitle>{t('kidsA1Class2.listening')}</CardTitle></CardHeader>
                         <CardContent className="flex flex-col items-center justify-center gap-4 text-center">
-                             <p className="text-muted-foreground">Haz clic en el enlace para ir a tu ejercicio de escucha y escritura.</p>
+                             <p className="text-muted-foreground text-foreground">Haz clic en el enlace para ir a tu ejercicio de escucha y escritura.</p>
                             <Button asChild><Link href="https://dailydictation.com/exercises/short-stories/5-my-house.8/listen-and-type" target="_blank" rel="noopener noreferrer">Ir al ejercicio</Link></Button>
                         </CardContent>
-                        <CardFooter className="justify-center"><Button onClick={() => setTopicToComplete('listening')}>He completado el ejercicio</Button></CardFooter>
+                        <CardFooter className="justify-center"><Button onClick={() => handleTopicComplete('listening')}>He completado el ejercicio</Button></CardFooter>
                     </Card>
                 );
-            case 'ex-positive': return <SingleFormExercise key={selectedTopic} onComplete={() => setTopicToComplete('ex-positive')} exerciseData={positiveExercisesData} title={t('kidsA1Class2.exercisePositive')} description={t('kidsA1Class2.exercisePositiveDescription')} formType="affirmative" />;
-            case 'ex-negative': return <SingleFormExercise key={selectedTopic} onComplete={() => setTopicToComplete('ex-negative')} exerciseData={negativeExercisesData} title={t('kidsA1Class2.exerciseNegative')} description={t('kidsA1Class2.exerciseNegativeDescription')} formType="negative" />;
-            case 'ex-interrogative': return <SingleFormExercise key={selectedTopic} onComplete={() => setTopicToComplete('ex-interrogative')} exerciseData={interrogativeExercisesData} title={t('kidsA1Class2.exerciseInterrogative')} description={t('kidsA1Class2.exerciseInterrogativeDescription')} formType="interrogative" />;
-            case 'ex-mixed-1-1': return <PresentSimpleExercise key={selectedTopic} onComplete={() => setTopicToComplete('ex-mixed-1-1')} exerciseData={class2Exercise1Data} title={t('kidsA1Class2.exercisesMixed1')} showShortAnswers={false} />;
-            case 'ex-mixed-1-2': return <PresentSimpleExercise key={selectedTopic} onComplete={() => setTopicToComplete('ex-mixed-1-2')} exerciseData={class2Exercise2Data} title={t('a1class1.exercise', {number: 2})} showShortAnswers={false} />;
-            case 'reading': return <ReadingComprehensionExercise key={selectedTopic} onComplete={() => setTopicToComplete('reading')} />;
+            case 'ex-positive': return <SingleFormExercise key={selectedTopic} onComplete={() => handleTopicComplete('ex-positive')} exerciseData={positiveExercisesData} title={t('kidsA1Class2.exercisePositive')} description={t('kidsA1Class2.exercisePositiveDescription')} formType="affirmative" />;
+            case 'ex-negative': return <SingleFormExercise key={selectedTopic} onComplete={() => handleTopicComplete('ex-negative')} exerciseData={negativeExercisesData} title={t('kidsA1Class2.exerciseNegative')} description={t('kidsA1Class2.exerciseNegativeDescription')} formType="negative" />;
+            case 'ex-interrogative': return <SingleFormExercise key={selectedTopic} onComplete={() => handleTopicComplete('ex-interrogative')} exerciseData={interrogativeExercisesData} title={t('kidsA1Class2.exerciseInterrogative')} description={t('kidsA1Class2.exerciseInterrogativeDescription')} formType="interrogative" />;
+            case 'ex-mixed-1-1': return <PresentSimpleExercise key={selectedTopic} onComplete={() => handleTopicComplete('ex-mixed-1-1')} exerciseData={class2Exercise1Data} title="Ejercicios Mixtos 1" showShortAnswers={false} />;
+            case 'ex-mixed-1-2': return <PresentSimpleExercise key={selectedTopic} onComplete={() => handleTopicComplete('ex-mixed-1-2')} exerciseData={class2Exercise2Data} title={t('a1class1.exercise', {number: 2})} showShortAnswers={false} />;
+            case 'reading': return <ReadingComprehensionExercise key={selectedTopic} onComplete={() => handleTopicComplete('reading')} />;
             default: return <div className="flex justify-center items-center h-48"><Loader2 className="animate-spin h-10 w-10 text-primary" /></div>;
         }
     };
@@ -1243,7 +1329,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                               return(
                                 <li key={item.key}>
                                 {!item.subItems ? (
-                                  <div onClick={() => handleTopicSelect(item.key)} className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer', isLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === item.key && (item.status !== 'locked' || isAdmin) && 'bg-muted text-primary font-semibold')}>
+                                  <div onClick={() => handleTopicSelect(item.key)} className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer text-foreground', isLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === item.key && (item.status !== 'locked' || isAdmin) && 'bg-muted text-primary font-semibold')}>
                                     <div className="flex items-center gap-3">
                                         <StatusIcon className={cn("h-5 w-5", item.status === 'completed' ? 'text-green-500' : '')} />
                                         <span>{item.name}</span>
@@ -1253,7 +1339,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                                 ) : (
                                   <Collapsible defaultOpen={isSelected}>
                                     <CollapsibleTrigger className="w-full">
-                                        <div className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors w-full cursor-pointer', isLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', isSelected && 'bg-muted text-primary font-semibold')}>
+                                        <div className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors w-full cursor-pointer text-foreground', isLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', isSelected && 'bg-muted text-primary font-semibold')}>
                                           <div className="flex items-center gap-3">
                                             <StatusIcon className={cn("h-5 w-5", item.status === 'completed' ? 'text-green-500' : '')} />
                                             <span>{item.name}</span>
@@ -1267,7 +1353,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                                           const isSubLocked = subItem.status === 'locked' && !isAdmin;
                                           const SubIcon = ICONS_CONFIG[subItem.status] || PenSquare;
                                           return (
-                                          <li key={subItem.key} onClick={() => handleTopicSelect(subItem.key)} className={cn('flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer', isSubLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === subItem.key && 'bg-muted text-primary font-semibold')}>
+                                          <li key={subItem.key} onClick={() => handleTopicSelect(subItem.key)} className={cn('flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer text-foreground', isSubLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === subItem.key && 'bg-muted text-primary font-semibold')}>
                                             <div className="flex items-center gap-3">
                                               <SubIcon className={cn("h-5 w-5", subItem.status === 'completed' ? 'text-green-500' : '')} />
                                               <span>{subItem.name}</span>
@@ -1323,3 +1409,4 @@ export default function EngA1ClassPage() {
       </div>
     );
 }
+
