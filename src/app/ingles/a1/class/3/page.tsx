@@ -35,7 +35,7 @@ const ICONS_CONFIG = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_a1_eng_u1_c3_v62_async';
+const progressStorageVersion = 'progress_a1_eng_u1_c3_v65_stable';
 const mainProgressKey = 'progress_a1_eng_unit_1_class_3';
 
 const class3MixedExercise1Data: ExercisePrompt[] = [
@@ -245,6 +245,10 @@ export default function EngA1Class3Page() {
             [`progress.${mainProgressKey}`]: Math.round(progressValue)
         });
     }, [learningPath, isAdmin, progressValue, studentDocRef, initialLoadComplete, selectedTopic, isInitialLoading, studentProfile]);
+
+    const handleTopicComplete = (completedKey: string) => {
+        setTopicToComplete(completedKey);
+    };
 
     useEffect(() => {
         if (!topicToComplete) return;
