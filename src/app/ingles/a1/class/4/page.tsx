@@ -38,7 +38,7 @@ const ICONS_CONFIG = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_a1_eng_unit_1_class_4_v5_stable';
+const progressStorageVersion = 'progress_a1_eng_unit_1_class_4_v6_stable';
 const mainProgressKey = 'progress_a1_eng_unit_1_class_4';
 
 const vocabularyData = {
@@ -331,7 +331,7 @@ export default function EngA1Class4Page() {
         
         setSelectedTopic(topicKey);
 
-        const autoViewTopics = ['grammar', 'wh-questions'];
+        const autoViewTopics = ['grammar'];
         if (autoViewTopics.includes(topicKey)) {
             handleTopicComplete(topicKey);
         }
@@ -394,7 +394,7 @@ export default function EngA1Class4Page() {
         switch (selectedTopic) {
             case 'vocabulary':
                 return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left">
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left text-foreground">
                         <CardHeader>
                             <CardTitle>Vocabulario</CardTitle>
                             <CardDescription>Adjetivos y Palabras Básicas</CardDescription>
@@ -508,29 +508,103 @@ export default function EngA1Class4Page() {
                 );
 
             case 'genitivo': return <GenitiveCaseExercise onComplete={() => handleTopicComplete('genitivo')} />;
+            
             case 'wh-questions':
                 return (
-                    <Card className="shadow-soft border-2 border-brand-purple p-6 text-left">
-                        <CardHeader>
-                            <CardTitle className="text-2xl font-black text-primary uppercase tracking-tight">WH Questions</CardTitle>
-                        </CardHeader>
-                        <CardContent className="pt-4 text-lg">
-                            <p>Estructuras para hacer preguntas informativas usando:</p>
-                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-6">
-                                {['WHAT (Qué/Cuál)', 'WHERE (Dónde)', 'WHEN (Cuándo)', 'WHY (Por qué)', 'WHO (Quién)', 'HOW (Cómo)'].map(wh => (
-                                    <div key={wh} className="p-4 bg-slate-50 dark:bg-slate-900/50 rounded-xl border font-bold text-primary text-center uppercase tracking-tighter">
-                                        {wh}
+                    <div className="space-y-6 text-left">
+                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground">
+                            <CardHeader>
+                                <CardTitle className="text-2xl font-black text-primary uppercase tracking-tight">WH Questions (Interrogativos)</CardTitle>
+                                <CardDescription className="font-bold text-foreground">Estructuras para hacer preguntas informativas en inglés.</CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-6">
+                                <div className="space-y-4">
+                                    <h3 className="text-xl font-bold text-primary uppercase tracking-tight">Regla 1: Verbo "To Be"</h3>
+                                    
+                                    <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] border border-border/50 space-y-4">
+                                        <div>
+                                            <h4 className="font-bold text-foreground mb-2 underline decoration-primary decoration-2 underline-offset-4">Estructura Básica</h4>
+                                            <p className="font-mono text-base font-black text-primary">WH + To be + Pronoun + complement?</p>
+                                            <p className="text-sm mt-1 italic text-muted-foreground">Ej: What is your name?</p>
+                                        </div>
+
+                                        <Separator className="opacity-50" />
+
+                                        <div>
+                                            <h4 className="font-bold text-foreground mb-2 underline decoration-primary decoration-2 underline-offset-4">Con Posesivos (Tipo 1)</h4>
+                                            <p className="font-mono text-base font-black text-primary">WH + To be + Pronoun + possessive + noun + complement?</p>
+                                            <p className="text-sm mt-1 italic text-muted-foreground">Ej: Where is his car?</p>
+                                        </div>
+
+                                        <Separator className="opacity-50" />
+
+                                        <div>
+                                            <h4 className="font-bold text-foreground mb-2 underline decoration-primary decoration-2 underline-offset-4">Con Posesivos (Tipo 2)</h4>
+                                            <p className="font-mono text-base font-black text-primary">WH + To be + possessive + noun + complement?</p>
+                                            <p className="text-sm mt-1 italic text-muted-foreground">Ej: What is her sister's job?</p>
+                                        </div>
                                     </div>
-                                ))}
-                            </div>
-                        </CardContent>
-                        <CardFooter className="justify-center border-t pt-6">
-                            <Button onClick={() => handleTopicComplete('wh-questions')} size="lg" className="px-16 font-bold h-14 text-xl">
-                                Continuar <ArrowRight className="ml-2 h-6 w-6" />
-                            </Button>
-                        </CardFooter>
-                    </Card>
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground">
+                            <CardHeader>
+                                <CardTitle className="text-2xl font-black text-primary uppercase tracking-tight">Regla 2: Auxiliar "Do/Does"</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] border border-border/50 space-y-2">
+                                    <p className="font-mono text-lg font-black text-primary">WH + Do/Does + pronoun + verb + complement?</p>
+                                    <p className="text-sm italic text-muted-foreground">Ej: Where do you live?</p>
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground">
+                            <CardHeader>
+                                <CardTitle className="text-2xl font-black text-primary uppercase tracking-tight">Regla 3: Excepciones y Estructuras con Sustantivo</CardTitle>
+                            </CardHeader>
+                            <CardContent className="space-y-6">
+                                <div className="p-6 bg-slate-50 dark:bg-slate-900/50 rounded-[2rem] border border-border/50">
+                                    <h4 className="font-bold text-primary mb-3">Palabras WH especiales:</h4>
+                                    <ul className="space-y-2 text-base">
+                                        <li><strong>Which:</strong> ¿Cuál? (cuando hay opciones limitadas)</li>
+                                        <li><strong>Whose:</strong> ¿De quién? (para indicar posesión)</li>
+                                        <li><strong>What kind of:</strong> ¿Qué tipo de?</li>
+                                    </ul>
+                                </div>
+
+                                <div className="p-6 bg-slate-50 dark:bg-slate-900/50 rounded-[2rem] border border-border/50 space-y-4">
+                                    <h4 className="font-bold text-foreground underline decoration-primary decoration-2 underline-offset-4">Estructura con Sustantivo + To Be</h4>
+                                    <div className="font-mono text-base space-y-2">
+                                        <p className="font-black text-primary">WH-word (Which/What/Whose) + noun + To be + ... ?</p>
+                                        <div className="text-sm italic text-muted-foreground space-y-1">
+                                            <p>Ej: Which color is your car?</p>
+                                            <p>Ej: Whose book is this?</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="p-6 bg-slate-50 dark:bg-slate-900/50 rounded-[2rem] border border-border/50 space-y-4">
+                                    <h4 className="font-bold text-foreground underline decoration-primary decoration-2 underline-offset-4">Estructura con Sustantivo + Do/Does</h4>
+                                    <div className="font-mono text-base space-y-2">
+                                        <p className="font-black text-primary">WH-word (Which/What/Whose) + noun + do/does + pronoun + verb...?</p>
+                                        <div className="text-sm italic text-muted-foreground space-y-1">
+                                            <p>Ej: Which car do you prefer?</p>
+                                            <p>Ej: What kind of music do you like?</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </CardContent>
+                            <CardFooter className="justify-center border-t pt-6">
+                                <Button onClick={() => handleTopicComplete('wh-questions')} size="lg" className="px-16 font-bold h-14 text-xl">
+                                    Entendido <ArrowRight className="ml-2 h-6 w-6" />
+                                </Button>
+                            </CardFooter>
+                        </Card>
+                    </div>
                 );
+
             case 'vocabulario-wh':
                 return <FillInTheBlanksExercise data={whVocabularyExerciseData} onComplete={() => handleTopicComplete('vocabulario-wh')} title="Vocabulario Wh" />;
             case 'ejercicio-gs':
