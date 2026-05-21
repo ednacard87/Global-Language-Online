@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, ChevronDown, XCircle, Loader2 } from 'lucide-react';
+import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, ChevronDown, XCircle, Loader2, ArrowRight } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
@@ -111,6 +111,7 @@ export default function EngA1Class3Page() {
     
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
     const [selectedTopic, setSelectedTopic] = useState<string>('');
+    const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
     const [isInitialLoading, setIsInitialLoading] = useState(true);
     const [initialLoadComplete, setInitialLoadComplete] = useState(false);
 
@@ -242,11 +243,10 @@ export default function EngA1Class3Page() {
             [`lessonProgress.${progressStorageVersion}`]: statusesToSave,
             [`progress.${mainProgressKey}`]: Math.round(progressValue)
         });
-    }, [learningPath, isAdmin, progressValue, studentDocRef, initialLoadComplete, selectedTopic, isInitialLoading]);
+    }, [learningPath, isAdmin, progressValue, studentDocRef, initialLoadComplete, selectedTopic, isInitialLoading, studentProfile]);
 
-    const handleTopicComplete = useCallback((completedKey: string) => {
-        if (isAdmin) return;
-        
+    useEffect(() => {
+        if (!topicToComplete) return;
         setLearningPath(currentPath => {
             let wasUnlocked = false;
             let nextToSelect: string | null = null;
@@ -259,7 +259,7 @@ export default function EngA1Class3Page() {
             for (let i = 0; i < newPath.length && !topicFound; i++) {
                 const currentTopic = newPath[i];
   
-                if (currentTopic.key === completedKey) {
+                if (currentTopic.key === topicToComplete) {
                     if (currentTopic.status !== 'completed') currentTopic.status = 'completed';
                     if (i + 1 < newPath.length && newPath[i + 1].status === 'locked') {
                         const nextMain = newPath[i + 1];
@@ -270,7 +270,7 @@ export default function EngA1Class3Page() {
                     }
                     topicFound = true;
                 } else if (currentTopic.subItems) {
-                    const subIndex = currentTopic.subItems.findIndex((sub: any) => sub.key === completedKey);
+                    const subIndex = currentTopic.subItems.findIndex((sub: any) => sub.key === topicToComplete);
                     if (subIndex !== -1) {
                         if (currentTopic.subItems[subIndex].status !== 'completed') currentTopic.subItems[subIndex].status = 'completed';
                         const nextSubIndex = subIndex + 1;
@@ -303,7 +303,8 @@ export default function EngA1Class3Page() {
             
             return newPath;
         });
-    }, [isAdmin, toast]);
+        setTopicToComplete(null);
+    }, [topicToComplete, toast, isAdmin]);
 
     const handleTopicSelect = (topicKey: string) => {
         const mainTopic = learningPath.find(t => t.key === topicKey || t.subItems?.some(st => st.key === topicKey));
@@ -326,27 +327,84 @@ export default function EngA1Class3Page() {
     const renderContent = () => {
         if (isInitialLoading) return <div className="flex justify-center items-center min-h-[400px]"><Loader2 className="h-12 w-12 animate-spin text-primary" /></div>;
 
-        const topic = learningPath.find(t => t.key === selectedTopic) || 
-                      learningPath.flatMap(t => t.subItems || []).find(st => st?.key === selectedTopic);
-
         switch (selectedTopic) {
             case 'grammar2':
                 return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
-                        <CardHeader>
-                            <CardTitle>Tercera Persona Singular (he, she, it)</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <p>En el presente simple afirmativo (+), cuando el sujeto es "he", "she" o "it", el verbo cambia.</p>
-                            <div className="p-4 bg-muted rounded-lg font-mono text-base border-2 border-dashed">
-                                <p>Regla general: agrega una "S"</p>
-                                <p className="text-primary font-bold">work &rarr; works</p>
-                                <Separator className="my-2" />
-                                <p>Terminados en O, SH, CH, SS, X, Z: agrega "ES"</p>
-                                <p className="text-primary font-bold">go &rarr; goes / watch &rarr; watches</p>
-                            </div>
-                        </CardContent>
-                    </Card>
+                    <div className="space-y-6">
+                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left text-foreground">
+                            <CardHeader>
+                                <CardTitle className="text-2xl font-black text-primary uppercase">Formación de la Tercera Persona Singular (he, she, it)</CardTitle>
+                                <CardDescription className="font-bold text-foreground">Reglas para el Presente Simple Afirmativo</CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                <h3 className="text-lg font-bold text-primary">Regla General</h3>
+                                <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 font-mono text-base border">
+                                    <p>A la mayoría de los verbos en tercera persona del singular (he, she, it) se les agrega una <span className="font-bold text-primary">"s"</span> al final.</p>
+                                    <div className="pt-2 space-y-1">
+                                        <p className="font-bold text-lg">She works</p>
+                                        <p className="font-bold text-lg">He eats</p>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left text-foreground">
+                            <CardHeader>
+                                <CardTitle className="text-2xl font-black text-primary uppercase">Verbos terminados en -o, -sh, -ch, -ss, -x, -z</CardTitle>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 font-mono text-base border">
+                                    <p>A los verbos que terminan en estas letras, se les agrega <span className="font-bold text-primary">"es"</span>.</p>
+                                    <div className="pt-2 space-y-2">
+                                        <p className="font-bold">I go &rarr; <span className="text-primary">He goes</span></p>
+                                        <p className="font-bold">I wish &rarr; <span className="text-primary">She wishes</span></p>
+                                        <p className="font-bold">I kiss &rarr; <span className="text-primary">He kisses</span></p>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left text-foreground">
+                            <CardHeader>
+                                <CardTitle className="text-2xl font-black text-primary uppercase">Verbos terminados en "y"</CardTitle>
+                            </CardHeader>
+                            <CardContent className="space-y-6">
+                                <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-4 font-mono text-base border">
+                                    <div>
+                                        <h4 className="font-bold text-primary mb-1">Consonante + "y"</h4>
+                                        <p className="text-sm mb-2">Se cambia la "y" por <span className="font-bold text-primary">"ies"</span>.</p>
+                                        <p className="font-bold">I study &rarr; <span className="text-primary">She studies</span></p>
+                                    </div>
+                                    <Separator className="bg-border/50" />
+                                    <div>
+                                        <h4 className="font-bold text-primary mb-1">Vocal + "y"</h4>
+                                        <p className="text-sm mb-2">Solo se agrega la <span className="font-bold text-primary">"s"</span>.</p>
+                                        <div className="space-y-1">
+                                            <p className="font-bold">I buy &rarr; <span className="text-primary">He buys</span></p>
+                                            <p className="font-bold">I stay &rarr; <span className="text-primary">She stays</span></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left text-foreground">
+                            <CardHeader>
+                                <CardTitle className="text-2xl font-black text-destructive uppercase">NOTA IMPORTANTE</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="bg-destructive/5 p-6 rounded-[2rem] space-y-3 font-mono text-base border-2 border-dashed border-destructive/20">
+                                    <p>Estas reglas solo se aplican a las oraciones afirmativas <span className="font-bold text-green-500 font-sans">(+)</span>.</p>
+                                    <p>No se aplican en oraciones negativas ni interrogativas <span className="font-bold text-red-500 font-sans">(-)</span> <span className="font-bold text-blue-500 font-sans">(?)</span>.</p>
+                                </div>
+                            </CardContent>
+                            <CardFooter className="justify-center border-t pt-6">
+                                <Button onClick={() => handleTopicComplete('grammar2')} size="lg" className="px-16 font-bold h-14 text-xl">
+                                    Entendido <ArrowRight className="ml-2 h-6 w-6" />
+                                </Button>
+                            </CardFooter>
+                        </Card>
+                    </div>
                 );
             case 'mixedExercises1':
                 return <PresentSimpleExercise key={selectedTopic} exerciseData={class3MixedExercise1Data} onComplete={() => handleTopicComplete('mixedExercises1')} title="Ejercicios Mixtos 1" showShortAnswers={false} />;
