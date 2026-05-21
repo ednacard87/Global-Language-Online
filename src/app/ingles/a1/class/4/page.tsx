@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, ChevronDown, HelpCircle, XCircle, Loader2, ArrowRight } from 'lucide-react';
+import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, ChevronDown, HelpCircle, XCircle, Loader2, ArrowRight, Info, Lightbulb } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
@@ -15,6 +15,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
 import { GenitiveCaseExercise } from '@/components/kids/exercises/genitive-case-exercise';
 import { WhQuestionExercise } from '@/components/kids/exercises/wh-question-exercise';
 import { WhQuestionsMainExercise } from '@/components/kids/exercises/wh-questions-main-exercise';
@@ -116,7 +117,7 @@ export default function EngA1Class4Page() {
 
     const initialLearningPath = useMemo((): Topic[] => [
         { key: 'vocabulary', name: 'Vocabulario', icon: BookOpen, status: 'active' },
-        { key: 'grammar', name: 'Grammar', icon: GraduationCap, status: 'locked' },
+        { key: 'grammar', name: 'Gramática', icon: GraduationCap, status: 'locked' },
         { key: 'genitivo', name: 'Ejercicio: Genitivo Sajon', icon: PenSquare, status: 'locked' },
         { key: 'wh-questions', name: 'WH QUESTIONS', icon: HelpCircle, status: 'locked' },
         {
@@ -210,7 +211,7 @@ export default function EngA1Class4Page() {
 
         setInitialLoadComplete(true);
         setIsInitialLoading(false);
-    }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading, isUserLoading, initialLoadComplete, t]);
+    }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading, isUserLoading, initialLoadComplete]);
     
     const progressValue = useMemo(() => {
         if (learningPath.length === 0) return 0;
@@ -393,7 +394,7 @@ export default function EngA1Class4Page() {
         switch (selectedTopic) {
             case 'vocabulary':
                 return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left">
                         <CardHeader>
                             <CardTitle>Vocabulario</CardTitle>
                             <CardDescription>Adjetivos y Palabras Básicas</CardDescription>
@@ -437,35 +438,98 @@ export default function EngA1Class4Page() {
 
             case 'grammar':
                 return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
-                        <CardHeader><CardTitle>Genitivo Sajón ('s)</CardTitle></CardHeader>
-                        <CardContent className="space-y-6 text-lg">
-                            <Accordion type="single" collapsible defaultValue="rule-1" className="w-full">
-                                <AccordionItem value="rule-1">
-                                    <AccordionTrigger className="text-lg font-semibold">Regla General (Poseedor Singular)</AccordionTrigger>
-                                    <AccordionContent className="space-y-2">
-                                        <p>Se añade un apóstrofo y una "s" ('s) al final del nombre del poseedor.</p>
-                                        <p className="font-mono bg-muted p-2 rounded">POSEEDOR + 'S + POSESIÓN</p>
-                                        <p className="italic text-muted-foreground">Ej: la casa de Maria &rarr; Maria's house</p>
-                                    </AccordionContent>
-                                </AccordionItem>
-                                <AccordionItem value="rule-2">
-                                    <AccordionTrigger className="text-lg font-semibold">Poseedores Plurales en "s"</AccordionTrigger>
-                                    <AccordionContent className="space-y-2">
-                                        <p>Solo se añade un apóstrofo (') al final.</p>
-                                        <p className="font-mono bg-muted p-2 rounded">POSEEDOR + ' + POSESIÓN</p>
-                                        <p className="italic text-muted-foreground">Ej: la casa de mis padres &rarr; my parents' house</p>
-                                    </AccordionContent>
-                                </AccordionItem>
-                            </Accordion>
-                        </CardContent>
-                    </Card>
+                    <div className="space-y-6 text-left">
+                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground">
+                            <CardHeader>
+                                <CardTitle className="text-2xl font-black text-primary uppercase tracking-tight">Genitivo Sajón ('s)</CardTitle>
+                                <CardDescription className="font-bold text-foreground">Se utiliza para indicar posesión (quién es el dueño de algo).</CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-6">
+                                <div className="space-y-4">
+                                    <h3 className="text-xl font-bold text-primary uppercase tracking-tight">Regla General (Poseedor Singular)</h3>
+                                    <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] border border-border/50">
+                                        <p className="text-muted-foreground mb-3 font-medium">Se añade un apóstrofo y una "s" ('s) al final del nombre del poseedor.</p>
+                                        <div className="font-mono text-base space-y-2">
+                                            <p className="font-black text-primary">Estructura: POSEEDOR + 'S + POSESIÓN</p>
+                                            <div className="pt-2">
+                                                <p>el carro de mi papá &rarr; <span className="font-bold text-primary">my dad's car</span></p>
+                                                <p>la casa de Maria &rarr; <span className="font-bold text-primary">Maria's house</span></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <Separator className="opacity-50" />
+
+                                <div className="space-y-4">
+                                    <h3 className="text-xl font-bold text-primary uppercase tracking-tight">Poseedores Plurales terminados en "s"</h3>
+                                    <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] border border-border/50">
+                                        <p className="text-muted-foreground mb-3 font-medium">Solo se añade un apóstrofo (') al final del nombre.</p>
+                                        <div className="font-mono text-base space-y-2">
+                                            <p className="font-black text-primary">Estructura: POSEEDOR + ' + POSESIÓN</p>
+                                            <div className="pt-2">
+                                                <p>la casa de mis padres &rarr; <span className="font-bold text-primary">my parents' house</span></p>
+                                                <p>el colegio de las niñas &rarr; <span className="font-bold text-primary">the girls' school</span></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <Separator className="opacity-50" />
+
+                                <div className="space-y-4">
+                                    <h3 className="text-xl font-bold text-primary uppercase tracking-tight">Poseedores Plurales que NO terminan en "s"</h3>
+                                    <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] border border-border/50">
+                                        <p className="text-muted-foreground mb-3 font-medium">Se aplica la regla general: se añade apóstrofo y "s" ('s).</p>
+                                        <div className="font-mono text-base space-y-2 pt-2">
+                                            <p>los juguetes de los niños &rarr; <span className="font-bold text-primary">the children's toys</span></p>
+                                            <p>la ropa de los hombres &rarr; <span className="font-bold text-primary">the men's clothes</span></p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <Separator className="opacity-50" />
+
+                                <div className="p-6 bg-destructive/5 rounded-[2rem] border-2 border-dashed border-destructive/20 text-center">
+                                    <h3 className="text-2xl font-black text-destructive uppercase mb-2">¡OJO!</h3>
+                                    <div className="space-y-3 font-mono text-base">
+                                        <p>No se usa el genitivo sajón cuando el poseedor es un objeto. En su lugar, se usa la estructura <span className="font-bold text-primary">"the... of the..."</span>.</p>
+                                        <p className="text-lg font-bold">la puerta del carro &rarr; <span className="text-primary">the door of the car</span></p>
+                                    </div>
+                                </div>
+                            </CardContent>
+                            <CardFooter className="justify-center border-t pt-6">
+                                <Button onClick={() => handleTopicComplete('grammar')} size="lg" className="px-16 font-bold h-14 text-xl">
+                                    Entendido <ArrowRight className="ml-2 h-6 w-6" />
+                                </Button>
+                            </CardFooter>
+                        </Card>
+                    </div>
                 );
 
             case 'genitivo': return <GenitiveCaseExercise onComplete={() => handleTopicComplete('genitivo')} />;
             case 'wh-questions':
                 return (
-                    <Card className="shadow-soft border-2 border-brand-purple p-6"><CardTitle>WH Questions</CardTitle><CardContent className="pt-4"><p>Estructuras para hacer preguntas informativas usando WHAT, WHERE, WHEN, WHY, WHO, HOW.</p></CardContent></Card>
+                    <Card className="shadow-soft border-2 border-brand-purple p-6 text-left">
+                        <CardHeader>
+                            <CardTitle className="text-2xl font-black text-primary uppercase tracking-tight">WH Questions</CardTitle>
+                        </CardHeader>
+                        <CardContent className="pt-4 text-lg">
+                            <p>Estructuras para hacer preguntas informativas usando:</p>
+                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-6">
+                                {['WHAT (Qué/Cuál)', 'WHERE (Dónde)', 'WHEN (Cuándo)', 'WHY (Por qué)', 'WHO (Quién)', 'HOW (Cómo)'].map(wh => (
+                                    <div key={wh} className="p-4 bg-slate-50 dark:bg-slate-900/50 rounded-xl border font-bold text-primary text-center uppercase tracking-tighter">
+                                        {wh}
+                                    </div>
+                                ))}
+                            </div>
+                        </CardContent>
+                        <CardFooter className="justify-center border-t pt-6">
+                            <Button onClick={() => handleTopicComplete('wh-questions')} size="lg" className="px-16 font-bold h-14 text-xl">
+                                Continuar <ArrowRight className="ml-2 h-6 w-6" />
+                            </Button>
+                        </CardFooter>
+                    </Card>
                 );
             case 'vocabulario-wh':
                 return <FillInTheBlanksExercise data={whVocabularyExerciseData} onComplete={() => handleTopicComplete('vocabulario-wh')} title="Vocabulario Wh" />;
