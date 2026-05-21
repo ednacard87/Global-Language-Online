@@ -4,6 +4,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import Link from 'next/link';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, ChevronDown, XCircle, Loader2, ArrowRight } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
@@ -318,7 +319,7 @@ export default function EngA1Class3Page() {
         
         setSelectedTopic(topicKey);
 
-        const autoViewTopics = ['grammar2', 'presentSimpleUses', 'vocabulary2', 'can'];
+        const autoViewTopics = ['presentSimpleUses', 'vocabulary2', 'can'];
         if (autoViewTopics.includes(topicKey)) {
             handleTopicComplete(topicKey);
         }
