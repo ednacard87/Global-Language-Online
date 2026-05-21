@@ -1,12 +1,12 @@
 'use client';
 
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, ChevronDown, Loader2, ArrowRight } from 'lucide-react';
+import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, ChevronDown, Loader2, ArrowRight, BookText, Check, X } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
@@ -14,6 +14,7 @@ import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocki
 import { doc } from 'firebase/firestore';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Separator } from '@/components/ui/separator';
+import { Input } from '@/components/ui/input';
 import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
 import { PresentSimpleExercise, type ExercisePrompt } from '@/components/kids/exercises/present-simple';
 import { QAShortAnswerExercise, type QAShortAnswerPrompt } from '@/components/kids/exercises/q-a-short-answer-exercise';
@@ -34,67 +35,229 @@ const ICONS_CONFIG = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_a1_eng_u1_c3_v67_stable';
+const progressStorageVersion = 'progress_a1_eng_u1_c3_v75_stable';
 const mainProgressKey = 'progress_a1_eng_unit_1_class_3';
 
+// --- DATA ---
+
 const class3MixedExercise1Data: ExercisePrompt[] = [
-    {
-        spanish: "EL BEBE VINO TINTO",
-        answers: {
-            affirmative: ["he drinks red wine"],
-            negative: ["he does not drink red wine", "he doesn't drink red wine"],
-            interrogative: ["does he drink red wine?"],
-        }
-    },
-    {
-        spanish: "ELLA JUEGA TENIS CON SU HERMANO",
-        answers: {
-            affirmative: ["she plays tennis with her brother"],
-            negative: ["she does not play tennis with her brother", "she doesn't play tennis with her brother"],
-            interrogative: ["does she play tennis with her brother?"],
-        }
-    },
-    {
-        spanish: "YO MONTO BICICLETA EL DOMINGO",
-        answers: {
-            affirmative: ["i ride a bike on sunday", "i ride a bicycle on sunday"],
-            negative: ["i do not ride a bike on sunday", "i don't ride a bike on sunday"],
-            interrogative: ["do i ride a bike on sunday?"],
-        }
-    },
+    { spanish: "EL BEBE VINO TINTO", answers: { affirmative: ["he drinks red wine"], negative: ["he does not drink red wine", "he doesn't drink red wine"], interrogative: ["does he drink red wine?"] } },
+    { spanish: "ELLA JUEGA TENNIS CON SU HERMANO", answers: { affirmative: ["she plays tennis with her brother"], negative: ["she does not play tennis with her brother", "she doesn't play tennis with her brother"], interrogative: ["does she play tennis with her brother?"] } },
+    { spanish: "YO MONTO BICICLETA LOS DOMINGOS", answers: { affirmative: ["i ride a bike on sundays", "i ride a bicycle on sundays"], negative: ["i do not ride a bike on sundays", "i don't ride a bike on sundays"], interrogative: ["do i ride a bike on sundays?"] } },
+    { spanish: "TÚ TRABAJAS LOS SABADOS", answers: { affirmative: ["you work on saturdays"], negative: ["you do not work on saturdays", "you don't work on saturdays"], interrogative: ["do you work on saturdays?"] } },
+    { spanish: "ELLA VE PELICULAS CON SU NOVIO", answers: { affirmative: ["she watches movies with her boyfriend"], negative: ["she does not watch movies with her boyfriend", "she doesn't watch movies with her boyfriend"], interrogative: ["does she watch movies with her boyfriend?"] } },
+    { spanish: "ÉL COME CON SU NOVIA EN ESE RESTAURANTE", answers: { affirmative: ["he eats with his girlfriend in that restaurant"], negative: ["he does not eat with his girlfriend in that restaurant", "he doesn't eat with his girlfriend in that restaurant"], interrogative: ["does he eat with his girlfriend in that restaurant?"] } },
+    { spanish: "ELLOS TRABAJAN EN EL HOSPITAL", answers: { affirmative: ["they work in the hospital"], negative: ["they do not work in the hospital", "they don't work in the hospital"], interrogative: ["do they work in the hospital?"] } },
+    { spanish: "YO ESTUDIO INGLES LOS LUNES Y MARTES", answers: { affirmative: ["i study english on mondays and tuesdays"], negative: ["i do not study english on mondays and tuesdays", "i don't study english on mondays and tuesdays"], interrogative: ["do i study english on mondays and tuesdays?"] } },
+    { spanish: "A ELLA LE GUSTA LA PIZZA", answers: { affirmative: ["she likes pizza"], negative: ["she does not like pizza", "she doesn't like pizza"], interrogative: ["does she like pizza?"] } },
+    { spanish: "QUEREMOS UN PASTEL DE PIÑA", answers: { affirmative: ["we want a pineapple cake"], negative: ["we do not want a pineapple cake", "we don't want a pineapple cake"], interrogative: ["do we want a pineapple cake?"] } },
 ];
+
+const mixed1Vocab = {
+    "vino tinto": "red wine",
+    "hermano": "brother",
+    "bicicleta": "bike / bicycle",
+    "novio": "boyfriend",
+    "novia": "girlfriend",
+    "hospital": "hospital",
+    "lunes": "mondays",
+    "martes": "tuesdays",
+    "pastel": "cake",
+    "piña": "pineapple"
+};
+
+const ex2_1Vocab = {
+    "bebe": "drinks",
+    "cerveza": "beer",
+    "escuela": "school",
+    "tio": "uncle",
+    "dos veces": "twice",
+    "tarde": "afternoon"
+};
 
 const class3QAShortAnswerExerciseData: QAShortAnswerPrompt[] = [
     { spanish: '¿TU HABLAS INGLES?', answers: { interrogative: ["do you speak english?"], shortAffirmative: ["yes, i do"], shortNegative: ["no, i do not", "no, i don't"] } },
-    { spanish: '¿ELLA COME HAMBURGUESA?', answers: { interrogative: ["does she eat hamburger?", "does she eat hamburgers?"], shortAffirmative: ["yes, she does"], shortNegative: ["no, she does not", "no, she doesn't"] } },
+    { spanish: '¿ELLA COME HAMBURGUESA?', answers: { interrogative: ["does she eat a hamburger?", "does she eat hamburgers?"], shortAffirmative: ["yes, she does"], shortNegative: ["no, she does not", "no, she doesn't"] } },
+    { spanish: '¿QUIERES UN HELADO?', answers: { interrogative: ["do you want an ice cream?"], shortAffirmative: ["yes, i do"], shortNegative: ["no, i do not", "no, i don't"] } },
+    { spanish: '¿ELLOS TRABAJAN AQUI?', answers: { interrogative: ["do they work here?"], shortAffirmative: ["yes, they do"], shortNegative: ["no, they do not", "no, they don't"] } },
+    { spanish: '¿EL DUERME EN SU TRABAJO?', answers: { interrogative: ["does he sleep at work?", "does he sleep at his work?"], shortAffirmative: ["yes, he does"], shortNegative: ["no, he does not", "no, he doesn't"] } },
+    { spanish: '¿ELLOS NECESITAN UN LIBRO?', answers: { interrogative: ["do they need a book?"], shortAffirmative: ["yes, they do"], shortNegative: ["no, they do not", "no, they don't"] } },
 ];
+
+const ex2_2Vocab = {
+    "hablar": "speak",
+    "hamburguesa": "hamburger",
+    "helado": "ice cream",
+    "trabajar": "work",
+    "aqui": "here",
+    "dormir": "sleep",
+    "necesitar": "need"
+};
 
 const class3ShortAnswerEx3Data: ShortAnswerPresentSimplePrompt[] = [
     { question: "DO THEY LIKE CHOCOLATE?", answers: { shortAffirmative: ["yes, they do"], shortNegative: ["no, they do not", "no, they don't"] } },
     { question: "DOES SHE SPEAK ITALIAN?", answers: { shortAffirmative: ["yes, she does"], shortNegative: ["no, she does not", "no, she doesn't"] } },
+    { question: "DO YOU EAT SALAD EVERY DAY?", answers: { shortAffirmative: ["yes, i do"], shortNegative: ["no, i do not", "no, i don't"] } },
+    { question: "DO THEY WORK TOGETHER?", answers: { shortAffirmative: ["yes, they do"], shortNegative: ["no, they do not", "no, they don't"] } },
+    { question: "DOES SHE PLAY VIDEO GAMES?", answers: { shortAffirmative: ["yes, she does"], shortNegative: ["no, she does not", "no, she doesn't"] } },
+    { question: "DOES HE DRINK COFFEE?", answers: { shortAffirmative: ["yes, he does"], shortNegative: ["no, he does not", "no, he doesn't"] } },
+    { question: "DO YOU LIKE ACTION MOVIES?", answers: { shortAffirmative: ["yes, i do"], shortNegative: ["no, i do not", "no, i don't"] } },
+    { question: "DO THEY CALL THEIR MOTHER?", answers: { shortAffirmative: ["yes, they do"], shortNegative: ["no, they do not", "no, they don't"] } },
+    { question: "DOES HE GO TO BOGOTA?", answers: { shortAffirmative: ["yes, he does"], shortNegative: ["no, he does not", "no, he doesn't"] } },
+    { question: "DOES SHE TEACH MATH?", answers: { shortAffirmative: ["yes, she does"], shortNegative: ["no, she does not", "no, she doesn't"] } },
 ];
 
 const class3LargeTextEx4Dialogue: DialogueLine[] = [
-    { speaker: "MARY", line: "¿TE VISITA EN MADRID?", answer: ["does she visit you in Madrid?"] },
-    { speaker: "JON", line: "ELLA NO VIENE A MADRID MUY A MENUDO. YO LA VISITO EN BARCELONA.", answer: ["she doesn't come to Madrid very often. i visit her in Barcelona.", "she does not come to Madrid very often. i visit her in Barcelona."] },
+    { speaker: "MARY", line: "¿VIVES EN BARCELONA?", answer: ["do you live in barcelona?"] },
+    { speaker: "JON", line: "NO, NO VIVO EN BARCELONA. VIVO EN MADRID, PERO MI HERMANA VIVE ALLÍ.", answer: ["no, i don't live in barcelona. i live in madrid, but my sister lives there.", "no, i do not live in barcelona. i live in madrid, but my sister lives there."] },
     { speaker: "MARY", line: "¿Y LE GUSTA?", answer: ["and does she like it?", "and does she like?"] },
     { speaker: "JON", line: "SÍ, LE ENCANTA BARCELONA. ELLA TRABAJA EN UN BANCO POR LAS MAÑANAS. POR LAS TARDES, ELLA JUEGA AL TENIS CON SU NOVIO O ELLA MIRA LA TV EN CASA. POR LAS NOCHES, ELLA VA A LA PLAYA O ELLA HACE SU TAREA DE INGLÉS. ESTUDIA INGLÉS LOS SÁBADOS.", answer: ["yes, she loves barcelona. she works in a bank in the mornings. in the afternoons, she plays tennis with her boyfriend or she watches tv at home. in the evenings, she goes to the beach or she does her english homework. she studies english on saturdays."] },
-    { speaker: "MARY", line: "¿VIVES EN BARCELONA?", answer: ["do you live in Barcelona?"] },
-    { speaker: "JON", line: "NO, NO VIVO EN BARCELONA. VIVO EN MADRID, PERO MI HERMANA VIVE ALLÍ.", answer: ["no, i don't live in barcelona. i live in madrid, but my sister lives there.", "no, i do not live in barcelona. i live in madrid, but my sister lives there."] },
+    { speaker: "MARY", line: "¿ELLA TE VISITA EN MADRID?", answer: ["does she visit you in madrid?"] },
+    { speaker: "JON", line: "ELLA NO VIENE A MADRID MUY A MENUDO. YO LA VISITO EN BARCELONA.", answer: ["she doesn't come to madrid very often. i visit her in barcelona.", "she does not come to madrid very often. i visit her in barcelona."] },
 ];
 
-const can1ExerciseData: ExercisePrompt[] = [
-    {
-        spanish: "Yo puedo nadar",
-        answers: {
-            affirmative: ["i can swim"],
-            negative: ["i cannot swim", "i can't swim"],
-            interrogative: ["can i swim?"],
-            shortAffirmative: ["yes, i can"],
-            shortNegative: ["no, i cannot", "no, i can't"],
-        }
-    },
+const dialogueVocab = {
+    "vives": "live",
+    "allí": "there",
+    "encanta": "loves",
+    "banco": "bank",
+    "mañanas": "mornings",
+    "tardes": "afternoons",
+    "novio": "boyfriend",
+    "noches": "evenings",
+    "playa": "beach",
+    "tarea": "homework",
+    "visita": "visit",
+    "a menudo": "often"
+};
+
+const canExercisePrompts = [
+    "ELLA PUEDE CERRAR LAS VENTANAS EN LA NOCHE",
+    "YO NO PUEDO COMER AZÚCAR",
+    "ÉL NO PUEDE TOMAR LICOR PORQUE ÉL ESTÁ ENFERMO",
+    "NOSOTRAS PODEMOS TRABAJAR LOS SABADOS EN LA MAÑANA",
+    "ELLOS PUEDEN HACER EJERCICIO EN LA TARDE",
+    "TU PUEDES VIAJAR EL JUEVES EN LA NOCHE",
+    "ÉL PUEDE LAVAR LOS PLATOS",
+    "ELLA PUEDE ESTAR EN CASA LOS FINES DE SEMANA",
+    "ÉL PUEDE ESTUDIAR TODOS LOS DIAS PORQUE EL NO TRABAJA",
+    "NOSOTROS NO PODEMOS IR A LA FINCA LA PROXIMA SEMANA"
 ];
+
+// --- AUXILIARY COMPONENT ---
+
+const LinesWritingExercise = ({ 
+    title, 
+    description, 
+    prompts,
+    onComplete, 
+    studentDocRef, 
+    initialData,
+    initialGrades,
+    savePath,
+    savePathGrades,
+    isAdmin = false
+}: any) => {
+    const [lines, setLines] = useState<string[]>(Array(prompts.length).fill(''));
+    const [grades, setGrades] = useState<Record<number, 'correct' | 'incorrect' | null>>(initialGrades || {});
+    const initializedRef = useRef(false);
+
+    useEffect(() => {
+        if (!initializedRef.current && initialData && Array.isArray(initialData)) {
+            const newLines = [...Array(prompts.length).fill('')];
+            initialData.forEach((val, i) => { if (i < prompts.length) newLines[i] = val || ''; });
+            setLines(newLines);
+            if (initialData.length > 0) initializedRef.current = true;
+        }
+    }, [initialData, prompts.length]);
+
+    const handleLineChange = (index: number, value: string) => {
+        const newLines = [...lines];
+        newLines[index] = value;
+        setLines(newLines);
+        if (studentDocRef) {
+            updateDocumentNonBlocking(studentDocRef, { [savePath]: newLines });
+        }
+    };
+
+    const handleToggleGrade = (index: number, type: 'correct' | 'incorrect') => {
+        if (!isAdmin) return;
+        const newGrades = { ...grades };
+        if (newGrades[index] === type) {
+            newGrades[index] = null;
+        } else {
+            newGrades[index] = type;
+        }
+        setGrades(newGrades);
+        if (studentDocRef) {
+            updateDocumentNonBlocking(studentDocRef, { [savePathGrades]: newGrades });
+        }
+    };
+
+    return (
+        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
+            <CardHeader>
+                <CardTitle>{title}</CardTitle>
+                <CardDescription className="font-semibold text-primary">{description}</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+                <div className="grid grid-cols-1 gap-6">
+                    {prompts.map((prompt: string, idx: number) => {
+                        const status = grades[idx];
+                        return (
+                            <div key={idx} className="space-y-2 group">
+                                <div className="flex items-center justify-between gap-4">
+                                    <Label className="text-sm font-bold text-muted-foreground uppercase tracking-tight flex items-center gap-2">
+                                        <span className="h-6 w-6 rounded-full bg-primary/20 text-primary flex items-center justify-center text-xs">{idx + 1}</span>
+                                        {prompt}
+                                    </Label>
+                                    <div className="flex items-center gap-1 shrink-0">
+                                        <Button 
+                                            size="icon" 
+                                            variant="ghost" 
+                                            onClick={() => handleToggleGrade(idx, 'correct')}
+                                            className={cn("h-8 w-8 rounded-full transition-all", status === 'correct' ? "bg-green-500 text-white shadow-lg" : "bg-muted text-muted-foreground")}
+                                            disabled={!isAdmin}
+                                        >
+                                            <Check className="h-4 w-4"/>
+                                        </Button>
+                                        <Button 
+                                            size="icon" 
+                                            variant="ghost" 
+                                            onClick={() => handleToggleGrade(idx, 'incorrect')}
+                                            className={cn("h-8 w-8 rounded-full transition-all", status === 'incorrect' ? "bg-red-500 text-white shadow-lg" : "bg-muted text-muted-foreground")}
+                                            disabled={!isAdmin}
+                                        >
+                                            <X className="h-4 w-4"/>
+                                        </Button>
+                                    </div>
+                                </div>
+                                <Input 
+                                    value={lines[idx]} 
+                                    onChange={(e) => handleLineChange(idx, e.target.value)}
+                                    className={cn(
+                                        "h-12 text-lg transition-all",
+                                        status === 'correct' ? 'border-green-500 bg-green-50/5' : 
+                                        status === 'incorrect' ? 'border-red-500 bg-red-50/5' : 'bg-muted/30 focus:bg-card'
+                                    )}
+                                    placeholder="Escribe tu traducción..."
+                                    autoComplete="off"
+                                />
+                            </div>
+                        )
+                    })}
+                </div>
+            </CardContent>
+            <CardFooter className="pt-6 border-t flex justify-center">
+                <Button onClick={onComplete} size="lg" className="px-16 font-bold h-14 text-xl">
+                    Avanzar <ArrowRight className="ml-2 h-6 w-6" />
+                </Button>
+            </CardFooter>
+        </Card>
+    );
+};
+
+// --- MAIN PAGE ---
 
 export default function EngA1Class3Page() {
     const { t } = useTranslation();
@@ -151,7 +314,7 @@ export default function EngA1Class3Page() {
             icon: PenSquare,
             status: 'locked',
             subItems: [
-                { key: 'can1', name: 'Ejercicios con CAN', icon: PenSquare, status: 'locked' },
+                { key: 'can1', name: 'Ejercicio con CAN', icon: PenSquare, status: 'locked' },
             ],
         },
     ], [t]);
@@ -326,7 +489,7 @@ export default function EngA1Class3Page() {
         
         setSelectedTopic(topicKey);
 
-        const autoViewTopics = ['vocabulary2'];
+        const autoViewTopics = ['grammar2', 'presentSimpleUses', 'vocabulary2', 'can'];
         if (autoViewTopics.includes(topicKey)) {
             handleTopicComplete(topicKey);
         }
@@ -345,7 +508,7 @@ export default function EngA1Class3Page() {
                                 <CardDescription className="font-bold text-foreground">Reglas para el Presente Simple Afirmativo</CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
-                                <div className="p-6 bg-slate-50 dark:bg-slate-900/50 rounded-[2rem] border border-border/50">
+                                <div className="p-6 bg-slate-100 dark:bg-slate-900/50 rounded-[2rem] border border-border/50">
                                     <h3 className="text-lg font-bold text-primary mb-3">Regla General</h3>
                                     <div className="space-y-3 font-mono text-base">
                                         <p>A la mayoría de los verbos en tercera persona del singular (he, she, it) se les agrega una <span className="font-bold text-primary">"s"</span> al final.</p>
@@ -356,7 +519,7 @@ export default function EngA1Class3Page() {
                                     </div>
                                 </div>
 
-                                <div className="p-6 bg-slate-50 dark:bg-slate-900/50 rounded-[2rem] border border-border/50">
+                                <div className="p-6 bg-slate-100 dark:bg-slate-900/50 rounded-[2rem] border border-border/50">
                                     <h3 className="text-lg font-bold text-primary mb-3">Verbos terminados en -o, -sh, -ch, -ss, -x, -z</h3>
                                     <div className="space-y-3 font-mono text-base">
                                         <p>A los verbos que terminan en estas letras, se les agrega <span className="font-bold text-primary">"es"</span>.</p>
@@ -368,7 +531,7 @@ export default function EngA1Class3Page() {
                                     </div>
                                 </div>
 
-                                <div className="p-6 bg-slate-50 dark:bg-slate-900/50 rounded-[2rem] border border-border/50">
+                                <div className="p-6 bg-slate-100 dark:bg-slate-900/50 rounded-[2rem] border border-border/50">
                                     <h3 className="text-lg font-bold text-primary mb-3">Verbos terminados en "y"</h3>
                                     <div className="space-y-6 font-mono text-base">
                                         <div className="space-y-2">
@@ -405,7 +568,7 @@ export default function EngA1Class3Page() {
                     </div>
                 );
             case 'mixedExercises1':
-                return <PresentSimpleExercise key={selectedTopic} exerciseData={class3MixedExercise1Data} onComplete={() => handleTopicComplete('mixedExercises1')} title="Ejercicios Mixtos 1" showShortAnswers={false} />;
+                return <PresentSimpleExercise key={selectedTopic} exerciseData={class3MixedExercise1Data} onComplete={() => handleTopicComplete('mixedExercises1')} title="Ejercicios Mixtos 1" showShortAnswers={false} vocabulary={mixed1Vocab} />;
             case 'presentSimpleUses':
                 return (
                     <div className="space-y-6 text-left">
@@ -417,7 +580,7 @@ export default function EngA1Class3Page() {
                             <CardContent className="space-y-6">
                                 <div className="space-y-4">
                                     <h3 className="text-xl font-bold text-primary uppercase tracking-tight">Hechos y Verdades Generales</h3>
-                                    <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] border border-border/50">
+                                    <div className="bg-slate-100 dark:bg-slate-900/50 p-6 rounded-[2rem] border border-border/50">
                                         <p className="text-muted-foreground mb-3 font-medium">Para cosas que siempre son ciertas.</p>
                                         <div className="font-mono text-lg space-y-1">
                                             <p className="font-black text-primary">The Earth goes around the Sun.</p>
@@ -430,7 +593,7 @@ export default function EngA1Class3Page() {
 
                                 <div className="space-y-4">
                                     <h3 className="text-xl font-bold text-primary uppercase tracking-tight">Hábitos y Rutinas</h3>
-                                    <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] border border-border/50">
+                                    <div className="bg-slate-100 dark:bg-slate-900/50 p-6 rounded-[2rem] border border-border/50">
                                         <p className="text-muted-foreground mb-3 font-medium">Para acciones que haces regularmente.</p>
                                         <div className="font-mono text-lg space-y-1">
                                             <p className="font-black text-primary">I play soccer on Saturdays.</p>
@@ -443,7 +606,7 @@ export default function EngA1Class3Page() {
 
                                 <div className="space-y-4">
                                     <h3 className="text-xl font-bold text-primary uppercase tracking-tight">Horarios y Eventos Programados</h3>
-                                    <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] border border-border/50">
+                                    <div className="bg-slate-100 dark:bg-slate-900/50 p-6 rounded-[2rem] border border-border/50">
                                         <p className="text-muted-foreground mb-3 font-medium">Para eventos futuros que tienen un horario fijo.</p>
                                         <div className="font-mono text-lg space-y-1">
                                             <p className="font-black text-primary">The train leaves at 8:00 AM.</p>
@@ -456,7 +619,7 @@ export default function EngA1Class3Page() {
 
                                 <div className="space-y-4">
                                     <h3 className="text-xl font-bold text-primary uppercase tracking-tight">Situaciones Permanentes</h3>
-                                    <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] border border-border/50">
+                                    <div className="bg-slate-100 dark:bg-slate-900/50 p-6 rounded-[2rem] border border-border/50">
                                         <p className="text-muted-foreground mb-3 font-medium">Para situaciones que son verdaderas por mucho tiempo.</p>
                                         <div className="font-mono text-lg space-y-1">
                                             <p className="font-black text-primary">She works in a hospital.</p>
@@ -474,13 +637,13 @@ export default function EngA1Class3Page() {
                     </div>
                 );
             case 'ex2_1':
-                return <SimpleTranslationExercise key={selectedTopic} course="a1" exerciseKey="c2_mixed1" onComplete={() => handleTopicComplete('ex2_1')} title="Ejercicio 1" />;
+                return <SimpleTranslationExercise key={selectedTopic} course="a1" exerciseKey="c2_mixed1" onComplete={() => handleTopicComplete('ex2_1')} title="Ejercicio 1" vocabulary={ex2_1Vocab} highlightVocabulary={true} />;
             case 'ex2_2':
-                return <QAShortAnswerExercise key={selectedTopic} exerciseData={class3QAShortAnswerExerciseData} onComplete={() => handleTopicComplete('ex2_2')} title="Ejercicio 2" description="Traduce y responde." />;
+                return <QAShortAnswerExercise key={selectedTopic} exerciseData={class3QAShortAnswerExerciseData} onComplete={() => handleTopicComplete('ex2_2')} title="Ejercicio 2" description="Traduce y responde." vocabulary={ex2_2Vocab} />;
             case 'ex3_3':
                 return <ShortAnswerPresentSimpleExercise key={selectedTopic} exerciseData={class3ShortAnswerEx3Data} onComplete={() => handleTopicComplete('ex3_3')} title="Ejercicio 3" description="Responde cortamente." />;
             case 'ex3_4':
-                return <LargeTextTranslationExercise key={selectedTopic} title="Ejercicio 4: Diálogo" dialogue={class3LargeTextEx4Dialogue} onComplete={() => handleTopicComplete('ex3_4')} />;
+                return <LargeTextTranslationExercise key={selectedTopic} title="Ejercicio 4: Diálogo" dialogue={class3LargeTextEx4Dialogue} onComplete={() => handleTopicComplete('ex3_4')} vocabulary={dialogueVocab} />;
             case 'can':
                 return (
                     <div className="space-y-6 text-left">
@@ -492,18 +655,18 @@ export default function EngA1Class3Page() {
                             <CardContent className="space-y-4">
                                 <p className="text-lg leading-relaxed">El verbo <span className="font-bold text-primary">'CAN'</span> es un verbo modal que se utiliza para expresar habilidad, posibilidad o permiso. En español, generalmente se traduce como <span className="italic">'poder'</span>.</p>
                                 
-                                <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-4 border">
+                                <div className="bg-slate-100 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-4 border">
                                     <div className="font-mono text-lg space-y-3">
                                         <div>
-                                            <p className="font-black text-primary">Habilidad:</p>
+                                            <p className="font-black text-primary underline decoration-2 underline-offset-4">Habilidad:</p>
                                             <p>"I can speak English." <span className="text-sm text-muted-foreground italic">(Yo puedo hablar inglés.)</span></p>
                                         </div>
                                         <div>
-                                            <p className="font-black text-primary">Posibilidad:</p>
+                                            <p className="font-black text-primary underline decoration-2 underline-offset-4">Posibilidad:</p>
                                             <p>"It can rain tomorrow." <span className="text-sm text-muted-foreground italic">(Puede llover mañana.)</span></p>
                                         </div>
                                         <div>
-                                            <p className="font-black text-primary">Permiso:</p>
+                                            <p className="font-black text-primary underline decoration-2 underline-offset-4">Permiso:</p>
                                             <p>"Can I go to the bathroom?" <span className="text-sm text-muted-foreground italic">(¿Puedo ir al baño?)</span></p>
                                         </div>
                                     </div>
@@ -516,7 +679,7 @@ export default function EngA1Class3Page() {
                                 <CardTitle className="text-2xl font-black text-primary uppercase tracking-tight">Estructura de "CAN"</CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-6">
-                                <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 font-mono text-base border">
+                                <div className="bg-slate-100 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 font-mono text-base border">
                                     <div className="flex items-center gap-4">
                                         <span className="text-green-500 font-bold w-10 text-center text-lg">(+)</span>
                                         <span className="text-muted-foreground">pronoun + can + verb (infinitive) + complement</span>
@@ -533,7 +696,7 @@ export default function EngA1Class3Page() {
 
                                 <div className="space-y-3">
                                     <h3 className="text-lg font-bold text-foreground">Respuestas Cortas</h3>
-                                    <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 font-mono text-base border">
+                                    <div className="bg-slate-100 dark:bg-slate-900/50 p-6 rounded-[2rem] space-y-3 font-mono text-base border">
                                         <div className="flex items-center gap-4">
                                             <span className="text-green-500 font-bold w-10 text-center text-lg">(+A)</span>
                                             <span>Yes, pronoun + can</span>
@@ -552,7 +715,7 @@ export default function EngA1Class3Page() {
                                 <CardTitle className="text-2xl font-black text-primary uppercase tracking-tight">Contracción Negativa</CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <div className="p-6 bg-slate-50 dark:bg-slate-900/50 rounded-[2rem] border text-center">
+                                <div className="p-6 bg-slate-100 dark:bg-slate-900/50 rounded-[2rem] border text-center">
                                     <p className="text-2xl font-black font-mono tracking-tighter text-primary">CAN + NOT = <span className="text-destructive">CAN'T</span></p>
                                 </div>
                             </CardContent>
@@ -565,7 +728,20 @@ export default function EngA1Class3Page() {
                     </div>
                 );
             case 'can1':
-                return <PresentSimpleExercise key={selectedTopic} exerciseData={can1ExerciseData} onComplete={() => handleTopicComplete('can1')} title="Ejercicios CAN" showShortAnswers={true} />;
+                return (
+                    <LinesWritingExercise 
+                        title="Ejercicio con CAN" 
+                        description="Traduce las siguientes frases de forma libre."
+                        prompts={canExercisePrompts}
+                        onComplete={() => handleTopicComplete('can1')}
+                        studentDocRef={studentDocRef}
+                        initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.canData}
+                        initialGrades={studentProfile?.lessonProgress?.[progressStorageVersion]?.canGrades}
+                        savePath={`lessonProgress.${progressStorageVersion}.canData`}
+                        savePathGrades={`lessonProgress.${progressStorageVersion}.canGrades`}
+                        isAdmin={isAdmin}
+                    />
+                );
             case 'vocabulary2':
                  return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple p-6">
@@ -586,7 +762,7 @@ export default function EngA1Class3Page() {
             <main className="flex-1 p-4 md:p-8">
                 <div className="max-w-7xl mx-auto">
                     <div className="mb-8 text-left text-white">
-                        <Link href="/ingles/a1/unit/1" className="hover:underline text-sm">Volver a la unidad 1</Link>
+                        <Link href="/ingles/a1" className="hover:underline text-sm">Volver al curso A1</Link>
                         <h1 className="text-4xl font-bold [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">Clase 3 (A1)</h1>
                     </div>
                     <div className="grid gap-8 md:grid-cols-12">
@@ -612,7 +788,7 @@ export default function EngA1Class3Page() {
                                                         {isLocked && <Lock className="h-4 w-4 text-yellow-500" />}
                                                         </div>
                                                     ) : (
-                                                        <Collapsible defaultOpen={isSelected}>
+                                                        <Collapsible defaultOpen={isSelected || item.subItems.some(si => si.status !== 'locked')}>
                                                         <CollapsibleTrigger className="w-full">
                                                             <div className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors w-full cursor-pointer', isLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', isSelected && 'bg-muted text-primary font-semibold')}>
                                                                 <div className="flex items-center gap-3">

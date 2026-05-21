@@ -6,8 +6,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
-import { ArrowLeft, ArrowRight, Trophy } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Trophy, BookText } from 'lucide-react';
 import { Label } from '@/components/ui/label';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 export type QAShortAnswerPrompt = {
     spanish: string;
@@ -21,7 +22,19 @@ export type QAShortAnswerPrompt = {
 type ValidationStatus = 'correct' | 'incorrect' | 'unchecked';
 type AnswerFields = 'interrogative' | 'shortAffirmative' | 'shortNegative';
 
-export function QAShortAnswerExercise({ exerciseData, onComplete, title, description }: { exerciseData: QAShortAnswerPrompt[], onComplete?: () => void, title: string, description: string }) {
+export function QAShortAnswerExercise({ 
+    exerciseData, 
+    onComplete, 
+    title, 
+    description,
+    vocabulary 
+}: { 
+    exerciseData: QAShortAnswerPrompt[], 
+    onComplete?: () => void, 
+    title: string, 
+    description: string,
+    vocabulary?: Record<string, string>
+}) {
     const { toast } = useToast();
     const [currentIndex, setCurrentIndex] = useState(0);
     const [answers, setAnswers] = useState({ interrogative: '', shortAffirmative: '', shortNegative: '' });
@@ -108,8 +121,35 @@ export function QAShortAnswerExercise({ exerciseData, onComplete, title, descrip
     return (
         <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
             <CardHeader>
-                <CardTitle>{title}</CardTitle>
-                <CardDescription>{description}</CardDescription>
+                <div className="flex justify-between items-start">
+                    <div>
+                        <CardTitle>{title}</CardTitle>
+                        <CardDescription>{description}</CardDescription>
+                    </div>
+                    {vocabulary && (
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button variant="outline" size="sm" className="border-2 border-brand-blue animate-border-pulse">
+                                    <BookText className="mr-2 h-4 w-4" />
+                                    Vocabulary
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-64">
+                                <div className="space-y-2">
+                                    <h4 className="font-bold border-b pb-1">Vocabulario útil</h4>
+                                    <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
+                                        {Object.entries(vocabulary).map(([es, en]) => (
+                                            <React.Fragment key={es}>
+                                                <span className="text-muted-foreground capitalize">{es}:</span>
+                                                <span className="font-semibold text-right">{en}</span>
+                                            </React.Fragment>
+                                        ))}
+                                    </div>
+                                </div>
+                            </PopoverContent>
+                        </Popover>
+                    )}
+                </div>
                 <div className="flex items-center justify-start flex-wrap gap-2 pt-4">
                     {exerciseData.map((_, index) => (
                         <button
@@ -134,7 +174,7 @@ export function QAShortAnswerExercise({ exerciseData, onComplete, title, descrip
                 </div>
                 <div className="space-y-3">
                     <div className="flex items-center gap-3">
-                        <Label htmlFor="interrogative" className="w-20 font-semibold text-center">(?)</Label>
+                        <Label htmlFor="interrogative" className="w-20 font-semibold text-center text-blue-500 font-mono">(?)</Label>
                         <Input 
                             id="interrogative" 
                             name="interrogative" 
@@ -145,7 +185,7 @@ export function QAShortAnswerExercise({ exerciseData, onComplete, title, descrip
                         />
                     </div>
                     <div className="flex items-center gap-3">
-                        <Label htmlFor="shortAffirmative" className="w-20 font-semibold text-center">(+A)</Label>
+                        <Label htmlFor="shortAffirmative" className="w-20 font-semibold text-center text-green-500 font-mono">(+A)</Label>
                         <Input 
                             id="shortAffirmative" 
                             name="shortAffirmative" 
@@ -156,7 +196,7 @@ export function QAShortAnswerExercise({ exerciseData, onComplete, title, descrip
                         />
                     </div>
                     <div className="flex items-center gap-3">
-                        <Label htmlFor="shortNegative" className="w-20 font-semibold text-center">(-A)</Label>
+                        <Label htmlFor="shortNegative" className="w-20 font-semibold text-center text-red-500 font-mono">(-A)</Label>
                         <Input 
                             id="shortNegative" 
                             name="shortNegative" 

@@ -7,6 +7,8 @@ import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { Label } from '@/components/ui/label';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { BookText } from 'lucide-react';
 
 export interface DialogueLine {
     speaker: string;
@@ -18,9 +20,10 @@ interface LargeTextTranslationExerciseProps {
     title: string;
     dialogue: DialogueLine[];
     onComplete: () => void;
+    vocabulary?: Record<string, string>;
 }
 
-export const LargeTextTranslationExercise = ({ title, dialogue, onComplete }: LargeTextTranslationExerciseProps) => {
+export const LargeTextTranslationExercise = ({ title, dialogue, onComplete, vocabulary }: LargeTextTranslationExerciseProps) => {
     const { toast } = useToast();
     const [userAnswers, setUserAnswers] = useState<string[]>(Array(dialogue.length).fill(''));
     const [validationStatus, setValidationStatus] = useState<('correct' | 'incorrect' | 'unchecked')[]>(Array(dialogue.length).fill('unchecked'));
@@ -40,8 +43,8 @@ export const LargeTextTranslationExercise = ({ title, dialogue, onComplete }: La
     const handleCheckAnswers = () => {
         let allCorrect = true;
         const newValidationStatus = dialogue.map((item, index) => {
-            const userAnswer = userAnswers[index].trim().toLowerCase().replace(/[.?,¿!¡]/g, '');
-            const correctAnswers = item.answer.map(ans => ans.toLowerCase().replace(/[.?,¿!¡]/g, ''));
+            const userAnswer = userAnswers[index].trim().toLowerCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' ');
+            const correctAnswers = item.answer.map(ans => ans.toLowerCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' '));
             const isCorrect = correctAnswers.some(ans => ans === userAnswer);
             if (!isCorrect) {
                 allCorrect = false;
@@ -66,28 +69,55 @@ export const LargeTextTranslationExercise = ({ title, dialogue, onComplete }: La
     };
 
     const getInputClass = (status: 'correct' | 'incorrect' | 'unchecked') => {
-        if (status === 'correct') return 'border-green-500 focus-visible:ring-green-500';
-        if (status === 'incorrect') return 'border-destructive focus-visible:ring-destructive';
+        if (status === 'correct') return 'border-green-500 focus-visible:ring-green-500 bg-green-50 dark:bg-green-900/10';
+        if (status === 'incorrect') return 'border-destructive focus-visible:ring-destructive bg-destructive/5';
         return '';
     };
 
     return (
         <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
             <CardHeader>
-                <CardTitle>{title}</CardTitle>
-                <CardDescription>Traduce cada línea del diálogo al inglés.</CardDescription>
+                <div className="flex justify-between items-start">
+                    <div>
+                        <CardTitle>{title}</CardTitle>
+                        <CardDescription>Traduce cada línea del diálogo al inglés.</CardDescription>
+                    </div>
+                    {vocabulary && (
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button variant="outline" size="sm" className="border-2 border-brand-blue animate-border-pulse">
+                                    <BookText className="mr-2 h-4 w-4" />
+                                    Vocabulary
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-64">
+                                <div className="space-y-2">
+                                    <h4 className="font-bold border-b pb-1 text-primary">Vocabulario útil</h4>
+                                    <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
+                                        {Object.entries(vocabulary).map(([es, en]) => (
+                                            <React.Fragment key={es}>
+                                                <span className="text-muted-foreground capitalize">{es}:</span>
+                                                <span className="font-semibold text-right">{en}</span>
+                                            </React.Fragment>
+                                        ))}
+                                    </div>
+                                </div>
+                            </PopoverContent>
+                        </Popover>
+                    )}
+                </div>
             </CardHeader>
             <CardContent className="space-y-4">
                 {dialogue.map((item, index) => (
                     <div key={index} className="grid gap-2">
-                        <Label htmlFor={`line-${index}`} className="text-muted-foreground">
-                            <span className="font-bold text-foreground">{item.speaker}:</span> {item.line}
+                        <Label htmlFor={`line-${index}`} className="text-muted-foreground italic text-base">
+                            <span className="font-bold text-foreground not-italic">{item.speaker}:</span> {item.line}
                         </Label>
                         <Input
                             id={`line-${index}`}
                             value={userAnswers[index]}
                             onChange={(e) => handleInputChange(index, e.target.value)}
-                            className={cn(getInputClass(validationStatus[index]))}
+                            className={cn("text-lg h-12", getInputClass(validationStatus[index]))}
                             placeholder="Escribe la traducción..."
                             autoComplete="off"
                         />
@@ -95,7 +125,7 @@ export const LargeTextTranslationExercise = ({ title, dialogue, onComplete }: La
                 ))}
             </CardContent>
             <CardFooter>
-                <Button onClick={handleCheckAnswers}>Verificar y Completar</Button>
+                <Button onClick={handleCheckAnswers} size="lg" className="w-full sm:w-auto">Verificar y Completar</Button>
             </CardFooter>
         </Card>
     );
