@@ -119,22 +119,6 @@ const class5Exercise2Vocab = {
     "esposa": "wife"
 };
 
-const class5Exercise3Prompts = [
-    { spanish: "¿ELLOS SON SUS PARIENTES? (RELATIVES) (DE ELLA)", english: ["are they her relatives?"] },
-    { spanish: "ESTA (THIS) NO ES MI CASA", english: ["this is not my house", "this isn't my house"] },
-    { spanish: "EL GATO ESTA EN SU CASA PEQUEÑA", english: ["the cat is in its small house"] },
-    { spanish: "¿ESTE ES TU CARRO?", english: ["is this your car?"] },
-    { spanish: "¿ERES SU TÍO (UNCLE)? (DE EL)", english: ["are you his uncle?"] },
-    { spanish: "ELLOS NO SON NUESTROS ABUELOS (GRANDPARENTS)", english: ["they are not our grandparents", "they aren't our grandparents"] },
-    { spanish: "¿DÓNDE ESTAN TUS PADRES?", english: ["where are your parents?"] },
-    { spanish: "¿ESTAS CON WILLIAM?", english: ["are you with william?"] },
-    { spanish: "ELLOS NO SON NUESTROS HERMANOS", english: ["they are not our brothers", "they aren't our brothers"] },
-    { spanish: "YO ESTOY CON (WITH) MI HERMANA", english: ["i am with my sister", "i'm with my sister"] },
-    { spanish: "¿QUIENES SON ELLOS?", english: ["who are they?"] },
-    { spanish: "ELLA NO ESTA CANSADA", english: ["she is not tired", "she isn't tired"] },
-    { spanish: "ESTOS (THESE) NO SON NUESTROS CARROS", english: ["these are not our cars", "these aren't our cars"] }
-];
-
 // --- Dictation Component ---
 const DictationExercise = ({ 
     title,
@@ -290,7 +274,7 @@ export default function EngA1Class5Page() {
         { key: 'nota-importante', name: 'Nota Importante', icon: Info, status: 'locked' },
         { key: 'ejercicio-1', name: 'Ejercicio 1', icon: PenSquare, status: 'locked' },
         { key: 'dictado-1', name: 'Dictado 1', icon: Mic, status: 'locked' },
-        { key: 'crear-1', name: 'Crear 1', icon: Pencil, status: 'locked' },
+        { key: 'crear-frases', name: 'Crear Frases', icon: Pencil, status: 'locked' },
         { key: 'ejercicio-2', name: 'Ejercicio 2', icon: PenSquare, status: 'locked' },
         { key: 'ejercicio-3', name: 'Ejercicio 3', icon: PenSquare, status: 'locked' },
         { key: 'ejercicio-vocabulario', name: 'Ejercicio Vocabulario', icon: PenSquare, status: 'locked' },
@@ -617,6 +601,7 @@ export default function EngA1Class5Page() {
             case 'dictado-1':
                 return (
                     <DictationExercise 
+                        key="dictado-1"
                         title="DICTATION 1"
                         description="Escucha y escribe las frases dictadas por tu profesor."
                         onComplete={() => handleTopicComplete('dictado-1')} 
@@ -629,13 +614,14 @@ export default function EngA1Class5Page() {
                         lineCount={21}
                     />
                 );
-            case 'crear-1':
+            case 'crear-frases':
                 return (
                     <DictationExercise 
-                        title="Crear 1"
+                        key="crear-frases"
+                        title="Crear Frases"
                         description="Ejercicio de creación de frases."
                         customInstructions="INVENTA TRES FRASES NEGATIVAS CON TO BE- DO Y DOES."
-                        onComplete={() => handleTopicComplete('crear-1')} 
+                        onComplete={() => handleTopicComplete('crear-frases')} 
                         studentDocRef={studentDocRef}
                         initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.crear1}
                         initialGrades={studentProfile?.lessonProgress?.[progressStorageVersion]?.crear1Grades}
@@ -731,4 +717,3 @@ export default function EngA1Class5Page() {
         </div>
     );
 }
-
