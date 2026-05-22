@@ -7,7 +7,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, ChevronDown, Loader2, ArrowRight, BookText, Check, X, HelpCircle, Info } from 'lucide-react';
-import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
 import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
@@ -37,7 +36,7 @@ const ICONS_CONFIG = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_a1_eng_u1_c3_v85_stable';
+const progressStorageVersion = 'progress_a1_eng_u1_c3_v86_stable';
 const mainProgressKey = 'progress_a1_eng_unit_1_class_3';
 
 // --- DATA ---
@@ -77,6 +76,28 @@ const class3QAShortAnswerExerciseData: QAShortAnswerPrompt[] = [
     { spanish: '¿ELLOS TRABAJAN AQUI?', answers: { interrogative: ["do they work here?"], shortAffirmative: ["yes, they do"], shortNegative: ["no, they do not", "no, they don't"] } },
     { spanish: '¿EL DUERME EN SU TRABAJO?', answers: { interrogative: ["does he sleep at work?", "does he sleep at his work?"], shortAffirmative: ["yes, he does"], shortNegative: ["no, he does not", "no, he doesn't"] } },
     { spanish: '¿ELLOS NECESITAN UN LIBRO?', answers: { interrogative: ["do they need a book?"], shortAffirmative: ["yes, they do"], shortNegative: ["no, they do not", "no, they don't"] } },
+];
+
+const class3ShortAnswerEx3Data: ShortAnswerPresentSimplePrompt[] = [
+    { question: "DO THEY LIKE CHOCOLATE?", answers: { shortAffirmative: ["yes, they do"], shortNegative: ["no, they do not", "no, they don't"] } },
+    { question: "DOES SHE SPEAK ITALIAN?", answers: { shortAffirmative: ["yes, she does"], shortNegative: ["no, she does not", "no, she doesn't"] } },
+    { question: "DO YOU EAT SALAD EVERY DAY?", answers: { shortAffirmative: ["yes, i do"], shortNegative: ["no, i do not", "no, i don't"] } },
+    { question: "DO THEY WORK TOGETHER?", answers: { shortAffirmative: ["yes, they do"], shortNegative: ["no, they do not", "no, they don't"] } },
+    { question: "DOES SHE PLAY VIDEO GAMES?", answers: { shortAffirmative: ["yes, she does"], shortNegative: ["no, she does not", "no, she doesn't"] } },
+    { question: "DOES HE DRINK COFFEE?", answers: { shortAffirmative: ["yes, he does"], shortNegative: ["no, he does not", "no, he doesn't"] } },
+    { question: "DO YOU LIKE ACTION MOVIES?", answers: { shortAffirmative: ["yes, i do"], shortNegative: ["no, i do not", "no, i don't"] } },
+    { question: "DO THEY CALL THEIR MOTHER?", answers: { shortAffirmative: ["yes, they do"], shortNegative: ["no, they do not", "no, they don't"] } },
+    { question: "DOES HE GO TO BOGOTA?", answers: { shortAffirmative: ["yes, he does"], shortNegative: ["no, he does not", "no, he doesn't"] } },
+    { question: "DOES SHE TEACH MATH?", answers: { shortAffirmative: ["yes, she does"], shortNegative: ["no, she does not", "no, she doesn't"] } },
+];
+
+const class3LargeTextEx4Dialogue: DialogueLine[] = [
+    { speaker: "MARY", line: "¿VIVES EN BARCELONA?", answer: ["do you live in barcelona?"] },
+    { speaker: "JON", line: "NO, NO VIVO EN BARCELONA. VIVO EN MADRID, PERO MI HERMANA VIVE ALLÍ.", answer: ["no, i do not live in barcelona. i live in madrid, but my sister lives there", "no, i don't live in barcelona. i live in madrid, but my sister lives there"] },
+    { speaker: "MARY", line: "¿Y LE GUSTA?", answer: ["and does she like it?"] },
+    { speaker: "JON", line: "SÍ, LE ENCANTA BARCELONA. ELLA TRABAJA EN UN BANCO POR LAS MAÑANAS. POR LAS TARDES, ELLA JUEGA AL TENIS CON SU NOVIO O ELLA MIRA LA TV EN CASA. POR LAS NOCHES, ELLA VA A LA PLAYA O ELLA HACE SU TAREA DE INGLÉS. ESTUDIA INGLÉS LOS SÁBADOS.", answer: ["yes, she loves barcelona. she works in a bank in the mornings. in the afternoons, she plays tennis with her boyfriend or she watches tv at home. in the evenings, she goes to the beach or she does her english homework. she studies english on saturdays", "yes, she loves barcelona. she works in a bank in the mornings. in the afternoons, she plays tennis with her boyfriend or she watches television at home. in the evenings, she goes to the beach or she does her english homework. she studies english on saturdays"] },
+    { speaker: "MARY", line: "¿ELLA TE VISITA EN MADRID?", answer: ["does she visit you in madrid?"] },
+    { speaker: "JON", line: "ELLA NO VIENE A MADRID MUY A MENUDO. YO LA VISITO EN BARCELONA.", answer: ["she does not come to madrid very often. i visit her in barcelona", "she doesn't come to madrid very often. i visit her in barcelona"] },
 ];
 
 const can1Prompts = [
@@ -310,7 +331,7 @@ export default function EngA1Class3Page() {
 
     // Vocab 2 State
     const [vocab2Answers, setVocab2Answers] = useState<string[]>(Array(vocab2Data.length).fill(''));
-    const [vocab2Validation, setVocab2Validation] = useState<ValidationStatus[]>(Array(vocab2Data.length).fill('unchecked'));
+    const [vocab2Validation, setVocab2Validation] = useState<('correct' | 'incorrect' | 'unchecked')[]>(Array(vocab2Data.length).fill('unchecked'));
     const [canAdvanceVocab2, setCanAdvanceVocab2] = useState(false);
 
     const initialLearningPath = useMemo((): Topic[] => [
@@ -351,14 +372,18 @@ export default function EngA1Class3Page() {
         },
     ], [t]);
 
+    const handleTopicComplete = useCallback((completedKey: string) => {
+        setTopicToComplete(completedKey);
+    }, []);
+
     useEffect(() => {
         if (isProfileLoading || isUserLoading || !studentProfile || initialLoadComplete) return;
         let path = initialLearningPath.map(topic => ({ ...topic, subItems: topic.subItems ? topic.subItems.map(sub => ({...sub})) : undefined }));
         let savedST = '';
         if (isAdmin) {
           path.forEach(item => { item.status = 'completed'; if (item.subItems) item.subItems.forEach(sub => sub.status = 'completed'); });
-        } else if(studentProfile?.lessonProgress?.[progressStorageVersion]) {
-            const savedData = studentProfile.lessonProgress[progressStorageVersion];
+        } else if(studentProfile?.lessonProgress?.[progressStorageKey]) {
+            const savedData = studentProfile.lessonProgress[progressStorageKey];
             path.forEach(item => {
                 if (savedData[item.key]) item.status = savedData[item.key];
                 if (item.subItems && savedData.subItems?.[item.key]) {
@@ -507,7 +532,7 @@ export default function EngA1Class3Page() {
                                         {learningPath.map((item) => {
                                             const isL = item.status === 'locked' && !isAdmin;
                                             const isS = selectedTopic === item.key || item.subItems?.some(si => si.key === selectedTopic);
-                                            const Icon = ICONS_CONFIG[item.status] || BookOpen;
+                                            const Icon = ICONS_CONFIG[item.status as keyof typeof ICONS_CONFIG] || BookOpen;
                                             return(
                                                 <li key={item.key}>
                                                 {!item.subItems ? (
@@ -525,7 +550,7 @@ export default function EngA1Class3Page() {
                                                         </CollapsibleTrigger>
                                                         <CollapsibleContent><ul className="pl-8 pt-1 space-y-1">{item.subItems.map((sub) => {
                                                             const isSubL = sub.status === 'locked' && !isAdmin;
-                                                            const SubI = ICONS_CONFIG[sub.status] || PenSquare;
+                                                            const SubI = ICONS_CONFIG[sub.status as keyof typeof ICONS_CONFIG] || PenSquare;
                                                             return (<li key={sub.key} onClick={() => handleTopicSelect(sub.key)} className={cn('flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer', isSubL ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === sub.key && 'bg-muted text-primary font-semibold')}><div className='flex items-center gap-3'><SubI className={cn("h-5 w-5", sub.status === 'completed' ? 'text-green-500' : '')} /><span>{sub.name}</span></div>{isSubL && <Lock className="h-4 w-4 text-yellow-500" />}</li>)
                                                         })}</ul></CollapsibleContent>
                                                     </Collapsible>
@@ -544,4 +569,3 @@ export default function EngA1Class3Page() {
         </div>
     );
 }
-
