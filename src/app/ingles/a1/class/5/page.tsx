@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { BookOpen, PenSquare, Lock, Info, CheckCircle, Loader2, ArrowRight, Mic, Check, X, Pencil } from 'lucide-react';
+import { BookOpen, PenSquare, Lock, Info, CheckCircle, Loader2, ArrowRight, Mic, Check, X, Pencil, BookText } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { ErrorCorrectionExercise, type ErrorCorrectionPrompt } from '@/components/kids/exercises/error-correction-exercise';
 import { PresentSimpleExercise, type ExercisePrompt } from '@/components/kids/exercises/present-simple';
 import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
@@ -33,7 +34,7 @@ const ICONS_CONFIG = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_a1_eng_unit_1_class_5_v15_stable';
+const progressStorageVersion = 'progress_a1_eng_unit_1_class_5_v16_stable';
 const mainProgressKey = 'progress_a1_eng_unit_1_class_5';
 
 const vocabularyData = {
@@ -106,6 +107,17 @@ const class5Exercise2Data: ExercisePrompt[] = [
     { spanish: "ELLA ES SU ESPOSA (de él)", answers: { affirmative: ["she is his wife"], negative: ["she is not his wife", "she isn't his wife"], interrogative: ["is she his wife?"] } },
     { spanish: "ELLOS TRABAJAN EN LA MAÑANA", answers: { affirmative: ["they work in the morning"], negative: ["they do not work in the morning", "they don't work in the morning"], interrogative: ["do they work in the morning?"] } },
 ];
+
+const class5Exercise2Vocab = {
+    "leche": "milk",
+    "pollo": "chicken",
+    "familia": "family",
+    "novia": "girlfriend",
+    "durante": "during",
+    "comprar": "buy",
+    "pasta": "pasta",
+    "esposa": "wife"
+};
 
 const class5Exercise3Prompts = [
     { spanish: "¿ELLOS SON SUS PARIENTES? (RELATIVES) (DE ELLA)", english: ["are they her relatives?"] },
@@ -633,7 +645,37 @@ export default function EngA1Class5Page() {
                         lineCount={9}
                     />
                 );
-            case 'ejercicio-2': return <PresentSimpleExercise exerciseData={class5Exercise2Data} onComplete={() => handleTopicComplete('ejercicio-2')} title="Ejercicio 2" showShortAnswers={false} vocabulary={{"pollo": "chicken", "familia": "family", "novia": "girlfriend", "durante": "during", "comprar": "buy", "pasta": "pasta", "esposa": "wife", "leche": "milk"}} />;
+            case 'ejercicio-2': return (
+                <div className="space-y-4">
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                        <CardHeader className="flex flex-row items-center justify-between">
+                            <div>
+                                <CardTitle>Ejercicio 2</CardTitle>
+                                <CardDescription>Traduce las frases a sus tres formas.</CardDescription>
+                            </div>
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                    <Button variant="outline" size="sm" className="border-2 border-brand-blue animate-border-pulse">
+                                        <BookText className="mr-2 h-4 w-4" />
+                                        Vocabulario
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-64">
+                                    <div className="grid grid-cols-2 gap-2 text-sm">
+                                        {Object.entries(class5Exercise2Vocab).map(([es, en]) => (
+                                            <React.Fragment key={es}>
+                                                <span className="text-muted-foreground capitalize">{es}:</span>
+                                                <span className="font-bold text-right">{en}</span>
+                                            </React.Fragment>
+                                        ))}
+                                    </div>
+                                </PopoverContent>
+                            </Popover>
+                        </CardHeader>
+                    </Card>
+                    <PresentSimpleExercise exerciseData={class5Exercise2Data} onComplete={() => handleTopicComplete('ejercicio-2')} title="" showShortAnswers={false} />
+                </div>
+            );
             case 'ejercicio-3': return <SimpleTranslationExercise course="a1" exerciseKey="c5_mixed3_updated" onComplete={() => handleTopicComplete('ejercicio-3')} title="Ejercicio 3" vocabulary={{"parientes": "relatives", "abuelos": "grandparents", "hijo": "son", "esposa": "wife", "compañeros": "coworkers"}} />;
             case 'ejercicio-vocabulario': return <Class5VocabExercise onComplete={() => handleTopicComplete('ejercicio-vocabulario')} />;
             default: return <div className="flex justify-center items-center h-48"><Loader2 className="animate-spin h-10 w-10 text-primary" /></div>;
@@ -689,3 +731,4 @@ export default function EngA1Class5Page() {
         </div>
     );
 }
+
