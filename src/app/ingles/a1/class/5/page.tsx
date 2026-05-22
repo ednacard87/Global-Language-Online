@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { BookOpen, PenSquare, Lock, Info, CheckCircle, Loader2, ArrowRight, Mic, Check, X } from 'lucide-react';
+import { BookOpen, PenSquare, Lock, Info, CheckCircle, Loader2, ArrowRight, Mic, Check, X, Pencil } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
@@ -33,7 +33,7 @@ const ICONS_CONFIG = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_a1_eng_unit_1_class_5_v10_stable';
+const progressStorageVersion = 'progress_a1_eng_unit_1_class_5_v15_stable';
 const mainProgressKey = 'progress_a1_eng_unit_1_class_5';
 
 const vocabularyData = {
@@ -91,51 +91,52 @@ const exercise1Data: ErrorCorrectionPrompt[] = [
 ];
 
 const class5Exercise2Data: ExercisePrompt[] = [
-    {
-        spanish: "EL BEBE LECHE",
-        answers: {
-            affirmative: ["he drinks milk"],
-            negative: ["he does not drink milk", "he doesn't drink milk"],
-            interrogative: ["does he drink milk?"],
-        }
-    },
-    {
-        spanish: "EL JUEGA FUTBOL CON SU HERMANO",
-        answers: {
-            affirmative: ["he plays soccer with his brother", "he plays football with his brother"],
-            negative: ["he does not play soccer with his brother", "he doesn't play soccer with his brother", "he does not play football with his brother", "he doesn't play football with his brother"],
-            interrogative: ["does he play soccer with his brother?", "does he play football with his brother?"],
-        }
-    },
-    {
-        spanish: "YO NADO LOS DOMINGOS",
-        answers: {
-            affirmative: ["i swim on sundays"],
-            negative: ["i do not swim on sundays", "i don't swim on sundays"],
-            interrogative: ["do i swim on sundays?"],
-        }
-    },
-    {
-        spanish: "TU TRABAJAS LOS SABADOS",
-        answers: {
-            affirmative: ["you work on saturdays"],
-            negative: ["you do not work on saturdays", "you don't work on saturdays"],
-            interrogative: ["do you work on saturdays?"],
-        }
-    }
+    { spanish: "EL BEBE LECHE", answers: { affirmative: ["he drinks milk"], negative: ["he does not drink milk", "he doesn't drink milk"], interrogative: ["does he drink milk?"] } },
+    { spanish: "EL JUEGA FUTBOL CON SU HERMANO", answers: { affirmative: ["he plays soccer with his brother", "he plays football with his brother"], negative: ["he does not play soccer with his brother", "he doesn't play soccer with his brother"], interrogative: ["does he play soccer with his brother?", "does he play football with his brother?"] } },
+    { spanish: "YO NADO LOS DOMINGOS", answers: { affirmative: ["i swim on sundays"], negative: ["i do not swim on sundays", "i don't swim on sundays"], interrogative: ["do i swim on sundays?"] } },
+    { spanish: "TU TRABAJAS LOS SABADOS", answers: { affirmative: ["you work on saturdays"], negative: ["you do not work on saturdays", "you don't work on saturdays"], interrogative: ["do you work on saturdays?"] } },
+    { spanish: "ELLA VE PELICULAS CON SU FAMILIA", answers: { affirmative: ["she watches movies with her family"], negative: ["she does not watch movies with her family", "she doesn't watch movies with her family"], interrogative: ["does she watch movies with her family?"] } },
+    { spanish: "EL COME PIZZA CON SU NOVIA", answers: { affirmative: ["he eats pizza with his girlfriend"], negative: ["he does not eat pizza with his girlfriend", "he doesn't eat pizza with his girlfriend"], interrogative: ["does he eat pizza with his girlfriend?"] } },
+    { spanish: "YO ESTUDIO INGLES DURANTE LA SEMANA", answers: { affirmative: ["i study english during the week"], negative: ["i do not study english during the week", "i don't study english during the week"], interrogative: ["do i study english during the week?"] } },
+    { spanish: "A ELLA LE GUSTA VIAJAR", answers: { affirmative: ["she likes to travel", "she likes traveling"], negative: ["she does not like to travel", "she doesn't like to travel"], interrogative: ["does she like to travel?"] } },
+    { spanish: "NOSOTROS COMPRAMOS UNA CASA", answers: { affirmative: ["we buy a house"], negative: ["we do not buy a house", "we don't buy a house"], interrogative: ["do we buy a house?"] } },
+    { spanish: "ELLA COCINA PASTA", answers: { affirmative: ["she cooks pasta"], negative: ["she does not cook pasta", "she doesn't cook pasta"], interrogative: ["does she cook pasta?"] } },
+    { spanish: "ELLOS SON TUS PRIMOS", answers: { affirmative: ["they are your cousins"], negative: ["they are not your cousins", "they aren't your cousins"], interrogative: ["are they your cousins?"] } },
+    { spanish: "NOSOTROS VAMOS A LA ESCUELA", answers: { affirmative: ["we go to school"], negative: ["we do not go to school", "we don't go to school"], interrogative: ["do we go to school?"] } },
+    { spanish: "ELLA ES SU ESPOSA (de él)", answers: { affirmative: ["she is his wife"], negative: ["she is not his wife", "she isn't his wife"], interrogative: ["is she his wife?"] } },
+    { spanish: "ELLOS TRABAJAN EN LA MAÑANA", answers: { affirmative: ["they work in the morning"], negative: ["they do not work in the morning", "they don't work in the morning"], interrogative: ["do they work in the morning?"] } },
+];
+
+const class5Exercise3Prompts = [
+    { spanish: "¿ELLOS SON SUS PARIENTES? (RELATIVES) (DE ELLA)", english: ["are they her relatives?"] },
+    { spanish: "ESTA (THIS) NO ES MI CASA", english: ["this is not my house", "this isn't my house"] },
+    { spanish: "EL GATO ESTA EN SU CASA PEQUEÑA", english: ["the cat is in its small house"] },
+    { spanish: "¿ESTE ES TU CARRO?", english: ["is this your car?"] },
+    { spanish: "¿ERES SU TÍO (UNCLE)? (DE EL)", english: ["are you his uncle?"] },
+    { spanish: "ELLOS NO SON NUESTROS ABUELOS (GRANDPARENTS)", english: ["they are not our grandparents", "they aren't our grandparents"] },
+    { spanish: "¿DÓNDE ESTAN TUS PADRES?", english: ["where are your parents?"] },
+    { spanish: "¿ESTAS CON WILLIAM?", english: ["are you with william?"] },
+    { spanish: "ELLOS NO SON NUESTROS HERMANOS", english: ["they are not our brothers", "they aren't our brothers"] },
+    { spanish: "YO ESTOY CON (WITH) MI HERMANA", english: ["i am with my sister", "i'm with my sister"] },
+    { spanish: "¿QUIENES SON ELLOS?", english: ["who are they?"] },
+    { spanish: "ELLA NO ESTA CANSADA", english: ["she is not tired", "she isn't tired"] },
+    { spanish: "ESTOS (THESE) NO SON NUESTROS CARROS", english: ["these are not our cars", "these aren't our cars"] }
 ];
 
 // --- Dictation Component ---
 const DictationExercise = ({ 
+    title,
+    description,
     onComplete, 
     studentDocRef, 
     initialData, 
     initialGrades,
     savePath, 
     savePathGrades,
-    isAdmin 
+    isAdmin,
+    lineCount = 21,
+    customInstructions
 }: any) => {
-    const lineCount = 21;
     const [lines, setLines] = useState<string[]>(Array(lineCount).fill(''));
     const [grades, setGrades] = useState<Record<number, 'correct' | 'incorrect' | null>>(initialGrades || {});
     const initializedRef = useRef(false);
@@ -147,7 +148,7 @@ const DictationExercise = ({
             setLines(newLines);
             if (initialData.length > 0) initializedRef.current = true;
         }
-    }, [initialData]);
+    }, [initialData, lineCount]);
 
     const handleLineChange = (index: number, value: string) => {
         const newLines = [...lines];
@@ -169,22 +170,27 @@ const DictationExercise = ({
             <CardHeader>
                 <div className="flex items-center gap-3">
                     <div className="p-2 bg-primary/20 rounded-lg text-primary">
-                        <Mic className="h-6 w-6" />
+                        {title.includes('DICTATION') ? <Mic className="h-6 w-6" /> : <Pencil className="h-6 w-6" />}
                     </div>
                     <div>
-                        <CardTitle>DICTATION 1</CardTitle>
-                        <CardDescription>Escucha y escribe las frases dictadas por tu profesor.</CardDescription>
+                        <CardTitle>{title}</CardTitle>
+                        <CardDescription>{description}</CardDescription>
                     </div>
                 </div>
             </CardHeader>
-            <CardContent className="space-y-3">
+            <CardContent className="space-y-4">
+                {customInstructions && (
+                    <div className="bg-primary/5 p-4 rounded-xl border border-primary/20 text-sm font-bold text-primary mb-4 uppercase text-center">
+                        {customInstructions}
+                    </div>
+                )}
                 <div className="grid grid-cols-1 gap-3">
                     {lines.map((line, idx) => {
                         const status = grades[idx];
-                        const isHeader = idx === 0;
+                        const isTitleLine = idx === 0 && title.includes('DICTATION');
                         return (
                             <div key={idx} className="flex items-center gap-3">
-                                <span className={cn("font-bold w-8 text-right", isHeader ? "text-primary" : "text-muted-foreground")}>
+                                <span className={cn("font-bold w-8 text-right", isTitleLine ? "text-primary" : "text-muted-foreground")}>
                                     {idx + 1}.
                                 </span>
                                 <Input 
@@ -192,11 +198,11 @@ const DictationExercise = ({
                                     onChange={e => handleLineChange(idx, e.target.value)} 
                                     className={cn(
                                         "flex-1 text-lg h-10 transition-all",
-                                        isHeader && "font-bold border-primary/50",
+                                        isTitleLine && "font-bold border-primary/50",
                                         status === 'correct' ? 'border-green-500 bg-green-50/5' : 
                                         status === 'incorrect' ? 'border-red-500 bg-red-50/5' : ''
                                     )} 
-                                    placeholder={isHeader ? "Escribe el título aquí..." : "Escribe la frase aquí..."}
+                                    placeholder={isTitleLine ? "Escribe el título aquí..." : "Escribe aquí..."}
                                     autoComplete="off" 
                                 />
                                 <div className="flex gap-1 shrink-0">
@@ -272,10 +278,10 @@ export default function EngA1Class5Page() {
         { key: 'nota-importante', name: 'Nota Importante', icon: Info, status: 'locked' },
         { key: 'ejercicio-1', name: 'Ejercicio 1', icon: PenSquare, status: 'locked' },
         { key: 'dictado-1', name: 'Dictado 1', icon: Mic, status: 'locked' },
+        { key: 'crear-1', name: 'Crear 1', icon: Pencil, status: 'locked' },
         { key: 'ejercicio-2', name: 'Ejercicio 2', icon: PenSquare, status: 'locked' },
         { key: 'ejercicio-3', name: 'Ejercicio 3', icon: PenSquare, status: 'locked' },
         { key: 'ejercicio-vocabulario', name: 'Ejercicio Vocabulario', icon: PenSquare, status: 'locked' },
-        { key: 'ejercicio-4', name: 'Ejercicio 4', icon: PenSquare, status: 'locked' },
     ], []);
     
     useEffect(() => {
@@ -599,6 +605,8 @@ export default function EngA1Class5Page() {
             case 'dictado-1':
                 return (
                     <DictationExercise 
+                        title="DICTATION 1"
+                        description="Escucha y escribe las frases dictadas por tu profesor."
                         onComplete={() => handleTopicComplete('dictado-1')} 
                         studentDocRef={studentDocRef}
                         initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.dictation1}
@@ -606,12 +614,28 @@ export default function EngA1Class5Page() {
                         savePath={`lessonProgress.${progressStorageVersion}.dictation1`}
                         savePathGrades={`lessonProgress.${progressStorageVersion}.dictation1Grades`}
                         isAdmin={isAdmin}
+                        lineCount={21}
                     />
                 );
-            case 'ejercicio-2': return <PresentSimpleExercise exerciseData={class5Exercise2Data} onComplete={() => handleTopicComplete('ejercicio-2')} title="Ejercicio 2" showShortAnswers={false} />;
-            case 'ejercicio-3': return <SimpleTranslationExercise course="a1" exerciseKey="c5_mixed3" onComplete={() => handleTopicComplete('ejercicio-3')} title="Ejercicio 3" />;
+            case 'crear-1':
+                return (
+                    <DictationExercise 
+                        title="Crear 1"
+                        description="Ejercicio de creación de frases."
+                        customInstructions="INVENTA TRES FRASES NEGATIVAS CON TO BE- DO Y DOES."
+                        onComplete={() => handleTopicComplete('crear-1')} 
+                        studentDocRef={studentDocRef}
+                        initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.crear1}
+                        initialGrades={studentProfile?.lessonProgress?.[progressStorageVersion]?.crear1Grades}
+                        savePath={`lessonProgress.${progressStorageVersion}.crear1`}
+                        savePathGrades={`lessonProgress.${progressStorageVersion}.crear1Grades`}
+                        isAdmin={isAdmin}
+                        lineCount={9}
+                    />
+                );
+            case 'ejercicio-2': return <PresentSimpleExercise exerciseData={class5Exercise2Data} onComplete={() => handleTopicComplete('ejercicio-2')} title="Ejercicio 2" showShortAnswers={false} vocabulary={{"pollo": "chicken", "familia": "family", "novia": "girlfriend", "durante": "during", "comprar": "buy", "pasta": "pasta", "esposa": "wife", "leche": "milk"}} />;
+            case 'ejercicio-3': return <SimpleTranslationExercise course="a1" exerciseKey="c5_mixed3_updated" onComplete={() => handleTopicComplete('ejercicio-3')} title="Ejercicio 3" vocabulary={{"parientes": "relatives", "abuelos": "grandparents", "hijo": "son", "esposa": "wife", "compañeros": "coworkers"}} />;
             case 'ejercicio-vocabulario': return <Class5VocabExercise onComplete={() => handleTopicComplete('ejercicio-vocabulario')} />;
-            case 'ejercicio-4': return <SimpleTranslationExercise course="a1" exerciseKey="c5_mixed4" onComplete={() => handleTopicComplete('ejercicio-4')} title="Ejercicio 4" />;
             default: return <div className="flex justify-center items-center h-48"><Loader2 className="animate-spin h-10 w-10 text-primary" /></div>;
         }
     };

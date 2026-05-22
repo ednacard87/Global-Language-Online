@@ -49,7 +49,7 @@ const exercises = {
         title: 'a1class1.exercise',
         prompts: [
             { spanish: 'ELLOS SON MIS ESTUDIANTES', english: ['they are my students', "they're my students"] },
-            { spanish: '¿ELLOS SON SUS AMIGOS? (de ella)', english: ['are they her friends?'] },
+            { spanish: '¿ELLOS SON SUS APODOS? (de ella)', english: ['are they her nicknames?'] },
             { spanish: '¿ELLA ES SU MAMÁ? – (DE EL)', english: ['is she his mother?', 'is she his mom?'] },
             { spanish: 'ELLOS SON NUESTROS PADRES', english: ['they are our parents', "they're our parents"] },
             { spanish: '¿ELLOS SON VIEJOS (OLD)?', english: ['are they old?'] },
@@ -62,6 +62,24 @@ const exercises = {
             { spanish: 'ELLOS NO ESTAN ENOJADOS (ANGRY)', english: ['they are not angry', "they aren't angry"] },
             { spanish: 'ELLA ES MUY (SO) ALTA (TALL)', english: ['she is so tall', "she's so tall"] },
             { spanish: 'NOSOTROS ESTAMOS PREOCUPADOS (WORRIED)', english: ['we are worried', "we're worried"] },
+        ]
+    },
+    c5_mixed3_updated: {
+        title: 'a1class1.exercise',
+        prompts: [
+            { spanish: '¿ELLOS SON SUS PARIENTES? (RELATIVES) (DE ELLA)', english: ["are they her relatives?"] },
+            { spanish: 'ESTA (THIS) NO ES MI CASA', english: ["this is not my house", "this isn't my house"] },
+            { spanish: 'EL GATO ESTA EN SU CASA PEQUEÑA', english: ["the cat is in its small house"] },
+            { spanish: '¿ESTE ES TU CARRO?', english: ["is this your car?"] },
+            { spanish: '¿ERES SU TÍO (UNCLE)? (DE EL)', english: ["are you his uncle?"] },
+            { spanish: 'ELLOS NO SON NUESTROS ABUELOS (GRANDPARENTS)', english: ["they are not our grandparents", "they aren't our grandparents"] },
+            { spanish: '¿DÓNDE ESTAN TUS PADRES?', english: ["where are your parents?"] },
+            { spanish: '¿ESTAS CON WILLIAM?', english: ["are you with william?"] },
+            { spanish: 'ELLOS NO SON NUESTROS HERMANOS', english: ["they are not our brothers", "they aren't our brothers"] },
+            { spanish: 'YO ESTOY CON (WITH) MI HERMANA', english: ["i am with my sister", "i'm with my sister"] },
+            { spanish: '¿QUIENES SON ELLOS?', english: ["who are they?"] },
+            { spanish: 'ELLA NO ESTA CANSADA', english: ["she is not tired", "she isn't tired"] },
+            { spanish: 'ESTOS (THESE) NO SON NUESTROS CARROS', english: ["these are not our cars", "these aren't our cars"] }
         ]
     },
     mixed4: {
@@ -856,7 +874,7 @@ export function SimpleTranslationExercise({
 
     const imageToShow = course === 'a1' || course === 'b1' ? a1MascotImage : guideFishImage;
 
-    const exerciseNumber = useMemo(() => exerciseKey.replace(/mixed|c\d+_ex|c\d+_the|c\d+_last|c\d+_general|custom_ex_/g, ''), [exerciseKey]);
+    const exerciseNumber = useMemo(() => exerciseKey.replace(/mixed|c\d+_ex|c\d+_the|c\d+_last|c\d+_general|custom_ex_|updated/g, ''), [exerciseKey]);
     
     const exerciseData = useMemo(() => {
         if (exercises[exerciseKey as ExerciseKey]) {
@@ -1062,3 +1080,4 @@ export function SimpleTranslationExercise({
         </Card>
     );
 }
+
