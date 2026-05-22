@@ -170,19 +170,35 @@ const interrogativeExercisesData = [
 ];
 const class2Exercise1Data = [
     {
-        spanish: "yo camino en el parque el sabado",
+        spanish: "yo camino en el parque el domingo",
         answers: {
-            affirmative: ["i walk in the park on saturday"],
-            negative: ["i do not walk in the park on saturday", "i don't walk in the park on saturday"],
-            interrogative: ["do i walk in the park on saturday?"],
+            affirmative: ["i walk in the park on sunday"],
+            negative: ["i do not walk in the park on sunday", "i don't walk in the park on sunday"],
+            interrogative: ["do i walk in the park on sunday?"],
         }
     },
     {
-        spanish: "nosotros caminamos en la universidad los domingos",
+        spanish: "tu juegas tenis el lunes",
         answers: {
-            affirmative: ["we walk at the university on sundays"],
-            negative: ["we do not walk at the university on sundays", "we don't walk at the university on sundays"],
-            interrogative: ["do we walk at the university on sundays?"],
+            affirmative: ["you play tennis on monday"],
+            negative: ["you do not play tennis on monday", "you don't play tennis on monday"],
+            interrogative: ["do you play tennis on monday?"],
+        }
+    },
+    {
+        spanish: "ellos van a la universidad el sabado",
+        answers: {
+            affirmative: ["they go to the university on saturday"],
+            negative: ["they do not go to the university on saturday", "they don't go to the university on saturday"],
+            interrogative: ["do they go to the university on saturday?"],
+        }
+    },
+    {
+        spanish: "nosotros trabajamos el fin de semana",
+        answers: {
+            affirmative: ["we work on the weekend", "we work on weekend"],
+            negative: ["we do not work on the weekend", "we don't work on the weekend", "we do not work on weekend", "we don't work on weekend"],
+            interrogative: ["do we work on the weekend?", "do we work on weekend?"],
         }
     }
 ];
@@ -209,6 +225,30 @@ const class2Exercise2Data = [
             affirmative: ["they drink beer"],
             negative: ["they do not drink beer", "they don't drink beer"],
             interrogative: ["do they drink beer?"],
+        }
+    },
+    {
+        spanish: "ellos van a la iglesia el domingo",
+        answers: {
+            affirmative: ["they go to church on sunday"],
+            negative: ["they do not go to church on sunday", "they don't go to church on sunday"],
+            interrogative: ["do they go to church on sunday?"],
+        }
+    },
+    {
+        spanish: "nosotros jugamos futbol el sabado",
+        answers: {
+            affirmative: ["we play soccer on saturday", "we play football on saturday"],
+            negative: ["we do not play soccer on saturday", "we don't play soccer on saturday", "we do not play football on saturday", "we don't play football on saturday"],
+            interrogative: ["do we play soccer on saturday?", "do we play football on saturday?"],
+        }
+    },
+    {
+        spanish: "yo veo peliculas los viernes en la noche",
+        answers: {
+            affirmative: ["i watch movies on friday nights", "i watch movies on fridays at night"],
+            negative: ["i do not watch movies on friday nights", "i don't watch movies on friday nights", "i do not watch movies on fridays at night", "i don't watch movies on fridays at night"],
+            interrogative: ["do i watch movies on friday nights?", "do i watch movies on fridays at night?"],
         }
     }
 ];
@@ -391,9 +431,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             if (item.subItems) {
                 if (!statusesToSave.subItems) statusesToSave.subItems = {};
                 statusesToSave.subItems[item.key] = {};
-                item.subItems.forEach(sub => {
-                    statusesToSave.subItems[item.key][sub.key] = sub.status;
-                });
+                item.subItems.forEach(sub => { data.subItems[item.key][sub.key] = sub.status; });
             }
         });
 
@@ -803,7 +841,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
 //                 CLASS 2 COMPONENT
 // =================================================================
 const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isProfileLoading, isUserLoading }: ClassContentProps) => {
-    const progressStorageVersion = 'progress_a1_eng_u1_c2_v89_stable';
+    const progressStorageVersion = 'progress_a1_eng_u1_c2_v92_stable';
     const mainProgressKey = 'progress_a1_eng_unit_1_class_2';
     
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
@@ -1146,7 +1184,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                                 <CardTitle>ESTRUCTURA</CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-4">
-                                <div className="p-6 bg-slate-100 dark:bg-slate-900/50 rounded-[2rem] border space-y-2 font-mono text-lg">
+                                <div className="p-6 bg-slate-100 dark:bg-slate-800/50 rounded-[2rem] border space-y-2 font-mono text-lg">
                                     <p><span className="font-bold text-green-500 mr-2">(+)</span> = Afirmativa</p>
                                     <p><span className="font-bold text-red-500 mr-2">(-)</span> = Negativa</p>
                                     <p><span className="font-bold text-blue-500 mr-2">(?)</span> = interrogativa ?</p>
@@ -1163,7 +1201,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                                 <CardTitle>ESTRUCTURA DO/DOES</CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-4">
-                                <div className="p-6 bg-slate-100 dark:bg-slate-900/50 rounded-[2rem] border space-y-3 font-mono text-base">
+                                <div className="p-6 bg-slate-100 dark:bg-slate-800/50 rounded-[2rem] border space-y-3 font-mono text-base">
                                     <p><span className="font-bold text-green-500 mr-2">(+)</span> pronoun + verb + Complement</p>
                                     <p><span className="font-bold text-red-500 mr-2">(-)</span> pronoun + Do/Does + Not +verb + Complement</p>
                                     <p><span className="font-bold text-blue-500 mr-2">(?)</span> Do/Does + pronoun + verb + Complement ?</p>
@@ -1180,9 +1218,22 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                                 <CardTitle>Conjugaciones</CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <div className="p-6 bg-slate-100 dark:bg-slate-900/50 rounded-[2rem] border space-y-2 font-mono text-lg text-center">
+                                <div className="p-6 bg-slate-100 dark:bg-slate-800/50 rounded-[2rem] border space-y-2 font-mono text-lg text-center">
                                     <p className="font-black text-primary">DO = I - YOU - WE - THEY</p>
                                     <p className="font-black text-brand-purple">DOES = HE - SHE - IT</p>
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground">
+                            <CardHeader>
+                                <CardTitle>NEGATIVE CONTRACCIONES</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="p-6 bg-slate-100 dark:bg-slate-800/50 rounded-[2rem] border space-y-2 font-mono text-lg text-center">
+                                    <p className="font-bold">DO / DOES:</p>
+                                    <p className="font-black text-red-500">DO NOT = DON’T</p>
+                                    <p className="font-black text-red-500">DOES NOT = DOESN’T</p>
                                 </div>
                             </CardContent>
                             <CardFooter className="justify-center border-t pt-6">
@@ -1198,8 +1249,8 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             case 'ex-positive': return <SingleFormExercise key={selectedTopic} onComplete={() => handleTopicComplete('ex-positive')} exerciseData={positiveExercisesData} title="Positive Form" description="Translate the sentence to its affirmative form." formType="affirmative" />;
             case 'ex-negative': return <SingleFormExercise key={selectedTopic} onComplete={() => handleTopicComplete('ex-negative')} exerciseData={negativeExercisesData} title="Negative Form" description="Translate the sentence to its negative form." formType="negative" />;
             case 'ex-interrogative': return <SingleFormExercise key={selectedTopic} onComplete={() => handleTopicComplete('ex-interrogative')} exerciseData={interrogativeExercisesData} title="Interrogative Form" description="Translate the sentence to its interrogative form." formType="interrogative" />;
-            case 'ex-mixed-1-1': return <PresentSimpleExercise key={selectedTopic} onComplete={() => handleTopicComplete('ex-mixed-1-1')} exerciseData={class2Exercise1Data} title="Mixed Exercises 1" showShortAnswers={false} vocabulary={{"caminar": "walk", "parque": "park", "universidad": "university", "sabado": "saturday", "domingos": "sundays"}} />;
-            case 'ex-mixed-1-2': return <PresentSimpleExercise key={selectedTopic} onComplete={() => handleTopicComplete('ex-mixed-1-2')} exerciseData={class2Exercise2Data} title="Mixed Exercises 2" showShortAnswers={false} vocabulary={{"dormir": "sleep", "tarde": "afternoon", "carne": "meat", "ensalada": "salad", "beber": "drink", "cerveza": "beer"}} />;
+            case 'ex-mixed-1-1': return <PresentSimpleExercise key={selectedTopic} onComplete={() => handleTopicComplete('ex-mixed-1-1')} exerciseData={class2Exercise1Data} title="Exercise 1" showShortAnswers={false} vocabulary={{"camino": "walk", "parque": "park", "domingo": "sunday", "juegas": "play", "tenis": "tennis", "lunes": "monday", "universidad": "university", "sabado": "saturday", "trabajamos": "work", "fin de semana": "weekend"}} highlightVocabulary={true} />;
+            case 'ex-mixed-1-2': return <PresentSimpleExercise key={selectedTopic} onComplete={() => handleTopicComplete('ex-mixed-1-2')} exerciseData={class2Exercise2Data} title="Exercise 2" showShortAnswers={false} vocabulary={{"duermes": "sleep", "tarde": "afternoon", "comemos": "eat", "carne": "meat", "ensalada": "salad", "beben": "drink", "cerveza": "beer", "iglesia": "church", "domingo": "sunday", "jugamos": "play", "futbol": "soccer/football", "veo": "watch", "peliculas": "movies", "viernes": "friday", "noche": "night"}} highlightVocabulary={true} />;
             case 'ex-mixed-1-3': return <PresentSimpleExercise key={selectedTopic} onComplete={() => handleTopicComplete('ex-mixed-1-3')} exerciseData={class2Exercise3Data} title="Mixed Exercises 3" showShortAnswers={false} vocabulary={{"tarea": "homework", "ejercicio": "exercise"}} />;
             case 'reading': return <ReadingComprehensionExercise key={selectedTopic} onComplete={() => handleTopicComplete('reading')} />;
             default: return <div className="flex justify-center items-center h-48"><Loader2 className="animate-spin h-10 w-10 text-primary" /></div>;
