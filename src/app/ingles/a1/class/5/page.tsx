@@ -404,7 +404,14 @@ export default function EngA1Class5Page() {
         Object.keys(vocabularyData).forEach(cat => {
             newVal[cat] = (vocabularyData as any)[cat].map((item: any, idx: number) => {
                 const userVal = (vocabAnswers[cat][idx] || '').trim().toUpperCase();
-                const isCorrect = userVal === item.english.toUpperCase();
+                const correctVal = item.english.toUpperCase();
+                
+                // Verificamos si es correcto el término base o con "TO " en la categoría de verbos
+                let isCorrect = userVal === correctVal;
+                if (cat === 'verbos' && !isCorrect) {
+                    isCorrect = userVal === `TO ${correctVal}`;
+                }
+                
                 if (isCorrect) oneCorrect = true;
                 return isCorrect ? 'correct' : 'incorrect';
             });
