@@ -40,7 +40,13 @@ import { LargeTextTranslationExercise, type DialogueLine } from '@/components/ki
 
 // --- CONSTANTS & DATA ---
 
-const progressStorageKey = 'progress_a1_eng_u1_c3_v90_stable';
+const ICONS_CONFIG = {
+    locked: Lock,
+    active: BookOpen,
+    completed: CheckCircle,
+};
+
+const progressStorageKey = 'progress_a1_eng_u1_c3_v95_stable';
 const mainProgressKey = 'progress_a1_eng_unit_1_class_3';
 
 const vocab2Data = [
@@ -93,7 +99,7 @@ const shortAnswerEx3Data: ShortAnswerPresentSimplePrompt[] = [
     { question: "DOES SHE TEACH MATH?", answers: { shortAffirmative: ["yes, she does"], shortNegative: ["no, she does not", "no, she doesn't"] } },
 ];
 
-const largeTextEx4Dialogue: DialogueLine[] = [
+const class3LargeTextEx4Dialogue: DialogueLine[] = [
     { speaker: "MARY", line: "¿VIVES EN BARCELONA?", answer: ["do you live in barcelona?"] },
     { speaker: "JON", line: "NO, NO VIVO EN BARCELONA. VIVO EN MADRID, PERO MI HERMANA VIVE ALLÍ.", answer: ["no, i do not live in barcelona. i live in madrid, but my sister lives there", "no, i don't live in barcelona. i live in madrid, but my sister lives there"] },
     { speaker: "MARY", line: "¿Y LE GUSTA?", answer: ["and does she like it?"] },
@@ -186,7 +192,7 @@ const LinesWritingExercise = ({
                                 <div className="grid grid-cols-2 gap-2 text-sm">
                                     {Object.entries(vocabulary).map(([es, en]) => (
                                         <React.Fragment key={es}>
-                                            <span className="text-muted-foreground">{es}:</span>
+                                            <span className="text-muted-foreground capitalize">{es}:</span>
                                             <span className="font-bold text-right">{en as string}</span>
                                         </React.Fragment>
                                     ))}
@@ -466,7 +472,7 @@ export default function EngA1Class3Page() {
                             curT.subItems[nextSubIdx].status = 'active'; nextToSel = curT.subItems[nextSubIdx].key; win = true;
                         } else if (curT.subItems.every((sub: any) => sub.status === 'completed')) {
                             if (curT.status !== 'completed') curT.status = 'completed';
-                            if (i + 1 < newPath.length && newP[i + 1].status === 'locked') {
+                            if (i + 1 < newP.length && newP[i + 1].status === 'locked') {
                                 const nextM = newP[i + 1]; nextM.status = 'active'; win = true; nextToSel = nextM.subItems?.[0]?.key || nextM.key;
                                 if (nextM.subItems?.[0]) nextM.subItems[0].status = 'active';
                             }
