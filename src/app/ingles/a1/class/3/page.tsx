@@ -6,7 +6,23 @@ import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, ChevronDown, Loader2, ArrowRight, BookText, Check, X, HelpCircle, Info } from 'lucide-react';
+import { 
+    BookOpen, 
+    PenSquare, 
+    Lock, 
+    GraduationCap, 
+    CheckCircle, 
+    ChevronDown, 
+    Loader2, 
+    ArrowRight, 
+    BookText, 
+    Check, 
+    X, 
+    HelpCircle, 
+    Info, 
+    BrainCircuit 
+} from 'lucide-react';
+import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
 import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
@@ -22,24 +38,10 @@ import { QAShortAnswerExercise, type QAShortAnswerPrompt } from '@/components/ki
 import { ShortAnswerPresentSimpleExercise, type ShortAnswerPresentSimplePrompt } from '@/components/kids/exercises/short-answer-present-simple';
 import { LargeTextTranslationExercise, type DialogueLine } from '@/components/kids/exercises/large-text-translation-exercise';
 
-type Topic = {
-  key: string;
-  name: string;
-  icon: React.ElementType;
-  status: 'locked' | 'active' | 'completed';
-  subItems?: { key: string; name: string; status: 'locked' | 'active' | 'completed', icon?: React.ElementType }[];
-};
+// --- CONSTANTS & DATA ---
 
-const ICONS_CONFIG = {
-    locked: Lock,
-    active: BookOpen,
-    completed: CheckCircle,
-};
-
-const progressStorageVersion = 'progress_a1_eng_u1_c3_v86_stable';
+const progressStorageKey = 'progress_a1_eng_u1_c3_v90_stable';
 const mainProgressKey = 'progress_a1_eng_unit_1_class_3';
-
-// --- DATA ---
 
 const vocab2Data = [
     { es: "AYER", en: "yesterday" },
@@ -56,7 +58,7 @@ const vocab2Data = [
     { es: "SIN", en: "without" },
 ];
 
-const class3MixedExercise1Data: ExercisePrompt[] = [
+const mixedExercise1Data: ExercisePrompt[] = [
     { spanish: "EL BEBE VINO TINTO", answers: { affirmative: ["he drinks red wine"], negative: ["he does not drink red wine", "he doesn't drink red wine"], interrogative: ["does he drink red wine?"] } },
     { spanish: "ELLA JUEGA TENNIS CON SU HERMANO", answers: { affirmative: ["she plays tennis with her brother"], negative: ["she does not play tennis with her brother", "she doesn't play tennis with her brother"], interrogative: ["does she play tennis with her brother?"] } },
     { spanish: "YO MONTO BICICLETA LOS DOMINGOS", answers: { affirmative: ["i ride a bike on sundays", "i ride a bicycle on sundays"], negative: ["i do not ride a bike on sundays", "i don't ride a bike on sundays"], interrogative: ["do i ride a bike on sundays?"] } },
@@ -69,7 +71,7 @@ const class3MixedExercise1Data: ExercisePrompt[] = [
     { spanish: "QUEREMOS UN PASTEL DE PIÑA", answers: { affirmative: ["we want a pineapple cake"], negative: ["we do not want a pineapple cake", "we don't want a pineapple cake"], interrogative: ["do we want a pineapple cake?"] } },
 ];
 
-const class3QAShortAnswerExerciseData: QAShortAnswerPrompt[] = [
+const mixedExercise2Sub2Data: QAShortAnswerPrompt[] = [
     { spanish: '¿TU HABLAS INGLES?', answers: { interrogative: ["do you speak english?"], shortAffirmative: ["yes, i do"], shortNegative: ["no, i do not", "no, i don't"] } },
     { spanish: '¿ELLA COME HAMBURGUESA?', answers: { interrogative: ["does she eat a hamburger?", "does she eat hamburgers?"], shortAffirmative: ["yes, she does"], shortNegative: ["no, she does not", "no, she doesn't"] } },
     { spanish: '¿QUIERES UN HELADO?', answers: { interrogative: ["do you want an ice cream?"], shortAffirmative: ["yes, i do"], shortNegative: ["no, i do not", "no, i don't"] } },
@@ -78,7 +80,7 @@ const class3QAShortAnswerExerciseData: QAShortAnswerPrompt[] = [
     { spanish: '¿ELLOS NECESITAN UN LIBRO?', answers: { interrogative: ["do they need a book?"], shortAffirmative: ["yes, they do"], shortNegative: ["no, they do not", "no, they don't"] } },
 ];
 
-const class3ShortAnswerEx3Data: ShortAnswerPresentSimplePrompt[] = [
+const shortAnswerEx3Data: ShortAnswerPresentSimplePrompt[] = [
     { question: "DO THEY LIKE CHOCOLATE?", answers: { shortAffirmative: ["yes, they do"], shortNegative: ["no, they do not", "no, they don't"] } },
     { question: "DOES SHE SPEAK ITALIAN?", answers: { shortAffirmative: ["yes, she does"], shortNegative: ["no, she does not", "no, she doesn't"] } },
     { question: "DO YOU EAT SALAD EVERY DAY?", answers: { shortAffirmative: ["yes, i do"], shortNegative: ["no, i do not", "no, i don't"] } },
@@ -91,11 +93,11 @@ const class3ShortAnswerEx3Data: ShortAnswerPresentSimplePrompt[] = [
     { question: "DOES SHE TEACH MATH?", answers: { shortAffirmative: ["yes, she does"], shortNegative: ["no, she does not", "no, she doesn't"] } },
 ];
 
-const class3LargeTextEx4Dialogue: DialogueLine[] = [
+const largeTextEx4Dialogue: DialogueLine[] = [
     { speaker: "MARY", line: "¿VIVES EN BARCELONA?", answer: ["do you live in barcelona?"] },
     { speaker: "JON", line: "NO, NO VIVO EN BARCELONA. VIVO EN MADRID, PERO MI HERMANA VIVE ALLÍ.", answer: ["no, i do not live in barcelona. i live in madrid, but my sister lives there", "no, i don't live in barcelona. i live in madrid, but my sister lives there"] },
     { speaker: "MARY", line: "¿Y LE GUSTA?", answer: ["and does she like it?"] },
-    { speaker: "JON", line: "SÍ, LE ENCANTA BARCELONA. ELLA TRABAJA EN UN BANCO POR LAS MAÑANAS. POR LAS TARDES, ELLA JUEGA AL TENIS CON SU NOVIO O ELLA MIRA LA TV EN CASA. POR LAS NOCHES, ELLA VA A LA PLAYA O ELLA HACE SU TAREA DE INGLÉS. ESTUDIA INGLÉS LOS SÁBADOS.", answer: ["yes, she loves barcelona. she works in a bank in the mornings. in the afternoons, she plays tennis with her boyfriend or she watches tv at home. in the evenings, she goes to the beach or she does her english homework. she studies english on saturdays", "yes, she loves barcelona. she works in a bank in the mornings. in the afternoons, she plays tennis with her boyfriend or she watches television at home. in the evenings, she goes to the beach or she does her english homework. she studies english on saturdays"] },
+    { speaker: "JON", line: "SÍ, LE ENCANTA BARCELONA. ELLA TRABAJA EN UN BANCO POR LAS MAÑANAS. POR LAS TARDES, ELLA JUEGA AL TENIS CON SU NOVIO O ELLA MIRA LA TV EN CASA. POR LAS NOCHES, ELLA VA A LA PLAYA O ELLA HACE SU TAREA DE INGLÉS. ESTUDIA INGLÉS LOS SÁBADOS.", answer: ["yes, she loves barcelona. she works in a bank in the mornings. in the afternoons, she plays tennis with her boyfriend or she watches tv at home. in the evenings, she goes to the beach or she does her english homework. she studies english on saturdays"] },
     { speaker: "MARY", line: "¿ELLA TE VISITA EN MADRID?", answer: ["does she visit you in madrid?"] },
     { speaker: "JON", line: "ELLA NO VIENE A MADRID MUY A MENUDO. YO LA VISITO EN BARCELONA.", answer: ["she does not come to madrid very often. i visit her in barcelona", "she doesn't come to madrid very often. i visit her in barcelona"] },
 ];
@@ -201,8 +203,8 @@ const LinesWritingExercise = ({
                         return (
                             <div key={idx} className="space-y-2 group">
                                 <div className="flex items-center justify-between gap-4">
-                                    <Label className="text-sm font-bold text-muted-foreground uppercase tracking-tight flex items-center gap-2">
-                                        <span className="h-6 w-6 rounded-full bg-primary/20 text-primary flex items-center justify-center text-xs">{idx + 1}</span>
+                                    <Label className="text-sm font-bold text-muted-foreground uppercase tracking-tight flex items-center gap-2 text-left">
+                                        <span className="h-6 w-6 rounded-full bg-primary/20 text-primary flex items-center justify-center text-xs shrink-0">{idx + 1}</span>
                                         {prompt}
                                     </Label>
                                     <div className="flex items-center gap-1 shrink-0">
@@ -234,7 +236,6 @@ const Can2ManualGradingExercise = ({
     savePathGrades,
     isAdmin 
 }: any) => {
-    const { toast } = useToast();
     const [currentIndex, setCurrentIndex] = useState(0);
     const [userAnswers, setUserAnswers] = useState<Record<number, Record<string, string>>>(initialData || {});
     const [grades, setGrades] = useState<Record<number, Record<string, 'correct' | 'incorrect' | null>>>(initialGrades || {});
@@ -311,7 +312,7 @@ const Can2ManualGradingExercise = ({
     );
 };
 
-// --- MAIN PAGE ---
+// --- MAIN PAGE COMPONENT ---
 
 export default function EngA1Class3Page() {
     const { t } = useTranslation();
@@ -437,7 +438,8 @@ export default function EngA1Class3Page() {
                 item.subItems.forEach(sub => { data.subItems[item.key][sub.key] = sub.status; });
             }
         });
-        updateDocumentNonBlocking(studentDocRef, { [`lessonProgress.${progressStorageVersion}`]: data, [`progress.${mainProgressKey}`]: Math.round(progressValue) });
+        updateDocumentNonBlocking(studentDocRef, { [`lessonProgress.${progressStorageKey}`]: data, [`progress.${mainProgressKey}`]: Math.round(progressValue) });
+        if (progressValue >= 100) window.dispatchEvent(new CustomEvent('progressUpdated'));
     }, [learningPath, isAdmin, progressValue, studentDocRef, initialLoadComplete, selectedTopic, isInitialLoading, studentProfile]);
 
     useEffect(() => {
@@ -464,7 +466,7 @@ export default function EngA1Class3Page() {
                             curT.subItems[nextSubIdx].status = 'active'; nextToSel = curT.subItems[nextSubIdx].key; win = true;
                         } else if (curT.subItems.every((sub: any) => sub.status === 'completed')) {
                             if (curT.status !== 'completed') curT.status = 'completed';
-                            if (i + 1 < newP.length && newP[i + 1].status === 'locked') {
+                            if (i + 1 < newPath.length && newP[i + 1].status === 'locked') {
                                 const nextM = newP[i + 1]; nextM.status = 'active'; win = true; nextToSel = nextM.subItems?.[0]?.key || nextM.key;
                                 if (nextM.subItems?.[0]) nextM.subItems[0].status = 'active';
                             }
@@ -501,17 +503,17 @@ export default function EngA1Class3Page() {
     const renderContent = () => {
         if (isInitialLoading) return <div className="flex justify-center items-center min-h-[400px]"><Loader2 className="h-12 w-12 animate-spin text-primary" /></div>;
         switch (selectedTopic) {
-            case 'grammar2': return <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm p-6 text-left"><CardTitle className="text-2xl font-black text-primary uppercase">3rd Person Singular (he, she, it)</CardTitle><CardContent className="space-y-4 pt-4"><div className="p-6 bg-slate-100 rounded-[2rem] border"><h3 className="font-bold text-primary mb-3">Regla General</h3><p className="font-mono">Add <span className="text-primary font-bold">"s"</span>: She works / He eats</p></div><div className="p-6 bg-slate-100 rounded-[2rem] border"><h3 className="font-bold text-primary mb-3">Endings -o, -sh, -ch, -ss, -x, -z</h3><p className="font-mono">Add <span className="text-primary font-bold">"es"</span>: He goes / She wishes</p></div><div className="p-6 bg-destructive/5 rounded-[2rem] border-2 border-dashed border-destructive/20 text-center"><p className="font-bold text-destructive">Only for affirmative sentences (+).</p></div></CardContent><CardFooter className="justify-center"><Button onClick={() => handleTopicComplete('grammar2')} size="lg" className="px-12 font-bold">Entendido <ArrowRight className="ml-2" /></Button></CardFooter></Card>;
-            case 'mixedExercises1': return <PresentSimpleExercise exerciseData={class3MixedExercise1Data} onComplete={() => handleTopicComplete('mixedExercises1')} title="Mixed Exercises 1" showShortAnswers={false} vocabulary={{ "vino tinto": "red wine", "hermano": "brother", "bicicleta": "bike / bicycle", "novio": "boyfriend", "hospital": "hospital", "pastel": "cake", "piña": "pineapple" }} />;
-            case 'presentSimpleUses': return <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm p-6 text-left"><CardTitle className="text-2xl font-black text-primary uppercase">Usos del Presente Simple</CardTitle><CardContent className="space-y-4 pt-4"><div className="p-6 bg-slate-100 rounded-[2rem] border"><h4>Habits & Routines</h4><p className="font-mono text-primary font-bold">I play soccer on Saturdays.</p></div></CardContent><CardFooter className="justify-center"><Button onClick={() => handleTopicComplete('presentSimpleUses')} size="lg" className="px-12 font-bold">Continuar</Button></CardFooter></Card>;
+            case 'grammar2': return <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm p-6 text-left text-foreground"><CardTitle className="text-2xl font-black text-primary uppercase tracking-tight">3rd Person Singular (he, she, it)</CardTitle><CardContent className="space-y-4 pt-4"><div className="p-6 bg-slate-100 rounded-[2rem] border border-border/50"><h3 className="font-bold text-primary mb-3">Regla General</h3><p className="font-mono text-base">Add <span className="text-primary font-bold">"s"</span>: She works / He eats</p></div><div className="p-6 bg-slate-100 rounded-[2rem] border border-border/50"><h3 className="font-bold text-primary mb-3">Endings -o, -sh, -ch, -ss, -x, -z</h3><p className="font-mono text-base">Add <span className="text-primary font-bold">"es"</span>: He goes / She wishes</p></div><div className="p-6 bg-destructive/5 rounded-[2rem] border-2 border-dashed border-destructive/20 text-center"><p className="font-bold text-destructive text-lg">Only for affirmative sentences (+).</p></div></CardContent><CardFooter className="justify-center"><Button onClick={() => handleTopicComplete('grammar2')} size="lg" className="px-12 font-bold">Entendido <ArrowRight className="ml-2" /></Button></CardFooter></Card>;
+            case 'mixedExercises1': return <PresentSimpleExercise exerciseData={mixedExercise1Data} onComplete={() => handleTopicComplete('mixedExercises1')} title="Mixed Exercises 1" showShortAnswers={false} vocabulary={{ "vino tinto": "red wine", "hermano": "brother", "bicicleta": "bike / bicycle", "novio": "boyfriend", "hospital": "hospital", "pastel": "cake", "piña": "pineapple" }} />;
+            case 'presentSimpleUses': return <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm p-6 text-left text-foreground"><CardTitle className="text-2xl font-black text-primary uppercase tracking-tight">Usos del Presente Simple</CardTitle><CardContent className="space-y-4 pt-4"><div className="p-6 bg-slate-100 rounded-[2rem] border border-border/50"><h4>Habits & Routines</h4><p className="font-mono text-primary font-bold text-lg">I play soccer on Saturdays.</p></div></CardContent><CardFooter className="justify-center"><Button onClick={() => handleTopicComplete('presentSimpleUses')} size="lg" className="px-12 font-bold">Continuar</Button></CardFooter></Card>;
             case 'ex2_1': return <SimpleTranslationExercise course="a1" exerciseKey="c2_mixed1" onComplete={() => handleTopicComplete('ex2_1')} title="Ejercicio 1" vocabulary={{ "bebe": "drinks", "cerveza": "beer", "escuela": "school", "tio": "uncle", "dos veces": "twice", "tarde": "afternoon" }} highlightVocabulary={true} />;
-            case 'ex2_2': return <QAShortAnswerExercise exerciseData={class3QAShortAnswerExerciseData} onComplete={() => handleTopicComplete('ex2_2')} title="Ejercicio 2" description="Traduce y responde." vocabulary={{ "hablar": "speak", "hamburguesa": "hamburger", "helado": "ice cream", "trabajar": "work", "aqui": "here" }} />;
-            case 'vocabulary2': return <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm p-6 text-left"><CardTitle>Vocabulary 2</CardTitle><CardContent><div className="grid grid-cols-2 gap-4 mt-4"><div className="font-bold bg-muted p-2 rounded">Español</div><div className="font-bold bg-muted p-2 rounded">Inglés</div>{vocab2Data.map((v, i) => (<React.Fragment key={i}><div className="p-2 border rounded bg-card">{v.es}</div><Input value={vocab2Answers[i] || ''} onChange={e => { const n = [...vocab2Answers]; n[i] = e.target.value; setVocab2Answers(n); setCanAdvanceVocab2(false); }} className={cn(vocab2Validation[i] === 'correct' ? 'border-green-500 bg-green-50' : vocab2Validation[i] === 'incorrect' ? 'border-destructive bg-destructive/5' : '')} /></React.Fragment>))}</div></CardContent><CardFooter className="justify-between mt-4"><Button onClick={handleVocab2Check}>Verificar</Button><Button onClick={() => handleTopicComplete('vocabulary2')} disabled={!canAdvanceVocab2 && !isAdmin}>Avanzar</Button></CardFooter></Card>;
-            case 'ex3_3': return <ShortAnswerPresentSimpleExercise exerciseData={class3ShortAnswerEx3Data} onComplete={() => handleTopicComplete('ex3_3')} title="Ejercicio 3" description="Responde cortamente." />;
+            case 'ex2_2': return <QAShortAnswerExercise exerciseData={mixedExercise2Sub2Data} onComplete={() => handleTopicComplete('ex2_2')} title="Ejercicio 2" description="Traduce y responde." vocabulary={{ "hablar": "speak", "hamburguesa": "hamburger", "helado": "ice cream", "trabajar": "work", "aqui": "here" }} />;
+            case 'vocabulary2': return <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm p-6 text-left text-foreground"><CardTitle>Vocabulary 2</CardTitle><CardContent><div className="grid grid-cols-2 gap-4 mt-4"><div className="font-bold bg-muted p-2 rounded">Español</div><div className="font-bold bg-muted p-2 rounded">Inglés</div>{vocab2Data.map((v, i) => (<React.Fragment key={i}><div className="p-2 border rounded bg-card">{v.es}</div><Input value={vocab2Answers[i] || ''} onChange={e => { const n = [...vocab2Answers]; n[i] = e.target.value; setVocab2Answers(n); setCanAdvanceVocab2(false); }} className={cn(vocab2Validation[i] === 'correct' ? 'border-green-500 bg-green-50' : vocab2Validation[i] === 'incorrect' ? 'border-destructive bg-destructive/5' : '')} /></React.Fragment>))}</div></CardContent><CardFooter className="justify-between mt-4"><Button onClick={handleVocab2Check}>Verificar</Button><Button onClick={() => handleTopicComplete('vocabulary2')} disabled={!canAdvanceVocab2 && !isAdmin}>Avanzar</Button></CardFooter></Card>;
+            case 'ex3_3': return <ShortAnswerPresentSimpleExercise exerciseData={shortAnswerEx3Data} onComplete={() => handleTopicComplete('ex3_3')} title="Ejercicio 3" description="Responde cortamente." />;
             case 'ex3_4': return <LargeTextTranslationExercise title="Ejercicio 4: Diálogo" dialogue={class3LargeTextEx4Dialogue} onComplete={() => handleTopicComplete('ex3_4')} vocabulary={{ "vives": "live", "allí": "there", "encanta": "loves", "banco": "bank", "mañanas": "mornings", "novio": "boyfriend", "tarea": "homework", "visita": "visit" }} />;
-            case 'can': return <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm p-6 text-left"><CardTitle className="text-2xl font-black text-primary uppercase">Modal Verb "CAN"</CardTitle><CardContent className="space-y-4 pt-4"><div className="p-6 bg-slate-100 rounded-[2rem] border"><p className="font-mono text-lg font-black text-primary">(+) pronoun + can + verb + complement</p><p className="font-mono text-lg font-black text-red-500">(-) pronoun + can + not + verb + complement</p><p className="font-mono text-lg font-black text-blue-500">(?) Can + pronoun + verb + complement ?</p></div></CardContent><CardFooter className="justify-center"><Button onClick={() => handleTopicComplete('can')} size="lg" className="px-12 font-bold">Entendido</Button></CardFooter></Card>;
-            case 'can1': return <LinesWritingExercise title="CAN 1" description="Traduce las siguientes frases de forma libre." prompts={can1Prompts} onComplete={() => handleTopicComplete('can1')} studentDocRef={studentDocRef} initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.canData} initialGrades={studentProfile?.lessonProgress?.[progressStorageVersion]?.canGrades} savePath={`lessonProgress.${progressStorageVersion}.canData`} savePathGrades={`lessonProgress.${progressStorageVersion}.canGrades`} isAdmin={isAdmin} vocabulary={{ "ventanas": "windows", "licor": "liquor", "enfermo": "sick", "finca": "farm", "platos": "dishes" }} />;
-            case 'can2': return <Can2ManualGradingExercise prompts={can2Prompts} onComplete={() => handleTopicComplete('can2')} vocabulary={{ "vacaciones": "vacations", "virtual": "virtual", "enseñar": "teach", "saber": "know", "enferma": "sick" }} studentDocRef={studentDocRef} initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.can2Data} initialGrades={studentProfile?.lessonProgress?.[progressStorageVersion]?.can2Grades} savePath={`lessonProgress.${progressStorageVersion}.can2Data`} savePathGrades={`lessonProgress.${progressStorageVersion}.can2Grades`} isAdmin={isAdmin} />;
+            case 'can': return <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm p-6 text-left text-foreground"><CardTitle className="text-2xl font-black text-primary uppercase tracking-tight">Modal Verb "CAN"</CardTitle><CardContent className="space-y-4 pt-4"><div className="p-6 bg-slate-100 rounded-[2rem] border border-border/50 text-base"><p className="font-mono text-lg font-black text-primary">(+) pronoun + can + verb + complement</p><p className="font-mono text-lg font-black text-red-500">(-) pronoun + can + not + verb + complement</p><p className="font-mono text-lg font-black text-blue-500">(?) Can + pronoun + verb + complement ?</p></div></CardContent><CardFooter className="justify-center"><Button onClick={() => handleTopicComplete('can')} size="lg" className="px-12 font-bold">Entendido</Button></CardFooter></Card>;
+            case 'can1': return <LinesWritingExercise title="CAN 1" description="Traduce las siguientes frases de forma libre." prompts={can1Prompts} onComplete={() => handleTopicComplete('can1')} studentDocRef={studentDocRef} initialData={studentProfile?.lessonProgress?.[progressStorageKey]?.canData} initialGrades={studentProfile?.lessonProgress?.[progressStorageKey]?.canGrades} savePath={`lessonProgress.${progressStorageKey}.canData`} savePathGrades={`lessonProgress.${progressStorageKey}.canGrades`} isAdmin={isAdmin} vocabulary={{ "ventanas": "windows", "licor": "liquor", "enfermo": "sick", "finca": "farm", "platos": "dishes" }} />;
+            case 'can2': return <Can2ManualGradingExercise prompts={can2Prompts} onComplete={() => handleTopicComplete('can2')} vocabulary={{ "vacaciones": "vacations", "virtual": "virtual", "enseñar": "teach", "saber": "know", "enferma": "sick" }} studentDocRef={studentDocRef} initialData={studentProfile?.lessonProgress?.[progressStorageKey]?.can2Data} initialGrades={studentProfile?.lessonProgress?.[progressStorageKey]?.can2Grades} savePath={`lessonProgress.${progressStorageKey}.can2Data`} savePathGrades={`lessonProgress.${progressStorageKey}.can2Grades`} isAdmin={isAdmin} />;
             default: return <div className="flex justify-center items-center h-48"><Loader2 className="animate-spin h-10 w-10 text-primary" /></div>;
         }
     };
@@ -536,14 +538,14 @@ export default function EngA1Class3Page() {
                                             return(
                                                 <li key={item.key}>
                                                 {!item.subItems ? (
-                                                    <div onClick={() => handleTopicSelect(item.key)} className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer', isL ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === item.key && 'bg-muted text-primary font-semibold')}>
+                                                    <div onClick={() => handleTopicSelect(item.key)} className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer text-foreground', isL ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === item.key && 'bg-muted text-primary font-semibold')}>
                                                         <div className="flex items-center gap-3"><Icon className={cn("h-5 w-5", item.status === 'completed' ? 'text-green-500' : '')} /><span>{item.name}</span></div>
                                                         {isL && <Lock className="h-4 w-4 text-yellow-500" />}
                                                     </div>
                                                 ) : (
                                                     <Collapsible defaultOpen={isS || item.subItems.some(si => si.status !== 'locked')}>
                                                         <CollapsibleTrigger className="w-full">
-                                                            <div className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors w-full cursor-pointer', isL ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', isS && 'bg-muted text-primary font-semibold')}>
+                                                            <div className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors w-full cursor-pointer text-foreground', isL ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', isS && 'bg-muted text-primary font-semibold')}>
                                                                 <div className="flex items-center gap-3"><Icon className={cn("h-5 w-5", item.status === 'completed' ? 'text-green-500' : '')} /><span>{item.name}</span></div>
                                                                 {isL ? <Lock className="h-4 w-4 text-yellow-500" /> : <ChevronDown className="h-4 w-4 transition-transform [&[data-state=open]]:rotate-180" />}
                                                             </div>
@@ -551,7 +553,7 @@ export default function EngA1Class3Page() {
                                                         <CollapsibleContent><ul className="pl-8 pt-1 space-y-1">{item.subItems.map((sub) => {
                                                             const isSubL = sub.status === 'locked' && !isAdmin;
                                                             const SubI = ICONS_CONFIG[sub.status as keyof typeof ICONS_CONFIG] || PenSquare;
-                                                            return (<li key={sub.key} onClick={() => handleTopicSelect(sub.key)} className={cn('flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer', isSubL ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === sub.key && 'bg-muted text-primary font-semibold')}><div className='flex items-center gap-3'><SubI className={cn("h-5 w-5", sub.status === 'completed' ? 'text-green-500' : '')} /><span>{sub.name}</span></div>{isSubL && <Lock className="h-4 w-4 text-yellow-500" />}</li>)
+                                                            return (<li key={sub.key} onClick={() => handleTopicSelect(sub.key)} className={cn('flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer text-foreground', isSubL ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === sub.key && 'bg-muted text-primary font-semibold')}><div className='flex items-center gap-3'><SubI className={cn("h-5 w-5", sub.status === 'completed' ? 'text-green-500' : '')} /><span>{sub.name}</span></div>{isSubL && <Lock className="h-4 w-4 text-yellow-500" />}</li>)
                                                         })}</ul></CollapsibleContent>
                                                     </Collapsible>
                                                 )}
