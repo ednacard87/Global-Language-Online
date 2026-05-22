@@ -1,11 +1,11 @@
 'use client';
 
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { BookOpen, PenSquare, Lock, Info, CheckCircle, Loader2, ArrowRight } from 'lucide-react';
+import { BookOpen, PenSquare, Lock, Info, CheckCircle, Loader2, ArrowRight, Mic, Check, X } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
@@ -14,6 +14,7 @@ import { doc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Input } from '@/components/ui/input';
+import { Separator } from '@/components/ui/separator';
 import { ErrorCorrectionExercise, type ErrorCorrectionPrompt } from '@/components/kids/exercises/error-correction-exercise';
 import { PresentSimpleExercise, type ExercisePrompt } from '@/components/kids/exercises/present-simple';
 import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
@@ -32,7 +33,7 @@ const ICONS_CONFIG = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_a1_eng_unit_1_class_5_v5_stable';
+const progressStorageVersion = 'progress_a1_eng_unit_1_class_5_v10_stable';
 const mainProgressKey = 'progress_a1_eng_unit_1_class_5';
 
 const vocabularyData = {
@@ -124,6 +125,120 @@ const class5Exercise2Data: ExercisePrompt[] = [
     }
 ];
 
+// --- Dictation Component ---
+const DictationExercise = ({ 
+    onComplete, 
+    studentDocRef, 
+    initialData, 
+    initialGrades,
+    savePath, 
+    savePathGrades,
+    isAdmin 
+}: any) => {
+    const lineCount = 21;
+    const [lines, setLines] = useState<string[]>(Array(lineCount).fill(''));
+    const [grades, setGrades] = useState<Record<number, 'correct' | 'incorrect' | null>>(initialGrades || {});
+    const initializedRef = useRef(false);
+
+    useEffect(() => {
+        if (!initializedRef.current && initialData && Array.isArray(initialData)) {
+            const newLines = [...Array(lineCount).fill('')];
+            initialData.forEach((val, i) => { if (i < lineCount) newLines[i] = val || ''; });
+            setLines(newLines);
+            if (initialData.length > 0) initializedRef.current = true;
+        }
+    }, [initialData]);
+
+    const handleLineChange = (index: number, value: string) => {
+        const newLines = [...lines];
+        newLines[index] = value;
+        setLines(newLines);
+        if (studentDocRef) updateDocumentNonBlocking(studentDocRef, { [savePath]: newLines });
+    };
+
+    const handleToggleGrade = (index: number, type: 'correct' | 'incorrect') => {
+        if (!isAdmin) return;
+        const newGrades = { ...grades };
+        newGrades[index] = newGrades[index] === type ? null : type;
+        setGrades(newGrades);
+        if (studentDocRef) updateDocumentNonBlocking(studentDocRef, { [savePathGrades]: newGrades });
+    };
+
+    return (
+        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
+            <CardHeader>
+                <div className="flex items-center gap-3">
+                    <div className="p-2 bg-primary/20 rounded-lg text-primary">
+                        <Mic className="h-6 w-6" />
+                    </div>
+                    <div>
+                        <CardTitle>DICTATION 1</CardTitle>
+                        <CardDescription>Escucha y escribe las frases dictadas por tu profesor.</CardDescription>
+                    </div>
+                </div>
+            </CardHeader>
+            <CardContent className="space-y-3">
+                <div className="grid grid-cols-1 gap-3">
+                    {lines.map((line, idx) => {
+                        const status = grades[idx];
+                        const isHeader = idx === 0;
+                        return (
+                            <div key={idx} className="flex items-center gap-3">
+                                <span className={cn("font-bold w-8 text-right", isHeader ? "text-primary" : "text-muted-foreground")}>
+                                    {idx + 1}.
+                                </span>
+                                <Input 
+                                    value={line} 
+                                    onChange={e => handleLineChange(idx, e.target.value)} 
+                                    className={cn(
+                                        "flex-1 text-lg h-10 transition-all",
+                                        isHeader && "font-bold border-primary/50",
+                                        status === 'correct' ? 'border-green-500 bg-green-50/5' : 
+                                        status === 'incorrect' ? 'border-red-500 bg-red-50/5' : ''
+                                    )} 
+                                    placeholder={isHeader ? "Escribe el título aquí..." : "Escribe la frase aquí..."}
+                                    autoComplete="off" 
+                                />
+                                <div className="flex gap-1 shrink-0">
+                                    <Button 
+                                        size="icon" 
+                                        variant="ghost" 
+                                        onClick={() => handleToggleGrade(idx, 'correct')} 
+                                        className={cn(
+                                            "h-8 w-8 rounded-full transition-colors", 
+                                            status === 'correct' ? "bg-green-500 text-white hover:bg-green-600" : "bg-muted text-muted-foreground opacity-50"
+                                        )} 
+                                        disabled={!isAdmin}
+                                    >
+                                        <Check className="h-4 w-4"/>
+                                    </Button>
+                                    <Button 
+                                        size="icon" 
+                                        variant="ghost" 
+                                        onClick={() => handleToggleGrade(idx, 'incorrect')} 
+                                        className={cn(
+                                            "h-8 w-8 rounded-full transition-colors", 
+                                            status === 'incorrect' ? "bg-red-500 text-white hover:bg-red-600" : "bg-muted text-muted-foreground opacity-50"
+                                        )} 
+                                        disabled={!isAdmin}
+                                    >
+                                        <X className="h-4 w-4"/>
+                                    </Button>
+                                </div>
+                            </div>
+                        )
+                    })}
+                </div>
+            </CardContent>
+            <CardFooter className="pt-6 border-t flex justify-center">
+                <Button onClick={onComplete} size="lg" className="px-16 font-bold h-14 text-xl">
+                    Avanzar <ArrowRight className="ml-2 h-6 w-6" />
+                </Button>
+            </CardFooter>
+        </Card>
+    );
+};
+
 export default function EngA1Class5Page() {
     const { t } = useTranslation();
     const { toast } = useToast();
@@ -156,6 +271,7 @@ export default function EngA1Class5Page() {
         { key: 'vocabulary', name: 'Vocabulario', icon: BookOpen, status: 'active' },
         { key: 'nota-importante', name: 'Nota Importante', icon: Info, status: 'locked' },
         { key: 'ejercicio-1', name: 'Ejercicio 1', icon: PenSquare, status: 'locked' },
+        { key: 'dictado-1', name: 'Dictado 1', icon: Mic, status: 'locked' },
         { key: 'ejercicio-2', name: 'Ejercicio 2', icon: PenSquare, status: 'locked' },
         { key: 'ejercicio-3', name: 'Ejercicio 3', icon: PenSquare, status: 'locked' },
         { key: 'ejercicio-vocabulario', name: 'Ejercicio Vocabulario', icon: PenSquare, status: 'locked' },
@@ -310,8 +426,6 @@ export default function EngA1Class5Page() {
     const renderContent = () => {
         if (isInitialLoading) return <div className="flex justify-center items-center min-h-[400px]"><Loader2 className="h-12 w-12 animate-spin text-primary" /></div>;
 
-        const topic = learningPath.find(t => t.key === selectedTopic);
-
         switch (selectedTopic) {
             case 'vocabulary':
                 return (
@@ -348,19 +462,152 @@ export default function EngA1Class5Page() {
                 );
             case 'nota-importante':
                 return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-                        <CardHeader><CardTitle>Notas Importantes</CardTitle></CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="p-4 bg-muted rounded-lg space-y-2 text-base">
-                                <p><strong>1. Dos verbos juntos:</strong> se agrega "TO" en la mitad.</p>
-                                <p><strong>2. Verbo "GO":</strong> "go to the + lugar" o "go + sin lugar".</p>
-                                <p><strong>3. ¡NUNCA!:</strong> Una frase tiene verbo TO BE y DO/DOES al tiempo.</p>
-                            </div>
-                        </CardContent>
-                        <CardFooter className="justify-center"><Button onClick={() => handleTopicComplete('nota-importante')} size="lg">Entendido</Button></CardFooter>
-                    </Card>
+                    <div className="space-y-6 text-left">
+                        <h2 className="text-3xl font-black text-center text-primary uppercase tracking-tighter">Noticias Importantes 🚀</h2>
+                        
+                        <div className="grid grid-cols-1 gap-6">
+                            <Card className="bg-slate-100 dark:bg-slate-900/50 border-border/50 rounded-[2rem] shadow-sm">
+                                <CardContent className="p-6">
+                                    <p className="text-lg font-bold">1- CUANDO TENEMOS DOS VERBOS JUNTOS, EN LA MITAD SE AGREGA = <span className="text-primary font-black">"TO"</span></p>
+                                </CardContent>
+                            </Card>
+
+                            <Card className="bg-slate-100 dark:bg-slate-900/50 border-border/50 rounded-[2rem] shadow-sm">
+                                <CardContent className="p-6 space-y-2">
+                                    <p className="text-lg font-bold uppercase tracking-tight">2- EL VERBO <span className="text-primary">"GO"</span> =</p>
+                                    <ul className="list-disc pl-5 space-y-1 font-medium">
+                                        <li>go to the + lugar especifico</li>
+                                        <li>go + cuando no tenemos un lugar</li>
+                                    </ul>
+                                </CardContent>
+                            </Card>
+
+                            <Card className="bg-slate-100 dark:bg-slate-900/50 border-border/50 rounded-[2rem] shadow-sm border-2 border-dashed border-destructive/20">
+                                <CardContent className="p-6">
+                                    <p className="text-lg font-black text-destructive uppercase">3- NUNCA PERO NUNCA UNA FRASE TIENE VERBO TO BE Y DO/DOES AL MISMO TIEMPO</p>
+                                </CardContent>
+                            </Card>
+
+                            <Card className="bg-slate-100 dark:bg-slate-900/50 border-border/50 rounded-[2rem] shadow-sm">
+                                <CardContent className="p-6 space-y-4">
+                                    <p className="text-lg font-bold uppercase">4- EL GENITIVO SAJÓN NUNCA TIENE EL ARTÍCULO = <span className="text-destructive">"THE"</span> ADELANTE DE ÉL.</p>
+                                    <div className="bg-background/50 p-4 rounded-xl border space-y-1 font-mono">
+                                        <p className="text-sm text-muted-foreground italic">la casa de maria</p>
+                                        <p className="flex items-center gap-2 text-green-600 font-bold"><Check className="h-4 w-4" /> Maria's house</p>
+                                        <p className="flex items-center gap-2 text-red-500 font-bold"><X className="h-4 w-4" /> the Maria's house</p>
+                                    </div>
+                                </CardContent>
+                            </Card>
+
+                            <Card className="bg-slate-100 dark:bg-slate-900/50 border-border/50 rounded-[2rem] shadow-sm">
+                                <CardHeader className="pb-2"><CardTitle className="text-primary uppercase tracking-widest text-lg font-black">5- COMMON PREPOSITIONS</CardTitle></CardHeader>
+                                <CardContent className="grid sm:grid-cols-3 gap-4">
+                                    <div className="space-y-1 p-3 bg-background/40 rounded-xl">
+                                        <p className="font-black text-primary border-b border-primary/20 pb-1">IN</p>
+                                        <p className="text-sm font-medium">in the morning</p>
+                                        <p className="text-sm font-medium">in the afternoon</p>
+                                        <p className="text-sm font-medium">in + months</p>
+                                    </div>
+                                    <div className="space-y-1 p-3 bg-background/40 rounded-xl">
+                                        <p className="font-black text-brand-purple border-b border-brand-purple/20 pb-1">AT</p>
+                                        <p className="text-sm font-medium">at night / at work</p>
+                                        <p className="text-sm font-medium">at school / home</p>
+                                        <p className="text-sm font-medium">at university</p>
+                                    </div>
+                                    <div className="space-y-1 p-3 bg-background/40 rounded-xl">
+                                        <p className="font-black text-brand-blue border-b border-brand-blue/20 pb-1">ON</p>
+                                        <p className="text-sm font-medium">on + weekdays</p>
+                                        <p className="text-sm font-medium">on weekend</p>
+                                        <p className="text-sm font-medium">on + month + day</p>
+                                    </div>
+                                </CardContent>
+                            </Card>
+
+                            <Card className="bg-slate-100 dark:bg-slate-900/50 border-border/50 rounded-[2rem] shadow-sm">
+                                <CardHeader className="pb-2"><CardTitle className="text-primary uppercase tracking-widest text-lg font-black">6- DIFERENCIAS ENTRE TÚ Y TU</CardTitle></CardHeader>
+                                <CardContent className="grid sm:grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <p className="font-bold underline decoration-primary decoration-2 underline-offset-4">TÚ = PRONOUN</p>
+                                        <p className="text-sm italic">PRONOUN = TÚ + VERB</p>
+                                        <p className="font-mono text-sm">tú eres = you are<br/>tú vives = you live</p>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <p className="font-bold underline decoration-brand-purple decoration-2 underline-offset-4">TU = POSSESSIVE</p>
+                                        <p className="text-sm italic">POSSESSIVE = TU + NOUN</p>
+                                        <p className="font-mono text-sm">tu casa = your house<br/>tu perro = your dog</p>
+                                    </div>
+                                </CardContent>
+                            </Card>
+
+                            <Card className="bg-slate-100 dark:bg-slate-900/50 border-border/50 rounded-[2rem] shadow-sm">
+                                <CardHeader className="pb-2"><CardTitle className="text-primary uppercase tracking-widest text-lg font-black">7- EXPLANATION: DESDE</CardTitle></CardHeader>
+                                <CardContent className="space-y-4">
+                                    <div>
+                                        <p className="font-bold">Desde: Since {"=>"} Años / Tiempo Específico</p>
+                                        <p className="text-sm italic mt-1 font-mono">i work in that company since 2022</p>
+                                    </div>
+                                    <Separator className="opacity-30" />
+                                    <div>
+                                        <p className="font-bold">Desde: From .... To / Until {"=>"} Rango</p>
+                                        <p className="text-sm italic mt-1 font-mono">i work from 8 a.m until 7 p.m</p>
+                                        <p className="text-sm italic font-mono">i work from 8 a.m to 7 p.m</p>
+                                    </div>
+                                    <Separator className="opacity-30" />
+                                    <div>
+                                        <p className="font-bold">de: from {"=>"} Origen</p>
+                                        <p className="text-sm italic mt-1 font-mono">i am from Colombia</p>
+                                    </div>
+                                </CardContent>
+                            </Card>
+
+                            <Card className="bg-slate-100 dark:bg-slate-900/50 border-border/50 rounded-[2rem] shadow-sm">
+                                <CardHeader className="pb-2"><CardTitle className="text-primary uppercase tracking-widest text-lg font-black">8- ADJECTIVES (-ED vs -ING)</CardTitle></CardHeader>
+                                <CardContent className="grid sm:grid-cols-2 gap-6">
+                                    <div className="space-y-2">
+                                        <p className="font-bold text-brand-blue">ED = Bored (Sentimientos)</p>
+                                        <p className="text-sm text-muted-foreground">La persona lo siente desde adentro.</p>
+                                        <p className="font-mono text-sm bg-background/50 p-2 rounded">i'm bored / he's bored</p>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <p className="font-bold text-brand-purple">ING = Boring (Características)</p>
+                                        <p className="text-sm text-muted-foreground">Características de un sustantivo u objeto.</p>
+                                        <p className="font-mono text-sm bg-background/50 p-2 rounded">he's boring / that movie is boring</p>
+                                    </div>
+                                </CardContent>
+                            </Card>
+
+                            <Card className="bg-slate-100 dark:bg-slate-900/50 border-border/50 rounded-[2rem] shadow-sm">
+                                <CardHeader className="pb-2"><CardTitle className="text-primary uppercase tracking-widest text-lg font-black">9- FUTURO EN INGLÉS: WILL</CardTitle></CardHeader>
+                                <CardContent className="space-y-2">
+                                    <p className="font-bold">WILL = Voluntad / Predicción</p>
+                                    <div className="grid sm:grid-cols-2 gap-2 font-mono text-sm">
+                                        <p className="p-2 bg-background/50 rounded">i will call you (yo llamaré)</p>
+                                        <p className="p-2 bg-background/50 rounded">i will work on weekend</p>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </div>
+
+                        <div className="flex justify-center pt-8">
+                            <Button onClick={() => handleTopicComplete('nota-importante')} size="lg" className="px-16 font-bold h-14 text-xl">
+                                He leído todo <ArrowRight className="ml-2 h-6 w-6" />
+                            </Button>
+                        </div>
+                    </div>
                 );
             case 'ejercicio-1': return <ErrorCorrectionExercise exerciseData={exercise1Data} onComplete={() => handleTopicComplete('ejercicio-1')} title="Ejercicio 1" />;
+            case 'dictado-1':
+                return (
+                    <DictationExercise 
+                        onComplete={() => handleTopicComplete('dictado-1')} 
+                        studentDocRef={studentDocRef}
+                        initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.dictation1}
+                        initialGrades={studentProfile?.lessonProgress?.[progressStorageVersion]?.dictation1Grades}
+                        savePath={`lessonProgress.${progressStorageVersion}.dictation1`}
+                        savePathGrades={`lessonProgress.${progressStorageVersion}.dictation1Grades`}
+                        isAdmin={isAdmin}
+                    />
+                );
             case 'ejercicio-2': return <PresentSimpleExercise exerciseData={class5Exercise2Data} onComplete={() => handleTopicComplete('ejercicio-2')} title="Ejercicio 2" showShortAnswers={false} />;
             case 'ejercicio-3': return <SimpleTranslationExercise course="a1" exerciseKey="c5_mixed3" onComplete={() => handleTopicComplete('ejercicio-3')} title="Ejercicio 3" />;
             case 'ejercicio-vocabulario': return <Class5VocabExercise onComplete={() => handleTopicComplete('ejercicio-vocabulario')} />;
