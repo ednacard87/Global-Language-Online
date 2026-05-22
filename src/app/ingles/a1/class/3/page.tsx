@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
@@ -47,7 +46,7 @@ const ICONS_CONFIG = {
     completed: CheckCircle,
 };
 
-const progressStorageKey = 'progress_a1_eng_u1_c3_v98_stable';
+const progressStorageKey = 'progress_a1_eng_u1_c3_v99_stable';
 const mainProgressKey = 'progress_a1_eng_unit_1_class_3';
 
 const vocab2Data = [
@@ -106,7 +105,7 @@ const class3LargeTextEx4Dialogue: DialogueLine[] = [
     { speaker: "MARY", line: "¿Y LE GUSTA?", answer: ["and does she like it?"] },
     { speaker: "JON", line: "SÍ, LE ENCANTA BARCELONA. ELLA TRABAJA EN UN BANCO POR LAS MAÑANAS. POR LAS TARDES, ELLA JUEGA AL TENIS CON SU NOVIO O ELLA MIRA LA TV EN CASA. POR LAS NOCHES, ELLA VA A LA PLAYA O ELLA HACE SU TAREA DE INGLÉS. ESTUDIA INGLÉS LOS SÁBADOS.", answer: ["yes, she loves barcelona. she works in a bank in the mornings. in the afternoons, she plays tennis with her boyfriend or she watches tv at home. in the evenings, she goes to the beach or she does her english homework. she studies english on saturdays"] },
     { speaker: "MARY", line: "¿ELLA TE VISITA EN MADRID?", answer: ["does she visit you in madrid?"] },
-    { speaker: "JON", line: "ELLA NO VIENE A MADRID MUY A MENUDO. YO LA VISITO EN BARCELONA.", answer: ["she does not come to madrid very often. i visit her in barcelona", "she doesn't come to madrid very often. i visit her in barcelona"] },
+    { speaker: "JON", line: "SÍ, ELLA VIENE A MADRID A VECES.", answer: ["yes, she comes to madrid sometimes"] },
 ];
 
 const can1Prompts = [
@@ -378,7 +377,7 @@ export default function EngA1Class3Page() {
                 { key: 'can2', name: 'CAN 2', icon: PenSquare, status: 'locked' },
             ],
         },
-    ], [t]);
+    ], []);
 
     const handleTopicComplete = useCallback((completedKey: string) => {
         setTopicToComplete(completedKey);
@@ -386,38 +385,63 @@ export default function EngA1Class3Page() {
 
     useEffect(() => {
         if (isProfileLoading || isUserLoading || !studentProfile || initialLoadComplete) return;
-        let path = initialLearningPath.map(topic => ({ ...topic, subItems: topic.subItems ? topic.subItems.map(sub => ({...sub})) : undefined }));
+
+        let path = initialLearningPath.map(topic => ({
+            ...topic,
+            subItems: topic.subItems ? topic.subItems.map(sub => ({...sub, status: 'locked'})) : undefined,
+        }));
+
         let savedST = '';
+
         if (isAdmin) {
-          path.forEach(item => { item.status = 'completed'; if (item.subItems) item.subItems.forEach(sub => sub.status = 'completed'); });
+          path.forEach(item => { 
+            item.status = 'completed';
+            if (item.subItems) item.subItems.forEach(sub => sub.status = 'completed');
+           });
         } else if(studentProfile?.lessonProgress?.[progressStorageKey]) {
             const savedData = studentProfile.lessonProgress[progressStorageKey];
             path.forEach(item => {
                 if (savedData[item.key]) item.status = savedData[item.key];
                 if (item.subItems && savedData.subItems?.[item.key]) {
-                    item.subItems.forEach(subItem => { if (savedData.subItems[item.key][subItem.key]) subItem.status = savedData.subItems[item.key][subItem.key]; });
+                    item.subItems.forEach(subItem => {
+                        if (savedData.subItems[item.key][subItem.key]) {
+                            subItem.status = savedData.subItems[item.key][subItem.key];
+                        }
+                    });
                 }
             });
             savedST = savedData.lastSelectedTopic || '';
         }
 
+        // --- Sequential Locking Repair ---
         let lastDone = true;
         for(let i=0; i < path.length; i++) {
+            // Unlock parent only if previous main step is completed
             if (lastDone && path[i].status === 'locked') {
                 path[i].status = 'active';
-                if (path[i].subItems) path[i].subItems[0].status = 'active';
             }
-            lastDone = path[i].status === 'completed';
+            
+            // Re-evaluate lastDone based on actual current state
+            const parentIsAccessible = path[i].status !== 'locked';
+            
             if (path[i].subItems) {
-                let subAll = true; let subLast = true;
+                let allSubDone = true;
+                let subStepActive = parentIsAccessible; // Only start unlocking subs if parent is not locked
+
                 for(let j=0; j < path[i].subItems.length; j++) {
-                    if (subLast && path[i].subItems[j].status === 'locked') path[i].subItems[j].status = 'active';
-                    subLast = path[i].subItems[j].status === 'completed';
-                    if (!subLast) subAll = false;
+                    if (subStepActive && path[i].subItems[j].status === 'locked') {
+                        path[i].subItems[j].status = 'active';
+                    }
+                    const isCompleted = path[i].subItems[j].status === 'completed';
+                    subStepActive = isCompleted;
+                    if (!isCompleted) allSubDone = false;
                 }
-                lastDone = subAll;
+                lastDone = allSubDone && parentIsAccessible;
+            } else {
+                lastDone = (path[i].status === 'completed');
             }
         }
+
         setLearningPath(path);
         const firstA = path.find(p => p.status === 'active') || path.flatMap(p => p.subItems || []).find(sp => sp?.status === 'active');
         setSelectedTopic(savedST || firstA?.key || path[0].key);
@@ -596,7 +620,6 @@ export default function EngA1Class3Page() {
                                 <CardTitle className="text-2xl font-black text-primary uppercase tracking-tight">VERBO MODAL CAN</CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-6">
-                                {/* Card 1: Intro */}
                                 <div className="p-6 bg-slate-100 rounded-[2rem] border border-border/50">
                                     <p className="text-xl font-bold text-primary mb-3">CAN = poder</p>
                                     <ul className="list-disc pl-5 space-y-2 text-lg">
@@ -612,8 +635,6 @@ export default function EngA1Class3Page() {
                                         </div>
                                     </div>
                                 </div>
-
-                                {/* Card 2: Structure */}
                                 <div className="p-6 bg-slate-100 rounded-[2rem] border border-border/50">
                                     <h3 className="text-xl font-bold text-primary mb-4 uppercase tracking-tight">ESTRUCTURA DEL VERBO CAN:</h3>
                                     <div className="space-y-3 font-mono text-base sm:text-lg">
@@ -626,8 +647,6 @@ export default function EngA1Class3Page() {
                                         <p><span className="text-red-600 font-bold mr-2">(-A)</span> No, pronoun + can + not</p>
                                     </div>
                                 </div>
-
-                                {/* Card 3: Contraction */}
                                 <div className="p-6 bg-slate-100 rounded-[2rem] border border-border/50 text-center">
                                     <h3 className="text-xl font-bold text-primary mb-2 uppercase tracking-tight">CONTRACCION NEGATIVA DE CAN</h3>
                                     <p className="text-2xl font-black font-mono bg-destructive/10 text-destructive px-6 py-3 rounded-xl border-2 border-dashed border-destructive/20 inline-block">
@@ -702,4 +721,3 @@ export default function EngA1Class3Page() {
         </div>
     );
 }
-
