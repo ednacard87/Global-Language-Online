@@ -189,7 +189,7 @@ const LinesWritingExercise = ({
                                 </Button>
                             </PopoverTrigger>
                             <PopoverContent className="w-64">
-                                <div className="grid grid-cols-2 gap-2 text-sm">
+                                <div className="grid gap-2 text-sm">
                                     {Object.entries(vocabulary).map(([es, en]) => (
                                         <React.Fragment key={es}>
                                             <span className="text-muted-foreground capitalize">{es}:</span>
@@ -466,7 +466,7 @@ export default function EngA1Class3Page() {
                 } else if (curT.subItems) {
                     const subIdx = curT.subItems.findIndex((sub: any) => sub.key === topicToComplete);
                     if (subIdx !== -1) {
-                        if (curT.subItems[subIdx].status !== 'completed') curT.subIdx[subIdx].status = 'completed';
+                        if (curT.subItems[subIdx].status !== 'completed') curT.subItems[subIdx].status = 'completed';
                         const nextSubIdx = subIdx + 1;
                         if (nextSubIdx < curT.subItems.length && curT.subItems[nextSubIdx].status === 'locked') {
                             curT.subItems[nextSubIdx].status = 'active'; nextToSel = curT.subItems[nextSubIdx].key; win = true;
@@ -589,7 +589,7 @@ export default function EngA1Class3Page() {
             case 'ex3_4': return <LargeTextTranslationExercise title="Ejercicio 4: Diálogo" dialogue={class3LargeTextEx4Dialogue} onComplete={() => handleTopicComplete('ex3_4')} vocabulary={{ "vives": "live", "allí": "there", "encanta": "loves", "banco": "bank", "mañanas": "mornings", "novio": "boyfriend", "tarea": "homework", "visita": "visit", "a menudo": "often" }} />;
             case 'can': return <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm p-6 text-left text-foreground"><CardTitle className="text-2xl font-black text-primary uppercase tracking-tight">Modal Verb "CAN"</CardTitle><CardContent className="space-y-4 pt-4"><div className="p-6 bg-slate-100 rounded-[2rem] border border-border/50 text-base"><p className="font-mono text-lg font-black text-primary">(+) pronoun + can + verb + complement</p><p className="font-mono text-lg font-black text-red-500">(-) pronoun + can + not + verb + complement</p><p className="font-mono text-lg font-black text-blue-500">(?) Can + pronoun + verb + complement ?</p></div></CardContent><CardFooter className="justify-center"><Button onClick={() => handleTopicComplete('can')} size="lg" className="px-12 font-bold">Entendido</Button></CardFooter></Card>;
             case 'can1': return <LinesWritingExercise title="CAN 1" description="Traduce las siguientes frases de forma libre." prompts={can1Prompts} onComplete={() => handleTopicComplete('can1')} studentDocRef={studentDocRef} initialData={studentProfile?.lessonProgress?.[progressStorageKey]?.canData} initialGrades={studentProfile?.lessonProgress?.[progressStorageKey]?.canGrades} savePath={`lessonProgress.${progressStorageKey}.canData`} savePathGrades={`lessonProgress.${progressStorageKey}.canGrades`} isAdmin={isAdmin} vocabulary={{ "ventanas": "windows", "licor": "liquor", "enfermo": "sick", "finca": "farm", "platos": "dishes", "próxima": "next" }} />;
-            case 'can2': return <Can2ManualGradingExercise prompts={can2Prompts} onComplete={() => handleTopicComplete('can2')} vocabulary={{ "vacaciones": "vacations", "virtual": "virtual", "enseñar": "teach", "saber": "know", "enferma": "sick" }} studentDocRef={studentDocRef} initialData={studentProfile?.lessonProgress?.[progressStorageKey]?.can2Data} initialGrades={studentProfile?.lessonProgress?.[progressStorageKey]?.can2Grades} savePath={`lessonProgress.${progressStorageKey}.can2Data`} savePathGrades={`lessonProgress.${progressStorageKey}.can2Grades`} isAdmin={isAdmin} />;
+            case 'can2': return <Can2ManualGradingExercise prompts={can2Prompts} onComplete={() => handleTopicComplete('can2')} vocabulary={{ "vacaciones": "vacation", "virtual": "virtual", "enseñar": "teach", "saber": "know", "enferma": "sick" }} studentDocRef={studentDocRef} initialData={studentProfile?.lessonProgress?.[progressStorageKey]?.can2Data} initialGrades={studentProfile?.lessonProgress?.[progressStorageKey]?.can2Grades} savePath={`lessonProgress.${progressStorageKey}.can2Data`} savePathGrades={`lessonProgress.${progressStorageKey}.can2Grades`} isAdmin={isAdmin} />;
             default: return <div className="flex justify-center items-center h-48"><Loader2 className="animate-spin h-10 w-10 text-primary" /></div>;
         }
     };
