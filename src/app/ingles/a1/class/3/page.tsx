@@ -105,7 +105,7 @@ const class3LargeTextEx4Dialogue: DialogueLine[] = [
     { speaker: "MARY", line: "¿Y LE GUSTA?", answer: ["and does she like it?"] },
     { speaker: "JON", line: "SÍ, LE ENCANTA BARCELONA. ELLA TRABAJA EN UN BANCO POR LAS MAÑANAS. POR LAS TARDES, ELLA JUEGA AL TENIS CON SU NOVIO O ELLA MIRA LA TV EN CASA. POR LAS NOCHES, ELLA VA A LA PLAYA O ELLA HACE SU TAREA DE INGLÉS. ESTUDIA INGLÉS LOS SÁBADOS.", answer: ["yes, she loves barcelona. she works in a bank in the mornings. in the afternoons, she plays tennis with her boyfriend or she watches tv at home. in the evenings, she goes to the beach or she does her english homework. she studies english on saturdays"] },
     { speaker: "MARY", line: "¿ELLA TE VISITA EN MADRID?", answer: ["does she visit you in madrid?"] },
-    { speaker: "JON", line: "SÍ, ELLA VIENE A MADRID A VECES.", answer: ["yes, she comes to madrid sometimes"] },
+    { speaker: "JON", line: "ELLA NO VIENE A MADRID MUY A MENUDO. YO LA VISITO EN BARCELONA.", answer: ["she does not come to madrid very often. i visit her in barcelona", "she doesn't come to madrid very often. i visit her in barcelona"] },
 ];
 
 const can1Prompts = [
@@ -189,7 +189,7 @@ const LinesWritingExercise = ({
                                 </Button>
                             </PopoverTrigger>
                             <PopoverContent className="w-64">
-                                <div className="grid gap-2 text-sm">
+                                <div className="grid grid-cols-2 gap-2 text-sm">
                                     {Object.entries(vocabulary).map(([es, en]) => (
                                         <React.Fragment key={es}>
                                             <span className="text-muted-foreground capitalize">{es}:</span>
@@ -416,18 +416,13 @@ export default function EngA1Class3Page() {
         // --- Sequential Locking Repair ---
         let lastDone = true;
         for(let i=0; i < path.length; i++) {
-            // Unlock parent only if previous main step is completed
             if (lastDone && path[i].status === 'locked') {
                 path[i].status = 'active';
             }
-            
-            // Re-evaluate lastDone based on actual current state
             const parentIsAccessible = path[i].status !== 'locked';
-            
             if (path[i].subItems) {
                 let allSubDone = true;
-                let subStepActive = parentIsAccessible; // Only start unlocking subs if parent is not locked
-
+                let subStepActive = parentIsAccessible;
                 for(let j=0; j < path[i].subItems.length; j++) {
                     if (subStepActive && path[i].subItems[j].status === 'locked') {
                         path[i].subItems[j].status = 'active';
@@ -543,22 +538,22 @@ export default function EngA1Class3Page() {
                                 <CardDescription className="font-bold text-foreground">FORMACION DE LA TERCERA PERSONA SINGULAR AFIRMATIVA EN EL PRESENTE SIMPLE</CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
-                                <div className="p-6 bg-slate-100 rounded-[2rem] border border-border/50">
+                                <div className="p-6 bg-slate-100 dark:bg-slate-800/50 rounded-[2rem] border border-border/50">
                                     <h3 className="font-bold text-primary mb-3">1. Regla General</h3>
                                     <p className="font-mono text-base italic">Normalmente los verbos en tercera persona agregan solo la <span className="text-primary font-bold">"s"</span></p>
                                     <p className="font-mono text-lg font-bold mt-2">she works, she eats</p>
                                 </div>
-                                <div className="p-6 bg-slate-100 rounded-[2rem] border border-border/50">
+                                <div className="p-6 bg-slate-100 dark:bg-slate-800/50 rounded-[2rem] border border-border/50">
                                     <h3 className="font-bold text-primary mb-3">2. Verbos terminados en o, sh, ch, ss, x, z</h3>
                                     <p className="font-mono text-base italic">Se le agrega <span className="text-primary font-bold">"ES"</span></p>
                                     <p className="font-mono text-lg font-bold mt-2">i go = she goes // i wish = she wishes // i kiss = she kisses</p>
                                 </div>
-                                <div className="p-6 bg-slate-100 rounded-[2rem] border border-border/50">
+                                <div className="p-6 bg-slate-100 dark:bg-slate-800/50 rounded-[2rem] border border-border/50">
                                     <h3 className="font-bold text-primary mb-3">3. Verbos terminados en "y" (consonante + y)</h3>
                                     <p className="font-mono text-base italic">Se cancela la "y" y se agrega <span className="text-primary font-bold">"ies"</span></p>
                                     <p className="font-mono text-lg font-bold mt-2">i study = she studies</p>
                                 </div>
-                                <div className="p-6 bg-slate-100 rounded-[2rem] border border-border/50">
+                                <div className="p-6 bg-slate-100 dark:bg-slate-800/50 rounded-[2rem] border border-border/50">
                                     <h3 className="font-bold text-primary mb-3">4. Verbos terminados en "y" (vocal + y)</h3>
                                     <p className="font-mono text-base italic">Se le agrega solo la <span className="text-primary font-bold">"s"</span></p>
                                     <p className="font-mono text-lg font-bold mt-2">i buy = she buys // i stay = she stays</p>
@@ -580,11 +575,11 @@ export default function EngA1Class3Page() {
                                 <CardTitle className="text-2xl font-black text-primary uppercase tracking-tight">Usos del Presente Simple</CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-4">
-                                <div className="p-6 bg-slate-100 rounded-[2rem] border border-border/50"><p className="text-lg">a) Para indicar acciones o estados habituales que se repiten.</p></div>
-                                <div className="p-6 bg-slate-100 rounded-[2rem] border border-border/50"><p className="text-lg">b) Situaciones permanentes.</p></div>
-                                <div className="p-6 bg-slate-100 rounded-[2rem] border border-border/50"><p className="text-lg">c) Verdades absolutas (científicas): <span className="font-bold text-primary italic">"Water boils at 100 degrees"</span></p></div>
-                                <div className="p-6 bg-slate-100 rounded-[2rem] border border-border/50"><p className="text-lg">d) Para horario de transportes.</p></div>
-                                <div className="p-6 bg-slate-100 rounded-[2rem] border border-border/50"><p className="text-lg">e) Eventos programados: cita médica, reunión, asado, baby shower.</p></div>
+                                <div className="p-6 bg-slate-100 dark:bg-slate-800/50 rounded-[2rem] border border-border/50"><p className="text-lg">a) Para indicar acciones o estados habituales que se repiten.</p></div>
+                                <div className="p-6 bg-slate-100 dark:bg-slate-800/50 rounded-[2rem] border border-border/50"><p className="text-lg">b) Situaciones permanentes.</p></div>
+                                <div className="p-6 bg-slate-100 dark:bg-slate-800/50 rounded-[2rem] border border-border/50"><p className="text-lg">c) Verdades absolutas (científicas): <span className="font-bold text-primary italic">"Water boils at 100 degrees"</span></p></div>
+                                <div className="p-6 bg-slate-100 dark:bg-slate-800/50 rounded-[2rem] border border-border/50"><p className="text-lg">d) Para horario de transportes.</p></div>
+                                <div className="p-6 bg-slate-100 dark:bg-slate-800/50 rounded-[2rem] border border-border/50"><p className="text-lg">e) Eventos programados: cita médica, reunión, asado, baby shower.</p></div>
                             </CardContent>
                             <CardFooter className="justify-center border-t pt-6"><Button onClick={() => handleTopicComplete('presentSimpleUses')} size="lg" className="px-12 font-bold">Continuar</Button></CardFooter>
                         </Card>
@@ -620,7 +615,7 @@ export default function EngA1Class3Page() {
                                 <CardTitle className="text-2xl font-black text-primary uppercase tracking-tight">VERBO MODAL CAN</CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-6">
-                                <div className="p-6 bg-slate-100 rounded-[2rem] border border-border/50">
+                                <div className="p-6 bg-slate-100 dark:bg-slate-800/50 rounded-[2rem] border border-border/50">
                                     <p className="text-xl font-bold text-primary mb-3">CAN = poder</p>
                                     <ul className="list-disc pl-5 space-y-2 text-lg">
                                         <li>El verbo <span className="font-bold text-primary">can</span> no tiene modificación en presente.</li>
@@ -635,7 +630,7 @@ export default function EngA1Class3Page() {
                                         </div>
                                     </div>
                                 </div>
-                                <div className="p-6 bg-slate-100 rounded-[2rem] border border-border/50">
+                                <div className="p-6 bg-slate-100 dark:bg-slate-800/50 rounded-[2rem] border border-border/50">
                                     <h3 className="text-xl font-bold text-primary mb-4 uppercase tracking-tight">ESTRUCTURA DEL VERBO CAN:</h3>
                                     <div className="space-y-3 font-mono text-base sm:text-lg">
                                         <p><span className="text-green-500 font-bold mr-2">(+)</span> pronoun + can + verb + complement</p>
@@ -647,7 +642,7 @@ export default function EngA1Class3Page() {
                                         <p><span className="text-red-600 font-bold mr-2">(-A)</span> No, pronoun + can + not</p>
                                     </div>
                                 </div>
-                                <div className="p-6 bg-slate-100 rounded-[2rem] border border-border/50 text-center">
+                                <div className="p-6 bg-slate-100 dark:bg-slate-800/50 rounded-[2rem] border border-border/50 text-center">
                                     <h3 className="text-xl font-bold text-primary mb-2 uppercase tracking-tight">CONTRACCION NEGATIVA DE CAN</h3>
                                     <p className="text-2xl font-black font-mono bg-destructive/10 text-destructive px-6 py-3 rounded-xl border-2 border-dashed border-destructive/20 inline-block">
                                         CAN + NOT = CAN’T
