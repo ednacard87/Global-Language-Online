@@ -374,18 +374,12 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
 
     const progressValue = useMemo(() => {
         if (learningPath.length === 0) return 0;
-        let totalTopics = 0;
-        let completedTopics = 0;
+        let total = 0; let done = 0;
         learningPath.forEach(t => {
-            if(t.subItems) {
-                totalTopics += t.subItems.length;
-                completedTopics += t.subItems.filter(st => st.status === 'completed').length;
-            } else {
-                totalTopics++;
-                if (t.status === 'completed') completedTopics++;
-            }
+            if(t.subItems) { total += t.subItems.length; done += t.subItems.filter(st => st.status === 'completed').length; }
+            else { total++; if (t.status === 'completed') done++; }
         });
-        return totalTopics > 0 ? (completedTopics / totalTopics) * 100 : 0;
+        return total > 0 ? (done / total) * 100 : 0;
     }, [learningPath]);
 
     useEffect(() => {
@@ -425,7 +419,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             }));
           
             let topicFound = false;
-            for (let i = 0; i < newPath.length && !topicFound; i++) {
+            for (let i = 0; i < newPath.length && !found; i++) {
                 const currentTopic = newPath[i];
   
                 if (currentTopic.key === topicToComplete) {
@@ -613,7 +607,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                                 <CardTitle className="text-2xl font-black text-primary uppercase tracking-tight">To be 1</CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-6">
-                                <div className="p-6 bg-slate-100 rounded-[2rem] border border-border/50">
+                                <div className="p-6 bg-slate-100 text-slate-900 rounded-[2rem] border border-border/50">
                                     <h3 className="text-xl font-bold text-primary mb-4">Estructura Verbo To be 1</h3>
                                     <div className="space-y-3 font-mono text-base">
                                         <p><span className="text-green-500 font-bold text-lg mr-2">(+)</span> pronoun + to be + complement</p>
@@ -621,7 +615,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                                         <p><span className="text-blue-500 font-bold text-lg mr-2">(?)</span> to be + pronoun + complement ?</p>
                                     </div>
                                 </div>
-                                <div className="p-6 bg-slate-100 rounded-[2rem] border border-border/50">
+                                <div className="p-6 bg-slate-100 text-slate-900 rounded-[2rem] border border-border/50">
                                     <h3 className="text-xl font-bold text-primary mb-4">Ejemplo: "ellos son estudiantes"</h3>
                                     <div className="space-y-3 font-mono text-lg">
                                         <p><span className="text-green-500 font-bold mr-2">(+)</span> They are students</p>
@@ -661,7 +655,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                                 <CardTitle className="text-2xl font-black text-primary uppercase tracking-tight">To be 2</CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-6">
-                                <div className="p-6 bg-slate-100 rounded-[2rem] border border-border/50">
+                                <div className="p-6 bg-slate-100 text-slate-900 rounded-[2rem] border border-border/50">
                                     <h3 className="text-xl font-bold text-primary mb-4">Estructura Verbo To be 2</h3>
                                     <div className="space-y-3 font-mono text-base">
                                         <p><span className="text-green-500 font-bold text-lg mr-2">(+)</span> pronoun + To be + possessive + noun + complement</p>
@@ -669,7 +663,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                                         <p><span className="text-blue-500 font-bold text-lg mr-2">(?)</span> To be + pronoun + possessive + noun + complement ?</p>
                                     </div>
                                 </div>
-                                <div className="p-6 bg-slate-100 rounded-[2rem] border border-border/50">
+                                <div className="p-6 bg-slate-100 text-slate-900 rounded-[2rem] border border-border/50">
                                     <h3 className="text-xl font-bold text-primary mb-4">Ejemplo: "Ellos son mis amigos"</h3>
                                     <div className="space-y-3 font-mono text-lg">
                                         <p><span className="text-green-500 font-bold mr-2">(+)</span> They are my friends</p>
@@ -690,7 +684,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                                 <CardTitle className="text-2xl font-black text-primary uppercase tracking-tight">To be 3</CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-6">
-                                <div className="p-6 bg-slate-100 rounded-[2rem] border border-border/50">
+                                <div className="p-6 bg-slate-100 text-slate-900 rounded-[2rem] border border-border/50">
                                     <h3 className="text-xl font-bold text-primary mb-4">Estructura Verbo To be 3</h3>
                                     <div className="space-y-3 font-mono text-base">
                                         <p><span className="text-green-500 font-bold text-lg mr-2">(+)</span> possessive + noun + to be + complement</p>
@@ -698,7 +692,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                                         <p><span className="text-blue-500 font-bold text-lg mr-2">(?)</span> To be + possessive + noun + complement ?</p>
                                     </div>
                                 </div>
-                                <div className="p-6 bg-slate-100 rounded-[2rem] border border-border/50">
+                                <div className="p-6 bg-slate-100 text-slate-900 rounded-[2rem] border border-border/50">
                                     <h3 className="text-xl font-bold text-primary mb-4">Ejemplo: "Mi mamá es una enfermera"</h3>
                                     <div className="space-y-3 font-mono text-lg">
                                         <p><span className="text-green-500 font-bold mr-2">(+)</span> My mother is a nurse</p>
