@@ -87,6 +87,21 @@ const whVocabularyExerciseData = [
     { spanish: 'PRONTO', english: 'SOON', gapped: 'S_ON' },
 ];
 
+const practiceVocab: Record<string, Record<string, string>> = {
+    'who': { "quién": "who", "tía": "aunt", "puerta": "door" },
+    'what1': { "qué": "what", "haces": "do", "lees": "read", "bebe": "drink", "metro": "subway" },
+    'what2': { "cuál": "what", "favorito": "favorite", "música": "music", "deporte": "sport", "comida": "food" },
+    'what-kind-of': { "tipo/clase": "kind/type", "zapatos": "shoes", "ropa": "clothes" },
+    'how': { "cómo": "how", "estás": "are you", "esposo": "husband", "ir": "go" },
+    'how-adjective': { "alto": "tall", "picante": "spicy", "pequeño": "small", "grande": "big", "sopa": "soup" },
+    'how-often': { "que tan seguido": "how often", "gimnasio": "gym", "comes": "eat" },
+    'whose': { "de quién": "whose", "sombrilla": "umbrella", "llaves": "keys" },
+    'where': { "dónde": "where", "vas": "are going", "libros": "books", "compras": "buy", "carne": "meat" },
+    'which': { "cuál": "which", "moto": "motorcycle", "helado": "ice cream", "necesitas": "need", "comprar": "buy" },
+    'when': { "cuándo": "when", "cumpleaños": "birthday", "fiesta": "party", "clase": "class" },
+    'why': { "por qué": "why", "porque": "because", "triste": "sad", "viaje": "trip", "lejos": "far away" }
+};
+
 export default function EngA1Class4Page() {
     const { t } = useTranslation();
     const { toast } = useToast();
@@ -211,7 +226,7 @@ export default function EngA1Class4Page() {
 
         setInitialLoadComplete(true);
         setIsInitialLoading(false);
-    }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading, isUserLoading, initialLoadComplete]);
+    }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading, isUserLoading, initialLoadComplete, t]);
     
     const progressValue = useMemo(() => {
         if (learningPath.length === 0) return 0;
@@ -331,7 +346,7 @@ export default function EngA1Class4Page() {
         
         setSelectedTopic(topicKey);
 
-        const autoViewTopics = ['grammar'];
+        const autoViewTopics = ['grammar', 'wh-questions'];
         if (autoViewTopics.includes(topicKey)) {
             handleTopicComplete(topicKey);
         }
@@ -507,7 +522,11 @@ export default function EngA1Class4Page() {
                     </div>
                 );
 
-            case 'genitivo': return <GenitiveCaseExercise onComplete={() => handleTopicComplete('genitivo')} />;
+            case 'genitivo': 
+                return <GenitiveCaseExercise 
+                            onComplete={() => handleTopicComplete('genitivo')} 
+                            vocabulary={{ "juguetes": "toys", "comoda": "comfortable", "hijo": "son", "zapatos": "shoes", "limpio": "clean", "pequeño": "small", "audifonos": "headphones", "sucio": "dirty" }}
+                        />;
             
             case 'wh-questions':
                 return (
@@ -558,6 +577,7 @@ export default function EngA1Class4Page() {
                                     <p className="text-sm italic text-muted-foreground">Ej: Where do you live?</p>
                                 </div>
                             </CardContent>
+
                         </Card>
 
                         <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground">
@@ -608,18 +628,31 @@ export default function EngA1Class4Page() {
             case 'vocabulario-wh':
                 return <FillInTheBlanksExercise data={whVocabularyExerciseData} onComplete={() => handleTopicComplete('vocabulario-wh')} title="Vocabulario Wh" />;
             case 'ejercicio-gs':
-                return <GenitiveSaxonGsExercise onComplete={() => handleTopicComplete('ejercicio-gs')} />;
+                return <GenitiveSaxonGsExercise 
+                            onComplete={() => handleTopicComplete('ejercicio-gs')} 
+                            vocabulary={{ "bicicletas": "bicycles", "tia": "aunt", "hijos": "sons", "gemelos": "twins", "pajaros": "birds", "comida": "food", "llaves": "keys", "nevera": "fridge" }}
+                        />;
             case 'ejercicio2-wh':
                 return <WhFillInTheBlanksExercise onComplete={() => handleTopicComplete('ejercicio2-wh')} />;
             case 'ejercicio3-wh':
-                return <WhQuestionsMainExercise3 onComplete={() => handleTopicComplete('ejercicio3-wh')} />;
+                return <WhQuestionsMainExercise3 
+                            onComplete={() => handleTopicComplete('ejercicio3-wh')} 
+                            vocabulary={{ "próximo": "next", "banda": "band", "cantante": "singer", "jefe": "boss", "familiar": "relative", "fin de semana": "weekend" }}
+                        />;
             case 'ejercicio-wh':
-                return <WhQuestionsMainExercise onComplete={() => handleTopicComplete('ejercicio-wh')} />;
+                return <WhQuestionsMainExercise 
+                            onComplete={() => handleTopicComplete('ejercicio-wh')} 
+                            vocabulary={{ "padres": "parents", "hamburguesa": "hamburger", "vecinos": "neighbors", "viaje": "trip", "alto": "tall", "ciencia ficción": "science fiction", "calle": "street", "frias": "cold", "compañeros": "coworkers" }}
+                        />;
 
             default:
                 const practiceTopics = ['who', 'what1', 'what2', 'what-kind-of', 'how', 'how-adjective', 'how-often', 'whose', 'where', 'which', 'when', 'why'];
                 if (practiceTopics.includes(selectedTopic)) {
-                    return <WhQuestionExercise exerciseName={topic?.name || ''} onComplete={() => handleTopicComplete(selectedTopic)} />;
+                    return <WhQuestionExercise 
+                                exerciseName={topic?.name || ''} 
+                                onComplete={() => handleTopicComplete(selectedTopic)} 
+                                vocabulary={practiceVocab[selectedTopic]}
+                            />;
                 }
                 return <div className="flex justify-center items-center h-48"><Loader2 className="animate-spin h-10 w-10 text-primary" /></div>;
         }

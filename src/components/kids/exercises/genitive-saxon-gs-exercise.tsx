@@ -6,7 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
-import { ArrowLeft, ArrowRight, Trophy } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Trophy, BookText } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 const exercisePrompts = [
     { spanish: "EL PERRO DE MIKE", english: ["mike's dog"] },
@@ -26,7 +27,7 @@ const exercisePrompts = [
 
 type ValidationStatus = 'correct' | 'incorrect' | 'unchecked';
 
-export function GenitiveSaxonGsExercise({ onComplete }: { onComplete: () => void }) {
+export function GenitiveSaxonGsExercise({ onComplete, vocabulary }: { onComplete: () => void, vocabulary?: Record<string, string> }) {
     const { toast } = useToast();
     const [currentIndex, setCurrentIndex] = useState(0);
     const [userAnswers, setUserAnswers] = useState<string[]>(Array(exercisePrompts.length).fill(''));
@@ -99,8 +100,32 @@ export function GenitiveSaxonGsExercise({ onComplete }: { onComplete: () => void
     return (
         <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
             <CardHeader>
-                <CardTitle>Ejercicio G.S</CardTitle>
-                 <CardDescription>Traduce las frases usando el Genitivo Sajón ('s).</CardDescription>
+                <div className="flex justify-between items-start">
+                    <div>
+                        <CardTitle>Ejercicio G.S</CardTitle>
+                        <CardDescription>Traduce las frases usando el Genitivo Sajón ('s).</CardDescription>
+                    </div>
+                    {vocabulary && (
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button variant="outline" size="sm" className="border-2 border-brand-blue animate-border-pulse">
+                                    <BookText className="mr-2 h-4 w-4" />
+                                    Vocabulary
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-64">
+                                <div className="grid grid-cols-2 gap-2 text-sm">
+                                    {Object.entries(vocabulary).map(([es, en]) => (
+                                        <React.Fragment key={es}>
+                                            <span className="text-muted-foreground capitalize">{es}:</span>
+                                            <span className="font-bold text-right">{en as string}</span>
+                                        </React.Fragment>
+                                    ))}
+                                </div>
+                            </PopoverContent>
+                        </Popover>
+                    )}
+                </div>
                 <div className="flex items-center justify-start flex-wrap gap-2 pt-4">
                     {exercisePrompts.map((_, index) => (
                         <button
