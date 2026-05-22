@@ -46,7 +46,7 @@ const ICONS_CONFIG = {
     completed: CheckCircle,
 };
 
-const progressStorageKey = 'progress_a1_eng_u1_c3_v95_stable';
+const progressStorageKey = 'progress_a1_eng_u1_c3_v98_stable';
 const mainProgressKey = 'progress_a1_eng_unit_1_class_3';
 
 const vocab2Data = [
@@ -377,7 +377,7 @@ export default function EngA1Class3Page() {
                 { key: 'can2', name: 'CAN 2', icon: PenSquare, status: 'locked' },
             ],
         },
-    ], [t]);
+    ], []);
 
     const handleTopicComplete = useCallback((completedKey: string) => {
         setTopicToComplete(completedKey);
@@ -421,7 +421,7 @@ export default function EngA1Class3Page() {
         const firstA = path.find(p => p.status === 'active') || path.flatMap(p => p.subItems || []).find(sp => sp?.status === 'active');
         setSelectedTopic(savedST || firstA?.key || path[0].key);
         setInitialLoadComplete(true); setIsInitialLoading(false);
-    }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading, isUserLoading, initialLoadComplete, t]);
+    }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading, isUserLoading, initialLoadComplete]);
 
     const progressValue = useMemo(() => {
         if (learningPath.length === 0) return 0;
@@ -466,7 +466,7 @@ export default function EngA1Class3Page() {
                 } else if (curT.subItems) {
                     const subIdx = curT.subItems.findIndex((sub: any) => sub.key === topicToComplete);
                     if (subIdx !== -1) {
-                        if (curT.subItems[subIdx].status !== 'completed') curT.subItems[subIdx].status = 'completed';
+                        if (curT.subItems[subIdx].status !== 'completed') curT.subIdx[subIdx].status = 'completed';
                         const nextSubIdx = subIdx + 1;
                         if (nextSubIdx < curT.subItems.length && curT.subItems[nextSubIdx].status === 'locked') {
                             curT.subItems[nextSubIdx].status = 'active'; nextToSel = curT.subItems[nextSubIdx].key; win = true;
@@ -509,16 +509,86 @@ export default function EngA1Class3Page() {
     const renderContent = () => {
         if (isInitialLoading) return <div className="flex justify-center items-center min-h-[400px]"><Loader2 className="h-12 w-12 animate-spin text-primary" /></div>;
         switch (selectedTopic) {
-            case 'grammar2': return <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm p-6 text-left text-foreground"><CardTitle className="text-2xl font-black text-primary uppercase tracking-tight">3rd Person Singular (he, she, it)</CardTitle><CardContent className="space-y-4 pt-4"><div className="p-6 bg-slate-100 rounded-[2rem] border border-border/50"><h3 className="font-bold text-primary mb-3">Regla General</h3><p className="font-mono text-base">Add <span className="text-primary font-bold">"s"</span>: She works / He eats</p></div><div className="p-6 bg-slate-100 rounded-[2rem] border border-border/50"><h3 className="font-bold text-primary mb-3">Endings -o, -sh, -ch, -ss, -x, -z</h3><p className="font-mono text-base">Add <span className="text-primary font-bold">"es"</span>: He goes / She wishes</p></div><div className="p-6 bg-destructive/5 rounded-[2rem] border-2 border-dashed border-destructive/20 text-center"><p className="font-bold text-destructive text-lg">Only for affirmative sentences (+).</p></div></CardContent><CardFooter className="justify-center"><Button onClick={() => handleTopicComplete('grammar2')} size="lg" className="px-12 font-bold">Entendido <ArrowRight className="ml-2" /></Button></CardFooter></Card>;
+            case 'grammar2':
+                return (
+                    <div className="space-y-6 text-left">
+                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground">
+                            <CardHeader>
+                                <CardTitle className="text-2xl font-black text-primary uppercase tracking-tight">3rd Person Singular (he, she, it)</CardTitle>
+                                <CardDescription className="font-bold text-foreground">FORMACION DE LA TERCERA PERSONA SINGULAR AFIRMATIVA EN EL PRESENTE SIMPLE</CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                <div className="p-6 bg-slate-100 rounded-[2rem] border border-border/50">
+                                    <h3 className="font-bold text-primary mb-3">1. Regla General</h3>
+                                    <p className="font-mono text-base italic">Normalmente los verbos en tercera persona agregan solo la <span className="text-primary font-bold">"s"</span></p>
+                                    <p className="font-mono text-lg font-bold mt-2">she works, she eats</p>
+                                </div>
+                                <div className="p-6 bg-slate-100 rounded-[2rem] border border-border/50">
+                                    <h3 className="font-bold text-primary mb-3">2. Verbos terminados en o, sh, ch, ss, x, z</h3>
+                                    <p className="font-mono text-base italic">Se le agrega <span className="text-primary font-bold">"ES"</span></p>
+                                    <p className="font-mono text-lg font-bold mt-2">i go = she goes // i wish = she wishes // i kiss = she kisses</p>
+                                </div>
+                                <div className="p-6 bg-slate-100 rounded-[2rem] border border-border/50">
+                                    <h3 className="font-bold text-primary mb-3">3. Verbos terminados en "y" (consonante + y)</h3>
+                                    <p className="font-mono text-base italic">Se cancela la "y" y se agrega <span className="text-primary font-bold">"ies"</span></p>
+                                    <p className="font-mono text-lg font-bold mt-2">i study = she studies</p>
+                                </div>
+                                <div className="p-6 bg-slate-100 rounded-[2rem] border border-border/50">
+                                    <h3 className="font-bold text-primary mb-3">4. Verbos terminados en "y" (vocal + y)</h3>
+                                    <p className="font-mono text-base italic">Se le agrega solo la <span className="text-primary font-bold">"s"</span></p>
+                                    <p className="font-mono text-lg font-bold mt-2">i buy = she buys // i stay = she stays</p>
+                                </div>
+                                <div className="p-6 bg-destructive/5 rounded-[2rem] border-2 border-dashed border-destructive/20 text-center">
+                                    <p className="font-bold text-destructive text-lg">NOTA: Esto solo se utiliza en oraciones afirmativas (+). <br/> En (-) y (?) no se usa.</p>
+                                </div>
+                            </CardContent>
+                            <CardFooter className="justify-center border-t pt-6"><Button onClick={() => handleTopicComplete('grammar2')} size="lg" className="px-12 font-bold">Entendido <ArrowRight className="ml-2" /></Button></CardFooter>
+                        </Card>
+                    </div>
+                );
             case 'mixedExercises1': return <PresentSimpleExercise exerciseData={mixedExercise1Data} onComplete={() => handleTopicComplete('mixedExercises1')} title="Mixed Exercises 1" showShortAnswers={false} vocabulary={{ "vino tinto": "red wine", "hermano": "brother", "bicicleta": "bike / bicycle", "novio": "boyfriend", "hospital": "hospital", "pastel": "cake", "piña": "pineapple" }} />;
-            case 'presentSimpleUses': return <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm p-6 text-left text-foreground"><CardTitle className="text-2xl font-black text-primary uppercase tracking-tight">Usos del Presente Simple</CardTitle><CardContent className="space-y-4 pt-4"><div className="p-6 bg-slate-100 rounded-[2rem] border border-border/50"><h4>Habits & Routines</h4><p className="font-mono text-primary font-bold text-lg">I play soccer on Saturdays.</p></div></CardContent><CardFooter className="justify-center"><Button onClick={() => handleTopicComplete('presentSimpleUses')} size="lg" className="px-12 font-bold">Continuar</Button></CardFooter></Card>;
+            case 'presentSimpleUses':
+                return (
+                    <div className="space-y-6 text-left">
+                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground">
+                            <CardHeader>
+                                <CardTitle className="text-2xl font-black text-primary uppercase tracking-tight">Usos del Presente Simple</CardTitle>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                <div className="p-6 bg-slate-100 rounded-[2rem] border border-border/50"><p className="text-lg">a) Para indicar acciones o estados habituales que se repiten.</p></div>
+                                <div className="p-6 bg-slate-100 rounded-[2rem] border border-border/50"><p className="text-lg">b) Situaciones permanentes.</p></div>
+                                <div className="p-6 bg-slate-100 rounded-[2rem] border border-border/50"><p className="text-lg">c) Verdades absolutas (científicas): <span className="font-bold text-primary italic">"Water boils at 100 degrees"</span></p></div>
+                                <div className="p-6 bg-slate-100 rounded-[2rem] border border-border/50"><p className="text-lg">d) Para horario de transportes.</p></div>
+                                <div className="p-6 bg-slate-100 rounded-[2rem] border border-border/50"><p className="text-lg">e) Eventos programados: cita médica, reunión, asado, baby shower.</p></div>
+                            </CardContent>
+                            <CardFooter className="justify-center border-t pt-6"><Button onClick={() => handleTopicComplete('presentSimpleUses')} size="lg" className="px-12 font-bold">Continuar</Button></CardFooter>
+                        </Card>
+                    </div>
+                );
             case 'ex2_1': return <SimpleTranslationExercise course="a1" exerciseKey="c2_mixed1" onComplete={() => handleTopicComplete('ex2_1')} title="Ejercicio 1" vocabulary={{ "bebe": "drinks", "cerveza": "beer", "escuela": "school", "tio": "uncle", "dos veces": "twice", "tarde": "afternoon" }} highlightVocabulary={true} />;
             case 'ex2_2': return <QAShortAnswerExercise exerciseData={mixedExercise2Sub2Data} onComplete={() => handleTopicComplete('ex2_2')} title="Ejercicio 2" description="Traduce y responde." vocabulary={{ "hablar": "speak", "hamburguesa": "hamburger", "helado": "ice cream", "trabajar": "work", "aqui": "here" }} />;
-            case 'vocabulary2': return <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm p-6 text-left text-foreground"><CardTitle>Vocabulary 2</CardTitle><CardContent><div className="grid grid-cols-2 gap-4 mt-4"><div className="font-bold bg-muted p-2 rounded">Español</div><div className="font-bold bg-muted p-2 rounded">Inglés</div>{vocab2Data.map((v, i) => (<React.Fragment key={i}><div className="p-2 border rounded bg-card">{v.es}</div><Input value={vocab2Answers[i] || ''} onChange={e => { const n = [...vocab2Answers]; n[i] = e.target.value; setVocab2Answers(n); setCanAdvanceVocab2(false); }} className={cn(vocab2Validation[i] === 'correct' ? 'border-green-500 bg-green-50' : vocab2Validation[i] === 'incorrect' ? 'border-destructive bg-destructive/5' : '')} /></React.Fragment>))}</div></CardContent><CardFooter className="justify-between mt-4"><Button onClick={handleVocab2Check}>Verificar</Button><Button onClick={() => handleTopicComplete('vocabulary2')} disabled={!canAdvanceVocab2 && !isAdmin}>Avanzar</Button></CardFooter></Card>;
-            case 'ex3_3': return <ShortAnswerPresentSimpleExercise exerciseData={shortAnswerEx3Data} onComplete={() => handleTopicComplete('ex3_3')} title="Ejercicio 3" description="Responde cortamente." />;
-            case 'ex3_4': return <LargeTextTranslationExercise title="Ejercicio 4: Diálogo" dialogue={class3LargeTextEx4Dialogue} onComplete={() => handleTopicComplete('ex3_4')} vocabulary={{ "vives": "live", "allí": "there", "encanta": "loves", "banco": "bank", "mañanas": "mornings", "novio": "boyfriend", "tarea": "homework", "visita": "visit" }} />;
+            case 'vocabulary2':
+                return (
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm p-6 text-left text-foreground">
+                        <CardHeader><CardTitle>Vocabulary 2</CardTitle></CardHeader>
+                        <CardContent>
+                            <div className="grid grid-cols-2 gap-4 mt-4">
+                                <div className="font-bold bg-muted p-2 rounded">Español</div><div className="font-bold bg-muted p-2 rounded">Inglés</div>
+                                {vocab2Data.map((v, i) => (
+                                    <React.Fragment key={i}>
+                                        <div className="p-2 border rounded bg-card flex items-center font-medium">{v.es}</div>
+                                        <Input value={vocab2Answers[i] || ''} onChange={e => { const n = [...vocab2Answers]; n[i] = e.target.value; setVocab2Answers(n); setCanAdvanceVocab2(false); }} className={cn(vocab2Validation[i] === 'correct' ? 'border-green-500 bg-green-50' : vocab2Validation[i] === 'incorrect' ? 'border-destructive bg-destructive/5' : '')} autoComplete="off" />
+                                    </React.Fragment>
+                                ))}
+                            </div>
+                        </CardContent>
+                        <CardFooter className="justify-between mt-4"><Button onClick={handleVocab2Check}>Verificar</Button><Button onClick={() => handleTopicComplete('vocabulary2')} disabled={!canAdvanceVocab2 && !isAdmin}>Avanzar</Button></CardFooter>
+                    </Card>
+                );
+            case 'ex3_3': return <ShortAnswerPresentSimpleExercise exerciseData={shortAnswerEx3Data} onComplete={() => handleTopicComplete('ex3_3')} title="Ejercicio 3" description="Responde cortamente." vocabulary={{ "like": "gustar", "chocolate": "chocolate", "speak": "hablar", "every day": "cada dia", "together": "juntos", "call": "llamar" }} />;
+            case 'ex3_4': return <LargeTextTranslationExercise title="Ejercicio 4: Diálogo" dialogue={class3LargeTextEx4Dialogue} onComplete={() => handleTopicComplete('ex3_4')} vocabulary={{ "vives": "live", "allí": "there", "encanta": "loves", "banco": "bank", "mañanas": "mornings", "novio": "boyfriend", "tarea": "homework", "visita": "visit", "a menudo": "often" }} />;
             case 'can': return <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm p-6 text-left text-foreground"><CardTitle className="text-2xl font-black text-primary uppercase tracking-tight">Modal Verb "CAN"</CardTitle><CardContent className="space-y-4 pt-4"><div className="p-6 bg-slate-100 rounded-[2rem] border border-border/50 text-base"><p className="font-mono text-lg font-black text-primary">(+) pronoun + can + verb + complement</p><p className="font-mono text-lg font-black text-red-500">(-) pronoun + can + not + verb + complement</p><p className="font-mono text-lg font-black text-blue-500">(?) Can + pronoun + verb + complement ?</p></div></CardContent><CardFooter className="justify-center"><Button onClick={() => handleTopicComplete('can')} size="lg" className="px-12 font-bold">Entendido</Button></CardFooter></Card>;
-            case 'can1': return <LinesWritingExercise title="CAN 1" description="Traduce las siguientes frases de forma libre." prompts={can1Prompts} onComplete={() => handleTopicComplete('can1')} studentDocRef={studentDocRef} initialData={studentProfile?.lessonProgress?.[progressStorageKey]?.canData} initialGrades={studentProfile?.lessonProgress?.[progressStorageKey]?.canGrades} savePath={`lessonProgress.${progressStorageKey}.canData`} savePathGrades={`lessonProgress.${progressStorageKey}.canGrades`} isAdmin={isAdmin} vocabulary={{ "ventanas": "windows", "licor": "liquor", "enfermo": "sick", "finca": "farm", "platos": "dishes" }} />;
+            case 'can1': return <LinesWritingExercise title="CAN 1" description="Traduce las siguientes frases de forma libre." prompts={can1Prompts} onComplete={() => handleTopicComplete('can1')} studentDocRef={studentDocRef} initialData={studentProfile?.lessonProgress?.[progressStorageKey]?.canData} initialGrades={studentProfile?.lessonProgress?.[progressStorageKey]?.canGrades} savePath={`lessonProgress.${progressStorageKey}.canData`} savePathGrades={`lessonProgress.${progressStorageKey}.canGrades`} isAdmin={isAdmin} vocabulary={{ "ventanas": "windows", "licor": "liquor", "enfermo": "sick", "finca": "farm", "platos": "dishes", "próxima": "next" }} />;
             case 'can2': return <Can2ManualGradingExercise prompts={can2Prompts} onComplete={() => handleTopicComplete('can2')} vocabulary={{ "vacaciones": "vacations", "virtual": "virtual", "enseñar": "teach", "saber": "know", "enferma": "sick" }} studentDocRef={studentDocRef} initialData={studentProfile?.lessonProgress?.[progressStorageKey]?.can2Data} initialGrades={studentProfile?.lessonProgress?.[progressStorageKey]?.can2Grades} savePath={`lessonProgress.${progressStorageKey}.can2Data`} savePathGrades={`lessonProgress.${progressStorageKey}.can2Grades`} isAdmin={isAdmin} />;
             default: return <div className="flex justify-center items-center h-48"><Loader2 className="animate-spin h-10 w-10 text-primary" /></div>;
         }
