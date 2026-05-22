@@ -357,7 +357,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
 
         setLearningPath(path);
         const firstActive = path.find(p => p.status === 'active') || path.flatMap(p => p.subItems || []).find(sp => sp?.status === 'active');
-        setSelectedTopic(savedSelectedTopic || firstA?.key || path[0].key);
+        setSelectedTopic(savedSelectedTopic || firstActive?.key || path[0].key);
 
         const newAnswers: {[key: string]: string[]} = {};
         const newValidation: {[key: string]: ('correct' | 'incorrect' | 'unchecked')[]} = {};
