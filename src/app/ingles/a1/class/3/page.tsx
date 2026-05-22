@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
@@ -377,7 +378,7 @@ export default function EngA1Class3Page() {
                 { key: 'can2', name: 'CAN 2', icon: PenSquare, status: 'locked' },
             ],
         },
-    ], []);
+    ], [t]);
 
     const handleTopicComplete = useCallback((completedKey: string) => {
         setTopicToComplete(completedKey);
@@ -539,7 +540,7 @@ export default function EngA1Class3Page() {
                                     <p className="font-mono text-lg font-bold mt-2">i buy = she buys // i stay = she stays</p>
                                 </div>
                                 <div className="p-6 bg-destructive/5 rounded-[2rem] border-2 border-dashed border-destructive/20 text-center">
-                                    <p className="font-bold text-destructive text-lg">NOTA: Esto solo se utiliza en oraciones afirmativas (+). <br/> En (-) y (?) no se usa.</p>
+                                    <p className="font-bold text-destructive text-lg">NOTA: Esto solo se utiliza en oraciones afirmativas (+). <br/> En (-) e (?) no se usa.</p>
                                 </div>
                             </CardContent>
                             <CardFooter className="justify-center border-t pt-6"><Button onClick={() => handleTopicComplete('grammar2')} size="lg" className="px-12 font-bold">Entendido <ArrowRight className="ml-2" /></Button></CardFooter>
@@ -587,9 +588,63 @@ export default function EngA1Class3Page() {
                 );
             case 'ex3_3': return <ShortAnswerPresentSimpleExercise exerciseData={shortAnswerEx3Data} onComplete={() => handleTopicComplete('ex3_3')} title="Ejercicio 3" description="Responde cortamente." vocabulary={{ "like": "gustar", "chocolate": "chocolate", "speak": "hablar", "every day": "cada dia", "together": "juntos", "call": "llamar" }} />;
             case 'ex3_4': return <LargeTextTranslationExercise title="Ejercicio 4: Diálogo" dialogue={class3LargeTextEx4Dialogue} onComplete={() => handleTopicComplete('ex3_4')} vocabulary={{ "vives": "live", "allí": "there", "encanta": "loves", "banco": "bank", "mañanas": "mornings", "novio": "boyfriend", "tarea": "homework", "visita": "visit", "a menudo": "often" }} />;
-            case 'can': return <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm p-6 text-left text-foreground"><CardTitle className="text-2xl font-black text-primary uppercase tracking-tight">Modal Verb "CAN"</CardTitle><CardContent className="space-y-4 pt-4"><div className="p-6 bg-slate-100 rounded-[2rem] border border-border/50 text-base"><p className="font-mono text-lg font-black text-primary">(+) pronoun + can + verb + complement</p><p className="font-mono text-lg font-black text-red-500">(-) pronoun + can + not + verb + complement</p><p className="font-mono text-lg font-black text-blue-500">(?) Can + pronoun + verb + complement ?</p></div></CardContent><CardFooter className="justify-center"><Button onClick={() => handleTopicComplete('can')} size="lg" className="px-12 font-bold">Entendido</Button></CardFooter></Card>;
+            case 'can':
+                return (
+                    <div className="space-y-6 text-left">
+                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground">
+                            <CardHeader>
+                                <CardTitle className="text-2xl font-black text-primary uppercase tracking-tight">VERBO MODAL CAN</CardTitle>
+                            </CardHeader>
+                            <CardContent className="space-y-6">
+                                {/* Card 1: Intro */}
+                                <div className="p-6 bg-slate-100 rounded-[2rem] border border-border/50">
+                                    <p className="text-xl font-bold text-primary mb-3">CAN = poder</p>
+                                    <ul className="list-disc pl-5 space-y-2 text-lg">
+                                        <li>El verbo <span className="font-bold text-primary">can</span> no tiene modificación en presente.</li>
+                                        <li>Siempre después del verbo <span className="font-bold text-primary">can</span> hay otro verbo.</li>
+                                        <li>Y ese verbo <span className="font-bold text-destructive underline uppercase">NUNCA</span> tiene el "TO" en la mitad de: can y el otro verbo.</li>
+                                    </ul>
+                                    <div className="mt-6 p-4 bg-background rounded-xl border-2 border-dashed">
+                                        <p className="font-bold mb-2">Example:</p>
+                                        <div className="space-y-2 font-mono text-lg">
+                                            <p className="flex items-center gap-2 text-green-600"><Check className="h-5 w-5" /> i can work</p>
+                                            <p className="flex items-center gap-2 text-red-600"><X className="h-5 w-5" /> i can <span className="underline decoration-wavy decoration-red-500">to</span> work</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Card 2: Structure */}
+                                <div className="p-6 bg-slate-100 rounded-[2rem] border border-border/50">
+                                    <h3 className="text-xl font-bold text-primary mb-4 uppercase tracking-tight">ESTRUCTURA DEL VERBO CAN:</h3>
+                                    <div className="space-y-3 font-mono text-base sm:text-lg">
+                                        <p><span className="text-green-500 font-bold mr-2">(+)</span> pronoun + can + verb + complement</p>
+                                        <p><span className="text-red-500 font-bold mr-2">(-)</span> pronoun + can + NOT + verb + complement</p>
+                                        <p><span className="text-blue-500 font-bold mr-2">(?)</span> can + pronoun + verb + complement ?</p>
+                                        <Separator className="my-4" />
+                                        <p className="font-sans font-bold text-primary mb-2 underline decoration-primary decoration-2 underline-offset-4">short answers</p>
+                                        <p><span className="text-green-600 font-bold mr-2">(+A)</span> Yes, pronoun + can</p>
+                                        <p><span className="text-red-600 font-bold mr-2">(-A)</span> No, pronoun + can + not</p>
+                                    </div>
+                                </div>
+
+                                {/* Card 3: Contraction */}
+                                <div className="p-6 bg-slate-100 rounded-[2rem] border border-border/50 text-center">
+                                    <h3 className="text-xl font-bold text-primary mb-2 uppercase tracking-tight">CONTRACCION NEGATIVA DE CAN</h3>
+                                    <p className="text-2xl font-black font-mono bg-destructive/10 text-destructive px-6 py-3 rounded-xl border-2 border-dashed border-destructive/20 inline-block">
+                                        CAN + NOT = CAN’T
+                                    </p>
+                                </div>
+                            </CardContent>
+                            <CardFooter className="justify-center border-t pt-6">
+                                <Button onClick={() => handleTopicComplete('can')} size="lg" className="px-16 font-bold h-14 text-xl">
+                                    Entendido <ArrowRight className="ml-2 h-6 w-6" />
+                                </Button>
+                            </CardFooter>
+                        </Card>
+                    </div>
+                );
             case 'can1': return <LinesWritingExercise title="CAN 1" description="Traduce las siguientes frases de forma libre." prompts={can1Prompts} onComplete={() => handleTopicComplete('can1')} studentDocRef={studentDocRef} initialData={studentProfile?.lessonProgress?.[progressStorageKey]?.canData} initialGrades={studentProfile?.lessonProgress?.[progressStorageKey]?.canGrades} savePath={`lessonProgress.${progressStorageKey}.canData`} savePathGrades={`lessonProgress.${progressStorageKey}.canGrades`} isAdmin={isAdmin} vocabulary={{ "ventanas": "windows", "licor": "liquor", "enfermo": "sick", "finca": "farm", "platos": "dishes", "próxima": "next" }} />;
-            case 'can2': return <Can2ManualGradingExercise prompts={can2Prompts} onComplete={() => handleTopicComplete('can2')} vocabulary={{ "vacaciones": "vacation", "virtual": "virtual", "enseñar": "teach", "saber": "know", "enferma": "sick" }} studentDocRef={studentDocRef} initialData={studentProfile?.lessonProgress?.[progressStorageKey]?.can2Data} initialGrades={studentProfile?.lessonProgress?.[progressStorageKey]?.can2Grades} savePath={`lessonProgress.${progressStorageKey}.can2Data`} savePathGrades={`lessonProgress.${progressStorageKey}.can2Grades`} isAdmin={isAdmin} />;
+            case 'can2': return <Can2ManualGradingExercise prompts={can2Prompts} onComplete={() => handleTopicComplete('can2')} vocabulary={{ "vacation": "vacation", "virtual": "virtual", "enseñar": "teach", "saber": "know", "enferma": "sick" }} studentDocRef={studentDocRef} initialData={studentProfile?.lessonProgress?.[progressStorageKey]?.can2Data} initialGrades={studentProfile?.lessonProgress?.[progressStorageKey]?.can2Grades} savePath={`lessonProgress.${progressStorageKey}.can2Data`} savePathGrades={`lessonProgress.${progressStorageKey}.can2Grades`} isAdmin={isAdmin} />;
             default: return <div className="flex justify-center items-center h-48"><Loader2 className="animate-spin h-10 w-10 text-primary" /></div>;
         }
     };
@@ -647,3 +702,4 @@ export default function EngA1Class3Page() {
         </div>
     );
 }
+
