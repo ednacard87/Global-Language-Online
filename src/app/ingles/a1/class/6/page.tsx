@@ -283,7 +283,7 @@ export default function EngA1Class6Page() {
                                 ))}
                             </div>
                         </CardContent>
-                        <CardFooter className="flex justify-between"><Button onClick={handleCheckVocab}>Verificar</Button><Button onClick={() => setTopicToComplete('vocabulary')} disabled={!canAdvanceVocab && !isAdmin}>Avanzar</Button></CardFooter>
+                        <CardFooter className="flex justify-between"><Button onClick={handleCheckVocab}>Verificar</Button><Button onClick={() => handleTopicComplete('vocabulary')} disabled={!canAdvanceVocab && !isAdmin}>Avanzar</Button></CardFooter>
                     </Card>
                 );
             case 'grammar':
@@ -321,21 +321,21 @@ export default function EngA1Class6Page() {
                             </CardContent>
                         </Card>
                         <div className="flex justify-center pt-4">
-                            <Button onClick={() => setTopicToComplete('note')} size="lg" className="px-12">Continuar</Button>
+                            <Button onClick={() => handleTopicComplete('note')} size="lg" className="px-12">Continuar</Button>
                         </div>
                     </div>
                 );
             case 'text':
-                return <LinesWritingExercise title="DICTATION 1" description="Escribe las frases dictadas." onComplete={() => setTopicToComplete('text')} studentDocRef={studentDocRef} lineCount={16} hasTitleLine={true} initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.dictation1} initialGrades={studentProfile?.lessonProgress?.[progressStorageVersion]?.dictation1Grades} savePath={`lessonProgress.${progressStorageVersion}.dictation1`} savePathGrades={`lessonProgress.${progressStorageVersion}.dictation1Grades`} isAdmin={isAdmin} />;
-            case 'vocab_game': return <AdjectivesMemoryGame data={vocabularyData} onComplete={() => setTopicToComplete('vocab_game')} />;
-            case 'ex1': return <SimpleTranslationExercise exerciseKey="c6_ex1" onComplete={() => setTopicToComplete('ex1')} course="a1" title="Exercise 1" vocabulary={{"mascota": "pet", "carro": "car", "hermana": "sister", "caballo": "horse", "juguete": "toy", "finca": "farm", "casa": "house", "libro": "book"}} highlightVocabulary={true} />;
-            case 'ex2': return <SimpleTranslationExercise exerciseKey="c6_ex2" onComplete={() => setTopicToComplete('ex2')} course="a1" title="Exercise 2" vocabulary={{"libros": "books", "hermanos": "brothers", "gato": "cat", "comida": "food", "hijo": "son", "zapatos": "shoes", "padres": "parents", "novia": "girlfriend", "amigos": "friends"}} highlightVocabulary={true} />;
-            case 'ex3': return <SimpleTranslationExercise exerciseKey="c6_ex3" onComplete={() => setTopicToComplete('ex3')} course="a1" title="Exercise 3" vocabulary={{"mío": "mine", "tuya": "yours", "suyo/a": "his / hers", "suya": "theirs", "mías": "mine"}} highlightVocabulary={true} />;
-            case 'ex4': return <SimpleTranslationExercise exerciseKey="c6_ex4" onComplete={() => setTopicToComplete('ex4')} course="a1" title="Exercise 4" vocabulary={{"computador": "computer", "casa": "house", "negro": "black", "perro": "dog", "gafas": "glasses", "hermano": "brother", "aquí": "here", "ahí": "there", "esperándote": "waiting for you", "puerta": "door", "cuero": "leather", "restaurante": "restaurant", "caliente": "hot", "tomarlo": "drink it"}} highlightVocabulary={true} />;
-            case 'ex5': return <SimpleTranslationExercise exerciseKey="c6_ex5" onComplete={() => setTopicToComplete('ex5')} course="a1" title="Exercise 5" vocabulary={{"reloj": "watch", "vieja": "old", "mascota": "pet", "camisetas": "t-shirts", "página web": "website", "estudiantes": "students", "caja": "box", "portátil": "laptop"}} highlightVocabulary={true} />;
-            case 'ex6': return <SimpleTranslationExercise exerciseKey="c6_ex6" onComplete={() => setTopicToComplete('ex6')} course="a1" title="Exercise 6" vocabulary={{"perdí": "lost", "llaves": "keys", "conozco": "know", "parientes": "relatives", "amigo": "friend", "aretas": "earrings", "chaqueta": "jacket"}} highlightVocabulary={true} />;
-            case 'ex7': return <SimpleTranslationExercise exerciseKey="c6_ex7" onComplete={() => setTopicToComplete('ex7')} course="a1" title="Exercise 7" vocabulary={{"bolso": "bag", "francés": "french", "vive": "lives", "camiseta": "t-shirt", "familia": "family"}} highlightVocabulary={true} />;
-            case 'ex8': return <LinesWritingExercise title="Create 1" description="Inventa frases usando pronombres posesivos." onComplete={() => setTopicToComplete('ex8')} studentDocRef={studentDocRef} lineCount={6} initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.writingEx8} initialGrades={studentProfile?.lessonProgress?.[progressStorageVersion]?.writingEx8Grades} savePath={`lessonProgress.${progressStorageVersion}.writingEx8`} savePathGrades={`lessonProgress.${progressStorageVersion}.writingEx8Grades`} isAdmin={isAdmin} />;
+                return <LinesWritingExercise title="DICTATION 1" description="Escribe las frases dictadas." onComplete={() => handleTopicComplete('text')} studentDocRef={studentDocRef} lineCount={16} hasTitleLine={true} initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.dictation1} initialGrades={studentProfile?.lessonProgress?.[progressStorageVersion]?.dictation1Grades} savePath={`lessonProgress.${progressStorageVersion}.dictation1`} savePathGrades={`lessonProgress.${progressStorageVersion}.dictation1Grades`} isAdmin={isAdmin} />;
+            case 'vocab_game': return <AdjectivesMemoryGame data={vocabularyData} onComplete={() => handleTopicComplete('vocab_game')} />;
+            case 'ex1': return <SimpleTranslationExercise exerciseKey="c6_ex1" onComplete={() => handleTopicComplete('ex1')} course="a1" title="Exercise 1" vocabulary={{"mascota": "pet", "carro": "car", "hermana": "sister", "caballo": "horse", "juguete": "toy", "finca": "farm", "casa": "house", "libro": "book"}} highlightVocabulary={true} />;
+            case 'ex2': return <SimpleTranslationExercise exerciseKey="c6_ex2" onComplete={() => handleTopicComplete('ex2')} course="a1" title="Exercise 2" vocabulary={{"libros": "books", "hermanos": "brothers", "gato": "cat", "comida": "food", "hijo": "son", "zapatos": "shoes", "padres": "parents", "novia": "girlfriend", "amigos": "friends"}} highlightVocabulary={true} />;
+            case 'ex3': return <SimpleTranslationExercise exerciseKey="c6_ex3" onComplete={() => handleTopicComplete('ex3')} course="a1" title="Exercise 3" vocabulary={{"mío": "mine", "tuya": "yours", "suyo/a": "his / hers", "suya": "theirs", "mías": "mine"}} highlightVocabulary={true} />;
+            case 'ex4': return <SimpleTranslationExercise exerciseKey="c6_ex4" onComplete={() => handleTopicComplete('ex4')} course="a1" title="Exercise 4" vocabulary={{"computador": "computer", "casa": "house", "negro": "black", "perro": "dog", "gafas": "glasses", "hermano": "brother", "aquí": "here", "ahí": "there", "esperándote": "waiting for you", "puerta": "door", "cuero": "leather", "restaurante": "restaurant", "caliente": "hot", "tomarlo": "drink it"}} highlightVocabulary={true} />;
+            case 'ex5': return <SimpleTranslationExercise exerciseKey="c6_ex5" onComplete={() => handleTopicComplete('ex5')} course="a1" title="Exercise 5" vocabulary={{"reloj": "watch", "vieja": "old", "mascota": "pet", "camisetas": "t-shirts", "página web": "website", "estudiantes": "students", "caja": "box", "portátil": "laptop"}} highlightVocabulary={true} />;
+            case 'ex6': return <SimpleTranslationExercise exerciseKey="c6_ex6" onComplete={() => handleTopicComplete('ex6')} course="a1" title="Exercise 6" vocabulary={{"perdí": "lost", "llaves": "keys", "conozco": "know", "parientes": "relatives", "amigo": "friend", "aretas": "earrings", "chaqueta": "jacket"}} highlightVocabulary={true} />;
+            case 'ex7': return <SimpleTranslationExercise exerciseKey="c6_ex7" onComplete={() => handleTopicComplete('ex7')} course="a1" title="Exercise 7" vocabulary={{"bolso": "bag", "francés": "french", "vive": "lives", "camiseta": "t-shirt", "familia": "family"}} highlightVocabulary={true} />;
+            case 'ex8': return <LinesWritingExercise title="Create 1" description="Inventa frases usando pronombres posesivos." onComplete={() => handleTopicComplete('ex8')} studentDocRef={studentDocRef} lineCount={6} initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.writingEx8} initialGrades={studentProfile?.lessonProgress?.[progressStorageVersion]?.writingEx8Grades} savePath={`lessonProgress.${progressStorageVersion}.writingEx8`} savePathGrades={`lessonProgress.${progressStorageVersion}.writingEx8Grades`} isAdmin={isAdmin} />;
             default: return <div className="flex justify-center items-center h-48"><Loader2 className="animate-spin text-primary" /></div>;
         }
     };
@@ -345,7 +345,10 @@ export default function EngA1Class6Page() {
             <DashboardHeader />
             <main className="flex-1 p-4 md:p-8">
                 <div className="max-w-7xl mx-auto">
-                    <div className="mb-8 text-left text-white"><Link href="/ingles/a1" className="hover:underline text-sm">Volver al curso A1</Link><h1 className="text-4xl font-bold [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">Clase 6</h1></div>
+                    <div className="mb-8 text-left text-white">
+                        <Link href="/ingles/a1/unit/2" className="hover:underline text-sm">Volver a la Unidad 2</Link>
+                        <h1 className="text-4xl font-bold [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">Clase 6</h1>
+                    </div>
                     <div className="grid gap-8 md:grid-cols-12">
                         <div className="md:col-span-9">{renderContent()}</div>
                         <div className="md:col-span-3 text-left">
