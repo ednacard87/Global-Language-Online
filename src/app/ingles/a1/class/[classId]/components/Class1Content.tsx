@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -17,6 +18,7 @@ import { PossessivesMemoryGame } from '@/components/kids/exercises/possessives-m
 import { TranslationExercise } from '@/components/dashboard/translation-exercise';
 import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
 import { ShortAnswerExercise } from '@/components/dashboard/short-answer-exercise';
+import { Separator } from '@/components/ui/separator';
 
 const vocabularyData = {
     weekdays: [
@@ -104,7 +106,7 @@ export default function Class1Content() {
     const { user, isUserLoading } = useUser();
     const firestore = useFirestore();
 
-    const progressStorageKey = 'progress_a1_eng_u1_c1_v101_blindado';
+    const progressStorageKey = 'progress_a1_eng_u1_c1_v105_blindado';
     const mainProgressKey = 'progress_a1_eng_unit_1_class_1';
 
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
@@ -196,8 +198,7 @@ export default function Class1Content() {
             }
             lastDone = path[i].status === 'completed';
             if (path[i].subItems) {
-                let allDone = true;
-                let lastSubDone = true;
+                let allDone = true; let lastSubDone = true;
                 for(let j=0; j < path[i].subItems.length; j++) {
                     if (lastSubDone && path[i].subItems[j].status === 'locked') path[i].subItems[j].status = 'active';
                     lastSubDone = path[i].subItems[j].status === 'completed';
@@ -296,7 +297,7 @@ export default function Class1Content() {
         const subT = mainT?.subItems?.find(st => st.key === topicKey);
         if (!isAdmin && ((subT && subT.status === 'locked') || (!subT && mainT?.status === 'locked'))) { toast({ variant: "destructive", title: "Contenido Bloqueado" }); return; }
         setSelectedTopic(topicKey);
-        const autoView = ['tobe', 'possessives', 'tobe-1', 'tobe-2', 'tobe-3'];
+        const autoView = ['tobe', 'possessives', 'tobe-1', 'tobe-2', 'tobe-3', 'demonstratives'];
         if (autoView.includes(topicKey)) handleTopicComplete(topicKey);
     };
 
@@ -369,13 +370,31 @@ export default function Class1Content() {
             case 'memory-tobe': return <ToBeMemoryGame onGameComplete={() => handleTopicComplete('memory-tobe')} />;
             case 'tobe-1':
                 return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left">
-                        <CardHeader><CardTitle className="text-2xl font-black text-primary">To be 1</CardTitle></CardHeader>
-                        <CardContent className="space-y-6 text-lg">
-                            <div className="p-6 bg-slate-100 rounded-[2rem] border text-black"><h3 className="font-bold text-primary mb-4">Estructura Verbo To be 1</h3><div className="space-y-2 font-mono"><p>(+) pronoun + to be + complement</p><p>(-) pronoun + to be + not + complement</p><p>(?) to be + pronoun + complement ?</p></div></div>
-                            <div className="p-6 bg-slate-100 rounded-[2rem] border text-black"><h3 className="font-bold text-primary mb-4">Ejemplo: "ellos son estudiantes"</h3><div className="space-y-2 font-mono"><p>(+) They are students</p><p>(-) They are not students</p><p>(?) are they students?</p></div></div>
-                        </CardContent>
-                    </Card>
+                    <div className="space-y-6">
+                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-slate-100 dark:bg-slate-800/50">
+                            <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase tracking-tight">1. –VERBO TO BE</CardTitle></CardHeader>
+                            <CardContent className="space-y-3 font-mono text-lg font-bold text-black">
+                                <p><span className="text-green-600">(+)</span> = PRONOUN + TO BE + COMPLEMENT.</p>
+                                <p><span className="text-red-600">(-)</span> = PRONOUN + TO BE + NOT+ COMPLEMENT.</p>
+                                <p><span className="text-blue-600">(?)</span> = TO BE + PRONOUN + COMPLEMENT?</p>
+                                <Separator className="my-4" />
+                                <p className="font-sans uppercase text-sm text-muted-foreground">SHORT ANSWER:</p>
+                                <p><span className="text-green-600">(+A)</span> = YES, + PRONOUN+ TO BE</p>
+                                <p><span className="text-red-600">(-A)</span> = NO, PRONOUN + TO BE + NOT</p>
+                            </CardContent>
+                        </Card>
+                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-slate-100 dark:bg-slate-800/50">
+                            <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase">Ejemplo = "Ellos son estudiantes"</CardTitle></CardHeader>
+                            <CardContent className="space-y-3 font-mono text-lg font-bold text-black">
+                                <p><span className="text-green-600">(+)</span> = they are students</p>
+                                <p><span className="text-red-600">(-)</span> = they are not students</p>
+                                <p><span className="text-blue-600">(?)</span> = are they students?</p>
+                            </CardContent>
+                            <CardFooter className="justify-center border-t pt-4">
+                                <Button onClick={() => handleTopicComplete('tobe-1')}>Siguiente Paso</Button>
+                            </CardFooter>
+                        </Card>
+                    </div>
                 );
             case 'exercises1': return <TranslationExercise exerciseKey="exercises1" onComplete={() => handleTopicComplete('exercises1')} vocabulary={{'un- una': 'a / an', 'abogado': 'lawyer', 'enfermo': 'sick', 'enfermero': 'nurse'}} highlightVocabulary={true} title="Exercise 1" />;
             case 'possessives':
@@ -393,32 +412,89 @@ export default function Class1Content() {
             case 'memory-possessives': return <PossessivesMemoryGame onGameComplete={() => handleTopicComplete('memory-possessives')} />;
             case 'tobe-2':
                 return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left">
-                        <CardHeader><CardTitle className="text-2xl font-black text-primary">To be 2</CardTitle></CardHeader>
-                        <CardContent className="space-y-6 text-lg">
-                            <div className="p-6 bg-slate-100 rounded-[2rem] border text-black"><h3 className="font-bold text-primary mb-4">Estructura Verbo To be 2</h3><div className="space-y-2 font-mono"><p>(+) prn + To be + possessive + noun + comp</p><p>(-) prn + To be + Not + possessive + noun + comp</p><p>(?) To be + prn + possessive + noun + comp ?</p></div></div>
-                            <div className="p-6 bg-slate-100 rounded-[2rem] border text-black"><h3 className="font-bold text-primary mb-4">Ejemplo: "Ellos son mis amigos"</h3><div className="space-y-2 font-mono"><p>(+) They are my friends</p><p>(-) They are not my friends</p><p>(?) are they my friends ?</p></div></div>
-                        </CardContent>
-                    </Card>
+                    <div className="space-y-6">
+                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-slate-100 dark:bg-slate-800/50">
+                            <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase tracking-tight">2. –VERBO TO BE + POSSESSIVES</CardTitle></CardHeader>
+                            <CardContent className="space-y-3 font-mono text-lg font-bold text-black">
+                                <p><span className="text-green-600">(+)</span> = PRONOUN + TO BE + POSSESSIVE + NOUN + COMPLEMENT.</p>
+                                <p><span className="text-red-600">(-)</span> = PRONOUN + TO BE + NOT+ POSSESSIVE + NOUN + COMPLEMENT.</p>
+                                <p><span className="text-blue-600">(?)</span> = TO BE + PRONOUN + POSSESSIVE + NOUN + COMPLEMENT?</p>
+                                <Separator className="my-4" />
+                                <p className="font-sans uppercase text-sm text-muted-foreground">SHORT ANSWER:</p>
+                                <p><span className="text-green-600">(+A)</span> = YES, + PRONOUN+ TO BE</p>
+                                <p><span className="text-red-600">(-A)</span> = NO, PRONOUN + TO BE + NOT</p>
+                            </CardContent>
+                        </Card>
+                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-slate-100 dark:bg-slate-800/50">
+                            <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase">Ejemplo = "Ellos son mis amigos"</CardTitle></CardHeader>
+                            <CardContent className="space-y-3 font-mono text-lg font-bold text-black">
+                                <p><span className="text-green-600">(+)</span> = they are my friends</p>
+                                <p><span className="text-red-600">(-)</span> = they are my friends?</p>
+                                <p><span className="text-blue-600">(?)</span> = are they my friends?</p>
+                            </CardContent>
+                            <CardFooter className="justify-center border-t pt-4">
+                                <Button onClick={() => handleTopicComplete('tobe-2')}>Siguiente Paso</Button>
+                            </CardFooter>
+                        </Card>
+                    </div>
                 );
             case 'exercises2': return <TranslationExercise exerciseKey="exercises2" onComplete={() => handleTopicComplete('exercises2')} vocabulary={{'amigo': 'friend', 'hijo': 'son', 'perro': 'dog'}} highlightVocabulary={true} title="Exercise 2" />;
             case 'tobe-3':
                 return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left">
-                        <CardHeader><CardTitle className="text-2xl font-black text-primary">To be 3</CardTitle></CardHeader>
-                        <CardContent className="space-y-6 text-lg">
-                            <div className="p-6 bg-slate-100 rounded-[2rem] border text-black"><h3 className="font-bold text-primary mb-4">Estructura Verbo To be 3</h3><div className="space-y-2 font-mono"><p>(+) possessive + noun + to be + complement</p><p>(-) possessive + noun + to be + Not + complement</p><p>(?) To be + possessive + noun + complement ?</p></div></div>
-                            <div className="p-6 bg-slate-100 rounded-[2rem] border text-black"><h3 className="font-bold text-primary mb-4">Ejemplo: "Mi mamá es una enfermera"</h3><div className="space-y-2 font-mono"><p>(+) My mother is a nurse</p><p>(+A) yes, she is</p></div></div>
-                        </CardContent>
-                    </Card>
+                    <div className="space-y-6">
+                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-slate-100 dark:bg-slate-800/50">
+                            <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase tracking-tight">3. – POSSESSIVES + TO BE</CardTitle></CardHeader>
+                            <CardContent className="space-y-3 font-mono text-lg font-bold text-black">
+                                <p><span className="text-green-600">(+)</span> = POSSESSIVE + NOUN + TO BE +COMPLEMENT.</p>
+                                <p><span className="text-red-600">(-)</span> = POSSESSIVE + NOUN + TO BE + NOT + COMPLEMENT.</p>
+                                <p><span className="text-blue-600">(?)</span> = TO BE + POSSESSIVE + NOUN + COMPLEMENT?</p>
+                                <Separator className="my-4" />
+                                <p className="font-sans uppercase text-sm text-muted-foreground">SHORT ANSWER:</p>
+                                <p><span className="text-green-600">(+A)</span> = YES, + PRONOUN+ TO BE</p>
+                                <p><span className="text-red-600">(-A)</span> = NO, PRONOUN + TO BE + NOT</p>
+                            </CardContent>
+                        </Card>
+                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-slate-100 dark:bg-slate-800/50">
+                            <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase">Ejemplo = "Mi mamá es una enfermera"</CardTitle></CardHeader>
+                            <CardContent className="space-y-3 font-mono text-lg font-bold text-black text-left">
+                                <p><span className="text-green-600">(+)</span> = my mother is a nurse</p>
+                                <p><span className="text-red-600">(-)</span> = my mother is not a nurse</p>
+                                <p><span className="text-blue-600">(?)</span> = is my mother a nurse?</p>
+                                <Separator className="my-2" />
+                                <p><span className="text-green-600">(+A)</span> = Yes, she is</p>
+                                <p><span className="text-red-600">(-A)</span> = No, she is not</p>
+                            </CardContent>
+                            <CardFooter className="justify-center border-t pt-4">
+                                <Button onClick={() => handleTopicComplete('tobe-3')}>Siguiente Paso</Button>
+                            </CardFooter>
+                        </Card>
+                    </div>
                 );
             case 'exercises3': return <TranslationExercise exerciseKey="exercises3" onComplete={() => handleTopicComplete('exercises3')} vocabulary={{'enfermera': 'nurse', 'abuelos': 'grandparents', 'pensionado': 'retired', 'juguete': 'toy'}} highlightVocabulary={true} title="Exercise 3" />;
-            case 'ex-mixto-1': return <SimpleTranslationExercise course="a1" exerciseKey="mixed1" onComplete={() => handleTopicComplete('ex-mixto-1')} title="Exercise 1" />;
-            case 'ex-mixto-2': return <TranslationExercise exerciseKey="qna2" formType="qna" onComplete={() => handleTopicComplete('ex-mixto-2')} title="Exercise 2" />;
-            case 'ex-mixto-3': return <SimpleTranslationExercise course="a1" exerciseKey="mixed3" onComplete={() => handleTopicComplete('ex-mixto-3')} title="Exercise 3" />;
-            case 'ex-mixto-4': return <SimpleTranslationExercise course="a1" exerciseKey="mixed4" onComplete={() => handleTopicComplete('ex-mixto-4')} title="Exercise 4" vocabulary={{'interesado': 'interested', 'peliculas': 'movies', 'estadio': 'stadium', 'primos': 'cousins'}} highlightVocabulary={true} />;
+            case 'ex-mixto-1': return <SimpleTranslationExercise course="a1" exerciseKey="mixed1" onComplete={() => handleTopicComplete('ex-mixto-1')} title="Exercise 1" vocabulary={{'estudiante': 'student', 'amigos': 'friends', 'padres': 'parents', 'hermana': 'sister', 'abogados': 'lawyers', 'Inglaterra': 'England'}} highlightVocabulary={true} />;
+            case 'ex-mixto-2': return <TranslationExercise exerciseKey="qna2" formType="qna" onComplete={() => handleTopicComplete('ex-mixto-2')} title="Exercise 2" vocabulary={{'cansado': 'tired', 'amiga': 'friend', 'estudiantes': 'students', 'feliz': 'happy', 'curiosos': 'curious', 'novia': 'girlfriend', 'ocupada': 'busy', 'libres': 'free', 'España': 'Spain', 'ingeniero': 'engineer', 'hambriento': 'hungry', 'compañeros': 'coworkers', 'a tiempo': 'on time'}} highlightVocabulary={true} />;
+            case 'ex-mixto-3': return <SimpleTranslationExercise course="a1" exerciseKey="mixed3" onComplete={() => handleTopicComplete('ex-mixto-3')} title="Exercise 3" vocabulary={{'estudiantes': 'students', 'apodos': 'nicknames', 'mamá': 'mom/mother', 'padres': 'parents', 'viejos': 'old', 'prima': 'cousin', 'abuela': 'grandma', 'hermanas': 'sisters', 'cansado': 'tired', 'aburridos': 'bored', 'profesores': 'teachers', 'enojados': 'angry', 'alta': 'tall', 'preocupados': 'worried'}} highlightVocabulary={true} />;
+            case 'ex-mixto-4': return <SimpleTranslationExercise course="a1" exerciseKey="mixed4" onComplete={() => handleTopicComplete('ex-mixto-4')} title="Exercise 4" vocabulary={{'profesor': 'teacher', 'ingeniero': 'engineer', 'australiano': 'Australian', 'universidad': 'university', 'mesa': 'table', 'silla': 'chair', 'hobbies': 'hobbies', 'interesado': 'interested', 'estadio': 'stadium', 'primos': 'cousins', 'amiga': 'friend'}} highlightVocabulary={true} />;
             case 'ex-mixto-5': return <ShortAnswerExercise onComplete={() => handleTopicComplete('ex-mixto-5')} />;
-            case 'ex-mixto-6': return <SimpleTranslationExercise course="a1" exerciseKey="mixed6" onComplete={() => handleTopicComplete('ex-mixto-6')} title="Exercise 6" vocabulary={{'padrastro': 'stepfather', 'primo': 'cousin', 'estante': 'shelf', 'escritorio': 'desk', 'iglesia': 'church', 'supermercado': 'supermarket'}} highlightVocabulary={true} />;
+            case 'ex-mixto-6': return <SimpleTranslationExercise course="a1" exerciseKey="mixed6" onComplete={() => handleTopicComplete('ex-mixto-6')} title="Exercise 6" vocabulary={{'profesora': 'teacher', 'trabajo': 'work', 'hijos': 'sons', 'padrastro': 'stepfather', 'primo': 'cousin', 'estante': 'shelf', 'escritorio': 'desk', 'iglesia': 'church', 'supermercado': 'supermarket'}} highlightVocabulary={true} />;
+            case 'demonstratives':
+                return (
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left">
+                        <CardHeader><CardTitle>Grammar: Demonstratives</CardTitle></CardHeader>
+                        <CardContent>
+                            <div className="grid grid-cols-3 gap-x-4 gap-y-2 text-lg text-black">
+                                <div className="font-bold p-3 bg-muted rounded-lg text-center">English</div><div className="font-bold p-3 bg-muted rounded-lg text-center">Español</div><div className="font-bold p-3 bg-muted rounded-lg text-center">Usage</div>
+                                <div className="p-3 bg-card border rounded-lg text-center">This</div><div className="p-3 bg-card border rounded-lg text-center">Este - Esta</div><div className="p-3 bg-card border rounded-lg text-center">Singular, cerca</div>
+                                <div className="p-3 bg-card border rounded-lg text-center">These</div><div className="p-3 bg-card border rounded-lg text-center">Estos - Estas</div><div className="p-3 bg-card border rounded-lg text-center">Plural, cerca</div>
+                                <div className="p-3 bg-card border rounded-lg text-center">That</div><div className="p-3 bg-card border rounded-lg text-center">Ese - Esa</div><div className="p-3 bg-card border rounded-lg text-center">Singular, lejos</div>
+                                <div className="p-3 bg-card border rounded-lg text-center">Those</div><div className="p-3 bg-card border rounded-lg text-center">Esos - Esas</div><div className="p-3 bg-card border rounded-lg text-center">Plural, lejos</div>
+                            </div>
+                        </CardContent>
+                        <CardFooter className="justify-center border-t pt-4">
+                            <Button onClick={() => handleTopicComplete('demonstratives')}>Terminar Clase</Button>
+                        </CardFooter>
+                    </Card>
+                );
             default: return null;
         }
     };
@@ -466,4 +542,3 @@ export default function Class1Content() {
         </div>
     );
 }
-
