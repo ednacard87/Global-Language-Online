@@ -353,7 +353,6 @@ export default function EngA1Class7Page() {
                                     <p className="text-lg text-slate-900 dark:text-slate-100">Para decir "de verdad", "realmente" o "muchísimo":</p>
                                     <p className="text-2xl font-black text-center py-4 bg-background/50 rounded-xl border border-brand-blue/20 text-slate-900">I REALLY LIKE WATER (+)</p>
                                 </CardContent>
-                            </Card>
 
                             <Card className="bg-slate-100 dark:bg-slate-900/50 border-border/50 rounded-[2rem] shadow-sm">
                                 <CardHeader><CardTitle className="text-primary text-xl font-black uppercase">1 - CON SUSTANTIVOS</CardTitle></CardHeader>
@@ -429,7 +428,7 @@ export default function EngA1Class7Page() {
             <main className="flex-1 p-4 md:p-8">
                 <div className="max-w-7xl mx-auto">
                     <div className="mb-8 text-left text-white">
-                        <Link href="/ingles/a1/unit/1" className="hover:underline text-sm">Volver al curso A1</Link>
+                        <Link href="/ingles/a1/unit/2" className="hover:underline text-sm">Volver a la Unidad 2</Link>
                         <h1 className="text-4xl font-bold [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">Clase 7 (A1)</h1>
                     </div>
                     <div className="grid gap-8 md:grid-cols-12">
