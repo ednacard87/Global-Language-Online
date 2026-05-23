@@ -221,9 +221,9 @@ export default function Class2Content() {
                     if (subIdx !== -1) {
                         if (curT.subItems[subIdx].status !== 'completed') curT.subItems[subIdx].status = 'completed';
                         const nextSubIdx = subIdx + 1;
-                        if (nextSubIdx < curT.subItems.length && curT.subItems[nextSubIdx].status === 'locked') {
-                            curT.subItems[nextSubIdx].status = 'active'; nextToSel = curT.subItems[nextSubIdx].key; win = true;
-                        } else if (curT.subItems.every((sub: any) => sub.status === 'completed')) {
+                        if (nextSubIdx < currentPath.length && currentPath[i].subItems![nextSubIdx].status === 'locked') {
+                            newP[i].subItems![nextSubIdx].status = 'active'; nextToSel = newP[i].subItems![nextSubIdx].key; win = true;
+                        } else if (newP[i].subItems!.every((sub: any) => sub.status === 'completed')) {
                             if (curT.status !== 'completed') curT.status = 'completed';
                             if (i + 1 < newP.length && newP[i + 1].status === 'locked') {
                                 const n = newP[i + 1]; n.status = 'active'; win = true; nextToSel = n.subItems?.[0]?.key || n.key;
@@ -311,10 +311,10 @@ export default function Class2Content() {
                                                 <div className="px-3 py-2 text-sm font-bold text-primary uppercase tracking-wider">{item.name}</div>
                                                 <ul className="pl-4 space-y-1">{item.subItems.map(sub => {
                                                     const subL = sub.status === 'locked' && !isAdmin;
-                                                    const subI = ICONS[sub.status] || PenSquare;
+                                                    const SubI = ICONS[sub.status] || PenSquare;
                                                     return (
                                                         <li key={sub.key} onClick={() => handleTopicSelect(sub.key)} className={cn('flex items-center gap-3 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors cursor-pointer', subL ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === sub.key && 'bg-muted text-primary font-bold')}>
-                                                            <subI className={cn("h-4 w-4", sub.status === 'completed' && 'text-green-500')} /><span>{sub.name}</span>
+                                                            <SubI className={cn("h-4 w-4", sub.status === 'completed' && 'text-green-500')} /><span>{sub.name}</span>
                                                         </li>
                                                     )
                                                 })}</ul>

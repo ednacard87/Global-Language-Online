@@ -442,10 +442,10 @@ export default function Class1Content() {
                                                 <div className="px-3 py-2 text-sm font-bold text-primary uppercase tracking-wider">{item.name}</div>
                                                 <ul className="pl-4 space-y-1">{item.subItems.map(sub => {
                                                     const subL = sub.status === 'locked' && !isAdmin;
-                                                    const subI = ICONS[sub.status] || PenSquare;
+                                                    const SubI = ICONS[sub.status] || PenSquare;
                                                     return (
                                                         <li key={sub.key} onClick={() => handleTopicSelect(sub.key)} className={cn('flex items-center gap-3 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors cursor-pointer', subL ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === sub.key && 'bg-muted text-primary font-bold')}>
-                                                            <subI className={cn("h-4 w-4", sub.status === 'completed' && 'text-green-500')} /><span>{sub.name}</span>
+                                                            <SubI className={cn("h-4 w-4", sub.status === 'completed' && 'text-green-500')} /><span>{sub.name}</span>
                                                         </li>
                                                     )
                                                 })}</ul>
