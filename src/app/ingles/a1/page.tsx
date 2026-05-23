@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo } from "react";
@@ -19,7 +18,7 @@ export default function EnglishA1Page() {
     () => (user ? doc(firestore, 'students', user.uid) : null),
     [firestore, user]
   );
-  const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{role?: 'admin' | 'student', progress?: Record<string, number>}>(studentDocRef);
+  const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{role?: 'admin' | 'student', progress?: Record<string, number>, unlockedUnits?: string[]}>(studentDocRef);
 
   const isAdmin = useMemo(() => {
       if (!user) return false;
@@ -42,54 +41,53 @@ export default function EnglishA1Page() {
         const progressU3 = studentProfile?.progress?.['progress_a1_eng_unit_3'] || 0;
         const progressR3 = studentProfile?.progress?.['progress_a1_eng_review_3'] || 0;
         
-        const itemsWithLockState = initialPath.map(item => {
+        const itemsWithLockState = initialPath.map((item, index) => {
             const newItem: PathItem = {...item, locked: true};
             if (item.storageKey && studentProfile?.progress) {
                 newItem.progress = studentProfile.progress[item.storageKey] || 0;
             }
+
+            if (isAdmin) {
+                newItem.locked = false;
+                return newItem;
+            }
+
+            // Check manual unit unlock from admin
+            if (item.href?.includes('/unit/')) {
+                const unitNum = item.href.split('/').pop();
+                const unitKey = `a1-unit-${unitNum}`;
+                if (studentProfile?.unlockedUnits?.includes(unitKey)) {
+                    newItem.locked = false;
+                    return newItem;
+                }
+            }
+
+            if (index === 0) {
+                newItem.locked = false; // Start
+            } else if (index === 1) {
+                newItem.locked = false; // Unit 1 always unlocked
+            } else if (index === 2) {
+                if (progressU1 >= 90) newItem.locked = false; // Review 1
+            } else if (index === 3) {
+                if (progressR1 >= 90) newItem.locked = false; // Test 1
+            } else if (index === 4) {
+                if (progressT1 >= 100 || progressU1 >= 100) newItem.locked = false; // Unit 2
+            } else if (index === 5) {
+                if (progressU2 >= 90) newItem.locked = false; // Review 2
+            } else if (index === 6) {
+                if (progressR2 >= 90) newItem.locked = false; // Test 2
+            } else if (index === 7) {
+                if (progressU2 >= 100) newItem.locked = false; // Unit 3
+            } else if (index === 8) {
+                if (progressU3 >= 90) newItem.locked = false; // Review 3
+            } else if (index === 9) {
+                if (progressR3 >= 90) newItem.locked = false; // Test 3
+            } else if (index === 10) {
+                if (progressU3 >= 100) newItem.locked = false; // Finish
+            }
+
             return newItem;
         });
-
-        if (isAdmin) {
-          itemsWithLockState.forEach(item => item.locked = false);
-        } else {
-          // Unlock logic
-          itemsWithLockState[0].locked = false; // Start
-          itemsWithLockState[1].locked = false; // Unit 1
-
-          // Unit 1 unlock chain
-          if (progressU1 >= 90) {
-              itemsWithLockState[2].locked = false; // Review 1
-          }
-          if (progressR1 >= 90) {
-              itemsWithLockState[3].locked = false; // Test 1
-          }
-          if (progressT1 >= 100 || progressU1 >= 100) {
-              itemsWithLockState[4].locked = false; // Unit 2
-          }
-
-          // Unit 2 unlock chain
-          if (progressU2 >= 90) {
-              itemsWithLockState[5].locked = false; // Review 2
-          }
-          if (progressR2 >= 90) {
-              itemsWithLockState[6].locked = false; // Test 2
-          }
-          if (progressU2 >= 100) {
-              itemsWithLockState[7].locked = false; // Unit 3
-          }
-
-          // Unit 3 unlock chain
-          if (progressU3 >= 90) {
-              itemsWithLockState[8].locked = false; // Review 3
-          }
-          if (progressR3 >= 90) {
-              itemsWithLockState[9].locked = false; // Test 3
-          }
-          if (progressU3 >= 100) {
-              itemsWithLockState[10].locked = false; // Finish
-          }
-        }
         
         itemsWithLockState.forEach(item => item.className = '');
         const nextActiveItem = itemsWithLockState.find(item => !item.locked && (item.progress ?? 0) < 100 && (item.type === 'class' || item.type === 'practice'));
@@ -110,7 +108,7 @@ export default function EnglishA1Page() {
   }, [t, isAdmin, studentProfile, isProfileLoading]);
 
   return (
-    <div className="flex w-full flex-col ingles-dashboard-bg min-h-screen">
+    <div className="flex w-full flex-col min-h-screen ingles-dashboard-bg">
       <DashboardHeader />
       <main className="flex flex-1 flex-col items-center gap-8 p-4 md:py-12">
         <div className="text-center">

@@ -18,7 +18,7 @@ export default function B1CoursePage() {
     () => (user ? doc(firestore, 'students', user.uid) : null),
     [firestore, user]
   );
-  const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{role?: 'admin' | 'student', progress?: Record<string, number>}>(studentDocRef);
+  const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{role?: 'admin' | 'student', progress?: Record<string, number>, unlockedUnits?: string[]}>(studentDocRef);
 
   const isAdmin = useMemo(() => {
       if (!user) return false;
@@ -37,45 +37,61 @@ export default function B1CoursePage() {
         const progressU3 = studentProfile?.progress?.['progress_b1_unit_3'] || 0;
         const progressU4 = studentProfile?.progress?.['progress_b1_unit_4'] || 0;
 
-        const itemsWithLockState = initialPath.map(item => {
+        const itemsWithLockState = initialPath.map((item, index) => {
             const newItem: PathItem = {...item, locked: true};
             if (item.storageKey && studentProfile?.progress) {
                 newItem.progress = studentProfile.progress[item.storageKey] || 0;
             }
+
+            if (isAdmin) {
+              newItem.locked = false;
+              return newItem;
+            }
+
+            // Check manual unit unlock from admin
+            if (item.href?.includes('/unit/')) {
+                const unitNum = item.href.split('/').pop();
+                const unitKey = `b1-unit-${unitNum}`;
+                if (studentProfile?.unlockedUnits?.includes(unitKey)) {
+                    newItem.locked = false;
+                    return newItem;
+                }
+            }
+
+            if (index === 0) {
+                newItem.locked = false; // Start
+            } else if (index === 1) {
+                newItem.locked = false; // Ted Talks 0
+            } else if (index === 2) {
+                if (progressTed >= 100) newItem.locked = false; // Unit 1
+            } else if (index === 3) {
+                if (progressU1 >= 100) newItem.locked = false; // Review 1
+            } else if (index === 4) {
+                if (progressU1 >= 100) newItem.locked = false; // Test 1
+            } else if (index === 5) {
+                if (progressU1 >= 100) newItem.locked = false; // Unit 2
+            } else if (index === 6) {
+                if (progressU2 >= 100) newItem.locked = false; // Review 2
+            } else if (index === 7) {
+                if (progressU2 >= 100) newItem.locked = false; // Test 2
+            } else if (index === 8) {
+                if (progressU2 >= 100) newItem.locked = false; // Unit 3
+            } else if (index === 9) {
+                if (progressU3 >= 100) newItem.locked = false; // Review 3
+            } else if (index === 10) {
+                if (progressU3 >= 100) newItem.locked = false; // Test 3
+            } else if (index === 11) {
+                if (progressU3 >= 100) newItem.locked = false; // Unit 4
+            } else if (index === 12) {
+                if (progressU4 >= 100) newItem.locked = false; // Review 4
+            } else if (index === 13) {
+                if (progressU4 >= 100) newItem.locked = false; // Final Test
+            } else if (index === 14) {
+                if (progressU4 >= 100) newItem.locked = false; // Final
+            }
+
             return newItem;
         });
-
-        if (isAdmin) {
-          itemsWithLockState.forEach(item => item.locked = false);
-        } else {
-          // Unlock logic
-          itemsWithLockState[0].locked = false; // Start
-          itemsWithLockState[1].locked = false; // Ted Talks 0
-
-          if (progressTed >= 100) {
-              itemsWithLockState[2].locked = false; // Unit 1
-          }
-          if (progressU1 >= 100) {
-              itemsWithLockState[3].locked = false; // Review 1
-              itemsWithLockState[4].locked = false; // Test 1
-              itemsWithLockState[5].locked = false; // Unit 2
-          }
-          if (progressU2 >= 100) {
-              itemsWithLockState[6].locked = false; // Review 2
-              itemsWithLockState[7].locked = false; // Test 2
-              itemsWithLockState[8].locked = false; // Unit 3
-          }
-          if (progressU3 >= 100) {
-              itemsWithLockState[9].locked = false; // Review 3
-              itemsWithLockState[10].locked = false; // Test 3
-              itemsWithLockState[11].locked = false; // Unit 4
-          }
-          if (progressU4 >= 100) {
-              itemsWithLockState[12].locked = false; // Review 4
-              itemsWithLockState[13].locked = false; // Final Test
-              itemsWithLockState[14].locked = false; // Final
-          }
-        }
         
         itemsWithLockState.forEach(item => item.className = '');
         const nextActiveItem = itemsWithLockState.find(item => !item.locked && (item.progress ?? 0) < 100 && (item.type === 'class' || item.type === 'practice'));

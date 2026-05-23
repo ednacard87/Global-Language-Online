@@ -31,6 +31,7 @@ interface Student {
   unlockedQuizzes?: Record<string, boolean>;
   unlockedCourses?: string[];
   unlockedClasses?: string[];
+  unlockedUnits?: string[];
   selectedCourse?: 'ingles' | 'espanol' | 'kids';
 }
 
@@ -43,7 +44,14 @@ const classCountsMap = {
     a2: 20,
     b1: 20,
     b2: 20,
-    es: 15, // Default for spanish if needed
+    es: 15,
+};
+
+const unitCountsMap: Record<string, number> = {
+    a1: 3,
+    a2: 4,
+    b1: 4,
+    b2: 4,
 };
 
 const repasosCountMap = {
@@ -234,25 +242,59 @@ export default function AdminDashboardPage() {
     }
   };
 
+  const handleToggleUnitAccess = async (studentId: string, unitKey: string) => {
+    if (!firestore) return;
+    setUpdatingStudentId(studentId);
+    
+    const student = displayedStudents?.find(s => s.id === studentId);
+    if (!student) {
+        setUpdatingStudentId(null);
+        return;
+    }
+
+    const currentlyUnlocked = student.unlockedUnits || [];
+    const isUnlocked = currentlyUnlocked.includes(unitKey);
+
+    const updatedUnits = isUnlocked
+        ? currentlyUnlocked.filter(u => u !== unitKey)
+        : [...currentlyUnlocked, unitKey];
+    
+    const studentRef = doc(firestore, 'students', studentId);
+    const data = { unlockedUnits: updatedUnits };
+
+    try {
+        await setDoc(studentRef, data, { merge: true });
+        toast({
+          title: "Acceso a Unidad Actualizado",
+          description: `La unidad ha sido ${!isUnlocked ? 'desbloqueada' : 'bloqueada'}.`,
+        });
+    } catch(error: any) {
+        console.error("Error updating unit access:", error);
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: `No se pudo actualizar el acceso a la unidad: ${error.message}`,
+        });
+    } finally {
+        setUpdatingStudentId(null);
+    }
+  };
+
   const getReadableProgress = (student: Student): React.ReactNode => {
     const { progress, selectedCourse } = student;
     if (!progress || Object.keys(progress).length === 0) {
       return <span className="text-xs text-muted-foreground">Sin progreso</span>;
     }
 
-    // Filter progress entries to only show those relevant to the selected course
     const filteredProgress = Object.entries(progress).filter(([key]) => {
       const lowerKey = key.toLowerCase();
       if (selectedCourse === 'ingles') {
-        // Exclude anything explicitly for kids or spanish
         return !lowerKey.includes('kids') && !lowerKey.includes('espanol') && !lowerKey.startsWith('progress_es_');
       }
       if (selectedCourse === 'kids') {
-        // Only include kids-related keys
         return lowerKey.includes('kids');
       }
       if (selectedCourse === 'espanol') {
-        // Only include spanish-related keys
         return lowerKey.includes('espanol') || lowerKey.startsWith('progress_es_');
       }
       return true;
@@ -262,10 +304,9 @@ export default function AdminDashboardPage() {
       return <span className="text-xs text-muted-foreground">Sin progreso</span>;
     }
 
-    // Find the lesson with the highest progress that is less than 100
     const activeLesson = filteredProgress
       .filter(([, value]) => value < 100)
-      .sort((a, b) => b[1] - a[1])[0]; // Get the one with highest progress
+      .sort((a, b) => b[1] - a[1])[0];
 
     if (activeLesson) {
       const [key, value] = activeLesson;
@@ -326,9 +367,10 @@ export default function AdminDashboardPage() {
                                     <TableHead>Status</TableHead>
                                     <TableHead>Programa</TableHead>
                                     <TableHead>Misión Actual</TableHead>
-                                    <TableHead>Acceso a Cursos</TableHead>
-                                    <TableHead>Acceso a Clases</TableHead>
-                                    <TableHead>Acceso a Repasos</TableHead>
+                                    <TableHead>Cursos</TableHead>
+                                    <TableHead>Unidades</TableHead>
+                                    <TableHead>Clases</TableHead>
+                                    <TableHead>Repasos</TableHead>
                                     <TableHead className="text-right">Actions</TableHead>
                                 </TableRow>
                             </TableHeader>
@@ -374,9 +416,9 @@ export default function AdminDashboardPage() {
                                                             variant={(student.unlockedCourses || []).includes(courseId) ? 'secondary' : 'outline'}
                                                             onClick={() => handleToggleCourseAccess(student.id, courseId, student.unlockedCourses || [])}
                                                             disabled={updatingStudentId === student.id}
-                                                            className="h-8"
+                                                            className="h-8 text-[10px]"
                                                         >
-                                                            {(student.unlockedCourses || []).includes(courseId) ? <Unlock className="mr-2 h-4 w-4" /> : <Lock className="mr-2 h-4 w-4" />}
+                                                            {(student.unlockedCourses || []).includes(courseId) ? <Unlock className="mr-1 h-3 w-3" /> : <Lock className="mr-1 h-3 w-3" />}
                                                             {courseId.toUpperCase()}
                                                         </Button>
                                                     ))}
@@ -384,10 +426,36 @@ export default function AdminDashboardPage() {
                                             </TableCell>
                                             <TableCell>
                                                 <div className="flex flex-wrap gap-1 max-w-xs">
-                                                    {courseIdsToShow.map(course => (
-                                                        <DropdownMenu key={`${student.id}-${course}`}>
+                                                    {student.selectedCourse === 'ingles' && courseIdsToShow.map(course => (
+                                                        <DropdownMenu key={`${student.id}-unit-${course}`}>
                                                             <DropdownMenuTrigger asChild>
-                                                                <Button variant="outline" size="sm" className="h-8">{course.toUpperCase()}</Button>
+                                                                <Button variant="outline" size="sm" className="h-8 text-[10px]">{course.toUpperCase()} U</Button>
+                                                            </DropdownMenuTrigger>
+                                                            <DropdownMenuContent>
+                                                                {Array.from({ length: unitCountsMap[course] || 0 }, (_, i) => i + 1).map(unitNum => {
+                                                                    const unitKey = `${course}-unit-${unitNum}`;
+                                                                    return (
+                                                                        <DropdownMenuCheckboxItem
+                                                                            key={unitKey}
+                                                                            checked={(student.unlockedUnits || []).includes(unitKey)}
+                                                                            onCheckedChange={() => handleToggleUnitAccess(student.id, unitKey)}
+                                                                            disabled={updatingStudentId === student.id}
+                                                                        >
+                                                                            Unidad {unitNum}
+                                                                        </DropdownMenuCheckboxItem>
+                                                                    );
+                                                                })}
+                                                            </DropdownMenuContent>
+                                                        </DropdownMenu>
+                                                    ))}
+                                                </div>
+                                            </TableCell>
+                                            <TableCell>
+                                                <div className="flex flex-wrap gap-1 max-w-xs">
+                                                    {courseIdsToShow.map(course => (
+                                                        <DropdownMenu key={`${student.id}-class-${course}`}>
+                                                            <DropdownMenuTrigger asChild>
+                                                                <Button variant="outline" size="sm" className="h-8 text-[10px]">{course.toUpperCase()} C</Button>
                                                             </DropdownMenuTrigger>
                                                             <DropdownMenuContent>
                                                                 {student.selectedCourse === 'kids' ? (
@@ -402,7 +470,7 @@ export default function AdminDashboardPage() {
                                                                         </DropdownMenuCheckboxItem>
                                                                     ))
                                                                 ) : (
-                                                                    Array.from({ length: ((classCountsMap as any)[course] || 15) - 1 }, (_, i) => i + 2).map(classNum => { // Dynamic class count starting from 2
+                                                                    Array.from({ length: ((classCountsMap as any)[course] || 15) - 1 }, (_, i) => i + 2).map(classNum => {
                                                                         const classId = `${course}-${classNum}`;
                                                                         return (
                                                                             <DropdownMenuCheckboxItem
@@ -426,7 +494,7 @@ export default function AdminDashboardPage() {
                                                     {student.selectedCourse === 'kids' ? (
                                                         <DropdownMenu>
                                                             <DropdownMenuTrigger asChild>
-                                                                <Button variant="outline" size="sm" className="h-8 w-full">KIDS <ChevronDown className="ml-2 h-4 w-4"/></Button>
+                                                                <Button variant="outline" size="sm" className="h-8 w-full text-[10px]">KIDS <ChevronDown className="ml-1 h-3 w-3"/></Button>
                                                             </DropdownMenuTrigger>
                                                             <DropdownMenuContent>
                                                                 {Array.from({ length: repasosCountMap.kids }, (_, i) => {
@@ -448,7 +516,7 @@ export default function AdminDashboardPage() {
                                                     ) : student.selectedCourse === 'espanol' ? (
                                                         <DropdownMenu>
                                                             <DropdownMenuTrigger asChild>
-                                                                <Button variant="outline" size="sm" className="h-8 w-full">ESPAÑOL <ChevronDown className="ml-2 h-4 w-4"/></Button>
+                                                                <Button variant="outline" size="sm" className="h-8 w-full text-[10px]">ESPAÑOL <ChevronDown className="ml-1 h-3 w-3"/></Button>
                                                             </DropdownMenuTrigger>
                                                             <DropdownMenuContent>
                                                                 {Array.from({ length: repasosCountMap.espanol }, (_, i) => {
@@ -474,7 +542,7 @@ export default function AdminDashboardPage() {
                                                                 return (
                                                                     <DropdownMenu key={`${student.id}-repaso-${courseId}`}>
                                                                         <DropdownMenuTrigger asChild>
-                                                                            <Button variant="outline" size="sm" className="h-8 text-[10px]">{courseId.toUpperCase()}</Button>
+                                                                            <Button variant="outline" size="sm" className="h-8 text-[10px]">{courseId.toUpperCase()} R</Button>
                                                                         </DropdownMenuTrigger>
                                                                         <DropdownMenuContent>
                                                                             <DropdownMenuLabel>Repasos {courseId.toUpperCase()}</DropdownMenuLabel>
