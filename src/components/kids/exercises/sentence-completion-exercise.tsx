@@ -59,7 +59,7 @@ export function SentenceCompletionExercise({ data, onComplete, title, descriptio
             });
 
             if (!isSentenceCorrect) {
-                allCorrect = false;
+                allSentencesCorrect = false;
             }
             return isSentenceCorrect ? 'correct' : 'incorrect';
         });
