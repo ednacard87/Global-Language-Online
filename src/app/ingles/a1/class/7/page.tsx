@@ -90,6 +90,10 @@ export default function EngA1Class7Page() {
     const [vocabValidation, setVocabValidation] = useState<('correct' | 'incorrect' | 'unchecked')[]>(Array(vocabularyData.length).fill('unchecked'));
     const [canAdvanceVocab, setCanAdvanceVocab] = useState(false);
 
+    const handleTopicComplete = useCallback((completedKey: string) => {
+        setTopicToComplete(completedKey);
+    }, []);
+
     const initialLearningPath = useMemo((): Topic[] => [
         { key: 'vocabulary', name: 'Vocabulary (Basic Verbs)', icon: BookOpen, status: 'active' },
         { key: 'grammar', name: 'Grammar', icon: GraduationCap, status: 'locked' },
@@ -130,7 +134,7 @@ export default function EngA1Class7Page() {
         setSelectedTopic(savedSelectedTopic || firstActive?.key || path[0].key);
         setInitialLoadComplete(true);
         setIsInitialLoading(false);
-    }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading, isUserLoading, initialLoadComplete, t]);
+    }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading, isUserLoading, initialLoadComplete]);
     
     const progressValue = useMemo(() => {
         if (learningPath.length === 0) return 0;
@@ -147,10 +151,6 @@ export default function EngA1Class7Page() {
         }
         if (progressValue >= 100) window.dispatchEvent(new CustomEvent('progressUpdated'));
     }, [learningPath, isAdmin, progressValue, studentDocRef, initialLoadComplete, selectedTopic, studentProfile, isInitialLoading]);
-
-    const handleTopicComplete = useCallback((completedKey: string) => {
-        setTopicToComplete(completedKey);
-    }, []);
 
     useEffect(() => {
         if (!topicToComplete) return;
@@ -223,27 +223,27 @@ export default function EngA1Class7Page() {
                             <Card className="bg-slate-100 dark:bg-slate-900/50 border-border/50 rounded-[2rem] shadow-sm">
                                 <CardHeader><CardTitle className="text-primary text-xl font-black uppercase">1 - SIGNIFICADO</CardTitle></CardHeader>
                                 <CardContent className="space-y-4">
-                                    <p className="text-lg">THE corresponde a: <strong>“EL”, “LA”, “LOS”, “LAS”</strong>.</p>
+                                    <p className="text-lg text-slate-900">THE corresponde a: <strong>“EL”, “LA”, “LOS”, “LAS”</strong>.</p>
                                     <div className="grid sm:grid-cols-2 gap-4">
                                         <div className="p-4 bg-background/50 rounded-xl border space-y-1">
                                             <p className="text-xs font-bold text-muted-foreground uppercase">Masculino/Singular</p>
-                                            <p className="font-bold">THE BOY ( EL NIÑO)</p>
-                                            <p className="font-bold">THE BOOK ( EL LIBRO)</p>
+                                            <p className="font-bold text-slate-900">THE BOY ( EL NIÑO)</p>
+                                            <p className="font-bold text-slate-900">THE BOOK ( EL LIBRO)</p>
                                         </div>
                                         <div className="p-4 bg-background/50 rounded-xl border space-y-1">
                                             <p className="text-xs font-bold text-muted-foreground uppercase">Femenino/Singular</p>
-                                            <p className="font-bold">THE GIRL ( LA NIÑA)</p>
-                                            <p className="font-bold">THE TABLE ( LA MESA)</p>
+                                            <p className="font-bold text-slate-900">THE GIRL ( LA NIÑA)</p>
+                                            <p className="font-bold text-slate-900">THE TABLE ( LA MESA)</p>
                                         </div>
                                         <div className="p-4 bg-background/50 rounded-xl border space-y-1">
                                             <p className="text-xs font-bold text-muted-foreground uppercase">Masculino/Plural</p>
-                                            <p className="font-bold">THE BOYS (LOS NIÑOS)</p>
-                                            <p className="font-bold">THE BOOKS (LOS LIBROS)</p>
+                                            <p className="font-bold text-slate-900">THE BOYS (LOS NIÑOS)</p>
+                                            <p className="font-bold text-slate-900">THE BOOKS (LOS LIBROS)</p>
                                         </div>
                                         <div className="p-4 bg-background/50 rounded-xl border space-y-1">
                                             <p className="text-xs font-bold text-muted-foreground uppercase">Femenino/Plural</p>
-                                            <p className="font-bold">THE GIRLS (LAS NIÑAS)</p>
-                                            <p className="font-bold">THE TABLES (LAS MESAS)</p>
+                                            <p className="font-bold text-slate-900">THE GIRLS (LAS NIÑAS)</p>
+                                            <p className="font-bold text-slate-900">THE TABLES (LAS MESAS)</p>
                                         </div>
                                     </div>
                                 </CardContent>
@@ -254,11 +254,11 @@ export default function EngA1Class7Page() {
                                 <CardContent className="space-y-4">
                                     <div className="flex items-start gap-3 p-4 bg-background/50 rounded-xl border">
                                         <div className="h-8 w-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold">a</div>
-                                        <p className="text-lg">Precedida de <strong>consonante</strong> se pronuncia <strong>“DE”</strong>: THE LAMP (DE LAMP)</p>
+                                        <p className="text-lg text-slate-900">Precedida de <strong>consonante</strong> se pronuncia <strong>“DE”</strong>: THE LAMP (DE LAMP)</p>
                                     </div>
                                     <div className="flex items-start gap-3 p-4 bg-background/50 rounded-xl border">
                                         <div className="h-8 w-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold">b</div>
-                                        <p className="text-lg">Precedida de <strong>vocal</strong> se pronuncia <strong>“DI”</strong>: THE ENEMY (DI ENEMI)</p>
+                                        <p className="text-lg text-slate-900">Precedida de <strong>vocal</strong> se pronuncia <strong>“DI”</strong>: THE ENEMY (DI ENEMI)</p>
                                     </div>
                                 </CardContent>
                             </Card>
@@ -266,7 +266,7 @@ export default function EngA1Class7Page() {
                             <Card className="bg-slate-100 dark:bg-slate-900/50 border-border/50 rounded-[2rem] shadow-sm">
                                 <CardHeader><CardTitle className="text-primary text-xl font-black uppercase">3 - USO ESPECÍFICO</CardTitle></CardHeader>
                                 <CardContent className="space-y-4">
-                                    <p className="text-lg">Se usa cuando se habla de <strong>"algo en particular o específico"</strong>:</p>
+                                    <p className="text-lg text-slate-900">Se usa cuando se habla de <strong>"algo en particular o específico"</strong>:</p>
                                     <ul className="space-y-2 font-mono italic text-muted-foreground pl-4">
                                         <li>1. WHAT IS THE NAME OF THE RESTAURANT?</li>
                                         <li>2. DO YOU REMEMBER THE DAY WHEN WE WENT TO WASHINGTON?</li>
@@ -278,7 +278,7 @@ export default function EngA1Class7Page() {
                             <Card className="bg-slate-100 dark:bg-slate-900/50 border-border/50 rounded-[2rem] shadow-sm border-2 border-dashed border-destructive/20">
                                 <CardHeader><CardTitle className="text-destructive text-xl font-black uppercase">4 - NO SE USA</CardTitle></CardHeader>
                                 <CardContent className="space-y-4">
-                                    <p className="text-lg font-bold">NO se pone cuando se habla en general o se generaliza:</p>
+                                    <p className="text-lg font-bold text-slate-900">NO se pone cuando se habla en general o se generaliza:</p>
                                     <ul className="space-y-2 font-mono italic text-muted-foreground pl-4">
                                         <li className="flex items-center gap-2"><XCircle className="h-4 w-4 text-destructive" /> I LIKE FOOTBALL (No: I like the football)</li>
                                         <li className="flex items-center gap-2"><XCircle className="h-4 w-4 text-destructive" /> SHE LOVES MUSIC (No: she loves the music)</li>
@@ -304,15 +304,15 @@ export default function EngA1Class7Page() {
                                     <div className="grid sm:grid-cols-2 gap-4 text-center">
                                         <div className="p-6 bg-background rounded-2xl border-2 border-dashed">
                                             <p className="text-lg font-black text-primary">A + Consonant</p>
-                                            <p className="mt-1 italic">A car</p>
+                                            <p className="mt-1 italic text-slate-900">A car</p>
                                         </div>
                                         <div className="p-6 bg-background rounded-2xl border-2 border-dashed">
                                             <p className="text-lg font-black text-primary">An + Vowel</p>
-                                            <p className="mt-1 italic">An elevator</p>
+                                            <p className="mt-1 italic text-slate-900">An elevator</p>
                                         </div>
                                     </div>
                                     <div className="p-4 bg-primary/10 rounded-xl border border-primary/20 text-center">
-                                        <p className="font-bold">USO: Son utilizados para referirnos a algo o alguien en <span className="underline uppercase">Singular</span>.</p>
+                                        <p className="font-bold text-slate-900">USO: Son utilizados para referirnos a algo o alguien en <span className="underline uppercase">Singular</span>.</p>
                                     </div>
                                 </CardContent>
                             </Card>
@@ -330,7 +330,7 @@ export default function EngA1Class7Page() {
                                 <CardContent className="p-6 grid sm:grid-cols-2 gap-8">
                                     <div className="space-y-3">
                                         <div className="flex items-center gap-2 text-green-500 font-black"><Plus className="h-6 w-6" /> POSITIVE</div>
-                                        <ul className="space-y-1 text-lg font-medium pl-8">
+                                        <ul className="space-y-1 text-lg font-medium pl-8 text-slate-900 dark:text-slate-100">
                                             <li>Love : Encantar</li>
                                             <li>Like : Gustar</li>
                                             <li>Enjoy : Disfrutar</li>
@@ -339,7 +339,7 @@ export default function EngA1Class7Page() {
                                     </div>
                                     <div className="space-y-3">
                                         <div className="flex items-center gap-2 text-red-500 font-black"><Minus className="h-6 w-6" /> NEGATIVE</div>
-                                        <ul className="space-y-1 text-lg font-medium pl-8">
+                                        <ul className="space-y-1 text-lg font-medium pl-8 text-slate-900 dark:text-slate-100">
                                             <li>Dislike : No gustar</li>
                                             <li>Hate : Odiar</li>
                                         </ul>
@@ -350,8 +350,8 @@ export default function EngA1Class7Page() {
                             <Card className="bg-slate-100 dark:bg-slate-900/50 border-border/50 rounded-[2rem] shadow-sm border-2 border-brand-blue/30">
                                 <CardHeader><CardTitle className="text-brand-blue text-xl font-black uppercase">NOTICA: REALLY</CardTitle></CardHeader>
                                 <CardContent className="space-y-2">
-                                    <p className="text-lg">Para decir "de verdad", "realmente" o "muchísimo":</p>
-                                    <p className="text-2xl font-black text-center py-4 bg-background/50 rounded-xl border border-brand-blue/20">I REALLY LIKE WATER (+)</p>
+                                    <p className="text-lg text-slate-900 dark:text-slate-100">Para decir "de verdad", "realmente" o "muchísimo":</p>
+                                    <p className="text-2xl font-black text-center py-4 bg-background/50 rounded-xl border border-brand-blue/20 text-slate-900">I REALLY LIKE WATER (+)</p>
                                 </CardContent>
                             </Card>
 
@@ -370,17 +370,17 @@ export default function EngA1Class7Page() {
                             <Card className="bg-slate-100 dark:bg-slate-900/50 border-border/50 rounded-[2rem] shadow-sm">
                                 <CardHeader><CardTitle className="text-primary text-xl font-black uppercase">2 - CON VERBOS (DOS OPCIONES)</CardTitle></CardHeader>
                                 <CardContent className="space-y-4">
-                                    <p className="text-lg">Cuando van acompañados de otros verbos, puedes usar cualquiera de estas dos opciones sin variar el sentido:</p>
+                                    <p className="text-lg text-slate-900 dark:text-slate-100">Cuando van acompañados de otros verbos, puedes usar cualquiera de estas dos opciones sin variar el sentido:</p>
                                     <div className="grid sm:grid-cols-2 gap-4">
                                         <div className="p-6 bg-background rounded-2xl border-2 border-dashed">
                                             <p className="text-lg font-black text-primary">a) TO (Infinitive)</p>
-                                            <p className="mt-1 font-bold">LIKE + TO + VERB</p>
-                                            <p className="mt-2 text-sm italic">I LIKE TO COOK PASTA</p>
+                                            <p className="mt-1 font-bold text-slate-900">LIKE + TO + VERB</p>
+                                            <p className="mt-2 text-sm italic text-slate-700">I LIKE TO COOK PASTA</p>
                                         </div>
                                         <div className="p-6 bg-background rounded-2xl border-2 border-dashed">
                                             <p className="text-lg font-black text-primary">b) ING (Gerund)</p>
-                                            <p className="mt-1 font-bold">LIKE + VERB-ING</p>
-                                            <p className="mt-2 text-sm italic">I LIKE COOKING PASTA</p>
+                                            <p className="mt-1 font-bold text-slate-900">LIKE + VERB-ING</p>
+                                            <p className="mt-2 text-sm italic text-slate-700">I LIKE COOKING PASTA</p>
                                         </div>
                                     </div>
                                 </CardContent>
@@ -393,16 +393,16 @@ export default function EngA1Class7Page() {
                                         <h4 className="font-bold text-foreground underline">CON SUSTANTIVOS (NOUNS)</h4>
                                         <div className="p-4 bg-background/50 rounded-xl border font-mono">
                                             <p className="text-primary font-bold">Pronombre + prefer + sustantivo + TO + sustantivo</p>
-                                            <p className="mt-2 text-sm italic">yo prefiero la pizza a la hamburguesa</p>
-                                            <p className="font-bold">I prefer pizza TO hamburger</p>
+                                            <p className="mt-2 text-sm italic text-slate-700">yo prefiero la pizza a la hamburguesa</p>
+                                            <p className="font-bold text-slate-900">I prefer pizza TO hamburger</p>
                                         </div>
                                     </div>
                                     <div className="space-y-2">
                                         <h4 className="font-bold text-foreground underline">CON VERBOS</h4>
                                         <div className="p-4 bg-background/50 rounded-xl border font-mono">
                                             <p className="text-primary font-bold">Pronombre + prefer + verbo-ING + TO + verbo-ING</p>
-                                            <p className="mt-2 text-sm italic">yo prefiero ir a la playa que quedarme en la piscina</p>
-                                            <p className="font-bold">I prefer GOING to the beach TO STAYING at the pool</p>
+                                            <p className="mt-2 text-sm italic text-slate-700">yo prefiero ir a la playa que quedarme en la piscina</p>
+                                            <p className="font-bold text-slate-900">I prefer GOING to the beach TO STAYING at the pool</p>
                                         </div>
                                     </div>
                                 </CardContent>
@@ -415,7 +415,7 @@ export default function EngA1Class7Page() {
             case 'ex3': return <SimpleTranslationExercise exerciseKey="c7_ex3" course="a1" onComplete={() => handleTopicComplete('ex3')} title="Exercise 3" vocabulary={{"manzana": "apple", "sandia": "watermelon", "primo": "cousin", "apodo": "nickname", "viejos": "old", "enojados": "angry", "hermano": "brother"}} highlightVocabulary={true} />;
             case 'ex4': return <SimpleTranslationExercise exerciseKey="c7_ex4" course="a1" onComplete={() => handleTopicComplete('ex4')} title="Exercise 4" vocabulary={{"preferir": "prefer", "calor": "heat", "frio": "cold", "terror": "horror", "ajo": "garlic", "metal": "metal", "novelas": "soap operas", "fresas": "strawberries", "pintar": "paint", "mentiras": "lies", "carpintería": "carpentry", "espinaca": "spinach", "remolacha": "beetroot", "pueblo": "town", "ciudad": "city"}} highlightVocabulary={true} />;
             case 'create1': return <CreativeWritingExercise title="Create 1" prompts={[{ id: 'p1', question: '1- WHAT DO YOU LIKE AND WHAT DO YOU DISLIKE?' }, { id: 'p2', question: '2- PIENSA EN ALGUIEN Y ESCRIBE SUS GUSTOS.' }]} onComplete={() => handleTopicComplete('create1')} studentDocRef={studentDocRef} initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.writingEx5} savePath={`lessonProgress.${progressStorageVersion}.writingEx5`} />;
-            case 'ex6': return <SentenceCompletionExercise title="Exercise 6" description="Inserta el \"THE\" donde sea necesario." data={exercise6Data} onComplete={() => handleTopicComplete('ex6')} />;
+            case 'ex6': return <SentenceCompletionExercise title="Exercise 6" description='Inserta el "THE" donde sea necesario.' data={exercise6Data} onComplete={() => handleTopicComplete('ex6')} />;
             case 'ex7': return <SimpleTranslationExercise exerciseKey="c7_ex7" course="a1" onComplete={() => handleTopicComplete('ex7')} title="Exercise 7: A vs AN" vocabulary={{"adolescente": "teenager", "soleado": "sunny", "sombrilla": "umbrella", "honesta": "honest", "actriz": "actress", "sillón": "armchair", "policia": "policeman", "brazo": "arm", "negocios": "business"}} highlightVocabulary={true} />;
             case 'create2': return <CreativeWritingExercise title="Create 2" description="WHAT DO YOU LIKE AND WHAT DO YOU DISLIKE OF MEDELLIN? (5 SENTENCES)" prompts={[{ id: 'p1', question: 'DESCRIBE TU CIUDAD (GUSTOS).' }]} onComplete={() => handleTopicComplete('create2')} studentDocRef={studentDocRef} initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.writingEx8} savePath={`lessonProgress.${progressStorageVersion}.writingEx8`} />;
             case 'ex9': return <SimpleTranslationExercise exerciseKey="c7_ex9" course="a1" onComplete={() => handleTopicComplete('ex9')} title="Exercise 9" vocabulary={{"carne": "meat", "restaurante": "restaurant", "chino": "chinese", "tenis": "tennis", "futbol": "soccer/football", "lleno": "full", "arte": "art", "ajo": "garlic"}} highlightVocabulary={true} />;
