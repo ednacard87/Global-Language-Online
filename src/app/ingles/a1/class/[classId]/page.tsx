@@ -380,6 +380,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             savedSelectedTopic = savedData.lastSelectedTopic || '';
         }
 
+        // --- Sequential Locking Repair ---
         let lastDone = true;
         for(let i=0; i < path.length; i++) {
             if (lastDone && path[i].status === 'locked') {
@@ -400,8 +401,8 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         }
 
         setLearningPath(path);
-        const firstActive = path.find(p => p.status === 'active') || path.flatMap(p => p.subItems || []).find(sp => sp?.status === 'active');
-        setSelectedTopic(savedSelectedTopic || firstActive?.key || path[0].key);
+        const firstA = path.find(p => p.status === 'active') || path.flatMap(p => p.subItems || []).find(sp => sp?.status === 'active');
+        setSelectedTopic(savedSelectedTopic || firstA?.key || path[0].key);
 
         const newAnswers: {[key: string]: string[]} = {};
         const newValidation: {[key: string]: ('correct' | 'incorrect' | 'unchecked')[]} = {};
@@ -461,7 +462,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             }));
           
             let topicFound = false;
-            for (let i = 0; i < newPath.length && !topicFound; i++) {
+            for (let i = 0; i < newPath.length && !found; i++) {
                 const currentTopic = newPath[i];
   
                 if (currentTopic.key === topicToComplete) {
@@ -767,7 +768,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             <main className="flex-1 p-4 md:p-8">
                 <div className="max-w-7xl mx-auto">
                     <div className="mb-8 text-left">
-                        <Link href="/ingles/a1" className="hover:underline text-sm text-white/80">Volver al curso A1</Link>
+                        <Link href="/ingles/a1/unit/1" className="hover:underline text-sm text-white/80">Volver a la Unidad 1</Link>
                         <h1 className="text-4xl font-bold text-white dark:text-primary [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">Clase 1 (A1)</h1>
                     </div>
                     <div className="grid gap-8 md:grid-cols-12">
@@ -1208,7 +1209,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                                 <div className="p-6 bg-slate-100 dark:bg-slate-800/50 rounded-[2rem] border space-y-3 font-mono text-base">
                                     <p><span className="font-bold text-green-500 mr-2">(+)</span> pronoun + verb + Complement</p>
                                     <p><span className="font-bold text-red-500 mr-2">(-)</span> pronoun + Do/Does + Not +verb + Complement</p>
-                                    <p><span className="font-bold text-blue-500 mr-2">(?)</span> Do/Does + pronoun + verb + Complement ?</p>
+                                    <p><span className="font-bold text-lg text-blue-500 mr-2">(?)</span> Do/Does + pronoun + verb + Complement ?</p>
                                     <Separator className="my-2" />
                                     <p className="font-sans font-semibold pt-2 text-primary">Short Answers = Respuestas Cortas</p>
                                     <p><span className="font-bold text-green-500 mr-2">(+A)</span> Yes, pronoun + Do/Does</p>
@@ -1267,7 +1268,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
           <main className="flex-1 p-4 md:p-8">
             <div className="max-w-7xl mx-auto">
               <div className="mb-8 text-left">
-                <Link href={`/ingles/a1/unit/1`} className="hover:underline text-sm text-white/80">Volver a la unidad 1</Link>
+                <Link href={`/ingles/a1/unit/1`} className="hover:underline text-sm text-white/80">Volver a la Unidad 1</Link>
                 <h1 className="text-4xl font-bold text-white dark:text-primary [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">Clase 2 (A1)</h1>
               </div>
               <div className="grid gap-8 md:grid-cols-12">
