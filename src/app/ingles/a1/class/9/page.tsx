@@ -2,8 +2,10 @@
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import Link from 'next/link';
+import { useParams, useRouter } from 'next/navigation';
 import { DashboardHeader } from '@/components/dashboard/header';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, Info, Gamepad2, MessageSquare, Pencil, Loader2, Home, ArrowRight, Lightbulb } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
@@ -221,7 +223,7 @@ export default function EngA1Class9Page() {
                 );
             case 'grammar': return <Card className="p-6"><CardTitle>DEMOSTRATIVOS</CardTitle><CardContent className="pt-4"><p>THIS, THESE (Cerca) | THAT, THOSE (Lejos).</p></CardContent></Card>;
             case 'ex1': return <SimpleTranslationExercise exerciseKey="c9_ex1" course="a1" onComplete={() => setTopicToComplete('ex1')} />;
-            case 'dialogue1': return <LargeTextTranslation title="Dialogue 1" phrases={dialogue1Phrases} vocabulary={dialogue1Vocab} onComplete={() => setTopicToComplete('dialogue1')} />;
+            case 'dialogue1': return <LargeTextTranslation title="Dialogue 1" phrases={dialogue1Phrases} onComplete={() => setTopicToComplete('dialogue1')} />;
             case 'vocab_game': return <VocabularyMatchingGame data={[...vocabularyData.weather, ...vocabularyData.house]} onComplete={() => setTopicToComplete('vocab_game')} />;
             case 'dialogue2': return <DialogueCompletionExercise title="Dialogue 2" description="Completa con demostrativos." dialogue={dialogue2Data} onComplete={() => setTopicToComplete('dialogue2')} />;
             default: return <div className="flex justify-center items-center h-48"><Loader2 className="animate-spin text-primary" /></div>;
@@ -233,7 +235,10 @@ export default function EngA1Class9Page() {
             <DashboardHeader />
             <main className="flex-1 p-4 md:p-8">
                 <div className="max-w-7xl mx-auto">
-                    <div className="mb-8 text-left text-white"><Link href="/ingles/a1" className="hover:underline text-sm">Volver al curso A1</Link><h1 className="text-4xl font-bold [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">Clase 9</h1></div>
+                    <div className="mb-8 text-left text-white">
+                        <Link href="/ingles/a1/unit/2" className="hover:underline text-sm">Volver a la Unidad 2</Link>
+                        <h1 className="text-4xl font-bold [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">Clase 9</h1>
+                    </div>
                     <div className="grid gap-8 md:grid-cols-12">
                         <div className="md:col-span-9">{renderContent()}</div>
                         <div className="md:col-span-3 text-left">
