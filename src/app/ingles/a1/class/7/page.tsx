@@ -45,7 +45,7 @@ const vocabularyData = [
     { spanish: 'COMPRAR', english: 'TO BUY' },
     { spanish: 'VENIR', english: 'TO COME' },
     { spanish: 'COSTAR', english: 'TO COST' },
-    { spanish: 'CORTAR', english: 'TO CUT' },
+    { spanish: 'COSTAR (PASADO)', english: 'COST' },
     { spanish: 'HACER', english: 'TO DO' },
     { spanish: 'DIBUJAR', english: 'TO DRAW' },
     { spanish: 'BEBER', english: 'TO DRINK' },
@@ -217,7 +217,7 @@ export default function EngA1Class7Page() {
                 return (
                     <div className="space-y-6 text-left">
                         <h2 className="text-3xl font-black text-center text-primary uppercase tracking-tighter">THE DEFINITE ARTICLE “THE” 🚀</h2>
-                        <p className="text-center text-muted-foreground font-medium uppercase tracking-widest text-sm">El Artículo Determinado "THE"</p>
+                        <p className="text-center text-slate-700 dark:text-slate-300 font-bold uppercase tracking-widest text-sm">EL ARTICULO DETERMINADO "THE"</p>
 
                         <div className="grid grid-cols-1 gap-6">
                             <Card className="bg-slate-100 dark:bg-slate-900/50 border-border/50 rounded-[2rem] shadow-sm">
@@ -323,7 +323,7 @@ export default function EngA1Class7Page() {
                 return (
                     <div className="space-y-6 text-left">
                         <h2 className="text-3xl font-black text-center text-primary uppercase tracking-tighter">LIKES AND DISLIKES 🚀</h2>
-                        <p className="text-center text-muted-foreground font-medium uppercase tracking-widest text-sm">(Verbos de Preferencia)</p>
+                        <p className="text-center text-slate-700 dark:text-slate-300 font-bold uppercase tracking-widest text-sm">(VERBOS DE PREFERENCIA)</p>
 
                         <div className="grid grid-cols-1 gap-6">
                             <Card className="bg-slate-100 dark:bg-slate-900/50 border-border/50 rounded-[2rem] shadow-sm">
