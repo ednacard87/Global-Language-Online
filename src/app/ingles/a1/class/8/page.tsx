@@ -165,6 +165,15 @@ export default function EngA1Class8Page() {
         setTopicToComplete(null);
     }, [topicToComplete, toast]);
 
+    const handleTopicSelect = (topicKey: string) => {
+        const t = learningPath.find(it => it.key === topicKey);
+        if (!isAdmin && t?.status === 'locked') { 
+            toast({ variant: "destructive", title: "Contenido Bloqueado" }); 
+            return; 
+        }
+        setSelectedTopic(topicKey);
+    };
+
     const renderContent = () => {
         if (isInitialLoading) return <div className="flex justify-center items-center h-64"><Loader2 className="animate-spin" /></div>;
         const topic = learningPath.find(t => t.key === selectedTopic);
@@ -174,19 +183,19 @@ export default function EngA1Class8Page() {
                     <Card className="shadow-soft border-2 border-brand-purple">
                         <CardHeader><CardTitle>Vocabulary</CardTitle></CardHeader>
                         <CardContent><div className="grid grid-cols-2 gap-2">{vocabularyData.map((v, i) => (<React.Fragment key={i}><div className="p-3 border rounded-lg bg-muted/20">{v.spanish}</div><Input value={vocabAnswers[i]} onChange={e => { const n = [...vocabAnswers]; n[i] = e.target.value; setVocabAnswers(n); setVocabValidation(vv => { const nv = [...vv]; nv[i] = 'unchecked'; return nv; }); }} className={cn(vocabValidation[i] === 'correct' ? 'border-green-500' : vocabValidation[i] === 'incorrect' ? 'border-red-500' : '')} /></React.Fragment>))}</div></CardContent>
-                        <CardFooter className="flex justify-between"><Button onClick={() => { let all = true; const nv = vocabularyData.map((v, i) => { const c = v.english.some(e => e.toLowerCase() === vocabAnswers[i].trim().toLowerCase()); if (!c) all = false; return c ? 'correct' : 'incorrect'; }); setVocabValidation(nv); if (all) toast({ title: "¡Perfecto!" }); }}>Verificar</Button><Button onClick={() => setTopicToComplete('vocabulary')} disabled={!vocabValidation.every(v => v === 'correct') && !isAdmin}>Avanzar</Button></CardFooter>
+                        <CardFooter className="flex justify-between"><Button onClick={() => { let all = true; const nv = vocabularyData.map((v, i) => { const c = v.english.some(e => e.toLowerCase() === vocabAnswers[i].trim().toLowerCase()); if (!c) all = false; return c ? 'correct' : 'incorrect'; }); setVocabValidation(nv); if (all) toast({ title: "¡Perfecto!" }); }}>Verificar</Button><Button onClick={() => handleTopicComplete('vocabulary')} disabled={!vocabValidation.every(v => v === 'correct') && !isAdmin}>Avanzar</Button></CardFooter>
                     </Card>
                 );
-            case 'dictation1': return <LinesWritingExercise title="Dictation 1" description="Escribe las frases dictadas." onComplete={() => setTopicToComplete('dictation1')} studentDocRef={studentDocRef} initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.dictation1} savePath={`lessonProgress.${progressStorageVersion}.dictation1`} />;
-            case 'dictation2': return <LinesWritingExercise title="Dictation 2" description="Escribe las frases dictadas." onComplete={() => setTopicToComplete('dictation2')} studentDocRef={studentDocRef} initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.dictation2} savePath={`lessonProgress.${progressStorageVersion}.dictation2`} />;
-            case 'ex1': return <SimpleTranslationExercise exerciseKey="c8_ex1" course="a1" onComplete={() => setTopicToComplete('ex1')} />;
-            case 'ex2': return <SimpleTranslationExercise exerciseKey="c8_ex2" course="a1" onComplete={() => setTopicToComplete('ex2')} />;
-            case 'ex3': return <SimpleTranslationExercise exerciseKey="c8_ex3" course="a1" onComplete={() => setTopicToComplete('ex3')} />;
-            case 'ex4': return <SimpleTranslationExercise exerciseKey="c8_ex4" course="a1" onComplete={() => setTopicToComplete('ex4')} />;
-            case 'ex5': return <SentenceCompletionExercise title="Exercise 5" description="Completa con THE." data={exercise5Data} onComplete={() => setTopicToComplete('ex5')} />;
-            case 'vocab_game': return <VocabularyMatchingGame data={vocabularyData} onComplete={() => setTopicToComplete('vocab_game')} />;
-            case 'writing1': return <CreativeWritingExercise title="Writing 1" description="About your school." prompts={[{ id: 'w1', question: '' }]} onComplete={() => setTopicToComplete('writing1')} studentDocRef={studentDocRef} initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.writing1} savePath={`lessonProgress.${progressStorageVersion}.writing1`} />;
-            case 'writing2': return <LinesWritingExercise title="Writing 2" description="Escribe frases posesivas." onComplete={() => setTopicToComplete('writing2')} studentDocRef={studentDocRef} lineCount={6} initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.writing2} savePath={`lessonProgress.${progressStorageVersion}.writing2`} />;
+            case 'dictation1': return <LinesWritingExercise title="Dictation 1" description="Escribe las frases dictadas." onComplete={() => handleTopicComplete('dictation1')} studentDocRef={studentDocRef} initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.dictation1} savePath={`lessonProgress.${progressStorageVersion}.dictation1`} />;
+            case 'dictation2': return <LinesWritingExercise title="Dictation 2" description="Escribe las frases dictadas." onComplete={() => handleTopicComplete('dictation2')} studentDocRef={studentDocRef} initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.dictation2} savePath={`lessonProgress.${progressStorageVersion}.dictation2`} />;
+            case 'ex1': return <SimpleTranslationExercise exerciseKey="c8_ex1" course="a1" onComplete={() => handleTopicComplete('ex1')} />;
+            case 'ex2': return <SimpleTranslationExercise exerciseKey="c8_ex2" course="a1" onComplete={() => handleTopicComplete('ex2')} />;
+            case 'ex3': return <SimpleTranslationExercise exerciseKey="c8_ex3" course="a1" onComplete={() => handleTopicComplete('ex3')} />;
+            case 'ex4': return <SimpleTranslationExercise exerciseKey="c8_ex4" course="a1" onComplete={() => handleTopicComplete('ex4')} />;
+            case 'ex5': return <SentenceCompletionExercise title="Exercise 5" description="Completa con THE." data={exercise5Data} onComplete={() => handleTopicComplete('ex5')} />;
+            case 'vocab_game': return <VocabularyMatchingGame data={vocabularyData} onComplete={() => handleTopicComplete('vocab_game')} />;
+            case 'writing1': return <CreativeWritingExercise title="Writing 1" description="About your school." prompts={[{ id: 'w1', question: '' }]} onComplete={() => handleTopicComplete('writing1')} studentDocRef={studentDocRef} initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.writing1} savePath={`lessonProgress.${progressStorageVersion}.writing1`} />;
+            case 'writing2': return <LinesWritingExercise title="Writing 2" description="Escribe frases posesivas." onComplete={() => handleTopicComplete('writing2')} studentDocRef={studentDocRef} lineCount={6} initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.writing2} savePath={`lessonProgress.${progressStorageVersion}.writing2`} />;
             default: return <div className="flex justify-center items-center h-48"><Loader2 className="animate-spin text-primary" /></div>;
         }
     };
