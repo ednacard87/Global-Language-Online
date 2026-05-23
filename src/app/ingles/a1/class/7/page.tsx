@@ -429,11 +429,12 @@ export default function EngA1Class7Page() {
             <main className="flex-1 p-4 md:p-8">
                 <div className="max-w-7xl mx-auto">
                     <div className="mb-8 text-left text-white">
-                        <Link href="/ingles/a1/unit/2" className="hover:underline text-sm">Volver a la Unidad 2</Link>
+                        <Link href="/ingles/a1/unit/2" className="hover:underline text-sm font-bold text-primary">Volver a la Unidad 2</Link>
                         <h1 className="text-4xl font-bold [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">Clase 7 (A1)</h1>
                     </div>
                     <div className="grid gap-8 md:grid-cols-12">
-                        <div className="md:col-span-3 md:order-1 text-left">
+                        <div className="md:col-span-9 md:order-1">{renderContent()}</div>
+                        <div className="md:col-span-3 md:order-2 text-left">
                             <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
                                 <CardHeader><CardTitle>Aventura</CardTitle></CardHeader>
                                 <CardContent>
@@ -448,7 +449,6 @@ export default function EngA1Class7Page() {
                                 </CardContent>
                             </Card>
                         </div>
-                        <div className="md:col-span-9 md:order-2">{renderContent()}</div>
                     </div>
                 </div>
             </main>
