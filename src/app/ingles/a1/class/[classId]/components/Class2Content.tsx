@@ -97,7 +97,7 @@ export default function Class2Content() {
     const { user, isUserLoading } = useUser();
     const firestore = useFirestore();
 
-    const progressStorageKey = 'progress_a1_eng_u1_c2_v100_blindado';
+    const progressStorageKey = 'progress_a1_eng_u1_c2_v101_blindado';
     const mainProgressKey = 'progress_a1_eng_unit_1_class_2';
 
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
@@ -134,6 +134,10 @@ export default function Class2Content() {
         },
         { key: 'reading', name: 'Reading', icon: BookOpen, status: 'locked' }
     ], []);
+
+    const handleTopicComplete = useCallback((completedKey: string) => {
+        setTopicToComplete(completedKey);
+    }, []);
 
     useEffect(() => {
         if (isProfileLoading || isUserLoading || !studentProfile) return;
@@ -221,7 +225,7 @@ export default function Class2Content() {
                     if (subIdx !== -1) {
                         if (curT.subItems[subIdx].status !== 'completed') curT.subItems[subIdx].status = 'completed';
                         const nextSubIdx = subIdx + 1;
-                        if (nextSubIdx < currentPath.length && currentPath[i].subItems![nextSubIdx].status === 'locked') {
+                        if (nextSubIdx < newP[i].subItems!.length && newP[i].subItems![nextSubIdx].status === 'locked') {
                             newP[i].subItems![nextSubIdx].status = 'active'; nextToSel = newP[i].subItems![nextSubIdx].key; win = true;
                         } else if (newP[i].subItems!.every((sub: any) => sub.status === 'completed')) {
                             if (curT.status !== 'completed') curT.status = 'completed';

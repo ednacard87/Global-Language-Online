@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { cn } from '@/lib/utils';
-import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, Info, Loader2, ArrowRight, Mic, Pencil } from 'lucide-react';
+import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, Info, Loader2, ArrowRight, Mic, Pencil, Check, X } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
 import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
@@ -21,11 +21,27 @@ const vocabularyData = {
     verbos: [
         { spanish: 'SALTAR', english: 'JUMP' }, { spanish: 'QUERER', english: 'WANT' },
         { spanish: 'PODER', english: 'CAN' }, { spanish: 'DEBER', english: 'SHOULD' },
+        { spanish: 'VIAJAR', english: 'TRAVEL' }, { spanish: 'LLAMAR', english: 'CALL' },
+        { spanish: 'MANEJAR', english: 'DRIVE' }, { spanish: 'COCINAR', english: 'COOK' },
+        { spanish: 'LEVANTARSE', english: 'GET UP' }, { spanish: 'VENIR', english: 'COME' },
+        { spanish: 'LLEGAR', english: 'ARRIVE' },
     ],
     adjetivos: [
         { spanish: 'ABURRIDO', english: 'BORED' }, { spanish: 'CANSADO', english: 'TIRED' },
+        { spanish: 'HAMBRIENTO', english: 'HUNGRY' }, { spanish: 'ENOJADO', english: 'ANGRY' },
     ]
 };
+
+const exercise1Data = [
+    { incorrect: "SHE DONT ANSWER MY QUESTION", translationHint: "(ELLA NO CONTESTA MIS PREGUNTAS)", correctAnswers: ["she does not answer my questions", "she doesn't answer my questions"] },
+    { incorrect: "WE DONT GOES TO SCHOL THE SONDAYS.", translationHint: "", correctAnswers: ["we do not go to school on sundays", "we don't go to school on sundays"] },
+    { incorrect: "DOIS JOSEPH LIKES MUVIS?", translationHint: "(¿A JOSEPH LE GUSTAN LAS PELÍCULAS?)", correctAnswers: ["does joseph like movies?"] },
+];
+
+const class5Exercise2Data = [
+    { spanish: "EL BEBE LECHE", answers: { affirmative: ["he drinks milk"], negative: ["he does not drink milk", "he doesn't drink milk"], interrogative: ["does he drink milk?"] } },
+    { spanish: "YO NADO LOS DOMINGOS", answers: { affirmative: ["i swim on sundays"], negative: ["i do not swim on sundays", "i don't swim on sundays"], interrogative: ["do i swim on sundays?"] } },
+];
 
 interface Topic {
     key: string;
@@ -42,13 +58,17 @@ export default function Class5Content() {
     const { user, isUserLoading } = useUser();
     const firestore = useFirestore();
 
-    const progressStorageKey = 'progress_a1_eng_u1_c5_v100_blindado';
+    const progressStorageKey = 'progress_a1_eng_u1_c5_v101_blindado';
     const mainProgressKey = 'progress_a1_eng_unit_1_class_5';
 
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
     const [selectedTopic, setSelectedTopic] = useState<string>('vocabulary');
     const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
     const [isInitialLoading, setIsInitialLoading] = useState(true);
+
+    const [vocabAnswers, setVocabAnswers] = useState<{[key: string]: string[]}>({});
+    const [vocabValidation, setVocabValidation] = useState<{[key: string]: ('correct' | 'incorrect' | 'unchecked')[]}>({});
+    const [canAdvanceVocab, setCanAdvanceVocab] = useState(false);
 
     const studentDocRef = useMemoFirebase(() => (user ? doc(firestore, 'students', user.uid) : null), [firestore, user]);
     const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{role?: string, lessonProgress?: any, progress?: any}>(studentDocRef);
@@ -60,6 +80,10 @@ export default function Class5Content() {
         { key: 'ejercicio-1', name: 'Ejercicio 1', icon: PenSquare, status: 'locked' },
         { key: 'ejercicio-vocabulario', name: 'Ejercicio Vocabulario', icon: PenSquare, status: 'locked' },
     ], []);
+
+    const handleTopicComplete = useCallback((completedKey: string) => {
+        setTopicToComplete(completedKey);
+    }, []);
 
     useEffect(() => {
         if (isProfileLoading || isUserLoading || !studentProfile) return;
@@ -75,6 +99,13 @@ export default function Class5Content() {
         for(let i=0; i < path.length; i++) { if (lastDone && path[i].status === 'locked') path[i].status = 'active'; lastDone = path[i].status === 'completed'; }
         setLearningPath(path);
         setSelectedTopic(savedST || path.find(p => p.status === 'active')?.key || 'vocabulary');
+
+        const initAnswers: any = {}; const initVal: any = {};
+        Object.keys(vocabularyData).forEach(cat => {
+            initAnswers[cat] = Array((vocabularyData as any)[cat].length).fill('');
+            initVal[cat] = Array((vocabularyData as any)[cat].length).fill('unchecked');
+        });
+        setVocabAnswers(initAnswers); setVocabValidation(initVal);
         setIsInitialLoading(false);
     }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading, isUserLoading]);
 
@@ -114,24 +145,42 @@ export default function Class5Content() {
         if (key === 'nota-importante' || key === 'vocabulary') handleTopicComplete(key);
     };
 
-    const handleTopicComplete = (key: string) => setTopicToComplete(key);
+    const handleVocabChange = (cat: string, idx: number, val: string) => {
+        const na = { ...vocabAnswers }; na[cat][idx] = val; setVocabAnswers(na);
+        const nv = { ...vocabValidation }; nv[cat][idx] = 'unchecked'; setVocabValidation(nv);
+        setCanAdvanceVocab(false);
+    };
+
+    const handleCheckVocab = () => {
+        let ok = false; const nv: any = {};
+        Object.keys(vocabularyData).forEach(cat => {
+            nv[cat] = (vocabularyData as any)[cat].map((item: any, idx: number) => {
+                const uv = (vocabAnswers[cat][idx] || '').trim().toUpperCase();
+                const cv = item.english.toUpperCase();
+                let res = uv === cv || uv === `TO ${cv}`;
+                if (res) ok = true; return res ? 'correct' : 'incorrect';
+            });
+        });
+        setVocabValidation(nv); if (ok) setCanAdvanceVocab(true);
+    };
 
     const renderContent = () => {
         if (isInitialLoading) return <div className="flex justify-center items-center h-64"><Loader2 className="animate-spin" /></div>;
         switch (selectedTopic) {
             case 'vocabulary':
                 return (
-                    <Card className="p-6 text-left">
+                    <Card className="p-6 text-left border-2 border-brand-purple">
                         <CardHeader><CardTitle>Vocabulario Clase 5</CardTitle></CardHeader>
                         <CardContent className="space-y-4">
                             {Object.entries(vocabularyData).map(([cat, items]) => (
-                                <div key={cat}><h4 className="font-bold capitalize">{cat}</h4><div className="grid grid-cols-2 gap-2">{items.map((item, i) => (<React.Fragment key={i}><div className="p-2 border rounded">{item.spanish}</div><div className="p-2 border rounded bg-primary/5 font-bold">{item.english}</div></React.Fragment>))}</div></div>
+                                <div key={cat}><h4 className="font-bold capitalize">{cat}</h4><div className="grid grid-cols-2 gap-2">{items.map((item, i) => (<React.Fragment key={i}><div className="p-2 border rounded">{item.spanish}</div><Input value={vocabAnswers[cat][i]} onChange={e => handleVocabChange(cat, i, e.target.value)} className={cn(vocabValidation[cat][i] === 'correct' ? 'border-green-500' : vocabValidation[cat][i] === 'incorrect' ? 'border-red-500' : '')} /></React.Fragment>))}</div></div>
                             ))}
                         </CardContent>
-                        <CardFooter><Button onClick={() => handleTopicComplete('vocabulary')}>Avanzar</Button></CardFooter>
+                        <CardFooter className="flex justify-between"><Button onClick={handleCheckVocab}>Verificar</Button><Button onClick={() => handleTopicComplete('vocabulary')} disabled={!canAdvanceVocab && !isAdmin}>Avanzar</Button></CardFooter>
                     </Card>
                 );
-            case 'nota-importante': return <Card className="p-6"><CardTitle>Notas de Gramática</CardTitle><CardContent className="pt-4"><p>Recuerda el uso de "TO" entre dos verbos y las reglas de "GO".</p></CardContent><CardFooter><Button onClick={() => handleTopicComplete('nota-importante')}>Entendido</Button></CardFooter></Card>;
+            case 'nota-importante': return <Card className="p-6 text-left border-2 border-brand-purple"><CardTitle>Notas de Gramática</CardTitle><CardContent className="pt-4 space-y-4"><p>Recuerda el uso de "TO" entre dos verbos y las reglas de "GO".</p></CardContent><CardFooter><Button onClick={() => handleTopicComplete('nota-importante')}>Entendido</Button></CardFooter></Card>;
+            case 'ejercicio-1': return <ErrorCorrectionExercise exerciseData={exercise1Data} onComplete={() => handleTopicComplete('ejercicio-1')} title="Ejercicio 1" />;
             case 'ejercicio-vocabulario': return <Class5VocabExercise onComplete={() => handleTopicComplete('ejercicio-vocabulario')} />;
             default: return null;
         }

@@ -104,7 +104,7 @@ export default function Class1Content() {
     const { user, isUserLoading } = useUser();
     const firestore = useFirestore();
 
-    const progressStorageKey = 'progress_a1_eng_u1_c1_v100_blindado';
+    const progressStorageKey = 'progress_a1_eng_u1_c1_v101_blindado';
     const mainProgressKey = 'progress_a1_eng_unit_1_class_1';
 
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
@@ -153,6 +153,10 @@ export default function Class1Content() {
             ]
         }
     ], [t]);
+
+    const handleTopicComplete = useCallback((completedKey: string) => {
+        setTopicToComplete(completedKey);
+    }, []);
 
     useEffect(() => {
         if (isProfileLoading || isUserLoading || !studentProfile) return;
