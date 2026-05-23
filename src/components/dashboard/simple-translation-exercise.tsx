@@ -172,14 +172,14 @@ const exercises = {
     c8_ex2: {
         title: 'a1class1.exercise',
         prompts: [
-            { spanish: '1	ESTE NO ES MIO, ES TUYO', english: ["this is not mine, it is yours", "this isn't mine, it's yours"] },
-            { spanish: '2	¿TE GUSTA SU CASA? - (DE ELLOS)', english: ["do you like their house?"] },
-            { spanish: '3	ESTE CELULAR ES DE ELLA', english: ["this cellphone is hers", "this phone is hers"] },
-            { spanish: '4	ME GUSTA EL COLOR DE SU CASA- (DE ELLA)', english: ["i like the color of her house"] },
-            { spanish: '5	ESTE ES NUESTRO GATO', english: ["this is our cat"] },
-            { spanish: '6	ESOS CUADROS SON TUYOS', english: ["those paintings are yours", "those pictures are yours"] },
-            { spanish: '7	¿ESTE ES SUYO? - (DE EL)', english: ["is this his?"] },
-            { spanish: '8	¿ESTOS SON SUS ZAPATOS? -(DE ELLA)', english: ["are these her shoes?"] },
+            { spanish: 'ESTE NO ES MIO, ES TUYO', english: ["this is not mine, it is yours", "this isn't mine, it's yours", "this is not mine, it's yours", "this isn't mine, it is yours"] },
+            { spanish: '¿TE GUSTA SU CASA? - (DE ELLOS)', english: ["do you like their house?"] },
+            { spanish: 'ESTE CELULAR ES DE ELLA', english: ["this cellphone is hers", "this cellphone's hers", "this phone is hers", "this phone's hers"] },
+            { spanish: 'ME GUSTA EL COLOR DE SU CASA- (DE ELLA)', english: ["i like the color of her house"] },
+            { spanish: 'ESTE ES NUESTRO GATO', english: ["this is our cat", "this's our cat"] },
+            { spanish: 'ESOS CUADROS SON TUYOS', english: ["those paintings are yours", "those pictures are yours"] },
+            { spanish: '¿ESTE ES SUYO? - (DE EL)', english: ["is this his?"] },
+            { spanish: '¿ESTOS SON SUS ZAPATOS? -(DE ELLA)', english: ["are these her shoes?"] },
         ]
     },
     c8_ex3: {
@@ -196,7 +196,7 @@ const exercises = {
             { spanish: 'ELLOS NO SOMOS NUESTROS TÍOS (UNCLES)', english: ["they are not our uncles", "they aren't our uncles"] },
             { spanish: '¿ELLA BEBE AGUA? –NO, ELLA BEBE VODKA', english: ["does she drink water? no, she drinks vodka"] },
             { spanish: 'NO ME GUSTA EL COMPORTAMIENTO', english: ["i do not like your behavior", "i don't like your behavior"] },
-            { spanish: 'ELLA VA CON ÉL A LA IGLESIA', english: ["she goes with him to the church", "she goes to the church with him"] },
+            { spanish: 'ELLA VA CON ÉL a LA IGLESIA', english: ["she goes with him to the church", "she goes to the church with him"] },
         ]
     },
     c8_ex4: {
