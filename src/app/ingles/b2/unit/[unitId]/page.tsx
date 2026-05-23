@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo } from "react";
@@ -126,8 +127,8 @@ export default function B2UnitPage() {
       <DashboardHeader />
       <main className="flex flex-1 flex-col items-center gap-8 p-4 md:py-12">
         <div className="text-center">
-            <h1 className="text-4xl font-bold text-brand-purple dark:text-primary [text-shadow:1px_1px_1.5px_hsl(var(--accent)/0.8)]">{isClient ? t('b2course.unitTitle', { unit: unitId }) : ''}</h1>
-            <Link href="/ingles/b2" className="text-sm text-muted-foreground hover:underline mt-2 inline-block">
+            <h1 className="text-4xl font-bold text-brand-purple dark:text-primary [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">{isClient ? t('b2course.unitTitle', { unit: unitId }) : ''}</h1>
+            <Link href="/ingles/b2" className="text-sm font-bold text-primary hover:underline mt-2 inline-block">
                 &larr; {isClient ? t('b2course.backToB2') : ''}
             </Link>
         </div>
