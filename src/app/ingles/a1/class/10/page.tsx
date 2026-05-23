@@ -12,6 +12,7 @@ import { Progress } from '@/components/ui/progress';
 import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Separator } from '@/components/ui/separator';
 import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
@@ -167,7 +168,7 @@ export default function EngA1Class10Page() {
         const t = learningPath.find(it => it.key === topicKey);
         if (!isAdmin && t?.status === 'locked') { toast({ variant: "destructive", title: "Contenido Bloqueado" }); return; }
         setSelectedTopic(topicKey);
-        if (['grammar', 'grammar2'].includes(topicKey)) setTopicToComplete(topicKey);
+        if (['grammar', 'grammar2'].includes(topicKey)) handleTopicComplete(topicKey);
     };
 
     const handleVocabCheck = () => {
@@ -191,19 +192,23 @@ export default function EngA1Class10Page() {
                     <Card className="shadow-soft border-2 border-brand-purple">
                         <CardHeader><CardTitle>Vocabulary</CardTitle></CardHeader>
                         <CardContent><Accordion type="multiple" defaultValue={['verbos', 'palabras']}>{Object.keys(vocabularyData).map(c => (<AccordionItem key={c} value={c}><AccordionTrigger className="capitalize font-bold">{c}</AccordionTrigger><AccordionContent><div className="grid grid-cols-2 gap-2">{(vocabularyData as any)[c].map((v: any, i: number) => (<React.Fragment key={i}><div className="p-2 border rounded bg-muted/10">{v.spanish}</div><Input value={vocabAnswers[c][i]} onChange={e => { const na = {...vocabAnswers}; na[c][i] = e.target.value; setVocabAnswers(na); setCanAdvanceVocab(false); }} className={cn(vocabValidation[c]?.[i] === 'correct' ? 'border-green-500' : vocabValidation[c]?.[i] === 'incorrect' ? 'border-red-500' : '')} /></React.Fragment>))}</div></AccordionContent></AccordionItem>))}</Accordion></CardContent>
-                        <CardFooter className="flex justify-between"><Button onClick={handleVocabCheck}>Verificar</Button><Button onClick={() => setTopicToComplete('vocabulary')} disabled={!canAdvanceVocab && !isAdmin}>Avanzar</Button></CardFooter>
+                        <CardFooter className="flex justify-between"><Button onClick={handleVocabCheck}>Verificar</Button><Button onClick={() => handleTopicComplete('vocabulary')} disabled={!canAdvanceVocab && !isAdmin}>Avanzar</Button></CardFooter>
                     </Card>
                 );
             case 'grammar': return <Card className="p-6"><CardTitle>WHAT vs WHICH</CardTitle><CardContent className="pt-4"><p>WHAT: General | WHICH: Opciones limitadas.</p></CardContent></Card>;
             case 'grammar2': return <Card className="p-6"><CardTitle>EL ARTÍCULO "THE"</CardTitle><CardContent className="pt-4"><p>THE = EL, LA, LOS, LAS.</p></CardContent></Card>;
-            case 'ex1': return <SimpleTranslationExercise exerciseKey="c10_ex1" course="a1" onComplete={() => setTopicToComplete('ex1')} title="Exercise 1: ONE / ONES" />;
-            case 'dialogue1': return <LargeTextTranslation title="Dialogue 1" phrases={dialogue1Phrases} onComplete={() => setTopicToComplete('dialogue1')} />;
-            case 'exercise2': return <SimpleTranslationExercise exerciseKey="c10_ex2" course="a1" onComplete={() => setTopicToComplete('exercise2')} title="Exercise 2" />;
-            case 'dialogue2': return <DialogueCompletionExercise title="Dialogue 2" description="Completa con demostrativos." dialogue={dialogue2Data} onComplete={() => setTopicToComplete('dialogue2')} />;
-            case 'ex_the1': return <SimpleTranslationExercise exerciseKey="c10_the1" course="a1" onComplete={() => setTopicToComplete('ex_the1')} title="Exercise with 'The' 1" />;
-            case 'ex_the2': return <SentenceCompletionExercise title="Exercise with 'The' 2" description="Usa THE si es necesario." data={exerciseThe2Data} onComplete={() => setTopicToComplete('ex_the2')} />;
+            case 'ex1': return <SimpleTranslationExercise exerciseKey="c10_ex1" course="a1" onComplete={() => handleTopicComplete('ex1')} title="Exercise 1: ONE / ONES" />;
+            case 'dialogue1': return <LargeTextTranslation title="Dialogue 1" phrases={dialogue1Phrases} onComplete={() => handleTopicComplete('dialogue1')} />;
+            case 'exercise2': return <SimpleTranslationExercise exerciseKey="c10_ex2" course="a1" onComplete={() => handleTopicComplete('exercise2')} title="Exercise 2" />;
+            case 'dialogue2': return <DialogueCompletionExercise title="Dialogue 2" description="Completa con demostrativos." dialogue={dialogue2Data} onComplete={() => handleTopicComplete('dialogue2')} />;
+            case 'ex_the1': return <SimpleTranslationExercise exerciseKey="c10_the1" course="a1" onComplete={() => handleTopicComplete('ex_the1')} title="Exercise with 'The' 1" />;
+            case 'ex_the2': return <SentenceCompletionExercise title="Exercise with 'The' 2" description="Usa THE si es necesario." data={exerciseThe2Data} onComplete={() => handleTopicComplete('ex_the2')} />;
             default: return <div className="flex justify-center items-center h-48"><Loader2 className="animate-spin text-primary" /></div>;
         }
+    };
+
+    const handleTopicComplete = (completedKey: string) => {
+        setTopicToComplete(completedKey);
     };
 
     return (
@@ -211,7 +216,10 @@ export default function EngA1Class10Page() {
             <DashboardHeader />
             <main className="flex-1 p-4 md:p-8">
                 <div className="max-w-7xl mx-auto">
-                    <div className="mb-8 text-left text-white"><Link href="/ingles/a1" className="hover:underline text-sm">Volver al curso A1</Link><h1 className="text-4xl font-bold [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">Clase 10</h1></div>
+                    <div className="mb-8 text-left text-white">
+                        <Link href="/ingles/a1/unit/2" className="hover:underline text-sm">Volver a la Unidad 2</Link>
+                        <h1 className="text-4xl font-bold [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">Clase 10</h1>
+                    </div>
                     <div className="grid gap-8 md:grid-cols-12">
                         <div className="md:col-span-9">{renderContent()}</div>
                         <div className="md:col-span-3 text-left">
