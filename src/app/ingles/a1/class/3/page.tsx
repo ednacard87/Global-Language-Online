@@ -103,7 +103,7 @@ const class3LargeTextEx4Dialogue: DialogueLine[] = [
     { speaker: "MARY", line: "¿VIVES EN BARCELONA?", answer: ["do you live in barcelona?"] },
     { speaker: "JON", line: "NO, NO VIVO EN BARCELONA. VIVO EN MADRID, PERO MI HERMANA VIVE ALLÍ.", answer: ["no, i do not live in barcelona. i live in madrid, but my sister lives there", "no, i don't live in barcelona. i live in madrid, but my sister lives there"] },
     { speaker: "MARY", line: "¿Y LE GUSTA?", answer: ["and does she like it?"] },
-    { speaker: "JON", line: "SÍ, LE ENCANTA BARCELONA. ELLA TRABAJA EN UN BANCO POR LAS MAÑANAS. POR LAS TARDES, ELLA JUEGA AL TENIS CON SU NOVIO O ELLA MIRA LA TV EN CASA. POR LAS NOCHES, ELLA VA A LA PLAYA O ELLA HACE SU TAREA DE INGLÉS. ESTUDIA INGLÉS LOS SÁBADOS.", answer: ["yes, she loves barcelona. she works in a bank in the mornings. in the afternoons, she plays tennis with her boyfriend or she watches tv at home. in the evenings, she goes to the beach or she does her english homework. she studies english on saturdays"] },
+    { speaker: "JON", line: "SÍ, LE ENCANTA BARCELONA. ELLA TRABAJA EN UN BANCO POR LAS MAÑANAS. POR LAS TARDES, ELLA JUEGA AL TENIS CON SU NOVIO O ELLA MIRA LA TV EN CASA. POR LAS NOCHES, ELLA VA A LA PLAYA OR ELLA HACE SU TAREA DE INGLÉS. ESTUDIA INGLÉS LOS SÁBADOS.", answer: ["yes, she loves barcelona. she works in a bank in the mornings. in the afternoons, she plays tennis with her boyfriend or she watches tv at home. in the evenings, she goes to the beach or she does her english homework. she studies english on saturdays"] },
     { speaker: "MARY", line: "¿ELLA TE VISITA EN MADRID?", answer: ["does she visit you in madrid?"] },
     { speaker: "JON", line: "ELLA NO VIENE A MADRID MUY A MENUDO. YO LA VISITO EN BARCELONA.", answer: ["she does not come to madrid very often. i visit her in barcelona", "she doesn't come to madrid very often. i visit her in barcelona"] },
 ];
@@ -418,6 +418,7 @@ export default function EngA1Class3Page() {
         for(let i=0; i < path.length; i++) {
             if (lastDone && path[i].status === 'locked') {
                 path[i].status = 'active';
+                if (path[i].subItems) path[i].subItems[0].status = 'active';
             }
             const parentIsAccessible = path[i].status !== 'locked';
             if (path[i].subItems) {
@@ -490,10 +491,10 @@ export default function EngA1Class3Page() {
                         const nextSubIdx = subIdx + 1;
                         if (nextSubIdx < curT.subItems.length && curT.subItems[nextSubIdx].status === 'locked') {
                             curT.subItems[nextSubIdx].status = 'active'; nextToSel = curT.subItems[nextSubIdx].key; win = true;
-                        } else if (curT.subItems.every((sub: any) => sub.status === 'completed')) {
+                        } else if (currentTopic.subItems.every((sub: any) => sub.status === 'completed')) {
                             if (curT.status !== 'completed') curT.status = 'completed';
-                            if (i + 1 < newP.length && newP[i + 1].status === 'locked') {
-                                const nextM = newP[i + 1]; nextM.status = 'active'; win = true; nextToSel = nextM.subItems?.[0]?.key || nextM.key;
+                            if (i + 1 < newPath.length && newPath[i + 1].status === 'locked') {
+                                const nextM = newPath[i + 1]; nextM.status = 'active'; win = true; nextToSel = nextM.subItems?.[0]?.key || nextM.key;
                                 if (nextM.subItems?.[0]) nextM.subItems[0].status = 'active';
                             }
                         }
@@ -582,7 +583,7 @@ export default function EngA1Class3Page() {
                                 <div className="p-6 bg-slate-100 dark:bg-slate-800/50 rounded-[2rem] border border-border/50"><p className="text-lg">e) Eventos programados: cita médica, reunión, asado, baby shower.</p></div>
                             </CardContent>
                             <CardFooter className="justify-center border-t pt-6"><Button onClick={() => handleTopicComplete('presentSimpleUses')} size="lg" className="px-12 font-bold">Continuar</Button></CardFooter>
-                        </Card>
+                        </div>
                     </div>
                 );
             case 'ex2_1': return <SimpleTranslationExercise course="a1" exerciseKey="c2_mixed1" onComplete={() => handleTopicComplete('ex2_1')} title="Ejercicio 1" vocabulary={{ "bebe": "drinks", "cerveza": "beer", "escuela": "school", "tio": "uncle", "dos veces": "twice", "tarde": "afternoon" }} highlightVocabulary={true} />;
@@ -668,7 +669,7 @@ export default function EngA1Class3Page() {
             <DashboardHeader />
             <main className="flex-1 p-4 md:p-8">
                 <div className="max-w-7xl mx-auto">
-                    <div className="mb-8 text-left text-white"><Link href="/ingles/a1" className="hover:underline text-sm">Volver al curso A1</Link><h1 className="text-4xl font-bold [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">Clase 3 (A1)</h1></div>
+                    <div className="mb-8 text-left text-white"><Link href="/ingles/a1/unit/1" className="hover:underline text-sm">Volver a la Unidad 1</Link><h1 className="text-4xl font-bold [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">Clase 3 (A1)</h1></div>
                     <div className="grid gap-8 md:grid-cols-12">
                         <div className="md:col-span-9">{renderContent()}</div>
                         <div className="md:col-span-3 text-left">
