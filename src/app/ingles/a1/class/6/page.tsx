@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, Info, Gamepad2, Loader2, ChevronDown, Check, X, ArrowRight } from 'lucide-react';
+import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, Info, Gamepad2, Loader2, ChevronDown, Check, X, ArrowRight, BookText } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
@@ -17,6 +17,7 @@ import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
 import { AdjectivesMemoryGame } from '@/components/kids/exercises/adjectives-memory-game';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 type Topic = {
   key: string;
@@ -166,17 +167,17 @@ export default function EngA1Class6Page() {
     const initialLearningPath = useMemo((): Topic[] => [
         { key: 'vocabulary', name: 'Vocabulary (Basic Adjectives)', icon: BookOpen, status: 'active' },
         { key: 'grammar', name: 'Grammar', icon: GraduationCap, status: 'locked' },
-        { key: 'ex1', name: 'Ejercicio 1', icon: PenSquare, status: 'locked' },
-        { key: 'ex2', name: 'Ejercicio 2', icon: PenSquare, status: 'locked' },
-        { key: 'ex3', name: 'Ejercicio 3', icon: PenSquare, status: 'locked' },
-        { key: 'note', name: 'Nota', icon: Info, status: 'locked' },
-        { key: 'ex4', name: 'Ejercicio 4', icon: PenSquare, status: 'locked' },
+        { key: 'ex1', name: 'Exercise 1', icon: PenSquare, status: 'locked' },
+        { key: 'ex2', name: 'Exercise 2', icon: PenSquare, status: 'locked' },
+        { key: 'ex3', name: 'Exercise 3', icon: PenSquare, status: 'locked' },
+        { key: 'note', name: 'Note', icon: Info, status: 'locked' },
+        { key: 'ex4', name: 'Exercise 4', icon: PenSquare, status: 'locked' },
         { key: 'text', name: 'Dictation 1', icon: BookOpen, status: 'locked' },
         { key: 'vocab_game', name: 'Vocabulario (Juego)', icon: Gamepad2, status: 'locked' },
-        { key: 'ex5', name: 'Ejercicio 5', icon: PenSquare, status: 'locked' },
-        { key: 'ex6', name: 'Ejercicio 6', icon: PenSquare, status: 'locked' },
-        { key: 'ex7', name: 'Ejercicio 7', icon: PenSquare, status: 'locked' },
-        { key: 'ex8', name: 'Ejercicio 8', icon: PenSquare, status: 'locked' },
+        { key: 'ex5', name: 'Exercise 5', icon: PenSquare, status: 'locked' },
+        { key: 'ex6', name: 'Exercise 6', icon: PenSquare, status: 'locked' },
+        { key: 'ex7', name: 'Exercise 7', icon: PenSquare, status: 'locked' },
+        { key: 'ex8', name: 'Create 1', icon: PenSquare, status: 'locked' },
     ], []);
 
     useEffect(() => {
@@ -293,17 +294,49 @@ export default function EngA1Class6Page() {
                         <CardContent><Table className="text-base"><TableHeader className="bg-muted"><TableRow><TableHead>ADJ.</TableHead><TableHead>ES</TableHead><TableHead>PRO.</TableHead><TableHead>ES</TableHead></TableRow></TableHeader><TableBody>{possessivesTable.map((row, idx) => (<TableRow key={idx}><TableCell className="font-bold text-primary">{row.adj}</TableCell><TableCell>{row.adjEs}</TableCell><TableCell className="font-bold text-brand-purple">{row.pro}</TableCell><TableCell>{row.proEs}</TableCell></TableRow>))}</TableBody></Table></CardContent>
                     </Card>
                 );
+            case 'note':
+                return (
+                    <div className="space-y-6 text-left">
+                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-slate-100 dark:bg-slate-800/50">
+                            <CardHeader>
+                                <CardTitle className="text-xl font-bold text-primary">1- Adjetivos Posesivos</CardTitle>
+                            </CardHeader>
+                            <CardContent className="text-slate-900 dark:text-slate-100">
+                                <p className="text-lg">Siempre en una frase están: <strong>ANTES</strong> del sustantivo.</p>
+                                <div className="mt-4 p-3 bg-white/50 rounded-lg border font-mono">
+                                    <p>Example = Ejemplo</p>
+                                    <p className="font-bold text-primary">My house / Your car</p>
+                                </div>
+                            </CardContent>
+                        </Card>
+                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-slate-100 dark:bg-slate-800/50">
+                            <CardHeader>
+                                <CardTitle className="text-xl font-bold text-primary">2- Pronombres Posesivos</CardTitle>
+                            </CardHeader>
+                            <CardContent className="text-slate-900 dark:text-slate-100">
+                                <p className="text-lg">Siempre en una frase están: <strong>DESPUÉS</strong> del sustantivo.</p>
+                                <div className="mt-4 p-3 bg-white/50 rounded-lg border font-mono">
+                                    <p>Example = Ejemplo</p>
+                                    <p className="font-bold text-primary">That house is mine (Esa casa es mía)</p>
+                                </div>
+                            </CardContent>
+                        </Card>
+                        <div className="flex justify-center pt-4">
+                            <Button onClick={() => handleTopicComplete('note')} size="lg" className="px-12">Continuar</Button>
+                        </div>
+                    </div>
+                );
             case 'text':
                 return <LinesWritingExercise title="DICTATION 1" description="Escribe las frases dictadas." onComplete={() => setTopicToComplete('text')} studentDocRef={studentDocRef} lineCount={16} hasTitleLine={true} initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.dictation1} initialGrades={studentProfile?.lessonProgress?.[progressStorageVersion]?.dictation1Grades} savePath={`lessonProgress.${progressStorageVersion}.dictation1`} savePathGrades={`lessonProgress.${progressStorageVersion}.dictation1Grades`} isAdmin={isAdmin} />;
             case 'vocab_game': return <AdjectivesMemoryGame data={vocabularyData} onComplete={() => setTopicToComplete('vocab_game')} />;
-            case 'ex1': return <SimpleTranslationExercise exerciseKey="c6_ex1" onComplete={() => setTopicToComplete('ex1')} course="a1" title="Ejercicio 1" />;
-            case 'ex2': return <SimpleTranslationExercise exerciseKey="c6_ex2" onComplete={() => setTopicToComplete('ex2')} course="a1" title="Ejercicio 2" />;
-            case 'ex3': return <SimpleTranslationExercise exerciseKey="c6_ex3" onComplete={() => setTopicToComplete('ex3')} course="a1" title="Ejercicio 3" />;
-            case 'ex4': return <SimpleTranslationExercise exerciseKey="c6_ex4" onComplete={() => setTopicToComplete('ex4')} course="a1" title="Ejercicio 4" />;
-            case 'ex5': return <SimpleTranslationExercise exerciseKey="c6_ex5" onComplete={() => setTopicToComplete('ex5')} course="a1" title="Ejercicio 5" />;
-            case 'ex6': return <SimpleTranslationExercise exerciseKey="c6_ex6" onComplete={() => setTopicToComplete('ex6')} course="a1" title="Ejercicio 6" />;
-            case 'ex7': return <SimpleTranslationExercise exerciseKey="c6_ex7" onComplete={() => setTopicToComplete('ex7')} course="a1" title="Ejercicio 7" />;
-            case 'ex8': return <LinesWritingExercise title="Ejercicio 8" description="Inventa frases posesivas." onComplete={() => setTopicToComplete('ex8')} studentDocRef={studentDocRef} lineCount={6} initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.writingEx8} initialGrades={studentProfile?.lessonProgress?.[progressStorageVersion]?.writingEx8Grades} savePath={`lessonProgress.${progressStorageVersion}.writingEx8`} savePathGrades={`lessonProgress.${progressStorageVersion}.writingEx8Grades`} isAdmin={isAdmin} />;
+            case 'ex1': return <SimpleTranslationExercise exerciseKey="c6_ex1" onComplete={() => handleTopicComplete('ex1')} course="a1" title="Exercise 1" vocabulary={{"mascota": "pet", "carro": "car", "hermana": "sister", "caballo": "horse", "juguete": "toy", "finca": "farm", "casa": "house", "libro": "book"}} highlightVocabulary={true} />;
+            case 'ex2': return <SimpleTranslationExercise exerciseKey="c6_ex2" onComplete={() => handleTopicComplete('ex2')} course="a1" title="Exercise 2" vocabulary={{"libros": "books", "hermanos": "brothers", "gato": "cat", "comida": "food", "hijo": "son", "zapatos": "shoes", "padres": "parents", "novia": "girlfriend", "amigos": "friends"}} highlightVocabulary={true} />;
+            case 'ex3': return <SimpleTranslationExercise exerciseKey="c6_ex3" onComplete={() => handleTopicComplete('ex3')} course="a1" title="Exercise 3" vocabulary={{"mío": "mine", "tuya": "yours", "suyo/a": "his / hers", "suya": "theirs", "mías": "mine"}} highlightVocabulary={true} />;
+            case 'ex4': return <SimpleTranslationExercise exerciseKey="c6_ex4" onComplete={() => handleTopicComplete('ex4')} course="a1" title="Exercise 4" vocabulary={{"computador": "computer", "casa": "house", "negro": "black", "perro": "dog", "gafas": "glasses", "hermano": "brother", "aquí": "here", "ahí": "there", "esperándote": "waiting for you", "puerta": "door", "cuero": "leather", "restaurante": "restaurant", "caliente": "hot", "tomarlo": "drink it"}} highlightVocabulary={true} />;
+            case 'ex5': return <SimpleTranslationExercise exerciseKey="c6_ex5" onComplete={() => handleTopicComplete('ex5')} course="a1" title="Exercise 5" vocabulary={{"reloj": "watch", "vieja": "old", "mascota": "pet", "camisetas": "t-shirts", "página web": "website", "estudiantes": "students", "caja": "box", "portátil": "laptop"}} highlightVocabulary={true} />;
+            case 'ex6': return <SimpleTranslationExercise exerciseKey="c6_ex6" onComplete={() => handleTopicComplete('ex6')} course="a1" title="Exercise 6" vocabulary={{"perdí": "lost", "llaves": "keys", "conozco": "know", "parientes": "relatives", "amigo": "friend", "aretas": "earrings", "chaqueta": "jacket"}} highlightVocabulary={true} />;
+            case 'ex7': return <SimpleTranslationExercise exerciseKey="c6_ex7" onComplete={() => handleTopicComplete('ex7')} course="a1" title="Exercise 7" vocabulary={{"bolso": "bag", "francés": "french", "vive": "lives", "camiseta": "t-shirt", "familia": "family"}} highlightVocabulary={true} />;
+            case 'ex8': return <LinesWritingExercise title="Create 1" description="Inventa frases usando pronombres posesivos." onComplete={() => setTopicToComplete('ex8')} studentDocRef={studentDocRef} lineCount={6} initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.writingEx8} initialGrades={studentProfile?.lessonProgress?.[progressStorageVersion]?.writingEx8Grades} savePath={`lessonProgress.${progressStorageVersion}.writingEx8`} savePathGrades={`lessonProgress.${progressStorageVersion}.writingEx8Grades`} isAdmin={isAdmin} />;
             default: return <div className="flex justify-center items-center h-48"><Loader2 className="animate-spin text-primary" /></div>;
         }
     };
@@ -322,7 +355,7 @@ export default function EngA1Class6Page() {
                                 <CardContent>
                                     <nav><ul className="space-y-1">
                                         {learningPath.map(item => (
-                                            <li key={item.key} onClick={() => handleTopicSelect(item.key)} className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer', (item.status === 'locked' && !isAdmin) ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === item.key && 'bg-muted text-primary font-semibold')}>
+                                            <li key={item.key} onClick={() => handleTopicSelect(item.key)} className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer text-foreground', (item.status === 'locked' && !isAdmin) ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === item.key && 'bg-muted text-primary font-semibold')}>
                                                 <div className="flex items-center gap-3">{(item.status === 'completed') ? <CheckCircle className="h-5 w-5 text-green-500" /> : <item.icon className="h-5 w-5" />}<span>{item.name}</span></div>
                                             </li>
                                         ))}
