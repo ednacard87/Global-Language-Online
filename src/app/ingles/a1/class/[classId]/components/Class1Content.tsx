@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
@@ -272,7 +272,7 @@ export default function Class1Content() {
                         const nextSubIdx = subIdx + 1;
                         if (nextSubIdx < curT.subItems.length && curT.subItems[nextSubIdx].status === 'locked') {
                             curT.subItems[nextSubIdx].status = 'active'; nextToSel = curT.subItems[nextSubIdx].key; wasUnlocked = true;
-                        } else if (curT.subItems.every((sub: any) => sub.status === 'completed')) {
+                        } else if (curT.subItems.every(sub => sub.status === 'completed')) {
                             if (curT.status !== 'completed') curT.status = 'completed';
                             if (i + 1 < newP.length && newP[i + 1].status === 'locked') {
                                 const nextM = newP[i + 1]; nextM.status = 'active'; wasUnlocked = true;
@@ -372,8 +372,8 @@ export default function Class1Content() {
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left">
                         <CardHeader><CardTitle className="text-2xl font-black text-primary">To be 1</CardTitle></CardHeader>
                         <CardContent className="space-y-6 text-lg">
-                            <div className="p-6 bg-slate-100 rounded-[2rem] border"><h3 className="font-bold text-primary mb-4">Estructura Verbo To be 1</h3><div className="space-y-2 font-mono"><p>(+) pronoun + to be + complement</p><p>(-) pronoun + to be + not + complement</p><p>(?) to be + pronoun + complement ?</p></div></div>
-                            <div className="p-6 bg-slate-100 rounded-[2rem] border"><h3 className="font-bold text-primary mb-4">Ejemplo: "ellos son estudiantes"</h3><div className="space-y-2 font-mono"><p>(+) They are students</p><p>(-) They are not students</p><p>(?) are they students?</p></div></div>
+                            <div className="p-6 bg-slate-100 rounded-[2rem] border text-black"><h3 className="font-bold text-primary mb-4">Estructura Verbo To be 1</h3><div className="space-y-2 font-mono"><p>(+) pronoun + to be + complement</p><p>(-) pronoun + to be + not + complement</p><p>(?) to be + pronoun + complement ?</p></div></div>
+                            <div className="p-6 bg-slate-100 rounded-[2rem] border text-black"><h3 className="font-bold text-primary mb-4">Ejemplo: "ellos son estudiantes"</h3><div className="space-y-2 font-mono"><p>(+) They are students</p><p>(-) They are not students</p><p>(?) are they students?</p></div></div>
                         </CardContent>
                     </Card>
                 );
@@ -396,8 +396,8 @@ export default function Class1Content() {
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left">
                         <CardHeader><CardTitle className="text-2xl font-black text-primary">To be 2</CardTitle></CardHeader>
                         <CardContent className="space-y-6 text-lg">
-                            <div className="p-6 bg-slate-100 rounded-[2rem] border"><h3 className="font-bold text-primary mb-4">Estructura Verbo To be 2</h3><div className="space-y-2 font-mono"><p>(+) prn + To be + possessive + noun + comp</p><p>(-) prn + To be + Not + possessive + noun + comp</p><p>(?) To be + prn + possessive + noun + comp ?</p></div></div>
-                            <div className="p-6 bg-slate-100 rounded-[2rem] border"><h3 className="font-bold text-primary mb-4">Ejemplo: "Ellos son mis amigos"</h3><div className="space-y-2 font-mono"><p>(+) They are my friends</p><p>(-) They are not my friends</p><p>(?) are they my friends ?</p></div></div>
+                            <div className="p-6 bg-slate-100 rounded-[2rem] border text-black"><h3 className="font-bold text-primary mb-4">Estructura Verbo To be 2</h3><div className="space-y-2 font-mono"><p>(+) prn + To be + possessive + noun + comp</p><p>(-) prn + To be + Not + possessive + noun + comp</p><p>(?) To be + prn + possessive + noun + comp ?</p></div></div>
+                            <div className="p-6 bg-slate-100 rounded-[2rem] border text-black"><h3 className="font-bold text-primary mb-4">Ejemplo: "Ellos son mis amigos"</h3><div className="space-y-2 font-mono"><p>(+) They are my friends</p><p>(-) They are not my friends</p><p>(?) are they my friends ?</p></div></div>
                         </CardContent>
                     </Card>
                 );
@@ -407,8 +407,8 @@ export default function Class1Content() {
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left">
                         <CardHeader><CardTitle className="text-2xl font-black text-primary">To be 3</CardTitle></CardHeader>
                         <CardContent className="space-y-6 text-lg">
-                            <div className="p-6 bg-slate-100 rounded-[2rem] border"><h3 className="font-bold text-primary mb-4">Estructura Verbo To be 3</h3><div className="space-y-2 font-mono"><p>(+) possessive + noun + to be + complement</p><p>(-) possessive + noun + to be + Not + complement</p><p>(?) To be + possessive + noun + complement ?</p></div></div>
-                            <div className="p-6 bg-slate-100 rounded-[2rem] border"><h3 className="font-bold text-primary mb-4">Ejemplo: "Mi mamá es una enfermera"</h3><div className="space-y-2 font-mono"><p>(+) My mother is a nurse</p><p>(+A) yes, she is</p></div></div>
+                            <div className="p-6 bg-slate-100 rounded-[2rem] border text-black"><h3 className="font-bold text-primary mb-4">Estructura Verbo To be 3</h3><div className="space-y-2 font-mono"><p>(+) possessive + noun + to be + complement</p><p>(-) possessive + noun + to be + Not + complement</p><p>(?) To be + possessive + noun + complement ?</p></div></div>
+                            <div className="p-6 bg-slate-100 rounded-[2rem] border text-black"><h3 className="font-bold text-primary mb-4">Ejemplo: "Mi mamá es una enfermera"</h3><div className="space-y-2 font-mono"><p>(+) My mother is a nurse</p><p>(+A) yes, she is</p></div></div>
                         </CardContent>
                     </Card>
                 );
@@ -416,9 +416,9 @@ export default function Class1Content() {
             case 'ex-mixto-1': return <SimpleTranslationExercise course="a1" exerciseKey="mixed1" onComplete={() => handleTopicComplete('ex-mixto-1')} title="Exercise 1" />;
             case 'ex-mixto-2': return <TranslationExercise exerciseKey="qna2" formType="qna" onComplete={() => handleTopicComplete('ex-mixto-2')} title="Exercise 2" />;
             case 'ex-mixto-3': return <SimpleTranslationExercise course="a1" exerciseKey="mixed3" onComplete={() => handleTopicComplete('ex-mixto-3')} title="Exercise 3" />;
-            case 'ex-mixto-4': return <SimpleTranslationExercise course="a1" exerciseKey="mixed4" onComplete={() => handleTopicComplete('ex-mixto-4')} title="Exercise 4" />;
+            case 'ex-mixto-4': return <SimpleTranslationExercise course="a1" exerciseKey="mixed4" onComplete={() => handleTopicComplete('ex-mixto-4')} title="Exercise 4" vocabulary={{'interesado': 'interested', 'peliculas': 'movies', 'estadio': 'stadium', 'primos': 'cousins'}} highlightVocabulary={true} />;
             case 'ex-mixto-5': return <ShortAnswerExercise onComplete={() => handleTopicComplete('ex-mixto-5')} />;
-            case 'ex-mixto-6': return <SimpleTranslationExercise course="a1" exerciseKey="mixed6" onComplete={() => handleTopicComplete('ex-mixto-6')} title="Exercise 6" />;
+            case 'ex-mixto-6': return <SimpleTranslationExercise course="a1" exerciseKey="mixed6" onComplete={() => handleTopicComplete('ex-mixto-6')} title="Exercise 6" vocabulary={{'padrastro': 'stepfather', 'primo': 'cousin', 'estante': 'shelf', 'escritorio': 'desk', 'iglesia': 'church', 'supermercado': 'supermarket'}} highlightVocabulary={true} />;
             default: return null;
         }
     };
@@ -466,3 +466,4 @@ export default function Class1Content() {
         </div>
     );
 }
+
