@@ -59,7 +59,7 @@ export function SentenceCompletionExercise({ data, onComplete, title, descriptio
             });
 
             if (!isSentenceCorrect) {
-                allSentencesCorrect = false;
+                allCorrect = false;
             }
             return isSentenceCorrect ? 'correct' : 'incorrect';
         });
@@ -155,11 +155,6 @@ export function SentenceCompletionExercise({ data, onComplete, title, descriptio
                 </div>
             </CardHeader>
             <CardContent className="space-y-8">
-                <div className="bg-primary/5 p-4 rounded-lg flex items-start gap-3 text-sm text-primary border border-primary/20">
-                    <Info className="h-5 w-5 shrink-0" />
-                    <p>Instrucciones: Completa cada espacio con el <strong>Pronombre Objeto</strong> correcto para que la frase tenga sentido.</p>
-                </div>
-
                 <div className="bg-muted p-8 rounded-xl border flex flex-wrap items-center gap-x-2 gap-y-4 text-xl font-medium leading-loose">
                     {currentPrompt.parts.map((text, idx) => (
                         <React.Fragment key={idx}>
