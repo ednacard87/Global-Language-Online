@@ -353,6 +353,7 @@ export default function EngA1Class7Page() {
                                     <p className="text-lg text-slate-900 dark:text-slate-100">Para decir "de verdad", "realmente" o "muchísimo":</p>
                                     <p className="text-2xl font-black text-center py-4 bg-background/50 rounded-xl border border-brand-blue/20 text-slate-900">I REALLY LIKE WATER (+)</p>
                                 </CardContent>
+                            </Card>
 
                             <Card className="bg-slate-100 dark:bg-slate-900/50 border-border/50 rounded-[2rem] shadow-sm">
                                 <CardHeader><CardTitle className="text-primary text-xl font-black uppercase">1 - CON SUSTANTIVOS</CardTitle></CardHeader>
