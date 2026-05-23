@@ -93,7 +93,7 @@ const shortAnswerEx3Data: ShortAnswerPresentSimplePrompt[] = [
     { question: "DO THEY WORK TOGETHER?", answers: { shortAffirmative: ["yes, they do"], shortNegative: ["no, they do not", "no, they don't"] } },
     { question: "DOES SHE PLAY VIDEO GAMES?", answers: { shortAffirmative: ["yes, she does"], shortNegative: ["no, she does not", "no, she doesn't"] } },
     { question: "DOES HE DRINK COFFEE?", answers: { shortAffirmative: ["yes, he does"], shortNegative: ["no, he does not", "no, he doesn't"] } },
-    { question: "DO YOU LIKE ACTION MOVIES?", answers: { shortAffirmative: ["yes, i do"], shortNegative: ["no, i do not", "no, i don't"] } },
+    { question: "DO YOU LIKE ACTION MOVIES?", answers: { shortAffirmative: ["yes, i do"], shortNegative: ["no, i do not", "no, i'm not"] } },
     { question: "DO THEY CALL THEIR MOTHER?", answers: { shortAffirmative: ["yes, they do"], shortNegative: ["no, they do not", "no, they don't"] } },
     { question: "DOES HE GO TO BOGOTA?", answers: { shortAffirmative: ["yes, he does"], shortNegative: ["no, he does not", "no, he doesn't"] } },
     { question: "DOES SHE TEACH MATH?", answers: { shortAffirmative: ["yes, she does"], shortNegative: ["no, she does not", "no, she doesn't"] } },
@@ -491,10 +491,10 @@ export default function EngA1Class3Page() {
                         const nextSubIdx = subIdx + 1;
                         if (nextSubIdx < curT.subItems.length && curT.subItems[nextSubIdx].status === 'locked') {
                             curT.subItems[nextSubIdx].status = 'active'; nextToSel = curT.subItems[nextSubIdx].key; win = true;
-                        } else if (currentTopic.subItems.every((sub: any) => sub.status === 'completed')) {
+                        } else if (curT.subItems.every((sub: any) => sub.status === 'completed')) {
                             if (curT.status !== 'completed') curT.status = 'completed';
-                            if (i + 1 < newPath.length && newPath[i + 1].status === 'locked') {
-                                const nextM = newPath[i + 1]; nextM.status = 'active'; win = true; nextToSel = nextM.subItems?.[0]?.key || nextM.key;
+                            if (i + 1 < newP.length && newP[i + 1].status === 'locked') {
+                                const nextM = newP[i + 1]; nextM.status = 'active'; win = true; nextToSel = nextM.subItems?.[0]?.key || nextM.key;
                                 if (nextM.subItems?.[0]) nextM.subItems[0].status = 'active';
                             }
                         }
@@ -583,7 +583,7 @@ export default function EngA1Class3Page() {
                                 <div className="p-6 bg-slate-100 dark:bg-slate-800/50 rounded-[2rem] border border-border/50"><p className="text-lg">e) Eventos programados: cita médica, reunión, asado, baby shower.</p></div>
                             </CardContent>
                             <CardFooter className="justify-center border-t pt-6"><Button onClick={() => handleTopicComplete('presentSimpleUses')} size="lg" className="px-12 font-bold">Continuar</Button></CardFooter>
-                        </div>
+                        </Card>
                     </div>
                 );
             case 'ex2_1': return <SimpleTranslationExercise course="a1" exerciseKey="c2_mixed1" onComplete={() => handleTopicComplete('ex2_1')} title="Ejercicio 1" vocabulary={{ "bebe": "drinks", "cerveza": "beer", "escuela": "school", "tio": "uncle", "dos veces": "twice", "tarde": "afternoon" }} highlightVocabulary={true} />;
