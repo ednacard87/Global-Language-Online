@@ -21,6 +21,10 @@ import Class7Content from './components/Class7Content';
 import Class8Content from './components/Class8Content';
 import Class9Content from './components/Class9Content';
 import Class10Content from './components/Class10Content';
+import Class11Content from './components/Class11Content';
+import Class12Content from './components/Class12Content';
+import Class13Content from './components/Class13Content';
+import Class14Content from './components/Class14Content';
 
 export default function EngA1DynamicClassPage() {
     const params = useParams();
@@ -62,6 +66,10 @@ export default function EngA1DynamicClassPage() {
             case '8': return <Class8Content />;
             case '9': return <Class9Content />;
             case '10': return <Class10Content />;
+            case '11': return <Class11Content />;
+            case '12': return <Class12Content />;
+            case '13': return <Class13Content />;
+            case '14': return <Class14Content />;
             default:
                 return (
                     <div className="max-w-7xl mx-auto text-white text-center py-20">
@@ -81,7 +89,7 @@ export default function EngA1DynamicClassPage() {
                 <div className="max-w-7xl mx-auto">
                     <div className="mb-8 text-left">
                         <Link href="/ingles/a1/unit/1" className="hover:underline text-sm font-bold text-primary flex items-center gap-2">
-                            <ArrowLeft className="h-4 w-4" /> Volver a la Unidad 1
+                            <ArrowLeft className="h-4 w-4" /> Volver al Curso A1
                         </Link>
                         <h1 className="text-4xl font-bold text-white [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">
                             Clase {classId} (A1)
