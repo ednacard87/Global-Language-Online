@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
@@ -685,8 +686,7 @@ export default function EngA1Class5Page() {
                         <h1 className="text-4xl font-bold [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">Clase 5 (A1)</h1>
                     </div>
                     <div className="grid gap-8 md:grid-cols-12">
-                        <div className="md:col-span-9">{renderContent()}</div>
-                        <div className="md:col-span-3 text-left">
+                        <div className="md:col-span-3 md:order-2 text-left">
                             <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
                                 <CardHeader><CardTitle>Ruta de Aprendizaje</CardTitle></CardHeader>
                                 <CardContent>
@@ -718,6 +718,7 @@ export default function EngA1Class5Page() {
                                 </CardContent>
                             </Card>
                         </div>
+                        <div className="md:col-span-9 md:order-1">{renderContent()}</div>
                     </div>
                 </div>
             </main>

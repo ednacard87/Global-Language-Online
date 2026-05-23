@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -12,6 +13,7 @@ import { Progress } from '@/components/ui/progress';
 import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
 
 type Topic = {
@@ -122,7 +124,7 @@ export default function EngA1Class14Page() {
                     <Card className="shadow-soft border-2 border-brand-purple">
                         <CardHeader><CardTitle>Vocabulary</CardTitle></CardHeader>
                         <CardContent><div className="space-y-4"><div><h4 className="font-bold">Verbos</h4><div className="grid grid-cols-2 gap-2">{vocabularyData.verbs.map((v, i) => (<React.Fragment key={i}><div className="p-2 border rounded">{v.spanish}</div><Input value={vocabAnswers.verbs[i]} onChange={e => { const n = {...vocabAnswers}; n.verbs[i] = e.target.value; setVocabAnswers(n); }} /></React.Fragment>))}</div></div></div></CardContent>
-                        <CardFooter className="flex justify-between"><Button onClick={() => { setCanAdvanceVocab(true); toast({ title: "Verificado" }); }}>Verificar</Button><Button onClick={() => setTopicToComplete('vocabulary')} disabled={!canAdvanceVocab && !isAdmin}>Avanzar</Button></CardFooter>
+                        <CardFooter className="flex justify-between"><Button onClick={() => { setCanAdvanceVocab(true); toast({ title: "Verificado" }); }}>Verificar</Button><Button onClick={() => handleTopicComplete('vocabulary')} disabled={!canAdvanceVocab && !isAdmin}>Avanzar</Button></CardFooter>
                     </Card>
                 );
             case 'ex1': return <SimpleTranslationExercise exerciseKey="c14_general" course="a1" onComplete={() => setTopicToComplete('ex1')} />;
@@ -138,8 +140,7 @@ export default function EngA1Class14Page() {
                 <div className="max-w-7xl mx-auto">
                     <div className="mb-8 text-left text-white"><Link href="/ingles/a1" className="hover:underline text-sm">Volver al curso A1</Link><h1 className="text-4xl font-bold [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">Clase 14 (A1)</h1></div>
                     <div className="grid gap-8 md:grid-cols-12">
-                        <div className="md:col-span-9">{renderContent()}</div>
-                        <div className="md:col-span-3 text-left">
+                        <div className="md:col-span-3 md:order-2 text-left">
                             <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
                                 <CardHeader><CardTitle>Ruta</CardTitle></CardHeader>
                                 <CardContent>
@@ -154,6 +155,7 @@ export default function EngA1Class14Page() {
                                 </CardContent>
                             </Card>
                         </div>
+                        <div className="md:col-span-9 md:order-1">{renderContent()}</div>
                     </div>
                 </div>
             </main>

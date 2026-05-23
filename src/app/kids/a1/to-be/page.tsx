@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
@@ -339,17 +340,14 @@ export default function ToBePage() {
             <h1 className="text-4xl font-bold dark:text-primary">{t('kidsA1.toBe')}</h1>
           </div>
           <div className="grid gap-8 md:grid-cols-12">
-            <div className="md:col-span-9">
-              {renderContent()}
-            </div>
-            <div className="md:col-span-3">
+            <div className="md:col-span-3 md:order-2">
               <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple">
                 <CardHeader><CardTitle>{t('a1class1.learningPath')}</CardTitle></CardHeader>
                 <CardContent>
                   <nav>
                     <ul className="space-y-1">
                       {learningPath.map((item) => {
-                        const Icon = ICONS[item.status];
+                        const Icon = item.icon;
                         return(
                             <li key={item.key} onClick={() => handleTopicSelect(item.key)}
                               className={cn(
@@ -376,6 +374,9 @@ export default function ToBePage() {
                     </div>
                 </CardContent>
               </Card>
+            </div>
+            <div className="md:col-span-9 md:order-1">
+              {renderContent()}
             </div>
           </div>
         </div>

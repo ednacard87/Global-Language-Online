@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
@@ -492,7 +493,7 @@ export default function EngA1Class3Page() {
                         if (nextSubIdx < curT.subItems.length && curT.subItems[nextSubIdx].status === 'locked') {
                             curT.subItems[nextSubIdx].status = 'active'; nextToSel = curT.subItems[nextSubIdx].key; win = true;
                         } else if (curT.subItems.every((sub: any) => sub.status === 'completed')) {
-                            if (curT.status !== 'completed') curT.status = 'completed';
+                            if (currentTopic.status !== 'completed') currentTopic.status = 'completed';
                             if (i + 1 < newP.length && newP[i + 1].status === 'locked') {
                                 const nextM = newP[i + 1]; nextM.status = 'active'; win = true; nextToSel = nextM.subItems?.[0]?.key || nextM.key;
                                 if (nextM.subItems?.[0]) nextM.subItems[0].status = 'active';
@@ -671,8 +672,7 @@ export default function EngA1Class3Page() {
                 <div className="max-w-7xl mx-auto">
                     <div className="mb-8 text-left text-white"><Link href="/ingles/a1/unit/1" className="hover:underline text-sm">Volver a la Unidad 1</Link><h1 className="text-4xl font-bold [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">Clase 3 (A1)</h1></div>
                     <div className="grid gap-8 md:grid-cols-12">
-                        <div className="md:col-span-9">{renderContent()}</div>
-                        <div className="md:col-span-3 text-left">
+                        <div className="md:col-span-3 md:order-2 text-left">
                             <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
                                 <CardHeader><CardTitle>Ruta de Aprendizaje</CardTitle></CardHeader>
                                 <CardContent>
@@ -711,6 +711,7 @@ export default function EngA1Class3Page() {
                                 </CardContent>
                             </Card>
                         </div>
+                        <div className="md:col-span-9 md:order-1">{renderContent()}</div>
                     </div>
                 </div>
             </main>

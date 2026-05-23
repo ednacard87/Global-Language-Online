@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
@@ -772,8 +773,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                         <h1 className="text-4xl font-bold text-white dark:text-primary [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">Clase 1 (A1)</h1>
                     </div>
                     <div className="grid gap-8 md:grid-cols-12">
-                        <div className="md:col-span-9">{renderContent()}</div>
-                        <div className="md:col-span-3 text-left">
+                        <div className="md:col-span-3 md:order-2 text-left">
                             <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
                                 <CardHeader><CardTitle>Ruta de Aprendizaje</CardTitle></CardHeader>
                                 <CardContent>
@@ -835,6 +835,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                                 </CardContent>
                             </Card>
                         </div>
+                        <div className="md:col-span-9 md:order-1">{renderContent()}</div>
                     </div>
                 </div>
             </main>
@@ -1196,7 +1197,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                                     <Separator className="my-2" />
                                     <p className="font-sans font-semibold pt-2 text-primary">Short Answers = Respuestas Cortas</p>
                                     <p><span className="font-bold text-green-500 mr-2">(+A)</span> = Respuesta corta positiva</p>
-                                    <p><span className="font-bold text-red-500 mr-2">(-A)</span> = Respuesta corta Negativa</p>
+                                    <p><span className="font-bold text-red-500 mr-2">(-A)</span> =  Respuesta corta Negativa</p>
                                 </div>
                             </CardContent>
                         </Card>
@@ -1228,6 +1229,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                                     <p className="font-black text-brand-purple uppercase">DOES = HE - SHE - IT</p>
                                 </div>
                             </CardContent>
+
                         </Card>
 
                         <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground">
@@ -1272,8 +1274,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                 <h1 className="text-4xl font-bold text-white dark:text-primary [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">Clase 2 (A1)</h1>
               </div>
               <div className="grid gap-8 md:grid-cols-12">
-                <div className="md:col-span-9">{renderContentForClass2()}</div>
-                <div className="md:col-span-3 text-left">
+                <div className="md:col-span-3 md:order-2 text-left">
                   <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
                     <CardHeader><CardTitle>Ruta de Aprendizaje</CardTitle></CardHeader>
                     <CardContent>
@@ -1333,6 +1334,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                     </CardContent>
                   </Card>
                 </div>
+                <div className="md:col-span-9 md:order-1">{renderContentForClass2()}</div>
               </div>
             </div>
           </main>

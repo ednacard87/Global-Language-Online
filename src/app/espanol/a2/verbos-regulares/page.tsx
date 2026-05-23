@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -112,6 +113,7 @@ export default function VerbosRegularesPage() {
             return;
         }
         setSelectedTopic(key);
+        // For simplicity, we auto-complete non-exercise topics on selection
         if (!key.startsWith('ejercicio')) {
           setTopicToComplete(key);
         }
@@ -142,7 +144,7 @@ export default function VerbosRegularesPage() {
                         <h1 className="text-4xl font-bold dark:text-primary">Verbos Regulares</h1>
                     </div>
                     <div className="grid gap-8 md:grid-cols-12">
-                        <div className="md:col-span-4">
+                        <div className="md:col-span-4 md:order-2">
                             <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple">
                                 <CardHeader><CardTitle>Ruta de Aprendizaje</CardTitle></CardHeader>
                                 <CardContent>
@@ -170,7 +172,7 @@ export default function VerbosRegularesPage() {
                                 </CardContent>
                             </Card>
                         </div>
-                        <div className="md:col-span-8">{renderContent()}</div>
+                        <div className="md:col-span-8 md:order-1">{renderContent()}</div>
                     </div>
                 </div>
             </main>
