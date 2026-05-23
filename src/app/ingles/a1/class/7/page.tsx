@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, Info, Loader2, Plus, Minus, Star, ChevronDown, Pencil, ArrowRight, Lightbulb } from 'lucide-react';
+import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, Info, Loader2, Plus, Minus, Star, ChevronDown, Pencil, ArrowRight, Lightbulb, BookText, XCircle } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
@@ -18,6 +18,7 @@ import { Separator } from '@/components/ui/separator';
 import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
 import { CreativeWritingExercise } from '@/components/dashboard/creative-writing-exercise';
 import { SentenceCompletionExercise, type CompletionPrompt } from '@/components/kids/exercises/sentence-completion-exercise';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 type Topic = {
   key: string;
@@ -147,6 +148,10 @@ export default function EngA1Class7Page() {
         if (progressValue >= 100) window.dispatchEvent(new CustomEvent('progressUpdated'));
     }, [learningPath, isAdmin, progressValue, studentDocRef, initialLoadComplete, selectedTopic, studentProfile, isInitialLoading]);
 
+    const handleTopicComplete = useCallback((completedKey: string) => {
+        setTopicToComplete(completedKey);
+    }, []);
+
     useEffect(() => {
         if (!topicToComplete) return;
         setLearningPath(currentPath => {
@@ -190,7 +195,6 @@ export default function EngA1Class7Page() {
 
     const renderContent = () => {
         if (isInitialLoading) return <div className="flex justify-center items-center min-h-[400px]"><Loader2 className="h-12 w-12 animate-spin text-primary" /></div>;
-        const topic = learningPath.find(t => t.key === selectedTopic);
 
         switch (selectedTopic) {
             case 'vocabulary':
