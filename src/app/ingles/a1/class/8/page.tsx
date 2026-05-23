@@ -76,7 +76,7 @@ const LinesWritingExercise = ({ title, description, lineCount = 12, onComplete, 
         if (studentDocRef) updateDocumentNonBlocking(studentDocRef, { [savePath]: n });
     };
     return (
-        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
+        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left">
             <CardHeader><CardTitle>{title}</CardTitle><CardDescription className="text-primary">{description}</CardDescription></CardHeader>
             <CardContent className="space-y-2">{lines.map((l, i) => (<div key={i} className="flex gap-2"><span className="font-bold w-6">{i + 1}.</span><Input value={l} onChange={e => handleLineChange(i, e.target.value)} className="bg-muted/30" /></div>))}</CardContent>
             <CardFooter className="pt-4 border-t"><Button onClick={onComplete}>Avanzar</Button></CardFooter>
@@ -148,6 +148,10 @@ export default function EngA1Class8Page() {
         if (progressValue >= 100) window.dispatchEvent(new CustomEvent('progressUpdated'));
     }, [learningPath, isAdmin, progressValue, studentDocRef, initialLoadComplete, selectedTopic, studentProfile, isInitialLoading]);
 
+    const handleTopicComplete = useCallback((completedKey: string) => {
+        setTopicToComplete(completedKey);
+    }, []);
+
     useEffect(() => {
         if (!topicToComplete) return;
         setLearningPath(curr => {
@@ -180,7 +184,7 @@ export default function EngA1Class8Page() {
         switch (selectedTopic) {
             case 'vocabulary':
                 return (
-                    <Card className="shadow-soft border-2 border-brand-purple">
+                    <Card className="shadow-soft border-2 border-brand-purple text-left">
                         <CardHeader><CardTitle>Vocabulary</CardTitle></CardHeader>
                         <CardContent><div className="grid grid-cols-2 gap-2">{vocabularyData.map((v, i) => (<React.Fragment key={i}><div className="p-3 border rounded-lg bg-muted/20">{v.spanish}</div><Input value={vocabAnswers[i]} onChange={e => { const n = [...vocabAnswers]; n[i] = e.target.value; setVocabAnswers(n); setVocabValidation(vv => { const nv = [...vv]; nv[i] = 'unchecked'; return nv; }); }} className={cn(vocabValidation[i] === 'correct' ? 'border-green-500' : vocabValidation[i] === 'incorrect' ? 'border-red-500' : '')} /></React.Fragment>))}</div></CardContent>
                         <CardFooter className="flex justify-between"><Button onClick={() => { let all = true; const nv = vocabularyData.map((v, i) => { const c = v.english.some(e => e.toLowerCase() === vocabAnswers[i].trim().toLowerCase()); if (!c) all = false; return c ? 'correct' : 'incorrect'; }); setVocabValidation(nv); if (all) toast({ title: "¡Perfecto!" }); }}>Verificar</Button><Button onClick={() => handleTopicComplete('vocabulary')} disabled={!vocabValidation.every(v => v === 'correct') && !isAdmin}>Avanzar</Button></CardFooter>
@@ -205,7 +209,10 @@ export default function EngA1Class8Page() {
             <DashboardHeader />
             <main className="flex-1 p-4 md:p-8">
                 <div className="max-w-7xl mx-auto">
-                    <div className="mb-8 text-left text-white"><Link href="/ingles/a1" className="hover:underline text-sm">Volver al curso A1</Link><h1 className="text-4xl font-bold [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">Clase 8</h1></div>
+                    <div className="mb-8 text-left text-white">
+                        <Link href="/ingles/a1/unit/2" className="hover:underline text-sm">Volver a la Unidad 2</Link>
+                        <h1 className="text-4xl font-bold [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">Clase 8</h1>
+                    </div>
                     <div className="grid gap-8 md:grid-cols-12">
                         <div className="md:col-span-9">{renderContent()}</div>
                         <div className="md:col-span-3 text-left">
@@ -214,7 +221,7 @@ export default function EngA1Class8Page() {
                                 <CardContent>
                                     <nav><ul className="space-y-1">
                                         {learningPath.map(item => (
-                                            <li key={item.key} onClick={() => handleTopicSelect(item.key)} className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer', (item.status === 'locked' && !isAdmin) ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === item.key && 'bg-muted text-primary font-semibold')}>
+                                            <li key={item.key} onClick={() => handleTopicSelect(item.key)} className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer text-foreground', (item.status === 'locked' && !isAdmin) ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === item.key && 'bg-muted text-primary font-semibold')}>
                                                 <div className="flex items-center gap-3">{(item.status === 'completed') ? <CheckCircle className="h-5 w-5 text-green-500" /> : <item.icon className="h-5 w-5" />}<span>{item.name}</span></div>
                                             </li>
                                         ))}
