@@ -182,7 +182,6 @@ const class2Exercise1Data = [
         }
     }
 ];
-// Simplified for space, the actual class uses the arrays above
 const class2Exercise2Data = [
     {
         spanish: "tu duermes en la tarde",
@@ -359,20 +358,20 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
     useEffect(() => {
         if (!initialLoadComplete || isInitialLoading || isAdmin || !studentDocRef || learningPath.length === 0) return;
 
-        const statusesToSave: Record<string, any> = { lastSelectedTopic: selectedTopic };
+        const data: Record<string, any> = { lastSelectedTopic: selectedTopic };
         learningPath.forEach(item => {
-            statusesToSave[item.key] = item.status;
+            data[item.key] = item.status;
             if (item.subItems) {
-                if (!statusesToSave.subItems) statusesToSave.subItems = {};
-                statusesToSave.subItems[item.key] = {};
-                item.subItems.forEach(sub => { statusesToSave.subItems[item.key][sub.key] = sub.status; });
+                if (!data.subItems) data.subItems = {};
+                data.subItems[item.key] = {};
+                item.subItems.forEach(sub => { data.subItems[item.key][sub.key] = sub.status; });
             }
         });
 
         const savedData = studentProfile?.lessonProgress?.[progressStorageKey];
-        if (JSON.stringify(statusesToSave) !== JSON.stringify(savedData)) {
+        if (JSON.stringify(data) !== JSON.stringify(savedData)) {
             updateDocumentNonBlocking(studentDocRef, {
-                [`lessonProgress.${progressStorageKey}`]: statusesToSave,
+                [`lessonProgress.${progressStorageKey}`]: data,
                 [`progress.${mainProgressKey}`]: Math.round(progressValue)
             });
             window.dispatchEvent(new CustomEvent('progressUpdated'));
@@ -701,7 +700,8 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                         <h1 className="text-4xl font-bold text-white dark:text-primary [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">Clase 1 (A1)</h1>
                     </div>
                     <div className="grid gap-8 md:grid-cols-12">
-                        <div className="md:col-span-3 md:order-1 text-left">
+                        <div className="md:col-span-9 md:order-1">{renderContent()}</div>
+                        <div className="md:col-span-3 md:order-2 text-left">
                             <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
                                 <CardHeader><CardTitle>Ruta de Aprendizaje</CardTitle></CardHeader>
                                 <CardContent>
@@ -763,7 +763,6 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                                 </CardContent>
                             </Card>
                         </div>
-                        <div className="md:col-span-9 md:order-2">{renderContent()}</div>
                     </div>
                 </div>
             </main>
@@ -873,7 +872,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
 
         setLearningPath(path);
         const firstActive = path.find(p => p.status === 'active') || path.flatMap(p => p.subItems || []).find(sp => sp?.status === 'active');
-        setSelectedTopic(savedSelectedTopic || firstA?.key || path[0].key);
+        setSelectedTopic(savedSelectedTopic || firstActive?.key || path[0].key);
 
         const newAnswers: {[key: string]: string[]} = {};
         const newValidation: {[key: string]: ('correct' | 'incorrect' | 'unchecked')[]} = {};
@@ -886,7 +885,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
         
         setInitialLoadComplete(true);
         setIsInitialLoading(false);
-    }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading, isUserLoading, initialLoadComplete]);
+    }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading, isUserLoading, initialLoadComplete, t]);
 
     const progressValue = useMemo(() => {
         if (learningPath.length === 0) return 0;
@@ -1202,7 +1201,8 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                 <h1 className="text-4xl font-bold text-white dark:text-primary [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">Clase 2 (A1)</h1>
               </div>
               <div className="grid gap-8 md:grid-cols-12">
-                <div className="md:col-span-3 md:order-1 text-left">
+                <div className="md:col-span-9 md:order-1">{renderContentForClass2()}</div>
+                <div className="md:col-span-3 md:order-2 text-left">
                   <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
                     <CardHeader><CardTitle>Ruta de Aprendizaje</CardTitle></CardHeader>
                     <CardContent>
@@ -1262,7 +1262,6 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                     </CardContent>
                   </Card>
                 </div>
-                <div className="md:col-span-9 md:order-2">{renderContentForClass2()}</div>
               </div>
             </div>
           </main>

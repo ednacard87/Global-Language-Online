@@ -75,7 +75,7 @@ const exercises = {
             { spanish: 'ELLOS NO SON NUESTROS ABUELOS (GRANDPARENTS)', english: ["they are not our grandparents", "they aren't our grandparents"] },
             { spanish: '¿DÓNDE ESTAN TUS PADRES?', english: ["where are your parents?"] },
             { spanish: '¿ESTAS CON WILLIAM?', english: ["are you with william?"] },
-            { spanish: 'ELLOS NO SON NUESTROS HERMANOS', english: ["they are not our brothers", "they aren't our brothers"] },
+            { spanish: 'ELLOS NO SOMOS NUESTROS HERMANOS', english: ["they are not our brothers", "they aren't our brothers"] },
             { spanish: 'YO ESTOY CON (WITH) MI HERMANA', english: ["i am with my sister", "i'm with my sister"] },
             { spanish: '¿QUIENES SON ELLOS?', english: ["who are they?"] },
             { spanish: 'ELLA NO ESTA CANSADA', english: ["she is not tired", "she isn't tired"] },
@@ -145,6 +145,87 @@ const exercises = {
             { spanish: 'MARCO TRABAJA EN MIAMI', english: ['marco works in miami'] },
             { spanish: 'EL TREN SALE A LAS 7 P.M', english: ['the train leaves at 7 p.m.'] },
         ],
+    },
+    c6_ex1: {
+        title: 'a1class1.exercise',
+        prompts: [
+            { spanish: 'mi mascota es un gato', english: ['my pet is a cat'] },
+            { spanish: 'este carro es el mio', english: ['this car is mine'] },
+            { spanish: 'ella es mi hermana', english: ['she is my sister'] },
+            { spanish: 'el caballo es de ella', english: ['the horse is hers'] },
+            { spanish: 'este juguete es de el', english: ['this toy is his'] },
+            { spanish: 'esta finca es nuestra', english: ['this farm is ours'] },
+            { spanish: 'esta casa es suya (de ellos)', english: ['this house is theirs'] },
+            { spanish: 'este libro es el tuyo', english: ['this book is yours'] },
+        ]
+    },
+    c6_ex2: {
+        title: 'a1class1.exercise',
+        prompts: [
+            { spanish: 'estos libros son mios', english: ['these books are mine'] },
+            { spanish: 'estos hermanos son de ella', english: ['these brothers are hers'] },
+            { spanish: 'el gato es mio', english: ['the cat is mine'] },
+            { spanish: 'la comida es nuestra', english: ['the food is ours'] },
+            { spanish: 'el hijo es de el', english: ['the son is his'] },
+            { spanish: 'estos zapatos son tuyos', english: ['these shoes are yours'] },
+            { spanish: 'los padres son de ellos', english: ['the parents are theirs'] },
+            { spanish: 'la novia es de el', english: ['the girlfriend is his'] },
+            { spanish: 'los amigos son de ella', english: ['the friends are hers'] },
+        ]
+    },
+    c6_ex3: {
+        title: 'a1class1.exercise',
+        prompts: [
+            { spanish: 'este libro es mío', english: ['this book is mine'] },
+            { spanish: 'esa casa es tuya', english: ['that house is yours'] },
+            { spanish: 'el perro es suyo (de él)', english: ['the dog is his'] },
+            { spanish: 'la gata es suya (de ella)', english: ['the cat is hers'] },
+            { spanish: 'estas maletas son mías', english: ['these suitcases are mine'] },
+        ]
+    },
+    c6_ex4: {
+        title: 'a1class1.exercise',
+        prompts: [
+            { spanish: 'este computador es mio', english: ['this computer is mine'] },
+            { spanish: 'esta casa no es mia, es negra', english: ['this house is not mine, it is black', "this house isn't mine, it's black"] },
+            { spanish: 'el perro es mio', english: ['the dog is mine'] },
+            { spanish: 'esas gafas no son mías, son de mi hermano', english: ['those glasses are not mine, they are my brother\'s', "those glasses aren't mine, they're my brother's"] },
+            { spanish: 'si el no esta aqui, el esta ahi esperandote en la puerta', english: ['if he is not here, he is there waiting for you at the door', "if he's not here, he's there waiting for you at the door"] },
+            { spanish: 'mis zapatos son de cuero', english: ['my shoes are leather'] },
+            { spanish: 'nosotros estamos en el restaurante', english: ['we are in the restaurant', "we're in the restaurant"] },
+            { spanish: 'este café está muy caliente, no puedo tomarlo', english: ['this coffee is very hot, i can not drink it', "this coffee is very hot, i can't drink it"] },
+        ]
+    },
+    c6_ex5: {
+        title: 'a1class1.exercise',
+        prompts: [
+            { spanish: 'este reloj es mio', english: ['this watch is mine'] },
+            { spanish: 'esta mascota es vieja', english: ['this pet is old'] },
+            { spanish: 'estas camisetas son nuestras', english: ['these t-shirts are ours'] },
+            { spanish: 'esta pagina web es mia', english: ['this website is mine'] },
+            { spanish: 'esos estudiantes son mios', english: ['those students are mine'] },
+            { spanish: 'esta caja es de el', english: ['this box is his'] },
+            { spanish: 'este portatil es de ella', english: ['this laptop is hers'] },
+        ]
+    },
+    c6_ex6: {
+        title: 'a1class1.exercise',
+        prompts: [
+            { spanish: 'perdí mis llaves', english: ['i lost my keys'] },
+            { spanish: 'conozco a sus parientes', english: ['i know their relatives'] },
+            { spanish: 'el es mi amigo', english: ['he is my friend', "he's my friend"] },
+            { spanish: 'esas aretas son de ella', english: ['those earrings are hers'] },
+            { spanish: 'esa chaqueta es de el', english: ['that jacket is his'] },
+        ]
+    },
+    c6_ex7: {
+        title: 'a1class1.exercise',
+        prompts: [
+            { spanish: 'este bolso es mio', english: ['this bag is mine'] },
+            { spanish: 'ella es mi profesora de frances', english: ['she is my french teacher', "she's my french teacher"] },
+            { spanish: 'el vive con su familia', english: ['he lives with his family'] },
+            { spanish: 'esta camiseta es mia', english: ['this t-shirt is mine'] },
+        ]
     },
     c8_ex1: {
         title: 'a1class1.exercise',
