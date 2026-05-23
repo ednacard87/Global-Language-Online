@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, Info, Mic, Loader2, RefreshCw, Flame, Trophy, Gamepad2, ChevronDown, Pencil, ArrowLeft, ArrowRight, Check, X, BookText } from 'lucide-react';
+import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, Info, Mic, Loader2, Gamepad2, Pencil, ArrowRight, Check, X, BookText } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
@@ -14,21 +14,15 @@ import { doc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
-import { CreativeWritingExercise } from '@/components/dashboard/creative-writing-exercise';
 import { VocabularyMatchingGame } from '@/components/dashboard/vocabulary-matching-game';
 import { SentenceCompletionExercise, type CompletionPrompt } from '@/components/kids/exercises/sentence-completion-exercise';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 type Topic = {
   key: string;
   name: string;
   icon: React.ElementType;
   status: 'completed' | 'active' | 'locked';
-};
-
-const ICONS_CONFIG = {
-    locked: Lock,
-    active: BookOpen,
-    completed: CheckCircle,
 };
 
 const progressStorageVersion = 'progress_a1_eng_u1_c8_v12_stable';
@@ -68,7 +62,6 @@ const exercise5Data: CompletionPrompt[] = [
     { parts: ["SHE WORKS WITH ", " ENGINEER."], answers: [""] },
 ];
 
-// --- Dictation / Manual Grading Component ---
 const ManualGradingExercise = ({ 
     title,
     description,
@@ -216,6 +209,10 @@ export default function EngA1Class8Page() {
         { key: 'writing2', name: 'Writing 2', icon: Pencil, status: 'locked' },
     ], []);
 
+    const handleTopicComplete = useCallback((completedKey: string) => {
+        setTopicToComplete(completedKey);
+    }, []);
+
     useEffect(() => {
         if (isProfileLoading || isUserLoading || !studentProfile || initialLoadComplete) return;
         let path = initialLearningPath.map(t => ({ ...t }));
@@ -249,10 +246,6 @@ export default function EngA1Class8Page() {
         if (progressValue >= 100) window.dispatchEvent(new CustomEvent('progressUpdated'));
     }, [learningPath, isAdmin, progressValue, studentDocRef, initialLoadComplete, selectedTopic, studentProfile, isInitialLoading]);
 
-    const handleTopicComplete = useCallback((completedKey: string) => {
-        setTopicToComplete(completedKey);
-    }, []);
-
     useEffect(() => {
         if (!topicToComplete) return;
         setLearningPath(curr => {
@@ -272,10 +265,7 @@ export default function EngA1Class8Page() {
 
     const handleTopicSelect = (topicKey: string) => {
         const t = learningPath.find(it => it.key === topicKey);
-        if (!isAdmin && t?.status === 'locked') { 
-            toast({ variant: "destructive", title: "Contenido Bloqueado" }); 
-            return; 
-        }
+        if (!isAdmin && t?.status === 'locked') { toast({ variant: "destructive", title: "Contenido Bloqueado" }); return; }
         setSelectedTopic(topicKey);
     };
 
@@ -309,31 +299,9 @@ export default function EngA1Class8Page() {
                     </Card>
                 );
             case 'dictation1': 
-                return <ManualGradingExercise 
-                            title="DICTATION 1" 
-                            description="Escucha y escribe las frases dictadas. El primer renglón es para el título." 
-                            lineCount={13} 
-                            onComplete={() => handleTopicComplete('dictation1')} 
-                            studentDocRef={studentDocRef} 
-                            isAdmin={isAdmin}
-                            initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.dictation1} 
-                            initialGrades={studentProfile?.lessonProgress?.[progressStorageVersion]?.dictation1Grades}
-                            savePath={`lessonProgress.${progressStorageVersion}.dictation1`}
-                            savePathGrades={`lessonProgress.${progressStorageVersion}.dictation1Grades`}
-                        />;
+                return <ManualGradingExercise title="DICTATION 1" description="Escucha y escribe las frases dictadas. El primer renglón es para el título." lineCount={13} onComplete={() => handleTopicComplete('dictation1')} studentDocRef={studentDocRef} isAdmin={isAdmin} initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.dictation1} initialGrades={studentProfile?.lessonProgress?.[progressStorageVersion]?.dictation1Grades} savePath={`lessonProgress.${progressStorageVersion}.dictation1`} savePathGrades={`lessonProgress.${progressStorageVersion}.dictation1Grades`} />;
             case 'dictation2': 
-                return <ManualGradingExercise 
-                            title="DICTATION 2" 
-                            description="Escucha y escribe las frases dictadas. El primer renglón es para el título." 
-                            lineCount={15} 
-                            onComplete={() => handleTopicComplete('dictation2')} 
-                            studentDocRef={studentDocRef} 
-                            isAdmin={isAdmin}
-                            initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.dictation2} 
-                            initialGrades={studentProfile?.lessonProgress?.[progressStorageVersion]?.dictation2Grades}
-                            savePath={`lessonProgress.${progressStorageVersion}.dictation2`}
-                            savePathGrades={`lessonProgress.${progressStorageVersion}.dictation2Grades`}
-                        />;
+                return <ManualGradingExercise title="DICTATION 2" description="Escucha y escribe las frases dictadas. El primer renglón es para el título." lineCount={15} onComplete={() => handleTopicComplete('dictation2')} studentDocRef={studentDocRef} isAdmin={isAdmin} initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.dictation2} initialGrades={studentProfile?.lessonProgress?.[progressStorageVersion]?.dictation2Grades} savePath={`lessonProgress.${progressStorageVersion}.dictation2`} savePathGrades={`lessonProgress.${progressStorageVersion}.dictation2Grades`} />;
             case 'ex1': return <SimpleTranslationExercise exerciseKey="c8_ex1" course="a1" onComplete={() => handleTopicComplete('ex1')} vocabulary={{ "contrario": "on the contrary", "otro lado": "on the other hand", "cumpleaños": "birthday", "jefe": "boss", "empresa": "company" }} highlightVocabulary={true} />;
             case 'ex2': return <SimpleTranslationExercise exerciseKey="c8_ex2" course="a1" onComplete={() => handleTopicComplete('ex2')} vocabulary={{ "mío": "mine", "tuyo": "yours", "suyo/a": "his/hers", "nuestro": "ours", "suya (de ellos)": "theirs", "cuadros": "paintings/pictures" }} highlightVocabulary={true} />;
             case 'ex3': return <SimpleTranslationExercise exerciseKey="c8_ex3" course="a1" onComplete={() => handleTopicComplete('ex3')} vocabulary={{ "nadar": "swim", "domingos": "sundays", "veloz": "fast", "triste": "sad", "feliz": "happy", "iglesia": "church", "comportamiento": "behavior" }} highlightVocabulary={true} />;
@@ -341,19 +309,7 @@ export default function EngA1Class8Page() {
             case 'ex5': return <SentenceCompletionExercise title="Exercise 5" description="Completa con THE." data={exercise5Data} onComplete={() => handleTopicComplete('ex5')} vocabulary={{ "billetera": "wallet", "idiomas": "languages", "regalo": "present", "llaves": "keys", "gafas": "sunglasses", "puerta": "door" }} />;
             case 'vocab_game': return <VocabularyMatchingGame data={vocabularyData} onComplete={() => handleTopicComplete('vocab_game')} />;
             case 'writing1': return <CreativeWritingExercise title="Writing 1" description="About your school." prompts={[{ id: 'w1', question: '' }]} onComplete={() => handleTopicComplete('writing1')} studentDocRef={studentDocRef} initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.writing1} savePath={`lessonProgress.${progressStorageVersion}.writing1`} />;
-            case 'writing2': 
-                return <ManualGradingExercise 
-                            title="Writing 2" 
-                            description="Crea frases usando los temas aprendidos hoy." 
-                            lineCount={6} 
-                            onComplete={() => handleTopicComplete('writing2')} 
-                            studentDocRef={studentDocRef} 
-                            isAdmin={isAdmin}
-                            initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.writing2} 
-                            initialGrades={studentProfile?.lessonProgress?.[progressStorageVersion]?.writing2Grades}
-                            savePath={`lessonProgress.${progressStorageVersion}.writing2`}
-                            savePathGrades={`lessonProgress.${progressStorageVersion}.writing2Grades`}
-                        />;
+            case 'writing2': return <ManualGradingExercise title="Writing 2" description="Crea frases usando los temas aprendidos hoy." lineCount={6} onComplete={() => handleTopicComplete('writing2')} studentDocRef={studentDocRef} isAdmin={isAdmin} initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.writing2} initialGrades={studentProfile?.lessonProgress?.[progressStorageVersion]?.writing2Grades} savePath={`lessonProgress.${progressStorageVersion}.writing2`} savePathGrades={`lessonProgress.${progressStorageVersion}.writing2Grades`} />;
             default: return <div className="flex justify-center items-center h-48"><Loader2 className="animate-spin text-primary" /></div>;
         }
     };
@@ -364,13 +320,13 @@ export default function EngA1Class8Page() {
             <main className="flex-1 p-4 md:p-8">
                 <div className="max-w-7xl mx-auto">
                     <div className="mb-8 text-left text-white">
-                        <Link href="/ingles/a1/unit/2" className="hover:underline text-sm">Volver a la Unidad 2</Link>
-                        <h1 className="text-4xl font-bold [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">Clase 8</h1>
+                        <Link href="/ingles/a1/unit/2" className="hover:underline text-sm font-bold text-primary">Volver a la Unidad 2</Link>
+                        <h1 className="text-4xl font-bold [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">Clase 8 (A1)</h1>
                     </div>
                     <div className="grid gap-8 md:grid-cols-12">
-                        <div className="md:col-span-3 md:order-2 text-left">
+                        <div className="md:col-span-3 md:order-2 order-1 text-left">
                             <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
-                                <CardHeader><CardTitle>Ruta de Aprendizaje</CardTitle></CardHeader>
+                                <CardHeader><CardTitle>Ruta</CardTitle></CardHeader>
                                 <CardContent>
                                     <nav><ul className="space-y-1">
                                         {learningPath.map(item => (
@@ -383,7 +339,7 @@ export default function EngA1Class8Page() {
                                 </CardContent>
                             </Card>
                         </div>
-                        <div className="md:col-span-9 md:order-1">{renderContent()}</div>
+                        <div className="md:col-span-9 md:order-1 order-2">{renderContent()}</div>
                     </div>
                 </div>
             </main>

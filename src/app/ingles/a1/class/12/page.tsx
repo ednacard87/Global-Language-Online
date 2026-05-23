@@ -6,17 +6,14 @@ import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, Loader2, ArrowRight, Pencil, Clock, ArrowLeft, Trophy, Activity, BookText, Sparkles } from 'lucide-react';
+import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, Loader2, Clock } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
 import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
-import { CreativeWritingExercise } from '@/components/dashboard/creative-writing-exercise';
-import { ShortAnswerPresentSimpleExercise, type ShortAnswerPresentSimplePrompt } from '@/components/kids/exercises/short-answer-present-simple';
 
 type Topic = {
   key: string;
@@ -25,22 +22,12 @@ type Topic = {
   status: 'completed' | 'active' | 'locked';
 };
 
-const ICONS_CONFIG = {
-    locked: Lock,
-    active: BookOpen,
-    completed: CheckCircle,
-};
-
 const progressStorageVersion = 'progress_a1_eng_u3_c12_v26_stable';
 const mainProgressKey = 'progress_a1_eng_unit_3_class_12';
 
 const timeExpressionsData = [
     { spanish: 'ANOCHE', english: ['LAST NIGHT'] },
     { spanish: 'ESTA NOCHE', english: ['TONIGHT'] },
-];
-
-const class12Exercise3Data: ShortAnswerPresentSimplePrompt[] = [
-    { question: "ARE YOU CALLING YOUR MOTHER?", answers: { shortAffirmative: ["yes, i am"], shortNegative: ["no, i am not", "no, i'm not"] } },
 ];
 
 export default function EngA1Class12Page() {
@@ -68,6 +55,10 @@ export default function EngA1Class12Page() {
         { key: 'grammar2', name: 'Grammar 2', icon: GraduationCap, status: 'locked' },
         { key: 'ex2', name: 'Exercise 2', icon: PenSquare, status: 'locked' },
     ], []);
+
+    const handleTopicComplete = useCallback((completedKey: string) => {
+        setTopicToComplete(completedKey);
+    }, []);
 
     useEffect(() => {
         if (isProfileLoading || isUserLoading || !studentProfile || initialLoadComplete) return;
@@ -99,6 +90,7 @@ export default function EngA1Class12Page() {
         if (JSON.stringify(s) !== JSON.stringify(studentProfile?.lessonProgress?.[progressStorageVersion])) {
             updateDocumentNonBlocking(studentDocRef, { [`lessonProgress.${progressStorageVersion}`]: s, [`progress.${mainProgressKey}`]: progressValue });
         }
+        if (progressValue >= 100) window.dispatchEvent(new CustomEvent('progressUpdated'));
     }, [learningPath, isAdmin, progressValue, studentDocRef, initialLoadComplete, selectedTopic, studentProfile, isInitialLoading]);
 
     useEffect(() => {
@@ -122,7 +114,7 @@ export default function EngA1Class12Page() {
         const t = learningPath.find(it => it.key === topicKey);
         if (!isAdmin && t?.status === 'locked') { toast({ variant: "destructive", title: "Contenido Bloqueado" }); return; }
         setSelectedTopic(topicKey);
-        if (['grammar', 'grammar2'].includes(topicKey)) setTopicToComplete(topicKey);
+        if (['grammar', 'grammar2'].includes(topicKey)) handleTopicComplete(topicKey);
     };
 
     const renderContent = () => {
@@ -134,35 +126,27 @@ export default function EngA1Class12Page() {
                     <Card className="shadow-soft border-2 border-brand-purple">
                         <CardHeader><CardTitle>Time Expressions</CardTitle></CardHeader>
                         <CardContent><div className="grid grid-cols-2 gap-2">{timeExpressionsData.map((v, i) => (<React.Fragment key={i}><div className="p-2 border rounded bg-muted/10">{v.spanish}</div><Input value={vocabAnswers[i]} onChange={e => { const na = [...vocabAnswers]; na[i] = e.target.value; setVocabAnswers(na); setCanAdvanceVocab(false); }} className={cn(vocabValidation[i] === 'correct' ? 'border-green-500' : vocabValidation[i] === 'incorrect' ? 'border-red-500' : '')} /></React.Fragment>))}</div></CardContent>
-                        <CardFooter className="flex justify-between"><Button onClick={() => { let ok = false; const nv = timeExpressionsData.map((v, i) => { const cor = v.english.some(e => e.toUpperCase() === vocabAnswers[i].trim().toUpperCase()); if (cor) ok = true; return cor ? 'correct' : 'incorrect'; }); setVocabValidation(nv); setCanAdvanceVocab(ok); if (ok) toast({ title: "¡Bien hecho!" }); }}>Verificar</Button><Button onClick={() => setTopicToComplete('vocabulary')} disabled={!canAdvanceVocab && !isAdmin}>Avanzar</Button></CardFooter>
+                        <CardFooter className="flex justify-between"><Button onClick={() => { let ok = false; const nv = timeExpressionsData.map((v, i) => { const cor = v.english.some(e => e.toUpperCase() === vocabAnswers[i].trim().toUpperCase()); if (cor) ok = true; return cor ? 'correct' : 'incorrect'; }); setVocabValidation(nv); setCanAdvanceVocab(ok); if (ok) toast({ title: "¡Bien hecho!" }); }}>Verificar</Button><Button onClick={() => handleTopicComplete('vocabulary')} disabled={!canAdvanceVocab && !isAdmin}>Avanzar</Button></CardFooter>
                     </Card>
                 );
             case 'grammar':
                 return (
                     <Card className="p-6">
-                        <CardHeader>
-                            <CardTitle>PRESENT CONTINUOUS</CardTitle>
-                        </CardHeader>
-                        <CardContent className="pt-4">
-                            <p>Acciones ocurriendo AHORA (-ING).</p>
-                        </CardContent>
+                        <CardHeader><CardTitle>PRESENT CONTINUOUS</CardTitle></CardHeader>
+                        <CardContent className="pt-4"><p>Acciones ocurriendo AHORA (-ING).</p></CardContent>
                     </Card>
                 );
             case 'ex1':
-                return <SimpleTranslationExercise exerciseKey="c12_ex1" course="a1" onComplete={() => setTopicToComplete('ex1')} />;
+                return <SimpleTranslationExercise exerciseKey="c12_ex1" course="a1" onComplete={() => handleTopicComplete('ex1')} />;
             case 'grammar2':
                 return (
                     <Card className="p-6">
-                        <CardHeader>
-                            <CardTitle>{"ING Rules"}</CardTitle>
-                        </CardHeader>
-                        <CardContent className="pt-4">
-                            <p>{"Take -> Taking | Stop -> Stopping."}</p>
-                        </CardContent>
+                        <CardHeader><CardTitle>ING Rules</CardTitle></CardHeader>
+                        <CardContent className="pt-4"><p>Take {"->"} Taking | Stop {"->"} Stopping.</p></CardContent>
                     </Card>
                 );
             case 'ex2':
-                return <SimpleTranslationExercise exerciseKey="c12_ex2" course="a1" onComplete={() => setTopicToComplete('ex2')} />;
+                return <SimpleTranslationExercise exerciseKey="c12_ex2" course="a1" onComplete={() => handleTopicComplete('ex2')} />;
             default:
                 return <div className="flex justify-center items-center h-48"><Loader2 className="animate-spin text-primary" /></div>;
         }
@@ -178,7 +162,7 @@ export default function EngA1Class12Page() {
                         <h1 className="text-4xl font-bold [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">Clase 12 (A1)</h1>
                     </div>
                     <div className="grid gap-8 md:grid-cols-12">
-                        <div className="md:col-span-3 md:order-2 text-left">
+                        <div className="md:col-span-3 md:order-2 order-1 text-left">
                             <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
                                 <CardHeader><CardTitle>Ruta</CardTitle></CardHeader>
                                 <CardContent>
@@ -207,7 +191,7 @@ export default function EngA1Class12Page() {
                                 </CardContent>
                             </Card>
                         </div>
-                        <div className="md:col-span-9 md:order-1">{renderContent()}</div>
+                        <div className="md:col-span-9 md:order-1 order-2">{renderContent()}</div>
                     </div>
                 </div>
             </main>

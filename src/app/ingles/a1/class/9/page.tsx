@@ -2,12 +2,11 @@
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import Link from 'next/link';
-import { useParams, useRouter } from 'next/navigation';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, Info, Gamepad2, MessageSquare, Pencil, Loader2, Home, ArrowRight, Lightbulb } from 'lucide-react';
+import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, Info, Gamepad2, MessageSquare, Pencil, Loader2, Home } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
@@ -25,12 +24,6 @@ type Topic = {
   name: string;
   icon: React.ElementType;
   status: 'completed' | 'active' | 'locked';
-};
-
-const ICONS_CONFIG = {
-    locked: Lock,
-    active: BookOpen,
-    completed: CheckCircle,
 };
 
 const progressStorageVersion = 'progress_a1_eng_u2_c9_v10_stable';
@@ -136,6 +129,10 @@ export default function EngA1Class9Page() {
         { key: 'dialogue2', name: 'Dialogue 2', icon: MessageSquare, status: 'locked' },
     ], []);
 
+    const handleTopicComplete = useCallback((completedKey: string) => {
+        setTopicToComplete(completedKey);
+    }, []);
+
     useEffect(() => {
         if (isProfileLoading || isUserLoading || !studentProfile || initialLoadComplete) return;
         let path = initialLearningPath.map(t => ({ ...t }));
@@ -197,7 +194,7 @@ export default function EngA1Class9Page() {
         const topic = learningPath.find(t => t.key === topicKey);
         if (!isAdmin && topic?.status === 'locked') { toast({ variant: "destructive", title: "Contenido Bloqueado" }); return; }
         setSelectedTopic(topicKey);
-        if (['grammar', 'grammar2', 'grammar3'].includes(topicKey)) setTopicToComplete(topicKey);
+        if (['grammar', 'grammar2', 'grammar3'].includes(topicKey)) handleTopicComplete(topicKey);
     };
 
     const renderContent = () => {
@@ -218,14 +215,14 @@ export default function EngA1Class9Page() {
                                 ))}
                             </Accordion>
                         </CardContent>
-                        <CardFooter className="flex justify-between"><Button onClick={() => { let ok = false; const nv: any = {}; Object.keys(vocabularyData).forEach(c => { nv[c] = (vocabularyData as any)[c].map((v: any, i: number) => { const cor = v.english.some((e: string) => e.toLowerCase() === vocabAnswers[c][i].trim().toLowerCase()); if (cor) ok = true; return cor ? 'correct' : 'incorrect'; }); }); setVocabValidation(nv); setCanAdvanceVocab(ok); if (ok) toast({ title: "¡Bien hecho!" }); }}>Verificar</Button><Button onClick={() => setTopicToComplete('vocabulary')} disabled={!canAdvanceVocab && !isAdmin}>Avanzar</Button></CardFooter>
+                        <CardFooter className="flex justify-between"><Button onClick={() => { let ok = false; const nv: any = {}; Object.keys(vocabularyData).forEach(c => { nv[c] = (vocabularyData as any)[c].map((v: any, i: number) => { const cor = v.english.some((e: string) => e.toLowerCase() === vocabAnswers[c][i].trim().toLowerCase()); if (cor) ok = true; return cor ? 'correct' : 'incorrect'; }); }); setVocabValidation(nv); setCanAdvanceVocab(ok); if (ok) toast({ title: "¡Bien hecho!" }); }}>Verificar</Button><Button onClick={() => handleTopicComplete('vocabulary')} disabled={!canAdvanceVocab && !isAdmin}>Avanzar</Button></CardFooter>
                     </Card>
                 );
             case 'grammar': return <Card className="p-6"><CardTitle>DEMOSTRATIVOS</CardTitle><CardContent className="pt-4"><p>THIS, THESE (Cerca) | THAT, THOSE (Lejos).</p></CardContent></Card>;
-            case 'ex1': return <SimpleTranslationExercise exerciseKey="c9_ex1" course="a1" onComplete={() => setTopicToComplete('ex1')} />;
-            case 'dialogue1': return <LargeTextTranslation title="Dialogue 1" phrases={dialogue1Phrases} onComplete={() => setTopicToComplete('dialogue1')} />;
-            case 'vocab_game': return <VocabularyMatchingGame data={[...vocabularyData.weather, ...vocabularyData.house]} onComplete={() => setTopicToComplete('vocab_game')} />;
-            case 'dialogue2': return <DialogueCompletionExercise title="Dialogue 2" description="Completa con demostrativos." dialogue={dialogue2Data} onComplete={() => setTopicToComplete('dialogue2')} />;
+            case 'ex1': return <SimpleTranslationExercise exerciseKey="c9_ex1" course="a1" onComplete={() => handleTopicComplete('ex1')} />;
+            case 'dialogue1': return <LargeTextTranslation title="Dialogue 1" phrases={dialogue1Phrases} onComplete={() => handleTopicComplete('dialogue1')} />;
+            case 'vocab_game': return <VocabularyMatchingGame data={[...vocabularyData.weather, ...vocabularyData.house]} onComplete={() => handleTopicComplete('vocab_game')} />;
+            case 'dialogue2': return <DialogueCompletionExercise title="Dialogue 2" description="Completa con demostrativos." dialogue={dialogue2Data} onComplete={() => handleTopicComplete('dialogue2')} />;
             default: return <div className="flex justify-center items-center h-48"><Loader2 className="animate-spin text-primary" /></div>;
         }
     };
@@ -236,13 +233,13 @@ export default function EngA1Class9Page() {
             <main className="flex-1 p-4 md:p-8">
                 <div className="max-w-7xl mx-auto">
                     <div className="mb-8 text-left text-white">
-                        <Link href="/ingles/a1/unit/2" className="hover:underline text-sm">Volver a la Unidad 2</Link>
-                        <h1 className="text-4xl font-bold [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">Clase 9</h1>
+                        <Link href="/ingles/a1/unit/2" className="hover:underline text-sm font-bold text-primary">Volver a la Unidad 2</Link>
+                        <h1 className="text-4xl font-bold [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">Clase 9 (A1)</h1>
                     </div>
                     <div className="grid gap-8 md:grid-cols-12">
-                        <div className="md:col-span-3 md:order-2 text-left">
+                        <div className="md:col-span-3 md:order-2 order-1 text-left">
                             <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
-                                <CardHeader><CardTitle>Ruta de Aprendizaje</CardTitle></CardHeader>
+                                <CardHeader><CardTitle>Ruta</CardTitle></CardHeader>
                                 <CardContent>
                                     <nav><ul className="space-y-1">
                                         {learningPath.map(item => (
@@ -255,7 +252,7 @@ export default function EngA1Class9Page() {
                                 </CardContent>
                             </Card>
                         </div>
-                        <div className="md:col-span-9 md:order-1">{renderContent()}</div>
+                        <div className="md:col-span-9 md:order-1 order-2">{renderContent()}</div>
                     </div>
                 </div>
             </main>

@@ -5,8 +5,7 @@ import Link from 'next/link';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, Loader2, ArrowRight, Mic, Trophy } from 'lucide-react';
-import { useTranslation } from '@/context/language-context';
+import { BookOpen, PenSquare, Lock, CheckCircle, Loader2, ArrowRight, Trophy } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
 import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
@@ -20,12 +19,6 @@ type Topic = {
   name: string;
   icon: React.ElementType;
   status: 'completed' | 'active' | 'locked';
-};
-
-const ICONS_CONFIG = {
-    locked: Lock,
-    active: BookOpen,
-    completed: CheckCircle,
 };
 
 const progressStorageVersion = 'progress_a1_eng_u3_c14_v11_stable';
@@ -59,6 +52,10 @@ export default function EngA1Class14Page() {
         { key: 'last_ex', name: 'Last Exercise', icon: CheckCircle, status: 'locked' },
     ], []);
 
+    const handleTopicComplete = useCallback((completedKey: string) => {
+        setTopicToComplete(completedKey);
+    }, []);
+
     useEffect(() => {
         if (isProfileLoading || isUserLoading || !studentProfile || initialLoadComplete) return;
         let path = initialLearningPath.map(t => ({ ...t }));
@@ -89,6 +86,7 @@ export default function EngA1Class14Page() {
         if (JSON.stringify(s) !== JSON.stringify(studentProfile?.lessonProgress?.[progressStorageVersion])) {
             updateDocumentNonBlocking(studentDocRef, { [`lessonProgress.${progressStorageVersion}`]: s, [`progress.${mainProgressKey}`]: progressValue });
         }
+        if (progressValue >= 100) window.dispatchEvent(new CustomEvent('progressUpdated'));
     }, [learningPath, isAdmin, progressValue, studentDocRef, initialLoadComplete, selectedTopic, studentProfile, isInitialLoading]);
 
     useEffect(() => {
@@ -126,8 +124,8 @@ export default function EngA1Class14Page() {
                         <CardFooter className="flex justify-between"><Button onClick={() => { setCanAdvanceVocab(true); toast({ title: "Verificado" }); }}>Verificar</Button><Button onClick={() => handleTopicComplete('vocabulary')} disabled={!canAdvanceVocab && !isAdmin}>Avanzar</Button></CardFooter>
                     </Card>
                 );
-            case 'ex1': return <SimpleTranslationExercise exerciseKey="c14_general" course="a1" onComplete={() => setTopicToComplete('ex1')} />;
-            case 'last_ex': return <Card className="p-12 text-center"><Trophy className="h-20 w-20 mx-auto text-yellow-400" /><h2 className="text-2xl font-bold mt-4">¡Clase 14 Completada!</h2><Button onClick={() => setTopicToComplete('last_ex')} className="mt-4">Finalizar</Button></Card>;
+            case 'ex1': return <SimpleTranslationExercise exerciseKey="c14_general" course="a1" onComplete={() => handleTopicComplete('ex1')} />;
+            case 'last_ex': return <Card className="p-12 text-center"><Trophy className="h-20 w-20 mx-auto text-yellow-400" /><h2 className="text-2xl font-bold mt-4">¡Clase 14 Completada!</h2><Button onClick={() => handleTopicComplete('last_ex')} className="mt-4">Finalizar</Button></Card>;
             default: return <div className="flex justify-center items-center h-48"><Loader2 className="animate-spin text-primary" /></div>;
         }
     };
@@ -139,7 +137,7 @@ export default function EngA1Class14Page() {
                 <div className="max-w-7xl mx-auto">
                     <div className="mb-8 text-left text-white"><Link href="/ingles/a1/unit/3" className="hover:underline text-sm font-bold text-primary">Volver a la Unidad 3</Link><h1 className="text-4xl font-bold [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">Clase 14 (A1)</h1></div>
                     <div className="grid gap-8 md:grid-cols-12">
-                        <div className="md:col-span-3 md:order-2 text-left">
+                        <div className="md:col-span-3 md:order-2 order-1 text-left">
                             <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
                                 <CardHeader><CardTitle>Ruta</CardTitle></CardHeader>
                                 <CardContent>
@@ -154,7 +152,7 @@ export default function EngA1Class14Page() {
                                 </CardContent>
                             </Card>
                         </div>
-                        <div className="md:col-span-9 md:order-1">{renderContent()}</div>
+                        <div className="md:col-span-9 md:order-1 order-2">{renderContent()}</div>
                     </div>
                 </div>
             </main>

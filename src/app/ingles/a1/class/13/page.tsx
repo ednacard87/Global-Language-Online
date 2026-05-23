@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { DashboardHeader } from "@/components/dashboard/header";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, Gamepad2, Feather, Bot, Trophy, Loader2, ArrowRight } from 'lucide-react';
+import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, Loader2, ArrowRight } from 'lucide-react';
 import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Progress } from "@/components/ui/progress";
@@ -14,8 +14,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ComparativeExercise } from '@/components/kids/exercises/comparative-exercise';
 import { SuperlativeExercise } from '@/components/kids/exercises/superlative-exercise';
-import { SyllableExercise, type SyllableExerciseData } from '@/components/kids/exercises/syllable-exercise';
-import { MonosyllabicExercise } from '@/components/kids/exercises/monosyllabic-exercise';
 import { useTranslation } from '@/context/language-context';
 
 type Topic = {
@@ -23,12 +21,6 @@ type Topic = {
   name: string;
   icon: React.ElementType;
   status: 'locked' | 'active' | 'completed';
-};
-
-const ICONS_CONFIG = {
-    locked: Lock,
-    active: BookOpen,
-    completed: CheckCircle,
 };
 
 const progressStorageVersion = 'progress_a1_eng_u3_c13_v10_stable';
@@ -54,7 +46,6 @@ export default function EngA1Class13Page() {
     const [initialLoadComplete, setInitialLoadComplete] = useState(false);
 
     const [vocabAnswers, setVocabAnswers] = useState<string[]>(Array(vocabularyData.length).fill(''));
-    const [vocabValidation, setVocabValidation] = useState<any[]>(Array(vocabularyData.length).fill('unchecked'));
     const [canAdvanceVocab, setCanAdvanceVocab] = useState(false);
 
     const initialLearningPath = useMemo((): Topic[] => [
@@ -64,6 +55,10 @@ export default function EngA1Class13Page() {
         { key: 'superlativos', name: 'Superlativos', icon: GraduationCap, status: 'locked' },
         { key: 'ejercicio-superlativo', name: 'Ejercicio Superlativo', icon: PenSquare, status: 'locked' },
     ], []);
+
+    const handleTopicComplete = useCallback((completedKey: string) => {
+        setTopicToComplete(completedKey);
+    }, []);
 
     useEffect(() => {
         if (isProfileLoading || isUserLoading || !studentProfile || initialLoadComplete) return;
@@ -119,25 +114,24 @@ export default function EngA1Class13Page() {
         const it = learningPath.find(t => t.key === topicKey);
         if (!isAdmin && it?.status === 'locked') { toast({ variant: "destructive", title: "Contenido Bloqueado" }); return; }
         setSelectedTopic(topicKey);
-        if (['comparativos', 'superlativos'].includes(topicKey)) setTopicToComplete(topicKey);
+        if (['comparativos', 'superlativos'].includes(topicKey)) handleTopicComplete(topicKey);
     };
 
     const renderContent = () => {
-        if (isInitialLoading) return <div className="flex justify-center items-center h-64"><Loader2 className="animate-spin" /></div>;
-        const topic = learningPath.find(t => t.key === selectedTopic);
+        if (isInitialLoading) return <div className="flex justify-center items-center h-64"><Loader2 className="animate-spin text-primary" /></div>;
         switch (selectedTopic) {
             case 'vocabulario':
                 return (
                     <Card className="shadow-soft border-2 border-brand-purple">
                         <CardHeader><CardTitle>Vocabulario (Adjetivos)</CardTitle></CardHeader>
                         <CardContent><div className="grid grid-cols-2 gap-2">{vocabularyData.map((v, i) => (<React.Fragment key={i}><div className="p-3 border rounded bg-muted/10">{v.spanish}</div><Input value={vocabAnswers[i]} onChange={e => { const n = [...vocabAnswers]; n[i] = e.target.value; setVocabAnswers(n); setCanAdvanceVocab(false); }} /></React.Fragment>))}</div></CardContent>
-                        <CardFooter><Button onClick={() => { let ok = false; vocabularyData.forEach((v, i) => { if (v.english.some(e => e.toLowerCase() === vocabAnswers[i].trim().toLowerCase())) ok = true; }); setCanAdvanceVocab(ok); if (ok) toast({ title: "¡Bien!" }); }}>Verificar</Button><Button onClick={() => setTopicToComplete('vocabulario')} disabled={!canAdvanceVocab && !isAdmin}>Avanzar</Button></CardFooter>
+                        <CardFooter><Button onClick={() => { let ok = false; vocabularyData.forEach((v, i) => { if (v.english.some(e => e.toLowerCase() === vocabAnswers[i].trim().toLowerCase())) ok = true; }); setCanAdvanceVocab(ok); if (ok) toast({ title: "¡Bien!" }); }}>Verificar</Button><Button onClick={() => handleTopicComplete('vocabulario')} disabled={!canAdvanceVocab && !isAdmin}>Avanzar</Button></CardFooter>
                     </Card>
                 );
             case 'comparativos': return <Card className="p-6"><CardTitle>COMPARATIVOS</CardTitle><CardContent className="pt-4"><p>Adjetivo + ER + THAN (Más que).</p></CardContent></Card>;
-            case 'ejercicio-comparativo': return <ComparativeExercise onComplete={() => setTopicToComplete('ejercicio-comparativo')} />;
+            case 'ejercicio-comparativo': return <ComparativeExercise onComplete={() => handleTopicComplete('ejercicio-comparativo')} />;
             case 'superlativos': return <Card className="p-6"><CardTitle>SUPERLATIVOS</CardTitle><CardContent className="pt-4"><p>THE + Adjetivo + EST (El más).</p></CardContent></Card>;
-            case 'ejercicio-superlativo': return <SuperlativeExercise onComplete={() => setTopicToComplete('ejercicio-superlativo')} />;
+            case 'ejercicio-superlativo': return <SuperlativeExercise onComplete={() => handleTopicComplete('ejercicio-superlativo')} />;
             default: return <div className="flex justify-center items-center h-48"><Loader2 className="animate-spin text-primary" /></div>;
         }
     };
@@ -149,7 +143,7 @@ export default function EngA1Class13Page() {
                 <div className="max-w-7xl mx-auto">
                     <div className="mb-8 text-left text-white"><Link href="/ingles/a1/unit/3" className="hover:underline text-sm font-bold text-primary">Volver a la Unidad 3</Link><h1 className="text-4xl font-bold [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">Clase 13 (A1)</h1></div>
                     <div className="grid gap-8 md:grid-cols-12">
-                        <div className="md:col-span-3 md:order-2 text-left">
+                        <div className="md:col-span-3 md:order-2 order-1 text-left">
                             <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
                                 <CardHeader><CardTitle>Ruta</CardTitle></CardHeader>
                                 <CardContent>
@@ -164,7 +158,7 @@ export default function EngA1Class13Page() {
                                 </CardContent>
                             </Card>
                         </div>
-                        <div className="md:col-span-9 md:order-1">{renderContent()}</div>
+                        <div className="md:col-span-9 md:order-1 order-2">{renderContent()}</div>
                     </div>
                 </div>
             </main>

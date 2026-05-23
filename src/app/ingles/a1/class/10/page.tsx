@@ -5,8 +5,7 @@ import Link from 'next/link';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, Loader2, ArrowRight, Sparkles, BookText, HelpCircle, Lightbulb, MessageSquare, Gamepad2, Globe, XCircle } from 'lucide-react';
-import { useTranslation } from '@/context/language-context';
+import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, Loader2, ArrowRight, MessageSquare } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
 import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
@@ -14,12 +13,10 @@ import { doc } from 'firebase/firestore';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Separator } from '@/components/ui/separator';
 import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
 import { LargeTextTranslation } from '@/components/dashboard/large-text-translation';
 import { DialogueCompletionExercise } from '@/components/kids/exercises/dialogue-completion-exercise';
 import { SentenceCompletionExercise, type CompletionPrompt } from '@/components/kids/exercises/sentence-completion-exercise';
-import { FillInTheBlanksExercise } from '@/components/kids/exercises/fill-in-the-blanks';
 
 type Topic = {
   key: string;
@@ -28,13 +25,7 @@ type Topic = {
   status: 'completed' | 'active' | 'locked';
 };
 
-const ICONS_CONFIG = {
-    locked: Lock,
-    active: BookOpen,
-    completed: CheckCircle,
-};
-
-const progressStorageVersion = 'progress_a1_eng_u2_c10_v22_stable';
+const progressStorageVersion = 'progress_a1_eng_u2_c10_v23_stable';
 const mainProgressKey = 'progress_a1_eng_unit_2_class_10';
 
 const vocabularyData = {
@@ -107,6 +98,10 @@ export default function EngA1Class10Page() {
         { key: 'ex_the2', name: 'Exercise with "The" 2', icon: PenSquare, status: 'locked' },
     ], []);
 
+    const handleTopicComplete = useCallback((completedKey: string) => {
+        setTopicToComplete(completedKey);
+    }, []);
+
     useEffect(() => {
         if (isProfileLoading || isUserLoading || !studentProfile || initialLoadComplete) return;
         let path = initialLearningPath.map(t => ({ ...t }));
@@ -175,7 +170,7 @@ export default function EngA1Class10Page() {
         let ok = false; const nv: any = {};
         Object.keys(vocabularyData).forEach(c => {
             nv[c] = (vocabularyData as any)[c].map((v: any, i: number) => {
-                const res = v.english.toUpperCase() === vocabAnswers[c][i].trim().toUpperCase();
+                const res = v.english.toUpperCase() === (vocabAnswers[c][i] || '').trim().toUpperCase();
                 if (res) ok = true; return res ? 'correct' : 'incorrect';
             });
         });
@@ -185,7 +180,6 @@ export default function EngA1Class10Page() {
 
     const renderContent = () => {
         if (isInitialLoading) return <div className="flex justify-center items-center h-64"><Loader2 className="animate-spin" /></div>;
-        const topic = learningPath.find(t => t.key === selectedTopic);
         switch (selectedTopic) {
             case 'vocabulary':
                 return (
@@ -217,7 +211,7 @@ export default function EngA1Class10Page() {
                         <h1 className="text-4xl font-bold [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">Clase 10 (A1)</h1>
                     </div>
                     <div className="grid gap-8 md:grid-cols-12">
-                        <div className="md:col-span-3 md:order-2 text-left">
+                        <div className="md:col-span-3 md:order-2 order-1 text-left">
                             <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
                                 <CardHeader><CardTitle>Ruta</CardTitle></CardHeader>
                                 <CardContent>
@@ -232,7 +226,7 @@ export default function EngA1Class10Page() {
                                 </CardContent>
                             </Card>
                         </div>
-                        <div className="md:col-span-9 md:order-1">{renderContent()}</div>
+                        <div className="md:col-span-9 md:order-1 order-2">{renderContent()}</div>
                     </div>
                 </div>
             </main>

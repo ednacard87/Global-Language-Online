@@ -5,31 +5,23 @@ import Link from 'next/link';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, Info, Gamepad2, Loader2, ChevronDown, Check, X, ArrowRight, BookText } from 'lucide-react';
+import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, Info, Gamepad2, Loader2, Check, X } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
 import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
 import { doc } from 'firebase/firestore';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
 import { AdjectivesMemoryGame } from '@/components/kids/exercises/adjectives-memory-game';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 type Topic = {
   key: string;
   name: string;
   icon: React.ElementType;
   status: 'locked' | 'active' | 'completed';
-};
-
-const ICONS_CONFIG = {
-    locked: Lock,
-    active: BookOpen,
-    completed: CheckCircle,
 };
 
 const progressStorageVersion = 'progress_a1_eng_u2_c6_v16_stable';
@@ -40,30 +32,16 @@ const vocabularyData = [
     { spanish: 'ALEGRE', english: ['cheerful'] },
     { spanish: 'OCUPADO', english: ['busy'] },
     { spanish: 'RARO, EXTRAÑO', english: ['strange'] },
-    { spanish: 'CURIOSO', english: ['curious'] },
     { spanish: 'AMIGABLE', english: ['friendly'] },
-    { spanish: 'DULCE', english: ['sweet'] },
     { spanish: 'INTELIGENTE', english: ['intelligent'] },
-    { spanish: 'LIBRE', english: ['free'] },
     { spanish: 'EGOÍSTA', english: ['selfish'] },
-    { spanish: 'ENVIDIOSO', english: ['envious'] },
     { spanish: 'FELIZ', english: ['happy'] },
     { spanish: 'AMABLE', english: ['kind'] },
     { spanish: 'RAPIDO', english: ['fast'] },
     { spanish: 'ABURRIDOR', english: ['boring'] },
-    { spanish: 'GENEROSO', english: ['generous'] },
-    { spanish: 'MINUSCULO', english: ['tiny'] },
-    { spanish: 'HERMOSO', english: ['beautiful'] },
     { spanish: 'LENTO', english: ['slow'] },
-    { spanish: 'ENORME', english: ['huge'] },
     { spanish: 'ORDENADO', english: ['tidy'] },
-    { spanish: 'TERCO', english: ['stubborn'] },
-    { spanish: 'NERVIOSO', english: ['nervous'] },
-    { spanish: 'DESORDENADO', english: ['messy', 'untidy'] },
     { spanish: 'TRABAJADOR', english: ['hardworking'] },
-    { spanish: 'PESIMISTA', english: ['pessimistic'] },
-    { spanish: 'OPTIMISTA', english: ['optimistic'] },
-    { spanish: 'FLEXIBLE', english: ['flexible'] },
 ];
 
 const possessivesTable = [
@@ -71,7 +49,6 @@ const possessivesTable = [
     { adj: 'YOUR', adjEs: 'TU-TUS', pro: 'YOURS', proEs: 'TUYO (OS-A-AS)' },
     { adj: 'HIS', adjEs: 'SU-SUS DE EL', pro: 'HIS', proEs: '(SUYO/A/OS/AS DE EL)' },
     { adj: 'HER', adjEs: 'SU-SUS DE ELLA', pro: 'HERS', proEs: '(SUYO/A/OS/AS DE ELLA)' },
-    { adj: 'ITS', adjEs: 'SU-SUS DE ESO', pro: 'ITS', proEs: '(SUYO/A/OS/AS DE ESO)' },
     { adj: 'OUR', adjEs: 'NUESTRO/A/OS/AS', pro: 'OURS', proEs: '( NUESTRO/A/OS/AS)' },
     { adj: 'THEIR', adjEs: 'SU- SUS DE ELLOS', pro: 'THEIRS', proEs: '( SUYO/A/OS/AS DE ELLOS)' },
 ];
@@ -138,7 +115,7 @@ const LinesWritingExercise = ({
                     })}
                 </div>
             </CardContent>
-            <CardFooter className="pt-6 border-t"><Button onClick={onComplete} size="lg">Avanzar</Button></CardFooter>
+            <CardFooter className="pt-6 border-t flex justify-center"><Button onClick={onComplete} size="lg">Avanzar</Button></CardFooter>
         </Card>
     );
 };
@@ -161,8 +138,12 @@ export default function EngA1Class6Page() {
     const [initialLoadComplete, setInitialLoadComplete] = useState(false);
 
     const [vocabAnswers, setVocabAnswers] = useState<string[]>(Array(vocabularyData.length).fill(''));
-    const [vocabValidation, setVocabValidation] = useState<('correct' | 'incorrect' | 'unchecked')[]>(Array(vocabularyData.length).fill('unchecked'));
+    const [vocabValidation, setVocabValidation] = useState<any[]>(Array(vocabularyData.length).fill('unchecked'));
     const [canAdvanceVocab, setCanAdvanceVocab] = useState(false);
+
+    const handleTopicComplete = useCallback((completedKey: string) => {
+        setTopicToComplete(completedKey);
+    }, []);
 
     const initialLearningPath = useMemo((): Topic[] => [
         { key: 'vocabulary', name: 'Vocabulary (Basic Adjectives)', icon: BookOpen, status: 'active' },
@@ -208,8 +189,8 @@ export default function EngA1Class6Page() {
 
     const progressValue = useMemo(() => {
         if (learningPath.length === 0) return 0;
-        const completedCount = learningPath.filter(t => t.status === 'completed').length;
-        return Math.round((completedCount / learningPath.length) * 100);
+        const comp = learningPath.filter(t => t.status === 'completed').length;
+        return Math.round((comp / learningPath.length) * 100);
     }, [learningPath]);
 
     useEffect(() => {
@@ -248,7 +229,7 @@ export default function EngA1Class6Page() {
         const topic = learningPath.find(t => t.key === topicKey);
         if (!isAdmin && topic?.status === 'locked') { toast({ variant: "destructive", title: "Contenido Bloqueado" }); return; }
         setSelectedTopic(topicKey);
-        if (['grammar', 'note'].includes(topicKey)) setTopicToComplete(topicKey);
+        if (['grammar', 'note'].includes(topicKey)) handleTopicComplete(topicKey);
     };
 
     const handleCheckVocab = () => {
@@ -264,7 +245,7 @@ export default function EngA1Class6Page() {
     };
 
     const renderContent = () => {
-        if (isInitialLoading) return <div className="flex justify-center items-center min-h-[400px]"><Loader2 className="h-12 w-12 animate-spin text-primary" /></div>;
+        if (isInitialLoading) return <div className="flex justify-center items-center h-64"><Loader2 className="animate-spin text-primary" /></div>;
 
         switch (selectedTopic) {
             case 'vocabulary':
@@ -291,38 +272,21 @@ export default function EngA1Class6Page() {
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
                         <CardHeader><CardTitle>Adjetivos vs Pronombres Posesivos</CardTitle></CardHeader>
                         <CardContent><Table className="text-base"><TableHeader className="bg-muted"><TableRow><TableHead>ADJ.</TableHead><TableHead>ES</TableHead><TableHead>PRO.</TableHead><TableHead>ES</TableHead></TableRow></TableHeader><TableBody>{possessivesTable.map((row, idx) => (<TableRow key={idx}><TableCell className="font-bold text-primary">{row.adj}</TableCell><TableCell>{row.adjEs}</TableCell><TableCell className="font-bold text-brand-purple">{row.pro}</TableCell><TableCell>{row.proEs}</TableCell></TableRow>))}</TableBody></Table></CardContent>
+                        <CardFooter className="justify-center"><Button onClick={() => handleTopicComplete('grammar')}>Entendido</Button></CardFooter>
                     </Card>
                 );
             case 'note':
                 return (
                     <div className="space-y-6 text-left">
                         <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-slate-100 dark:bg-slate-800/50">
-                            <CardHeader>
-                                <CardTitle className="text-xl font-bold text-primary">1- Adjetivos Posesivos</CardTitle>
-                            </CardHeader>
-                            <CardContent className="text-slate-900 dark:text-slate-100">
-                                <p className="text-lg">Siempre en una frase están: <strong>ANTES</strong> del sustantivo.</p>
-                                <div className="mt-4 p-3 bg-white/50 rounded-lg border font-mono">
-                                    <p>Example = Ejemplo</p>
-                                    <p className="font-bold text-primary">My house / Your car</p>
-                                </div>
-                            </CardContent>
+                            <CardHeader><CardTitle className="text-xl font-bold text-primary">1- Adjetivos Posesivos</CardTitle></CardHeader>
+                            <CardContent className="text-slate-900 dark:text-slate-100"><p className="text-lg">Siempre en una frase están: <strong>ANTES</strong> del sustantivo.</p><div className="mt-4 p-3 bg-white/50 rounded-lg border font-mono"><p>Example = Ejemplo</p><p className="font-bold text-primary">My house / Your car</p></div></CardContent>
                         </Card>
                         <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-slate-100 dark:bg-slate-800/50">
-                            <CardHeader>
-                                <CardTitle className="text-xl font-bold text-primary">2- Pronombres Posesivos</CardTitle>
-                            </CardHeader>
-                            <CardContent className="text-slate-900 dark:text-slate-100">
-                                <p className="text-lg">Siempre en una frase están: <strong>DESPUÉS</strong> del sustantivo.</p>
-                                <div className="mt-4 p-3 bg-white/50 rounded-lg border font-mono">
-                                    <p>Example = Ejemplo</p>
-                                    <p className="font-bold text-primary">That house is mine (Esa casa es mía)</p>
-                                </div>
-                            </CardContent>
+                            <CardHeader><CardTitle className="text-xl font-bold text-primary">2- Pronombres Posesivos</CardTitle></CardHeader>
+                            <CardContent className="text-slate-900 dark:text-slate-100"><p className="text-lg">Siempre en una frase están: <strong>DESPUÉS</strong> del sustantivo.</p><div className="mt-4 p-3 bg-white/50 rounded-lg border font-mono"><p>Example = Ejemplo</p><p className="font-bold text-primary">That house is mine (Esa casa es mía)</p></div></CardContent>
                         </Card>
-                        <div className="flex justify-center pt-4">
-                            <Button onClick={() => handleTopicComplete('note')} size="lg" className="px-12">Continuar</Button>
-                        </div>
+                        <div className="flex justify-center pt-4"><Button onClick={() => handleTopicComplete('note')} size="lg" className="px-12">Continuar</Button></div>
                     </div>
                 );
             case 'text':
@@ -346,13 +310,13 @@ export default function EngA1Class6Page() {
             <main className="flex-1 p-4 md:p-8">
                 <div className="max-w-7xl mx-auto">
                     <div className="mb-8 text-left text-white">
-                        <Link href="/ingles/a1/unit/2" className="hover:underline text-sm">Volver a la Unidad 2</Link>
-                        <h1 className="text-4xl font-bold [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">Clase 6</h1>
+                        <Link href="/ingles/a1/unit/2" className="hover:underline text-sm font-bold text-primary">Volver a la Unidad 2</Link>
+                        <h1 className="text-4xl font-bold [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">Clase 6 (A1)</h1>
                     </div>
                     <div className="grid gap-8 md:grid-cols-12">
-                        <div className="md:col-span-3 md:order-2 text-left">
+                        <div className="md:col-span-3 md:order-2 order-1 text-left">
                             <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
-                                <CardHeader><CardTitle>Ruta de Aprendizaje</CardTitle></CardHeader>
+                                <CardHeader><CardTitle>Ruta</CardTitle></CardHeader>
                                 <CardContent>
                                     <nav><ul className="space-y-1">
                                         {learningPath.map(item => (
@@ -365,7 +329,7 @@ export default function EngA1Class6Page() {
                                 </CardContent>
                             </Card>
                         </div>
-                        <div className="md:col-span-9 md:order-1">{renderContent()}</div>
+                        <div className="md:col-span-9 md:order-1 order-2">{renderContent()}</div>
                     </div>
                 </div>
             </main>
