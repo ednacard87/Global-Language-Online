@@ -1,12 +1,11 @@
-
 'use client';
 
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, Info, Mic, Loader2, RefreshCw, Flame, Trophy, Gamepad2, ChevronDown, Pencil, ArrowLeft, ArrowRight } from 'lucide-react';
+import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, Info, Mic, Loader2, RefreshCw, Flame, Trophy, Gamepad2, ChevronDown, Pencil, ArrowLeft, ArrowRight, Check, X } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
@@ -32,7 +31,7 @@ const ICONS_CONFIG = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_a1_eng_u1_c8_v6_stable';
+const progressStorageVersion = 'progress_a1_eng_u1_c8_v12_stable';
 const mainProgressKey = 'progress_a1_eng_unit_1_class_8';
 
 const vocabularyData = [
@@ -69,18 +68,118 @@ const exercise5Data: CompletionPrompt[] = [
     { parts: ["SHE WORKS WITH ", " ENGINEER."], answers: [""] },
 ];
 
-const LinesWritingExercise = ({ title, description, lineCount = 12, onComplete, studentDocRef, initialData, savePath }: any) => {
+// --- Dictation / Manual Grading Component ---
+const ManualGradingExercise = ({ 
+    title,
+    description,
+    onComplete, 
+    studentDocRef, 
+    initialData, 
+    initialGrades,
+    savePath, 
+    savePathGrades,
+    isAdmin,
+    lineCount = 13,
+}: any) => {
     const [lines, setLines] = useState<string[]>(Array(lineCount).fill(''));
-    useEffect(() => { if (initialData && Array.isArray(initialData)) setLines(initialData); }, [initialData]);
-    const handleLineChange = (idx: number, val: string) => {
-        const n = [...lines]; n[idx] = val; setLines(n);
-        if (studentDocRef) updateDocumentNonBlocking(studentDocRef, { [savePath]: n });
+    const [grades, setGrades] = useState<Record<number, 'correct' | 'incorrect' | null>>(initialGrades || {});
+    const initializedRef = useRef(false);
+
+    useEffect(() => {
+        if (!initializedRef.current && initialData && Array.isArray(initialData)) {
+            const newLines = [...Array(lineCount).fill('')];
+            initialData.forEach((val, i) => { if (i < lineCount) newLines[i] = val || ''; });
+            setLines(newLines);
+            if (initialData.length > 0) initializedRef.current = true;
+        }
+    }, [initialData, lineCount]);
+
+    const handleLineChange = (index: number, value: string) => {
+        const newLines = [...lines];
+        newLines[index] = value;
+        setLines(newLines);
+        if (studentDocRef) updateDocumentNonBlocking(studentDocRef, { [savePath]: newLines });
     };
+
+    const handleToggleGrade = (index: number, type: 'correct' | 'incorrect') => {
+        if (!isAdmin) return;
+        const newGrades = { ...grades };
+        newGrades[index] = newGrades[index] === type ? null : type;
+        setGrades(newGrades);
+        if (studentDocRef) updateDocumentNonBlocking(studentDocRef, { [savePathGrades]: newGrades });
+    };
+
     return (
-        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left">
-            <CardHeader><CardTitle>{title}</CardTitle><CardDescription className="text-primary">{description}</CardDescription></CardHeader>
-            <CardContent className="space-y-2">{lines.map((l, i) => (<div key={i} className="flex gap-2"><span className="font-bold w-6">{i + 1}.</span><Input value={l} onChange={e => handleLineChange(i, e.target.value)} className="bg-muted/30" /></div>))}</CardContent>
-            <CardFooter className="pt-4 border-t"><Button onClick={onComplete}>Avanzar</Button></CardFooter>
+        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
+            <CardHeader>
+                <div className="flex items-center gap-3">
+                    <div className="p-2 bg-primary/20 rounded-lg text-primary">
+                        {title.includes('DICTATION') ? <Mic className="h-6 w-6" /> : <Pencil className="h-6 w-6" />}
+                    </div>
+                    <div>
+                        <CardTitle>{title}</CardTitle>
+                        <CardDescription>{description}</CardDescription>
+                    </div>
+                </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 gap-3">
+                    {lines.map((line, idx) => {
+                        const status = grades[idx];
+                        const isTitleLine = idx === 0 && title.includes('DICTATION');
+                        return (
+                            <div key={idx} className="flex items-center gap-3">
+                                <span className={cn("font-bold w-8 text-right", isTitleLine ? "text-primary" : "text-muted-foreground")}>
+                                    {idx + 1}.
+                                </span>
+                                <Input 
+                                    value={line} 
+                                    onChange={e => handleLineChange(idx, e.target.value)} 
+                                    className={cn(
+                                        "flex-1 text-lg h-10 transition-all",
+                                        isTitleLine && "font-bold border-primary/50",
+                                        status === 'correct' ? 'border-green-500 bg-green-50/5' : 
+                                        status === 'incorrect' ? 'border-red-500 bg-red-50/5' : ''
+                                    )} 
+                                    placeholder={isTitleLine ? "Escribe el título aquí..." : "Escribe aquí..."}
+                                    autoComplete="off" 
+                                />
+                                <div className="flex gap-1 shrink-0">
+                                    <Button 
+                                        size="icon" 
+                                        variant="ghost" 
+                                        onClick={() => handleToggleGrade(idx, 'correct')} 
+                                        className={cn(
+                                            "h-8 w-8 rounded-full transition-colors", 
+                                            status === 'correct' ? "bg-green-500 text-white" : "bg-muted text-muted-foreground opacity-50"
+                                        )} 
+                                        disabled={!isAdmin}
+                                    >
+                                        <Check className="h-4 w-4"/>
+                                    </Button>
+                                    <Button 
+                                        size="icon" 
+                                        variant="ghost" 
+                                        onClick={() => handleToggleGrade(idx, 'incorrect')} 
+                                        className={cn(
+                                            "h-8 w-8 rounded-full transition-colors", 
+                                            status === 'incorrect' ? "bg-red-500 text-white" : "bg-muted text-muted-foreground opacity-50"
+                                        )} 
+                                        disabled={!isAdmin}
+                                    >
+                                        <X className="h-4 w-4"/>
+                                    </Button>
+                                </div>
+                            </div>
+                        )
+                    })}
+                </div>
+            </CardContent>
+            <CardFooter className="pt-6 border-t flex justify-center">
+                <Button onClick={onComplete} size="lg" className="px-16 font-bold h-14 text-xl">
+                    Avanzar <ArrowRight className="ml-2 h-6 w-6" />
+                </Button>
+            </CardFooter>
         </Card>
     );
 };
@@ -101,6 +200,7 @@ export default function EngA1Class8Page() {
 
     const [vocabAnswers, setVocabAnswers] = useState<string[]>(Array(vocabularyData.length).fill(''));
     const [vocabValidation, setVocabValidation] = useState<any[]>(Array(vocabularyData.length).fill('unchecked'));
+    const [canAdvanceVocab, setCanAdvanceVocab] = useState(false);
 
     const initialLearningPath = useMemo((): Topic[] => [
         { key: 'vocabulary', name: 'Vocabulary (Basic Words)', icon: BookOpen, status: 'active' },
@@ -179,6 +279,23 @@ export default function EngA1Class8Page() {
         setSelectedTopic(topicKey);
     };
 
+    const handleCheckVocab = () => {
+        let atLeastOneCorrect = false;
+        const nv = vocabularyData.map((v, i) => {
+            const c = v.english.some(e => e.toLowerCase() === vocabAnswers[i].trim().toLowerCase());
+            if (c) atLeastOneCorrect = true;
+            return c ? 'correct' : 'incorrect';
+        });
+        setVocabValidation(nv);
+        if (atLeastOneCorrect) {
+            toast({ title: "¡Buen trabajo!", description: "Has acertado al menos una. ¡Ya puedes avanzar!" });
+            setCanAdvanceVocab(true);
+        } else {
+            toast({ variant: 'destructive', title: "Sigue intentando" });
+            setCanAdvanceVocab(false);
+        }
+    };
+
     const renderContent = () => {
         if (isInitialLoading) return <div className="flex justify-center items-center h-64"><Loader2 className="animate-spin" /></div>;
         const topic = learningPath.find(t => t.key === selectedTopic);
@@ -187,20 +304,56 @@ export default function EngA1Class8Page() {
                 return (
                     <Card className="shadow-soft border-2 border-brand-purple text-left">
                         <CardHeader><CardTitle>Vocabulary</CardTitle></CardHeader>
-                        <CardContent><div className="grid grid-cols-2 gap-2">{vocabularyData.map((v, i) => (<React.Fragment key={i}><div className="p-3 border rounded-lg bg-muted/20">{v.spanish}</div><Input value={vocabAnswers[i]} onChange={e => { const n = [...vocabAnswers]; n[i] = e.target.value; setVocabAnswers(n); setVocabValidation(vv => { const nv = [...vv]; nv[i] = 'unchecked'; return nv; }); }} className={cn(vocabValidation[i] === 'correct' ? 'border-green-500' : vocabValidation[i] === 'incorrect' ? 'border-red-500' : '')} /></React.Fragment>))}</div></CardContent>
-                        <CardFooter className="flex justify-between"><Button onClick={() => { let all = true; const nv = vocabularyData.map((v, i) => { const c = v.english.some(e => e.toLowerCase() === vocabAnswers[i].trim().toLowerCase()); if (!c) all = false; return c ? 'correct' : 'incorrect'; }); setVocabValidation(nv); if (all) toast({ title: "¡Perfecto!" }); }}>Verificar</Button><Button onClick={() => handleTopicComplete('vocabulary')} disabled={!vocabValidation.every(v => v === 'correct') && !isAdmin}>Avanzar</Button></CardFooter>
+                        <CardContent><div className="grid grid-cols-2 gap-2">{vocabularyData.map((v, i) => (<React.Fragment key={i}><div className="p-3 border rounded-lg bg-muted/20">{v.spanish}</div><Input value={vocabAnswers[i]} onChange={e => { const n = [...vocabAnswers]; n[i] = e.target.value; setVocabAnswers(n); setVocabValidation(vv => { const nv = [...vv]; nv[i] = 'unchecked'; return nv; }); setCanAdvanceVocab(false); }} className={cn(vocabValidation[i] === 'correct' ? 'border-green-500' : vocabValidation[i] === 'incorrect' ? 'border-red-500' : '')} /></React.Fragment>))}</div></CardContent>
+                        <CardFooter className="flex justify-between"><Button onClick={handleCheckVocab} variant="secondary">Verificar</Button><Button onClick={() => handleTopicComplete('vocabulary')} disabled={!canAdvanceVocab && !isAdmin}>Avanzar</Button></CardFooter>
                     </Card>
                 );
-            case 'dictation1': return <LinesWritingExercise title="Dictation 1" description="Escribe las frases dictadas." onComplete={() => handleTopicComplete('dictation1')} studentDocRef={studentDocRef} initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.dictation1} savePath={`lessonProgress.${progressStorageVersion}.dictation1`} />;
-            case 'dictation2': return <LinesWritingExercise title="Dictation 2" description="Escribe las frases dictadas." onComplete={() => handleTopicComplete('dictation2')} studentDocRef={studentDocRef} initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.dictation2} savePath={`lessonProgress.${progressStorageVersion}.dictation2`} />;
-            case 'ex1': return <SimpleTranslationExercise exerciseKey="c8_ex1" course="a1" onComplete={() => handleTopicComplete('ex1')} />;
-            case 'ex2': return <SimpleTranslationExercise exerciseKey="c8_ex2" course="a1" onComplete={() => handleTopicComplete('ex2')} />;
-            case 'ex3': return <SimpleTranslationExercise exerciseKey="c8_ex3" course="a1" onComplete={() => handleTopicComplete('ex3')} />;
-            case 'ex4': return <SimpleTranslationExercise exerciseKey="c8_ex4" course="a1" onComplete={() => handleTopicComplete('ex4')} />;
-            case 'ex5': return <SentenceCompletionExercise title="Exercise 5" description="Completa con THE." data={exercise5Data} onComplete={() => handleTopicComplete('ex5')} />;
+            case 'dictation1': 
+                return <ManualGradingExercise 
+                            title="DICTATION 1" 
+                            description="Escucha y escribe las frases dictadas. El primer renglón es para el título." 
+                            lineCount={13} 
+                            onComplete={() => handleTopicComplete('dictation1')} 
+                            studentDocRef={studentDocRef} 
+                            isAdmin={isAdmin}
+                            initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.dictation1} 
+                            initialGrades={studentProfile?.lessonProgress?.[progressStorageVersion]?.dictation1Grades}
+                            savePath={`lessonProgress.${progressStorageVersion}.dictation1`}
+                            savePathGrades={`lessonProgress.${progressStorageVersion}.dictation1Grades`}
+                        />;
+            case 'dictation2': 
+                return <ManualGradingExercise 
+                            title="DICTATION 2" 
+                            description="Escucha y escribe las frases dictadas. El primer renglón es para el título." 
+                            lineCount={15} 
+                            onComplete={() => handleTopicComplete('dictation2')} 
+                            studentDocRef={studentDocRef} 
+                            isAdmin={isAdmin}
+                            initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.dictation2} 
+                            initialGrades={studentProfile?.lessonProgress?.[progressStorageVersion]?.dictation2Grades}
+                            savePath={`lessonProgress.${progressStorageVersion}.dictation2`}
+                            savePathGrades={`lessonProgress.${progressStorageVersion}.dictation2Grades`}
+                        />;
+            case 'ex1': return <SimpleTranslationExercise exerciseKey="c8_ex1" course="a1" onComplete={() => handleTopicComplete('ex1')} vocabulary={{ "contrario": "on the contrary", "otro lado": "on the other hand", "cumpleaños": "birthday", "jefe": "boss", "empresa": "company" }} highlightVocabulary={true} />;
+            case 'ex2': return <SimpleTranslationExercise exerciseKey="c8_ex2" course="a1" onComplete={() => handleTopicComplete('ex2')} vocabulary={{ "mío": "mine", "tuyo": "yours", "suyo/a": "his/hers", "nuestro": "ours", "suya (de ellos)": "theirs", "cuadros": "paintings/pictures" }} highlightVocabulary={true} />;
+            case 'ex3': return <SimpleTranslationExercise exerciseKey="c8_ex3" course="a1" onComplete={() => handleTopicComplete('ex3')} vocabulary={{ "nadar": "swim", "domingos": "sundays", "veloz": "fast", "triste": "sad", "feliz": "happy", "iglesia": "church", "comportamiento": "behavior" }} highlightVocabulary={true} />;
+            case 'ex4': return <SimpleTranslationExercise exerciseKey="c8_ex4" course="a1" onComplete={() => handleTopicComplete('ex4')} vocabulary={{ "vaso": "glass", "chaqueta": "jacket", "cumpleaños": "birthday", "allá": "there", "saber": "know", "ir": "to go" }} highlightVocabulary={true} />;
+            case 'ex5': return <SentenceCompletionExercise title="Exercise 5" description="Completa con THE." data={exercise5Data} onComplete={() => handleTopicComplete('ex5')} vocabulary={{ "billetera": "wallet", "idiomas": "languages", "regalo": "present", "llaves": "keys", "gafas": "sunglasses", "puerta": "door" }} />;
             case 'vocab_game': return <VocabularyMatchingGame data={vocabularyData} onComplete={() => handleTopicComplete('vocab_game')} />;
             case 'writing1': return <CreativeWritingExercise title="Writing 1" description="About your school." prompts={[{ id: 'w1', question: '' }]} onComplete={() => handleTopicComplete('writing1')} studentDocRef={studentDocRef} initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.writing1} savePath={`lessonProgress.${progressStorageVersion}.writing1`} />;
-            case 'writing2': return <LinesWritingExercise title="Writing 2" description="Escribe frases posesivas." onComplete={() => handleTopicComplete('writing2')} studentDocRef={studentDocRef} lineCount={6} initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.writing2} savePath={`lessonProgress.${progressStorageVersion}.writing2`} />;
+            case 'writing2': 
+                return <ManualGradingExercise 
+                            title="Writing 2" 
+                            description="Crea frases usando los temas aprendidos hoy." 
+                            lineCount={6} 
+                            onComplete={() => handleTopicComplete('writing2')} 
+                            studentDocRef={studentDocRef} 
+                            isAdmin={isAdmin}
+                            initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.writing2} 
+                            initialGrades={studentProfile?.lessonProgress?.[progressStorageVersion]?.writing2Grades}
+                            savePath={`lessonProgress.${progressStorageVersion}.writing2`}
+                            savePathGrades={`lessonProgress.${progressStorageVersion}.writing2Grades`}
+                        />;
             default: return <div className="flex justify-center items-center h-48"><Loader2 className="animate-spin text-primary" /></div>;
         }
     };
@@ -217,7 +370,7 @@ export default function EngA1Class8Page() {
                     <div className="grid gap-8 md:grid-cols-12">
                         <div className="md:col-span-3 md:order-2 text-left">
                             <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
-                                <CardHeader><CardTitle>Ruta</CardTitle></CardHeader>
+                                <CardHeader><CardTitle>Ruta de Aprendizaje</CardTitle></CardHeader>
                                 <CardContent>
                                     <nav><ul className="space-y-1">
                                         {learningPath.map(item => (
