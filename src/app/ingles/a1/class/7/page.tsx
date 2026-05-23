@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -224,27 +223,27 @@ export default function EngA1Class7Page() {
                             <Card className="bg-slate-100 dark:bg-slate-900/50 border-border/50 rounded-[2rem] shadow-sm">
                                 <CardHeader><CardTitle className="text-primary text-xl font-black uppercase">1 - SIGNIFICADO</CardTitle></CardHeader>
                                 <CardContent className="space-y-4">
-                                    <p className="text-lg text-slate-900">THE corresponde a: <strong>“EL”, “LA”, “LOS”, “LAS”</strong>.</p>
+                                    <p className="text-lg text-slate-900 dark:text-slate-100">THE corresponde a: <strong>“EL”, “LA”, “LOS”, “LAS”</strong>.</p>
                                     <div className="grid sm:grid-cols-2 gap-4">
                                         <div className="p-4 bg-background/50 rounded-xl border space-y-1">
                                             <p className="text-xs font-bold text-muted-foreground uppercase">Masculino/Singular</p>
-                                            <p className="font-bold text-slate-900">THE BOY ( EL NIÑO)</p>
-                                            <p className="font-bold text-slate-900">THE BOOK ( EL LIBRO)</p>
+                                            <p className="font-bold text-slate-900 dark:text-slate-100">THE BOY ( EL NIÑO)</p>
+                                            <p className="font-bold text-slate-900 dark:text-slate-100">THE BOOK ( EL LIBRO)</p>
                                         </div>
                                         <div className="p-4 bg-background/50 rounded-xl border space-y-1">
                                             <p className="text-xs font-bold text-muted-foreground uppercase">Femenino/Singular</p>
-                                            <p className="font-bold text-slate-900">THE GIRL ( LA NIÑA)</p>
-                                            <p className="font-bold text-slate-900">THE TABLE ( LA MESA)</p>
+                                            <p className="font-bold text-slate-900 dark:text-slate-100">THE GIRL ( LA NIÑA)</p>
+                                            <p className="font-bold text-slate-900 dark:text-slate-100">THE TABLE ( LA MESA)</p>
                                         </div>
                                         <div className="p-4 bg-background/50 rounded-xl border space-y-1">
                                             <p className="text-xs font-bold text-muted-foreground uppercase">Masculino/Plural</p>
-                                            <p className="font-bold text-slate-900">THE BOYS (LOS NIÑOS)</p>
-                                            <p className="font-bold text-slate-900">THE BOOKS (LOS LIBROS)</p>
+                                            <p className="font-bold text-slate-900 dark:text-slate-100">THE BOYS (LOS NIÑOS)</p>
+                                            <p className="font-bold text-slate-900 dark:text-slate-100">THE BOOKS (LOS LIBROS)</p>
                                         </div>
                                         <div className="p-4 bg-background/50 rounded-xl border space-y-1">
                                             <p className="text-xs font-bold text-muted-foreground uppercase">Femenino/Plural</p>
-                                            <p className="font-bold text-slate-900">THE GIRLS (LAS NIÑAS)</p>
-                                            <p className="font-bold text-slate-900">THE TABLES (LAS MESAS)</p>
+                                            <p className="font-bold text-slate-900 dark:text-slate-100">THE GIRLS (LAS NIÑAS)</p>
+                                            <p className="font-bold text-slate-900 dark:text-slate-100">THE TABLES (LAS MESAS)</p>
                                         </div>
                                     </div>
                                 </CardContent>
@@ -255,11 +254,11 @@ export default function EngA1Class7Page() {
                                 <CardContent className="space-y-4">
                                     <div className="flex items-start gap-3 p-4 bg-background/50 rounded-xl border">
                                         <div className="h-8 w-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold">a</div>
-                                        <p className="text-lg text-slate-900">Precedida de <strong>consonante</strong> se pronuncia <strong>“DE”</strong>: THE LAMP (DE LAMP)</p>
+                                        <p className="text-lg text-slate-900 dark:text-slate-100">Precedida de <strong>consonante</strong> se pronuncia <strong>“DE”</strong>: THE LAMP (DE LAMP)</p>
                                     </div>
                                     <div className="flex items-start gap-3 p-4 bg-background/50 rounded-xl border">
                                         <div className="h-8 w-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold">b</div>
-                                        <p className="text-lg text-slate-900">Precedida de <strong>vocal</strong> se pronuncia <strong>“DI”</strong>: THE ENEMY (DI ENEMI)</p>
+                                        <p className="text-lg text-slate-900 dark:text-slate-100">Precedida de <strong>vocal</strong> se pronuncia <strong>“DI”</strong>: THE ENEMY (DI ENEMI)</p>
                                     </div>
                                 </CardContent>
                             </Card>
@@ -267,7 +266,7 @@ export default function EngA1Class7Page() {
                             <Card className="bg-slate-100 dark:bg-slate-900/50 border-border/50 rounded-[2rem] shadow-sm">
                                 <CardHeader><CardTitle className="text-primary text-xl font-black uppercase">3 - USO ESPECÍFICO</CardTitle></CardHeader>
                                 <CardContent className="space-y-4">
-                                    <p className="text-lg text-slate-900">Se usa cuando se habla de <strong>"algo en particular o específico"</strong>:</p>
+                                    <p className="text-lg text-slate-900 dark:text-slate-100">Se usa cuando se habla de <strong>"algo en particular o específico"</strong>:</p>
                                     <ul className="space-y-2 font-mono italic text-muted-foreground pl-4">
                                         <li>1. WHAT IS THE NAME OF THE RESTAURANT?</li>
                                         <li>2. DO YOU REMEMBER THE DAY WHEN WE WENT TO WASHINGTON?</li>
@@ -279,7 +278,7 @@ export default function EngA1Class7Page() {
                             <Card className="bg-slate-100 dark:bg-slate-900/50 border-border/50 rounded-[2rem] shadow-sm border-2 border-dashed border-destructive/20">
                                 <CardHeader><CardTitle className="text-destructive text-xl font-black uppercase">4 - NO SE USA</CardTitle></CardHeader>
                                 <CardContent className="space-y-4">
-                                    <p className="text-lg font-bold text-slate-900">NO se pone cuando se habla en general o se generaliza:</p>
+                                    <p className="text-lg font-bold text-slate-900 dark:text-slate-100">NO se pone cuando se habla en general o se generaliza:</p>
                                     <ul className="space-y-2 font-mono italic text-muted-foreground pl-4">
                                         <li className="flex items-center gap-2"><XCircle className="h-4 w-4 text-destructive" /> I LIKE FOOTBALL (No: I like the football)</li>
                                         <li className="flex items-center gap-2"><XCircle className="h-4 w-4 text-destructive" /> SHE LOVES MUSIC (No: she loves the music)</li>
@@ -305,15 +304,15 @@ export default function EngA1Class7Page() {
                                     <div className="grid sm:grid-cols-2 gap-4 text-center">
                                         <div className="p-6 bg-background rounded-2xl border-2 border-dashed">
                                             <p className="text-lg font-black text-primary">A + Consonant</p>
-                                            <p className="mt-1 italic text-slate-900">A car</p>
+                                            <p className="mt-1 italic text-slate-900 dark:text-slate-100">A car</p>
                                         </div>
                                         <div className="p-6 bg-background rounded-2xl border-2 border-dashed">
                                             <p className="text-lg font-black text-primary">An + Vowel</p>
-                                            <p className="mt-1 italic text-slate-900">An elevator</p>
+                                            <p className="mt-1 italic text-slate-900 dark:text-slate-100">An elevator</p>
                                         </div>
                                     </div>
                                     <div className="p-4 bg-primary/10 rounded-xl border border-primary/20 text-center">
-                                        <p className="font-bold text-slate-900">USO: Son utilizados para referirnos a algo o alguien en <span className="underline uppercase">Singular</span>.</p>
+                                        <p className="font-bold text-slate-900 dark:text-slate-100">USO: Son utilizados para referirnos a algo o alguien en <span className="underline uppercase">Singular</span>.</p>
                                     </div>
                                 </CardContent>
                             </Card>
@@ -352,7 +351,7 @@ export default function EngA1Class7Page() {
                                 <CardHeader><CardTitle className="text-brand-blue text-xl font-black uppercase">NOTICA: REALLY</CardTitle></CardHeader>
                                 <CardContent className="space-y-2">
                                     <p className="text-lg text-slate-900 dark:text-slate-100">Para decir "de verdad", "realmente" o "muchísimo":</p>
-                                    <p className="text-2xl font-black text-center py-4 bg-background/50 rounded-xl border border-brand-blue/20 text-slate-900">I REALLY LIKE WATER (+)</p>
+                                    <p className="text-2xl font-black text-center py-4 bg-background/50 rounded-xl border border-brand-blue/20 text-slate-900 dark:text-slate-100">I REALLY LIKE WATER (+)</p>
                                 </CardContent>
                             </Card>
 
@@ -375,13 +374,13 @@ export default function EngA1Class7Page() {
                                     <div className="grid sm:grid-cols-2 gap-4">
                                         <div className="p-6 bg-background rounded-2xl border-2 border-dashed">
                                             <p className="text-lg font-black text-primary">a) TO (Infinitive)</p>
-                                            <p className="mt-1 font-bold text-slate-900">LIKE + TO + VERB</p>
-                                            <p className="mt-2 text-sm italic text-slate-700">I LIKE TO COOK PASTA</p>
+                                            <p className="mt-1 font-bold text-slate-900 dark:text-slate-100">LIKE + TO + VERB</p>
+                                            <p className="mt-2 text-sm italic text-slate-700 dark:text-slate-300">I LIKE TO COOK PASTA</p>
                                         </div>
                                         <div className="p-6 bg-background rounded-2xl border-2 border-dashed">
                                             <p className="text-lg font-black text-primary">b) ING (Gerund)</p>
-                                            <p className="mt-1 font-bold text-slate-900">LIKE + VERB-ING</p>
-                                            <p className="mt-2 text-sm italic text-slate-700">I LIKE COOKING PASTA</p>
+                                            <p className="mt-1 font-bold text-slate-900 dark:text-slate-100">LIKE + VERB-ING</p>
+                                            <p className="mt-2 text-sm italic text-slate-700 dark:text-slate-300">I LIKE COOKING PASTA</p>
                                         </div>
                                     </div>
                                 </CardContent>
@@ -394,16 +393,16 @@ export default function EngA1Class7Page() {
                                         <h4 className="font-bold text-foreground underline">CON SUSTANTIVOS (NOUNS)</h4>
                                         <div className="p-4 bg-background/50 rounded-xl border font-mono">
                                             <p className="text-primary font-bold">Pronombre + prefer + sustantivo + TO + sustantivo</p>
-                                            <p className="mt-2 text-sm italic text-slate-700">yo prefiero la pizza a la hamburguesa</p>
-                                            <p className="font-bold text-slate-900">I prefer pizza TO hamburger</p>
+                                            <p className="mt-2 text-sm italic text-slate-700 dark:text-slate-300">yo prefiero la pizza a la hamburguesa</p>
+                                            <p className="font-bold text-slate-900 dark:text-slate-100">I prefer pizza TO hamburger</p>
                                         </div>
                                     </div>
                                     <div className="space-y-2">
                                         <h4 className="font-bold text-foreground underline">CON VERBOS</h4>
                                         <div className="p-4 bg-background/50 rounded-xl border font-mono">
                                             <p className="text-primary font-bold">Pronombre + prefer + verbo-ING + TO + verbo-ING</p>
-                                            <p className="mt-2 text-sm italic text-slate-700">yo prefiero ir a la playa que quedarme en la piscina</p>
-                                            <p className="font-bold text-slate-900">I prefer GOING to the beach TO STAYING at the pool</p>
+                                            <p className="mt-2 text-sm italic text-slate-700 dark:text-slate-300">yo prefiero ir a la playa que quedarme en la piscina</p>
+                                            <p className="font-bold text-slate-900 dark:text-slate-100">I prefer GOING to the beach TO STAYING at the pool</p>
                                         </div>
                                     </div>
                                 </CardContent>
@@ -434,7 +433,7 @@ export default function EngA1Class7Page() {
                         <h1 className="text-4xl font-bold [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">Clase 7 (A1)</h1>
                     </div>
                     <div className="grid gap-8 md:grid-cols-12">
-                        <div className="md:col-span-3 md:order-2 text-left">
+                        <div className="md:col-span-3 md:order-1 text-left">
                             <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
                                 <CardHeader><CardTitle>Aventura</CardTitle></CardHeader>
                                 <CardContent>
@@ -449,7 +448,7 @@ export default function EngA1Class7Page() {
                                 </CardContent>
                             </Card>
                         </div>
-                        <div className="md:col-span-9 md:order-1">{renderContent()}</div>
+                        <div className="md:col-span-9 md:order-2">{renderContent()}</div>
                     </div>
                 </div>
             </main>
