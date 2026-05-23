@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, Info, Mic, Loader2, RefreshCw, Flame, Trophy, Gamepad2, ChevronDown, Pencil, ArrowLeft, ArrowRight, Check, X } from 'lucide-react';
+import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, Info, Mic, Loader2, RefreshCw, Flame, Trophy, Gamepad2, ChevronDown, Pencil, ArrowLeft, ArrowRight, Check, X, BookText } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
@@ -126,7 +126,7 @@ const ManualGradingExercise = ({
                 <div className="grid grid-cols-1 gap-3">
                     {lines.map((line, idx) => {
                         const status = grades[idx];
-                        const isTitleLine = idx === 0 && title.includes('DICTATION');
+                        const isTitleLine = idx === 0 && (title.includes('DICTATION') || title.includes('Writing 2'));
                         return (
                             <div key={idx} className="flex items-center gap-3">
                                 <span className={cn("font-bold w-8 text-right", isTitleLine ? "text-primary" : "text-muted-foreground")}>
@@ -151,7 +151,7 @@ const ManualGradingExercise = ({
                                         onClick={() => handleToggleGrade(idx, 'correct')} 
                                         className={cn(
                                             "h-8 w-8 rounded-full transition-colors", 
-                                            status === 'correct' ? "bg-green-500 text-white" : "bg-muted text-muted-foreground opacity-50"
+                                            status === 'correct' ? "bg-green-500 text-white hover:bg-green-600" : "bg-muted text-muted-foreground opacity-50"
                                         )} 
                                         disabled={!isAdmin}
                                     >
@@ -163,7 +163,7 @@ const ManualGradingExercise = ({
                                         onClick={() => handleToggleGrade(idx, 'incorrect')} 
                                         className={cn(
                                             "h-8 w-8 rounded-full transition-colors", 
-                                            status === 'incorrect' ? "bg-red-500 text-white" : "bg-muted text-muted-foreground opacity-50"
+                                            status === 'incorrect' ? "bg-red-500 text-white hover:bg-red-600" : "bg-muted text-muted-foreground opacity-50"
                                         )} 
                                         disabled={!isAdmin}
                                     >

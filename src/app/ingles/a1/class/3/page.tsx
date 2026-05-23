@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
@@ -83,7 +82,7 @@ const mixedExercise2Sub2Data: QAShortAnswerPrompt[] = [
     { spanish: '¿ELLA COME HAMBURGUESA?', answers: { interrogative: ["does she eat a hamburger?", "does she eat hamburgers?"], shortAffirmative: ["yes, she does"], shortNegative: ["no, she does not", "no, she doesn't"] } },
     { spanish: '¿QUIERES UN HELADO?', answers: { interrogative: ["do you want an ice cream?"], shortAffirmative: ["yes, i do"], shortNegative: ["no, i do not", "no, i don't"] } },
     { spanish: '¿ELLOS TRABAJAN AQUI?', answers: { interrogative: ["do they work here?"], shortAffirmative: ["yes, they do"], shortNegative: ["no, they do not", "no, they don't"] } },
-    { spanish: '¿EL DUERME EN SU TRABAJO?', answers: { interrogative: ["does he sleep at work?", "does he sleep at his work?"], shortAffirmative: ["yes, he does"], shortNegative: ["no, he does not", "no, he doesn't"] } },
+    { spanish: '¿EL DUERME EN SU TRABAJO?', answers: { interrogative: ["does he sleep at work?", "does he sleep at his work?"], shortAffirmative: ["yes, he does"], shortNegative: ["no, she does not", "no, she doesn't"] } },
     { spanish: '¿ELLOS NECESITAN UN LIBRO?', answers: { interrogative: ["do they need a book?"], shortAffirmative: ["yes, they do"], shortNegative: ["no, they do not", "no, they don't"] } },
 ];
 
@@ -493,7 +492,7 @@ export default function EngA1Class3Page() {
                         if (nextSubIdx < curT.subItems.length && curT.subItems[nextSubIdx].status === 'locked') {
                             curT.subItems[nextSubIdx].status = 'active'; nextToSel = curT.subItems[nextSubIdx].key; win = true;
                         } else if (curT.subItems.every((sub: any) => sub.status === 'completed')) {
-                            if (currentTopic.status !== 'completed') currentTopic.status = 'completed';
+                            if (curT.status !== 'completed') curT.status = 'completed';
                             if (i + 1 < newP.length && newP[i + 1].status === 'locked') {
                                 const nextM = newP[i + 1]; nextM.status = 'active'; win = true; nextToSel = nextM.subItems?.[0]?.key || nextM.key;
                                 if (nextM.subItems?.[0]) nextM.subItems[0].status = 'active';

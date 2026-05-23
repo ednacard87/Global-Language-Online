@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -639,16 +638,16 @@ export default function EngB1Class1Page() {
             <DashboardHeader />
             <main className="flex-1 p-4 md:p-8">
                 <div className="max-w-7xl mx-auto">
-                    <div className="mb-8 text-left">
-                        <Link href="/ingles/b1" className="hover:underline text-sm text-white/80">Volver al curso B1</Link>
-                        <h1 className="text-4xl font-bold text-white dark:text-primary [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">Class 1 (B1)</h1>
+                    <div className="mb-8 text-left text-white">
+                        <Link href="/ingles/b1/unit/1" className="hover:underline text-sm font-bold text-primary">Volver a la Unidad 1</Link>
+                        <h1 className="text-4xl font-bold [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">Class 1 (B1)</h1>
                     </div>
                     <div className="grid gap-8 md:grid-cols-12">
                         <div className="md:col-span-3 md:order-2 text-left">
                             <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
                                 <CardHeader className="pb-4"><CardTitle className="text-lg">Ruta de Aprendizaje</CardTitle></CardHeader>
                                 <CardContent className="p-0">
-                                    <div className="max-h-[60vh] overflow-y-auto px-6 pb-6">
+                                    <div className="max-h-[60vh] overflow-y-auto px-6 pb-6 text-foreground">
                                         {isInitialLoading ? (
                                             <div className="space-y-2">
                                                 {Array.from({ length: 6 }).map((_, i) => (

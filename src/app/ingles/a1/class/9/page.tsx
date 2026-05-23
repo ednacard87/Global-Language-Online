@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -243,7 +242,7 @@ export default function EngA1Class9Page() {
                     <div className="grid gap-8 md:grid-cols-12">
                         <div className="md:col-span-3 md:order-2 text-left">
                             <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
-                                <CardHeader><CardTitle>Ruta</CardTitle></CardHeader>
+                                <CardHeader><CardTitle>Ruta de Aprendizaje</CardTitle></CardHeader>
                                 <CardContent>
                                     <nav><ul className="space-y-1">
                                         {learningPath.map(item => (

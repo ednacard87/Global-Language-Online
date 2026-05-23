@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
@@ -106,7 +105,7 @@ const class5Exercise2Data: ExercisePrompt[] = [
     { spanish: "ELLOS SON TUS PRIMOS", answers: { affirmative: ["they are your cousins"], negative: ["they are not your cousins", "they aren't your cousins"], interrogative: ["are they your cousins?"] } },
     { spanish: "NOSOTROS VAMOS A LA ESCUELA", answers: { affirmative: ["we go to school"], negative: ["we do not go to school", "we don't go to school"], interrogative: ["do we go to school?"] } },
     { spanish: "ELLA ES SU ESPOSA (de él)", answers: { affirmative: ["she is his wife"], negative: ["she is not his wife", "she isn't his wife"], interrogative: ["is she his wife?"] } },
-    { spanish: "ELLOS TRABAJAN EN LA MAÑANA", answers: { affirmative: ["they work in the morning"], negative: ["they do not work in the morning", "they don't work in the morning"], interrogative: ["do they work in the morning?"] } },
+    { spanish: "ELLOS TRABAJAN EN EL HOSPITAL", answers: { affirmative: ["they work in the hospital"], negative: ["they do not work in the hospital", "they don't work in the hospital"], interrogative: ["do they work in the hospital?"] } },
 ];
 
 const class5Exercise2Vocab = {
