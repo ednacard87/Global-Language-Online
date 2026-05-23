@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { DashboardHeader } from '@/components/dashboard/header';
@@ -153,6 +153,10 @@ const positiveExercisesData = [
     { spanish: 'ellos escuchan musica', answer: ["they listen to music"] },
     { spanish: 'yo hablo ingles', answer: ["I speak English"] },
     { spanish: 'tu abres la puerta', answer: ["you open the door"] },
+    { spanish: 'yo camino en el parque el domingo', answer: ["i walk in the park on sunday"] },
+    { spanish: 'tu juegas tenis el lunes', answer: ["you play tennis on monday"] },
+    { spanish: 'ellos van a la universidad el sabado', answer: ["they go to the university on saturday"] },
+    { spanish: 'nosotros trabajamos el fin de semana', answer: ["we work on the weekend", "we work on weekend"] },
 ];
 const negativeExercisesData = [
     { spanish: 'yo no bebo agua', answer: ["I do not drink water", "I don't drink water"] },
@@ -293,7 +297,7 @@ interface ClassContentProps {
 //                 CLASS 1 COMPONENT
 // =================================================================
 const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isProfileLoading, isUserLoading }: ClassContentProps) => {
-    const progressStorageKey = `progress_a1_eng_u1_c1_v80_stable`;
+    const progressStorageKey = `progress_a1_eng_u1_c1_v81_stable`;
     const mainProgressKey = `progress_a1_eng_unit_1_class_1`;
 
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
@@ -431,7 +435,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
             if (item.subItems) {
                 if (!statusesToSave.subItems) statusesToSave.subItems = {};
                 statusesToSave.subItems[item.key] = {};
-                item.subItems.forEach(sub => { data.subItems[item.key][sub.key] = sub.status; });
+                item.subItems.forEach(sub => { statusesToSave.subItems[item.key][sub.key] = sub.status; });
             }
         });
 
@@ -841,7 +845,7 @@ const Class1Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
 //                 CLASS 2 COMPONENT
 // =================================================================
 const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isProfileLoading, isUserLoading }: ClassContentProps) => {
-    const progressStorageVersion = 'progress_a1_eng_u1_c2_v92_stable';
+    const progressStorageVersion = 'progress_a1_eng_u1_c2_v93_stable';
     const mainProgressKey = 'progress_a1_eng_unit_1_class_2';
     
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
@@ -1189,7 +1193,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                                     <p><span className="font-bold text-red-500 mr-2">(-)</span> = Negativa</p>
                                     <p><span className="font-bold text-blue-500 mr-2">(?)</span> = interrogativa ?</p>
                                     <Separator className="my-2" />
-                                    <p className="font-sans font-bold text-primary">Short Answers = Respuestas Cortas</p>
+                                    <p className="font-sans font-semibold pt-2 text-primary">Short Answers = Respuestas Cortas</p>
                                     <p><span className="font-bold text-green-500 mr-2">(+A)</span> = Respuesta corta positiva</p>
                                     <p><span className="font-bold text-red-500 mr-2">(-A)</span> = Respuesta corta Negativa</p>
                                 </div>
@@ -1206,7 +1210,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                                     <p><span className="font-bold text-red-500 mr-2">(-)</span> pronoun + Do/Does + Not +verb + Complement</p>
                                     <p><span className="font-bold text-blue-500 mr-2">(?)</span> Do/Does + pronoun + verb + Complement ?</p>
                                     <Separator className="my-2" />
-                                    <p className="font-sans font-bold text-primary">Short Answers = Respuestas Cortas</p>
+                                    <p className="font-sans font-semibold pt-2 text-primary">Short Answers = Respuestas Cortas</p>
                                     <p><span className="font-bold text-green-500 mr-2">(+A)</span> Yes, pronoun + Do/Does</p>
                                     <p><span className="font-bold text-red-500 mr-2">(-A)</span> No, pronoun + Do/Does + Not</p>
                                 </div>
@@ -1219,8 +1223,8 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                             </CardHeader>
                             <CardContent>
                                 <div className="p-6 bg-slate-100 dark:bg-slate-800/50 rounded-[2rem] border space-y-2 font-mono text-lg text-center">
-                                    <p className="font-black text-primary">DO = I - YOU - WE - THEY</p>
-                                    <p className="font-black text-brand-purple">DOES = HE - SHE - IT</p>
+                                    <p className="font-black text-primary uppercase">DO = I - YOU - WE - THEY</p>
+                                    <p className="font-black text-brand-purple uppercase">DOES = HE - SHE - IT</p>
                                 </div>
                             </CardContent>
                         </Card>
@@ -1231,7 +1235,7 @@ const Class2Content = ({ t, toast, studentDocRef, studentProfile, isAdmin, isPro
                             </CardHeader>
                             <CardContent>
                                 <div className="p-6 bg-slate-100 dark:bg-slate-800/50 rounded-[2rem] border space-y-2 font-mono text-lg text-center">
-                                    <p className="font-bold">DO / DOES:</p>
+                                    <p className="font-bold uppercase">DO / DOES:</p>
                                     <p className="font-black text-red-500">DO NOT = DON’T</p>
                                     <p className="font-black text-red-500">DOES NOT = DOESN’T</p>
                                 </div>
