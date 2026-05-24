@@ -1,4 +1,3 @@
-
 'use client';
 
 import React from 'react';
@@ -17,6 +16,11 @@ import Class2Content from '@/components/clases/A2/Class2Content';
 import Class3Content from '@/components/clases/A2/Class3Content';
 import Class4Content from '@/components/clases/A2/Class4Content';
 import Class5Content from '@/components/clases/A2/Class5Content';
+import Class6Content from '@/components/clases/A2/Class6Content';
+import Class7Content from '@/components/clases/A2/Class7Content';
+import Class8Content from '@/components/clases/A2/Class8Content';
+import Class9Content from '@/components/clases/A2/Class9Content';
+import Class10Content from '@/components/clases/A2/Class10Content';
 
 export default function EngA2DynamicClassPage() {
     const params = useParams();
@@ -53,6 +57,11 @@ export default function EngA2DynamicClassPage() {
             case '3': return <Class3Content />;
             case '4': return <Class4Content />;
             case '5': return <Class5Content />;
+            case '6': return <Class6Content />;
+            case '7': return <Class7Content />;
+            case '8': return <Class8Content />;
+            case '9': return <Class9Content />;
+            case '10': return <Class10Content />;
             default:
                 return (
                     <div className="max-w-7xl mx-auto text-white text-center py-20">
