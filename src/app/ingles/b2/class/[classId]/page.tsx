@@ -1,4 +1,3 @@
-
 'use client';
 
 import React from 'react';
@@ -17,6 +16,21 @@ import Class2Content from '@/components/clases/B2/Class2Content';
 import Class3Content from '@/components/clases/B2/Class3Content';
 import Class4Content from '@/components/clases/B2/Class4Content';
 import Class5Content from '@/components/clases/B2/Class5Content';
+import Class6Content from '@/components/clases/B2/Class6Content';
+import Class7Content from '@/components/clases/B2/Class7Content';
+import Class8Content from '@/components/clases/B2/Class8Content';
+import Class9Content from '@/components/clases/B2/Class9Content';
+import Class10Content from '@/components/clases/B2/Class10Content';
+import Class11Content from '@/components/clases/B2/Class11Content';
+import Class12Content from '@/components/clases/B2/Class12Content';
+import Class13Content from '@/components/clases/B2/Class13Content';
+import Class14Content from '@/components/clases/B2/Class14Content';
+import Class15Content from '@/components/clases/B2/Class15Content';
+import Class16Content from '@/components/clases/B2/Class16Content';
+import Class17Content from '@/components/clases/B2/Class17Content';
+import Class18Content from '@/components/clases/B2/Class18Content';
+import Class19Content from '@/components/clases/B2/Class19Content';
+import Class20Content from '@/components/clases/B2/Class20Content';
 
 export default function EngB2DynamicClassPage() {
     const params = useParams();
@@ -53,6 +67,21 @@ export default function EngB2DynamicClassPage() {
             case '3': return <Class3Content />;
             case '4': return <Class4Content />;
             case '5': return <Class5Content />;
+            case '6': return <Class6Content />;
+            case '7': return <Class7Content />;
+            case '8': return <Class8Content />;
+            case '9': return <Class9Content />;
+            case '10': return <Class10Content />;
+            case '11': return <Class11Content />;
+            case '12': return <Class12Content />;
+            case '13': return <Class13Content />;
+            case '14': return <Class14Content />;
+            case '15': return <Class15Content />;
+            case '16': return <Class16Content />;
+            case '17': return <Class17Content />;
+            case '18': return <Class18Content />;
+            case '19': return <Class19Content />;
+            case '20': return <Class20Content />;
             default:
                 return (
                     <div className="max-w-7xl mx-auto text-white text-center py-20">
