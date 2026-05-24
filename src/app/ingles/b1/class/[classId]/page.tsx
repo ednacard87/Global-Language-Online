@@ -21,6 +21,11 @@ import Class7Content from '@/components/clases/B1/Class7Content';
 import Class8Content from '@/components/clases/B1/Class8Content';
 import Class9Content from '@/components/clases/B1/Class9Content';
 import Class10Content from '@/components/clases/B1/Class10Content';
+import Class11Content from '@/components/clases/B1/Class11Content';
+import Class12Content from '@/components/clases/B1/Class12Content';
+import Class13Content from '@/components/clases/B1/Class13Content';
+import Class14Content from '@/components/clases/B1/Class14Content';
+import Class15Content from '@/components/clases/B1/Class15Content';
 
 export default function EngB1DynamicClassPage() {
     const params = useParams();
@@ -62,6 +67,11 @@ export default function EngB1DynamicClassPage() {
             case '8': return <Class8Content />;
             case '9': return <Class9Content />;
             case '10': return <Class10Content />;
+            case '11': return <Class11Content />;
+            case '12': return <Class12Content />;
+            case '13': return <Class13Content />;
+            case '14': return <Class14Content />;
+            case '15': return <Class15Content />;
             default:
                 return (
                     <div className="max-w-7xl mx-auto text-white text-center py-20">
