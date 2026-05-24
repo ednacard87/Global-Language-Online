@@ -16,7 +16,6 @@ import {
     HelpCircle, 
     Loader2, 
     ArrowRight, 
-    Separator,
     BookText 
 } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
@@ -25,7 +24,7 @@ import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocki
 import { doc } from 'firebase/firestore';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Separator } from '@/components/ui/separator';
 
 // Importación de ejercicios específicos
 import { GenitiveCaseExercise } from '@/components/kids/exercises/genitive-case-exercise';
@@ -44,7 +43,7 @@ const ICONS_CONFIG = {
     completed: CheckCircle,
 };
 
-const progressStorageVersion = 'progress_a1_eng_u1_c4_v110_blindado';
+const progressStorageVersion = 'progress_a1_eng_u1_c4_v130_blindado';
 const mainProgressKey = 'progress_a1_eng_unit_1_class_4';
 
 const vocabularyData = {
@@ -383,7 +382,7 @@ export default function Class4Content() {
             <div className="md:col-span-9 md:order-1 order-2">{renderContent()}</div>
             <div className="md:col-span-3 md:order-2 order-1 text-left">
                 <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
-                    <CardHeader><CardTitle>Aventura Clase 4</CardTitle></CardHeader>
+                    <CardHeader><CardTitle>Ruta de Aprendizaje</CardTitle></CardHeader>
                     <CardContent>
                         <nav><ul className="space-y-1">
                             {learningPath.map(item => (

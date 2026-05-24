@@ -1,17 +1,19 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Progress } from '@/components/ui/progress';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { cn } from '@/lib/utils';
 import { BookOpen, PenSquare, Lock, Info, CheckCircle, Loader2, ArrowRight, Mic, Check, X, Pencil, BookText } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
+import { Progress } from '@/components/ui/progress';
 import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
 import { doc } from 'firebase/firestore';
+import { Button } from '@/components/ui/button';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { ErrorCorrectionExercise, type ErrorCorrectionPrompt } from '@/components/kids/exercises/error-correction-exercise';
@@ -19,7 +21,12 @@ import { PresentSimpleExercise, type ExercisePrompt } from '@/components/kids/ex
 import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
 import { Class5VocabExercise } from '@/components/kids/exercises/class5-vocab-exercise';
 
-// --- DATA ---
+type Topic = {
+  key: string;
+  name: string;
+  icon: React.ElementType;
+  status: 'locked' | 'active' | 'completed';
+};
 
 const ICONS_CONFIG = {
     locked: Lock,
@@ -205,8 +212,8 @@ export default function Class5Content() {
         let path = initialLearningPath.map(t => ({...t}));
         let savedST = '';
         if (isAdmin) path.forEach(t => t.status = 'completed');
-        else if (studentProfile?.lessonProgress?.[progressStorageVersion]) {
-            const d = studentProfile.lessonProgress[progressStorageVersion];
+        else if (studentProfile?.lessonProgress?.[progressStorageKey]) {
+            const d = studentProfile.lessonProgress[progressStorageKey];
             path.forEach(t => { if (d[t.key]) t.status = d[t.key]; });
             savedST = d.lastSelectedTopic || '';
         }
@@ -215,12 +222,12 @@ export default function Class5Content() {
         setLearningPath(path);
         setSelectedTopic(savedST || path.find(p => p.status === 'active')?.key || 'vocabulary');
 
-        const initA: any = {}; const initV: any = {};
+        const initAnswers: any = {}; const initVal: any = {};
         Object.keys(vocabularyData).forEach(cat => {
-            initA[cat] = Array((vocabularyData as any)[cat].length).fill('');
-            initV[cat] = Array((vocabularyData as any)[cat].length).fill('unchecked');
+            initAnswers[cat] = Array((vocabularyData as any)[cat].length).fill('');
+            initVal[cat] = Array((vocabularyData as any)[cat].length).fill('unchecked');
         });
-        setVocabAnswers(initA); setVocabValidation(initV);
+        setVocabAnswers(initAnswers); setVocabValidation(initVal);
         setIsInitialLoading(false);
     }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading, isUserLoading]);
 
@@ -233,7 +240,7 @@ export default function Class5Content() {
         if (isInitialLoading || isAdmin || !studentDocRef || learningPath.length === 0) return;
         const d: any = { lastSelectedTopic: selectedTopic };
         learningPath.forEach(t => d[t.key] = t.status);
-        updateDocumentNonBlocking(studentDocRef, { [`lessonProgress.${progressStorageVersion}`]: d, [`progress.${mainProgressKey}`]: progressValue });
+        updateDocumentNonBlocking(studentDocRef, { [`lessonProgress.${progressStorageKey}`]: d, [`progress.${mainProgressKey}`]: progressValue });
     }, [learningPath, isAdmin, progressValue, studentDocRef, selectedTopic, isInitialLoading]);
 
     const handleTopicComplete = useCallback((completedKey: string) => setTopicToComplete(completedKey), []);
@@ -263,7 +270,13 @@ export default function Class5Content() {
         if (key === 'nota-importante') handleTopicComplete(key);
     };
 
-    const handleVocabCheck = () => {
+    const handleVocabChange = (cat: string, idx: number, val: string) => {
+        const na = { ...vocabAnswers }; na[cat][idx] = val; setVocabAnswers(na);
+        const nv = { ...vocabValidation }; nv[cat][idx] = 'unchecked'; setVocabValidation(nv);
+        setCanAdvanceVocab(false);
+    };
+
+    const handleCheckVocab = () => {
         let ok = false; const nv: any = {};
         Object.keys(vocabularyData).forEach(cat => {
             nv[cat] = (vocabularyData as any)[cat].map((item: any, idx: number) => {
@@ -289,13 +302,13 @@ export default function Class5Content() {
                                     <AccordionItem key={cat} value={cat}>
                                         <AccordionTrigger className="text-lg font-bold capitalize">{cat}</AccordionTrigger>
                                         <AccordionContent className="grid grid-cols-2 gap-2">
-                                            {items.map((item, i) => (<React.Fragment key={i}><div className="p-3 border rounded bg-muted/10">{item.spanish}</div><Input value={vocabAnswers[cat][i]} onChange={e => { const na = {...vocabAnswers}; na[cat][i] = e.target.value; setVocabAnswers(na); setCanAdvanceVocab(false); }} className={cn(vocabValidation[cat][i] === 'correct' ? 'border-green-500' : vocabValidation[cat][i] === 'incorrect' ? 'border-red-500' : '')} /></React.Fragment>))}
+                                            {items.map((item, i) => (<React.Fragment key={i}><div className="p-3 border rounded bg-muted/10">{item.spanish}</div><Input value={vocabAnswers[cat][i]} onChange={e => handleVocabChange(cat, i, e.target.value)} className={cn(vocabValidation[cat][i] === 'correct' ? 'border-green-500' : vocabValidation[cat][i] === 'incorrect' ? 'border-red-500' : '')} /></React.Fragment>))}
                                         </AccordionContent>
                                     </AccordionItem>
                                 ))}
                             </Accordion>
                         </CardContent>
-                        <CardFooter className="flex justify-between border-t pt-6"><Button onClick={handleVocabCheck}>Verificar</Button><Button onClick={() => handleTopicComplete('vocabulary')} disabled={!canAdvanceVocab && !isAdmin}>Avanzar</Button></CardFooter>
+                        <CardFooter className="flex justify-between border-t pt-6"><Button onClick={handleCheckVocab}>Verificar</Button><Button onClick={() => handleTopicComplete('vocabulary')} disabled={!canAdvanceVocab && !isAdmin}>Avanzar</Button></CardFooter>
                     </Card>
                 );
             case 'nota-importante':
@@ -303,12 +316,12 @@ export default function Class5Content() {
                     <div className="space-y-6 text-left">
                         <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-slate-100 dark:bg-slate-800/50 text-black">
                             <CardHeader><CardTitle className="text-primary font-black uppercase">NOTICIAS IMPORTANTES 🚀</CardTitle></CardHeader>
-                            <CardContent className="space-y-6">
+                            <CardContent className="space-y-6 text-black font-bold">
                                 <div className="p-4 bg-white/20 rounded-xl border border-black/10"><p className="font-bold">1- DOS VERBOS JUNTOS &rarr; USAR "TO" EN MEDIO.</p></div>
                                 <div className="p-4 bg-white/20 rounded-xl border border-black/10"><p className="font-bold">2- EL VERBO "GO":</p><p className="italic ml-4">go to the + lugar / go (sin lugar)</p></div>
                                 <div className="p-4 bg-destructive/10 rounded-xl border-2 border-dashed border-destructive/20 text-center"><p className="font-black text-destructive uppercase">3- NUNCA USAR TO BE Y DO/DOES AL MISMO TIEMPO.</p></div>
                             </CardContent>
-                            <CardFooter className="justify-center pt-2 pb-6"><Button onClick={() => handleTopicComplete('nota-importante')} size="lg">He leído todo</Button></CardFooter>
+                            <CardFooter className="justify-center pt-2 pb-6"><Button onClick={() => handleTopicComplete('nota-importante')} size="lg" className='text-white px-12'>He leído todo</Button></CardFooter>
                         </Card>
                     </div>
                 );
@@ -326,11 +339,11 @@ export default function Class5Content() {
             <div className="md:col-span-9 md:order-1 order-2">{renderContent()}</div>
             <div className="md:col-span-3 md:order-2 order-1 text-left">
                 <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
-                    <CardHeader><CardTitle>Aventura Clase 5</CardTitle></CardHeader>
+                    <CardHeader><CardTitle>Ruta de Aprendizaje</CardTitle></CardHeader>
                     <CardContent>
                         <nav><ul className="space-y-1">
                             {learningPath.map(item => (
-                                <li key={item.key} onClick={() => handleTopicSelect(item.key)} className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer text-foreground', (item.status === 'locked' && !isAdmin) ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === item.key && 'bg-muted text-primary font-bold')}>
+                                <li key={item.key} onClick={() => handleTopicSelect(item.key)} className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer text-foreground', (item.status === 'locked' && !isAdmin) ? 'text-muted-foreground/50' : 'hover:bg-muted', selectedTopic === item.key && 'bg-muted text-primary font-bold')}>
                                     <div className="flex items-center gap-3">{(item.status === 'completed') ? <CheckCircle className="h-5 w-5 text-green-500" /> : <item.icon className="h-5 w-5" />}<span>{item.name}</span></div>
                                 </li>
                             ))}
@@ -342,3 +355,4 @@ export default function Class5Content() {
         </div>
     );
 }
+
