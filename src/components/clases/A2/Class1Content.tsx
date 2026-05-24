@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -17,23 +18,19 @@ import { useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 
 export default function Class1Content() {
-    const { t } = useTranslation();
     const { user, isUserLoading } = useUser();
     const firestore = useFirestore();
-
     const [isInitialLoading, setIsInitialLoading] = useState(true);
 
     const studentDocRef = useMemoFirebase(
       () => (user ? doc(firestore, 'students', user.uid) : null),
       [firestore, user]
     );
-    const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{role?: string}>(studentDocRef);
+    const { isLoading: isProfileLoading } = useDoc(studentDocRef);
 
     useEffect(() => {
         if (!isUserLoading && !isProfileLoading) {
-            const timer = setTimeout(() => {
-                setIsInitialLoading(false);
-            }, 600);
+            const timer = setTimeout(() => setIsInitialLoading(false), 600);
             return () => clearTimeout(timer);
         }
     }, [isUserLoading, isProfileLoading]);
@@ -80,12 +77,9 @@ export default function Class1Content() {
                     </CardFooter>
                 </Card>
             </div>
-
             <div className="md:col-span-3 md:order-2 order-1 text-left">
                 <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
-                    <CardHeader>
-                        <CardTitle className="text-lg">Misión Próximamente</CardTitle>
-                    </CardHeader>
+                    <CardHeader><CardTitle className="text-lg">Misión Próximamente</CardTitle></CardHeader>
                     <CardContent>
                         <nav>
                             <ul className="space-y-1">

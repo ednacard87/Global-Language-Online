@@ -74,7 +74,6 @@ export const calculateEspanolIntroProgress = (progress: Record<string, number> |
 
     const completedItems = courseItemsWithPoints.reduce((sum, item) => {
         const itemProgress = progress[item.storageKey!] || 0;
-        // Para los quices, consideramos "completado" si tiene más de 0 (aunque el bloqueo secuencial use el 70%)
         return sum + (itemProgress > 0 ? 1 : 0);
     }, 0);
     
@@ -98,35 +97,6 @@ export const calculateEnglishIntroCourseProgress = (progress: Record<string, num
     
     return Math.round(earnedPoints);
 };
-
-
-export type Intro1PathKey = 
-  | "abc"
-  | "abc-memory"
-  | "numbers"
-  | "numbers-memory"
-  | "tobe"
-  | "tobe-memory"
-  | "possessives"
-  | "possessives-memory"
-  | "abcExercise"
-  | "abcspelling"
-  | "numbersspelling"
-  | "pronouns"
-  | "verbtobe1"
-  | "exercises1"
-  | "verbtobe2"
-  | "exercises2"
-  | "verbtobe3"
-  | "exercises3"
-  | "demonstratives";
-
-export interface Topic {
-    key: string;
-    name: string;
-    icon: React.ElementType;
-    status: 'completed' | 'active' | 'locked';
-}
 
 export const getKidsIntro1PathData = (t: (key: string) => string): Topic[] => [
     { key: "abc", name: t('intro1Page.abc'), icon: Languages, status: 'active' },
@@ -514,28 +484,27 @@ export const getA2EngUnitPath = (unitId: string | number, t: (key: string) => st
     const unitPaths: {[key: string]: PathItem[]} = {
         '1': [
             { type: 'start', icon: Footprints, label: 'dashboard.start' },
-            ...Array.from({ length: 5 }, (_, i) => ({ type: 'class' as const, icon: BookOpen, label: `Class ${i + 1} (A2)`, href: `#`, storageKey: `progress_a2_eng_unit_1_class_${i + 1}` })),
+            ...Array.from({ length: 5 }, (_, i) => ({ type: 'class' as const, icon: BookOpen, label: `Class ${i + 1} (A2)`, href: `/ingles/a2/class/${i + 1}`, storageKey: `progress_a2_eng_unit_1_class_${i + 1}` })),
             { type: 'end', icon: Flag, label: 'dashboard.finish' },
         ],
         '2': [
             { type: 'start', icon: Footprints, label: 'dashboard.start' },
-             ...Array.from({ length: 5 }, (_, i) => ({ type: 'class' as const, icon: BookOpen, label: `Class ${i + 6} (A2)`, href: `#`, storageKey: `progress_a2_eng_unit_2_class_${i + 6}` })),
+             ...Array.from({ length: 5 }, (_, i) => ({ type: 'class' as const, icon: BookOpen, label: `Class ${i + 6} (A2)`, href: `/ingles/a2/class/${i + 6}`, storageKey: `progress_a2_eng_unit_2_class_${i + 6}` })),
             { type: 'end', icon: Flag, label: 'dashboard.finish' },
         ],
         '3': [
             { type: 'start', icon: Footprints, label: 'dashboard.start' },
-             ...Array.from({ length: 5 }, (_, i) => ({ type: 'class' as const, icon: BookOpen, label: `Class ${i + 11} (A2)`, href: `#`, storageKey: `progress_a2_eng_unit_3_class_${i + 11}` })),
+             ...Array.from({ length: 5 }, (_, i) => ({ type: 'class' as const, icon: BookOpen, label: `Class ${i + 11} (A2)`, href: `/ingles/a2/class/${i + 11}`, storageKey: `progress_a2_eng_unit_3_class_${i + 11}` })),
             { type: 'end', icon: Flag, label: 'dashboard.finish' },
         ],
         '4': [
             { type: 'start', icon: Footprints, label: 'dashboard.start' },
-             ...Array.from({ length: 5 }, (_, i) => ({ type: 'class' as const, icon: BookOpen, label: `Class ${i + 16} (A2)`, href: `#`, storageKey: `progress_a2_eng_unit_4_class_${i + 16}` })),
+             ...Array.from({ length: 5 }, (_, i) => ({ type: 'class' as const, icon: BookOpen, label: `Class ${i + 16} (A2)`, href: `/ingles/a2/class/${i + 16}`, storageKey: `progress_a2_eng_unit_4_class_${i + 16}` })),
             { type: 'end', icon: Flag, label: 'dashboard.finish' },
         ]
     };
     return unitPaths[String(unitId)] || [];
 }
-
 
 export const getA2EspanolPath = (t: (key: string) => string): PathItem[] => [
     { type: 'start', icon: Footprints, label: 'dashboard.start' },
@@ -677,7 +646,7 @@ export const getKidsA1MainPath = (t: (key: string) => string): PathItem[] => [
     { type: 'class', icon: GraduationCap, label: 'kidsA1.can', href: '/kids/a1/can', storageKey: 'progress_kids_a1_can' },
     { type: 'class', icon: GraduationCap, label: 'kidsA1.saxonGenitive', href: '/kids/a1/genitivo-sajon', storageKey: 'progress_kids_a1_saxongenitive' },
     { type: 'class', icon: GraduationCap, label: 'kidsA1.whQuestions', href: '/kids/a1/wh-questions', storageKey: 'progress_kids_a1_whquestions' },
-    { type: 'class', icon: GraduationCap, label: 'kidsA1.possessives', href: '/kids/a1/posesivos', storageKey: 'progress_kids_a1_possessives' },
+    { type: 'class', icon: GraduationCap, label: 'kidsA1.posesivos', href: '/kids/a1/posesivos', storageKey: 'progress_kids_a1_possessives' },
     { type: 'class', icon: GraduationCap, label: 'kidsA1.preferenceVerbs', href: '/kids/a1/verbos-preferencia', storageKey: 'progress_kids_a1_preferenceverbs' },
     { type: 'class', icon: GraduationCap, label: 'kidsA1.demonstratives', href: '/kids/a1/demostrativos', storageKey: 'progress_kids_a1_demonstratives' },
     { type: 'class', icon: GraduationCap, label: 'kidsA1.oneOnes', href: '/kids/a1/one-ones', storageKey: 'progress_kids_a1_oneones' },
