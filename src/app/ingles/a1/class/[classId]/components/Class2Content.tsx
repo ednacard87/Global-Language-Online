@@ -247,7 +247,7 @@ export default function Class2Content() {
         const subT = mainT?.subItems?.find(st => st.key === topicKey);
         if (!isAdmin && ((subT && subT.status === 'locked') || (!subT && mainT?.status === 'locked'))) { toast({ variant: "destructive", title: "Contenido Bloqueado" }); return; }
         setSelectedTopic(topicKey);
-        if (['grammar'].includes(topicKey)) handleTopicComplete(topicKey);
+        // Automatic completion removed for grammar to force user to click the "Entendido" button
     };
 
     const handleVocabInputChange = (index: number, value: string) => {
@@ -259,7 +259,10 @@ export default function Class2Content() {
     const handleCheckVocab = () => {
         let ok = false;
         const nv = vocabularyVerbs.map((v, i) => {
-            const res = (vocabAnswers[i] || '').trim().toLowerCase() === v.english.toLowerCase();
+            const userVal = (vocabAnswers[i] || '').trim().toLowerCase();
+            const correctVal = v.english.toLowerCase();
+            // Accept the word with or without "to"
+            const res = userVal === correctVal || userVal === `to ${correctVal}`;
             if (res) ok = true; return res ? 'correct' : 'incorrect';
         });
         setVocabValidation(nv as any); if (ok) setCanAdvanceVocab(true);
@@ -285,26 +288,47 @@ export default function Class2Content() {
                 return (
                     <div className="space-y-6 text-left">
                         <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-slate-100 dark:bg-slate-800/50 text-black dark:text-white">
-                            <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase">“DO - DOES”</CardTitle></CardHeader>
-                            <CardContent className="space-y-4"><div className="p-6 bg-white/10 rounded-2xl border"><p className="text-lg font-bold">“DO-DOES” EN INGLES PUEDE SERVIR COMO:</p><p className="text-lg mt-2">1 - VERBO (HACER) // 2- AUXILIAR: DO / DOES</p><p className="font-mono text-xl font-black text-primary mt-4">I DO - YOU DO - WE DO - THEY DO // HE/SHE/IT DOES</p></div></CardContent>
-                        </Card>
-                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-slate-100 dark:bg-slate-800/50 text-black dark:text-white">
-                            <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase">“DO - DOES” COMO AUXILIAR</CardTitle></CardHeader>
-                            <CardContent className="p-6 bg-white/10 rounded-2xl border"><p className="font-mono text-xl font-black text-primary">DO - DOES = I DO - YOU DO - WE DO - THEY DO // HE/SHE/IT DOES</p></CardContent>
-                        </Card>
-                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-slate-100 dark:bg-slate-800/50 text-black dark:text-white">
-                            <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase">ESTRUCTURA CON LOS AUXILIARES: (DO - DOES)</CardTitle></CardHeader>
-                            <CardContent className="p-6 bg-white/10 rounded-2xl border space-y-3 font-mono text-lg font-bold">
-                                <p><span className="text-green-600">(+)</span> = pronombre + verbo + complemento</p>
-                                <p><span className="text-red-600">(-)</span> = pronombre + do/ does + not + verbo + complemento</p>
-                                <p><span className="text-blue-600">(?)</span> = do/ does + pronombre + verbo + complemento?</p>
-                                <div className="border-t my-4 pt-4"><p className="font-sans uppercase text-sm text-muted-foreground mb-2">Short Answers:</p><p><span className="text-green-600">(+A)</span> = yes. pronombre + do/ does</p><p><span className="text-red-600">(-A)</span> = no, pronombre + do/ does + not</p></div>
+                            <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase tracking-tight">“DO - DOES”</CardTitle></CardHeader>
+                            <CardContent className="space-y-4">
+                                <div className="p-6 bg-white/10 dark:bg-background/20 rounded-2xl border">
+                                    <p className="text-lg font-bold">“DO-DOES” EN INGLES PUEDE SERVIR COMO:</p>
+                                    <p className="text-lg mt-2">1 - VERBO (HACER) // 2- AUXILIAR: DO / DOES</p>
+                                    <p className="font-mono text-xl font-black text-primary mt-4 uppercase">I DO - YOU DO - WE DO - THEY DO // HE/SHE/IT DOES</p>
+                                </div>
                             </CardContent>
                         </Card>
                         <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-slate-100 dark:bg-slate-800/50 text-black dark:text-white">
-                            <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase">NEGATIVE CONTRACCIONES</CardTitle></CardHeader>
-                            <CardContent className="p-6 bg-white/10 rounded-2xl border text-center"><div className="grid grid-cols-2 gap-4 text-xl font-black font-mono"><div className="p-4 bg-white/5 dark:bg-slate-900 rounded-xl border-2 border-dashed border-primary/30 text-slate-900 dark:text-white">DO NOT = DON’T</div><div className="p-4 bg-white/5 dark:bg-slate-900 rounded-xl border-2 border-dashed border-primary/30 text-slate-900 dark:text-white">DOES NOT = DOESN’T</div></div></CardContent>
-                            <CardFooter className="justify-center border-t pt-6"><Button onClick={() => handleTopicComplete('grammar')} size="lg" className="px-16 font-bold h-14 text-xl">Entendido <ArrowRight className="ml-2" /></Button></CardFooter>
+                            <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase tracking-tight">“DO - DOES ” COMO AUXILIAR</CardTitle></CardHeader>
+                            <CardContent className="p-6 bg-white/10 dark:bg-background/20 rounded-2xl border">
+                                <p className="font-mono text-xl font-black text-primary uppercase">DO - DOES = I DO - YOU DO - WE DO - THEY DO // HE/SHE/IT DOES</p>
+                            </CardContent>
+                        </Card>
+                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-slate-100 dark:bg-slate-800/50 text-black dark:text-white">
+                            <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase tracking-tight">ESTRUCTURA CON LOS AUXILIARES: (DO - DOES)</CardTitle></CardHeader>
+                            <CardContent className="p-6 bg-white/10 dark:bg-background/20 rounded-2xl border space-y-3 font-mono text-lg font-bold">
+                                <p><span className="text-green-600">(+)</span> = pronombre + verbo + complemento</p>
+                                <p><span className="text-red-600">(-)</span> = pronombre + do/ does + not + verbo + complemento</p>
+                                <p><span className="text-blue-600">(?)</span> = do/ does + pronombre + verbo + complemento?</p>
+                                <div className="border-t my-4 pt-4">
+                                    <p className="font-sans uppercase text-sm text-muted-foreground mb-2">Short Answers:</p>
+                                    <p><span className="text-green-600">(+A)</span> = yes. pronombre + do/ does</p>
+                                    <p><span className="text-red-600">(-A)</span> = no, pronombre + do/ does + not</p>
+                                </div>
+                            </CardContent>
+                        </Card>
+                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-slate-100 dark:bg-slate-800/50 text-black dark:text-white">
+                            <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase tracking-tight">NEGATIVE CONTRACCIONES</CardTitle></CardHeader>
+                            <CardContent className="p-6 bg-white/10 dark:bg-background/20 rounded-2xl border text-center">
+                                <div className="grid grid-cols-2 gap-4 text-xl font-black font-mono">
+                                    <div className="p-4 bg-white/5 dark:bg-slate-900 rounded-xl border-2 border-dashed border-primary/30 text-slate-900 dark:text-white">DO NOT = DON’T</div>
+                                    <div className="p-4 bg-white/5 dark:bg-slate-900 rounded-xl border-2 border-dashed border-primary/30 text-slate-900 dark:text-white">DOES NOT = DOESN’T</div>
+                                </div>
+                            </CardContent>
+                            <CardFooter className="justify-center border-t pt-6">
+                                <Button onClick={() => handleTopicComplete('grammar')} size="lg" className="px-16 font-bold h-14 text-xl">
+                                    Entendido <ArrowRight className="ml-2" />
+                                </Button>
+                            </CardFooter>
                         </Card>
                     </div>
                 );
@@ -331,7 +355,7 @@ export default function Class2Content() {
                             {learningPath.map(item => (
                                 <li key={item.key}>
                                     {!item.subItems ? (
-                                        <div onClick={() => handleTopicSelect(item.key)} className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer text-foreground', (item.status === 'locked' && !isAdmin) ? 'text-muted-foreground/50' : 'hover:bg-muted', selectedTopic === item.key && 'bg-muted text-primary font-bold')}>
+                                        <div onClick={() => handleTopicSelect(item.key)} className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer text-foreground', (item.status === 'locked' && !isAdmin) ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === item.key && 'bg-muted text-primary font-bold')}>
                                             <div className="flex items-center gap-3">{(item.status === 'completed') ? <CheckCircle className="h-5 w-5 text-green-500" /> : <item.icon className="h-5 w-5" />}<span>{item.name}</span></div>
                                         </div>
                                     ) : (
@@ -340,7 +364,7 @@ export default function Class2Content() {
                                             <ul className="pl-4 space-y-1">{item.subItems.map(sub => {
                                                 const subL = sub.status === 'locked' && !isAdmin;
                                                 return (
-                                                    <li key={sub.key} onClick={() => handleTopicSelect(sub.key)} className={cn('flex items-center gap-3 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors cursor-pointer text-foreground', subL ? 'text-muted-foreground/50' : 'hover:bg-muted', selectedTopic === sub.key && 'bg-muted text-primary font-bold')}>
+                                                    <li key={sub.key} onClick={() => handleTopicSelect(sub.key)} className={cn('flex items-center gap-3 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors cursor-pointer text-foreground', subL ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === sub.key && 'bg-muted text-primary font-bold')}>
                                                         <sub.icon className={cn("h-4 w-4", sub.status === 'completed' && 'text-green-500')} /><span>{sub.name}</span>
                                                     </li>
                                                 )
@@ -357,4 +381,3 @@ export default function Class2Content() {
         </div>
     );
 }
-
