@@ -10,22 +10,24 @@ import { Loader2, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from '@/context/language-context';
 
-// Importación de componentes de contenido modularizados
+// Importación de componentes locales (Clases que aún no se han mudado al búnker global)
 import Class1Content from './components/Class1Content';
 import Class2Content from './components/Class2Content';
-import Class3Content from './components/Class3Content';
-import Class4Content from './components/Class4Content';
-import Class5Content from './components/Class5Content';
-import Class6Content from './components/Class6Content';
-import Class7Content from './components/Class7Content';
-import Class8Content from './components/Class8Content';
-import Class9Content from './components/Class9Content';
-import Class10Content from './components/Class10Content';
-import Class11Content from './components/Class11Content';
-import Class12Content from './components/Class12Content';
-import Class13Content from './components/Class13Content';
-import Class14Content from './components/Class14Content';
-import Class15Content from './components/Class15Content';
+
+// Importación de componentes modularizados y blindados en el búnker global
+import Class3Content from '@/components/clases/A1/Class3Content';
+import Class4Content from '@/components/clases/A1/Class4Content';
+import Class5Content from '@/components/clases/A1/Class5Content';
+import Class6Content from '@/components/clases/A1/Class6Content';
+import Class7Content from '@/components/clases/A1/Class7Content';
+import Class8Content from '@/components/clases/A1/Class8Content';
+import Class9Content from '@/components/clases/A1/Class9Content';
+import Class10Content from '@/components/clases/A1/Class10Content';
+import Class11Content from '@/components/clases/A1/Class11Content';
+import Class12Content from '@/components/clases/A1/Class12Content';
+import Class13Content from '@/components/clases/A1/Class13Content';
+import Class14Content from '@/components/clases/A1/Class14Content';
+import Class15Content from '@/components/clases/A1/Class15Content';
 import Class16Content from '@/components/clases/A1/Class16Content';
 
 export default function EngA1DynamicClassPage() {
