@@ -25,6 +25,8 @@ import Class11Content from './components/Class11Content';
 import Class12Content from './components/Class12Content';
 import Class13Content from './components/Class13Content';
 import Class14Content from './components/Class14Content';
+import Class15Content from './components/Class15Content';
+import Class16Content from '@/components/clases/A1/Class16Content';
 
 export default function EngA1DynamicClassPage() {
     const params = useParams();
@@ -70,6 +72,8 @@ export default function EngA1DynamicClassPage() {
             case '12': return <Class12Content />;
             case '13': return <Class13Content />;
             case '14': return <Class14Content />;
+            case '15': return <Class15Content />;
+            case '16': return <Class16Content />;
             default:
                 return (
                     <div className="max-w-7xl mx-auto text-white text-center py-20">
