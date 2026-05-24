@@ -18,13 +18,17 @@ import Link from 'next/link';
  * src/components/clases/[CourseFolder]/Class[Id]Content.tsx
  */
 
-// Mapeo de parámetros de URL a carpetas reales (para manejar mayúsculas/minúsculas)
+// Mapeo de parámetros de URL a carpetas reales (para manejar niveles y suites)
 const courseFolderMap: Record<string, string> = {
   'a1': 'A1',
   'a2': 'A2',
   'b1': 'B1',
   'b2': 'B2',
   'espanol': 'Espanol',
+  'espanol-a1': 'Espanol/A1',
+  'espanol-a2': 'Espanol/A2',
+  'espanol-b1': 'Espanol/B1',
+  'espanol-b2': 'Espanol/B2',
   'kids': 'Kids',
 };
 
@@ -68,7 +72,7 @@ export default function UniversalClassPage() {
           }),
           {
             loading: () => <LoadingSpinner />,
-            ssr: false // Desactivamos SSR para evitar errores de hidratación en componentes con lógica compleja
+            ssr: false // Desactivamos SSR para evitar errores de hidratación
           }
         );
 
@@ -107,7 +111,7 @@ export default function UniversalClassPage() {
       </CardHeader>
       <CardContent className="text-center space-y-8 pb-10">
         <p className="text-xl text-muted-foreground leading-relaxed px-6">
-          Estamos preparando el contenido de la <span className="font-bold text-foreground">Clase {classId}</span> para el nivel <span className="font-bold text-foreground uppercase">{courseParam}</span>.
+          Estamos preparando el contenido de la <span className="font-bold text-foreground">Clase {classId}</span>.
           <br />
           ¡Estará disponible muy pronto en tu radar!
         </p>
