@@ -5,7 +5,7 @@ import dynamic from 'next/dynamic';
 import { useParams, useRouter } from 'next/navigation';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { useUser } from '@/firebase';
-import { Loader2, AlertCircle, ArrowLeft } from 'lucide-react';
+import { Loader2, AlertCircle, ArrowLeft } from 'lucide-center';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -30,6 +30,9 @@ const courseFolderMap: Record<string, string> = {
   'espanol-b1': 'Espanol/B1',
   'espanol-b2': 'Espanol/B2',
   'kids': 'Kids',
+  'kids-a1': 'Kids/A1',
+  'kids-a2': 'Kids/A2',
+  'kids-b1': 'Kids/B1',
 };
 
 export default function UniversalClassPage() {
