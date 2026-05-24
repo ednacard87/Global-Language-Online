@@ -12,6 +12,10 @@ import { useTranslation } from '@/context/language-context';
 
 // Importación de componentes de contenido modularizados (Nivel B1)
 import Class1Content from '@/components/clases/B1/Class1Content';
+import Class2Content from '@/components/clases/B1/Class2Content';
+import Class3Content from '@/components/clases/B1/Class3Content';
+import Class4Content from '@/components/clases/B1/Class4Content';
+import Class5Content from '@/components/clases/B1/Class5Content';
 
 export default function EngB1DynamicClassPage() {
     const params = useParams();
@@ -44,6 +48,10 @@ export default function EngB1DynamicClassPage() {
     const renderClassContent = () => {
         switch (classId) {
             case '1': return <Class1Content />;
+            case '2': return <Class2Content />;
+            case '3': return <Class3Content />;
+            case '4': return <Class4Content />;
+            case '5': return <Class5Content />;
             default:
                 return (
                     <div className="max-w-7xl mx-auto text-white text-center py-20">
