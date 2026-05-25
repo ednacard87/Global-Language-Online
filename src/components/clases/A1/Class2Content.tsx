@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
-import { BookOpen, GraduationCap, CheckCircle, BrainCircuit, PenSquare, Lock, Loader2, ArrowRight, BookText } from 'lucide-react';
+import { BookOpen, GraduationCap, CheckCircle, BrainCircuit, PenSquare, Lock, Loader2, ArrowRight } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
 import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
@@ -17,7 +17,6 @@ import { SingleFormExercise } from '@/components/kids/exercises/single-form';
 import { PresentSimpleExercise, type ExercisePrompt } from '@/components/kids/exercises/present-simple';
 import { ReadingComprehensionExercise } from '@/components/kids/exercises/reading-comprehension';
 import { Separator } from '@/components/ui/separator';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 // --- DATA ---
 
@@ -141,6 +140,7 @@ export default function Class2Content() {
         },
         { key: 'memory-verbs', name: 'Memory: Verbs', icon: BrainCircuit, status: 'locked' },
         { key: 'ex1', name: 'Exercise 1', icon: PenSquare, status: 'locked' },
+        { key: 'ex2', name: 'Exercise 2', icon: PenSquare, status: 'locked' },
         { key: 'reading', name: 'Reading', icon: BookOpen, status: 'locked' },
         { key: 'vocab-verbs', name: 'Exercise: Fill gaps', icon: PenSquare, status: 'locked' }
     ], []);
@@ -256,6 +256,17 @@ export default function Class2Content() {
         setSelectedTopic(topicKey);
     };
 
+    const handleVocabInputChange = (cat: 'verb' | 'word', index: number, value: string) => {
+        if (cat === 'verb') {
+            const na = [...verbsAnswers]; na[index] = value; setVerbsAnswers(na);
+            const nv = [...verbsValidation]; nv[index] = 'unchecked'; setVerbsValidation(nv as any);
+        } else {
+            const na = [...wordsAnswers]; na[index] = value; setWordsAnswers(na);
+            const nv = [...wordsValidation]; nv[index] = 'unchecked'; setWordsValidation(nv as any);
+        }
+        setCanAdvanceVocab(false);
+    };
+
     const handleVocabCheck = () => {
         let oneCorrect = false;
         
@@ -297,7 +308,6 @@ export default function Class2Content() {
                             <CardDescription>Traduce los términos al inglés. Para los verbos, puedes incluir "To" al inicio.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-8">
-                            {/* Section 1: Verbs */}
                             <div className="space-y-4">
                                 <h3 className="text-xl font-black text-primary uppercase tracking-tight border-b pb-2">1. Basic Verbs</h3>
                                 <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-lg">
@@ -308,11 +318,7 @@ export default function Class2Content() {
                                             <div className="p-3 border rounded bg-white/5 text-foreground font-medium flex items-center">{v.spanish}</div>
                                             <Input 
                                                 value={verbsAnswers[i] || ''} 
-                                                onChange={e => {
-                                                    const n = [...verbsAnswers]; n[i] = e.target.value; setVerbsAnswers(n);
-                                                    const nv = [...verbsValidation]; nv[i] = 'unchecked'; setVerbsValidation(nv as any);
-                                                    setCanAdvanceVocab(false);
-                                                }} 
+                                                onChange={e => handleVocabInputChange('verb', i, e.target.value)} 
                                                 className={cn("h-12", verbsValidation[i] === 'correct' ? 'border-green-500 bg-green-50/5' : verbsValidation[i] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} 
                                                 autoComplete="off"
                                             />
@@ -323,7 +329,6 @@ export default function Class2Content() {
 
                             <Separator />
 
-                            {/* Section 2: Words */}
                             <div className="space-y-4">
                                 <h3 className="text-xl font-black text-primary uppercase tracking-tight border-b pb-2">2. Basic Words</h3>
                                 <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-lg">
@@ -334,11 +339,7 @@ export default function Class2Content() {
                                             <div className="p-3 border rounded bg-white/5 text-foreground font-medium flex items-center">{v.spanish}</div>
                                             <Input 
                                                 value={wordsAnswers[i] || ''} 
-                                                onChange={e => {
-                                                    const n = [...wordsAnswers]; n[i] = e.target.value; setWordsAnswers(n);
-                                                    const nv = [...wordsValidation]; nv[i] = 'unchecked'; setWordsValidation(nv as any);
-                                                    setCanAdvanceVocab(false);
-                                                }} 
+                                                onChange={e => handleVocabInputChange('word', i, e.target.value)} 
                                                 className={cn("h-12", wordsValidation[i] === 'correct' ? 'border-green-500 bg-green-50/5' : wordsValidation[i] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} 
                                                 autoComplete="off"
                                             />
@@ -347,7 +348,7 @@ export default function Class2Content() {
                                 </div>
                             </div>
                         </CardContent>
-                        <CardFooter className="flex justify-between border-t pt-6"><Button onClick={handleVocabCheck} variant="secondary">Verificar</Button><Button onClick={() => handleTopicComplete('vocabulary')} disabled={!canAdvanceVocab && !isAdmin} className='text-white'>Avanzar</Button></CardFooter>
+                        <CardFooter className="flex justify-between border-t pt-6"><Button onClick={handleVocabCheck} variant="secondary">Verificar</Button><Button onClick={() => handleTopicComplete('vocabulary')} disabled={!canAdvanceVocab && !isAdmin}>Avanzar</Button></CardFooter>
                     </Card>
                 );
             case 'grammar':
@@ -375,6 +376,7 @@ export default function Class2Content() {
             case 'ex-int': return <SingleFormExercise onComplete={() => handleTopicComplete('ex-int')} exerciseData={interrogativeExercises} title="Interrogative Form" formType="interrogative" description="Traduce las frases a su forma interrogativa." />;
             case 'memory-verbs': return <VerbMemoryGame onComplete={() => handleTopicComplete('memory-verbs')} />;
             case 'ex1': return <PresentSimpleExercise exerciseData={exercise1Data} onComplete={() => handleTopicComplete('ex1')} title="Exercise 1" showShortAnswers={true} />;
+            case 'ex2': return <Card className="p-6 text-center"><CardTitle>Exercise 2</CardTitle><CardContent className="pt-4"><p>Contenido del Exercise 2 próximamente.</p></CardContent><CardFooter className="justify-center"><Button onClick={() => handleTopicComplete('ex2')}>Completar</Button></CardFooter></Card>;
             case 'reading': return <ReadingComprehensionExercise onComplete={() => handleTopicComplete('reading')} />;
             case 'vocab-verbs': return <FillInTheBlanksExercise onComplete={() => handleTopicComplete('vocab-verbs')} />;
             default: return null;
@@ -418,4 +420,3 @@ export default function Class2Content() {
         </div>
     );
 }
-
