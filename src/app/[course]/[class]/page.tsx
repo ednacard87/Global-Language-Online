@@ -5,7 +5,7 @@ import dynamic from 'next/dynamic';
 import { useParams, useRouter } from 'next/navigation';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { useUser } from '@/firebase';
-import { Loader2, AlertCircle, ArrowLeft } from 'lucide-center';
+import { Loader2, AlertCircle, ArrowLeft } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
