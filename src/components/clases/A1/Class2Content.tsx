@@ -8,32 +8,30 @@ import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
 import { 
     BookOpen, 
-    PenSquare, 
-    Lock, 
     GraduationCap, 
     CheckCircle, 
+    BrainCircuit, 
+    PenSquare, 
+    Lock, 
     Loader2, 
     ArrowRight, 
     BookText,
-    Check,
-    X,
+    Trophy,
+    RefreshCw
 } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
 import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
 import { doc } from 'firebase/firestore';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { VerbMemoryGame } from '@/components/kids/exercises/verb-memory-game';
+import { ReadingComprehensionExercise } from '@/components/kids/exercises/reading-comprehension';
 import { Separator } from '@/components/ui/separator';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Label } from '@/components/ui/label';
-import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
 
 // --- DATA ---
 
-const progressStorageKey = 'progress_a1_eng_u1_c2_v200_blindado';
-const mainProgressKey = 'progress_a1_eng_unit_1_class_2';
-
-const vocabularyVerbs = [
+const vocabularyData = [
     { spanish: 'JUGAR', english: 'play' },
     { spanish: 'CAMINAR', english: 'walk' },
     { spanish: 'IR', english: 'go' },
@@ -57,7 +55,7 @@ const vocabularyVerbs = [
     { spanish: 'ENSEÑAR', english: 'teach' },
 ];
 
-const vocabularyWords = [
+const basicWordsData = [
     { spanish: 'AYER', english: 'yesterday' },
     { spanish: 'HOY', english: 'today' },
     { spanish: 'MAÑANA', english: 'tomorrow' },
@@ -72,36 +70,49 @@ const vocabularyWords = [
     { spanish: 'SIN', english: 'without' },
 ];
 
-const ex1Vocab = {
-    "tenis": "tennis", "caminar": "walk", "parque": "park", "universidad": "university", "domingos": "sundays",
-    "tarde": "afternoon", "carne": "meat", "ensalada": "salad", "iglesia": "church", "miercoles": "wednesday",
-    "futbol": "soccer / football", "peliculas": "movies", "viernes": "fridays", "noche": "night"
-};
-
-const ex2Prompts = [
-    { 
-        spanish: "TU HACES LA TAREA", 
-        answers: { 
-            affirmative: ["you do the homework", "you do the task"], 
-            negative: ["you do not do the homework", "you don't do the homework", "you do not do the task", "you don't do the task"], 
-            interrogative: ["do you do the homework?", "do you do the task?"], 
-            shortAffirmative: ["yes, i do"], 
-            shortNegative: ["no, i do not", "no, i don't"] 
-        } 
-    },
-    { 
-        spanish: "ELLA HACE EJERCICIO", 
-        answers: { 
-            affirmative: ["she does exercise"], 
-            negative: ["she does not do exercise", "she doesn't do exercise"], 
-            interrogative: ["does she do exercise?"], 
-            shortAffirmative: ["yes, she does"], 
-            shortNegative: ["no, she does not", "no, she doesn't"] 
-        } 
-    }
+const posExercises = [
+    { spanish: 'yo bebo agua', answer: ["I drink water"] },
+    { spanish: 'nosotros jugamos futbol', answer: ["we play soccer", "we play football"] },
+    { spanish: 'ellos escuchan música', answer: ["they listen to music"] },
+    { spanish: 'yo hablo ingles', answer: ["I speak English"] },
+    { spanish: 'tu abres la puerta', answer: ["you open the door"] },
 ];
 
-const ex2Vocab = { "tarea": "homework / task", "ejercicio": "exercise", "hacer": "do / does" };
+const negExercises = [
+    { spanish: 'yo no bebo agua', answer: ["I do not drink water", "I don't drink water"] },
+    { spanish: 'nosotros no jugamos futbol', answer: ["we do not play soccer", "we don't play soccer", "we do not play football", "we don't play football"] },
+    { spanish: 'ellos no escuchan música', answer: ["they do not listen to music", "they don't listen to music"] },
+    { spanish: 'yo no hablo ingles', answer: ["I do not speak English", "I don't speak English"] },
+    { spanish: 'tu no abres la puerta', answer: ["you do not open the door", "you don't open the door"] },
+];
+
+const intExercises = [
+    { spanish: '¿yo bebo agua?', answer: ["do I drink water?"] },
+    { spanish: '¿nosotros jugamos futbol?', answer: ["do we play soccer?", "do we play football?"] },
+    { spanish: '¿ellos escuchan música?', answer: ["do they listen to music?"] },
+    { spanish: '¿yo hablo ingles?', answer: ["do I speak English?"] },
+    { spanish: '¿tu abres la puerta?', answer: ["do you open the door?"] },
+];
+
+const exercise1Data = [
+    { spanish: "TU JUEGAS TENIS EL LUNES", answers: { affirmative: ["you play tennis on monday"], negative: ["you do not play tennis on monday", "you don't play tennis on monday"], interrogative: ["do you play tennis on monday?"], shortAffirmative: ["yes, i do"], shortNegative: ["no, i do not", "no, i don't"] } },
+    { spanish: "NOSOTROS CAMINAMOS EN EL PARQUE", answers: { affirmative: ["we walk in the park"], negative: ["we do not walk in the park", "we don't walk in the park"], interrogative: ["do we walk in the park?"], shortAffirmative: ["yes, we do"], shortNegative: ["no, we do not", "no, we don't"] } },
+    { spanish: "ELLOS VAN A LA UNIVERSIDAD EL SABADO", answers: { affirmative: ["they go to the university on saturday"], negative: ["they do not go to the university on saturday", "they don't go to the university on saturday"], interrogative: ["do they go to the university on saturday?"], shortAffirmative: ["yes, they do"], shortNegative: ["no, they do not", "no, they don't"] } },
+    { spanish: "TÚ DUERMES EN LA TARDE", answers: { affirmative: ["you sleep in the afternoon"], negative: ["you do not sleep in the afternoon", "you don't sleep in the afternoon"], interrogative: ["do you sleep in the afternoon?"], shortAffirmative: ["yes, i do"], shortNegative: ["no, i do not", "no, i don't"] } },
+    { spanish: "NOSOTROS COMEMOS CARNE Y ENSALADA", answers: { affirmative: ["we eat meat and salad"], negative: ["we do not eat meat and salad", "we don't eat meat and salad"], interrogative: ["do we eat meat and salad?"], shortAffirmative: ["yes, we do"], shortNegative: ["no, we do not", "no, we don't"] } },
+    { spanish: "ELLOS BEBEN CERVEZA", answers: { affirmative: ["they drink beer"], negative: ["they do not drink beer", "they don't drink beer"], interrogative: ["do they drink beer?"], shortAffirmative: ["yes, they do"], shortNegative: ["no, they do not", "no, they don't"] } },
+    { spanish: "ELLOS VAN A LA IGLESIA EL MIERCOLES", answers: { affirmative: ["they go to church on wednesday"], negative: ["they do not go to church on wednesday", "they don't go to church on wednesday"], interrogative: ["do they go to church on wednesday?"], shortAffirmative: ["yes, they do"], shortNegative: ["no, they do not", "no, they don't"] } },
+    { spanish: "NOSOTROS JUGAMOS FUTBOL LOS SABADOS", answers: { affirmative: ["we play soccer on saturdays", "we play football on saturdays"], negative: ["we do not play soccer on saturdays", "we don't play soccer on saturdays"], interrogative: ["do we play soccer on saturdays?"], shortAffirmative: ["yes, we do"], shortNegative: ["no, we do not", "no, we don't"] } },
+    { spanish: "YO VEO PELÍCULAS LOS VIERNES EN LA NOCHE", answers: { affirmative: ["i watch movies on friday nights", "i watch movies on fridays at night"], negative: ["i do not watch movies on friday nights", "i don't watch movies on friday nights"], interrogative: ["do i watch movies on friday nights?"], shortAffirmative: ["yes, i do"], shortNegative: ["no, i do not", "no, i don't"] } },
+    { spanish: "NOSOTROS TRABAJAMOS LOS DOMINGOS", answers: { affirmative: ["we work on sundays"], negative: ["we do not work on sundays", "we don't work on sundays"], interrogative: ["do we work on sundays?"], shortAffirmative: ["yes, we do"], shortNegative: ["no, we do not", "no, we don't"] } },
+];
+
+const generalVocab = {
+    "beber": "drink", "jugar": "play", "futbol": "soccer/football", "música": "music", "hablar": "speak", "abrir": "open", "puerta": "door",
+    "tenis": "tennis", "caminar": "walk", "parque": "park", "universidad": "university", "sabado": "saturday", "dormir": "sleep", "tarde": "afternoon",
+    "comer": "eat", "carne": "meat", "ensalada": "salad", "cerveza": "beer", "iglesia": "church", "miercoles": "wednesday", "peliculas": "movies",
+    "viernes": "friday", "noche": "night", "domingo": "sunday"
+};
 
 interface Topic {
     key: string;
@@ -113,6 +124,103 @@ interface Topic {
 const ICONS = { locked: Lock, active: BookOpen, completed: CheckCircle };
 
 // --- SUB-COMPONENTS ---
+
+const VocabularyGame = ({ onComplete }: { onComplete: () => void }) => {
+    const { toast } = useToast();
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [userAnswer, setUserAnswer] = useState('');
+    const [isCompleted, setIsCompleted] = useState(false);
+
+    const gameData = useMemo(() => vocabularyData.map(v => {
+        const full = v.english.toLowerCase();
+        const gapIdx = Math.floor(Math.random() * full.length);
+        const gapped = full.substring(0, gapIdx) + '_' + full.substring(gapIdx + 1);
+        return { spanish: v.spanish, english: full, gapped, missing: full[gapIdx] };
+    }), []);
+
+    const current = gameData[currentIndex];
+
+    const handleCheck = () => {
+        if (userAnswer.trim().toLowerCase() === current.missing) {
+            if (currentIndex === gameData.length - 1) {
+                setIsCompleted(true);
+            } else {
+                toast({ title: "¡Correcto!" });
+                setCurrentIndex(prev => prev + 1);
+                setUserAnswer('');
+            }
+        } else {
+            toast({ variant: 'destructive', title: "Incorrecto", description: "Inténtalo de nuevo." });
+        }
+    };
+
+    if (isCompleted) {
+        return (
+            <Card className="shadow-soft rounded-lg border-2 border-brand-purple text-center p-12">
+                <Trophy className="h-20 w-20 mx-auto text-yellow-400 mb-6 animate-bounce" />
+                <h2 className="text-3xl font-black text-primary uppercase">Congratulations!</h2>
+                <p className="text-muted-foreground mt-2 mb-8">Has completado el reto de vocabulario.</p>
+                <Button onClick={onComplete} size="lg" className='px-12 text-white font-bold'>Terminar</Button>
+            </Card>
+        );
+    }
+
+    return (
+        <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+            <CardHeader><CardTitle>Vocabulary (Game)</CardTitle><CardDescription>Completa la palabra con la letra que falta.</CardDescription></CardHeader>
+            <CardContent className="space-y-6">
+                <div className="text-center"><p className="text-sm text-muted-foreground">Palabra {currentIndex + 1} de {gameData.length}</p><p className="text-2xl font-bold text-primary mt-2">{current.spanish}</p></div>
+                <div className="flex justify-center items-center gap-2 text-4xl font-mono tracking-widest bg-muted p-8 rounded-2xl border">
+                    {current.gapped.split('_')[0]}
+                    <Input value={userAnswer} onChange={e => setUserAnswer(e.target.value.slice(-1))} className="w-12 h-14 text-center text-3xl font-bold border-primary border-2 uppercase" autoComplete="off" />
+                    {current.gapped.split('_')[1]}
+                </div>
+            </CardContent>
+            <CardFooter className="justify-center"><Button onClick={handleCheck} size="lg">Verificar</Button></CardFooter>
+        </Card>
+    );
+};
+
+const SingleFormExercise = ({ title, data, onComplete, formType, vocab }: any) => {
+    const { toast } = useToast();
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [answer, setAnswer] = useState('');
+    const [status, setStatus] = useState<'correct' | 'incorrect' | 'unchecked'>('unchecked');
+
+    const handleCheck = () => {
+        const userVal = answer.trim().toLowerCase().replace(/[.?,]/g, '');
+        const isCorrect = data[currentIndex].answer.some((a: string) => a.toLowerCase().replace(/[.?,]/g, '') === userVal);
+        setStatus(isCorrect ? 'correct' : 'incorrect');
+        if (isCorrect) toast({ title: "¡Muy bien!" });
+        else toast({ variant: 'destructive', title: "Sigue intentando" });
+    };
+
+    const handleNext = () => {
+        if (currentIndex < data.length - 1) {
+            setCurrentIndex(prev => prev + 1);
+            setAnswer(''); setStatus('unchecked');
+        } else {
+            onComplete();
+        }
+    };
+
+    return (
+        <Card className="shadow-soft border-2 border-brand-purple">
+            <CardHeader className="flex flex-row items-center justify-between">
+                <div><CardTitle>{title}</CardTitle><CardDescription>Traduce la frase.</CardDescription></div>
+                <Popover><PopoverTrigger asChild><Button variant="outline" size="sm" className='border-brand-blue border-2'><BookText className="mr-2 h-4 w-4" /> Vocabulary</Button></PopoverTrigger><PopoverContent className="w-64"><div className="grid grid-cols-2 gap-2 text-sm">{Object.entries(vocab).map(([es, en]: any) => (<React.Fragment key={es}><span className="text-muted-foreground">{es}:</span><span className="font-bold text-right">{en}</span></React.Fragment>))}</div></PopoverContent></Popover>
+            </CardHeader>
+            <CardContent className="space-y-6">
+                <div className="bg-muted p-4 rounded-lg border text-center font-bold text-xl">{data[currentIndex].spanish}</div>
+                <Input value={answer} onChange={e => setAnswer(e.target.value)} className={cn("h-12 text-lg", status === 'correct' ? 'border-green-500 bg-green-50/5' : status === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} placeholder="Tu traducción..." autoComplete="off" />
+            </CardContent>
+            <CardFooter className="justify-between">
+                <Button onClick={handleCheck}>Verificar</Button>
+                <Button onClick={handleNext} disabled={status !== 'correct'}>Siguiente <ArrowRight className="ml-2 h-4 w-4" /></Button>
+            </CardFooter>
+        </Card>
+    );
+};
 
 const MultiFormExercise = ({ prompts, onComplete, vocabulary }: any) => {
     const { toast } = useToast();
@@ -136,57 +244,30 @@ const MultiFormExercise = ({ prompts, onComplete, vocabulary }: any) => {
         fields.forEach(field => {
             const userVal = answers[field].trim().toLowerCase().replace(/[.?,]/g, '');
             const corrects = currentPrompt.answers[field].map((a: string) => a.toLowerCase().replace(/[.?,]/g, ''));
-            
-            if (field === 'interrogative' && !answers[field].trim().endsWith('?')) {
-                newVal[field] = 'incorrect';
-                allOk = false;
-            } else if (corrects.includes(userVal)) {
-                newVal[field] = 'correct';
-            } else {
-                newVal[field] = 'incorrect';
-                allOk = false;
-            }
+            if (field === 'interrogative' && !answers[field].trim().endsWith('?')) { allOk = false; newVal[field] = 'incorrect'; }
+            else if (corrects.includes(userVal)) newVal[field] = 'correct';
+            else { allOk = false; newVal[field] = 'incorrect'; }
         });
 
         setValidation(newVal);
-        if (allOk) {
-            toast({ title: "¡Correcto!" });
-            setCompletedMap(prev => ({ ...prev, [currentIndex]: true }));
-        } else {
-            toast({ variant: 'destructive', title: "Incorrecto", description: "Revisa los campos en rojo." });
-        }
+        if (allOk) { toast({ title: "¡Correcto!" }); setCompletedMap(prev => ({ ...prev, [currentIndex]: true })); }
+        else toast({ variant: 'destructive', title: "Incorrecto", description: "Revisa los campos en rojo." });
     };
 
     return (
         <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-            <CardHeader>
-                <div className="flex justify-between items-start">
-                    <div>
-                        <CardTitle>Exercise 2</CardTitle>
-                        <CardDescription>Traduce la frase en todas sus formas.</CardDescription>
-                    </div>
-                    {vocabulary && (
-                        <Popover>
-                            <PopoverTrigger asChild>
-                                <Button variant="outline" size="sm" className="border-2 border-brand-blue animate-border-pulse"><BookText className="mr-2 h-4 w-4" /> Vocabulary</Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-64">
-                                <div className="grid grid-cols-2 gap-2 text-sm">
-                                    {Object.entries(vocabulary).map(([es, en]: any) => (<React.Fragment key={es}><span className="text-muted-foreground capitalize">{es}:</span><span className="font-bold text-right">{en}</span></React.Fragment>))}
-                                </div>
-                            </PopoverContent>
-                        </Popover>
-                    )}
-                </div>
-                <div className="flex gap-2 pt-4">
+            <CardHeader className="flex flex-row items-center justify-between">
+                <div><CardTitle>Exercise 1</CardTitle><CardDescription>Traduce la frase en todas sus formas.</CardDescription></div>
+                <Popover><PopoverTrigger asChild><Button variant="outline" size="sm" className='border-brand-blue border-2'><BookText className="mr-2 h-4 w-4" /> Vocabulary</Button></PopoverTrigger><PopoverContent className="w-64"><div className="grid grid-cols-2 gap-2 text-sm">{Object.entries(vocabulary).map(([es, en]: any) => (<React.Fragment key={es}><span className="text-muted-foreground">{es}:</span><span className="font-bold text-right">{en}</span></React.Fragment>))}</div></PopoverContent></Popover>
+            </CardHeader>
+            <CardContent className="space-y-6">
+                <div className="flex gap-2 justify-center mb-4">
                     {prompts.map((_: any, i: number) => (
-                        <div key={i} onClick={() => setCurrentIndex(i)} className={cn("h-6 w-6 rounded-full border-2 flex items-center justify-center text-xs font-bold cursor-pointer transition-all", currentIndex === i ? "border-primary ring-2 ring-primary" : "border-muted", completedMap[i] ? "bg-green-500 text-white border-green-500" : "bg-card")}>
+                        <div key={i} onClick={() => setCurrentIndex(i)} className={cn("h-8 w-8 rounded-full border-2 flex items-center justify-center text-sm font-bold cursor-pointer transition-all", currentIndex === i ? "border-primary ring-2 ring-primary" : "border-muted", completedMap[i] ? "bg-green-500 text-white border-green-500" : (validation.affirmative === 'incorrect' && currentIndex === i ? "bg-red-500 text-white border-red-500" : "bg-card"))}>
                             {i + 1}
                         </div>
                     ))}
                 </div>
-            </CardHeader>
-            <CardContent className="space-y-6">
                 <div className="bg-muted p-4 rounded-lg border text-center font-bold text-xl">{currentPrompt.spanish}</div>
                 <div className="space-y-3 font-mono">
                     {[
@@ -207,69 +288,57 @@ const MultiFormExercise = ({ prompts, onComplete, vocabulary }: any) => {
                 <Button onClick={() => setCurrentIndex(prev => Math.max(0, prev - 1))} disabled={currentIndex === 0} variant="outline">Anterior</Button>
                 <div className="flex gap-2">
                     <Button onClick={handleCheck}>Verificar</Button>
-                    {currentIndex < prompts.length - 1 ? (
-                        <Button onClick={() => setCurrentIndex(prev => prev + 1)} disabled={!completedMap[currentIndex]}>Siguiente <ArrowRight className="ml-2 h-4 w-4" /></Button>
-                    ) : (
-                        <Button onClick={onComplete} disabled={!completedMap[currentIndex]} className='text-white'>Finalizar</Button>
-                    )}
+                    <Button onClick={onComplete} disabled={!completedMap[currentIndex]}>Siguiente</Button>
                 </div>
             </CardFooter>
         </Card>
     );
 };
 
-// --- MAIN COMPONENT ---
+// --- MAIN CLASS COMPONENT ---
 
 export default function Class2Content() {
     const { toast } = useToast();
     const { user, isUserLoading } = useUser();
     const firestore = useFirestore();
+    const progressStorageKey = 'progress_a1_eng_u1_c2_v250_blindado';
+    const mainProgressKey = 'progress_a1_eng_unit_1_class_2';
 
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
     const [selectedTopic, setSelectedTopic] = useState<string>('');
     const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
     const [isInitialLoading, setIsInitialLoading] = useState(true);
 
-    const [verbsAnswers, setVerbsAnswers] = useState<string[]>(Array(vocabularyVerbs.length).fill(''));
-    const [wordsAnswers, setWordsAnswers] = useState<string[]>(Array(vocabularyWords.length).fill(''));
-    const [verbsValidation, setVerbsValidation] = useState<any[]>(Array(vocabularyVerbs.length).fill('unchecked'));
-    const [wordsValidation, setWordsValidation] = useState<any[]>(Array(vocabularyWords.length).fill('unchecked'));
-    const [canAdvanceVocab, setCanAdvanceVocab] = useState(false);
+    const [verbsAnswers, setVerbsAnswers] = useState<string[]>(Array(vocabularyData.length).fill(''));
+    const [wordsAnswers, setWordsAnswers] = useState<string[]>(Array(basicWordsData.length).fill(''));
+    const [verbsValidation, setVerbsValidation] = useState<any[]>(Array(vocabularyData.length).fill('unchecked'));
+    const [wordsValidation, setWordsValidation] = useState<any[]>(Array(basicWordsData.length).fill('unchecked'));
 
     const studentDocRef = useMemoFirebase(() => (user ? doc(firestore, 'students', user.uid) : null), [firestore, user]);
     const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{role?: string, lessonProgress?: any, progress?: any}>(studentDocRef);
     const isAdmin = useMemo(() => (user && (studentProfile?.role === 'admin' || user.email === 'ednacard87@gmail.com')), [user, studentProfile]);
 
     const initialLearningPath = useMemo((): Topic[] => [
-        { key: 'vocabulary', name: 'Vocabulary 2', icon: BookOpen, status: 'active' },
-        { key: 'grammar', name: 'Grammar: DO - DOES', icon: GraduationCap, status: 'locked' },
+        { key: 'vocabulary', name: 'Vocabulary (Verbs)', icon: BookOpen, status: 'active' },
+        { key: 'grammar', name: 'Grammar: Present Simple', icon: GraduationCap, status: 'locked' },
+        { key: 'ex-pos', name: 'Exercise: Positive', icon: PenSquare, status: 'locked' },
+        { key: 'ex-neg', name: 'Exercise: Negative', icon: PenSquare, status: 'locked' },
+        { key: 'ex-int', name: 'Exercise: Interrogative', icon: PenSquare, status: 'locked' },
+        { key: 'memory-verbs', name: 'Memory: Verbs', icon: BrainCircuit, status: 'locked' },
         { key: 'ex1', name: 'Exercise 1', icon: PenSquare, status: 'locked' },
         { key: 'ex2', name: 'Exercise 2', icon: PenSquare, status: 'locked' },
+        { key: 'reading', name: 'Reading', icon: BookOpen, status: 'locked' },
+        { key: 'vocab_game', name: 'Vocabulary (Game)', icon: Gamepad2, status: 'locked' },
     ], []);
-
-    const handleTopicComplete = useCallback((completedKey: string) => {
-        setTopicToComplete(completedKey);
-    }, []);
-
-    const handleTopicSelect = (key: string) => {
-        const t = learningPath.find(it => it.key === key);
-        if (!isAdmin && t?.status === 'locked') {
-            toast({ variant: "destructive", title: "Contenido Bloqueado" });
-            return;
-        }
-        setSelectedTopic(key);
-        if (key === 'grammar') handleTopicComplete(key);
-    };
 
     useEffect(() => {
         if (isProfileLoading || isUserLoading || !studentProfile) return;
         let path = initialLearningPath.map(t => ({...t}));
         let savedST = '';
-        if (isAdmin) {
-            path.forEach(item => { item.status = 'completed'; });
-        } else if(studentProfile?.lessonProgress?.[progressStorageKey]) {
+        if (isAdmin) path.forEach(t => t.status = 'completed');
+        else if (studentProfile?.lessonProgress?.[progressStorageKey]) {
             const d = studentProfile.lessonProgress[progressStorageKey];
-            path.forEach(item => { if (d[t.key]) t.status = d[t.key]; });
+            path.forEach(t => { if (d[t.key]) t.status = d[t.key]; });
             savedST = d.lastSelectedTopic || '';
         }
         let lastDone = true;
@@ -295,6 +364,8 @@ export default function Class2Content() {
         if (progressValue >= 100) window.dispatchEvent(new CustomEvent('progressUpdated'));
     }, [learningPath, isAdmin, progressValue, studentDocRef, selectedTopic, isInitialLoading, studentProfile]);
 
+    const handleTopicComplete = useCallback((key: string) => setTopicToComplete(key), []);
+
     useEffect(() => {
         if (!topicToComplete) return;
         setLearningPath(curr => {
@@ -312,24 +383,26 @@ export default function Class2Content() {
         setTopicToComplete(null);
     }, [topicToComplete]);
 
+    const handleTopicSelect = (key: string) => {
+        const t = learningPath.find(it => it.key === key);
+        if (!isAdmin && t?.status === 'locked') return;
+        setSelectedTopic(key);
+        if (['grammar', 'vocabulary'].includes(key)) handleTopicComplete(key);
+    };
+
     const handleVocabCheck = () => {
         let ok = false;
-        const nvV = vocabularyVerbs.map((v, i) => {
+        const nvV = vocabularyData.map((v, i) => {
             const u = (verbsAnswers[i] || '').trim().toLowerCase();
             const res = u === v.english.toLowerCase() || u === `to ${v.english.toLowerCase()}`;
             if (res) ok = true; return res ? 'correct' : 'incorrect';
         });
-        const nvW = vocabularyWords.map((v, i) => {
+        const nvW = basicWordsData.map((v, i) => {
             const res = (wordsAnswers[i] || '').trim().toLowerCase() === v.english.toLowerCase();
             if (res) ok = true; return res ? 'correct' : 'incorrect';
         });
         setVerbsValidation(nvV); setWordsValidation(nvW);
-        if (ok) {
-            toast({ title: "¡Bien hecho!" });
-            setCanAdvanceVocab(true);
-        } else {
-            toast({ variant: 'destructive', title: 'Inténtalo de nuevo' });
-        }
+        if (ok) toast({ title: "¡Bien hecho!" });
     };
 
     const renderContent = () => {
@@ -337,53 +410,39 @@ export default function Class2Content() {
         switch (selectedTopic) {
             case 'vocabulary':
                 return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left">
-                        <CardHeader><CardTitle className="text-black dark:text-primary">Vocabulary 2</CardTitle></CardHeader>
+                    <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left">
+                        <CardHeader><CardTitle>Vocabulary (Verbs)</CardTitle></CardHeader>
                         <CardContent className="space-y-8">
                             <div className="space-y-4">
-                                <h3 className="text-xl font-black text-primary uppercase border-b pb-2 dark:text-white">1. Basic Verbs</h3>
                                 <div className="grid grid-cols-2 gap-2 text-lg">
-                                    <div className="font-bold p-2 bg-muted rounded text-foreground">Español</div>
-                                    <div className="font-bold p-2 bg-muted rounded text-foreground">Inglés</div>
-                                    {vocabularyVerbs.map((v, i) => (
-                                        <React.Fragment key={`verb-${i}`}>
-                                            <div className="p-2 border rounded bg-white/5 font-medium">{v.spanish}</div>
-                                            <Input value={verbsAnswers[i]} onChange={e => { const na = [...verbsAnswers]; na[i] = e.target.value; setVerbsAnswers(na); setCanAdvanceVocab(false); }} className={cn(verbsValidation[i] === 'correct' ? 'border-green-500 bg-green-50/5' : verbsValidation[i] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} autoComplete="off" />
-                                        </React.Fragment>
-                                    ))}
+                                    <div className="font-bold p-2 bg-muted rounded text-foreground">Español</div><div className="font-bold p-2 bg-muted rounded text-foreground">Inglés</div>
+                                    {vocabularyData.map((v, i) => (<React.Fragment key={i}><div className="p-2 border rounded bg-white/5 font-medium">{v.spanish}</div><Input value={verbsAnswers[i]} onChange={e => { const na = [...verbsAnswers]; na[i] = e.target.value; setVerbsAnswers(na); }} className={cn(verbsValidation[i] === 'correct' ? 'border-green-500' : verbsValidation[i] === 'incorrect' ? 'border-red-500' : '')} /></React.Fragment>))}
                                 </div>
                             </div>
                             <Separator />
                             <div className="space-y-4">
-                                <h3 className="text-xl font-black text-primary uppercase border-b pb-2 dark:text-white">2. Basic Words</h3>
+                                <h3 className="text-xl font-bold">Palabras Básicas</h3>
                                 <div className="grid grid-cols-2 gap-2 text-lg">
-                                    <div className="font-bold p-2 bg-muted rounded text-foreground">Español</div>
-                                    <div className="font-bold p-2 bg-muted rounded text-foreground">Inglés</div>
-                                    {vocabularyWords.map((v, i) => (
-                                        <React.Fragment key={`word-${i}`}>
-                                            <div className="p-2 border rounded bg-white/5 font-medium">{v.spanish}</div>
-                                            <Input value={wordsAnswers[i]} onChange={e => { const na = [...wordsAnswers]; na[i] = e.target.value; setWordsAnswers(na); setCanAdvanceVocab(false); }} className={cn(wordsValidation[i] === 'correct' ? 'border-green-500 bg-green-50/5' : wordsValidation[i] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} autoComplete="off" />
-                                        </React.Fragment>
-                                    ))}
+                                    {basicWordsData.map((v, i) => (<React.Fragment key={i}><div className="p-2 border rounded bg-white/5 font-medium">{v.spanish}</div><Input value={wordsAnswers[i]} onChange={e => { const na = [...wordsAnswers]; na[i] = e.target.value; setWordsAnswers(na); }} className={cn(wordsValidation[i] === 'correct' ? 'border-green-500' : wordsValidation[i] === 'incorrect' ? 'border-red-500' : '')} /></React.Fragment>))}
                                 </div>
                             </div>
                         </CardContent>
-                        <CardFooter className="flex justify-between border-t pt-6"><Button onClick={handleVocabCheck} variant="secondary">Verificar</Button><Button onClick={() => handleTopicComplete('vocabulary')} disabled={!canAdvanceVocab && !isAdmin} className='text-white'>Avanzar</Button></CardFooter>
+                        <CardFooter className="flex justify-between border-t pt-6"><Button onClick={handleVocabCheck} variant="secondary">Verificar</Button><Button onClick={() => handleTopicComplete('vocabulary')}>Avanzar</Button></CardFooter>
                     </Card>
                 );
             case 'grammar':
                 return (
                     <div className="space-y-6 text-left">
-                        <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-black">
-                            <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase">“DO - DOES”</CardTitle></CardHeader>
+                        <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-black p-6">
+                            <CardTitle className="text-2xl font-black text-primary uppercase">“DO - DOES”</CardTitle>
                             <CardContent className="space-y-6 text-lg font-bold">
                                 <div className="p-6 bg-slate-100 rounded-2xl border">
                                     <p className="text-primary mb-2">DO-DOES EN INGLES PUEDE SERVIR COMO:</p>
-                                    <p>1 - VERBO (HACER) // 2- AUXILIAR</p>
+                                    <p>1 - VERBO (HACER) // 2- AUXILIAR: DO / DOES</p>
                                     <p className="font-mono text-xl mt-4">I DO - YOU DO - WE DO - THEY DO<br/>HE / SHE / IT DOES</p>
                                 </div>
                                 <div className="p-6 bg-slate-100 rounded-2xl border">
-                                    <p className="text-primary uppercase mb-2">Estructura con Auxiliares (Do / Does):</p>
+                                    <p className="text-primary uppercase mb-2">ESTRUCTURA CON LOS AUXILIARES:</p>
                                     <ul className="space-y-2 font-mono text-base">
                                         <li><span className="text-green-600">(+)</span> = pronoun + verb + complement</li>
                                         <li><span className="text-red-600">(-)</span> = pronoun + do/does + not + verb + complement</li>
@@ -399,10 +458,13 @@ export default function Class2Content() {
                         </Card>
                     </div>
                 );
-            case 'ex1':
-                return <SimpleTranslationExercise course="a1" exerciseKey="c2_ex1_full" title="Exercise 1" onComplete={() => handleTopicComplete('ex1')} vocabulary={ex1Vocab} highlightVocabulary={true} />;
-            case 'ex2':
-                return <MultiFormExercise prompts={ex2Prompts} onComplete={() => handleTopicComplete('ex2')} vocabulary={ex2Vocab} />;
+            case 'ex-pos': return <SingleFormExercise title="Positive Form" data={posExercises} onComplete={() => handleTopicComplete('ex-pos')} formType="affirmative" vocab={generalVocab} />;
+            case 'ex-neg': return <SingleFormExercise title="Negative Form" data={negExercises} onComplete={() => handleTopicComplete('ex-neg')} formType="negative" vocab={generalVocab} />;
+            case 'ex-int': return <SingleFormExercise title="Interrogative Form" data={intExercises} onComplete={() => handleTopicComplete('ex-int')} formType="interrogative" vocab={generalVocab} />;
+            case 'memory-verbs': return <VerbMemoryGame onComplete={() => handleTopicComplete('memory-verbs')} />;
+            case 'ex1': return <MultiFormExercise prompts={exercise1Data} onComplete={() => handleTopicComplete('ex1')} vocabulary={generalVocab} />;
+            case 'reading': return <ReadingComprehensionExercise onComplete={() => handleTopicComplete('reading')} />;
+            case 'vocab_game': return <VocabularyGame onComplete={() => handleTopicComplete('vocab_game')} />;
             default: return null;
         }
     };
@@ -412,7 +474,7 @@ export default function Class2Content() {
             <div className="md:col-span-9 md:order-1 order-2">{renderContent()}</div>
             <div className="md:col-span-3 md:order-2 order-1 text-left">
                 <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
-                    <CardHeader><CardTitle>Ruta de Aprendizaje</CardTitle></CardHeader>
+                    <CardHeader><CardTitle>Ruta Clase 2</CardTitle></CardHeader>
                     <CardContent>
                         <nav><ul className="space-y-1">
                             {learningPath.map(item => (
@@ -428,3 +490,4 @@ export default function Class2Content() {
         </div>
     );
 }
+
