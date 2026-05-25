@@ -1,10 +1,11 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from 'next/navigation';
-import { Loader2, Check, Flame, Gamepad2, Ear, BookOpen, Swords, CaseSensitive, Lock, Star, Rocket, Music } from 'lucide-react';
+import { Loader2, Check, Flame, Gamepad2, Ear, BookOpen, Swords, CaseSensitive, Lock, Star, Rocket, Music, CheckCircle } from 'lucide-react';
 import { DashboardHeader } from "@/components/dashboard/header";
 import { useTranslation } from "@/context/language-context";
 import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
@@ -143,14 +144,16 @@ export default function KidsCoursePage() {
         return;
     }
     
-    if (studentProfile && !isAdmin && !studentProfile.selectedCourse) {
-        router.push('/select-course');
-        return;
-    }
-
-    if (studentProfile && !isAdmin && studentProfile.selectedCourse !== 'kids') {
-        router.push('/');
+    if (studentProfile) {
+        if (!isAdmin && !studentProfile.selectedCourse) {
+            router.push('/select-course');
+        } else if (studentProfile.selectedCourse && studentProfile.selectedCourse !== 'kids' && !isAdmin) {
+            router.push(`/${studentProfile.selectedCourse === 'ingles' ? '' : studentProfile.selectedCourse}`);
+        } else {
+            setIsRedirecting(false);
+        }
     } else {
+        // No hay perfil pero cargó, posiblemente primer login
         setIsRedirecting(false);
     }
   }, [user, studentProfile, isUserLoading, isProfileLoading, isAdmin, router]);
@@ -223,7 +226,6 @@ export default function KidsCoursePage() {
   const introCourse = useMemo(() => courses.find(c => c.href === "/kids/intro"), [courses]);
   const otherCourses = useMemo(() => courses.filter(c => c.href !== "/intro"), [courses]);
 
-  const adventureMascotImage = PlaceHolderImages.find(p => p.id === 'kids-adventure-mascot');
   const musicBg = "https://s3.envato.com/files/1a8011a5-217f-4a8a-9618-c2ddefbe08e3/inline_image_preview.jpg";
 
   if (isUserLoading || isProfileLoading || isRedirecting) {
@@ -239,7 +241,6 @@ export default function KidsCoursePage() {
       <DashboardHeader />
       <main className="flex-1 p-4 md:p-8">
         <div className="max-w-7xl mx-auto space-y-8">
-            {/* Header */}
             <div className="flex justify-between items-center rounded-lg bg-gray-800/50 backdrop-blur-sm p-4">
                 <div>
                     <h1 className="text-3xl font-bold text-cyan-400">WELCOME TO THE ZONE, {studentProfile?.name?.split(' ')[0] || 'Player'}!</h1>
@@ -253,9 +254,7 @@ export default function KidsCoursePage() {
                 </div>
             </div>
 
-            {/* --- DESKTOP VIEW --- */}
             <div className="hidden lg:grid lg:grid-cols-3 gap-8">
-                {/* Quick Missions */}
                 <div className="lg:col-span-1 space-y-4">
                     <h2 className="text-xl font-bold text-cyan-400/90 uppercase tracking-wider">Quick Missions</h2>
                     <div className="grid grid-cols-2 gap-4">
@@ -295,7 +294,6 @@ export default function KidsCoursePage() {
                     </div>
                 </div>
 
-                {/* Learning Adventure */}
                 <div className="lg:col-span-2 space-y-4">
                     <h2 className="text-xl font-bold text-cyan-400/90 uppercase tracking-wider">The Learning Adventure</h2>
                     <div className="space-y-3">
@@ -306,9 +304,7 @@ export default function KidsCoursePage() {
                 </div>
             </div>
 
-            {/* --- MOBILE VIEW --- */}
             <div className="lg:hidden flex flex-col space-y-8">
-              {/* 1. Saludo */}
               <div className="flex justify-between items-center rounded-lg bg-gray-800/50 backdrop-blur-sm p-4">
                   <div>
                       <h1 className="text-2xl font-bold text-cyan-400">WELCOME, {studentProfile?.name?.split(' ')[0] || 'Player'}!</h1>
@@ -322,7 +318,6 @@ export default function KidsCoursePage() {
                   </div>
               </div>
               
-              {/* 2. Intro Course */}
               {introCourse && (
                 <div>
                   <h2 className="text-xl font-bold text-cyan-400/90 uppercase tracking-wider mb-4">The Learning Adventure</h2>
@@ -330,7 +325,6 @@ export default function KidsCoursePage() {
                 </div>
               )}
               
-              {/* 3. Quick Missions */}
               <div className="space-y-4">
                 <h2 className="text-xl font-bold text-cyan-400/90 uppercase tracking-wider">Quick Missions</h2>
                 <div className="grid grid-cols-3 gap-4">
@@ -370,7 +364,6 @@ export default function KidsCoursePage() {
                 </div>
               </div>
               
-              {/* 4. Rest of Courses */}
               <div className="space-y-3">
                 {otherCourses.map((course, index) => (
                   <AdventureCard key={index} {...course} />

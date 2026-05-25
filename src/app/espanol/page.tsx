@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useMemo, useEffect, useState } from 'react';
@@ -5,7 +6,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 import Image from 'next/image';
-import { BookOpen, Mic, Video, Music, Lock, CheckCircle, Flame, Gamepad2, Star, Rocket, Smile, PlayCircle, Ear } from 'lucide-react';
+import { BookOpen, Mic, Video, Music, Lock, CheckCircle, Gamepad2, Star, Rocket, Ear, PlayCircle } from 'lucide-react';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -117,13 +118,14 @@ export default function EspanolDashboardPage() {
             return;
         }
 
-        if (studentProfile && !isAdmin && !studentProfile.selectedCourse) {
-            router.push('/select-course');
-            return;
-        }
-
-        if (studentProfile && !isAdmin && studentProfile.selectedCourse !== 'espanol') {
-            router.push('/');
+        if (studentProfile) {
+            if (!isAdmin && !studentProfile.selectedCourse) {
+                router.push('/select-course');
+            } else if (studentProfile.selectedCourse && studentProfile.selectedCourse !== 'espanol' && !isAdmin) {
+                router.push(`/${studentProfile.selectedCourse === 'ingles' ? '' : studentProfile.selectedCourse}`);
+            } else {
+                setIsRedirecting(false);
+            }
         } else {
             setIsRedirecting(false);
         }
@@ -244,7 +246,6 @@ export default function EspanolDashboardPage() {
                 </div>
             </div>
 
-            {/* --- DESKTOP VIEW --- */}
             <div className="hidden lg:grid lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-1 space-y-4">
                     <h2 className="text-xl font-bold text-primary uppercase tracking-wider">{t('dashboard.quickSkills')}</h2>
@@ -323,9 +324,7 @@ export default function EspanolDashboardPage() {
                 </div>
             </div>
 
-            {/* --- MOBILE VIEW --- */}
             <div className="lg:hidden flex flex-col space-y-8">
-              {/* 1. Saludo */}
               <div className="flex justify-between items-center rounded-lg bg-card/80 backdrop-blur-sm border-2 border-brand-purple p-4">
                   <div>
                       <h1 className="text-2xl font-bold text-primary">WELCOME, {studentProfile?.name?.split(' ')[0] || 'Student'}!</h1>
@@ -339,7 +338,6 @@ export default function EspanolDashboardPage() {
                   </div>
               </div>
               
-              {/* 2. Intro Course */}
               {introCourse && (
                 <div>
                   <h2 className="text-xl font-bold text-primary uppercase tracking-wider mb-4">La Aventura de Aprendizaje</h2>
@@ -347,7 +345,6 @@ export default function EspanolDashboardPage() {
                 </div>
               )}
               
-              {/* 3. Quick Skills */}
               <div className="space-y-4">
                 <h2 className="text-xl font-bold text-primary uppercase tracking-wider">{t('dashboard.quickSkills')}</h2>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
@@ -414,7 +411,6 @@ export default function EspanolDashboardPage() {
                 </div>
               </div>
               
-              {/* 3. Rest of Courses */}
               <div className="space-y-3">
                 {otherCourses.map((course, index) => (
                   <AdventureCard key={index} {...course} />

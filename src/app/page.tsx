@@ -20,6 +20,7 @@ import {
   Tv,
   CaseSensitive,
   FileText,
+  Loader2
 } from "lucide-react";
 import { startOfWeek } from 'date-fns';
 import {
@@ -44,7 +45,6 @@ import { useTranslation } from "@/context/language-context";
 import { useToast } from "@/hooks/use-toast";
 import { calculateEnglishIntroCourseProgress } from "@/lib/course-data";
 import LandingPage from "./landing/page";
-import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
@@ -163,54 +163,15 @@ const courseClassCounts = {
     b2: 20,
 };
 
-function DashboardPage() {
-  const { user, isUserLoading } = useUser();
+function DashboardPage({ studentProfile, isAdmin }: { studentProfile: Student | null, isAdmin: boolean }) {
+  const { user } = useUser();
   const firestore = useFirestore();
   const { t } = useTranslation();
   const { toast } = useToast();
-  const router = useRouter();
   
   const [courses, setCourses] = useState<any[]>([]);
-  const [isRedirecting, setIsRedirecting] = useState(true);
-
-
-  const studentDocRef = useMemoFirebase(
-    () => (user ? doc(firestore, 'students', user.uid) : null),
-    [firestore, user]
-  );
-  const { data: studentProfile, isLoading: isProfileLoading } = useDoc<Student>(studentDocRef);
-
-  const isAdmin = useMemo(() => {
-    if (!user || !studentProfile) return false;
-    return studentProfile.role === 'admin' || user.email === 'ednacard87@gmail.com';
-  }, [user, studentProfile]);
 
   const introProgress = useMemo(() => calculateEnglishIntroCourseProgress(studentProfile?.progress), [studentProfile]);
-
-  useEffect(() => {
-    if (isUserLoading || isProfileLoading) return;
-
-    if (!studentProfile) {
-      setIsRedirecting(false);
-      return;
-    }
-
-    if (!isAdmin && !studentProfile.selectedCourse) {
-      router.push('/select-course');
-      return;
-    }
-
-    if (isAdmin) {
-      setIsRedirecting(false);
-      return;
-    }
-
-    if (studentProfile.selectedCourse && studentProfile.selectedCourse !== 'ingles') {
-      router.push(`/${studentProfile.selectedCourse}`);
-    } else {
-      setIsRedirecting(false);
-    }
-  }, [studentProfile, isUserLoading, isProfileLoading, isAdmin, router]);
 
   const canPlayIntroGames = introProgress >= 30 || isAdmin;
 
@@ -314,15 +275,6 @@ function DashboardPage() {
   const introCourse = useMemo(() => courses.find(c => c.href === "/intro"), [courses]);
   const otherCourses = useMemo(() => courses.filter(c => c.href !== "/intro"), [courses]);
 
-
-  if (isUserLoading || isRedirecting) {
-    return (
-        <div className="flex h-screen items-center justify-center">
-            <Loader2 className="h-16 w-16 animate-spin text-primary" />
-        </div>
-    );
-  }
-
   return (
     <div className="flex w-full flex-col ingles-dashboard-bg min-h-screen">
       <DashboardHeader />
@@ -343,9 +295,7 @@ function DashboardPage() {
               </div>
             </div>
 
-            {/* --- DESKTOP VIEW --- */}
             <div className="hidden lg:grid lg:grid-cols-3 gap-8">
-                {/* Left Column */}
                 <div className="lg:col-span-1 space-y-4">
                     <h2 className="text-xl font-bold text-primary uppercase tracking-wider">{t('dashboard.quickSkills')}</h2>
                     <div className="grid grid-cols-3 gap-4">
@@ -402,7 +352,6 @@ function DashboardPage() {
                     <StudyCalendar />
                 </div>
 
-                {/* Right Column */}
                 <div className="lg:col-span-2 space-y-4">
                     <h2 className="text-xl font-bold text-primary uppercase tracking-wider">THE LEARNING ADVENTURE</h2>
                     <div className="space-y-3">
@@ -413,9 +362,7 @@ function DashboardPage() {
                 </div>
             </div>
 
-            {/* --- MOBILE VIEW --- */}
             <div className="lg:hidden flex flex-col space-y-8">
-              {/* 1. Saludo */}
               <div className="flex justify-between items-center rounded-lg bg-card/80 backdrop-blur-sm border-2 border-brand-purple p-4">
                   <div>
                       <h1 className="text-2xl font-bold text-primary">WELCOME, {studentProfile?.name?.split(' ')[0] || 'Student'}!</h1>
@@ -429,7 +376,6 @@ function DashboardPage() {
                   </div>
               </div>
               
-              {/* 2. Intro Course */}
               {introCourse && (
                 <div>
                   <h2 className="text-xl font-bold text-primary uppercase tracking-wider mb-4">THE LEARNING ADVENTURE</h2>
@@ -437,7 +383,6 @@ function DashboardPage() {
                 </div>
               )}
               
-              {/* 3. Quick Skills */}
               <div className="space-y-4">
                 <h2 className="text-xl font-bold text-primary uppercase tracking-wider">{t('dashboard.quickSkills')}</h2>
                 <div className="grid grid-cols-3 gap-4">
@@ -471,14 +416,12 @@ function DashboardPage() {
                 </div>
               </div>
               
-              {/* 4. Other Courses */}
               <div className="space-y-3">
                 {otherCourses.map((course, index) => (
                   <AdventureCard key={index} {...course} />
                 ))}
               </div>
 
-              {/* 5. Streak and Hours */}
               <div className="grid grid-cols-2 gap-4">
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
                         <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -502,7 +445,6 @@ function DashboardPage() {
                     </Card>
                 </div>
               
-              {/* 6. Study Calendar */}
               <StudyCalendar />
 
             </div>
@@ -514,8 +456,32 @@ function DashboardPage() {
 
 export default function Home() {
     const { user, isUserLoading } = useUser();
+    const firestore = useFirestore();
+    const router = useRouter();
 
-    if (isUserLoading) {
+    const studentDocRef = useMemoFirebase(
+      () => (user ? doc(firestore, 'students', user.uid) : null),
+      [firestore, user]
+    );
+    const { data: studentProfile, isLoading: isProfileLoading } = useDoc<Student>(studentDocRef);
+
+    useEffect(() => {
+        if (isUserLoading || isProfileLoading) return;
+        if (!user) return;
+
+        if (studentProfile) {
+            const isAdmin = studentProfile.role === 'admin' || user.email === 'ednacard87@gmail.com';
+            if (isAdmin) return;
+
+            if (!studentProfile.selectedCourse) {
+                router.push('/select-course');
+            } else if (studentProfile.selectedCourse !== 'ingles') {
+                router.push(`/${studentProfile.selectedCourse}`);
+            }
+        }
+    }, [user, isUserLoading, isProfileLoading, studentProfile, router]);
+
+    if (isUserLoading || isProfileLoading) {
         return (
             <div className="flex h-screen items-center justify-center">
                 <Loader2 className="h-16 w-16 animate-spin text-primary" />
@@ -527,5 +493,15 @@ export default function Home() {
         return <LandingPage />;
     }
 
-    return <DashboardPage />;
+    // Si tiene perfil y el curso NO es inglés, mostramos el loader mientras el router.push hace su trabajo
+    const isAdmin = studentProfile?.role === 'admin' || user.email === 'ednacard87@gmail.com';
+    if (studentProfile && studentProfile.selectedCourse && studentProfile.selectedCourse !== 'ingles' && !isAdmin) {
+        return (
+            <div className="flex h-screen items-center justify-center">
+                <Loader2 className="h-16 w-16 animate-spin text-primary" />
+            </div>
+        );
+    }
+
+    return <DashboardPage studentProfile={studentProfile || null} isAdmin={isAdmin} />;
 }
