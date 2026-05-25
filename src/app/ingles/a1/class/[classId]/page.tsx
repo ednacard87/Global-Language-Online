@@ -10,11 +10,9 @@ import { Loader2, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from '@/context/language-context';
 
-// Importación de componentes locales (Clases que aún no se han mudado al búnker global)
-import Class1Content from './components/Class1Content';
-import Class2Content from './components/Class2Content';
-
-// Importación de componentes modularizados y blindados en el búnker global
+// Importación de componentes modularizados y blindados en el búnker global (Nivel A1)
+import Class1Content from '@/components/clases/A1/Class1Content';
+import Class2Content from '@/components/clases/A1/Class2Content';
 import Class3Content from '@/components/clases/A1/Class3Content';
 import Class4Content from '@/components/clases/A1/Class4Content';
 import Class5Content from '@/components/clases/A1/Class5Content';

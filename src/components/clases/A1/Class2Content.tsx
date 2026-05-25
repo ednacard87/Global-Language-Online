@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
-import { BookOpen, GraduationCap, CheckCircle, BrainCircuit, PenSquare, Lock, Loader2, ArrowRight } from 'lucide-react';
+import { BookOpen, GraduationCap, CheckCircle, BrainCircuit, PenSquare, Lock, Loader2, ArrowRight, BookText } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
 import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
@@ -71,16 +71,11 @@ const negativeExercises = [
     { spanish: 'yo no bebo agua', answer: ["I do not drink water", "I don't drink water"] },
     { spanish: 'nosotros no jugamos futbol', answer: ["we do not play soccer", "we don't play soccer", "we do not play football", "we don't play football"] },
     { spanish: 'ellos no escuchan música', answer: ["they do not listen to music", "they don't listen to music"] },
-    { spanish: 'yo no hablo ingles', answer: ["I do not speak English", "I don't speak English"] },
-    { spanish: 'tu no abres la puerta', answer: ["you do not open the door", "you don't open the door"] },
 ];
 
 const interrogativeExercises = [
     { spanish: '¿yo bebo agua?', answer: ["do I drink water?"] },
     { spanish: '¿nosotros jugamos futbol?', answer: ["do we play soccer?", "do we play football?"] },
-    { spanish: '¿ellos escuchan música?', answer: ["do they listen to music?"] },
-    { spanish: '¿yo hablo ingles?', answer: ["do I speak English?"] },
-    { spanish: '¿tu abres la puerta?', answer: ["do you open the door?"] },
 ];
 
 const exercise1Data: ExercisePrompt[] = [
@@ -106,7 +101,7 @@ export default function Class2Content() {
     const { user, isUserLoading } = useUser();
     const firestore = useFirestore();
 
-    const progressStorageKey = 'progress_a1_eng_u1_c2_v150_blindado';
+    const progressStorageKey = 'progress_a1_eng_u1_c2_v160_blindado';
     const mainProgressKey = 'progress_a1_eng_unit_1_class_2';
 
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
@@ -269,32 +264,21 @@ export default function Class2Content() {
 
     const handleVocabCheck = () => {
         let oneCorrect = false;
-        
         const nextVerbsVal = vocabularyVerbs.map((v, i) => {
             const userVal = (verbsAnswers[i] || '').trim().toLowerCase();
             const correctVal = v.english.toLowerCase();
             const res = userVal === correctVal || userVal === `to ${correctVal}`;
-            if (res) oneCorrect = true;
-            return res ? 'correct' : 'incorrect';
+            if (res) oneCorrect = true; return res ? 'correct' : 'incorrect';
         });
-
         const nextWordsVal = vocabularyWords.map((v, i) => {
             const userVal = (wordsAnswers[i] || '').trim().toLowerCase();
             const correctVal = v.english.toLowerCase();
             const res = userVal === correctVal;
-            if (res) oneCorrect = true;
-            return res ? 'correct' : 'incorrect';
+            if (res) oneCorrect = true; return res ? 'correct' : 'incorrect';
         });
-
-        setVerbsValidation(nextVerbsVal as any);
-        setWordsValidation(nextWordsVal as any);
-
-        if (oneCorrect) {
-            toast({ title: "¡Bien hecho!", description: "Has acertado al menos una traducción. Ya puedes avanzar." });
-            setCanAdvanceVocab(true);
-        } else {
-            toast({ variant: 'destructive', title: 'Sigue intentando' });
-        }
+        setVerbsValidation(nextVerbsVal as any); setWordsValidation(nextWordsVal as any);
+        if (oneCorrect) { toast({ title: "¡Bien hecho!", description: "Has acertado al menos una traducción." }); setCanAdvanceVocab(true); }
+        else toast({ variant: 'destructive', title: 'Sigue intentando' });
     };
 
     const renderContent = () => {
@@ -309,46 +293,34 @@ export default function Class2Content() {
                         </CardHeader>
                         <CardContent className="space-y-8">
                             <div className="space-y-4">
-                                <h3 className="text-xl font-black text-primary uppercase tracking-tight border-b pb-2">1. Basic Verbs</h3>
+                                <h3 className="text-xl font-black text-primary uppercase tracking-tight border-b pb-2 dark:text-white">1. Basic Verbs</h3>
                                 <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-lg">
-                                    <div className="font-bold p-3 bg-muted rounded-lg text-foreground uppercase tracking-widest text-xs">Español</div>
-                                    <div className="font-bold p-3 bg-muted rounded-lg text-foreground uppercase tracking-widest text-xs">Inglés</div>
+                                    <div className="font-bold p-3 bg-muted rounded-lg text-foreground uppercase tracking-widest text-xs dark:text-white">Español</div>
+                                    <div className="font-bold p-3 bg-muted rounded-lg text-foreground uppercase tracking-widest text-xs dark:text-white">Inglés</div>
                                     {vocabularyVerbs.map((v, i) => (
                                         <React.Fragment key={`verb-${i}`}>
                                             <div className="p-3 border rounded bg-white/5 text-foreground font-medium flex items-center">{v.spanish}</div>
-                                            <Input 
-                                                value={verbsAnswers[i] || ''} 
-                                                onChange={e => handleVocabInputChange('verb', i, e.target.value)} 
-                                                className={cn("h-12", verbsValidation[i] === 'correct' ? 'border-green-500 bg-green-50/5' : verbsValidation[i] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} 
-                                                autoComplete="off"
-                                            />
+                                            <Input value={verbsAnswers[i] || ''} onChange={e => handleVocabInputChange('verb', i, e.target.value)} className={cn("h-12", verbsValidation[i] === 'correct' ? 'border-green-500 bg-green-50/5' : verbsValidation[i] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} autoComplete="off" />
                                         </React.Fragment>
                                     ))}
                                 </div>
                             </div>
-
                             <Separator />
-
                             <div className="space-y-4">
-                                <h3 className="text-xl font-black text-primary uppercase tracking-tight border-b pb-2">2. Basic Words</h3>
+                                <h3 className="text-xl font-black text-primary uppercase tracking-tight border-b pb-2 dark:text-white">2. Basic Words</h3>
                                 <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-lg">
-                                    <div className="font-bold p-3 bg-muted rounded-lg text-foreground uppercase tracking-widest text-xs">Español</div>
-                                    <div className="font-bold p-3 bg-muted rounded-lg text-foreground uppercase tracking-widest text-xs">Inglés</div>
+                                    <div className="font-bold p-3 bg-muted rounded-lg text-foreground uppercase tracking-widest text-xs dark:text-white">Español</div>
+                                    <div className="font-bold p-3 bg-muted rounded-lg text-foreground uppercase tracking-widest text-xs dark:text-white">Inglés</div>
                                     {vocabularyWords.map((v, i) => (
                                         <React.Fragment key={`word-${i}`}>
                                             <div className="p-3 border rounded bg-white/5 text-foreground font-medium flex items-center">{v.spanish}</div>
-                                            <Input 
-                                                value={wordsAnswers[i] || ''} 
-                                                onChange={e => handleVocabInputChange('word', i, e.target.value)} 
-                                                className={cn("h-12", wordsValidation[i] === 'correct' ? 'border-green-500 bg-green-50/5' : wordsValidation[i] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} 
-                                                autoComplete="off"
-                                            />
+                                            <Input value={wordsAnswers[i] || ''} onChange={e => handleVocabInputChange('word', i, e.target.value)} className={cn("h-12", wordsValidation[i] === 'correct' ? 'border-green-500 bg-green-50/5' : wordsValidation[i] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} autoComplete="off" />
                                         </React.Fragment>
                                     ))}
                                 </div>
                             </div>
                         </CardContent>
-                        <CardFooter className="flex justify-between border-t pt-6"><Button onClick={handleVocabCheck} variant="secondary">Verificar</Button><Button onClick={() => handleTopicComplete('vocabulary')} disabled={!canAdvanceVocab && !isAdmin}>Avanzar</Button></CardFooter>
+                        <CardFooter className="flex justify-between border-t pt-6"><Button onClick={handleVocabCheck} variant="secondary">Verificar</Button><Button onClick={() => handleTopicComplete('vocabulary')} disabled={!canAdvanceVocab && !isAdmin} className='text-white'>Avanzar</Button></CardFooter>
                     </Card>
                 );
             case 'grammar':
@@ -364,9 +336,7 @@ export default function Class2Content() {
                                 </div>
                             </CardContent>
                             <CardFooter className="justify-center border-t pt-6">
-                                <Button onClick={() => handleTopicComplete('grammar')} size="lg" className="px-16 font-bold h-14 text-xl text-white">
-                                    Entendido <ArrowRight className="ml-2" />
-                                </Button>
+                                <Button onClick={() => handleTopicComplete('grammar')} size="lg" className="px-16 font-bold h-14 text-xl text-white">Entendido <ArrowRight className="ml-2" /></Button>
                             </CardFooter>
                         </Card>
                     </div>
@@ -376,7 +346,7 @@ export default function Class2Content() {
             case 'ex-int': return <SingleFormExercise onComplete={() => handleTopicComplete('ex-int')} exerciseData={interrogativeExercises} title="Interrogative Form" formType="interrogative" description="Traduce las frases a su forma interrogativa." />;
             case 'memory-verbs': return <VerbMemoryGame onComplete={() => handleTopicComplete('memory-verbs')} />;
             case 'ex1': return <PresentSimpleExercise exerciseData={exercise1Data} onComplete={() => handleTopicComplete('ex1')} title="Exercise 1" showShortAnswers={true} />;
-            case 'ex2': return <Card className="p-6 text-center"><CardTitle>Exercise 2</CardTitle><CardContent className="pt-4"><p>Contenido del Exercise 2 próximamente.</p></CardContent><CardFooter className="justify-center"><Button onClick={() => handleTopicComplete('ex2')}>Completar</Button></CardFooter></Card>;
+            case 'ex2': return <Card className="p-6 text-center shadow-soft border-2 border-brand-purple bg-card/95"><CardTitle>Exercise 2</CardTitle><CardContent className="pt-4"><p>Contenido del Exercise 2 próximamente.</p></CardContent><CardFooter className="justify-center"><Button onClick={() => handleTopicComplete('ex2')}>Completar</Button></CardFooter></Card>;
             case 'reading': return <ReadingComprehensionExercise onComplete={() => handleTopicComplete('reading')} />;
             case 'vocab-verbs': return <FillInTheBlanksExercise onComplete={() => handleTopicComplete('vocab-verbs')} />;
             default: return null;
@@ -413,7 +383,7 @@ export default function Class2Content() {
                                 </li>
                             ))}
                         </ul></nav>
-                        <div className="mt-6 pt-6 border-t"><div className="flex justify-between items-center text-xs mb-2 text-muted-foreground"><span>Progreso</span><span className="font-bold text-foreground">{progressValue}%</span></div><Progress value={progressValue} className="h-1.5" /></div>
+                        <div className="mt-6 pt-6 border-t"><div className="flex justify-between items-center text-xs mb-2"><span>Progreso</span><span className="font-bold">{progressValue}%</span></div><Progress value={progressValue} className="h-1.5" /></div>
                     </CardContent>
                 </Card>
             </div>
