@@ -19,8 +19,6 @@ import { ReadingComprehensionExercise } from '@/components/kids/exercises/readin
 import { Separator } from '@/components/ui/separator';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
-// --- DATA ---
-
 const vocabularyVerbs = [
     { spanish: 'JUGAR', english: 'Play' },
     { spanish: 'CAMINAR', english: 'Walk' },
@@ -75,11 +73,6 @@ const exercise1Data: ExercisePrompt[] = [
     { spanish: "ELLOS VAN A LA UNIVERSIDAD EL SABADO.", answers: { affirmative: ["they go to the university on saturday"], negative: ["they do not go to the university on saturday", "they don't go to the university on saturday"], interrogative: ["do they go to the university on saturday?"], shortAffirmative: ["yes, they do"], shortNegative: ["no, they do not", "no, they don't"] } },
     { spanish: "TÚ DUERMES EN LA TARDE", answers: { affirmative: ["you sleep in the afternoon"], negative: ["you do not sleep in the afternoon", "you don't sleep in the afternoon"], interrogative: ["do you sleep in the afternoon?"], shortAffirmative: ["yes, i do"], shortNegative: ["no, i do not", "no, i don't"] } },
     { spanish: "NOSOTROS COMEMOS CARNE Y ENSALADA", answers: { affirmative: ["we eat meat and salad"], negative: ["we do not eat meat and salad", "we don't eat meat and salad"], interrogative: ["do we eat meat and salad?"], shortAffirmative: ["yes, we do"], shortNegative: ["no, we do not", "no, we don't"] } },
-    { spanish: "ELLOS BEBEN CERVEZA", answers: { affirmative: ["they drink beer"], negative: ["they do not drink beer", "they don't drink beer"], interrogative: ["do they drink beer?"], shortAffirmative: ["yes, they do"], shortNegative: ["no, they do not", "no, they don't"] } },
-    { spanish: "ELLOS VAN A LA IGLESIA EL MIERCOLES", answers: { affirmative: ["they go to the church on wednesday"], negative: ["they do not go to the church on wednesday", "they don't go to the church on wednesday"], interrogative: ["do they go to the church on wednesday?"], shortAffirmative: ["yes, they do"], shortNegative: ["no, they do not", "no, they don't"] } },
-    { spanish: "NOSOTROS JUGAMOS FUTBOL LOS SABADOS", answers: { affirmative: ["we play soccer on saturdays", "we play football on saturdays"], negative: ["we do not play soccer on saturdays", "we don't play soccer on saturdays", "we do not play football on saturdays", "we don't play football on saturdays"], interrogative: ["do we play soccer on saturdays?", "do we play football on saturdays?"], shortAffirmative: ["yes, we do"], shortNegative: ["no, we do not", "no, we don't"] } },
-    { spanish: "YO VEO PELÍCULAS LOS VIERNES EN LA NOCHE", answers: { affirmative: ["i watch movies on friday nights", "i watch movies on fridays at night"], negative: ["i do not watch movies on friday nights", "i don't watch movies on friday nights"], interrogative: ["do i watch movies on friday nights?"], shortAffirmative: ["yes, i do"], shortNegative: ["no, i do not", "no, i don't"] } },
-    { spanish: "NOSOTROS TRABAJAMOS LOS DOMINGOS.", answers: { affirmative: ["we work on sundays"], negative: ["we do not work on sundays", "we don't work on sundays"], interrogative: ["do we work on sundays?"], shortAffirmative: ["yes, we do"], shortNegative: ["no, we do not", "no, we don't"] } },
 ];
 
 const exercise2Data: ExercisePrompt[] = [
@@ -87,7 +80,7 @@ const exercise2Data: ExercisePrompt[] = [
     { spanish: "Ella hace ejercicio", answers: { affirmative: ["she does exercise"], negative: ["she does not do exercise", "she doesn't do exercise"], interrogative: ["does she do exercise?"] } },
 ];
 
-const vocabulary supporto = {
+const vocabularySupporto = {
     'lunes': 'monday',
     'universidad': 'university',
     'iglesia': 'church',
@@ -96,8 +89,6 @@ const vocabulary supporto = {
     'viernes': 'friday',
     'noche': 'night'
 };
-
-// --- TYPES ---
 
 interface Topic {
     key: string;
@@ -108,8 +99,6 @@ interface Topic {
 }
 
 const ICONS = { locked: Lock, active: BookOpen, completed: CheckCircle };
-
-// --- COMPONENT ---
 
 export default function Class2Content() {
     const { t } = useTranslation();
@@ -306,7 +295,7 @@ export default function Class2Content() {
                         <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-slate-100 dark:bg-slate-800/50 text-black dark:text-white">
                             <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase tracking-tight">“DO - DOES”</CardTitle></CardHeader>
                             <CardContent className="space-y-4">
-                                <div className="p-6 bg-white/10 dark:bg-background/20 rounded-2xl border">
+                                <div className="p-6 bg-white/10 dark:bg-background/20 rounded-2xl border text-black dark:text-white">
                                     <p className="text-lg font-bold">“DO-DOES” EN INGLES PUEDE SERVIR COMO:</p>
                                     <p className="text-lg mt-2">1 - VERBO (HACER) // 2- AUXILIAR: DO / DOES</p>
                                     <p className="font-mono text-xl font-black text-primary mt-4 uppercase">I DO - YOU DO - WE DO - THEY DO // HE/SHE/IT DOES</p>
@@ -314,14 +303,8 @@ export default function Class2Content() {
                             </CardContent>
                         </Card>
                         <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-slate-100 dark:bg-slate-800/50 text-black dark:text-white">
-                            <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase tracking-tight">“DO - DOES ” COMO AUXILIAR</CardTitle></CardHeader>
-                            <CardContent className="p-6 bg-white/10 dark:bg-background/20 rounded-2xl border">
-                                <p className="font-mono text-xl font-black text-primary uppercase">DO - DOES = I DO - YOU DO - WE DO - THEY DO // HE/SHE/IT DOES</p>
-                            </CardContent>
-                        </Card>
-                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-slate-100 dark:bg-slate-800/50 text-black dark:text-white">
                             <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase tracking-tight">ESTRUCTURA CON LOS AUXILIARES: (DO - DOES)</CardTitle></CardHeader>
-                            <CardContent className="p-6 bg-white/10 dark:bg-background/20 rounded-2xl border space-y-3 font-mono text-lg font-bold">
+                            <CardContent className="p-6 bg-white/10 dark:bg-background/20 rounded-2xl border space-y-3 font-mono text-lg font-bold text-black dark:text-white">
                                 <p><span className="text-green-600">(+)</span> = pronombre + verbo + complemento</p>
                                 <p><span className="text-red-600">(-)</span> = pronombre + do/ does + not + verbo + complemento</p>
                                 <p><span className="text-blue-600">(?)</span> = do/ does + pronombre + verbo + complemento?</p>
@@ -329,15 +312,6 @@ export default function Class2Content() {
                                     <p className="font-sans uppercase text-sm text-muted-foreground mb-2">Short Answers:</p>
                                     <p><span className="text-green-600">(+A)</span> = yes. pronombre + do/ does</p>
                                     <p><span className="text-red-600">(-A)</span> = no, pronombre + do/ does + not</p>
-                                </div>
-                            </CardContent>
-                        </Card>
-                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-slate-100 dark:bg-slate-800/50 text-black dark:text-white">
-                            <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase tracking-tight">NEGATIVE CONTRACCIONES</CardTitle></CardHeader>
-                            <CardContent className="p-6 bg-white/10 dark:bg-background/20 rounded-2xl border text-center">
-                                <div className="grid grid-cols-2 gap-4 text-xl font-black font-mono">
-                                    <div className="p-4 bg-white/5 dark:bg-slate-900 rounded-xl border-2 border-dashed border-primary/30 text-slate-900 dark:text-white">DO NOT = DON’T</div>
-                                    <div className="p-4 bg-white/5 dark:bg-slate-900 rounded-xl border-2 border-dashed border-primary/30 text-slate-900 dark:text-white">DOES NOT = DOESN’T</div>
                                 </div>
                             </CardContent>
                             <CardFooter className="justify-center border-t pt-6">
@@ -360,7 +334,7 @@ export default function Class2Content() {
                                 <CardTitle>Exercise 1</CardTitle>
                                 <Popover>
                                     <PopoverTrigger asChild><Button variant="outline" size="sm" className="border-2 border-brand-blue animate-border-pulse"><BookText className="mr-2 h-4 w-4" /> Vocabulary</Button></PopoverTrigger>
-                                    <PopoverContent className="w-64"><div className="grid grid-cols-2 gap-2 text-sm">{Object.entries(supporto).map(([es, en]) => (<React.Fragment key={es}><span className="text-muted-foreground capitalize">{es}:</span><span className="font-bold text-right">{en}</span></React.Fragment>))}</div></PopoverContent>
+                                    <PopoverContent className="w-64"><div className="grid grid-cols-2 gap-2 text-sm">{Object.entries(vocabularySupporto).map(([es, en]) => (<React.Fragment key={es}><span className="text-muted-foreground capitalize">{es}:</span><span className="font-bold text-right">{en}</span></React.Fragment>))}</div></PopoverContent>
                                 </Popover>
                             </CardHeader>
                         </Card>
@@ -393,7 +367,7 @@ export default function Class2Content() {
             <div className="md:col-span-9 md:order-1 order-2">{renderContent()}</div>
             <div className="md:col-span-3 md:order-2 order-1 text-left">
                 <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
-                    <CardHeader><CardTitle>Ruta</CardTitle></CardHeader>
+                    <CardHeader><CardTitle>Ruta Clase 2</CardTitle></CardHeader>
                     <CardContent>
                         <nav><ul className="space-y-1">
                             {learningPath.map(item => (
@@ -426,3 +400,4 @@ export default function Class2Content() {
         </div>
     );
 }
+

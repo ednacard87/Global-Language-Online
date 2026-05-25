@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { cn } from '@/lib/utils';
-import { BookOpen, GraduationCap, CheckCircle, BrainCircuit, PenSquare, Lock, Loader2, ArrowRight, BookText } from 'lucide-react';
+import { BookOpen, GraduationCap, CheckCircle, BrainCircuit, PenSquare, Lock, Loader2, ArrowRight } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
 import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
@@ -18,7 +18,6 @@ import { TranslationExercise } from '@/components/dashboard/translation-exercise
 import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
 import { ShortAnswerExercise } from '@/components/dashboard/short-answer-exercise';
 import { Separator } from '@/components/ui/separator';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 const vocabularyData = {
     weekdays: [
@@ -244,7 +243,7 @@ export default function Class1Content() {
             [`lessonProgress.${progressStorageKey}`]: data,
             [`progress.${mainProgressKey}`]: progressValue
         });
-    }, [learningPath, isAdmin, progressValue, studentDocRef, selectedTopic, isInitialLoading]);
+    }, [learningPath, isAdmin, progressValue, studentDocRef, selectedTopic, isInitialLoading, studentProfile]);
 
     useEffect(() => {
         if (!topicToComplete) return;
@@ -319,7 +318,7 @@ export default function Class1Content() {
     };
 
     const renderContent = () => {
-        if (isInitialLoading) return <div className="flex justify-center items-center min-h-[400px]"><Loader2 className="animate-spin h-12 w-12 text-primary" /></div>;
+        if (isInitialLoading) return <div className="flex justify-center items-center min-h-[400px]"><Loader2 className="h-12 w-12 text-primary" /></div>;
         switch (selectedTopic) {
             case 'vocabulary':
                 return (
@@ -363,7 +362,7 @@ export default function Class1Content() {
                         </CardContent>
                     </Card>
                 );
-            case 'memory-tobe': return <ToBeMemoryGame onGameComplete={() => setTopicToComplete('memory-tobe')} />;
+            case 'memory-tobe': return <ToBeMemoryGame onGameComplete={() => handleTopicComplete('memory-tobe')} />;
             case 'tobe-1':
                 return (
                     <div className="space-y-6">
@@ -389,7 +388,7 @@ export default function Class1Content() {
                             <CardFooter className="justify-center border-t pt-4">
                                 <Button onClick={() => setTopicToComplete('tobe-1')}>Siguiente Paso</Button>
                             </CardFooter>
-                        </div>
+                        </Card>
                     </div>
                 );
             case 'exercises1': return <TranslationExercise exerciseKey="exercises1" onComplete={() => setTopicToComplete('exercises1')} vocabulary={{'un- una': 'a / an', 'abogado': 'lawyer', 'enfermo': 'sick', 'enfermero': 'nurse'}} highlightVocabulary={true} title="Exercise 1" />;
@@ -405,7 +404,7 @@ export default function Class1Content() {
                         </CardContent>
                     </Card>
                 );
-            case 'memory-possessives': return <PossessivesMemoryGame onGameComplete={() => setTopicToComplete('memory-possessives')} />;
+            case 'memory-possessives': return <PossessivesMemoryGame onGameComplete={() => handleTopicComplete('memory-possessives')} />;
             case 'tobe-2':
                 return (
                     <div className="space-y-6">
@@ -431,7 +430,7 @@ export default function Class1Content() {
                             <CardFooter className="justify-center border-t pt-4">
                                 <Button onClick={() => setTopicToComplete('tobe-2')}>Siguiente Paso</Button>
                             </CardFooter>
-                        </div>
+                        </Card>
                     </div>
                 );
             case 'exercises2': return <TranslationExercise exerciseKey="exercises2" onComplete={() => setTopicToComplete('exercises2')} vocabulary={{'amigo': 'friend', 'hijo': 'son', 'perro': 'dog'}} highlightVocabulary={true} title="Exercise 2" />;
@@ -463,71 +462,34 @@ export default function Class1Content() {
                             <CardFooter className="justify-center border-t pt-4">
                                 <Button onClick={() => setTopicToComplete('tobe-3')}>Siguiente Paso</Button>
                             </CardFooter>
-                        </div>
+                        </Card>
                     </div>
                 );
             case 'exercises3': return <TranslationExercise exerciseKey="exercises3" onComplete={() => setTopicToComplete('exercises3')} vocabulary={{'enfermera': 'nurse', 'abuelos': 'grandparents', 'pensionado': 'retired', 'juguete': 'toy'}} highlightVocabulary={true} title="Exercise 3" />;
-            case 'ex-mixto-1': return (
-                <div className="space-y-4">
-                    <Card className="border-2 border-brand-purple">
-                        <CardHeader className="flex flex-row items-center justify-between">
-                            <div><CardTitle>Exercise 1</CardTitle></div>
-                            <Popover><PopoverTrigger asChild><Button variant="outline" size="sm" className="border-2 border-brand-blue animate-border-pulse"><BookText className="mr-2 h-4 w-4" /> Vocabulary</Button></PopoverTrigger>
-                            <PopoverContent className="w-64"><div className="grid grid-cols-2 gap-2 text-sm">{Object.entries({estudiante: 'student', amigos: 'friends', padres: 'parents', hermana: 'sister', abogados: 'lawyers', Inglaterra: 'England'}).map(([es, en]) => (<React.Fragment key={es}><span className="text-muted-foreground capitalize">{es}:</span><span className="font-bold text-right">{en}</span></React.Fragment>))}</div></PopoverContent></Popover>
-                        </CardHeader>
-                    </Card>
-                    <SimpleTranslationExercise course="a1" exerciseKey="mixed1" onComplete={() => setTopicToComplete('ex-mixto-1')} title="" />
-                </div>
-            );
-            case 'ex-mixto-2': return (
-                <div className="space-y-4">
-                    <Card className="border-2 border-brand-purple">
-                        <CardHeader className="flex flex-row items-center justify-between">
-                            <div><CardTitle>Exercise 2</CardTitle></div>
-                            <Popover><PopoverTrigger asChild><Button variant="outline" size="sm" className="border-2 border-brand-blue animate-border-pulse"><BookText className="mr-2 h-4 w-4" /> Vocabulary</Button></PopoverTrigger>
-                            <PopoverContent className="w-64"><div className="grid grid-cols-2 gap-2 text-sm">{Object.entries({cansado: 'tired', amiga: 'friend', estudiantes: 'students', feliz: 'happy', curiosos: 'curious', novia: 'girlfriend', ocupada: 'busy', libres: 'free', España: 'Spain', ingeniero: 'engineer', hambriento: 'hungry', compañeros: 'coworkers', 'a tiempo': 'on time'}).map(([es, en]) => (<React.Fragment key={es}><span className="text-muted-foreground capitalize">{es}:</span><span className="font-bold text-right">{en}</span></React.Fragment>))}</div></PopoverContent></Popover>
-                        </CardHeader>
-                    </Card>
-                    <TranslationExercise exerciseKey="qna2" formType="qna" onComplete={() => setTopicToComplete('ex-mixto-2')} title="" />
-                </div>
-            );
-            case 'ex-mixto-3': return (
-                <div className="space-y-4">
-                    <Card className="border-2 border-brand-purple">
-                        <CardHeader className="flex flex-row items-center justify-between">
-                            <div><CardTitle>Exercise 3</CardTitle></div>
-                            <Popover><PopoverTrigger asChild><Button variant="outline" size="sm" className="border-2 border-brand-blue animate-border-pulse"><BookText className="mr-2 h-4 w-4" /> Vocabulary</Button></PopoverTrigger>
-                            <PopoverContent className="w-64"><div className="grid grid-cols-2 gap-2 text-sm">{Object.entries({estudiantes: 'students', apodos: 'nicknames', mamá: 'mom/mother', padres: 'parents', viejos: 'old', prima: 'cousin', abuela: 'grandma', hermanas: 'sisters', cansado: 'tired', aburridos: 'bored', profesores: 'teachers', enojados: 'angry', alta: 'tall', preocupados: 'worried'}).map(([es, en]) => (<React.Fragment key={es}><span className="text-muted-foreground capitalize">{es}:</span><span className="font-bold text-right">{en}</span></React.Fragment>))}</div></PopoverContent></Popover>
-                        </CardHeader>
-                    </Card>
-                    <SimpleTranslationExercise course="a1" exerciseKey="mixed3" onComplete={() => setTopicToComplete('ex-mixto-3')} title="" />
-                </div>
-            );
-            case 'ex-mixto-4': return (
-                <div className="space-y-4">
-                    <Card className="border-2 border-brand-purple">
-                        <CardHeader className="flex flex-row items-center justify-between">
-                            <div><CardTitle>Exercise 4</CardTitle></div>
-                            <Popover><PopoverTrigger asChild><Button variant="outline" size="sm" className="border-2 border-brand-blue animate-border-pulse"><BookText className="mr-2 h-4 w-4" /> Vocabulary</Button></PopoverTrigger>
-                            <PopoverContent className="w-64"><div className="grid grid-cols-2 gap-2 text-sm">{Object.entries({profesor: 'teacher', ingeniero: 'engineer', australiano: 'Australian', universidad: 'university', mesa: 'table', silla: 'chair', hobbies: 'hobbies', interesado: 'interested', estadio: 'stadium', primos: 'cousins', amiga: 'friend'}).map(([es, en]) => (<React.Fragment key={es}><span className="text-muted-foreground capitalize">{es}:</span><span className="font-bold text-right">{en}</span></React.Fragment>))}</div></PopoverContent></Popover>
-                        </CardHeader>
-                    </Card>
-                    <SimpleTranslationExercise course="a1" exerciseKey="mixed4" onComplete={() => setTopicToComplete('ex-mixto-4')} title="" />
-                </div>
-            );
+            case 'ex-mixto-1': return <SimpleTranslationExercise course="a1" exerciseKey="mixed1" onComplete={() => setTopicToComplete('ex-mixto-1')} title="Exercise 1" vocabulary={{'estudiante': 'student', 'amigos': 'friends', 'padres': 'parents', 'hermana': 'sister', 'abogados': 'lawyers', 'Inglaterra': 'England'}} highlightVocabulary={true} />;
+            case 'ex-mixto-2': return <TranslationExercise exerciseKey="qna2" formType="qna" onComplete={() => setTopicToComplete('ex-mixto-2')} title="Exercise 2" vocabulary={{'cansado': 'tired', 'amiga': 'friend', 'estudiantes': 'students', 'feliz': 'happy', 'curiosos': 'curious', 'novia': 'girlfriend', 'ocupada': 'busy', 'libres': 'free', 'España': 'Spain', 'ingeniero': 'engineer', 'hambriento': 'hungry', 'compañeros': 'coworkers', 'a tiempo': 'on time'}} highlightVocabulary={true} />;
+            case 'ex-mixto-3': return <SimpleTranslationExercise course="a1" exerciseKey="mixed3" onComplete={() => setTopicToComplete('ex-mixto-3')} title="Exercise 3" vocabulary={{'estudiantes': 'students', 'apodos': 'nicknames', 'mamá': 'mom/mother', 'padres': 'parents', 'viejos': 'old', 'prima': 'cousin', 'abuela': 'grandma', 'hermanas': 'sisters', 'cansado': 'tired', 'aburridos': 'bored', 'profesores': 'teachers', 'enojados': 'angry', 'alta': 'tall', 'preocupados': 'worried'}} highlightVocabulary={true} />;
+            case 'ex-mixto-4': return <SimpleTranslationExercise course="a1" exerciseKey="mixed4" onComplete={() => setTopicToComplete('ex-mixto-4')} title="Exercise 4" vocabulary={{'profesor': 'teacher', 'ingeniero': 'engineer', 'australiano': 'Australian', 'universidad': 'university', 'mesa': 'table', 'silla': 'chair', 'hobbies': 'hobbies', 'interesado': 'interested', 'estadio': 'stadium', 'primos': 'cousins', 'amiga': 'friend'}} highlightVocabulary={true} />;
             case 'ex-mixto-5': return <ShortAnswerExercise onComplete={() => setTopicToComplete('ex-mixto-5')} />;
-            case 'ex-mixto-6': return (
-                <div className="space-y-4">
-                    <Card className="border-2 border-brand-purple">
-                        <CardHeader className="flex flex-row items-center justify-between">
-                            <div><CardTitle>Exercise 6</CardTitle></div>
-                            <Popover><PopoverTrigger asChild><Button variant="outline" size="sm" className="border-2 border-brand-blue animate-border-pulse"><BookText className="mr-2 h-4 w-4" /> Vocabulary</Button></PopoverTrigger>
-                            <PopoverContent className="w-64"><div className="grid grid-cols-2 gap-2 text-sm">{Object.entries({profesora: 'teacher', trabajo: 'work', hijos: 'sons', padrastro: 'stepfather', primo: 'cousin', estante: 'shelf', escritorio: 'desk', iglesia: 'church', supermercado: 'supermarket'}).map(([es, en]) => (<React.Fragment key={es}><span className="text-muted-foreground capitalize">{es}:</span><span className="font-bold text-right">{en}</span></React.Fragment>))}</div></PopoverContent></Popover>
-                        </CardHeader>
+            case 'ex-mixto-6': return <SimpleTranslationExercise course="a1" exerciseKey="mixed6" onComplete={() => setTopicToComplete('ex-mixto-6')} title="Exercise 6" vocabulary={{'profesora': 'teacher', 'trabajo': 'work', 'hijos': 'sons', 'padrastro': 'stepfather', 'primo': 'cousin', 'estante': 'shelf', 'escritorio': 'desk', 'iglesia': 'church', 'supermercado': 'supermarket'}} highlightVocabulary={true} />;
+            case 'demonstratives':
+                return (
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left">
+                        <CardHeader><CardTitle>Grammar: Demonstratives</CardTitle></CardHeader>
+                        <CardContent>
+                            <div className="grid grid-cols-3 gap-x-4 gap-y-2 text-lg text-black">
+                                <div className="font-bold p-3 bg-muted rounded-lg text-center">English</div><div className="font-bold p-3 bg-muted rounded-lg text-center">Español</div><div className="font-bold p-3 bg-muted rounded-lg text-center">Usage</div>
+                                <div className="p-3 bg-card border rounded-lg text-center">This</div><div className="p-3 bg-card border rounded-lg text-center">Este - Esta</div><div className="p-3 bg-card border rounded-lg text-center">Singular, cerca</div>
+                                <div className="p-3 bg-card border rounded-lg text-center">These</div><div className="p-3 bg-card border rounded-lg text-center">Estos - Estas</div><div className="p-3 bg-card border rounded-lg text-center">Plural, cerca</div>
+                                <div className="p-3 bg-card border rounded-lg text-center">That</div><div className="p-3 bg-card border rounded-lg text-center">Ese - Esa</div><div className="p-3 bg-card border rounded-lg text-center">Singular, lejos</div>
+                                <div className="p-3 bg-card border rounded-lg text-center">Those</div><div className="p-3 bg-card border rounded-lg text-center">Esos - Esas</div><div className="p-3 bg-card border rounded-lg text-center">Plural, lejos</div>
+                            </div>
+                        </CardContent>
+                        <CardFooter className="justify-center border-t pt-4">
+                            <Button onClick={() => handleTopicComplete('demonstratives')}>Terminar Clase</Button>
+                        </CardFooter>
                     </Card>
-                    <SimpleTranslationExercise course="a1" exerciseKey="mixed6" onComplete={() => setTopicToComplete('ex-mixto-6')} title="" />
-                </div>
-            );
+                );
             default: return null;
         }
     };
@@ -575,3 +537,4 @@ export default function Class1Content() {
         </div>
     );
 }
+
