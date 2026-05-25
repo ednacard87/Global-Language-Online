@@ -8,10 +8,10 @@ import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
 import { 
     BookOpen, 
-    GraduationCap, 
-    CheckCircle, 
     PenSquare, 
     Lock, 
+    GraduationCap, 
+    CheckCircle, 
     Loader2, 
     ArrowRight, 
     BookText,
@@ -24,14 +24,13 @@ import { useToast } from '@/hooks/use-toast';
 import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
 import { Separator } from '@/components/ui/separator';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Label } from '@/components/ui/label';
 
 // --- DATA ---
 
-const progressStorageKey = 'progress_a1_eng_u1_c2_v170_blindado';
+const progressStorageKey = 'progress_a1_eng_u1_c2_v200_blindado';
 const mainProgressKey = 'progress_a1_eng_unit_1_class_2';
 
 const vocabularyVerbs = [
@@ -73,30 +72,26 @@ const vocabularyWords = [
     { spanish: 'SIN', english: 'without' },
 ];
 
+const ex1Prompts = [
+    { spanish: "TU JUEGAS TENIS EL LUNES", english: ["you play tennis on monday"] },
+    { spanish: "NOSOTROS CAMINAMOS EN EL PARQUE", english: ["we walk in the park"] },
+    { spanish: "ELLOS VAN A LA UNIVERSIDAD EL SABADO", english: ["they go to the university on saturday", "they go to university on saturday"] },
+    { spanish: "NOSOTROS TRABAJAMOS LOS DOMINGOS", english: ["we work on sundays"] },
+    { spanish: "TU DUERMES EN LA TARDE", english: ["you sleep in the afternoon"] },
+    { spanish: "NOSOTROS COMEMOS CARNE Y ENSALADA", english: ["we eat meat and salad"] },
+    { spanish: "ELLOS BEBEN AGUA", english: ["they drink water"] },
+    { spanish: "ELLOS VAN A LA IGLESIA EL MIERCOLES", english: ["they go to the church on wednesday", "they go to church on wednesday"] },
+    { spanish: "NOSOTROS JUGAMOS FUTBOL LOS SABADOS", english: ["we play soccer on saturdays", "we play football on saturdays"] },
+    { spanish: "YO VEO PELICULAS LOS VIERNES EN LA NOCHE", english: ["i watch movies on fridays at night", "i see movies on fridays at night"] },
+];
+
 const ex1Vocab = {
-    "tenis": "tennis",
-    "caminar": "walk",
-    "parque": "park",
-    "universidad": "university",
-    "domingos": "sundays",
-    "tarde": "afternoon",
-    "carne": "meat",
-    "ensalada": "salad",
-    "iglesia": "church",
-    "miercoles": "wednesday",
-    "futbol": "soccer / football",
-    "peliculas": "movies",
-    "viernes": "fridays",
-    "noche": "night"
+    "tenis": "tennis", "caminar": "walk", "parque": "park", "universidad": "university", "domingos": "sundays",
+    "tarde": "afternoon", "carne": "meat", "ensalada": "salad", "iglesia": "church", "miercoles": "wednesday",
+    "futbol": "soccer / football", "peliculas": "movies", "viernes": "fridays", "noche": "night"
 };
 
-const ex2Vocab = {
-    "tarea": "homework / task",
-    "ejercicio": "exercise",
-    "hacer": "do / does"
-};
-
-const exercise2Prompts = [
+const ex2Prompts = [
     { 
         spanish: "TU HACES LA TAREA", 
         answers: { 
@@ -119,6 +114,8 @@ const exercise2Prompts = [
     }
 ];
 
+const ex2Vocab = { "tarea": "homework / task", "ejercicio": "exercise", "hacer": "do / does" };
+
 interface Topic {
     key: string;
     name: string;
@@ -126,9 +123,8 @@ interface Topic {
     status: 'locked' | 'active' | 'completed';
 }
 
-const ICONS = { locked: Lock, active: BookOpen, completed: CheckCircle };
+// --- SUB-COMPONENTS ---
 
-// --- SUB-COMPONENT FOR EXERCISE 2 ---
 const MultiFormExercise = ({ prompts, onComplete, vocabulary }: any) => {
     const { toast } = useToast();
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -219,12 +215,15 @@ const MultiFormExercise = ({ prompts, onComplete, vocabulary }: any) => {
                 </div>
             </CardContent>
             <CardFooter className="justify-between border-t pt-6">
-                <Button onClick={handleCheck}>Verificar</Button>
-                {currentIndex < prompts.length - 1 ? (
-                    <Button onClick={() => setCurrentIndex(prev => prev + 1)} disabled={!completedMap[currentIndex]}>Siguiente <ArrowRight className="ml-2 h-4 w-4" /></Button>
-                ) : (
-                    <Button onClick={onComplete} disabled={!completedMap[currentIndex]} className='text-white'>Finalizar</Button>
-                )}
+                <Button onClick={() => setCurrentIndex(prev => Math.max(0, prev - 1))} disabled={currentIndex === 0} variant="outline">Anterior</Button>
+                <div className="flex gap-2">
+                    <Button onClick={handleCheck}>Verificar</Button>
+                    {currentIndex < prompts.length - 1 ? (
+                        <Button onClick={() => setCurrentIndex(prev => prev + 1)} disabled={!completedMap[currentIndex]}>Siguiente <ArrowRight className="ml-2 h-4 w-4" /></Button>
+                    ) : (
+                        <Button onClick={onComplete} disabled={!completedMap[currentIndex]} className='text-white'>Finalizar</Button>
+                    )}
+                </div>
             </CardFooter>
         </Card>
     );
@@ -238,7 +237,7 @@ export default function Class2Content() {
     const firestore = useFirestore();
 
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
-    const [selectedTopic, setSelectedTopic] = useState<string>('vocabulary');
+    const [selectedTopic, setSelectedTopic] = useState<string>('');
     const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
     const [isInitialLoading, setIsInitialLoading] = useState(true);
 
@@ -258,6 +257,20 @@ export default function Class2Content() {
         { key: 'ex1', name: 'Exercise 1', icon: PenSquare, status: 'locked' },
         { key: 'ex2', name: 'Exercise 2', icon: PenSquare, status: 'locked' },
     ], []);
+
+    const handleTopicComplete = useCallback((completedKey: string) => {
+        setTopicToComplete(completedKey);
+    }, []);
+
+    const handleTopicSelect = (key: string) => {
+        const t = learningPath.find(it => it.key === key);
+        if (!isAdmin && t?.status === 'locked') {
+            toast({ variant: "destructive", title: "Contenido Bloqueado" });
+            return;
+        }
+        setSelectedTopic(key);
+        if (key === 'grammar') handleTopicComplete(key);
+    };
 
     useEffect(() => {
         if (isProfileLoading || isUserLoading || !studentProfile) return;
@@ -291,7 +304,7 @@ export default function Class2Content() {
         learningPath.forEach(t => data[t.key] = t.status);
         updateDocumentNonBlocking(studentDocRef, { [`lessonProgress.${progressStorageKey}`]: data, [`progress.${mainProgressKey}`]: progressValue });
         if (progressValue >= 100) window.dispatchEvent(new CustomEvent('progressUpdated'));
-    }, [learningPath, isAdmin, progressValue, studentDocRef, selectedTopic, isInitialLoading]);
+    }, [learningPath, isAdmin, progressValue, studentDocRef, selectedTopic, isInitialLoading, studentProfile]);
 
     useEffect(() => {
         if (!topicToComplete) return;
@@ -310,13 +323,6 @@ export default function Class2Content() {
         setTopicToComplete(null);
     }, [topicToComplete]);
 
-    const handleTopicSelect = (key: string) => {
-        const t = learningPath.find(it => it.key === key);
-        if (!isAdmin && t?.status === 'locked') return;
-        setSelectedTopic(key);
-        if (key === 'grammar') handleTopicComplete(key);
-    };
-
     const handleVocabCheck = () => {
         let ok = false;
         const nvV = vocabularyVerbs.map((v, i) => {
@@ -329,7 +335,12 @@ export default function Class2Content() {
             if (res) ok = true; return res ? 'correct' : 'incorrect';
         });
         setVerbsValidation(nvV); setWordsValidation(nvW);
-        if (ok) setCanAdvanceVocab(true);
+        if (ok) {
+            toast({ title: "¡Bien hecho!" });
+            setCanAdvanceVocab(true);
+        } else {
+            toast({ variant: 'destructive', title: 'Inténtalo de nuevo' });
+        }
     };
 
     const renderContent = () => {
@@ -338,33 +349,31 @@ export default function Class2Content() {
             case 'vocabulary':
                 return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left">
-                        <CardHeader>
-                            <CardTitle className="text-black dark:text-primary">Vocabulary 2</CardTitle>
-                        </CardHeader>
+                        <CardHeader><CardTitle className="text-black dark:text-primary">Vocabulary 2</CardTitle></CardHeader>
                         <CardContent className="space-y-8">
                             <div className="space-y-4">
-                                <h3 className="text-xl font-black text-primary uppercase tracking-tight border-b pb-2 dark:text-white">1. Basic Verbs</h3>
-                                <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-lg">
-                                    <div className="font-bold p-3 bg-muted rounded-lg text-foreground uppercase tracking-widest text-xs dark:text-white">Español</div>
-                                    <div className="font-bold p-3 bg-muted rounded-lg text-foreground uppercase tracking-widest text-xs dark:text-white">Inglés</div>
+                                <h3 className="text-xl font-black text-primary uppercase border-b pb-2 dark:text-white">1. Basic Verbs</h3>
+                                <div className="grid grid-cols-2 gap-2 text-lg">
+                                    <div className="font-bold p-2 bg-muted rounded text-foreground">Español</div>
+                                    <div className="font-bold p-2 bg-muted rounded text-foreground">Inglés</div>
                                     {vocabularyVerbs.map((v, i) => (
                                         <React.Fragment key={`verb-${i}`}>
-                                            <div className="p-3 border rounded bg-white/5 text-foreground font-medium flex items-center">{v.spanish}</div>
-                                            <Input value={verbsAnswers[i]} onChange={e => { const na = [...verbsAnswers]; na[i] = e.target.value; setVerbsAnswers(na); setVerbsValidation(v => { const nv = [...v]; nv[i] = 'unchecked'; return nv; }); setCanAdvanceVocab(false); }} className={cn("h-12", verbsValidation[i] === 'correct' ? 'border-green-500 bg-green-50/5' : verbsValidation[i] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} autoComplete="off" />
+                                            <div className="p-2 border rounded bg-white/5 font-medium">{v.spanish}</div>
+                                            <Input value={verbsAnswers[i]} onChange={e => { const na = [...verbsAnswers]; na[i] = e.target.value; setVerbsAnswers(na); setCanAdvanceVocab(false); }} className={cn(verbsValidation[i] === 'correct' ? 'border-green-500 bg-green-50/5' : verbsValidation[i] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} autoComplete="off" />
                                         </React.Fragment>
                                     ))}
                                 </div>
                             </div>
                             <Separator />
                             <div className="space-y-4">
-                                <h3 className="text-xl font-black text-primary uppercase tracking-tight border-b pb-2 dark:text-white">2. Basic Words</h3>
-                                <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-lg">
-                                    <div className="font-bold p-3 bg-muted rounded-lg text-foreground uppercase tracking-widest text-xs dark:text-white">Español</div>
-                                    <div className="font-bold p-3 bg-muted rounded-lg text-foreground uppercase tracking-widest text-xs dark:text-white">Inglés</div>
+                                <h3 className="text-xl font-black text-primary uppercase border-b pb-2 dark:text-white">2. Basic Words</h3>
+                                <div className="grid grid-cols-2 gap-2 text-lg">
+                                    <div className="font-bold p-2 bg-muted rounded text-foreground">Español</div>
+                                    <div className="font-bold p-2 bg-muted rounded text-foreground">Inglés</div>
                                     {vocabularyWords.map((v, i) => (
                                         <React.Fragment key={`word-${i}`}>
-                                            <div className="p-3 border rounded bg-white/5 text-foreground font-medium flex items-center">{v.spanish}</div>
-                                            <Input value={wordsAnswers[i]} onChange={e => { const na = [...wordsAnswers]; na[i] = e.target.value; setWordsAnswers(na); setWordsValidation(v => { const nv = [...v]; nv[i] = 'unchecked'; return nv; }); setCanAdvanceVocab(false); }} className={cn("h-12", wordsValidation[i] === 'correct' ? 'border-green-500 bg-green-50/5' : wordsValidation[i] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} autoComplete="off" />
+                                            <div className="p-2 border rounded bg-white/5 font-medium">{v.spanish}</div>
+                                            <Input value={wordsAnswers[i]} onChange={e => { const na = [...wordsAnswers]; na[i] = e.target.value; setWordsAnswers(na); setCanAdvanceVocab(false); }} className={cn(wordsValidation[i] === 'correct' ? 'border-green-500 bg-green-50/5' : wordsValidation[i] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} autoComplete="off" />
                                         </React.Fragment>
                                     ))}
                                 </div>
@@ -392,37 +401,19 @@ export default function Class2Content() {
                                         <li><span className="text-blue-600">(?)</span> = do/does + pronoun + verb + complement?</li>
                                     </ul>
                                 </div>
-                                <div className="p-6 bg-slate-100 rounded-2xl border">
-                                    <p className="text-primary uppercase mb-2">Respuestas Cortas (Short Answers):</p>
-                                    <ul className="space-y-1 font-mono text-base">
-                                        <li><span className="text-green-600">(+A)</span> = Yes, pronoun + do/does</li>
-                                        <li><span className="text-red-600">(-A)</span> = No, pronoun + do/does + not</li>
-                                    </ul>
-                                </div>
                                 <div className="p-6 bg-destructive/10 rounded-2xl border-2 border-dashed border-destructive/30 text-center">
                                     <p className="text-destructive font-black uppercase">Contracciones Negativas:</p>
                                     <p className="text-2xl mt-2">DO NOT = DON’T<br/>DOES NOT = DOESN’T</p>
                                 </div>
                             </CardContent>
-                            <CardFooter className="justify-center pt-2 pb-6"><Button onClick={() => handleTopicComplete('grammar')} size="lg" className="px-16 font-bold text-white">Entendido <ArrowRight className="ml-2" /></Button></CardFooter>
+                            <CardFooter className="justify-center pb-6"><Button onClick={() => handleTopicComplete('grammar')} size="lg" className='text-white px-12'>Entendido</Button></CardFooter>
                         </Card>
                     </div>
                 );
             case 'ex1':
-                return <SimpleTranslationExercise 
-                            course="a1" 
-                            exerciseKey="c2_ex1_full" 
-                            title="Exercise 1" 
-                            onComplete={() => handleTopicComplete('ex1')} 
-                            vocabulary={ex1Vocab}
-                            highlightVocabulary={true}
-                        />;
+                return <SimpleTranslationExercise course="a1" exerciseKey="c2_ex1_full" title="Exercise 1" onComplete={() => handleTopicComplete('ex1')} vocabulary={ex1Vocab} highlightVocabulary={true} />;
             case 'ex2':
-                return <MultiFormExercise 
-                            prompts={exercise2Prompts} 
-                            onComplete={() => handleTopicComplete('ex2')} 
-                            vocabulary={ex2Vocab}
-                        />;
+                return <MultiFormExercise prompts={ex2Prompts} onComplete={() => handleTopicComplete('ex2')} vocabulary={ex2Vocab} />;
             default: return null;
         }
     };
