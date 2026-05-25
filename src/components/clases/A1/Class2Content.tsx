@@ -17,7 +17,6 @@ import {
     ArrowRight, 
     BookText,
     Trophy,
-    RefreshCw,
     Gamepad2,
     ChevronDown
 } from 'lucide-react';
@@ -34,7 +33,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 
 // --- DATA ---
 
-const progressStorageKey = 'progress_a1_eng_u1_c2_v400_blindado';
+const progressStorageKey = 'progress_a1_eng_u1_c2_v500_blindado';
 const mainProgressKey = 'progress_a1_eng_unit_1_class_2';
 
 const verbVocabulary = [
@@ -118,11 +117,15 @@ const exercise2Prompts = [
     { spanish: "ELLA HACE EJERCICIO", answers: { affirmative: ["she does exercise"], negative: ["she does not do exercise", "she doesn't do exercise"], interrogative: ["does she do exercise?"], shortAffirmative: ["yes, she does"], shortNegative: ["no, she does not", "no, she doesn't"] } },
 ];
 
-const generalVocab = {
-    "beber": "drink", "jugar": "play", "futbol": "soccer/football", "música": "music", "hablar": "speak", "abrir": "open", "puerta": "door",
-    "tenis": "tennis", "caminar": "walk", "parque": "park", "universidad": "university", "sabado": "saturday", "dormir": "sleep", "tarde": "afternoon",
-    "comer": "eat", "carne": "meat", "ensalada": "salad", "cerveza": "beer", "iglesia": "church", "miercoles": "wednesday", "peliculas": "movies",
-    "viernes": "friday", "noche": "night", "domingo": "sunday", "tarea": "homework", "hacer": "do/does"
+const posVocab = { "beber": "drink", "jugar": "play", "escuchar": "listen", "música": "music", "hablar": "speak", "abrir": "open", "puerta": "door" };
+const negVocab = { "beber": "drink", "jugar": "play", "escuchar": "listen", "música": "music", "hablar": "speak", "abrir": "open", "puerta": "door" };
+const intVocab = { "beber": "drink", "jugar": "play", "escuchar": "listen", "música": "music", "hablar": "speak", "abrir": "open", "puerta": "door" };
+const ex1Vocab = {
+    "jugar": "play", "tenis": "tennis", "lunes": "monday", "caminar": "walk", "parque": "park", 
+    "ir": "go", "universidad": "university", "sabado": "saturday", "dormir": "sleep", "tarde": "afternoon",
+    "comer": "eat", "carne": "meat", "ensalada": "salad", "beber": "drink", "cerveza": "beer",
+    "iglesia": "church", "miercoles": "wednesday", "futbol": "soccer/football", "ver": "watch/see",
+    "peliculas": "movies", "viernes": "friday", "noche": "night", "trabajar": "work", "domingo": "sunday"
 };
 
 // --- SUB-COMPONENTS ---
@@ -210,7 +213,18 @@ const SingleFormExercise = ({ title, data, onComplete, vocab }: any) => {
         <Card className="shadow-soft border-2 border-brand-purple">
             <CardHeader className="flex flex-row items-center justify-between">
                 <div><CardTitle>{title}</CardTitle><CardDescription>Traduce la frase.</CardDescription></div>
-                <Popover><PopoverTrigger asChild><Button variant="outline" size="sm" className='border-brand-blue border-2'><BookText className="mr-2 h-4 w-4" /> Vocabulary</Button></PopoverTrigger><PopoverContent className="w-64"><div className="grid grid-cols-2 gap-2 text-sm">{Object.entries(vocab).map(([es, en]: any) => (<React.Fragment key={es}><span className="text-muted-foreground">{es}:</span><span className="font-bold text-right">{en}</span></React.Fragment>))}</div></PopoverContent></Popover>
+                {vocab && (
+                    <Popover>
+                        <PopoverTrigger asChild><Button variant="outline" size="sm" className='border-brand-blue border-2'><BookText className="mr-2 h-4 w-4" /> Vocabulary</Button></PopoverTrigger>
+                        <PopoverContent className="w-64">
+                            <div className="grid grid-cols-2 gap-2 text-sm">
+                                {Object.entries(vocab).map(([es, en]: any) => (
+                                    <React.Fragment key={es}><span className="text-muted-foreground">{es}:</span><span className="font-bold text-right">{en}</span></React.Fragment>
+                                ))}
+                            </div>
+                        </PopoverContent>
+                    </Popover>
+                )}
             </CardHeader>
             <CardContent className="space-y-6">
                 <div className="bg-muted p-4 rounded-lg border text-center font-bold text-xl">{data[currentIndex].spanish}</div>
@@ -253,7 +267,7 @@ const MultiFormExercise = ({ title, prompts, onComplete, vocabulary }: any) => {
 
         setValidation(newVal);
         if (allOk) { toast({ title: "¡Correcto!" }); setCompletedMap(prev => ({ ...prev, [currentIndex]: true })); }
-        else toast({ variant: 'destructive', title: "Incorrecto", description: "Revisa los campos en rojo." });
+        else toast({ variant: 'destructive', title: "Incorrecto", description: "Revisa los campos marcados en rojo." });
     };
 
     const handleNext = () => {
@@ -268,7 +282,18 @@ const MultiFormExercise = ({ title, prompts, onComplete, vocabulary }: any) => {
         <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
             <CardHeader className="flex flex-row items-center justify-between">
                 <div><CardTitle>{title}</CardTitle><CardDescription>Traduce la frase en todas sus formas.</CardDescription></div>
-                <Popover><PopoverTrigger asChild><Button variant="outline" size="sm" className='border-brand-blue border-2'><BookText className="mr-2 h-4 w-4" /> Vocabulary</Button></PopoverTrigger><PopoverContent className="w-64"><div className="grid grid-cols-2 gap-2 text-sm">{Object.entries(vocabulary).map(([es, en]: any) => (<React.Fragment key={es}><span className="text-muted-foreground">{es}:</span><span className="font-bold text-right">{en}</span></React.Fragment>))}</div></PopoverContent></Popover>
+                {vocabulary && (
+                    <Popover>
+                        <PopoverTrigger asChild><Button variant="outline" size="sm" className='border-brand-blue border-2'><BookText className="mr-2 h-4 w-4" /> Vocabulary</Button></PopoverTrigger>
+                        <PopoverContent className="w-64">
+                            <div className="grid grid-cols-2 gap-2 text-sm">
+                                {Object.entries(vocabulary).map(([es, en]: any) => (
+                                    <React.Fragment key={es}><span className="text-muted-foreground">{es}:</span><span className="font-bold text-right">{en}</span></React.Fragment>
+                                ))}
+                            </div>
+                        </PopoverContent>
+                    </Popover>
+                )}
             </CardHeader>
             <CardContent className="space-y-6">
                 <div className="flex gap-2 justify-center mb-4 flex-wrap">
@@ -279,7 +304,7 @@ const MultiFormExercise = ({ title, prompts, onComplete, vocabulary }: any) => {
                     ))}
                 </div>
                 <div className="bg-muted p-4 rounded-lg border text-center font-bold text-xl">{currentPrompt.spanish}</div>
-                <div className="space-y-3 font-mono">
+                <div className="space-y-3 font-mono text-base">
                     {[
                         { k: 'affirmative', l: '(+)', c: 'text-green-500' },
                         { k: 'negative', l: '(-)', c: 'text-red-500' },
@@ -306,14 +331,6 @@ const MultiFormExercise = ({ title, prompts, onComplete, vocabulary }: any) => {
 };
 
 // --- MAIN CLASS COMPONENT ---
-
-interface Topic {
-    key: string;
-    name: string;
-    icon: React.ElementType;
-    status: 'locked' | 'active' | 'completed';
-    subItems?: { key: string; name: string; icon: React.ElementType; status: 'locked' | 'active' | 'completed' }[];
-}
 
 export default function Class2Content() {
     const { toast } = useToast();
@@ -469,6 +486,12 @@ export default function Class2Content() {
         if (['grammar'].includes(topicKey)) handleTopicCompleteInternal(topicKey);
     };
 
+    const handleVocabInputChange = (index: number, value: string) => {
+        const na = [...verbsAnswers]; na[index] = value; setVerbsAnswers(na);
+        const nv = [...verbsValidation]; nv[index] = 'unchecked'; setVerbsValidation(nv as any);
+        setCanAdvanceVocab(false);
+    };
+
     const handleVocabCheck = () => {
         let ok = false;
         const nvV = verbVocabulary.map((v, i) => {
@@ -491,20 +514,20 @@ export default function Class2Content() {
             case 'vocabulary':
                 return (
                     <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left">
-                        <CardHeader><CardTitle>Vocabulary 2</CardTitle></CardHeader>
+                        <CardHeader><CardTitle className='text-black dark:text-primary'>Vocabulary 2</CardTitle><CardDescription>Traduce los términos al inglés. Para los verbos, puedes incluir "To" al inicio.</CardDescription></CardHeader>
                         <CardContent className="space-y-8">
                             <div className="space-y-4">
                                 <h3 className="font-bold text-lg text-primary uppercase">1. Basic Verbs</h3>
                                 <div className="grid grid-cols-2 gap-2 text-base">
                                     <div className="font-bold p-2 bg-muted rounded text-foreground">Español</div><div className="font-bold p-2 bg-muted rounded text-foreground">Inglés</div>
-                                    {verbVocabulary.map((v, i) => (<React.Fragment key={i}><div className="p-2 border rounded bg-white/5 font-medium">{v.spanish}</div><Input value={verbsAnswers[i]} onChange={e => { const na = [...verbsAnswers]; na[i] = e.target.value; setVerbsAnswers(na); setCanAdvanceVocab(false); }} className={cn(verbsValidation[i] === 'correct' ? 'border-green-500 bg-green-50/5' : verbsValidation[i] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} /></React.Fragment>))}
+                                    {verbVocabulary.map((v, i) => (<React.Fragment key={i}><div className="p-2 border rounded bg-white/5 font-medium">{v.spanish}</div><Input value={verbsAnswers[i] || ''} onChange={e => handleVocabInputChange(i, e.target.value)} className={cn("h-12", verbsValidation[i] === 'correct' ? 'border-green-500 bg-green-50/5' : verbsValidation[i] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} autoComplete="off" /></React.Fragment>))}
                                 </div>
                             </div>
                             <Separator />
                             <div className="space-y-4">
                                 <h3 className="font-bold text-lg text-primary uppercase">2. Basic Words</h3>
                                 <div className="grid grid-cols-2 gap-2 text-base">
-                                    {basicWords.map((v, i) => (<React.Fragment key={i}><div className="p-2 border rounded bg-white/5 font-medium">{v.spanish}</div><Input value={wordsAnswers[i]} onChange={e => { const na = [...wordsAnswers]; na[i] = e.target.value; setWordsAnswers(na); setCanAdvanceVocab(false); }} className={cn(wordsValidation[i] === 'correct' ? 'border-green-500 bg-green-50/5' : wordsValidation[i] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} /></React.Fragment>))}
+                                    {basicWords.map((v, i) => (<React.Fragment key={i}><div className="p-2 border rounded bg-white/5 font-medium">{v.spanish}</div><Input value={wordsAnswers[i] || ''} onChange={e => { const na = [...wordsAnswers]; na[i] = e.target.value; setWordsAnswers(na); setCanAdvanceVocab(false); }} className={cn(wordsValidation[i] === 'correct' ? 'border-green-500 bg-green-50/5' : wordsValidation[i] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} /></React.Fragment>))}
                                 </div>
                             </div>
                         </CardContent>
@@ -514,7 +537,7 @@ export default function Class2Content() {
             case 'grammar':
                 return (
                     <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left p-6">
-                        <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase">“DO - DOES”</CardTitle></CardHeader>
+                        <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase tracking-tight">“DO - DOES”</CardTitle></CardHeader>
                         <CardContent className="space-y-6 text-black dark:text-white font-bold text-lg">
                             <div className="p-6 bg-slate-100 rounded-2xl border text-black font-bold">
                                 <p className="text-primary mb-2 uppercase">1 - Usos Generales</p>
@@ -537,12 +560,12 @@ export default function Class2Content() {
                         <CardFooter className="justify-center border-t pt-6"><Button onClick={() => handleTopicCompleteInternal('grammar')} size="lg" className='text-white px-12'>Entendido</Button></CardFooter>
                     </Card>
                 );
-            case 'ex-pos': return <SingleFormExercise title="Positive Form" data={posExercises} onComplete={() => handleTopicCompleteInternal('ex-pos')} vocab={generalVocab} />;
-            case 'ex-neg': return <SingleFormExercise title="Negative Form" data={negExercises} onComplete={() => handleTopicCompleteInternal('ex-neg')} vocab={generalVocab} />;
-            case 'ex-int': return <SingleFormExercise title="Interrogative Form" data={intExercises} onComplete={() => handleTopicCompleteInternal('ex-int')} vocab={generalVocab} />;
+            case 'ex-pos': return <SingleFormExercise title="Positive Form" data={posExercises} onComplete={() => handleTopicCompleteInternal('ex-pos')} vocab={posVocab} />;
+            case 'ex-neg': return <SingleFormExercise title="Negative Form" data={negExercises} onComplete={() => handleTopicCompleteInternal('ex-neg')} vocab={negVocab} />;
+            case 'ex-int': return <SingleFormExercise title="Interrogative Form" data={intExercises} onComplete={() => handleTopicCompleteInternal('ex-int')} vocab={intVocab} />;
             case 'memory-verbs': return <VerbMemoryGame onComplete={() => handleTopicCompleteInternal('memory-verbs')} />;
-            case 'ex1': return <MultiFormExercise title="Exercise 1" prompts={exercise1Prompts} onComplete={() => handleTopicCompleteInternal('ex1')} vocabulary={generalVocab} />;
-            case 'ex2': return <MultiFormExercise title="Exercise 2" prompts={exercise2Prompts} onComplete={() => handleTopicCompleteInternal('ex2')} vocabulary={generalVocab} />;
+            case 'ex1': return <MultiFormExercise title="Exercise 1" prompts={exercise1Prompts} onComplete={() => handleTopicCompleteInternal('ex1')} vocabulary={ex1Vocab} />;
+            case 'ex2': return <MultiFormExercise title="Exercise 2" prompts={exercise2Prompts} onComplete={() => handleTopicCompleteInternal('ex2')} />;
             case 'reading': return <ReadingComprehensionExercise onComplete={() => handleTopicCompleteInternal('reading')} />;
             case 'vocab_game': return <VocabularyGame onComplete={() => handleTopicCompleteInternal('vocab_game')} />;
             default: return null;
@@ -554,13 +577,13 @@ export default function Class2Content() {
             <div className="md:col-span-9 md:order-1 order-2">{renderContent()}</div>
             <div className="md:col-span-3 md:order-2 order-1 text-left">
                 <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
-                    <CardHeader><CardTitle>Ruta de Aprendizaje</CardTitle></CardHeader>
+                    <CardHeader><CardTitle>Ruta Clase 2</CardTitle></CardHeader>
                     <CardContent>
                         <nav><ul className="space-y-1">
                             {learningPath.map(item => (
                                 <li key={item.key}>
                                     {!item.subItems ? (
-                                        <div onClick={() => handleTopicSelect(item.key)} className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer text-foreground', (item.status === 'locked' && !isAdmin) ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === item.key && 'bg-muted text-primary font-bold')}>
+                                        <div onClick={() => handleTopicSelect(item.key)} className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer text-foreground', (item.status === 'locked' && !isAdmin) ? 'text-muted-foreground/50' : 'hover:bg-muted', selectedTopic === item.key && 'bg-muted text-primary font-bold')}>
                                             <div className="flex items-center gap-3">{(item.status === 'completed') ? <CheckCircle className="h-5 w-5 text-green-500" /> : <item.icon className="h-5 w-5" />}<span>{item.name}</span></div>
                                         </div>
                                     ) : (
@@ -574,7 +597,7 @@ export default function Class2Content() {
                                             <CollapsibleContent><ul className="pl-8 pt-1 space-y-1">{item.subItems.map(sub => {
                                                 const subL = sub.status === 'locked' && !isAdmin;
                                                 return (
-                                                    <li key={sub.key} onClick={() => handleTopicSelect(sub.key)} className={cn('flex items-center gap-3 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors cursor-pointer text-foreground', subL ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === sub.key && 'bg-muted text-primary font-bold')}>
+                                                    <li key={sub.key} onClick={() => handleTopicSelect(sub.key)} className={cn('flex items-center gap-3 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors cursor-pointer text-foreground', subL ? 'text-muted-foreground/50' : 'hover:bg-muted', selectedTopic === sub.key && 'bg-muted text-primary font-bold')}>
                                                         <sub.icon className={cn("h-4 w-4", sub.status === 'completed' && 'text-green-500')} /><span>{sub.name}</span>
                                                     </li>
                                                 )
@@ -591,3 +614,4 @@ export default function Class2Content() {
         </div>
     );
 }
+
