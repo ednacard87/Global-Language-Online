@@ -18,7 +18,8 @@ import {
     BookText,
     Trophy,
     RefreshCw,
-    Gamepad2
+    Gamepad2,
+    ChevronDown
 } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
@@ -29,10 +30,11 @@ import { ReadingComprehensionExercise } from '@/components/kids/exercises/readin
 import { Separator } from '@/components/ui/separator';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Label } from '@/components/ui/label';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 // --- DATA ---
 
-const progressStorageKey = 'progress_a1_eng_u1_c2_v260_blindado';
+const progressStorageKey = 'progress_a1_eng_u1_c2_v400_blindado';
 const mainProgressKey = 'progress_a1_eng_unit_1_class_2';
 
 const verbVocabulary = [
@@ -254,6 +256,14 @@ const MultiFormExercise = ({ title, prompts, onComplete, vocabulary }: any) => {
         else toast({ variant: 'destructive', title: "Incorrecto", description: "Revisa los campos en rojo." });
     };
 
+    const handleNext = () => {
+        if (currentIndex < prompts.length - 1) {
+            setCurrentIndex(prev => prev + 1);
+        } else {
+            onComplete();
+        }
+    };
+
     return (
         <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
             <CardHeader className="flex flex-row items-center justify-between">
@@ -261,7 +271,7 @@ const MultiFormExercise = ({ title, prompts, onComplete, vocabulary }: any) => {
                 <Popover><PopoverTrigger asChild><Button variant="outline" size="sm" className='border-brand-blue border-2'><BookText className="mr-2 h-4 w-4" /> Vocabulary</Button></PopoverTrigger><PopoverContent className="w-64"><div className="grid grid-cols-2 gap-2 text-sm">{Object.entries(vocabulary).map(([es, en]: any) => (<React.Fragment key={es}><span className="text-muted-foreground">{es}:</span><span className="font-bold text-right">{en}</span></React.Fragment>))}</div></PopoverContent></Popover>
             </CardHeader>
             <CardContent className="space-y-6">
-                <div className="flex gap-2 justify-center mb-4">
+                <div className="flex gap-2 justify-center mb-4 flex-wrap">
                     {prompts.map((_: any, i: number) => (
                         <div key={i} onClick={() => setCurrentIndex(i)} className={cn("h-8 w-8 rounded-full border-2 flex items-center justify-center text-sm font-bold cursor-pointer transition-all", currentIndex === i ? "border-primary ring-2 ring-primary" : "border-muted", completedMap[i] ? "bg-green-500 text-white border-green-500" : (validation.affirmative === 'incorrect' && currentIndex === i ? "bg-red-500 text-white border-red-500" : "bg-card"))}>
                             {i + 1}
@@ -297,12 +307,18 @@ const MultiFormExercise = ({ title, prompts, onComplete, vocabulary }: any) => {
 
 // --- MAIN CLASS COMPONENT ---
 
+interface Topic {
+    key: string;
+    name: string;
+    icon: React.ElementType;
+    status: 'locked' | 'active' | 'completed';
+    subItems?: { key: string; name: string; icon: React.ElementType; status: 'locked' | 'active' | 'completed' }[];
+}
+
 export default function Class2Content() {
     const { toast } = useToast();
     const { user, isUserLoading } = useUser();
     const firestore = useFirestore();
-    const progressStorageKey = 'progress_a1_eng_u1_c2_v300_blindado';
-    const mainProgressKey = 'progress_a1_eng_unit_1_class_2';
 
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
     const [selectedTopic, setSelectedTopic] = useState<string>('');
@@ -313,6 +329,7 @@ export default function Class2Content() {
     const [wordsAnswers, setWordsAnswers] = useState<string[]>(Array(basicWords.length).fill(''));
     const [verbsValidation, setVerbsValidation] = useState<any[]>(Array(verbVocabulary.length).fill('unchecked'));
     const [wordsValidation, setWordsValidation] = useState<any[]>(Array(basicWords.length).fill('unchecked'));
+    const [canAdvanceVocab, setCanAdvanceVocab] = useState(false);
 
     const studentDocRef = useMemoFirebase(() => (user ? doc(firestore, 'students', user.uid) : null), [firestore, user]);
     const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{role?: string, lessonProgress?: any, progress?: any}>(studentDocRef);
@@ -449,6 +466,7 @@ export default function Class2Content() {
         const subT = mainT?.subItems?.find(st => st.key === topicKey);
         if (!isAdmin && ((subT && subT.status === 'locked') || (!subT && mainT?.status === 'locked'))) { toast({ variant: "destructive", title: "Contenido Bloqueado" }); return; }
         setSelectedTopic(topicKey);
+        if (['grammar'].includes(topicKey)) handleTopicCompleteInternal(topicKey);
     };
 
     const handleVocabCheck = () => {
@@ -464,6 +482,7 @@ export default function Class2Content() {
         });
         setVerbsValidation(nvV); setWordsValidation(nvW);
         if (ok) { toast({ title: "¡Bien hecho!" }); setCanAdvanceVocab(true); }
+        else toast({ variant: 'destructive', title: 'Sigue intentando' });
     };
 
     const renderContent = () => {
@@ -489,7 +508,7 @@ export default function Class2Content() {
                                 </div>
                             </div>
                         </CardContent>
-                        <CardFooter className="flex justify-between border-t pt-6"><Button onClick={handleVocabCheck} variant="secondary">Verificar</Button><Button onClick={() => handleTopicCompleteInternal('vocabulary')} disabled={!canAdvanceVocab && !isAdmin}>Avanzar</Button></CardFooter>
+                        <CardFooter className="flex justify-between border-t pt-6"><Button onClick={handleVocabCheck} variant="secondary">Verificar</Button><Button onClick={() => handleTopicCompleteInternal('vocabulary')} disabled={!canAdvanceVocab && !isAdmin} className='text-white'>Avanzar</Button></CardFooter>
                     </Card>
                 );
             case 'grammar':
@@ -541,7 +560,7 @@ export default function Class2Content() {
                             {learningPath.map(item => (
                                 <li key={item.key}>
                                     {!item.subItems ? (
-                                        <div onClick={() => handleTopicSelect(item.key)} className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer text-foreground', (item.status === 'locked' && !isAdmin) ? 'text-muted-foreground/50' : 'hover:bg-muted', selectedTopic === item.key && 'bg-muted text-primary font-bold')}>
+                                        <div onClick={() => handleTopicSelect(item.key)} className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer text-foreground', (item.status === 'locked' && !isAdmin) ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === item.key && 'bg-muted text-primary font-bold')}>
                                             <div className="flex items-center gap-3">{(item.status === 'completed') ? <CheckCircle className="h-5 w-5 text-green-500" /> : <item.icon className="h-5 w-5" />}<span>{item.name}</span></div>
                                         </div>
                                     ) : (
@@ -572,4 +591,3 @@ export default function Class2Content() {
         </div>
     );
 }
-
