@@ -17,7 +17,6 @@ import {
     BookText,
     Check,
     X,
-    Info
 } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
@@ -27,6 +26,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Separator } from '@/components/ui/separator';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Label } from '@/components/ui/label';
+import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
 
 // --- DATA ---
 
@@ -72,19 +72,6 @@ const vocabularyWords = [
     { spanish: 'SIN', english: 'without' },
 ];
 
-const ex1Prompts = [
-    { spanish: "TU JUEGAS TENIS EL LUNES", english: ["you play tennis on monday"] },
-    { spanish: "NOSOTROS CAMINAMOS EN EL PARQUE", english: ["we walk in the park"] },
-    { spanish: "ELLOS VAN A LA UNIVERSIDAD EL SABADO", english: ["they go to the university on saturday", "they go to university on saturday"] },
-    { spanish: "NOSOTROS TRABAJAMOS LOS DOMINGOS", english: ["we work on sundays"] },
-    { spanish: "TU DUERMES EN LA TARDE", english: ["you sleep in the afternoon"] },
-    { spanish: "NOSOTROS COMEMOS CARNE Y ENSALADA", english: ["we eat meat and salad"] },
-    { spanish: "ELLOS BEBEN AGUA", english: ["they drink water"] },
-    { spanish: "ELLOS VAN A LA IGLESIA EL MIERCOLES", english: ["they go to the church on wednesday", "they go to church on wednesday"] },
-    { spanish: "NOSOTROS JUGAMOS FUTBOL LOS SABADOS", english: ["we play soccer on saturdays", "we play football on saturdays"] },
-    { spanish: "YO VEO PELICULAS LOS VIERNES EN LA NOCHE", english: ["i watch movies on fridays at night", "i see movies on fridays at night"] },
-];
-
 const ex1Vocab = {
     "tenis": "tennis", "caminar": "walk", "parque": "park", "universidad": "university", "domingos": "sundays",
     "tarde": "afternoon", "carne": "meat", "ensalada": "salad", "iglesia": "church", "miercoles": "wednesday",
@@ -122,6 +109,8 @@ interface Topic {
     icon: React.ElementType;
     status: 'locked' | 'active' | 'completed';
 }
+
+const ICONS = { locked: Lock, active: BookOpen, completed: CheckCircle };
 
 // --- SUB-COMPONENTS ---
 
@@ -280,7 +269,7 @@ export default function Class2Content() {
             path.forEach(item => { item.status = 'completed'; });
         } else if(studentProfile?.lessonProgress?.[progressStorageKey]) {
             const d = studentProfile.lessonProgress[progressStorageKey];
-            path.forEach(item => { if (d[item.key]) item.status = d[item.key]; });
+            path.forEach(item => { if (d[t.key]) t.status = d[t.key]; });
             savedST = d.lastSelectedTopic || '';
         }
         let lastDone = true;
