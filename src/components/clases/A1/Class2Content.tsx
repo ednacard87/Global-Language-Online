@@ -40,7 +40,10 @@ import { SimpleTranslationExercise } from '@/components/dashboard/simple-transla
 import { VerbMemoryGame } from '@/components/kids/exercises/verb-memory-game';
 import { ReadingComprehensionExercise } from '@/components/kids/exercises/reading-comprehension';
 
-// --- CONSTANTS & DATA ---
+// --- CONSTANTES Y DATOS PRINCIPALES ---
+// Aquí se definen las constantes usadas para controlar el progreso,
+// las claves de almacenamiento en Firebase y los datos estáticos
+// de vocabulario y ejercicios que se muestran en esta clase.
 
 const ICONS_CONFIG = {
     locked: Lock,
@@ -75,6 +78,7 @@ const verbVocabulary = [
     { spanish: 'ENSEÑAR', english: 'teach' },
 ];
 
+// Vocabulario adicional de palabras comunes que se usan en el ejercicio de traducción.
 const basicWords = [
     { spanish: 'AYER', english: 'yesterday' },
     { spanish: 'HOY', english: 'today' },
@@ -132,6 +136,7 @@ const ex2Prompts = [
     { spanish: "ELLA HACE EJERCICIO", answers: { affirmative: ["she does exercise"], negative: ["she does not do exercise", "she doesn't do exercise"], interrogative: ["does she do exercise?"], shortAffirmative: ["yes, she does"], shortNegative: ["no, she does not", "no, she doesn't"] } },
 ];
 
+// Vocabulario de apoyo general que se muestra en algunos ejercicios con varias formas.
 const generalVocab = {
     "jugar": "play", "tenis": "tennis", "lunes": "monday", "caminar": "walk", "parque": "park", 
     "ir": "go", "universidad": "university", "sabado": "saturday", "dormir": "sleep", "tarde": "afternoon",
@@ -145,8 +150,8 @@ const posVocab = { "beber": "drink", "jugar": "play", "escuchar": "listen", "mú
 const negVocab = { "beber": "drink", "jugar": "play", "escuchar": "listen", "música": "music", "hablar": "speak", "abrir": "open", "puerta": "door" };
 const intVocab = { "beber": "drink", "jugar": "play", "escuchar": "listen", "música": "music", "hablar": "speak", "abrir": "open", "puerta": "door" };
 
-// --- SUB-COMPONENTS ---
-
+// --- SUBCOMPONENTES ---
+// Componentes internos que representan actividades específicas de la clase.
 const VocabularyGame = ({ onComplete }: { onComplete: () => void }) => {
     const { toast } = useToast();
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -163,6 +168,8 @@ const VocabularyGame = ({ onComplete }: { onComplete: () => void }) => {
     const current = gameData[currentIndex];
 
     const handleCheck = () => {
+        // Comprueba si la letra ingresada coincide con la letra faltante
+        // en la palabra actual y avanza al siguiente reto o marca la actividad como completada.
         if (userAnswer.trim().toLowerCase() === current.missing) {
             if (currentIndex === gameData.length - 1) {
                 setIsCompleted(true);
@@ -203,6 +210,8 @@ const VocabularyGame = ({ onComplete }: { onComplete: () => void }) => {
     );
 };
 
+// Ejercicio que muestra una sola frase a la vez y permite validar
+// la traducción del usuario en formas afirmativa, negativa o interrogativa.
 const SingleFormExercise = ({ title, data, onComplete, vocab, formType }: any) => {
     const { toast } = useToast();
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -210,6 +219,8 @@ const SingleFormExercise = ({ title, data, onComplete, vocab, formType }: any) =
     const [status, setStatus] = useState<'correct' | 'incorrect' | 'unchecked'>('unchecked');
 
     const handleCheck = () => {
+        // Normaliza la respuesta del usuario eliminando signos y espaciado
+        // para comparar con las respuestas esperadas.
         const userVal = answer.trim().toLowerCase().replace(/[.?,¿!¡]/g, '');
         const isCorrect = data[currentIndex].answer.some((a: string) => a.toLowerCase().replace(/[.?,¿!¡]/g, '') === userVal);
         
@@ -262,6 +273,8 @@ const SingleFormExercise = ({ title, data, onComplete, vocab, formType }: any) =
     );
 };
 
+// Ejercicio que pide traducir una misma frase en varias formas: afirmativa, negativa,
+// interrogativa y respuestas cortas. Incluye validación por campo.
 const MultiFormExercise = ({ title, prompts, onComplete, vocabulary, showVocab = true }: any) => {
     const { toast } = useToast();
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -272,11 +285,13 @@ const MultiFormExercise = ({ title, prompts, onComplete, vocabulary, showVocab =
     const currentPrompt = prompts[currentIndex];
 
     useEffect(() => {
+        // Cada vez que cambia la pregunta, reinicia respuestas y estados de validación.
         setAnswers({ affirmative: '', negative: '', interrogative: '', shortAffirmative: '', shortNegative: '' });
         setValidation({ affirmative: 'unchecked', negative: 'unchecked', interrogative: 'unchecked', shortAffirmative: 'unchecked', shortNegative: 'unchecked' });
     }, [currentIndex]);
 
     const handleCheck = () => {
+        // Verifica cada campo de la frase actual y marca si cada uno es correcto.
         const fields: (keyof typeof answers)[] = ['affirmative', 'negative', 'interrogative', 'shortAffirmative', 'shortNegative'];
         const newVal = { ...validation };
         let allOk = true;
@@ -354,11 +369,15 @@ const MultiFormExercise = ({ title, prompts, onComplete, vocabulary, showVocab =
     );
 };
 
+// Componente principal de la Clase 2 que controla la ruta de aprendizaje,
+// el seguimiento del progreso y el renderizado del contenido activo.
 export default function Class2Content() {
     const { toast } = useToast();
     const { user, isUserLoading } = useUser();
     const firestore = useFirestore();
 
+    // Estados para la ruta de aprendizaje, la pestaña activa, el tema a completar
+y el estado de carga inicial de los datos.
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
     const [selectedTopic, setSelectedTopic] = useState<string>('');
     const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
@@ -396,6 +415,8 @@ export default function Class2Content() {
     ], []);
 
     useEffect(() => {
+        // Carga la ruta de aprendizaje desde el perfil del estudiante o define
+        // la ruta inicial para usuarios nuevos.
         if (isProfileLoading || isUserLoading || !studentProfile) return;
         let path = initialLearningPath.map(t => ({...t, subItems: t.subItems ? t.subItems.map(s => ({...s})) : undefined}));
         let savedST = '';
@@ -444,6 +465,8 @@ export default function Class2Content() {
     }, [learningPath]);
 
     useEffect(() => {
+        // Sincroniza el progreso y la selección actual con Firestore de manera
+        // no bloqueante para que el avance se guarde automáticamente.
         if (isInitialLoading || isAdmin || !studentDocRef || learningPath.length === 0) return;
         const data: any = { lastSelectedTopic: selectedTopic };
         learningPath.forEach(item => {
@@ -458,6 +481,7 @@ export default function Class2Content() {
         if (progressValue >= 100) window.dispatchEvent(new CustomEvent('progressUpdated'));
     }, [learningPath, isAdmin, progressValue, studentDocRef, selectedTopic, isInitialLoading, studentProfile]);
 
+    // Marca un tema para completar y desencadena la lógica que desbloquea el siguiente tema.
     const handleTopicCompleteInternal = useCallback((key: string) => setTopicToComplete(key), []);
 
     useEffect(() => {
@@ -500,6 +524,8 @@ export default function Class2Content() {
         setTopicToComplete(null);
     }, [topicToComplete, toast]);
 
+    // Controla la selección de temas desde la barra lateral.
+    // Si el tema está bloqueado, muestra una alerta y no cambia de contenido.
     const handleTopicSelect = (topicKey: string) => {
         const mainT = learningPath.find(t => t.key === topicKey || t.subItems?.some(st => st.key === topicKey));
         const subT = mainT?.subItems?.find(st => st.key === topicKey);
@@ -530,6 +556,7 @@ export default function Class2Content() {
         else toast({ variant: 'destructive', title: 'Sigue intentando' });
     };
 
+    // Renderiza el contenido principal según el tema seleccionado.
     const renderContent = () => {
         if (isInitialLoading) return <div className="flex justify-center items-center h-64"><Loader2 className="animate-spin text-primary" /></div>;
         switch (selectedTopic) {
@@ -599,16 +626,16 @@ export default function Class2Content() {
                                 </ul>
                             </div>
 
-                            <div className="p-6 bg-destructive/5 dark:bg-destructive/10 rounded-[2rem] border-2 border-dashed border-destructive/20 text-center">
-                                <div className="flex items-center justify-center gap-2 mb-2">
-                                    <XCircle className="h-5 w-5 text-destructive" />
-                                    <p className="text-destructive font-black uppercase tracking-widest">3 - Contracciones Negativas</p>
-                                </div>
-                                <div className="flex flex-col gap-2 text-2xl font-black text-slate-900 dark:text-slate-100">
-                                    <p>DO NOT = <span className="text-destructive">DON’T</span></p>
-                                    <p>DOES NOT = <span className="text-destructive">DOESN’T</span></p>
-                                </div>
+                            <div className="p-6 bg-green-50 dark:bg-green-900/10 rounded-[2rem] border-2 border-dashed border-green-500/20 text-center">
+                            <div className="flex items-center justify-center gap-2 mb-2">
+                                <CheckCircle2 className="h-5 w-5 text-green-600" />
+                                <p className="text-green-600 font-black uppercase tracking-widest">3 - Contracciones Negativas</p>
                             </div>
+                            <div className="flex flex-col gap-2 text-2xl font-black text-slate-900 dark:text-slate-100">
+                                <p>DO NOT = <span className="text-green-600">DON’T</span></p>
+                                <p>DOES NOT = <span className="text-green-600">DOESN’T</span></p>
+                            </div>
+                        </div>
                         </CardContent>
                         <CardFooter className="justify-center border-t pt-6">
                             <Button onClick={() => handleTopicCompleteInternal('grammar')} size="lg" className='text-white px-16 h-14 font-black rounded-full shadow-lg hover:scale-105 transition-transform'>
