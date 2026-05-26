@@ -346,10 +346,10 @@ const MultiFormExercise = ({ title, prompts, onComplete, vocabulary, showVocab =
                 <div className="space-y-3 font-mono text-base">
                     {[
                         { k: 'affirmative', l: '(+)', c: 'text-green-500' },
-                        { k: 'negative', l: '(-)', c: 'text-red-500' },
+                        { k: 'negative', l: '(-)', c: 'text-green-400' },
                         { k: 'interrogative', l: '(?)', c: 'text-blue-500' },
                         { k: 'shortAffirmative', l: '(+A)', c: 'text-green-600' },
-                        { k: 'shortNegative', l: '(-A)', c: 'text-red-600' }
+                        { k: 'shortNegative', l: '(-A)', c: 'text-green-500' }
                     ].map(f => (
                         <div key={f.k} className="flex items-center gap-3">
                             <Label className={cn("w-10 font-bold", f.c)}>{f.l}</Label>
@@ -615,27 +615,27 @@ y el estado de carga inicial de los datos.
                                 </div>
                                 <ul className="space-y-3 font-mono text-base tracking-tighter">
                                     <li className="flex items-center gap-2"><span className="text-green-600 font-black">(+)</span> pronoun + verb + complement</li>
-                                    <li className="flex items-center gap-2"><span className="text-red-600 font-black">(-)</span> pronoun + do/does + not + verb + complement</li>
+                                    <li className="flex items-center gap-2"><span className="text-green-500 font-black">(-)</span> pronoun + do/does + not + verb + complement</li>
                                     <li className="flex items-center gap-2"><span className="text-blue-600 font-black">(?)</span> do/does + pronoun + verb + complement?</li>
                                 </ul>
                                 <Separator className="my-4" />
                                 <p className="text-sm uppercase mb-2 text-muted-foreground">Short answers:</p>
                                 <ul className="space-y-1 font-mono text-base">
                                     <li><span className="text-green-600 font-black">(+A)</span> Yes, pronoun + do/does</li>
-                                    <li><span className="text-red-600 font-black">(-A)</span> No, pronoun + do/does + not</li>
+                                    <li><span className="text-green-500 font-black">(-A)</span> No, pronoun + do/does + not</li>
                                 </ul>
                             </div>
 
-                            <div className="p-6 bg-green-50 dark:bg-green-900/10 rounded-[2rem] border-2 border-dashed border-green-500/20 text-center">
-                            <div className="flex items-center justify-center gap-2 mb-2">
-                                <CheckCircle2 className="h-5 w-5 text-green-600" />
-                                <p className="text-green-600 font-black uppercase tracking-widest">3 - Contracciones Negativas</p>
+                            <div className="p-6 bg-destructive/5 dark:bg-destructive/10 rounded-[2rem] border-2 border-dashed border-destructive/20 text-center">
+                                <div className="flex items-center justify-center gap-2 mb-2">
+                                    <XCircle className="h-5 w-5 text-destructive" />
+                                    <p className="text-destructive font-black uppercase tracking-widest">3 - Contracciones Negativas</p>
+                                </div>
+                                <div className="flex flex-col gap-2 text-2xl font-black text-slate-900 dark:text-slate-100">
+                                    <p>DO NOT = <span className="text-destructive">DON’T</span></p>
+                                    <p>DOES NOT = <span className="text-destructive">DOESN’T</span></p>
+                                </div>
                             </div>
-                            <div className="flex flex-col gap-2 text-2xl font-black text-slate-900 dark:text-slate-100">
-                                <p>DO NOT = <span className="text-green-600">DON’T</span></p>
-                                <p>DOES NOT = <span className="text-green-600">DOESN’T</span></p>
-                            </div>
-                        </div>
                         </CardContent>
                         <CardFooter className="justify-center border-t pt-6">
                             <Button onClick={() => handleTopicCompleteInternal('grammar')} size="lg" className='text-white px-16 h-14 font-black rounded-full shadow-lg hover:scale-105 transition-transform'>
