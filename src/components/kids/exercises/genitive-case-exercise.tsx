@@ -14,18 +14,18 @@ const exercisePrompts = [
     { spanish: "LA CASA DE MIS PADRES ES COMODA", english: ["my parents' house is comfortable"] },
     { spanish: "EL COMPUTADOR DE SARA", english: ["sara's computer"] },
     { spanish: "LOS CELULARES DE PETER", english: ["peter's cellphones"] },
-    { spanish: "EL VIAJE DEL SABADO", english: ["saturday's trip"] },
+    { spanish: "EL VIAJE DEL SABADO", english: ["the trip of the saturday"] },
     { spanish: "EL HIJO DE WILLIAM ES DOCTOR", english: ["william's son is a doctor"] },
     { spanish: "LOS PANTALONES CORTOS DE DANNY", english: ["danny's shorts"] },
     { spanish: "LOS ZAPATOS DE MIS AMIGOS SON ADIDAS", english: ["my friends' shoes are adidas"] },
     { spanish: "EL CLOSET DE SU HERMANA ESTA LIMPIO (DE ÉL)", english: ["his sister's closet is clean"] },
     { spanish: "EL PERRO DE THOMAS ES PEQUEÑO", english: ["thomas's dog is small", "thomas' dog is small"] },
     { spanish: "LOS AUDIFONOS DE MARY SON NEGROS", english: ["mary's headphones are black"] },
-    { spanish: "¿EL APARTAMENTO DE TOM ES GRANDE?", english: ["is tom's apartment big?"] },
+    { spanish: "EL APARTAMENTO DE TOM ES GRANDE", english: ["tom's apartment is big"] },
     { spanish: "EL CARRO DE JORDAN NO ESTA SUCIO", english: ["jordan's car is not dirty", "jordan's car isn't dirty"] },
     { spanish: "EL COMPUTADOR DE ANA ES RAPIDO", english: ["ana's computer is fast"] },
-    { spanish: "LOS HIJOS DE DANIEL SON ALTOS", english: ["daniel's sons are tall"] },
-    { spanish: "¿LA FINCA DE TUS ABUELOS ES PEQUEÑA?", english: ["is your grandparents' farm small?"] },
+    { spanish: "LOS HIJOS DE DANIEL SON ALTOS", english: ["daniel's children are tall"] },
+    { spanish: "LA FINCA DE TUS ABUELOS ES PEQUEÑA", english: ["your grandparents' farm is small"] },
 ];
 
 type ValidationStatus = 'correct' | 'incorrect' | 'unchecked';
