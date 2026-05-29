@@ -450,6 +450,27 @@ const exercises = {
             { spanish: '10. ¿QUE LE ENSEÑAS A ELLOS?', english: ["what do you teach them?"] },
         ]
     },
+
+    // Class 1 (b1)
+    // --- CLASS 1 B1 ---
+    c1_b1_phrasal: {
+        title: 'Exercise Phrasal Verbs',
+        prompts: [
+            { spanish: 'yo me levanto a las 7', english: ['i get up at 7', 'i get up at seven', 'i get up at 7:00'] },
+            { spanish: 'ella se despierta tarde.', english: ['she wakes up late'] },
+            { spanish: 'apaga la luz y enciende el televisor.', english: ['turn off the light and turn on the tv', 'turn off the light and turn on the television'] },
+            { spanish: 'recoge el carro esta noche', english: ['pick up the car tonight'] },
+            { spanish: 'estoy buscando mis llaves.', english: ['i am looking for my keys', "i'm looking for my keys"] },
+            { spanish: 'ella busca su hermano.', english: ['she looks for her brother'] },
+            { spanish: 'yo encontré la verdad.', english: ['i found out the truth'] },
+            { spanish: 'ella regresó pronto.', english: ['she came back soon'] },
+            { spanish: 'nosotros salimos los fines de semana.', english: ['we go out on weekends', 'we go out on the weekends'] },
+            { spanish: 'ella se maquilla todos los dias.', english: ['she makes up every day'] },
+            { spanish: 'el se sienta en la mesa.', english: ['he sits down at the table'] },
+            { spanish: 'él cuida sus padres.', english: ['he takes care of his parents'] },
+        ]
+    },
+    
     custom_ex_some: {
         title: 'Exercise With Some',
         prompts: [

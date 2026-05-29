@@ -52,6 +52,21 @@ const ICONS_CONFIG = {
 const progressStorageVersion = 'progress_b1_eng_u1_c1_v5_stable';
 const mainProgressKey = 'progress_b1_eng_unit_1_class_1';
 
+const phrasalVocabForButton = {
+    "levantarse": "get up",
+    "despertarse": "wake up",
+    "encender": "turn on",
+    "apagar": "turn off",
+    "recoger": "pick up",
+    "buscar": "look for",
+    "cuidar": "take care",
+    "averiguar": "find out",
+    "regresar": "come back",
+    "salir": "go out",
+    "maquillarse": "make up",
+    "sentarse": "sit down"
+};
+
 const phrasalVerbsData = [
     { spanish: 'LEVANTARSE', english: 'GET UP' },
     { spanish: 'DESPERTARSE', english: 'WAKE UP' },
@@ -312,6 +327,7 @@ export default function EngB1Class1Page() {
         const topic = learningPath.find(t => t.key === selectedTopic);
         if (!topic) return null;
 
+        //-----VOCABULARY PHRASAL VERBS -----------
         switch (selectedTopic) {
             case 'vocabulary_phrasal':
                 return (
@@ -354,6 +370,12 @@ export default function EngB1Class1Page() {
                         </CardFooter>
                     </Card>
                 );
+
+                //-------EXERCISE PHRASAL VERBS-----------
+            case 'ex_phrasal':
+              return <SimpleTranslationExercise exerciseKey="c1_b1_phrasal" course="b1" onComplete={() => handleTopicComplete('ex_phrasal')} vocabulary={phrasalVocabForButton} highlightVocabulary={true} />;
+
+                //------------Grammar Some--------
             case 'grammar_some':
                 return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
@@ -431,6 +453,8 @@ export default function EngB1Class1Page() {
                         </CardFooter>
                     </Card>
                 );
+
+                //Exercise with some
             case 'ex_some':
                 return (
                     <SimpleTranslationExercise 
@@ -441,6 +465,8 @@ export default function EngB1Class1Page() {
                         course="b1"
                     />
                 );
+
+                //------------Grammar Any--------
             case 'grammar_any':
                 return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
@@ -496,6 +522,8 @@ export default function EngB1Class1Page() {
                         </CardFooter>
                     </Card>
                 );
+
+                // --- Exercise with any ---- 
             case 'ex_any':
                 return (
                     <SimpleTranslationExercise 
@@ -506,6 +534,8 @@ export default function EngB1Class1Page() {
                         course="b1"
                     />
                 );
+
+                //--- GRAMMAR 2: SOME EN OFRECIMIENTOS Y PETICIONES + ANY EN AFIRMATIVAS
             case 'grammar_2':
                 return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple">

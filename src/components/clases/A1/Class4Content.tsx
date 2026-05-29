@@ -467,7 +467,7 @@ export default function EngA1Class4Page() {
                                         <div className="font-mono text-base space-y-2">
                                             <p className="font-black text-primary">Estructura: POSEEDOR + 'S + POSESIÓN</p>
                                             <div className="pt-2">
-                                                <p>el carro de mi papá &rarr; <span className="font-bold text-primary">my dad's car</span></p>
+                                            
                                                 <p>la casa de Maria &rarr; <span className="font-bold text-primary">Maria's house</span></p>
                                             </div>
                                         </div>
@@ -522,10 +522,11 @@ export default function EngA1Class4Page() {
                     </div>
                 );
 
+                //---- Botón Vocabulario Ejericicio Genitivo ----
             case 'genitivo': 
                 return <GenitiveCaseExercise 
                             onComplete={() => handleTopicComplete('genitivo')} 
-                            vocabulary={{ "juguetes": "toys", "comoda": "comfortable", "hijo": "son", "zapatos": "shoes", "limpio": "clean", "pequeño": "small", "audifonos": "headphones", "sucio": "dirty" }}
+                            vocabulary={{ "juguetes": "toys", "comodo": "comfortable", "hijo": "son", "hijos": "children", "zapatos": "shoes", "viaje": "trip", "limpio": "clean", "pequeño": "small", "audifonos": "headphones", "sucio": "dirty", "apartmaento": "apartment", "pantalon corto": "short", "abuelos": "grandparents", "celular": "cellphone" }}
                         />;
             
             case 'wh-questions':
