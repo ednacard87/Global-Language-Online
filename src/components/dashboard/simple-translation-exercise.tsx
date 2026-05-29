@@ -14,6 +14,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 
 // Data for the exercises
 const exercises = {
+    
     // ---CLASS 1 (A1)
     mixed1: {
         title: 'a1class1.exercise',
@@ -256,7 +257,7 @@ const exercises = {
         ]
     },
 
-    
+
     c8_ex1: {
         title: 'a1class1.exercise',
         prompts: [

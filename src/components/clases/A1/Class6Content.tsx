@@ -300,6 +300,7 @@ export default function EngA1Class6Page() {
                         <div className="flex justify-center pt-4"><Button onClick={() => handleTopicComplete('note')} size="lg" className="px-12">Continuar</Button></div>
                     </div>
                 );
+                //los botones de Vocabulario del Ejercicio 6 
             case 'text':
                 return <LinesWritingExercise title="DICTATION 1" description="Escribe las frases dictadas." onComplete={() => handleTopicComplete('text')} studentDocRef={studentDocRef} lineCount={16} hasTitleLine={true} initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.dictation1} initialGrades={studentProfile?.lessonProgress?.[progressStorageVersion]?.dictation1Grades} savePath={`lessonProgress.${progressStorageVersion}.dictation1`} savePathGrades={`lessonProgress.${progressStorageVersion}.dictation1Grades`} isAdmin={isAdmin} />;
             case 'vocab_game': return <AdjectivesMemoryGame data={vocabularyData} onComplete={() => handleTopicComplete('vocab_game')} />;
