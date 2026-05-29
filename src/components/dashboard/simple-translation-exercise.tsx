@@ -14,6 +14,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 
 // Data for the exercises
 const exercises = {
+    // ---CLASS 1 (A1)
     mixed1: {
         title: 'a1class1.exercise',
         prompts: [
@@ -133,6 +134,8 @@ const exercises = {
             { spanish: '¿TU HERMANA ESTÁ EN EL PARQUE? – NO, ELLA ESTÁ EN EL SUPERMERCADO', english: ["Is your sister at the park? No, she is at the supermarket."] },
         ]
     },
+
+    // ---CLASS 2 (A1) ---
     c2_mixed1: {
         title: 'a1class1.exercise',
         prompts: [
@@ -146,87 +149,114 @@ const exercises = {
             { spanish: 'EL TREN SALE A LAS 7 P.M', english: ['the train leaves at 7 p.m.'] },
         ],
     },
+
+    // --- CLASS 6 (A1) ---
     c6_ex1: {
         title: 'a1class1.exercise',
-        prompts: [
-            { spanish: 'mi mascota es un gato', english: ['my pet is a cat'] },
-            { spanish: 'este carro es el mio', english: ['this car is mine'] },
-            { spanish: 'ella es mi hermana', english: ['she is my sister'] },
-            { spanish: 'el caballo es de ella', english: ['the horse is hers'] },
-            { spanish: 'este juguete es de el', english: ['this toy is his'] },
-            { spanish: 'esta finca es nuestra', english: ['this farm is ours'] },
-            { spanish: 'esta casa es suya (de ellos)', english: ['this house is theirs'] },
-            { spanish: 'este libro es el tuyo', english: ['this book is yours'] },
+         prompts: [
+            { spanish: 'YO TENGO UNA MASCOTA – ESTA ES MI MASCOTA', english: ['i have a pet - this is my pet'] },
+            { spanish: 'TU TIENES UN CARRO – ESTE ES TU CARRO', english: ['you have a car - this is your car'] },
+            { spanish: 'ÉL TIENE UNA HERMANA – ESTA ES SU HERMANA', english: ['he has a sister - this is his sister'] },
+            { spanish: 'ELLA TIENE UN CABALLO – ESE ES SU CABALLO', english: ['she has a horse - that is her horse'] },
+            { spanish: 'EL GATO TIENE UN JUGUETE – ESE ES SU JUGUETE', english: ['the cat has a toy - that is its toy'] },
+            { spanish: 'NOSOTROS TENEMOS UNA FINCA – ESA ES NUESTRA FINCA', english: ['we have a farm - that is our farm'] },
+            { spanish: 'ELLOS TIENEN UNA CASA- ESA ES SU CASA', english: ['they have a house - that is their house'] },
+            { spanish: 'YO TENGO UN LIBRO- ESTE ES MI LIBRO', english: ['i have a book - this is my book'] },
         ]
     },
     c6_ex2: {
         title: 'a1class1.exercise',
         prompts: [
-            { spanish: 'estos libros son mios', english: ['these books are mine'] },
-            { spanish: 'estos hermanos son de ella', english: ['these brothers are hers'] },
-            { spanish: 'el gato es mio', english: ['the cat is mine'] },
-            { spanish: 'la comida es nuestra', english: ['the food is ours'] },
-            { spanish: 'el hijo es de el', english: ['the son is his'] },
-            { spanish: 'estos zapatos son tuyos', english: ['these shoes are yours'] },
-            { spanish: 'los padres son de ellos', english: ['the parents are theirs'] },
-            { spanish: 'la novia es de el', english: ['the girlfriend is his'] },
-            { spanish: 'los amigos son de ella', english: ['the friends are hers'] },
+            { spanish: 'TU TIENES LIBROS - ESTOS SON TUS LIBROS', english: ['you have books - these are your books'] },
+            { spanish: 'MIS HERMANOS VIENEN DE ESPAÑA', english: ['my brothers come from spain'] },
+            { spanish: 'AL GATO LE GUSTA SU COMIDA', english: ['the cat likes its food'] },
+            { spanish: 'RICHARD ES MI HIJO - EL ES NUESTRO HIJO', english: ['richard is my son - he is our son'] },
+            { spanish: '¿DÓNDE ESTÁN TUS ZAPATOS?', english: ['where are your shoes?'] },
+            { spanish: '¿DÓNDE ESTÁ SU CASA? - (DE ELLA)', english: ['where is her house?'] },
+            { spanish: '¿ELLOS SON SUS PADRES? (DE ELLOS)', english: ['are they their parents?'] },
+            { spanish: 'ESTA ES MI CASA - ESA NO ES SU CASA- (DE EL)', english: ['this is my house - that is not his house', "this is my house - that isn't his house"] },
+            { spanish: '¿ELLA ES SU NOVIA? (DE EL)', english: ['is she his girlfriend?'] },
+            { spanish: '¿ELLOS SON TUS AMIGOS?', english: ['are they your friends?'] },
         ]
     },
     c6_ex3: {
         title: 'a1class1.exercise',
         prompts: [
-            { spanish: 'este libro es mío', english: ['this book is mine'] },
-            { spanish: 'esa casa es tuya', english: ['that house is yours'] },
-            { spanish: 'el perro es suyo (de él)', english: ['the dog is his'] },
-            { spanish: 'la gata es suya (de ella)', english: ['the cat is hers'] },
-            { spanish: 'estas maletas son mías', english: ['these suitcases are mine'] },
+            { spanish: 'ESTE ES MI CARRO – ESTE ES MIO', english: ['this is my car - this is mine'] },
+            { spanish: 'ESTA ES TU FINCA – ESA ES LA TUYA', english: ['this is your farm - that is yours'] },
+            { spanish: 'ESTE ES SU LIBRO (de ella) - ESTE ES SUYO', english: ['this is her book - this is hers'] },
+            { spanish: 'ESTA ES SU CASA (de ellos)– ESTA ES SUYA', english: ['this is their house - this is theirs'] },
+            { spanish: 'ESAS SON MIS GAFAS – ESAS SON LAS MIAS', english: ['those are my glasses - those are mine'] },
+            { spanish: 'ESE ES SU CELULAR (de él) – ESE ES EL SUYO', english: ['that is his cellphone - that is his'] },
         ]
     },
     c6_ex4: {
         title: 'a1class1.exercise',
         prompts: [
-            { spanish: 'este computador es mio', english: ['this computer is mine'] },
-            { spanish: 'esta casa no es mia, es negra', english: ['this house is not mine, it is black', "this house isn't mine, it's black"] },
-            { spanish: 'el perro es mio', english: ['the dog is mine'] },
-            { spanish: 'esas gafas no son mías, son de mi hermano', english: ['those glasses are not mine, they are my brother\'s', "those glasses aren't mine, they're my brother's"] },
-            { spanish: 'si el no esta aqui, el esta ahi esperandote en la puerta', english: ['if he is not here, he is there waiting for you at the door', "if he's not here, he's there waiting for you at the door"] },
-            { spanish: 'mis zapatos son de cuero', english: ['my shoes are leather'] },
-            { spanish: 'nosotros estamos en el restaurante', english: ['we are in the restaurant', "we're in the restaurant"] },
-            { spanish: 'este café está muy caliente, no puedo tomarlo', english: ['this coffee is very hot, i can not drink it', "this coffee is very hot, i can't drink it"] },
+            { spanish: 'ESE COMPUTADOR ES MIO', english: ['that computer is mine'] },
+            { spanish: 'ESA CASA ES NUESTRA', english: ['that house is ours'] },
+            { spanish: 'ESTOS SON NUESTROS LIBROS', english: ['these are our books'] },
+            { spanish: 'ESE CARRO NEGRO ES MÍO', english: ['that black car is mine'] },
+            { spanish: '¿ESTE PERRO ES TUYO? - SI', english: ['is this dog yours? - yes'] },
+            { spanish: 'ESAS SON TUS GAFAS', english: ['those are your glasses'] },
+            { spanish: '¿ESTA MI HERMANO AQUÍ?', english: ['is my brother here?'] },
+            { spanish: 'EL LIBRO ES NUESTRO', english: ['the book is ours'] },
+            { spanish: '¿SU CARRO ESTÁ AHÍ? (DE ELLOS)', english: ['is their car there?'] },
+            { spanish: 'ESTA ES SU FINCA- (DE ELLA)', english: ['this is her farm'] },
+            { spanish: 'TU AMIGO ESTÁ ESPERANDOTE EN LA PUERTA', english: ['your friend is waiting for you at the door'] },
+            { spanish: 'SUS ZAPATOS SON NEGROS (DE EL)', english: ['his shoes are black'] },
+            { spanish: 'MIS PADRES ESTAN EN SU CASA', english: ['my parents are in their house', "my parents are in their home"] },
+            { spanish: 'A LOS PERROS LES GUSTA SU COMIDA', english: ['the dogs like their food'] },
+            { spanish: '¿DÓNDE ESTÁN TUS ZAPATOS DE CUERO?', english: ['where are your leather shoes?'] },
+            { spanish: 'EL RESTAURANTE ES DE ELLOS', english: ['the restaurant is theirs'] },
+            { spanish: 'MI NÚMERO DE TELÉFONO ES…', english: ['my phone number is...'] },
+            { spanish: 'SU JUGUETE ESTÁ EN MI CARRO (DEL GATO)', english: ['its toy is in my car'] },
+            { spanish: '¿ESTE APARTAMENTO ES DE ELLOS?', english: ['is this apartment theirs?'] },
+            { spanish: '¿ESTE ES SU SANDUCHE? (DE ELLA)', english: ['is this her sandwich?'] },
+            { spanish: 'MI CAFÉ ESTÁ MUY CALIENTE, NO PUEDO TOMARLO', english: ["my coffee is very hot, i can't drink it", "my coffee is very hot, i cannot drink it"] },
+            { spanish: '¿ESTE ES SUYO? (DE ELLA)', english: ['is this hers?'] },
         ]
     },
     c6_ex5: {
         title: 'a1class1.exercise',
         prompts: [
-            { spanish: 'este reloj es mio', english: ['this watch is mine'] },
-            { spanish: 'esta mascota es vieja', english: ['this pet is old'] },
-            { spanish: 'estas camisetas son nuestras', english: ['these t-shirts are ours'] },
-            { spanish: 'esta pagina web es mia', english: ['this website is mine'] },
-            { spanish: 'esos estudiantes son mios', english: ['those students are mine'] },
-            { spanish: 'esta caja es de el', english: ['this box is his'] },
-            { spanish: 'este portatil es de ella', english: ['this laptop is hers'] },
+            { spanish: 'YO TENGO UN RELOJ NUEVO- EL RELOJ ES MIO', english: ['i have a new watch - the watch is mine'] },
+            { spanish: 'JANE TIENE UNA CASA VIEJA- LA CASA ES DE ELLA', english: ['jane has an old house - the house is hers'] },
+            { spanish: 'MARY TIENE UNA MASCOTA- LA MASCOTA ES DE ELLA', english: ['mary has a pet - the pet is hers'] },
+            { spanish: 'TÚ TIENES ALGUNAS CAMISETAS NUEVAS- LAS CAMISETAS SON TUYAS', english: ['you have some new t-shirts - the t-shirts are yours'] },
+            { spanish: 'TIM Y LOUIS TIENEN UNA NUEVA PAGINA WEB- LA PAGINA WEB ES DE ELLOS', english: ['tim and louis have a new website - the website is theirs'] },
+            { spanish: 'NOSOTROS TENEMOS UN EMPLEO NUEVO- EL EMPLEO ES NUESTRO', english: ['we have a new job - the job is ours'] },
+            { spanish: 'YO TENGO UN PERRO PEQUEÑO– EL PERRO ES MIO', english: ['i have a small dog - the dog is mine'] },
+            { spanish: 'ELLOS TIENEN UNA CAJA- LA CAJA ES DE ELLOS', english: ['they have a box - the box is theirs'] },
+            { spanish: 'ELLA TIENE UN PORTATIL BLANCO- EL PORTATIL ES DE ELLA', english: ['she has a white laptop - the laptop is hers'] },
+            { spanish: 'NOSOTROS TENEMOS UNA FINCA- LA FINCA ES NUESTRA', english: ['we have a farm - the farm is ours'] },
         ]
     },
     c6_ex6: {
         title: 'a1class1.exercise',
         prompts: [
-            { spanish: 'perdí mis llaves', english: ['i lost my keys'] },
-            { spanish: 'conozco a sus parientes', english: ['i know their relatives'] },
-            { spanish: 'el es mi amigo', english: ['he is my friend', "he's my friend"] },
-            { spanish: 'esas aretas son de ella', english: ['those earrings are hers'] },
-            { spanish: 'esa chaqueta es de el', english: ['that jacket is his'] },
+            { spanish: 'PERDI MIS LLAVES', english: ['i lost my keys'] },
+            { spanish: '¿ESTE ES MÍO Ó ES TUYO?', english: ['is this mine or yours?'] },
+            { spanish: 'YO CONOZCO SU HERMANO (DE ELLA)', english: ['i know her brother'] },
+            { spanish: 'ELLOS SON NUESTROS PARIENTES', english: ['they are our relatives'] },
+            { spanish: 'TU NO ERES SU AMIGO- (DE EL)', english: ["you aren't his friend", "you are not his friend"] },
+            { spanish: '¿ELLOS SON TUS AMIGOS?', english: ['are they your friends?'] },
+            { spanish: '¿ESTAS SON SUS ARETAS? - (DE ELLA)', english: ['are these her earrings?'] },
+            { spanish: '¿ESTA ES SU CHAQUETA? (DE ÉL)', english: ['is this his jacket?'] },
         ]
     },
     c6_ex7: {
         title: 'a1class1.exercise',
         prompts: [
-            { spanish: 'este bolso es mio', english: ['this bag is mine'] },
-            { spanish: 'ella es mi profesora de frances', english: ['she is my french teacher', "she's my french teacher"] },
-            { spanish: 'el vive con su familia', english: ['he lives with his family'] },
-            { spanish: 'esta camiseta es mia', english: ['this t-shirt is mine'] },
+            { spanish: 'ESTE ES SU BOLSO Y EL OTRO ES MÍO (DE ELLA)', english: ['this is her bag and the other one is mine'] },
+            { spanish: 'TU ERES FRANCÉS, TU FAMILIA VIVE EN FRANCIA', english: ['you are french, your family lives in france'] },
+            { spanish: '¿ESTA CAMISETA ES TUYA O MÍA?', english: ['is this t-shirt yours or mine?'] },
+            { spanish: '¿DONDE ESTÁ SU CELULAR? - (DE EL)', english: ['where is his cellphone?', 'where is his phone?'] },
+            { spanish: 'ESTA ES NUESTRA FAMILIA', english: ['this is our family'] },
         ]
     },
+
+    
     c8_ex1: {
         title: 'a1class1.exercise',
         prompts: [
