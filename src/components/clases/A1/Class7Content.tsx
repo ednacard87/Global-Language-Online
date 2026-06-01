@@ -1,23 +1,11 @@
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import Link from 'next/link';
+import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { 
-    BookOpen, 
-    PenSquare, 
-    Lock, 
-    GraduationCap, 
-    CheckCircle, 
-    Loader2, 
-    Plus, 
-    Minus, 
-    ChevronDown, 
-    Pencil, 
-    ArrowRight, 
-    BookText, 
-    XCircle 
-} from 'lucide-react';
+import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, Info, Loader2, Plus, Minus, Star, ChevronDown, Pencil, ArrowRight, Lightbulb, BookText, XCircle } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
@@ -32,9 +20,20 @@ import { CreativeWritingExercise } from '@/components/dashboard/creative-writing
 import { SentenceCompletionExercise, type CompletionPrompt } from '@/components/kids/exercises/sentence-completion-exercise';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
-// --- DATA ---
+type Topic = {
+  key: string;
+  name: string;
+  icon: React.ElementType;
+  status: 'locked' | 'active' | 'completed';
+};
 
-const progressStorageVersion = 'progress_a1_eng_u2_c7_v120_blindado';
+const ICONS_CONFIG = {
+    locked: Lock,
+    active: BookOpen,
+    completed: CheckCircle,
+};
+
+const progressStorageVersion = 'progress_a1_eng_u2_c7_v11_stable';
 const mainProgressKey = 'progress_a1_eng_unit_2_class_7';
 
 const vocabularyData = [
@@ -46,6 +45,7 @@ const vocabularyData = [
     { spanish: 'COMPRAR', english: 'TO BUY' },
     { spanish: 'VENIR', english: 'TO COME' },
     { spanish: 'COSTAR', english: 'TO COST' },
+    { spanish: 'COSTAR (PASADO)', english: 'COST' },
     { spanish: 'HACER', english: 'TO DO' },
     { spanish: 'DIBUJAR', english: 'TO DRAW' },
     { spanish: 'BEBER', english: 'TO DRINK' },
@@ -63,46 +63,45 @@ const exercise6Data: CompletionPrompt[] = [
     { parts: ["", " LIONS ARE THE MOST BEAUTIFUL ANIMALS."], answers: [""] },
     { parts: ["I HATE ", " BASKETBALL."], answers: [""] },
     { parts: ["I LIKE ", " WEATHER IN THAT CITY."], answers: ["THE"] },
+    { parts: ["", " HORSES ARE PRETTY."], answers: [""] },
+    { parts: ["I LIKE ", " WHITE SHIRTS."], answers: [""] },
+    { parts: ["WHERE IS ", " DOG? ", " DOG IS UNDER THE BED."], answers: ["THE", "THE"] },
+    { parts: ["", " SUN IS SHINING."], answers: ["THE"] },
 ];
 
-interface Topic {
-  key: string;
-  name: string;
-  icon: React.ElementType;
-  status: 'locked' | 'active' | 'completed';
-}
-
-const ICONS = { locked: Lock, active: BookOpen, completed: CheckCircle };
-
-// --- COMPONENT ---
-
-export default function Class7Content() {
+export default function EngA1Class7Page() {
     const { t } = useTranslation();
     const { toast } = useToast();
     const { user, isUserLoading } = useUser();
     const firestore = useFirestore();
 
+    const studentDocRef = useMemoFirebase(() => (user ? doc(firestore, 'students', user.uid) : null), [firestore, user]);
+    const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{role?: string, lessonProgress?: any, progress?: any}>(studentDocRef);
+
+    const isAdmin = useMemo(() => (user && (studentProfile?.role === 'admin' || user.email === 'ednacard87@gmail.com')), [user, studentProfile]);
+    
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
     const [selectedTopic, setSelectedTopic] = useState<string>('');
     const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
     const [isInitialLoading, setIsInitialLoading] = useState(true);
+    const [initialLoadComplete, setInitialLoadComplete] = useState(false);
 
     const [vocabAnswers, setVocabAnswers] = useState<string[]>(Array(vocabularyData.length).fill(''));
     const [vocabValidation, setVocabValidation] = useState<('correct' | 'incorrect' | 'unchecked')[]>(Array(vocabularyData.length).fill('unchecked'));
     const [canAdvanceVocab, setCanAdvanceVocab] = useState(false);
 
-    const studentDocRef = useMemoFirebase(() => (user ? doc(firestore, 'students', user.uid) : null), [firestore, user]);
-    const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{role?: string, lessonProgress?: any, progress?: any}>(studentDocRef);
-    const isAdmin = useMemo(() => (user && (studentProfile?.role === 'admin' || user.email === 'ednacard87@gmail.com')), [user, studentProfile]);
+    const handleTopicComplete = useCallback((completedKey: string) => {
+        setTopicToComplete(completedKey);
+    }, []);
 
     const initialLearningPath = useMemo((): Topic[] => [
-        { key: 'vocabulary', name: 'Vocabulary (Verbs)', icon: BookOpen, status: 'active' },
-        { key: 'grammar', name: 'Grammar: Definite Article', icon: GraduationCap, status: 'locked' },
+        { key: 'vocabulary', name: 'Vocabulary (Basic Verbs)', icon: BookOpen, status: 'active' },
+        { key: 'grammar', name: 'Grammar', icon: GraduationCap, status: 'locked' },
         { key: 'ex1', name: 'Exercise 1', icon: PenSquare, status: 'locked' },
-        { key: 'grammar2', name: 'Grammar: A vs AN', icon: GraduationCap, status: 'locked' },
+        { key: 'grammar2', name: 'Grammar 2', icon: GraduationCap, status: 'locked' },
         { key: 'ex2', name: 'Exercise 2', icon: PenSquare, status: 'locked' },
         { key: 'ex3', name: 'Exercise 3', icon: PenSquare, status: 'locked' },
-        { key: 'grammar3', name: 'Grammar: Preferences', icon: GraduationCap, status: 'locked' },
+        { key: 'grammar3', name: 'Grammar 3', icon: GraduationCap, status: 'locked' },
         { key: 'ex4', name: 'Exercise 4', icon: PenSquare, status: 'locked' },
         { key: 'create1', name: 'Create 1', icon: Pencil, status: 'locked' },
         { key: 'ex6', name: 'Exercise 6', icon: PenSquare, status: 'locked' },
@@ -110,18 +109,18 @@ export default function Class7Content() {
         { key: 'create2', name: 'Create 2', icon: Pencil, status: 'locked' },
         { key: 'ex9', name: 'Exercise 9', icon: PenSquare, status: 'locked' },
     ], []);
-
+    
     useEffect(() => {
-        if (isProfileLoading || isUserLoading || !studentProfile) return;
+        if (isProfileLoading || isUserLoading || !studentProfile || initialLoadComplete) return;
         let path = initialLearningPath.map(t => ({ ...t }));
-        let savedST = '';
+        let savedSelectedTopic = '';
 
         if (isAdmin) {
-            path.forEach(item => { item.status = 'completed'; });
-        } else if (studentProfile?.lessonProgress?.[progressStorageVersion]) {
+          path.forEach(item => { item.status = 'completed'; });
+        } else if(studentProfile?.lessonProgress?.[progressStorageVersion]) {
             const savedData = studentProfile.lessonProgress[progressStorageVersion];
             path.forEach(item => { if (savedData[item.key]) item.status = savedData[item.key]; });
-            savedST = savedData.lastSelectedTopic || '';
+            savedSelectedTopic = savedData.lastSelectedTopic || '';
         }
 
         let lastDone = true;
@@ -131,48 +130,55 @@ export default function Class7Content() {
         }
 
         setLearningPath(path);
-        setSelectedTopic(savedST || path.find(p => p.status === 'active')?.key || 'vocabulary');
+        const firstActive = path.find(p => p.status === 'active');
+        setSelectedTopic(savedSelectedTopic || firstActive?.key || path[0].key);
+        setInitialLoadComplete(true);
         setIsInitialLoading(false);
-    }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading, isUserLoading]);
-
+    }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading, isUserLoading, initialLoadComplete]);
+    
     const progressValue = useMemo(() => {
-        const done = learningPath.filter(t => t.status === 'completed').length;
-        return learningPath.length > 0 ? Math.round((done / learningPath.length) * 100) : 0;
+        if (learningPath.length === 0) return 0;
+        const completedCount = learningPath.filter(t => t.status === 'completed').length;
+        return Math.round((completedCount / learningPath.length) * 100);
     }, [learningPath]);
 
     useEffect(() => {
-        if (isInitialLoading || isAdmin || !studentDocRef || learningPath.length === 0) return;
-        const data: any = { lastSelectedTopic: selectedTopic };
-        learningPath.forEach(t => data[t.key] = t.status);
-        updateDocumentNonBlocking(studentDocRef, { [`lessonProgress.${progressStorageVersion}`]: data, [`progress.${mainProgressKey}`]: progressValue });
+        if (!initialLoadComplete || isInitialLoading || isAdmin || !studentDocRef || learningPath.length === 0) return;
+        const statusesToSave: Record<string, any> = { lastSelectedTopic: selectedTopic };
+        learningPath.forEach(item => { statusesToSave[item.key] = item.status; });
+        if (JSON.stringify(statusesToSave) !== JSON.stringify(studentProfile?.lessonProgress?.[progressStorageVersion])) {
+            updateDocumentNonBlocking(studentDocRef, { [`lessonProgress.${progressStorageVersion}`]: statusesToSave, [`progress.${mainProgressKey}`]: progressValue });
+        }
         if (progressValue >= 100) window.dispatchEvent(new CustomEvent('progressUpdated'));
-    }, [learningPath, isAdmin, progressValue, studentDocRef, selectedTopic, isInitialLoading]);
-
-    const handleTopicComplete = useCallback((completedKey: string) => setTopicToComplete(completedKey), []);
+    }, [learningPath, isAdmin, progressValue, studentDocRef, initialLoadComplete, selectedTopic, studentProfile, isInitialLoading]);
 
     useEffect(() => {
         if (!topicToComplete) return;
-        setLearningPath(curr => {
-            const np = curr.map(t => ({ ...t }));
-            const idx = np.findIndex(t => t.key === topicToComplete);
-            if (idx !== -1 && np[idx].status !== 'completed') {
-                np[idx].status = 'completed';
-                if (idx + 1 < np.length && np[idx + 1].status === 'locked') {
-                    np[idx + 1].status = 'active';
-                    setSelectedTopic(np[idx + 1].key);
-                    toast({ title: "¡Siguiente tema desbloqueado!" });
+        setLearningPath(currentPath => {
+            let wasUnlocked = false;
+            let nextToSelect: string | null = null;
+            const newPath = currentPath.map(t => ({ ...t }));
+            const idx = newPath.findIndex(t => t.key === topicToComplete);
+            if (idx !== -1 && newPath[idx].status !== 'completed') {
+                newPath[idx].status = 'completed';
+                if (idx + 1 < newPath.length && newPath[idx + 1].status === 'locked') {
+                    newPath[idx + 1].status = 'active';
+                    wasUnlocked = true;
+                    nextToSelect = newPath[idx + 1].key;
                 }
             }
-            return np;
+            if (wasUnlocked) setTimeout(() => toast({ title: "¡Siguiente tema desbloqueado!" }), 0);
+            if (nextToSelect) { const n = nextToSelect; setTimeout(() => setSelectedTopic(n), 0); }
+            return newPath;
         });
         setTopicToComplete(null);
     }, [topicToComplete, toast]);
 
-    const handleTopicSelect = (key: string) => {
-        const t = learningPath.find(it => it.key === key);
-        if (!isAdmin && t?.status === 'locked') { toast({ variant: "destructive", title: "Contenido Bloqueado" }); return; }
-        setSelectedTopic(key);
-        if (['grammar', 'grammar2', 'grammar3'].includes(key)) handleTopicComplete(key);
+    const handleTopicSelect = (topicKey: string) => {
+        const topic = learningPath.find(t => t.key === topicKey);
+        if (!isAdmin && topic?.status === 'locked') { toast({ variant: "destructive", title: "Contenido Bloqueado" }); return; }
+        setSelectedTopic(topicKey);
+        if (['grammar', 'grammar2', 'grammar3'].includes(topicKey)) handleTopicComplete(topicKey);
     };
 
     const handleVocabCheck = () => {
@@ -188,109 +194,266 @@ export default function Class7Content() {
     };
 
     const renderContent = () => {
-        if (isInitialLoading) return <div className="flex justify-center items-center h-64"><Loader2 className="animate-spin text-primary" /></div>;
+        if (isInitialLoading) return <div className="flex justify-center items-center min-h-[400px]"><Loader2 className="h-12 w-12 animate-spin text-primary" /></div>;
 
         switch (selectedTopic) {
             case 'vocabulary':
                 return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left">
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
                         <CardHeader><CardTitle>Vocabulary (Verbs)</CardTitle></CardHeader>
                         <CardContent>
                             <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-lg">
                                 <div className="font-bold p-3 bg-muted rounded-lg">Español</div><div className="font-bold p-3 bg-muted rounded-lg">Inglés</div>
                                 {vocabularyData.map((item, idx) => (
-                                    <React.Fragment key={idx}>
-                                        <div className="p-3 border rounded-lg bg-white/5">{item.spanish}</div>
-                                        <Input value={vocabAnswers[idx]} onChange={e => { const n = [...vocabAnswers]; n[idx] = e.target.value; setVocabAnswers(n); setVocabValidation(v => { const nv = [...v]; nv[idx] = 'unchecked'; return nv as any; }); setCanAdvanceVocab(false); }} className={cn(vocabValidation[idx] === 'correct' ? 'border-green-500 bg-green-50/5' : vocabValidation[idx] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} />
-                                    </React.Fragment>
+                                    <React.Fragment key={idx}><div className="p-3 border rounded-lg">{item.spanish}</div>
+                                    <Input value={vocabAnswers[idx]} onChange={e => { const n = [...vocabAnswers]; n[idx] = e.target.value; setVocabAnswers(n); setVocabValidation(v => { const nv = [...v]; nv[idx] = 'unchecked'; return nv as any; }); setCanAdvanceVocab(false); }} className={cn(vocabValidation[idx] === 'correct' ? 'border-green-500' : vocabValidation[idx] === 'incorrect' ? 'border-red-500' : '')} /></React.Fragment>
                                 ))}
                             </div>
                         </CardContent>
-                        <CardFooter className="flex justify-between border-t pt-6"><Button onClick={handleVocabCheck}>Verificar</Button><Button onClick={() => handleTopicComplete('vocabulary')} disabled={!canAdvanceVocab && !isAdmin}>Avanzar</Button></CardFooter>
+                        <CardFooter className="flex justify-between"><Button onClick={handleVocabCheck}>Verificar</Button><Button onClick={() => handleTopicComplete('vocabulary')} disabled={!canAdvanceVocab && !isAdmin}>Avanzar</Button></CardFooter>
                     </Card>
                 );
-            case 'grammar':
+            case 'grammar': 
                 return (
                     <div className="space-y-6 text-left">
-                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-slate-100 dark:bg-slate-800/50 text-black">
-                            <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase">THE DEFINITE ARTICLE “THE” 🚀</CardTitle></CardHeader>
-                            <CardContent className="space-y-6 text-lg font-bold">
-                                <div className="p-6 bg-white/10 rounded-2xl border">
-                                    <p className="text-primary uppercase">1 - SIGNIFICADO</p>
-                                    <p className="mt-2">THE corresponde a: “EL”, “LA”, “LOS”, “LAS”.</p>
-                                </div>
-                                <div className="p-6 bg-white/10 rounded-2xl border">
-                                    <p className="text-primary uppercase">2 - USO ESPECÍFICO</p>
-                                    <p className="mt-2">Se usa cuando se habla de "algo en particular o específico".</p>
-                                </div>
-                                <div className="p-6 bg-destructive/10 rounded-2xl border-2 border-dashed border-destructive/20 text-center">
-                                    <p className="text-destructive uppercase font-black">Nota: No se usa para generalizar.</p>
-                                    <p className="font-mono text-base text-muted-foreground">I like football (No: I like the football)</p>
-                                </div>
-                            </CardContent>
-                            <CardFooter className="justify-center pb-6"><Button onClick={() => handleTopicComplete('grammar')} size="lg" className="px-12 font-bold">Entendido</Button></CardFooter>
-                        </Card>
+                        <h2 className="text-3xl font-black text-center text-primary uppercase tracking-tighter">THE DEFINITE ARTICLE “THE” 🚀</h2>
+                        <p className="text-center text-slate-700 dark:text-slate-300 font-bold uppercase tracking-widest text-sm">EL ARTICULO DETERMINADO "THE"</p>
+
+                        <div className="grid grid-cols-1 gap-6">
+                            <Card className="bg-slate-100 dark:bg-slate-900/50 border-border/50 rounded-[2rem] shadow-sm">
+                                <CardHeader><CardTitle className="text-primary text-xl font-black uppercase">1 - SIGNIFICADO</CardTitle></CardHeader>
+                                <CardContent className="space-y-4">
+                                    <p className="text-lg text-slate-900 dark:text-slate-100">THE corresponde a: <strong>“EL”, “LA”, “LOS”, “LAS”</strong>.</p>
+                                    <div className="grid sm:grid-cols-2 gap-4">
+                                        <div className="p-4 bg-background/50 rounded-xl border space-y-1">
+                                            <p className="text-xs font-bold text-muted-foreground uppercase">Masculino/Singular</p>
+                                            <p className="font-bold text-slate-900 dark:text-slate-100">THE BOY ( EL NIÑO)</p>
+                                            <p className="font-bold text-slate-900 dark:text-slate-100">THE BOOK ( EL LIBRO)</p>
+                                        </div>
+                                        <div className="p-4 bg-background/50 rounded-xl border space-y-1">
+                                            <p className="text-xs font-bold text-muted-foreground uppercase">Femenino/Singular</p>
+                                            <p className="font-bold text-slate-900 dark:text-slate-100">THE GIRL ( LA NIÑA)</p>
+                                            <p className="font-bold text-slate-900 dark:text-slate-100">THE TABLE ( LA MESA)</p>
+                                        </div>
+                                        <div className="p-4 bg-background/50 rounded-xl border space-y-1">
+                                            <p className="text-xs font-bold text-muted-foreground uppercase">Masculino/Plural</p>
+                                            <p className="font-bold text-slate-900 dark:text-slate-100">THE BOYS (LOS NIÑOS)</p>
+                                            <p className="font-bold text-slate-900 dark:text-slate-100">THE BOOKS (LOS LIBROS)</p>
+                                        </div>
+                                        <div className="p-4 bg-background/50 rounded-xl border space-y-1">
+                                            <p className="text-xs font-bold text-muted-foreground uppercase">Femenino/Plural</p>
+                                            <p className="font-bold text-slate-900 dark:text-slate-100">THE GIRLS (LAS NIÑAS)</p>
+                                            <p className="font-bold text-slate-900 dark:text-slate-100">THE TABLES (LAS MESAS)</p>
+                                        </div>
+                                    </div>
+                                </CardContent>
+                            </Card>
+
+                            <Card className="bg-slate-100 dark:bg-slate-900/50 border-border/50 rounded-[2rem] shadow-sm">
+                                <CardHeader><CardTitle className="text-primary text-xl font-black uppercase">2 - PRONUNCIACIÓN</CardTitle></CardHeader>
+                                <CardContent className="space-y-4">
+                                    <div className="flex items-start gap-3 p-4 bg-background/50 rounded-xl border">
+                                        <div className="h-8 w-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold">a</div>
+                                        <p className="text-lg text-slate-900 dark:text-slate-100">Precedida de <strong>consonante</strong> se pronuncia <strong>“DE”</strong>: THE LAMP (DE LAMP)</p>
+                                    </div>
+                                    <div className="flex items-start gap-3 p-4 bg-background/50 rounded-xl border">
+                                        <div className="h-8 w-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold">b</div>
+                                        <p className="text-lg text-slate-900 dark:text-slate-100">Precedida de <strong>vocal</strong> se pronuncia <strong>“DI”</strong>: THE ENEMY (DI ENEMI)</p>
+                                    </div>
+                                </CardContent>
+                            </Card>
+
+                            <Card className="bg-slate-100 dark:bg-slate-900/50 border-border/50 rounded-[2rem] shadow-sm">
+                                <CardHeader><CardTitle className="text-primary text-xl font-black uppercase">3 - USO ESPECÍFICO</CardTitle></CardHeader>
+                                <CardContent className="space-y-4">
+                                    <p className="text-lg text-slate-900 dark:text-slate-100">Se usa cuando se habla de <strong>"algo en particular o específico"</strong>:</p>
+                                    <ul className="space-y-2 font-mono italic text-muted-foreground pl-4">
+                                        <li>1. WHAT IS THE NAME OF THE RESTAURANT?</li>
+                                        <li>2. DO YOU REMEMBER THE DAY WHEN WE WENT TO WASHINGTON?</li>
+                                        <li>3. THE DOCTOR IS VERY GOOD</li>
+                                    </ul>
+                                </CardContent>
+                            </Card>
+
+                            <Card className="bg-slate-100 dark:bg-slate-900/50 border-border/50 rounded-[2rem] shadow-sm border-2 border-dashed border-destructive/20">
+                                <CardHeader><CardTitle className="text-destructive text-xl font-black uppercase">4 - NO SE USA</CardTitle></CardHeader>
+                                <CardContent className="space-y-4">
+                                    <p className="text-lg font-bold text-slate-900 dark:text-slate-100">NO se pone cuando se habla en general o se generaliza:</p>
+                                    <ul className="space-y-2 font-mono italic text-muted-foreground pl-4">
+                                        <li className="flex items-center gap-2"><XCircle className="h-4 w-4 text-destructive" /> I LIKE FOOTBALL (No: I like the football)</li>
+                                        <li className="flex items-center gap-2"><XCircle className="h-4 w-4 text-destructive" /> SHE LOVES MUSIC (No: she loves the music)</li>
+                                        <li className="flex items-center gap-2"><XCircle className="h-4 w-4 text-destructive" /> PEOPLE ARE STRANGE (No: the people are strange)</li>
+                                    </ul>
+                                </CardContent>
+                            </Card>
+                        </div>
                     </div>
                 );
-            case 'grammar2':
+            case 'grammar2': 
                 return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-slate-100 dark:bg-slate-800/50 text-black p-6">
-                        <CardTitle className="text-2xl font-black text-primary uppercase">INDEFINITIVE ARTICLES (A - AN)</CardTitle>
-                        <CardContent className="pt-6 space-y-4">
-                            <p className="text-xl font-bold">Significado: un / una</p>
-                            <div className="grid grid-cols-2 gap-4 text-center">
-                                <div className="p-6 bg-white/50 rounded-xl border-2 border-dashed"><p className="font-black text-primary text-xl">A</p><p>+ Consonante</p></div>
-                                <div className="p-6 bg-white/50 rounded-xl border-2 border-dashed"><p className="font-black text-primary text-xl">AN</p><p>+ Vocal</p></div>
-                            </div>
-                        </CardContent>
-                        <CardFooter className="justify-center"><Button onClick={() => handleTopicComplete('grammar2')} size="lg" className="px-12">Continuar</Button></CardFooter>
-                    </Card>
+                    <div className="space-y-6 text-left">
+                        <h2 className="text-3xl font-black text-center text-primary uppercase tracking-tighter">INDEFINITIVE ARTICLES 🚀</h2>
+                        <div className="grid grid-cols-1 gap-6">
+                            <Card className="bg-slate-100 dark:bg-slate-900/50 border-border/50 rounded-[2rem] shadow-sm">
+                                <CardContent className="p-8 space-y-6">
+                                    <div className="text-center">
+                                        <p className="text-5xl font-black text-primary">A - AN</p>
+                                        <p className="text-xl font-bold mt-2 text-muted-foreground">Significado: un / una</p>
+                                    </div>
+                                    <Separator />
+                                    <div className="grid sm:grid-cols-2 gap-4 text-center">
+                                        <div className="p-6 bg-background rounded-2xl border-2 border-dashed">
+                                            <p className="text-lg font-black text-primary">A + Consonant</p>
+                                            <p className="mt-1 italic text-slate-900 dark:text-slate-100">A car</p>
+                                        </div>
+                                        <div className="p-6 bg-background rounded-2xl border-2 border-dashed">
+                                            <p className="text-lg font-black text-primary">An + Vowel</p>
+                                            <p className="mt-1 italic text-slate-900 dark:text-slate-100">An elevator</p>
+                                        </div>
+                                    </div>
+                                    <div className="p-4 bg-primary/10 rounded-xl border border-primary/20 text-center">
+                                        <p className="font-bold text-slate-900 dark:text-slate-100">USO: Son utilizados para referirnos a algo o alguien en <span className="underline uppercase">Singular</span>.</p>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </div>
+                    </div>
                 );
-            case 'grammar3':
+            case 'grammar3': 
                 return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-slate-100 dark:bg-slate-800/50 text-black p-6">
-                        <CardTitle className="text-2xl font-black text-primary uppercase">LIKES AND DISLIKES</CardTitle>
-                        <CardContent className="pt-6 space-y-6">
-                            <p className="text-lg font-bold">Cuando van seguidos de verbos, se pueden usar dos formas:</p>
-                            <div className="grid sm:grid-cols-2 gap-4 font-mono">
-                                <div className="p-4 bg-white/50 rounded-xl border text-center"><p className="text-primary font-black">LIKE + TO + VERBO</p><p className="text-sm mt-1">I like to cook</p></div>
-                                <div className="p-4 bg-white/50 rounded-xl border text-center"><p className="text-primary font-black">LIKE + VERBO-ING</p><p className="text-sm mt-1">I like cooking</p></div>
-                            </div>
-                        </CardContent>
-                        <CardFooter className="justify-center"><Button onClick={() => handleTopicComplete('grammar3')} size="lg" className="px-12">Entendido</Button></CardFooter>
-                    </Card>
+                    <div className="space-y-6 text-left">
+                        <h2 className="text-3xl font-black text-center text-primary uppercase tracking-tighter">LIKES AND DISLIKES 🚀</h2>
+                        <p className="text-center text-slate-700 dark:text-slate-300 font-bold uppercase tracking-widest text-sm">(VERBOS DE PREFERENCIA)</p>
+
+                        <div className="grid grid-cols-1 gap-6">
+                            <Card className="bg-slate-100 dark:bg-slate-900/50 border-border/50 rounded-[2rem] shadow-sm">
+                                <CardContent className="p-6 grid sm:grid-cols-2 gap-8">
+                                    <div className="space-y-3">
+                                        <div className="flex items-center gap-2 text-green-500 font-black"><Plus className="h-6 w-6" /> POSITIVE</div>
+                                        <ul className="space-y-1 text-lg font-medium pl-8 text-slate-900 dark:text-slate-100">
+                                            <li>Love : Encantar</li>
+                                            <li>Like : Gustar</li>
+                                            <li>Enjoy : Disfrutar</li>
+                                            <li>Prefer : Preferir</li>
+                                        </ul>
+                                    </div>
+                                    <div className="space-y-3">
+                                        <div className="flex items-center gap-2 text-red-500 font-black"><Minus className="h-6 w-6" /> NEGATIVE</div>
+                                        <ul className="space-y-1 text-lg font-medium pl-8 text-slate-900 dark:text-slate-100">
+                                            <li>Dislike : No gustar</li>
+                                            <li>Hate : Odiar</li>
+                                        </ul>
+                                    </div>
+                                </CardContent>
+                            </Card>
+
+                            <Card className="bg-slate-100 dark:bg-slate-900/50 border-border/50 rounded-[2rem] shadow-sm border-2 border-brand-blue/30">
+                                <CardHeader><CardTitle className="text-brand-blue text-xl font-black uppercase">NOTICA: REALLY</CardTitle></CardHeader>
+                                <CardContent className="space-y-2">
+                                    <p className="text-lg text-slate-900 dark:text-slate-100">Para decir "de verdad", "realmente" o "muchísimo":</p>
+                                    <p className="text-2xl font-black text-center py-4 bg-background/50 rounded-xl border border-brand-blue/20 text-slate-900 dark:text-slate-100">I REALLY LIKE WATER (+)</p>
+                                </CardContent>
+                            </Card>
+
+                            <Card className="bg-slate-100 dark:bg-slate-900/50 border-border/50 rounded-[2rem] shadow-sm">
+                                <CardHeader><CardTitle className="text-primary text-xl font-black uppercase">1 - CON SUSTANTIVOS</CardTitle></CardHeader>
+                                <CardContent>
+                                    <div className="grid gap-3 font-mono italic text-muted-foreground p-4 bg-background/50 rounded-xl border">
+                                        <p>ME GUSTAN LAS PELICULAS</p>
+                                        <p>NO ME GUSTAN LAS HAMBURGUESAS</p>
+                                        <p>A ELLA NO LE GUSTA EL AJO</p>
+                                        <p>ÉL ODIA LAS SERIES</p>
+                                    </div>
+                                </CardContent>
+                            </Card>
+
+                            <Card className="bg-slate-100 dark:bg-slate-900/50 border-border/50 rounded-[2rem] shadow-sm">
+                                <CardHeader><CardTitle className="text-primary text-xl font-black uppercase">2 - CON VERBOS (DOS OPCIONES)</CardTitle></CardHeader>
+                                <CardContent className="space-y-4">
+                                    <p className="text-lg text-slate-900 dark:text-slate-100">Cuando van acompañados de otros verbos, puedes usar cualquiera de estas dos opciones sin variar el sentido:</p>
+                                    <div className="grid sm:grid-cols-2 gap-4">
+                                        <div className="p-6 bg-background rounded-2xl border-2 border-dashed">
+                                            <p className="text-lg font-black text-primary">a) TO (Infinitive)</p>
+                                            <p className="mt-1 font-bold text-slate-900 dark:text-slate-100">LIKE + TO + VERB</p>
+                                            <p className="mt-2 text-sm italic text-slate-700 dark:text-slate-300">I LIKE TO COOK PASTA</p>
+                                        </div>
+                                        <div className="p-6 bg-background rounded-2xl border-2 border-dashed">
+                                            <p className="text-lg font-black text-primary">b) ING (Gerund)</p>
+                                            <p className="mt-1 font-bold text-slate-900 dark:text-slate-100">LIKE + VERB-ING</p>
+                                            <p className="mt-2 text-sm italic text-slate-700 dark:text-slate-300">I LIKE COOKING PASTA</p>
+                                        </div>
+                                    </div>
+                                </CardContent>
+                            </Card>
+
+                            <Card className="bg-slate-100 dark:bg-slate-900/50 border-border/50 rounded-[2rem] shadow-sm border-2 border-brand-purple/30">
+                                <CardHeader><CardTitle className="text-brand-purple text-xl font-black uppercase">USO DE "PREFER"</CardTitle></CardHeader>
+                                <CardContent className="space-y-6">
+                                    <div className="space-y-2">
+                                        <h4 className="font-bold text-foreground underline">CON SUSTANTIVOS (NOUNS)</h4>
+                                        <div className="p-4 bg-background/50 rounded-xl border font-mono">
+                                            <p className="text-primary font-bold">Pronombre + prefer + sustantivo + TO + sustantivo</p>
+                                            <p className="mt-2 text-sm italic text-slate-700 dark:text-slate-300">yo prefiero la pizza a la hamburguesa</p>
+                                            <p className="font-bold text-slate-900 dark:text-slate-100">I prefer pizza TO hamburger</p>
+                                        </div>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <h4 className="font-bold text-foreground underline">CON VERBOS</h4>
+                                        <div className="p-4 bg-background/50 rounded-xl border font-mono">
+                                            <p className="text-primary font-bold">Pronombre + prefer + verbo-ING + TO + verbo-ING</p>
+                                            <p className="mt-2 text-sm italic text-slate-700 dark:text-slate-300">yo prefiero ir a la playa que quedarme en la piscina</p>
+                                            <p className="font-bold text-slate-900 dark:text-slate-100">I prefer GOING to the beach TO STAYING at the pool</p>
+                                        </div>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </div>
+                    </div>
                 );
-            case 'ex1': return <SimpleTranslationExercise course="a1" exerciseKey="c7_ex1" onComplete={() => handleTopicComplete('ex1')} title="Exercise 1" />;
-            case 'ex2': return <SimpleTranslationExercise course="a1" exerciseKey="c7_ex2" onComplete={() => handleTopicComplete('ex2')} title="Exercise 2" />;
-            case 'ex3': return <SimpleTranslationExercise course="a1" exerciseKey="c7_ex3" onComplete={() => handleTopicComplete('ex3')} title="Exercise 3" />;
-            case 'ex4': return <SimpleTranslationExercise course="a1" exerciseKey="c7_ex4" onComplete={() => handleTopicComplete('ex4')} title="Exercise 4" />;
-            case 'create1': return <CreativeWritingExercise title="Create 1" prompts={[{id:'p1', question: 'What do you like and dislike?'}, {id:'p2', question: 'Describe someone else\'s tastes.'}]} onComplete={() => handleTopicComplete('create1')} studentDocRef={studentDocRef} initialData={studentProfile?.lessonProgress?.[progressStorageKey]?.create1 || {}} savePath={`lessonProgress.${progressStorageKey}.create1`} />;
-            case 'ex6': return <SentenceCompletionExercise title="Exercise 6" description='Inserta "THE" donde sea necesario o déjalo vacío.' data={exercise6Data} onComplete={() => handleTopicComplete('ex6')} />;
-            case 'ex7': return <SimpleTranslationExercise course="a1" exerciseKey="c7_ex7" onComplete={() => handleTopicComplete('ex7')} title="Exercise 7: A vs AN" />;
-            case 'create2': return <CreativeWritingExercise title="Create 2" prompts={[{id:'p1', question: 'What do you like and dislike about your city?'}]} onComplete={() => handleTopicComplete('create2')} studentDocRef={studentDocRef} initialData={studentProfile?.lessonProgress?.[progressStorageKey]?.create2 || {}} savePath={`lessonProgress.${progressStorageKey}.create2`} />;
-            case 'ex9': return <SimpleTranslationExercise course="a1" exerciseKey="c7_ex9" onComplete={() => handleTopicComplete('ex9')} title="Exercise 9" />;
-            default: return null;
+
+                // ----- Vocabulario de los ejercicios -----
+            case 'ex1': return <SimpleTranslationExercise exerciseKey="c7_ex1" course="a1" onComplete={() => handleTopicComplete('ex1')} title="Exercise 1" vocabulary={{"parques": "parks", "tranquilos": "quiet", "noche": "night", "joven": "young", "jugos": "juices", "saludables": "healthy", "película": "movie", "arañas": "spiders", "mariposas": "butterflies", "audifonos": "headphones"}} highlightVocabulary={true} />;
+            case 'ex2': return <SimpleTranslationExercise exerciseKey="c7_ex2" course="a1" onComplete={() => handleTopicComplete('ex2')} title="Exercise 2" vocabulary={{"encontró": "found", "perdió": "lost", "verduras": "vegetables", "accidente": "accident", "calle": "street", "concierto": "concert", "ingeniero": "engineer", "esposa": "wife"}} highlightVocabulary={true} />;
+            case 'ex3': return <SimpleTranslationExercise exerciseKey="c7_ex3" course="a1" onComplete={() => handleTopicComplete('ex3')} title="Exercise 3" vocabulary={{"manzana": "apple", "sandia": "watermelon", "primo": "cousin", "apodo": "nickname", "viejos": "old", "enojados": "angry", "hermano": "brother"}} highlightVocabulary={true} />;
+            case 'ex4': return <SimpleTranslationExercise exerciseKey="c7_ex4" course="a1" onComplete={() => handleTopicComplete('ex4')} title="Exercise 4" vocabulary={{"preferir": "prefer", "calor": "heat", "frio": "cold", "terror": "horror", "ajo": "garlic", "metal": "metal", "novelas": "soap operas", "fresas": "strawberries", "pintar": "paint", "mentiras": "lies", "carpintería": "carpentry", "espinaca": "spinach", "remolacha": "beetroot", "pueblo": "town", "ciudad": "city"}} highlightVocabulary={true} />;
+            case 'create1': return <CreativeWritingExercise title="Create 1" prompts={[{ id: 'p1', question: '1- WHAT DO YOU LIKE AND WHAT DO YOU DISLIKE?' }, { id: 'p2', question: '2- PIENSA EN ALGUIEN Y ESCRIBE SUS GUSTOS.' }]} onComplete={() => handleTopicComplete('create1')} studentDocRef={studentDocRef} initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.writingEx5} savePath={`lessonProgress.${progressStorageVersion}.writingEx5`} />;
+            case 'ex6': return <SentenceCompletionExercise title="Exercise 6" description='Instrucciones : Inserta el "THE" donde sea necesario.' data={exercise6Data} onComplete={() => handleTopicComplete('ex6')} />;
+            case 'ex7': return <SimpleTranslationExercise exerciseKey="c7_ex7" course="a1" onComplete={() => handleTopicComplete('ex7')} title="Exercise 7: A vs AN" vocabulary={{"adolescente": "teenager", "soleado": "sunny", "sombrilla": "umbrella", "honesta": "honest", "actriz": "actress", "sillón": "armchair", "policia": "policeman", "brazo": "arm", "negocios": "business"}} highlightVocabulary={true} />;
+            case 'create2': return <CreativeWritingExercise title="Create 2" description="WHAT DO YOU LIKE AND WHAT DO YOU DISLIKE OF MEDELLIN? (5 SENTENCES)" prompts={[{ id: 'p1', question: 'DESCRIBE TU CIUDAD (GUSTOS).' }]} onComplete={() => handleTopicComplete('create2')} studentDocRef={studentDocRef} initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.writingEx8} savePath={`lessonProgress.${progressStorageVersion}.writingEx8`} />;
+            case 'ex9': return <SimpleTranslationExercise exerciseKey="c7_ex9" course="a1" onComplete={() => handleTopicComplete('ex9')} title="Exercise 9" vocabulary={{"carne": "meat", "restaurante": "restaurant", "chino": "chinese", "tenis": "tennis", "futbol": "soccer/football", "lleno": "full", "arte": "art", "ajo": "garlic"}} highlightVocabulary={true} />;
+            default: return <div className="flex justify-center items-center h-48"><Loader2 className="animate-spin text-primary" /></div>;
         }
     };
 
     return (
-        <div className="grid gap-8 md:grid-cols-12">
-            <div className="md:col-span-9 md:order-1 order-2">{renderContent()}</div>
-            <div className="md:col-span-3 md:order-2 order-1 text-left">
-                <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
-                    <CardHeader><CardTitle>Ruta de Aprendizaje</CardTitle></CardHeader>
-                    <CardContent>
-                        <nav><ul className="space-y-1">
-                            {learningPath.map(item => (
-                                <li key={item.key} onClick={() => handleTopicSelect(item.key)} className={cn('flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer text-foreground', (item.status === 'locked' && !isAdmin) ? 'text-muted-foreground/50' : 'hover:bg-muted', selectedTopic === item.key && 'bg-muted text-primary font-bold')}>
-                                    <item.icon className={cn("h-5 w-5", item.status === 'completed' && 'text-green-500')} /><span>{item.name}</span>
-                                </li>
-                            ))}
-                        </ul></nav>
-                        <div className="mt-6 pt-6 border-t"><div className="flex justify-between items-center text-xs mb-2"><span>Progreso</span><span className="font-bold">{progressValue}%</span></div><Progress value={progressValue} className="h-1.5" /></div>
-                    </CardContent>
-                </Card>
-            </div>
+        <div className="flex w-full flex-col min-h-screen ingles-dashboard-bg">
+            <DashboardHeader />
+            <main className="flex-1 p-4 md:p-8">
+                <div className="max-w-7xl mx-auto">
+                    <div className="mb-8 text-left text-white">
+                        <Link href="/ingles/a1/unit/2" className="hover:underline text-sm font-bold text-primary">Volver a la Unidad 2</Link>
+                        <h1 className="text-4xl font-bold [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">Clase 7 (A1)</h1>
+                    </div>
+                    <div className="grid gap-8 md:grid-cols-12">
+                        <div className="md:col-span-3 md:order-2 text-left">
+                            <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
+                                <CardHeader><CardTitle>Aventura</CardTitle></CardHeader>
+                                <CardContent>
+                                    <nav><ul className="space-y-1">
+                                        {learningPath.map(item => (
+                                            <li key={item.key} onClick={() => handleTopicSelect(item.key)} className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer', (item.status === 'locked' && !isAdmin) ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === item.key && 'bg-muted text-primary font-semibold')}>
+                                                <div className="flex items-center gap-3">{(item.status === 'completed') ? <CheckCircle className="h-5 w-5 text-green-500" /> : <item.icon className="h-5 w-5" />}<span>{item.name}</span></div>
+                                            </li>
+                                        ))}
+                                    </ul></nav>
+                                    <div className="mt-6 pt-6 border-t"><div className="flex justify-between items-center text-sm mb-2"><span>Progreso</span><span className="font-bold">{progressValue}%</span></div><Progress value={progressValue} className="h-2" /></div>
+                                </CardContent>
+                            </Card>
+                        </div>
+                        <div className="md:col-span-9 md:order-1">{renderContent()}</div>
+                    </div>
+                </div>
+            </main>
         </div>
     );
 }
