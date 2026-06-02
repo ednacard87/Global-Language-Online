@@ -19,6 +19,7 @@ import { SimpleTranslationExercise } from '@/components/dashboard/simple-transla
 import { CreativeWritingExercise } from '@/components/dashboard/creative-writing-exercise';
 import { SentenceCompletionExercise, type CompletionPrompt } from '@/components/kids/exercises/sentence-completion-exercise';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 type Topic = {
   key: string;

@@ -11,6 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { ArrowLeft, ArrowRight, Trophy, BookText } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { ScrollArea } from '../ui/scroll-area';
 
 // Data for the exercises
 const exercises = {
@@ -768,14 +769,16 @@ export function SimpleTranslationExercise({
                                             Palabras importantes para este ejercicio.
                                         </p>
                                     </div>
-                                    <div className="grid gap-2 text-sm">
-                                        {Object.entries(vocabulary).map(([spanish, english]) => (
-                                            <div key={spanish} className="grid grid-cols-2 items-center gap-4">
-                                                <span className="text-muted-foreground capitalize">{spanish}</span>
-                                                <span className="font-semibold text-right">{english}</span>
-                                            </div>
+                                    <ScrollArea className="h-40">
+                                        <div className="grid gap-2 text-sm">
+                                            {Object.entries(vocabulary).map(([spanish, english]) => (
+                                                <div key={spanish} className="grid grid-cols-2 items-center gap-4">
+                                                    <span className="text-muted-foreground capitalize">{spanish}</span>
+                                                    <span className="font-semibold text-right">{english}</span>
+                                                </div> 
                                         ))}
-                                    </div>
+                                        </div>
+                                    </ScrollArea>
                                 </div>
                             </PopoverContent>
                         </Popover>
