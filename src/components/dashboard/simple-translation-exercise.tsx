@@ -327,26 +327,47 @@ const exercises = {
             { spanish: 'ME ENCANTA ESCUCHAR MÚSICA ROMANTICA MIENTRAS HAGO UN ROMPECABEZAS', english: ["i love listening to romantic music while doing a puzzle"] },
             { spanish: 'ELLA PREFIERE NO TENER REDES SOCIALES', english: ["she prefers not to have social media"] },
             { spanish: 'PREFIERO VIVIR EN UN PUEBLO QUE VIVIR EN UNA GRAN CIUDAD', english: ["i prefer living in a town to living in a big city"] },
-            { spanish: 'El prefiere el pescado a la carne', english: ["he prefers fish to meat"] },
+            { spanish: 'EL PREFIERE EL PESCADO A LA CARNE', english: ["he prefers fish to meat"] },
         ]
     },
     c7_ex7: {
         title: 'a1class1.exercise',
         prompts: [
-            { spanish: 'UN ADOLESCENTE', english: ["a teenager"] },
-            { spanish: 'UN DÍA SOLEADO', english: ["a sunny day"] },
-            { spanish: 'UNA SOMBRILLA', english: ["an umbrella"] },
+            { spanish: 'A LOS GATOS LES GUSTA LA CARNE ', english: ["cats like meat"] },
+            { spanish: 'ESTE ES EL NOMBRE DEL RESTAURANTE CHINO', english: ["this is the chinese restaurant"] },
+            { spanish: 'A ELLA NO LE GUSTA EL TENNIS, A ELLA LE GUSTA EL FUTBOL ', english: ["she doesn't like tennis, she likes football" , "she does not like tennis, she likes football"] },
+            { spanish: 'EL VASO ESTÁ LLENO (FULL) DE AGUA ', english: ["the glass is full of water"] },
+            { spanish: 'ME GUSTA EL ARTE ', english: ["i like art"] },
+            { spanish: 'ELLAS SON HERMANAS – ELLA ES MI HERMANA', english: ["they are sisters - she is my sister" , "they're sisters - she's my sister"] },
+            { spanish: 'NOSOTROS SOMOS INGENIEROS – EL ES UN INGENIERO', english: ["we are engineers - he is an engineer" , "we're engineers - he's an engineer"] },
+            { spanish: 'ELLOS SON AMIGOS – ELLA ES SU AMIGA (DE ELLOS)', english: ["they are friends - she is their friend" , "they're friends - she's their friend"] },
+            { spanish: 'ESTOS (THESE) SON PERROS – ESE ES NUESTRO PERRO', english: ["these are dogs - that is our dog"] },
+            { spanish: 'NO ME GUSTA COMER AJO, EXCEPTO CUANDO ESTÁ EN LA CARNE', english: ["i don't like garlic except it's in the meat" , "i do not like garlic except it is in the meat"] },
         ]
     },
     c7_ex9: {
         title: 'a1class1.exercise',
         prompts: [
             { spanish: 'ME GUSTA EL TENIS', english: ["i like tennis"] },
-            { spanish: 'EL RESTAURANTE CHINO ESTÁ LLENO', english: ["the chinese restaurant is full"] },
+            { spanish: 'YO QUIERO COMER UN BANANO CON LECHE', english: ["i want to eat a banana with milk"] },
+            { spanish: 'ELLA ES UNA INGENIERA', english: ["she is an engineer" , "she's an engineer"] },
+            { spanish: 'NOSOTROS TRABAJAMOS CON UN PROFESOR EN LA UNIVERSIDAD', english: ["we work with a teacher at the university" , "we work with a professor at the university"] },
+            { spanish: 'ÉL ES UN ADOLESCENTE', english: ["he is a teenager" , "he's a teenager"] },
+            { spanish: 'TRAEME UNA SOMBRILLA, ESTA LLOVIENDO', english: ["bring me an umbrella, it is raining" , "bring me an umbrella, it's raining"] },
+            { spanish: 'ELLA ES UNA PERSONA HONESTA', english: ["she is a honest person" , "she's a honest person"] },
+            { spanish: 'SU PRIMO TIENE UN BUEN TRABAJO (DE ÉL)', english: ["his cousin has a good job" , "his cousins's job is good"] },
+            { spanish: 'CONTRATIEMPO ES UNA PELICULA INTERESANTE', english: ["Contratiempo is an interesting movie"] },
+            { spanish: 'NOSOTROS COMEMOS 3 VECES AL DIA', english: ["we eat three times a day"] },
+            { spanish: 'CAMERON DIAZ ES UNA ACTRIZ', english: ["Cameron diaz is an actress"] },
+            { spanish: 'ESTE ES UN SILLON', english: ["this is an armchair"] },
+            { spanish: '¿PUEDES DARME UN JUGO DE NARANJA? POR FAVOR', english: ["can i have an orange juice? please"] },
+            { spanish: 'ÉL ES UN BUEN POLICIA', english: ["he is a good policeman" , "he's a good policeman"] },
+            { spanish: 'EL SE FRACTURÓ SU BRAZO EN UN ACCIDENTE DE CARRO', english: ["he broke his arm in a car accident."] },
+            { spanish: 'MI MAMA ES UNA DOCTORA Y MI PAPÁ ES UN HOMBRE DE NEGOCIOS', english: ["my mother is a doctor and my father is a businessman"] },
         ]
     },
 
-
+     //---- CLASS 8 A1 ---
     c8_ex1: {
         title: 'a1class1.exercise',
         prompts: [
