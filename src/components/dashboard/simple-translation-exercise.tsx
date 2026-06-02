@@ -257,6 +257,95 @@ const exercises = {
         ]
     },
 
+    // --- CLASS 7 A1 ---
+    c7_ex1: {
+        title: 'a1class1.exercise',
+        prompts: [
+            { spanish: 'LOS PARQUES SON TRANQUILOS EN LA NOCHE', english: ["the parks are quiet at night"] },
+            { spanish: 'MI HERMANA ES JOVEN', english: ["my sister is young"] },
+            { spanish: 'LOS JUGOS SON SALUDABLES', english: ["the juices are healthy"] },
+            { spanish: 'LA PELÍCULA ES INTERESANTE', english: ["the movie is interesting"] },
+            { spanish: 'LA CIUDAD MÁS GRANDE DE COLOMBIA ES BOGOTA', english: ["Bogota is the biggest city in Colombia"] },
+            { spanish: 'ME GUSTAN LOS ANIMALES, ESPECIALMENTE LOS PERROS', english: ["I like animals, especially dogs"] },
+            { spanish: 'A ELLA NO LE GUSTAN LAS ARAÑAS', english: ["She doesn't like spiders" , "she dislikes spiders"] },
+            { spanish: '¿TE GUSTAN LAS FRUTAS? ', english: ["Do you like fruits?"] },
+            { spanish: 'EL HERMANO DE ANTONIO ES MUY ALTO', english: ["Antonio's brother is very tall"] },
+            { spanish: 'ME GUSTAN LAS MARIPOSAS', english: ["i like butterflies"] },
+            { spanish: 'A ELLA LE GUSTAN LOS CARROS', english: ["she likes cars"] },
+            { spanish: 'CUANDO ESCUCHO MUSICA, ME GUSTA ESCUCHARLA CON AUDIFONOS PORQUE NO ME GUSTA MOLESTAR OTRAS PERSONAS', english: ["when i listen to music, i like to listen it with headphones because i don't like to bother other people "] },
+        ]
+    },
+    c7_ex2: {
+        title: 'a1class1.exercise',
+        prompts: [
+            { spanish: 'ÉL ENCONTRÓ MIS LLAVES', english: ["he found my keys"] },
+            { spanish: 'YO PERDÍ MI CELULAR', english: ["i lost my cellphone"] },
+            { spanish: 'LAS VERDURAS SON BUENAS', english: ["vegetables are good"] },
+            { spanish: 'LA MAMA DE TOM COMPRA VERDURAS EN ESE SUPERMERCADO', english: ["Tom's mother buys vegetables in that supermarket"] },
+            { spanish: 'CHARLY VIO UN ACCIDENTE EN LA CALLE', english: ["Charly saw an accident in the street"] },
+            { spanish: 'SARA QUIERE IR A UN CONCIERTO EL VIERNES EN LA NOCHE', english: ["Sara wants to go to a concert on friday night" , "Sara wants to go to a concert on friday at night"] },
+            { spanish: 'EL ES UN INGENIERO Y SU ESPOSA ES UNA DOCTORA', english: ["he is an engineer and his wife is a doctor" , "he's an engineer and his wife is a doctor"] },
+        ]
+    },
+    c7_ex3: {
+        title: 'a1class1.exercise',
+        prompts: [
+            { spanish: 'ELLOS SON DOCTORES- EL ES UN DOCTOR', english: ["they are doctors - he is a doctor" , "they're doctors - he's a doctor"] },
+            { spanish: 'YO NO TENGO UNA MANZANA- YO TENGO UNA SANDIA', english: ["i have an apple - i have a watermelon"] },
+            { spanish: 'NOSOTROS SOMOS ESTUDIANTES- YO SOY UN ESTUDIANTE', english: ["we are students - i am a student" , "we're students - i'm a student"] },
+            { spanish: 'ELLOS SON PRIMOS- EL ES PRIMO DE CHRISTIAN', english: ["they are cousins - he is Christian's cousin" , "they're cousins - he's Christian's cousin"] },
+            { spanish: 'ESTOS SON GATOS NEGROS- ESTE ES UN GATO GRIS', english: ["these are black cats - this is a gray cat"] },
+            { spanish: 'ESTE NO ES TU CELULAR-ESE ES MI CELULAR', english: ["this is not your cellphone - that is my cellphone" , "this isn't your cellphone - that's my cellphone" , "this isn't your cellphone - that is my cellphone"] },
+            { spanish: 'ESTAS SON TUS GAFAS- ESAS NO SON LAS TUYAS', english: ["these are your glasses - those are not yours" , "these are your glasses - those aren't yours"] },
+            { spanish: 'ELLOS SON HERMANOS- EL ES SU HERMANO (DE ELLA)', english: ["they are brothers - he is her brother" , "they're brothers - he's her brother"] },
+            { spanish: 'ESTOS SON PERROS- ESTE ES SU PERRO (DE ÉL) ', english: ["these are dogs - this is his dog"] },
+            { spanish: 'ELLOS SON PROFESORES- ELLA ES UNA PROFESORA', english: ["they are teachers - she is a teacher" , "they're teachers - she's a teacher"] },
+        ]
+    },
+    c7_ex4: {
+        title: 'a1class1.exercise',
+        prompts: [
+            { spanish: 'YO PREFIERO EL CALOR AL FRIO', english: ["i prefer heat to cold", "i prefer the heat to the cold"] },
+            { spanish: 'ME GUSTA EL TERROR', english: ["i like horror"] },
+            { spanish: 'A ELLA NO LE GUSTA EL AJO', english: ["she doesn't like garlic", "she does not like garlic"] },
+            { spanish: 'ME ENCANTAN LOS CARROS', english: ["i love cars"] },
+            { spanish: 'A ÉL GUSTA JUGAR FUTBOL CON MIS PRIMOS', english: ["he likes to play soccer with my cousins" , "he likes playing soccer with my cousins"] },
+            { spanish: 'A ÉL NO LE GUSTA COMER VERDURAS/VEGETALES', english: ["he doesn't like vegetables", "he does not like vegetables"] },
+            { spanish: 'PREFIERO EL VERANO QUE EL INVIERNO', english: ["i prefer summer to winter"] },
+            { spanish: 'NO NOS GUSTA LA MÚSICA METAL', english: ["we don't like metal music" , "we do not like metal music"] },
+            { spanish: 'A ÉL NO LE GUSTA COMER AJO: ', english: ["he doesn't like garlic" , "he does not like garlic"] },
+            { spanish: 'A MI ABUELA LE ENCANTA LAS NOVELAS DE TELEVISION: (soap operas)', english: ["my grandmother loves soap operas"] },
+            { spanish: '¿PREFIERES LAS FRESAS O LOS BANANOS? ', english: ["do you prefer apples or bananas?"] },
+            { spanish: 'NO NOS GUSTA CAMINAR EN LA NOCHE EN ESE BARRIO PORQUE ES PELIGROSO', english: ["we don't like to walk at night in that neighborhood because it's dangerous" , "we do not like to walk at night in that neighborhood because it is dangerous"] },
+            { spanish: 'REALMENTE ME GUSTA PINTAR (to paint)', english: ["i really like painting" , "i really like to paint"] },
+            { spanish: 'ME ENCANTA EL CHOCOLATE ', english: ["i love chocolate"] },
+            { spanish: 'NO ME GUSTA EL BILLAR (billiard)', english: ["i don't like billard" , "i do not like billard"] },
+            { spanish: 'NOSOTROS ODIAMOS LAS MENTIRAS', english: ["we hate lies"] },
+            { spanish: 'A MI PAPA LE ENCANTA LA CARPINTERIA (carpentry)', english: ["my father loves carpentry" , "my dad loves carpentry"] },
+            { spanish: 'ÉL DISFRUTA COMER ESPINACA Y REMOLACHA', english: ["he enjoys spinach and beet"] },
+            { spanish: 'YO PREFIERO VIVIR EN UNA CASA QUE EN UN APARTAMENTO', english: [": i prefer living in a house to an apartment."] },
+            { spanish: 'ME ENCANTA ESCUCHAR MÚSICA ROMANTICA MIENTRAS HAGO UN ROMPECABEZAS', english: ["i love listening to romantic music while doing a puzzle"] },
+            { spanish: 'ELLA PREFIERE NO TENER REDES SOCIALES', english: ["she prefers not to have social media"] },
+            { spanish: 'PREFIERO VIVIR EN UN PUEBLO QUE VIVIR EN UNA GRAN CIUDAD', english: ["i prefer living in a town to living in a big city"] },
+            { spanish: 'El prefiere el pescado a la carne', english: ["he prefers fish to meat"] },
+        ]
+    },
+    c7_ex7: {
+        title: 'a1class1.exercise',
+        prompts: [
+            { spanish: 'UN ADOLESCENTE', english: ["a teenager"] },
+            { spanish: 'UN DÍA SOLEADO', english: ["a sunny day"] },
+            { spanish: 'UNA SOMBRILLA', english: ["an umbrella"] },
+        ]
+    },
+    c7_ex9: {
+        title: 'a1class1.exercise',
+        prompts: [
+            { spanish: 'ME GUSTA EL TENIS', english: ["i like tennis"] },
+            { spanish: 'EL RESTAURANTE CHINO ESTÁ LLENO', english: ["the chinese restaurant is full"] },
+        ]
+    },
+
 
     c8_ex1: {
         title: 'a1class1.exercise',
