@@ -117,21 +117,13 @@ const exercises = {
                 "is your mother at home? no, she is in the church", 
                 "is your mother at home? no, she's in the church", 
                 "is your mom at home? no, she's in the church", 
-                "is your mom at home? no, she is in the church",
-                "is your mother at home? no she is in the church", 
-                "is your mother at home? no she's in the church", 
-                "is your mom at home? no she's in the church", 
-                "is your mom at home? no she is in the church"
+                "is your mom at home? no, she is in the church", 
             ] },
             { spanish: '¿TUS HERMANOS ESTÁN EN LA UNIVERSIDAD? – NO', english: [
                 "are your siblings at university? no, they are not", 
                 "are your siblings at university? no, they aren't", 
                 "are your brothers at university? no, they are not", 
                 "are your brothers at university? no, they aren't",
-                "are your siblings at the university? no, they are not", 
-                "are your siblings at the university? no, they aren't", 
-                "are your brothers at the university? no, they are not", 
-                "are your brothers at the university? no, they aren't"
             ] },
             { spanish: '¿TU HERMANA ESTÁ EN EL PARQUE? – NO, ELLA ESTÁ EN EL SUPERMERCADO', english: ["Is your sister at the park? No, she is at the supermarket."] },
         ]
@@ -380,7 +372,7 @@ const exercises = {
             { spanish: '¿A DONDE VA TU HERMANO?', english: ["where does your brother go?"] },
             { spanish: 'ESTAS (THESE) NO SON MIS GAFAS', english: ["these are not my glasses", "these aren't my glasses"] },
             { spanish: '¿DONDE ESTAN TUS PADRES? ESTAN EN CASA', english: ["where are your parents? they are at home", "where are your parents? they're at home"] },
-            { spanish: '¿QUE HACEN TU HERMANO? EL JUEGA TENNIS', english: ["what does your brother do? he plays tennis"] },
+            { spanish: '¿QUE HACE TU HERMANO? EL JUEGA TENIS', english: ["what does your brother do? he plays tennis"] },
             { spanish: '¿CUÁNDO VA SUSAN AL CINE? ELLA VA AL CINE LOS MIERCOLES', english: ["when does susan go to the cinema? she goes to the cinema on wednesdays"] },
             { spanish: '¿QUIEN ES EL? EL ES EL HERMANO DE SARA', english: ["who is he? he is sara's brother", "who is he? he's sara's brother"] },
             { spanish: '¿A DONDE VAS? A JUGAR FUTBOL? – YO VOY AL ESTADIO', english: ["where do you go to play football? i go to the stadium", "where do you go to play soccer? i go to the stadium"] },
@@ -414,27 +406,27 @@ const exercises = {
             { spanish: 'NOSOTROS NO VAMOS A BOGOTÁ', english: ["we do not go to bogota", "we don't go to bogota"] },
             { spanish: '¿ELLA ESTÁ TRISTE? NO, ELLA ESTA FELIZ', english: ["is she sad? no, she is happy", "is she sad? no, she's happy"] },
             { spanish: 'A ELLA LE GUSTAN LOS GATOS', english: ["she likes cats", "she does like cats"] },
-            { spanish: 'ELLA JUEGA BALONCESTO (BASKETBALL) LOS SÁBADOS', english: ["she plays basketball on saturdays"] },
+            { spanish: 'ELLA JUEGA BALONCESTO LOS SÁBADOS', english: ["she plays basketball on saturdays"] },
             { spanish: '¿A DÓNDE VIAJA ÉL? ÉL VIAJA A BARCELONA', english: ["where does he travel? he travels to barcelona"] },
             { spanish: 'ELLOS NO SOMOS NUESTROS TÍOS (UNCLES)', english: ["they are not our uncles", "they aren't our uncles"] },
             { spanish: '¿ELLA BEBE AGUA? –NO, ELLA BEBE VODKA', english: ["does she drink water? no, she drinks vodka"] },
             { spanish: 'NO ME GUSTA EL COMPORTAMIENTO', english: ["i do not like your behavior", "i don't like your behavior"] },
-            { spanish: 'ELLA VA CON ÉL a LA IGLESIA', english: ["she goes with him to the church", "she goes to the church with him"] },
+            { spanish: 'ELLA VA CON ÉL A LA IGLESIA', english: ["she goes with him to the church", "she goes to the church with him"] },
         ]
     },
     c8_ex4: {
         title: 'a1class1.exercise',
         prompts: [
             { spanish: '¿ELLOS SON NUESTROS AMIGOS?', english: ["are they our friends?"] },
-            { spanish: '¿ESTE (THIS) ES TU VASO (GLASS)?', english: ["is this your glass?"] },
+            { spanish: '¿ESTE (THIS) ES TU VASO?', english: ["is this your glass?"] },
             { spanish: 'ESTE NO ES SU CARRO (DE ELLOS)', english: ["this is not their car", "this isn't their car"] },
             { spanish: 'ELLA ES MI HERMANA', english: ["she is my sister", "she's my sister"] },
-            { spanish: '¿DÓNDE ESTÁ TU CHAQUETA? (JACKET)', english: ["where is your jacket?", "where's your jacket?"] },
-            { spanish: '¿CUÁL ES TU CUMPLEAÑOS? (BIRTHDAY)', english: ["when is your birthday?", "when's your birthday?"] },
-            { spanish: 'ELLA NO VA ALLÁ (THERE)', english: ["she does not go there", "she doesn't go there"] },
+            { spanish: '¿DÓNDE ESTÁ TU CHAQUETA?', english: ["where is your jacket?", "where's your jacket?"] },
+            { spanish: '¿CUÁL ES TU CUMPLEAÑOS?', english: ["when is your birthday?", "when's your birthday?"] },
+            { spanish: 'ELLA NO VA ALLÁ', english: ["she does not go there", "she doesn't go there"] },
             { spanish: 'ELLOS SON SUS AMIGOS (DE ÉL)', english: ["they are his friends", "they're his friends"] },
             { spanish: '¿DÓNDE CORREN ELLOS?', english: ["where do they run?"] },
-            { spanish: 'ELLA NO SABE (KNOW) A DONDE IR (TO GO)', english: ["she does not know where to go", "she doesn't know where to go"] },
+            { spanish: 'ELLA NO SABE A DONDE IR', english: ["she does not know where to go", "she doesn't know where to go"] },
         ]
     },
     c9_ex1: {
@@ -564,6 +556,7 @@ const exercises = {
 
     // Class 1 (b1)
     // --- CLASS 1 B1 ---
+    
     c1_b1_phrasal: {
         title: 'Exercise Phrasal Verbs',
         prompts: [
@@ -769,6 +762,8 @@ export function SimpleTranslationExercise({
                                             Palabras importantes para este ejercicio.
                                         </p>
                                     </div>
+
+                                     
                                     <ScrollArea className="max-h-[300px] pr-4">
                                         <div className="grid gap-2 text-sm">
                                             {Object.entries(vocabulary).map(([spanish, english]) => (

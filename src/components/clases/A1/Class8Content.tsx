@@ -1,21 +1,11 @@
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import Link from 'next/link';
+import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { 
-    BookOpen, 
-    PenSquare, 
-    Lock, 
-    CheckCircle, 
-    Mic, 
-    Loader2, 
-    ArrowRight, 
-    Check, 
-    X, 
-    Pencil, 
-    Gamepad2 
-} from 'lucide-react';
+import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, Info, Mic, Loader2, Gamepad2, Pencil, ArrowRight, Check, X, BookText } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
@@ -26,11 +16,17 @@ import { Button } from '@/components/ui/button';
 import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
 import { VocabularyMatchingGame } from '@/components/dashboard/vocabulary-matching-game';
 import { SentenceCompletionExercise, type CompletionPrompt } from '@/components/kids/exercises/sentence-completion-exercise';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { CreativeWritingExercise } from '@/components/dashboard/creative-writing-exercise';
 
-// --- DATA ---
+type Topic = {
+  key: string;
+  name: string;
+  icon: React.ElementType;
+  status: 'completed' | 'active' | 'locked';
+};
 
-const progressStorageVersion = 'progress_a1_eng_u1_c8_v130_blindado';
+const progressStorageVersion = 'progress_a1_eng_u1_c8_v12_stable';
 const mainProgressKey = 'progress_a1_eng_unit_1_class_8';
 
 const vocabularyData = [
@@ -66,21 +62,6 @@ const exercise5Data: CompletionPrompt[] = [
     { parts: ["", " DOOR OF MY HOUSE."], answers: ["THE"] },
     { parts: ["SHE WORKS WITH ", " ENGINEER."], answers: [""] },
 ];
-
-interface Topic {
-  key: string;
-  name: string;
-  icon: React.ElementType;
-  status: 'completed' | 'active' | 'locked';
-}
-
-const ICONS_CONFIG = {
-    locked: Lock,
-    active: BookOpen,
-    completed: CheckCircle,
-};
-
-// --- AUXILIARY COMPONENTS ---
 
 const ManualGradingExercise = ({ 
     title,
@@ -130,8 +111,8 @@ const ManualGradingExercise = ({
                         {title.includes('DICTATION') ? <Mic className="h-6 w-6" /> : <Pencil className="h-6 w-6" />}
                     </div>
                     <div>
-                        <CardTitle className="text-black dark:text-primary">{title}</CardTitle>
-                        <CardDescription className="text-black/70 dark:text-muted-foreground">{description}</CardDescription>
+                        <CardTitle>{title}</CardTitle>
+                        <CardDescription>{description}</CardDescription>
                     </div>
                 </div>
             </CardHeader>
@@ -164,7 +145,7 @@ const ManualGradingExercise = ({
                                         onClick={() => handleToggleGrade(idx, 'correct')} 
                                         className={cn(
                                             "h-8 w-8 rounded-full transition-colors", 
-                                            status === 'correct' ? "bg-green-500 text-white" : "bg-muted text-muted-foreground opacity-50"
+                                            status === 'correct' ? "bg-green-500 text-white hover:bg-green-600" : "bg-muted text-muted-foreground opacity-50"
                                         )} 
                                         disabled={!isAdmin}
                                     >
@@ -176,7 +157,7 @@ const ManualGradingExercise = ({
                                         onClick={() => handleToggleGrade(idx, 'incorrect')} 
                                         className={cn(
                                             "h-8 w-8 rounded-full transition-colors", 
-                                            status === 'incorrect' ? "bg-red-500 text-white" : "bg-muted text-muted-foreground opacity-50"
+                                            status === 'incorrect' ? "bg-red-500 text-white hover:bg-red-600" : "bg-muted text-muted-foreground opacity-50"
                                         )} 
                                         disabled={!isAdmin}
                                     >
@@ -197,9 +178,7 @@ const ManualGradingExercise = ({
     );
 };
 
-// --- MAIN CLASS COMPONENT ---
-
-export default function Class8Content() {
+export default function EngA1Class8Page() {
     const { toast } = useToast();
     const { user, isUserLoading } = useUser();
     const firestore = useFirestore();
@@ -211,6 +190,7 @@ export default function Class8Content() {
     const [selectedTopic, setSelectedTopic] = useState<string>('');
     const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
     const [isInitialLoading, setIsInitialLoading] = useState(true);
+    const [initialLoadComplete, setInitialLoadComplete] = useState(false);
 
     const [vocabAnswers, setVocabAnswers] = useState<string[]>(Array(vocabularyData.length).fill(''));
     const [vocabValidation, setVocabValidation] = useState<any[]>(Array(vocabularyData.length).fill('unchecked'));
@@ -223,29 +203,33 @@ export default function Class8Content() {
         { key: 'dictation2', name: 'Dictation 2', icon: Mic, status: 'locked' },
         { key: 'ex2', name: 'Exercise 2', icon: PenSquare, status: 'locked' },
         { key: 'ex3', name: 'Exercise 3', icon: PenSquare, status: 'locked' },
-        { key: 'vocab_game', name: 'Vocabulary Game', icon: Gamepad2, status: 'locked' },
+        { key: 'vocab_game', name: 'Vocabulary (game)', icon: Gamepad2, status: 'locked' },
         { key: 'ex4', name: 'Exercise 4', icon: PenSquare, status: 'locked' },
         { key: 'ex5', name: 'Exercise 5', icon: PenSquare, status: 'locked' },
         { key: 'writing1', name: 'Writing 1', icon: Pencil, status: 'locked' },
         { key: 'writing2', name: 'Writing 2', icon: Pencil, status: 'locked' },
     ], []);
 
+    const handleTopicComplete = useCallback((completedKey: string) => {
+        setTopicToComplete(completedKey);
+    }, []);
+
     useEffect(() => {
-        if (isProfileLoading || isUserLoading || !studentProfile) return;
+        if (isProfileLoading || isUserLoading || !studentProfile || initialLoadComplete) return;
         let path = initialLearningPath.map(t => ({ ...t }));
         let savedST = '';
         if (isAdmin) path.forEach(t => t.status = 'completed');
         else if (studentProfile?.lessonProgress?.[progressStorageVersion]) {
-            const d = studentProfile.lessonProgress[progressStorageVersion];
-            path.forEach(t => { if (d[t.key]) t.status = d[t.key]; });
-            savedST = d.lastSelectedTopic || '';
+            const data = studentProfile.lessonProgress[progressStorageVersion];
+            path.forEach(t => { if (data[t.key]) t.status = data[t.key]; });
+            savedST = data.lastSelectedTopic || '';
         }
         let lastDone = true;
         for(let i=0; i < path.length; i++) { if (lastDone && path[i].status === 'locked') path[i].status = 'active'; lastDone = path[i].status === 'completed'; }
         setLearningPath(path);
         setSelectedTopic(savedST || path.find(p => p.status === 'active')?.key || path[0].key);
-        setIsInitialLoading(false);
-    }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading, isUserLoading]);
+        setInitialLoadComplete(true); setIsInitialLoading(false);
+    }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading, isUserLoading, initialLoadComplete]);
 
     const progressValue = useMemo(() => {
         if (learningPath.length === 0) return 0;
@@ -254,26 +238,31 @@ export default function Class8Content() {
     }, [learningPath]);
 
     useEffect(() => {
-        if (isInitialLoading || isAdmin || !studentDocRef || learningPath.length === 0) return;
-        const s: any = { lastSelectedTopic: selectedTopic };
-        learningPath.forEach(t => s[t.key] = t.status);
-        updateDocumentNonBlocking(studentDocRef, { [`lessonProgress.${progressStorageVersion}`]: s, [`progress.${mainProgressKey}`]: progressValue });
+        if (!initialLoadComplete || isInitialLoading || isAdmin || !studentDocRef || learningPath.length === 0) return;
+        const save = { lastSelectedTopic: selectedTopic };
+        learningPath.forEach(t => (save as any)[t.key] = t.status);
+        if (JSON.stringify(save) !== JSON.stringify(studentProfile?.lessonProgress?.[progressStorageVersion])) {
+            updateDocumentNonBlocking(studentDocRef, { [`lessonProgress.${progressStorageVersion}`]: save, [`progress.${mainProgressKey}`]: progressValue });
+        }
         if (progressValue >= 100) window.dispatchEvent(new CustomEvent('progressUpdated'));
-    }, [learningPath, isAdmin, progressValue, studentDocRef, selectedTopic, studentProfile, isInitialLoading]);
+    }, [learningPath, isAdmin, progressValue, studentDocRef, initialLoadComplete, selectedTopic, studentProfile, isInitialLoading]);
 
     useEffect(() => {
         if (!topicToComplete) return;
         setLearningPath(curr => {
+            let win = false; let next: string | null = null;
             const np = curr.map(t => ({ ...t }));
-            const idx = np.findIndex(t => t.key === topicToComplete);
-            if (idx !== -1 && np[idx].status !== 'completed') {
-                np[idx].status = 'completed';
-                if (idx + 1 < np.length && np[idx + 1].status === 'locked') {
-                    np[idx + 1].status = 'active';
-                    setSelectedTopic(np[idx + 1].key);
-                    setTimeout(() => toast({ title: "¡Siguiente tema desbloqueado!" }), 0);
+            const i = np.findIndex(t => t.key === topicToComplete);
+            if (i !== -1 && np[i].status !== 'completed') {
+                np[i].status = 'completed';
+                if (i + 1 < np.length && np[i + 1].status === 'locked') {
+                    np[i + 1].status = 'active';
+                    win = true;
+                    next = np[i + 1].key;
                 }
             }
+            if (win) setTimeout(() => toast({ title: "¡Siguiente tema desbloqueado!" }), 0);
+            if (next) { const n = next; setTimeout(() => setSelectedTopic(n), 0); }
             return np;
         });
         setTopicToComplete(null);
@@ -281,66 +270,85 @@ export default function Class8Content() {
 
     const handleTopicSelect = (topicKey: string) => {
         const t = learningPath.find(it => it.key === topicKey);
-        if (!isAdmin && t?.status === 'locked') return;
+        if (!isAdmin && t?.status === 'locked') { toast({ variant: "destructive", title: "Contenido Bloqueado" }); return; }
         setSelectedTopic(topicKey);
     };
 
     const handleCheckVocab = () => {
-        let ok = false;
+        let atLeastOneCorrect = false;
         const nv = vocabularyData.map((v, i) => {
-            const res = v.english.some(e => e.toLowerCase() === vocabAnswers[i].trim().toLowerCase());
-            if (res) ok = true; return res ? 'correct' : 'incorrect';
+            const c = v.english.some(e => e.toLowerCase() === vocabAnswers[i].trim().toLowerCase());
+            if (c) atLeastOneCorrect = true;
+            return c ? 'correct' : 'incorrect';
         });
-        setVocabValidation(nv as any);
-        if (ok) { toast({ title: "¡Bien hecho!", description: "Ya puedes avanzar." }); setCanAdvanceVocab(true); }
-        else toast({ variant: 'destructive', title: "Sigue intentando" });
+        setVocabValidation(nv);
+        if (atLeastOneCorrect) {
+            toast({ title: "¡Buen trabajo!", description: "Has acertado al menos una. ¡Ya puedes avanzar!" });
+            setCanAdvanceVocab(true);
+        } else {
+            toast({ variant: 'destructive', title: "Sigue intentando" });
+            setCanAdvanceVocab(false);
+        }
     };
 
     const renderContent = () => {
-        if (isInitialLoading) return <div className="flex justify-center items-center h-64"><Loader2 className="animate-spin text-primary" /></div>;
+        if (isInitialLoading) return <div className="flex justify-center items-center h-64"><Loader2 className="animate-spin" /></div>;
         switch (selectedTopic) {
             case 'vocabulary':
                 return (
-                    <Card className="shadow-soft border-2 border-brand-purple text-left bg-card/95 backdrop-blur-sm">
-                        <CardHeader><CardTitle>Vocabulary</CardTitle><CardDescription>Traduce los términos básicos al inglés.</CardDescription></CardHeader>
-                        <CardContent><div className="grid grid-cols-2 gap-2">{vocabularyData.map((v, i) => (<React.Fragment key={i}><div className="p-3 border rounded-lg bg-muted/20">{v.spanish}</div><Input value={vocabAnswers[i]} onChange={e => { const n = [...vocabAnswers]; n[i] = e.target.value; setVocabAnswers(n); setVocabValidation(vv => { const nv = [...vv]; nv[i] = 'unchecked'; return nv; }); setCanAdvanceVocab(false); }} className={cn(vocabValidation[i] === 'correct' ? 'border-green-500 bg-green-50/5' : vocabValidation[i] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} autoComplete="off" /></React.Fragment>))}</div></CardContent>
-                        <CardFooter className="flex justify-between border-t pt-6 mt-4"><Button onClick={handleCheckVocab} variant="secondary">Verificar</Button><Button onClick={() => handleTopicComplete('vocabulary')} disabled={!canAdvanceVocab && !isAdmin} className="px-8">Avanzar</Button></CardFooter>
+                    <Card className="shadow-soft border-2 border-brand-purple text-left">
+                        <CardHeader><CardTitle>Vocabulary</CardTitle></CardHeader>
+                        <CardContent><div className="grid grid-cols-2 gap-2">{vocabularyData.map((v, i) => (<React.Fragment key={i}><div className="p-3 border rounded-lg bg-muted/20">{v.spanish}</div><Input value={vocabAnswers[i]} onChange={e => { const n = [...vocabAnswers]; n[i] = e.target.value; setVocabAnswers(n); setVocabValidation(vv => { const nv = [...vv]; nv[i] = 'unchecked'; return nv; }); setCanAdvanceVocab(false); }} className={cn(vocabValidation[i] === 'correct' ? 'border-green-500' : vocabValidation[i] === 'incorrect' ? 'border-red-500' : '')} /></React.Fragment>))}</div></CardContent>
+                        <CardFooter className="flex justify-between"><Button onClick={handleCheckVocab} variant="secondary">Verificar</Button><Button onClick={() => handleTopicComplete('vocabulary')} disabled={!canAdvanceVocab && !isAdmin}>Avanzar</Button></CardFooter>
                     </Card>
                 );
             case 'dictation1': 
-                return <ManualGradingExercise title="DICTATION 1" description="Escucha y escribe las frases dictadas. El primer renglón es el título." lineCount={13} onComplete={() => handleTopicComplete('dictation1')} studentDocRef={studentDocRef} isAdmin={isAdmin} savePath={`lessonProgress.${progressStorageVersion}.dict1`} savePathGrades={`lessonProgress.${progressStorageVersion}.dict1Grades`} initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.dict1} initialGrades={studentProfile?.lessonProgress?.[progressStorageVersion]?.dict1Grades} />;
+                return <ManualGradingExercise title="DICTATION 1" description="Escucha y escribe las frases dictadas. El primer renglón es para el título." lineCount={13} onComplete={() => handleTopicComplete('dictation1')} studentDocRef={studentDocRef} isAdmin={isAdmin} initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.dictation1} initialGrades={studentProfile?.lessonProgress?.[progressStorageVersion]?.dictation1Grades} savePath={`lessonProgress.${progressStorageVersion}.dictation1`} savePathGrades={`lessonProgress.${progressStorageVersion}.dictation1Grades`} />;
             case 'dictation2': 
-                return <ManualGradingExercise title="DICTATION 2" description="Escucha y escribe las frases dictadas. El primer renglón es el título." lineCount={15} onComplete={() => handleTopicComplete('dictation2')} studentDocRef={studentDocRef} isAdmin={isAdmin} savePath={`lessonProgress.${progressStorageVersion}.dict2`} savePathGrades={`lessonProgress.${progressStorageVersion}.dict2Grades`} initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.dict2} initialGrades={studentProfile?.lessonProgress?.[progressStorageVersion]?.dict2Grades} />;
-            case 'ex1': return <SimpleTranslationExercise exerciseKey="c8_ex1" course="a1" onComplete={() => handleTopicComplete('ex1')} vocabulary={{ "contrario": "on the contrary", "jefe": "boss" }} highlightVocabulary={true} />;
-            case 'ex2': return <SimpleTranslationExercise exerciseKey="c8_ex2" course="a1" onComplete={() => handleTopicComplete('ex2')} />;
-            case 'ex3': return <SimpleTranslationExercise exerciseKey="c8_ex3" course="a1" onComplete={() => handleTopicComplete('ex3')} />;
+                return <ManualGradingExercise title="DICTATION 2" description="Escucha y escribe las frases dictadas. El primer renglón es para el título." lineCount={15} onComplete={() => handleTopicComplete('dictation2')} studentDocRef={studentDocRef} isAdmin={isAdmin} initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.dictation2} initialGrades={studentProfile?.lessonProgress?.[progressStorageVersion]?.dictation2Grades} savePath={`lessonProgress.${progressStorageVersion}.dictation2`} savePathGrades={`lessonProgress.${progressStorageVersion}.dictation2Grades`} />;
+
+                // ----- Vocabulario de los ejercicios ----
+            case 'ex1': return <SimpleTranslationExercise exerciseKey="c8_ex1" course="a1" onComplete={() => handleTopicComplete('ex1')} vocabulary={{ "Enojado" : "angry", "contrario": "on the contrary", "otro lado": "on the other hand", "Vegetariano" : "vegetarian" , "hermana" : "sister" , "gafas" : "glasses" , "Tenis" : "Tennis" , "cine": "cinema", "estadio": "stadium", "celular": "cellphone" , "pescado" : "fish" , "tristes": "sad" , "computador" : "computer" }} highlightVocabulary={true} />;
+            case 'ex2': return <SimpleTranslationExercise exerciseKey="c8_ex2" course="a1" onComplete={() => handleTopicComplete('ex2')} vocabulary={{ "mío": "mine", "tuyo": "yours", "suyo/a": "his/hers", "nuestro": "ours", "suya (de ellos)": "theirs", "cuadros": "paintings" }} highlightVocabulary={true} />;
+            case 'ex3': return <SimpleTranslationExercise exerciseKey="c8_ex3" course="a1" onComplete={() => handleTopicComplete('ex3')} vocabulary={{ "nadar": "swim", "domingos": "sundays", "veloz": "fast", "triste": "sad", "feliz": "happy", "Baloncesto" : "basketball" , "Viajar" : "to travel" , "Tio" : "uncle" , "comportamiento": "behavior" , "iglesia": "church"}} highlightVocabulary={true} />;
+            case 'ex4': return <SimpleTranslationExercise exerciseKey="c8_ex4" course="a1" onComplete={() => handleTopicComplete('ex4')} vocabulary={{ "vaso": "glass", "chaqueta": "jacket", "cumpleaños": "birthday", "allá": "there", "Correr" : "to run" , "saber": "know", "ir": "to go" }} highlightVocabulary={true} />;
+            case 'ex5': return <SentenceCompletionExercise title="Exercise 5" description="Completa con THE." data={exercise5Data} onComplete={() => handleTopicComplete('ex5')} vocabulary={{ "billetera": "wallet", "idiomas": "languages", "regalo": "present", "llaves": "keys", "gafas de sol": "sunglasses", "fresas" : "strawberries" , "shoes" : "zapatos" , "dias soleados" : "sunny days" , "puerta": "door" }} />;
             case 'vocab_game': return <VocabularyMatchingGame data={vocabularyData} onComplete={() => handleTopicComplete('vocab_game')} />;
-            case 'ex4': return <SimpleTranslationExercise exerciseKey="c8_ex4" course="a1" onComplete={() => handleTopicComplete('ex4')} />;
-            case 'ex5': return <SentenceCompletionExercise title="Exercise 5" description="Completa con THE donde corresponda." data={exercise5Data} onComplete={() => handleTopicComplete('ex5')} />;
-            case 'writing1': return <CreativeWritingExercise title="Writing 1" description="About your school." prompts={[{ id: 'w1', question: '' }]} onComplete={() => handleTopicComplete('writing1')} studentDocRef={studentDocRef} initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.write1 || {}} savePath={`lessonProgress.${progressStorageVersion}.write1`} />;
-            case 'writing2': return <ManualGradingExercise title="Writing 2" description="Crea frases usando los temas aprendidos hoy." lineCount={6} onComplete={() => handleTopicComplete('writing2')} studentDocRef={studentDocRef} isAdmin={isAdmin} savePath={`lessonProgress.${progressStorageVersion}.write2`} savePathGrades={`lessonProgress.${progressStorageVersion}.write2Grades`} initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.write2} initialGrades={studentProfile?.lessonProgress?.[progressStorageVersion]?.write2Grades} />;
-            default: return null;
+            case 'writing1': return <CreativeWritingExercise title="Writing 1" description="About your school." prompts={[{ id: 'w1', question: '' }]} onComplete={() => handleTopicComplete('writing1')} studentDocRef={studentDocRef} initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.writing1 || {}} savePath={`lessonProgress.${progressStorageVersion}.writing1`} />;
+            case 'writing2': return <ManualGradingExercise title="Writing 2" description="Crea frases usando los temas aprendidos hoy." lineCount={6} onComplete={() => handleTopicComplete('writing2')} studentDocRef={studentDocRef} isAdmin={isAdmin} initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.writing2} initialGrades={studentProfile?.lessonProgress?.[progressStorageVersion]?.writing2Grades} savePath={`lessonProgress.${progressStorageVersion}.writing2`} savePathGrades={`lessonProgress.${progressStorageVersion}.writing2Grades`} />;
+            default: return <div className="flex justify-center items-center h-48"><Loader2 className="animate-spin text-primary" /></div>;
         }
     };
 
     return (
-        <div className="grid gap-8 md:grid-cols-12">
-            <div className="md:col-span-9 md:order-1 order-2">{renderContent()}</div>
-            <div className="md:col-span-3 md:order-2 order-1 text-left">
-                <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
-                    <CardHeader><CardTitle>Ruta de Aprendizaje</CardTitle></CardHeader>
-                    <CardContent>
-                        <nav><ul className="space-y-1">
-                            {learningPath.map(item => (
-                                <li key={item.key} onClick={() => handleTopicSelect(item.key)} className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer text-foreground', (item.status === 'locked' && !isAdmin) ? 'text-muted-foreground/50' : 'hover:bg-muted', selectedTopic === item.key && 'bg-muted text-primary font-bold')}>
-                                    <div className="flex items-center gap-3">{(item.status === 'completed') ? <CheckCircle className="h-5 w-5 text-green-500" /> : <item.icon className="h-5 w-5" />}<span>{item.name}</span></div>
-                                </li>
-                            ))}
-                        </ul></nav>
-                        <div className="mt-6 pt-6 border-t"><div className="flex justify-between items-center text-xs mb-2"><span>Progreso</span><span className="font-bold">{progressValue}%</span></div><Progress value={progressValue} className="h-2" /></div>
-                    </CardContent>
-                </Card>
-            </div>
+        <div className="flex w-full flex-col min-h-screen ingles-dashboard-bg">
+            <DashboardHeader />
+            <main className="flex-1 p-4 md:p-8">
+                <div className="max-w-7xl mx-auto">
+                    <div className="mb-8 text-left text-white">
+                        <Link href="/ingles/a1/unit/2" className="hover:underline text-sm font-bold text-primary">Volver a la Unidad 2</Link>
+                        <h1 className="text-4xl font-bold [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">Clase 8 (A1)</h1>
+                    </div>
+                    <div className="grid gap-8 md:grid-cols-12">
+                        <div className="md:col-span-3 md:order-2 order-1 text-left">
+                            <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
+                                <CardHeader><CardTitle>Ruta</CardTitle></CardHeader>
+                                <CardContent>
+                                    <nav><ul className="space-y-1">
+                                        {learningPath.map(item => (
+                                            <li key={item.key} onClick={() => handleTopicSelect(item.key)} className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer text-foreground', (item.status === 'locked' && !isAdmin) ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === item.key && 'bg-muted text-primary font-semibold')}>
+                                                <div className="flex items-center gap-3">{(item.status === 'completed') ? <CheckCircle className="h-5 w-5 text-green-500" /> : <item.icon className="h-5 w-5" />}<span>{item.name}</span></div>
+                                            </li>
+                                        ))}
+                                    </ul></nav>
+                                    <div className="mt-6 pt-6 border-t"><div className="flex justify-between items-center text-sm mb-2"><span>Progreso</span><span className="font-bold">{progressValue}%</span></div><Progress value={progressValue} className="h-2" /></div>
+                                </CardContent>
+                            </Card>
+                        </div>
+                        <div className="md:col-span-9 md:order-1 order-2">{renderContent()}</div>
+                    </div>
+                </div>
+            </main>
         </div>
     );
 }
