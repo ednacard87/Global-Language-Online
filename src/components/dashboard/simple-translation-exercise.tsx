@@ -769,14 +769,14 @@ export function SimpleTranslationExercise({
                                             Palabras importantes para este ejercicio.
                                         </p>
                                     </div>
-                                    <ScrollArea className="h-40">
+                                    <ScrollArea className="max-h-[300px] pr-4">
                                         <div className="grid gap-2 text-sm">
                                             {Object.entries(vocabulary).map(([spanish, english]) => (
-                                                <div key={spanish} className="grid grid-cols-2 items-center gap-4">
+                                                <div key={spanish} className="grid grid-cols-2 items-center gap-4 py-1 border-b border-border/50 last:border-0 text-foreground">
                                                     <span className="text-muted-foreground capitalize">{spanish}</span>
                                                     <span className="font-semibold text-right">{english}</span>
-                                                </div> 
-                                        ))}
+                                                </div>
+                                            ))}
                                         </div>
                                     </ScrollArea>
                                 </div>
