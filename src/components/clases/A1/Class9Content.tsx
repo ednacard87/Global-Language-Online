@@ -36,12 +36,13 @@ import { VocabularyMatchingGame } from '@/components/dashboard/vocabulary-matchi
 import { DialogueCompletionExercise } from '@/components/kids/exercises/dialogue-completion-exercise';
 import { CreativeWritingExercise } from '@/components/dashboard/creative-writing-exercise';
 import { DashboardHeader } from '@/components/dashboard/header';
+import { Footer } from '@/components/footer';
 import { Separator } from '@/components/ui/separator';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 // --- DATA ---
 
-const progressStorageVersion = 'progress_a1_eng_u2_c9_v130_blindado';
+const progressStorageVersion = 'progress_a1_eng_u2_c9_v135_stable';
 const mainProgressKey = 'progress_a1_eng_unit_2_class_9';
 
 const vocabularyData = {
@@ -110,13 +111,74 @@ const dialogue2Data = [
     { speaker: "JON", parts: ["", " ONES? - THOSE ARE…. $55."], answers: [["THESE", "THOSE"]] },
 ];
 
-// ---- Vocabulario de los ejercicios --------
-const ex1Vocab = { "esto": "this", "ese": "that", "esos": "those", "estas": "these", "cuarto": "room" };
-const ex2Vocab = { "oficina": "office", "esos": "those", "amigos": "friends", "casas": "houses", "viejas": "old" };
-const ex3Vocab = { "interesante": "interesting", "zapatos": "shoes", "caros": "expensive", "hermosas": "beautiful" };
-const ex4Vocab = { "celular": "cellphone", "llaves": "keys", "mesa": "table", "parientes": "relatives" };
-const ex5Vocab = { "caja": "box", "alto": "tall", "manzanas": "apples", "ventana": "window" };
-const dial1Vocab = { "aretes": "earrings", "esposa": "wife", "dorados": "golden", "plateados": "silver", "chaqueta": "jacket", "marrón": "brown" };
+// ---- VOCABULARIO REFINADO PARA EJERCICIOS CLASE 9 --------
+const ex1Vocab = { 
+    "conocer": "know", 
+    "hombre": "man", 
+    "negro": "black", 
+    "guitarra": "guitar", 
+    "mucho": "really / very much", 
+    "restaurante": "restaurant", 
+    "altos": "tall", 
+    "veloz": "fast", 
+    "hermosos": "beautiful", 
+    "inteligentes": "intelligent", 
+    "vestidos": "dresses", 
+    "grandes": "big", 
+    "cómodo": "comfortable", 
+    "cuesta más": "costs more", 
+    "camiseta": "t-shirt", 
+    "muchacha": "girl", 
+    "lugares": "places", 
+    "cantante": "singer" 
+};
+
+const ex2Vocab = { 
+    "qué": "what", 
+    "ese": "that", 
+    "oficina": "office", 
+    "amigos": "friends", 
+    "casas": "houses", 
+    "viejas": "old" 
+};
+
+const ex3Vocab = { 
+    "libro": "book", 
+    "interesante": "interesting", 
+    "zapatos": "shoes", 
+    "caros": "expensive", 
+    "flores": "flowers", 
+    "hermosas": "beautiful" 
+};
+
+const ex4Vocab = { 
+    "celular": "phone / cellphone", 
+    "llaves": "keys", 
+    "mesa": "table", 
+    "parientes": "relatives" 
+};
+
+const ex5Vocab = { 
+    "qué tan grande": "how big", 
+    "caja": "box", 
+    "niño": "boy", 
+    "alto": "tall", 
+    "manzanas": "apples", 
+    "ventana": "window", 
+    "abierta": "open" 
+};
+
+const dial1Vocab = { 
+    "ayudarte": "help you", 
+    "aretes": "earrings", 
+    "esposa": "wife", 
+    "dorados": "golden", 
+    "plateados": "silver", 
+    "chaqueta": "jacket", 
+    "marrón": "brown", 
+    "me los llevo": "i take them", 
+    "también": "too" 
+};
 
 interface Topic {
   key: string;
@@ -382,6 +444,7 @@ export default function Class9Content() {
                     </div>
                 </div>
             </main>
+            <Footer />
         </div>
     );
 }
