@@ -452,6 +452,45 @@ const exercises = {
             { spanish: 'A ELLAS LES ENCANTA ESE CANTANTE', english: ['they love that singer'] },
         ]
     },
+
+    c9_ex2: {
+        title: 'a1class1.exercise',
+        prompts: [
+            { spanish: '¿QUÉ ES ESO?', english: ['what is that?'] },
+            { spanish: 'ESA ES TU OFICINA', english: ['that is your office'] },
+            { spanish: 'AQUELLOS SON SUS AMIGOS (DE ÉL)', english: ['those are his friends'] },
+            { spanish: 'ESAS CASAS SON VIEJAS', english: ['those houses are old'] },
+            { spanish: '¿QUÉ SON ESOS?', english: ['what are those?'] },
+        ]
+    },
+    c9_ex3: {
+        title: 'a1class1.exercise',
+        prompts: [
+            { spanish: 'ESTE LIBRO ES INTERESANTE', english: ['this book is interesting'] },
+            { spanish: 'ESOS ZAPATOS SON CAROS', english: ['those shoes are expensive'] },
+            { spanish: 'ESE HOMBRE ES MI PADRE', english: ['that man is my father', 'that man is my dad'] },
+            { spanish: 'ESTAS FLORES SON HERMOSAS', english: ['these flowers are beautiful'] },
+        ]
+    },
+    c9_ex4: {
+        title: 'a1class1.exercise',
+        prompts: [
+            { spanish: '¿ES ESTE TU CELULAR?', english: ['is this your cellphone?', 'is this your phone?'] },
+            { spanish: '¿SON ESAS TUS LLAVES?', english: ['are those your keys?'] },
+            { spanish: 'NO, ESTA NO ES MI MESA', english: ['no, this is not my table', "no, this isn't my table"] },
+            { spanish: 'ESOS NO SON MIS PARIENTES', english: ['those are not my relatives', "those aren't my relatives"] },
+        ]
+    },
+    c9_ex5: {
+        title: 'a1class1.exercise',
+        prompts: [
+            { spanish: '¿QUÉ TAN GRANDE ES ESTA CAJA?', english: ['how big is this box?'] },
+            { spanish: 'AQUEL NIÑO ES MUY ALTO', english: ['that boy is very tall'] },
+            { spanish: 'ESTAS MANZANAS SON ROJAS', english: ['these apples are red'] },
+            { spanish: 'ESA VENTANA ESTÁ ABIERTA', english: ['that window is open'] },
+        ]
+    },
+
     c10_ex1: {
         title: 'a1class1.exercise',
         prompts: [
