@@ -64,7 +64,7 @@ const verbVocabulary = [
     { spanish: 'CANTAR', english: 'sing' },
     { spanish: 'HABLAR', english: 'speak' },
     { spanish: 'PENSAR', english: 'think' },
-    { spanish: 'HABER/TENER', english: 'have' },
+    { spanish: 'TENER', english: 'have' },
     { spanish: 'HACER', english: 'do' },
     { spanish: 'ESTUDIAR', english: 'study' },
     { spanish: 'ESCRIBIR', english: 'write' },
@@ -525,26 +525,27 @@ export default function Class2Content() {
                 );
             case 'grammar':
                 return (
+                    // Gramatica 1 - (Do/Does  + usos principales + estructura + contracciones)
                     <div className="space-y-6 text-left">
                         <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-slate-100 dark:bg-slate-800/50">
                             <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase tracking-tight">Present Simple: “DO - DOES”</CardTitle></CardHeader>
                             <CardContent className="space-y-8 font-bold text-lg pt-4 text-foreground">
                                 <div className="p-6 bg-white/80 dark:bg-background/20 rounded-2xl border text-black">
                                     <p className="text-lg font-bold">1 - USOS PRINCIPALES:</p>
-                                    <p className="text-lg mt-2">“DO-DOES” sirve como VERBO (HACER) o como AUXILIAR para negar y preguntar.</p>
-                                    <p className="font-mono text-xl font-black text-primary mt-4 uppercase text-center">I DO - YOU DO - WE DO - THEY DO // HE/SHE/IT DOES</p>
+                                    <p className="text-lg mt-2"> AUXILIAR = “DO-DOES”  // como VERBO (HACER = TO DO).</p>
+                                    <p className="font-mono text-xl font-black text-primary mt-4 uppercase text-center"> I - YOU - WE - THEY = DO // HE - SHE - IT = DOES</p>
                                 </div>
 
                                 <div className="p-6 bg-white/80 dark:bg-background/20 rounded-2xl border text-black space-y-4">
                                     <p className="text-primary uppercase tracking-widest text-sm">2 - ESTRUCTURA (Fórmulas):</p>
                                     <div className="space-y-2 p-4 bg-muted rounded-lg font-mono text-base text-foreground">
-                                        <p><span className="text-green-500 font-bold mr-2">(+)</span> subject + verb + complement</p>
-                                        <p><span className="text-red-500 font-bold mr-2">(-)</span> subject + Do/Does + Not + verb + complement</p>
-                                        <p><span className="text-blue-500 font-bold mr-2">(?)</span> Do/Does + subject + verb + complement?</p>
+                                        <p><span className="text-green-500 font-bold mr-2">(+)</span> pronoun + verb + complement</p>
+                                        <p><span className="text-red-500 font-bold mr-2">(-)</span> pronoun + Aux:Do/Does + Not + verb + complement</p>
+                                        <p><span className="text-blue-500 font-bold mr-2">(?)</span> Aux:Do/Does + pronoun + verb + complement?</p>
                                         <Separator className='my-4'/>
                                         <p className="font-sans uppercase text-xs text-muted-foreground mb-1">Short Answers:</p>
-                                        <p><span className="text-green-600 font-bold mr-2">(+A)</span> Yes, pronoun + Do/Does</p>
-                                        <p><span className="text-red-600 font-bold mr-2">(-A)</span> No, pronoun + Do/Does + Not</p>
+                                        <p><span className="text-green-600 font-bold mr-2">(+A)</span> Yes, pronoun + Aux:Do/Does</p>
+                                        <p><span className="text-red-600 font-bold mr-2">(-A)</span> No, pronoun + Aux:Do/Does + Not</p>
                                     </div>
                                 </div>
 
