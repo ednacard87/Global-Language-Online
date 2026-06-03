@@ -9,9 +9,10 @@ import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
-import { ArrowRight, Trophy, BookText } from 'lucide-react';
+import { ArrowRight, Trophy, BookText, Loader2 } from 'lucide-react';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 export type ExercisePrompt = {
     spanish: string;
@@ -34,8 +35,65 @@ type TranslationForms = {
 
 type ValidationStatus = 'correct' | 'incorrect' | 'unchecked';
 
-const nemoImage = PlaceHolderImages.find(p => p.id === 'nemo-icon');
-const clownFishImage = PlaceHolderImages.find(p => p.id === 'clown-fish-guide');
+// --- DATA EXPORTS ---
+
+export const presentSimpleExercises: ExercisePrompt[] = [
+    {
+        spanish: "yo juego en el parque",
+        answers: {
+            affirmative: ["i play in the park"],
+            negative: ["i do not play in the park", "i don't play in the park"],
+            interrogative: ["do i play in the park?"],
+            shortAffirmative: ["yes, i do"],
+            shortNegative: ["no, i do not", "no, i don't"]
+        }
+    },
+    {
+        spanish: "ella come una manzana",
+        answers: {
+            affirmative: ["she eats an apple"],
+            negative: ["she does not eat an apple", "she doesn't eat an apple"],
+            interrogative: ["does she eat an apple?"],
+            shortAffirmative: ["yes, she does"],
+            shortNegative: ["no, she does not", "no, she doesn't"]
+        }
+    },
+    {
+        spanish: "nosotros vivimos en una casa grande",
+        answers: {
+            affirmative: ["we live in a big house"],
+            negative: ["we do not live in a big house", "we don't live in a big house"],
+            interrogative: ["do we live in a big house?"],
+            shortAffirmative: ["yes, we do"],
+            shortNegative: ["no, we do not", "no, we don't"]
+        }
+    }
+];
+
+export const presentSimpleExercises2: ExercisePrompt[] = [
+    {
+        spanish: "ellos hablan inglés",
+        answers: {
+            affirmative: ["they speak english"],
+            negative: ["they do not speak english", "they don't speak english"],
+            interrogative: ["do they speak english?"],
+            shortAffirmative: ["yes, they do"],
+            shortNegative: ["no, they do not", "no, they don't"]
+        }
+    },
+    {
+        spanish: "él trabaja cada día",
+        answers: {
+            affirmative: ["he works every day"],
+            negative: ["he does not work every day", "he doesn't work every day"],
+            interrogative: ["does he work every day?"],
+            shortAffirmative: ["yes, he does"],
+            shortNegative: ["no, he does not", "no, he doesn't"]
+        }
+    }
+];
+
+// --- COMPONENT ---
 
 export const PresentSimpleExercise = ({
     onComplete,
@@ -72,7 +130,7 @@ export const PresentSimpleExercise = ({
         setIsCurrentCorrect(false);
     }, [currentIndex]);
     
-    if (!currentExercise) return null;
+    if (!currentExercise) return <div className="flex justify-center items-center h-48"><Loader2 className="animate-spin text-primary" /></div>;
     
     const shouldShowShortAnswers = showShortAnswers && currentExercise.answers.shortAffirmative !== undefined && currentExercise.answers.shortNegative !== undefined;
     
@@ -147,17 +205,20 @@ export const PresentSimpleExercise = ({
                                     Vocabulary
                                 </Button>
                             </PopoverTrigger>
+
                             <PopoverContent className="w-64">
                                 <div className="space-y-2">
                                     <h4 className="font-bold border-b pb-1 text-primary">Apoyo</h4>
-                                    <div className="grid grid-cols-2 gap-2 text-sm">
-                                        {Object.entries(vocabulary).map(([es, en]) => (
-                                            <React.Fragment key={es}>
-                                                <span className="text-muted-foreground capitalize">{es}:</span>
-                                                <span className="font-semibold text-right">{en}</span>
-                                            </React.Fragment>
-                                        ))}
-                                    </div>
+                                    <ScrollArea className="max-h-[300px] pr-4">
+                                        <div className="grid grid-cols-2 gap-2 text-sm">
+                                            {Object.entries(vocabulary).map(([es, en]) => (
+                                                <React.Fragment key={es}>
+                                                    <span className="text-muted-foreground capitalize">{es}:</span>
+                                                    <span className="font-semibold text-right">{en}</span>
+                                                </React.Fragment>
+                                            ))}
+                                        </div>
+                                    </ScrollArea>
                                 </div>
                             </PopoverContent>
                         </Popover>
@@ -171,8 +232,7 @@ export const PresentSimpleExercise = ({
                             className={cn(
                                 "h-8 w-8 rounded-full flex items-center justify-center font-bold border-2 transition-all",
                                 currentIndex === index ? "border-primary ring-2 ring-primary" : "border-muted-foreground/50",
-                                completedPrompts[index] && 'bg-green-500/20 border-green-500 text-green-700',
-                                !completedPrompts[index] && validationStatus.affirmative === 'incorrect' && 'border-destructive text-destructive'
+                                completedPrompts[index] ? 'bg-green-500 border-green-500 text-white' : ''
                             )}
                         >
                             {index + 1}
@@ -181,8 +241,8 @@ export const PresentSimpleExercise = ({
                 </div>
             </CardHeader>
             <CardContent className="space-y-6">
-                <div className="bg-muted p-4 rounded-lg border text-center">
-                    <p className="text-xl font-bold">{currentExercise.spanish}</p>
+                <div className="bg-muted p-4 rounded-lg border text-center font-bold text-xl uppercase tracking-tighter">
+                    {currentExercise.spanish}
                 </div>
                  <div className="space-y-3 font-mono text-base">
                     <div className="flex items-center gap-3">
@@ -199,7 +259,7 @@ export const PresentSimpleExercise = ({
                     </div>
                     {shouldShowShortAnswers && (
                         <>
-                            <div className="border-t my-2" />
+                            <div className="border-t my-2 border-border/50" />
                             <div className="flex items-center gap-3">
                                 <Label className="w-12 font-bold text-lg text-green-600 text-center">(+A)</Label>
                                 <Input name="shortAffirmative" value={translations.shortAffirmative} onChange={handleInputChange} className={cn(validationStatus.shortAffirmative === 'correct' ? 'border-green-500 bg-green-50/5' : validationStatus.shortAffirmative === 'incorrect' ? 'border-destructive bg-destructive/5' : '')} autoComplete="off" />
@@ -212,9 +272,9 @@ export const PresentSimpleExercise = ({
                     )}
                 </div>
             </CardContent>
-            <CardFooter className="flex justify-between">
+            <CardFooter className="flex justify-between border-t pt-6 mt-4">
                 <Button onClick={handleCheck}>Verificar</Button>
-                <Button onClick={handleNext} disabled={!isCurrentCorrect}>
+                <Button onClick={handleNext} disabled={!isCurrentCorrect} className='text-white font-bold'>
                     {currentIndex < exerciseData.length - 1 ? 'Siguiente' : 'Finalizar'}
                     <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
