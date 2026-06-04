@@ -429,6 +429,7 @@ const exercises = {
             { spanish: 'ELLA NO SABE A DONDE IR', english: ["she does not know where to go", "she doesn't know where to go"] },
         ]
     },
+     // --- CLASS 9 A1 ---
     c9_ex1: {
         title: 'a1class1.exercise',
         prompts: [
@@ -452,42 +453,45 @@ const exercises = {
             { spanish: 'A ELLAS LES ENCANTA ESE CANTANTE', english: ['they love that singer'] },
         ]
     },
-
     c9_ex2: {
         title: 'a1class1.exercise',
         prompts: [
-            { spanish: '¿QUÉ ES ESO?', english: ['what is that?'] },
-            { spanish: 'ESA ES TU OFICINA', english: ['that is your office'] },
-            { spanish: 'AQUELLOS SON SUS AMIGOS (DE ÉL)', english: ['those are his friends'] },
-            { spanish: 'ESAS CASAS SON VIEJAS', english: ['those houses are old'] },
-            { spanish: '¿QUÉ SON ESOS?', english: ['what are those?'] },
+            { spanish: 'ME GUSTAN LOS ANIMALES GRANDES- ME GUSTAN LOS GRANDES:', english: ["i like big animals - i like the big ones", "i like big animals i like the big ones"] },
+            { spanish: 'ME GUSTA EL VESTIDO NEGRO- ME GUSTA EL NEGRO.', english: ["i like the black dress - i like the black one", "i like the black dress i like the black one"] },
+            { spanish: 'EL LIBRO AZUL -EL AZUL', english: ["the blue book - the blue one", "the blue book the blue one"] },
+            { spanish: 'EL PERRO GRIS- EL GRIS', english: ["the gray dog - the gray one", "the gray dog the gray one"] },
+            { spanish: 'EL CARRO PEQUEÑO- EL PEQUEÑO', english: ["the small car - the small one", "the small car the small one"] },
+            { spanish: 'EL EDIFICIO (BUILDING) ALTO-EL ALTO', english: ["the tall building - the tall one", "the tall building the tall one"] },
+            { spanish: 'LOS HOMBRES FUERTES- LOS FUERTES.', english: ["the strong men - the strong ones", "the strong men the strong ones"] },
+            { spanish: 'LOS COMPUTADORES BARATOS – LOS BARATOS', english: ["the cheap computers - the cheap ones", "the cheap computers the cheap ones"] },
+            { spanish: 'LAS CASAS GRANDES- LAS GRANDES', english: ["the big houses - the big ones", "the big houses the big ones"] },
+            { spanish: 'EL COLLAR (NECKLACE)CARO- EL CARO', english: ["the expensive necklace - the expensive one", "the expensive necklace the expensive one"] },
         ]
     },
     c9_ex3: {
         title: 'a1class1.exercise',
         prompts: [
-            { spanish: 'ESTE LIBRO ES INTERESANTE', english: ['this book is interesting'] },
-            { spanish: 'ESOS ZAPATOS SON CAROS', english: ['those shoes are expensive'] },
-            { spanish: 'ESE HOMBRE ES MI PADRE', english: ['that man is my father', 'that man is my dad'] },
-            { spanish: 'ESTAS FLORES SON HERMOSAS', english: ['these flowers are beautiful'] },
+            { spanish: "¿TE GUSTAN ESTOS CUADROS (PICTURES)? - TE GUSTAN ESTOS?", english: ["do you like these pictures? do you like these ones?", "do you like these pictures? - do you like these ones?"] },
+            { spanish: "A ELLA LE GUSTA ESTA PELICULA (MOVIE) Y A EL LE GUSTA ESA", english: ["she likes this movie and he likes that one"] },
+            { spanish: "LAS CASAS BLANCAS- LAS BLANCAS", english: ["the white houses - the white ones"] },
+            { spanish: "LOS ZAPATOS NEGROS- LOS NEGROS", english: ["the black shoes - the black ones"] },
+            { spanish: "ME GUSTAN ESTAS MESAS- ¿A TI TE GUSTAN ESAS?", english: ["i like these tables - do you like those ones?", "i like these tables do you like those ones?"] },
+            { spanish: "¿TE GUSTA ESTE HELADO? - ¿TE GUSTA ESTE?", english: ["do you like this ice cream? - do you like this one?", "do you like this ice cream? do you like this one?"] },
         ]
     },
     c9_ex4: {
         title: 'a1class1.exercise',
         prompts: [
-            { spanish: '¿ES ESTE TU CELULAR?', english: ['is this your cellphone?', 'is this your phone?'] },
-            { spanish: '¿SON ESAS TUS LLAVES?', english: ['are those your keys?'] },
-            { spanish: 'NO, ESTA NO ES MI MESA', english: ['no, this is not my table', "no, this isn't my table"] },
-            { spanish: 'ESOS NO SON MIS PARIENTES', english: ['those are not my relatives', "those aren't my relatives"] },
-        ]
-    },
-    c9_ex5: {
-        title: 'a1class1.exercise',
-        prompts: [
-            { spanish: '¿QUÉ TAN GRANDE ES ESTA CAJA?', english: ['how big is this box?'] },
-            { spanish: 'AQUEL NIÑO ES MUY ALTO', english: ['that boy is very tall'] },
-            { spanish: 'ESTAS MANZANAS SON ROJAS', english: ['these apples are red'] },
-            { spanish: 'ESA VENTANA ESTÁ ABIERTA', english: ['that window is open'] },
+            { spanish: "ESE CARRO ES AZUL MIENTRAS QUE ESTE ES GRIS", english: ["that car is blue while this one is gray"] },
+            { spanish: "ESTE ES EL REGALO QUE COMPRE PARA MARY", english: ["this is the gift i bought for mary", "this is the present i bought for mary"] },
+            { spanish: "ESA CASA ES CARA MIENTRAS ESTA ES BARATA", english: ["that house is expensive while this one is cheap"] },
+            { spanish: "ESA MUJER ES SU MAMA Y LA OTRA ES SU TIA (DE EL)", english: ["that woman is his mother and the other one is his aunt", "that woman is his mom and the other one is his aunt"] },
+            { spanish: "ESTOS HOMBRES SON MIS AMIGOS", english: ["these men are my friends"] },
+            { spanish: "ESOS ANIMALES SON MUY GRANDES Y SALVAJES MIENTRAS QUE ESTOS SON PEQUEÑOS", english: ["those animals are very big and wild while these ones are small"] },
+            { spanish: "ESOS MUCHACHOS SON INTELIGENTES MIENTRAS QUE ESTOS SON PEREZOSOS", english: ["those boys are intelligent while these ones are lazy"] },
+            { spanish: "¿DONDE ESTÁ ESE RESTAURANTE?", english: ["where is that restaurant?"] },
+            { spanish: "ESOS CABALLOS SON NEGROS", english: ["those horses are black"] },
+            { spanish: "ESTOS GATOS SON BLANCOS MIENTRAS QUE ESOS SON NEGROS", english: ["these cats are white while those ones are black"] },
         ]
     },
 
