@@ -6,7 +6,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
-import { Trophy } from 'lucide-react';
+import { Trophy, BookText } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface DialogueLine {
     speaker: string;
@@ -19,9 +21,10 @@ interface DialogueCompletionExerciseProps {
     description: string;
     dialogue: DialogueLine[];
     onComplete: () => void;
+    vocabulary?: Record<string, string>;
 }
 
-export function DialogueCompletionExercise({ title, description, dialogue, onComplete }: DialogueCompletionExerciseProps) {
+export function DialogueCompletionExercise({ title, description, dialogue, onComplete, vocabulary }: DialogueCompletionExerciseProps) {
     const { toast } = useToast();
     
     // Flatten all blanks into a single array for easier management
@@ -92,13 +95,42 @@ export function DialogueCompletionExercise({ title, description, dialogue, onCom
     return (
         <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
             <CardHeader>
-                <CardTitle>{title}</CardTitle>
-                <CardDescription>{description}</CardDescription>
+                <div className="flex justify-between items-start">
+                    <div>
+                        <CardTitle>{title}</CardTitle>
+                        <CardDescription>{description}</CardDescription>
+                    </div>
+                    {vocabulary && (
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button variant="outline" size="sm" className="border-2 border-brand-blue animate-border-pulse">
+                                    <BookText className="mr-2 h-4 w-4" />
+                                    Vocabulary
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-64">
+                                <div className="space-y-2 text-foreground">
+                                    <h4 className="font-bold border-b pb-1 text-primary">Vocabulario útil</h4>
+                                    <ScrollArea className="h-[200px] pr-4">
+                                        <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
+                                            {Object.entries(vocabulary).map(([es, en]) => (
+                                                <React.Fragment key={es}>
+                                                    <span className="text-muted-foreground capitalize">{es}:</span>
+                                                    <span className="font-semibold text-right">{en}</span>
+                                                </React.Fragment>
+                                            ))}
+                                        </div>
+                                    </ScrollArea>
+                                </div>
+                            </PopoverContent>
+                        </Popover>
+                    )}
+                </div>
             </CardHeader>
             <CardContent className="space-y-6">
                 <div className="space-y-6 bg-muted/30 p-6 rounded-2xl border">
                     {dialogue.map((line, lIdx) => (
-                        <div key={lIdx} className="flex gap-2 items-baseline text-base sm:text-lg flex-wrap leading-relaxed">
+                        <div key={lIdx} className="flex gap-2 items-baseline text-base sm:text-lg flex-wrap leading-relaxed text-foreground">
                             <span className="font-black text-primary shrink-0 min-w-[70px]">{line.speaker}:</span>
                             {line.parts.map((part, pIdx) => (
                                 <React.Fragment key={pIdx}>
