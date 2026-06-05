@@ -25,8 +25,8 @@ const whExercisesData = {
         prompts: [
             { spanish: 'QUE HACES?', english: ["what do you do?"] },
             { spanish: 'QUE COME ELLA?', english: ["what does she eat?"] },
-            { spanish: 'QUE LEES EN EL METRO?', english: ["what do you read on the subway?"] },
-            { spanish: 'QUE BEBE EL NIÑO?', english: ["what does the child drink?"] },
+            { spanish: 'QUE LEES EN EL METRO?', english: ["what do you read on the subway?" , "what do you read on the train"] },
+            { spanish: 'QUE BEBE EL NIÑO?', english: ["what does the child drink?" , "what does the boy drink"] },
             { spanish: 'QUE COMEN ELLOS EN LA NOCHE?', english: ["what do they eat at night?"] }
         ]
     },
