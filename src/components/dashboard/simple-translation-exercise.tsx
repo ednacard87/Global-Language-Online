@@ -494,13 +494,13 @@ const exercises = {
             { spanish: "ESTOS GATOS SON BLANCOS MIENTRAS QUE ESOS SON NEGROS", english: ["these cats are white while those ones are black"] },
         ]
     },
-
+    // --- CLASS 10 A1 ---
     c10_ex1: {
         title: 'a1class1.exercise',
         prompts: [
             { spanish: 'EL TIGRE GRANDE – EL GRANDE', english: ["the big tiger - the big one", "the big tiger the big one"] },
             { spanish: 'LOS PARQUES PEQUEÑOS- LOS PEQUEÑOS', english: ["the small parks - the small ones", "the small parks the small ones"] },
-            { spanish: 'EL PORTATIL NUEEVO- EL NUEVO', english: ["the new laptop - the new one", "the new laptop the new one"] },
+            { spanish: 'EL PORTATIL NUEVO- EL NUEVO', english: ["the new laptop - the new one", "the new laptop the new one"] },
             { spanish: 'LA OTRA SOMBRILLA- LA OTRA', english: ["the other umbrella - the other one", "the other umbrella the other one"] },
             { spanish: 'LOS OTROS PORTATILES– LOS OTROS', english: ["the other laptops - the other ones", "the other laptops the other ones"] },
             { spanish: '¿CUALES VESTIDOS TE GUSTAN? – CUALES TE GUSTAN?', english: ["which dresses do you like? - which ones do you like?", "which dresses do you like? which ones do you like?"] },
@@ -509,10 +509,25 @@ const exercises = {
             { spanish: 'PREFIERO LOS CELULARES PEQUEÑOS – PREFIERO LOS PEQUEÑOS', english: ["i prefer small cellphones - i prefer the small ones", "i prefer small cellphones i prefer the small ones"] },
             { spanish: '¿CUALES GAFAS TE GUSTAN? – CUALES TE GUSTAN?', english: ["which glasses do you like? - which ones do you like?", "which glasses do you like? which ones do you like?"] },
             { spanish: '¿CUAL CHAQUETA TE GUSTA? – CUAL TE GUSTA? A MI ME GUSTA LA NEGRA', english: ["which jacket do you like? - which one do you like? i like the black one", "which jacket do you like? which one do you like? i like the black one"] },
-            { spanish: '¿CUALES JUGOS TE GUSTAN? – CUAL TE GUSTA? – A MI ME GUSTA EL DE MARACUYA', english: ["which juices do you like? - which one do you like? - i like the peak passion fruit one", "which juices do you like? which one do you like? i like the peak passion fruit one"] },
+            { spanish: '¿CUALES JUGOS TE GUSTAN? – CUAL TE GUSTA? – A MI ME GUSTA EL DE MARACUYA', english: ["which juices do you like? - which one do you like? - i like the passion fruit one"] },
             { spanish: '¿CUAL LIBRO LE GUSTA A ELLA? - CUAL LE GUSTA?', english: ["which book does she like? - which one does she like?", "which book does she like? which one does she like?"] },
             { spanish: '¿CUAL CELULAR ES TUYO? – CUAL ES EL TUYO?', english: ["which cellphone is yours? - which one is yours?", "which cellphone is yours? which one is yours?"] },
             { spanish: '¿CUALES BOTAS SON DE ELLA? – CUALES SON DE ELLA?', english: ["which boots are hers? - which ones are hers?", "which boots are hers? which ones are hers?"] },
+        ]
+    },
+    c10_ex2: {
+        title: 'a1class1.exercise',
+        prompts: [
+            { spanish: '1. ME GUSTA ESTE JUEGO Y A TI TE GUSTA ESE.', english: ["i like this game and you like that one"] },
+            { spanish: '2. NO ME GUSTAN ESTAS GAFAS – NO ME GUSTAN ESAS.', english: ["i do not like these glasses - i do not like those ones", "i don't like these glasses - i don't like those ones"] },
+            { spanish: '3. ESTOS RELOJES SON VIEJOS- ESTOS SON VIEJOS', english: ["these watches are old - these ones are old"] },
+            { spanish: '4. ME GUSTA ESTA SERIE - ME GUSTA ESA:', english: ["i like this series - i like that one"] },
+            { spanish: '5. NO ME GUSTAN ESTAS GORRAS (CAPS)- A MI ME GUSTAN ESAS-', english: ["i do not like these caps - i like those ones", "i don't like these caps - i like those ones"] },
+            { spanish: '6. A ELLOS LES GUSTAN ESOS COMPUTADORES - A NOSOTROS NOS GUSTAN ESTOS-', english: ["they like those computers - we like these ones"] },
+            { spanish: '7. A MI ME GUSTA ESTA CASA MIENTRAS QUE A ELLA LE GUSTA ESA:', english: ["i like this house while she likes that one"] },
+            { spanish: '8. EL PREFIERE ESTE CARRO A ESA MOTO:', english: ["he prefers this car to that motorcycle"] },
+            { spanish: '9. NO ME GUSTAN ESAS CAMISETAS – A MI NO ME GUSTAN ESAS:', english: ["i do not like those t-shirts - i do not like those ones", "i don't like those t-shirts - i don't like those ones"] },
+            { spanish: '10. A NOSOTROS NOS GUSTA ESA FINCA – A NOSOTROS NOS GUSTA ESA:', english: ["we like that farm - we like that one"] },
         ]
     },
     c10_the1: {
@@ -530,6 +545,8 @@ const exercises = {
             { spanish: '10- NOSOTROS VAMOS A LA ISLA SICILIA EL PROXIMO MES', english: ["we go to sicily island next month", "we go to sicily next month", "we are going to sicily next month"] },
         ]
     },
+
+    // --- CLASS 11 A1 ---
     c11_ex1: {
         title: 'a1class1.exercise',
         prompts: [
