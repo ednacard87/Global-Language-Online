@@ -115,9 +115,9 @@ const whExercisesData = {
         prompts: [
             { spanish: '¿CUÁNDO ES TU CUMPLEAÑOS?', english: ["when is your birthday?"] },
             { spanish: '¿CUÁNDO ES LA CLASE DE INGLÉS?', english: ["when is the english class?"] },
-            { spanish: 'CUANDO ES LA FIESTA?', english: ["when is the party?"] },
-            { spanish: 'CUANDO ES EL VIAJE A EUROPA?', english: ["when is the trip to europe?"] },
-            { spanish: 'CUANDO ES LA CLASE DE YOGA?', english: ["when is the yoga class?"] }
+            { spanish: '¿CUANDO ES LA FIESTA?', english: ["when is the party?"] },
+            { spanish: '¿CUANDO ES EL VIAJE A EUROPA?', english: ["when is the trip to europe?"] },
+            { spanish: '¿CUANDO ES LA CLASE DE YOGA?', english: ["when is the yoga class?"] }
         ]
     },
     'Why': {

@@ -2,10 +2,23 @@
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import Link from 'next/link';
-import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, ChevronDown, HelpCircle, XCircle, Loader2, ArrowRight, Info, Lightbulb } from 'lucide-react';
+import { 
+    BookOpen, 
+    PenSquare, 
+    Lock, 
+    GraduationCap, 
+    CheckCircle, 
+    ChevronDown, 
+    HelpCircle, 
+    Loader2, 
+    ArrowRight, 
+    Info,
+    ArrowLeft,
+    BookText,
+    Globe
+} from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
@@ -16,29 +29,22 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { GenitiveCaseExercise } from '@/components/kids/exercises/genitive-case-exercise';
 import { WhQuestionExercise } from '@/components/kids/exercises/wh-question-exercise';
 import { WhQuestionsMainExercise } from '@/components/kids/exercises/wh-questions-main-exercise';
 import { FillInTheBlanksExercise } from '@/components/kids/exercises/fill-in-the-blanks';
 import { GenitiveSaxonGsExercise } from '@/components/kids/exercises/genitive-saxon-gs-exercise';
 import { WhFillInTheBlanksExercise } from '@/components/kids/exercises/wh-fill-in-the-blanks-exercise';
 import { WhQuestionsMainExercise3 } from '@/components/kids/exercises/wh-questions-main-exercise-3';
+import { GenitiveCaseExercise } from '@/components/kids/exercises/genitive-case-exercise';
+import { DashboardHeader } from '@/components/dashboard/header';
+import { Footer } from '@/components/footer';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Label } from '@/components/ui/label';
 
-type Topic = {
-  key: string;
-  name: string;
-  icon: React.ElementType;
-  status: 'locked' | 'active' | 'completed';
-  subItems?: { key: string; name: string; status: 'locked' | 'active' | 'completed', icon?: React.ElementType }[];
-};
+// --- DATA ---
 
-const ICONS_CONFIG = {
-    locked: Lock,
-    active: BookOpen,
-    completed: CheckCircle,
-};
-
-const progressStorageVersion = 'progress_a1_eng_unit_1_class_4_v6_stable';
+const progressStorageVersion = 'progress_a1_eng_unit_1_class_4_v155_stable';
 const mainProgressKey = 'progress_a1_eng_unit_1_class_4';
 
 const vocabularyData = {
@@ -88,21 +94,35 @@ const whVocabularyExerciseData = [
 ];
 
 const practiceVocab: Record<string, Record<string, string>> = {
-    'who': { "quién": "who", "tía": "aunt", "puerta": "door" , "Ese" : "that"  },
-    'what1': { "qué": "what", "haces": "do", "lees": "read", "bebe": "drink", "metro": "subway" , "el niño" : "the boy"},
-    'what2': { "cuál": "what", "favorito": "favorite", "música": "music", "deporte": "sport", "comida": "food" },
+    'Who': { "quién": "who", "tía": "aunt", "puerta": "door" , "Ese" : "that"},
+    'What1': { "qué": "what", "haces": "do", "lees": "read", "bebe": "drink", "metro": "subway/Train" , "el niño" : "the boy"},
+    'What2': { "cuál": "what", "favorito": "favorite", "música": "music", "deporte": "sport", "comida": "food" },
     'what-kind-of': { "tipo/clase": "kind/type", "zapatos": "shoes", "ropa": "clothes" },
-    'how': { "cómo": "how", "estás": "are you", "esposo": "husband", "ir": "go" },
+    'How': { "cómo": "how", "estás": "are you", "esposo": "husband", "ir": "go" },
     'how-adjective': { "alto": "tall", "picante": "spicy", "pequeño": "small", "grande": "big", "sopa": "soup" },
     'how-often': { "que tan seguido": "how often", "gimnasio": "gym", "comes": "eat" },
-    'whose': { "de quién": "whose", "sombrilla": "umbrella", "llaves": "keys" },
-    'where': { "dónde": "where", "vas": "are going", "libros": "books", "compras": "buy", "carne": "meat" },
-    'which': { "cuál": "which", "moto": "motorcycle", "helado": "ice cream", "necesitas": "need", "comprar": "buy" },
-    'when': { "cuándo": "when", "cumpleaños": "birthday", "fiesta": "party", "clase": "class" },
-    'why': { "por qué": "why", "porque": "because", "triste": "sad", "viaje": "trip", "lejos": "far away" }
+    'Whose': { "de quién": "whose", "sombrilla": "umbrella", "llaves": "keys" },
+    'Where': { "dónde": "where", "vas": "are going", "libros": "books", "compras": "buy", "carne": "meat" },
+    'Which': { "cuál": "which", "moto": "motorcycle", "helado": "ice cream", "necesitas": "need", "comprar": "buy" },
+    'When': { "cuándo": "when", "cumpleaños": "birthday", "fiesta": "party", "clase": "class" },
+    'Why': { "por qué": "why", "porque": "because", "triste": "sad", "viaje": "trip", "lejos": "far away" }
 };
 
-export default function EngA1Class4Page() {
+interface Topic {
+  key: string;
+  name: string;
+  icon: React.ElementType;
+  status: 'locked' | 'active' | 'completed';
+  subItems?: { key: string; name: string; status: 'locked' | 'active' | 'completed', icon?: React.ElementType }[];
+}
+
+const ICONS_MAP = {
+    locked: Lock,
+    active: BookOpen,
+    completed: CheckCircle,
+};
+
+export default function Class4Content() {
     const { t } = useTranslation();
     const { toast } = useToast();
     const { user, isUserLoading } = useUser();
@@ -133,11 +153,11 @@ export default function EngA1Class4Page() {
     const initialLearningPath = useMemo((): Topic[] => [
         { key: 'vocabulary', name: 'Vocabulario', icon: BookOpen, status: 'active' },
         { key: 'grammar', name: 'Gramática', icon: GraduationCap, status: 'locked' },
-        { key: 'genitivo', name: 'Ejercicio: Genitivo Sajon', icon: PenSquare, status: 'locked' },
+        { key: 'genitivo', name: 'Ejercicio: Genitivo Sajón', icon: PenSquare, status: 'locked' },
         { key: 'wh-questions', name: 'WH QUESTIONS', icon: HelpCircle, status: 'locked' },
         {
             key: 'practice',
-            name: 'Practica',
+            name: 'Práctica WH',
             icon: PenSquare,
             status: 'locked',
             subItems: [
@@ -158,8 +178,8 @@ export default function EngA1Class4Page() {
         { key: 'ejercicio-wh', name: 'Ejercicios Wh Questions', icon: PenSquare, status: 'locked' },
         { key: 'vocabulario-wh', name: 'Vocabulario Wh', icon: BookOpen, status: 'locked' },
         { key: 'ejercicio-gs', name: 'Ejercicio G.S', icon: PenSquare, status: 'locked' },
-        { key: 'ejercicio2-wh', name: 'Ejercicio2 Wh', icon: PenSquare, status: 'locked' },
-        { key: 'ejercicio3-wh', name: 'Ejercicio3 Wh', icon: PenSquare, status: 'locked' },
+        { key: 'ejercicio2-wh', name: 'Ejercicio 2 Wh', icon: PenSquare, status: 'locked' },
+        { key: 'ejercicio3-wh', name: 'Ejercicio 3 Wh', icon: PenSquare, status: 'locked' },
     ], []);
     
     useEffect(() => {
@@ -212,8 +232,8 @@ export default function EngA1Class4Page() {
         }
 
         setLearningPath(path);
-        const firstActive = path.find(p => p.status === 'active') || path.flatMap(p => p.subItems || []).find(sp => sp?.status === 'active');
-        setSelectedTopic(savedSelectedTopic || firstActive?.key || path[0].key);
+        const firstA = path.find(p => p.status === 'active') || path.flatMap(p => p.subItems || []).find(sp => sp?.status === 'active');
+        setSelectedTopic(savedSelectedTopic || firstA?.key || path[0].key);
 
         const newAnswers: {[key: string]: string[]} = {};
         const newValidation: {[key: string]: ('correct' | 'incorrect' | 'unchecked')[]} = {};
@@ -227,7 +247,7 @@ export default function EngA1Class4Page() {
         setInitialLoadComplete(true);
         setIsInitialLoading(false);
     }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading, isUserLoading, initialLoadComplete, t]);
-    
+
     const progressValue = useMemo(() => {
         if (learningPath.length === 0) return 0;
         let totalTopics = 0;
@@ -241,8 +261,12 @@ export default function EngA1Class4Page() {
                 if (t.status === 'completed') completedTopics++;
             }
         });
-        return totalTopics > 0 ? (completedTopics / totalTopics) * 100 : 0;
+        return totalTopics > 0 ? Math.round((completedTopics / totalTopics) * 100) : 0;
     }, [learningPath]);
+
+    const handleTopicComplete = useCallback((completedKey: string) => {
+        setTopicToComplete(completedKey);
+    }, []);
 
     useEffect(() => {
         if (!initialLoadComplete || isInitialLoading || isAdmin || !studentDocRef || learningPath.length === 0) return;
@@ -284,7 +308,9 @@ export default function EngA1Class4Page() {
                 const currentTopic = newPath[i];
   
                 if (currentTopic.key === topicToComplete) {
-                    if (currentTopic.status !== 'completed') currentTopic.status = 'completed';
+                    if (currentTopic.status !== 'completed') {
+                        currentTopic.status = 'completed';
+                    }
                     if (i + 1 < newPath.length && newPath[i + 1].status === 'locked') {
                         const nextMain = newPath[i + 1];
                         nextMain.status = 'active';
@@ -296,14 +322,18 @@ export default function EngA1Class4Page() {
                 } else if (currentTopic.subItems) {
                     const subIndex = currentTopic.subItems.findIndex((sub: any) => sub.key === topicToComplete);
                     if (subIndex !== -1) {
-                        if (currentTopic.subItems[subIndex].status !== 'completed') currentTopic.subItems[subIndex].status = 'completed';
+                        if (currentTopic.subItems[subIndex].status !== 'completed') {
+                            currentTopic.subItems[subIndex].status = 'completed';
+                        }
                         const nextSubIndex = subIndex + 1;
                         if (nextSubIndex < currentTopic.subItems.length && currentTopic.subItems[nextSubIndex].status === 'locked') {
                             currentTopic.subItems[nextSubIndex].status = 'active';
                             nextToSelect = currentTopic.subItems[nextSubIndex].key;
                             wasUnlocked = true;
                         } else if (currentTopic.subItems.every((sub: any) => sub.status === 'completed')) {
-                            if (currentTopic.status !== 'completed') currentTopic.status = 'completed';
+                            if (currentTopic.status !== 'completed') {
+                                currentTopic.status = 'completed';
+                            }
                             if (i + 1 < newPath.length && newPath[i + 1].status === 'locked') {
                                 const nextMain = newPath[i + 1];
                                 nextMain.status = 'active';
@@ -330,10 +360,6 @@ export default function EngA1Class4Page() {
         setTopicToComplete(null);
     }, [topicToComplete, toast, isAdmin]);
 
-    const handleTopicComplete = (completedKey: string) => {
-        setTopicToComplete(completedKey);
-    };
-
     const handleTopicSelect = (topicKey: string) => {
         const mainTopic = learningPath.find(t => t.key === topicKey || t.subItems?.some(st => st.key === topicKey));
         const subTopic = mainTopic?.subItems?.find(st => st.key === topicKey);
@@ -352,7 +378,7 @@ export default function EngA1Class4Page() {
         }
     };
 
-    const handleInputChange = (category: string, index: number, value: string) => {
+    const handleVocabInputChange = (category: string, index: number, value: string) => {
         setUserAnswers(prevAnswers => {
             const newCategoryAnswers = [...(prevAnswers[category] || [])];
             newCategoryAnswers[index] = value;
@@ -369,7 +395,7 @@ export default function EngA1Class4Page() {
         setCanAdvanceVocab(false);
     };
 
-    const handleCheckAnswers = () => {
+    const handleCheckVocabAnswers = () => {
         let atLeastOneCorrect = false;
         const newValidationStatus: {[key: string]: ('correct' | 'incorrect' | 'unchecked')[]} = {};
     
@@ -393,7 +419,7 @@ export default function EngA1Class4Page() {
         }
     };
     
-    const getInputClass = (category: string, index: number) => {
+    const getVocabInputClass = (category: string, index: number) => {
         const status = validationStatus[category]?.[index];
         if (status === 'correct') return 'border-green-500 focus-visible:ring-green-500 bg-green-50 dark:bg-green-900/10';
         if (status === 'incorrect') return 'border-destructive focus-visible:ring-destructive bg-destructive/5';
@@ -402,9 +428,6 @@ export default function EngA1Class4Page() {
     
     const renderContent = () => {
         if (isInitialLoading) return <div className="flex justify-center items-center min-h-[400px]"><Loader2 className="h-12 w-12 animate-spin text-primary" /></div>;
-
-        const topic = learningPath.find(t => t.key === selectedTopic) || 
-                      learningPath.flatMap(t => t.subItems || []).find(st => st?.key === selectedTopic);
 
         switch (selectedTopic) {
             case 'vocabulary':
@@ -418,7 +441,7 @@ export default function EngA1Class4Page() {
                             <Accordion type="multiple" defaultValue={['basicAdjectives', 'basicWords']} className="w-full">
                                 {Object.entries(vocabularyData).map(([category, items]) => (
                                     <AccordionItem key={category} value={category}>
-                                        <AccordionTrigger className="text-lg font-semibold">
+                                        <AccordionTrigger className="text-lg font-semibold text-foreground">
                                             {category === 'basicAdjectives' ? 'Adjetivos Básicos' : 'Palabras Básicas'}
                                         </AccordionTrigger>
                                         <AccordionContent>
@@ -427,12 +450,12 @@ export default function EngA1Class4Page() {
                                                 <div className="font-bold p-3 bg-muted rounded-lg">Inglés</div>
                                                 {(items as {spanish: string, english: string}[]).map((word, index) => (
                                                     <React.Fragment key={`${category}-${index}`}>
-                                                        <div className="p-3 bg-card border rounded-lg flex items-center font-medium">{word.spanish}</div>
+                                                        <div className="p-3 bg-card border rounded-lg flex items-center font-medium text-foreground">{word.spanish}</div>
                                                         <div className="p-3 bg-card border rounded-lg flex items-center">
                                                             <Input
                                                                 value={userAnswers[category]?.[index] || ''}
-                                                                onChange={(e) => handleInputChange(category, index, e.target.value)}
-                                                                className={cn(getInputClass(category, index))}
+                                                                onChange={(e) => handleVocabInputChange(category, index, e.target.value)}
+                                                                className={cn(getVocabInputClass(category, index))}
                                                                 autoComplete="off"
                                                             />
                                                         </div>
@@ -444,9 +467,9 @@ export default function EngA1Class4Page() {
                                 ))}
                             </Accordion>
                         </CardContent>
-                        <CardFooter className="flex justify-between">
-                            <Button onClick={handleCheckAnswers}>Verificar</Button>
-                            <Button onClick={() => handleTopicComplete('vocabulary')} disabled={!canAdvanceVocab && !isAdmin}>Avanzar</Button>
+                        <CardFooter className="flex justify-between border-t pt-6 mt-4">
+                            <Button onClick={handleCheckVocabAnswers} variant="secondary">Verificar</Button>
+                            <Button onClick={() => handleTopicComplete('vocabulary')} disabled={!canAdvanceVocab && !isAdmin} className='text-white font-bold'>Siguiente <ArrowRight className='ml-2 h-4 w-4'/></Button>
                         </CardFooter>
                     </Card>
                 );
@@ -457,28 +480,26 @@ export default function EngA1Class4Page() {
                         <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground">
                             <CardHeader>
                                 <CardTitle className="text-2xl font-black text-primary uppercase tracking-tight">Genitivo Sajón ('s)</CardTitle>
-                                <CardDescription className="font-bold text-foreground">Se utiliza para indicar posesión (quién es el dueño de algo).</CardDescription>
+                                <CardDescription className="font-bold text-foreground text-lg">Se utiliza para indicar posesión (quién es el dueño de algo).</CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-6">
                                 <div className="space-y-4">
-                                    <h3 className="text-xl font-bold text-primary uppercase tracking-tight">Regla General (Poseedor Singular)</h3>
-                                    <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] border border-border/50">
+                                    <h3 className="text-xl font-black text-primary uppercase tracking-tight">Regla General (Poseedor Singular)</h3>
+                                    <div className="bg-slate-100 dark:bg-slate-800/50 p-6 rounded-[2rem] border border-border/50">
                                         <p className="text-muted-foreground mb-3 font-medium">Se añade un apóstrofo y una "s" ('s) al final del nombre del poseedor.</p>
                                         <div className="font-mono text-base space-y-2">
                                             <p className="font-black text-primary">Estructura: POSEEDOR + 'S + POSESIÓN</p>
                                             <div className="pt-2">
-                                            
+                                                <p>el carro de mi papá &rarr; <span className="font-bold text-primary">my dad's car</span></p>
                                                 <p>la casa de Maria &rarr; <span className="font-bold text-primary">Maria's house</span></p>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <Separator className="opacity-50" />
-
                                 <div className="space-y-4">
-                                    <h3 className="text-xl font-bold text-primary uppercase tracking-tight">Poseedores Plurales terminados en "s"</h3>
-                                    <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] border border-border/50">
+                                    <h3 className="text-xl font-black text-primary uppercase tracking-tight">Poseedores Plurales terminados en "s"</h3>
+                                    <div className="bg-slate-100 dark:bg-slate-800/50 p-6 rounded-[2rem] border border-border/50">
                                         <p className="text-muted-foreground mb-3 font-medium">Solo se añade un apóstrofo (') al final del nombre.</p>
                                         <div className="font-mono text-base space-y-2">
                                             <p className="font-black text-primary">Estructura: POSEEDOR + ' + POSESIÓN</p>
@@ -490,31 +511,16 @@ export default function EngA1Class4Page() {
                                     </div>
                                 </div>
 
-                                <Separator className="opacity-50" />
-
-                                <div className="space-y-4">
-                                    <h3 className="text-xl font-bold text-primary uppercase tracking-tight">Poseedores Plurales que NO terminan en "s"</h3>
-                                    <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] border border-border/50">
-                                        <p className="text-muted-foreground mb-3 font-medium">Se aplica la regla general: se añade apóstrofo y "s" ('s).</p>
-                                        <div className="font-mono text-base space-y-2 pt-2">
-                                            <p>los juguetes de los niños &rarr; <span className="font-bold text-primary">the children's toys</span></p>
-                                            <p>la ropa de los hombres &rarr; <span className="font-bold text-primary">the men's clothes</span></p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <Separator className="opacity-50" />
-
                                 <div className="p-6 bg-destructive/5 rounded-[2rem] border-2 border-dashed border-destructive/20 text-center">
                                     <h3 className="text-2xl font-black text-destructive uppercase mb-2">¡OJO!</h3>
                                     <div className="space-y-3 font-mono text-base">
                                         <p>No se usa el genitivo sajón cuando el poseedor es un objeto. En su lugar, se usa la estructura <span className="font-bold text-primary">"the... of the..."</span>.</p>
-                                        <p className="text-lg font-bold">la puerta del carro &rarr; <span className="text-primary">the door of the car</span></p>
+                                        <p className="text-lg font-bold">la puerta del carro &rarr; <span className="text-primary font-black uppercase">the door of the car</span></p>
                                     </div>
                                 </div>
                             </CardContent>
                             <CardFooter className="justify-center border-t pt-6">
-                                <Button onClick={() => handleTopicComplete('grammar')} size="lg" className="px-16 font-bold h-14 text-xl">
+                                <Button onClick={() => handleTopicComplete('grammar')} size="lg" className="px-16 font-bold h-14 text-xl text-white">
                                     Entendido <ArrowRight className="ml-2 h-6 w-6" />
                                 </Button>
                             </CardFooter>
@@ -522,124 +528,128 @@ export default function EngA1Class4Page() {
                     </div>
                 );
 
-                //---- Botón Vocabulario Ejericicio Genitivo ----
             case 'genitivo': 
                 return <GenitiveCaseExercise 
                             onComplete={() => handleTopicComplete('genitivo')} 
-                            vocabulary={{ "juguetes": "toys", "comodo": "comfortable", "hijo": "son", "hijos": "children", "zapatos": "shoes", "viaje": "trip", "limpio": "clean", "pequeño": "small", "audifonos": "headphones", "sucio": "dirty", "apartmaento": "apartment", "pantalon corto": "short", "abuelos": "grandparents", "celular": "cellphone" }}
+                            vocabulary={{ "juguetes": "toys", "comoda": "comfortable", "hijo": "son", "zapatos": "shoes", "limpio": "clean", "pequeño": "small", "audifonos": "headphones", "sucio": "dirty" }}
                         />;
             
-            case 'wh-questions':
-                return (
-                    <div className="space-y-6 text-left">
-                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground">
-                            <CardHeader>
-                                <CardTitle className="text-2xl font-black text-primary uppercase tracking-tight">WH Questions (Interrogativos)</CardTitle>
-                                <CardDescription className="font-bold text-foreground">Estructuras para hacer preguntas informativas en inglés.</CardDescription>
-                            </CardHeader>
-                            <CardContent className="space-y-6">
-                                <div className="space-y-4">
-                                    <h3 className="text-xl font-bold text-primary uppercase tracking-tight">Regla 1: Verbo "To Be"</h3>
-                                    
-                                    <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] border border-border/50 space-y-4">
-                                        <div>
-                                            <h4 className="font-bold text-foreground mb-2 underline decoration-primary decoration-2 underline-offset-4">Estructura Básica</h4>
-                                            <p className="font-mono text-base font-black text-primary">WH + To be + Pronoun + complement?</p>
-                                            <p className="text-sm mt-1 italic text-muted-foreground">Ej: What is your name?</p>
-                                        </div>
-
-                                        <Separator className="opacity-50" />
-
-                                        <div>
-                                            <h4 className="font-bold text-foreground mb-2 underline decoration-primary decoration-2 underline-offset-4">Con Posesivos (Tipo 1)</h4>
-                                            <p className="font-mono text-base font-black text-primary">WH + To be + Pronoun + possessive + noun + complement?</p>
-                                            <p className="text-sm mt-1 italic text-muted-foreground">Ej: Where is his car?</p>
-                                        </div>
-
-                                        <Separator className="opacity-50" />
-
-                                        <div>
-                                            <h4 className="font-bold text-foreground mb-2 underline decoration-primary decoration-2 underline-offset-4">Con Posesivos (Tipo 2)</h4>
-                                            <p className="font-mono text-base font-black text-primary">WH + To be + possessive + noun + complement?</p>
-                                            <p className="text-sm mt-1 italic text-muted-foreground">Ej: What is her sister's job?</p>
-                                        </div>
-                                    </div>
+                        case 'wh-questions':
+                            return (
+                                <div className="space-y-6 text-left">
+                                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground">
+                                        <CardHeader>
+                                            <CardTitle className="text-2xl font-black text-primary uppercase tracking-tight">WH Questions (Interrogativos)</CardTitle>
+                                            <CardDescription className="font-bold text-foreground">Estructuras para hacer preguntas informativas en inglés.</CardDescription>
+                                        </CardHeader>
+                                        <CardContent className="space-y-6">
+                                            <div className="space-y-4">
+                                                <h3 className="text-xl font-bold text-primary uppercase tracking-tight">Regla 1: Verbo "To Be"</h3>
+                                                
+                                                <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] border border-border/50 space-y-4">
+                                                    <div>
+                                                        <h4 className="font-bold text-foreground mb-2 underline decoration-primary decoration-2 underline-offset-4">Estructura Básica</h4>
+                                                        <p className="font-mono text-base font-black text-primary">WH + To be + Pronoun + complement?</p>
+                                                        <p className="text-sm mt-1 italic text-muted-foreground">Ej: What is your name?</p>
+                                                    </div>
+            
+                                                    <Separator className="opacity-50" />
+            
+                                                    <div>
+                                                        <h4 className="font-bold text-foreground mb-2 underline decoration-primary decoration-2 underline-offset-4">Con Posesivos (Tipo 1)</h4>
+                                                        <p className="font-mono text-base font-black text-primary">WH + To be + Pronoun + possessive + noun + complement?</p>
+                                                        <p className="text-sm mt-1 italic text-muted-foreground">Ej: Where is his car?</p>
+                                                    </div>
+            
+                                                    <Separator className="opacity-50" />
+            
+                                                    <div>
+                                                        <h4 className="font-bold text-foreground mb-2 underline decoration-primary decoration-2 underline-offset-4">Con Posesivos (Tipo 2)</h4>
+                                                        <p className="font-mono text-base font-black text-primary">WH + To be + possessive + noun + complement?</p>
+                                                        <p className="text-sm mt-1 italic text-muted-foreground">Ej: What is her sister's job?</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+            
+                                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground">
+                                        <CardHeader>
+                                            <CardTitle className="text-2xl font-black text-primary uppercase tracking-tight">Regla 2: Auxiliar "Do/Does"</CardTitle>
+                                        </CardHeader>
+                                        <CardContent>
+                                            <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] border border-border/50 space-y-2">
+                                                <p className="font-mono text-lg font-black text-primary">WH + Do/Does + pronoun + verb + complement?</p>
+                                                <p className="text-sm italic text-muted-foreground">Ej: Where do you live?</p>
+                                            </div>
+                                        </CardContent>
+            
+                                    </Card>
+            
+                                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground">
+                                        <CardHeader>
+                                            <CardTitle className="text-2xl font-black text-primary uppercase tracking-tight">Regla 3: Excepciones y Estructuras con Sustantivo</CardTitle>
+                                        </CardHeader>
+                                        <CardContent className="space-y-6">
+                                            <div className="p-6 bg-slate-50 dark:bg-slate-900/50 rounded-[2rem] border border-border/50">
+                                                <h4 className="font-bold text-primary mb-3">Palabras WH especiales:</h4>
+                                                <ul className="space-y-2 text-base">
+                                                    <li><strong>Which:</strong> ¿Cuál? (cuando hay opciones limitadas)</li>
+                                                    <li><strong>Whose:</strong> ¿De quién? (para indicar posesión)</li>
+                                                    <li><strong>What kind of:</strong> ¿Qué tipo de?</li>
+                                                </ul>
+                                            </div>
+            
+                                            <div className="p-6 bg-slate-50 dark:bg-slate-900/50 rounded-[2rem] border border-border/50 space-y-4">
+                                                <h4 className="font-bold text-foreground underline decoration-primary decoration-2 underline-offset-4">Estructura con Sustantivo + To Be</h4>
+                                                <div className="font-mono text-base space-y-2">
+                                                    <p className="font-black text-primary">WH-word (Which/What/Whose) + noun + To be + ... ?</p>
+                                                    <div className="text-sm italic text-muted-foreground space-y-1">
+                                                        <p>Ej: Which color is your car?</p>
+                                                        <p>Ej: Whose book is this?</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+            
+                                            <div className="p-6 bg-slate-50 dark:bg-slate-900/50 rounded-[2rem] border border-border/50 space-y-4">
+                                                <h4 className="font-bold text-foreground underline decoration-primary decoration-2 underline-offset-4">Estructura con Sustantivo + Do/Does</h4>
+                                                <div className="font-mono text-base space-y-2">
+                                                    <p className="font-black text-primary">WH-word (Which/What/Whose) + noun + do/does + pronoun + verb...?</p>
+                                                    <div className="text-sm italic text-muted-foreground space-y-1">
+                                                        <p>Ej: Which car do you prefer?</p>
+                                                        <p>Ej: What kind of music do you like?</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </CardContent>
+                                        <CardFooter className="justify-center border-t pt-6">
+                                            <Button onClick={() => handleTopicComplete('wh-questions')} size="lg" className="px-16 font-bold h-14 text-xl">
+                                                Entendido <ArrowRight className="ml-2 h-6 w-6" />
+                                            </Button>
+                                        </CardFooter>
+                                    </Card>
                                 </div>
-                            </CardContent>
-                        </Card>
-
-                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground">
-                            <CardHeader>
-                                <CardTitle className="text-2xl font-black text-primary uppercase tracking-tight">Regla 2: Auxiliar "Do/Does"</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-[2rem] border border-border/50 space-y-2">
-                                    <p className="font-mono text-lg font-black text-primary">WH + Do/Does + pronoun + verb + complement?</p>
-                                    <p className="text-sm italic text-muted-foreground">Ej: Where do you live?</p>
-                                </div>
-                            </CardContent>
-
-                        </Card>
-
-                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground">
-                            <CardHeader>
-                                <CardTitle className="text-2xl font-black text-primary uppercase tracking-tight">Regla 3: Excepciones y Estructuras con Sustantivo</CardTitle>
-                            </CardHeader>
-                            <CardContent className="space-y-6">
-                                <div className="p-6 bg-slate-50 dark:bg-slate-900/50 rounded-[2rem] border border-border/50">
-                                    <h4 className="font-bold text-primary mb-3">Palabras WH especiales:</h4>
-                                    <ul className="space-y-2 text-base">
-                                        <li><strong>Which:</strong> ¿Cuál? (cuando hay opciones limitadas)</li>
-                                        <li><strong>Whose:</strong> ¿De quién? (para indicar posesión)</li>
-                                        <li><strong>What kind of:</strong> ¿Qué tipo de?</li>
-                                    </ul>
-                                </div>
-
-                                <div className="p-6 bg-slate-50 dark:bg-slate-900/50 rounded-[2rem] border border-border/50 space-y-4">
-                                    <h4 className="font-bold text-foreground underline decoration-primary decoration-2 underline-offset-4">Estructura con Sustantivo + To Be</h4>
-                                    <div className="font-mono text-base space-y-2">
-                                        <p className="font-black text-primary">WH-word (Which/What/Whose) + noun + To be + ... ?</p>
-                                        <div className="text-sm italic text-muted-foreground space-y-1">
-                                            <p>Ej: Which color is your car?</p>
-                                            <p>Ej: Whose book is this?</p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="p-6 bg-slate-50 dark:bg-slate-900/50 rounded-[2rem] border border-border/50 space-y-4">
-                                    <h4 className="font-bold text-foreground underline decoration-primary decoration-2 underline-offset-4">Estructura con Sustantivo + Do/Does</h4>
-                                    <div className="font-mono text-base space-y-2">
-                                        <p className="font-black text-primary">WH-word (Which/What/Whose) + noun + do/does + pronoun + verb...?</p>
-                                        <div className="text-sm italic text-muted-foreground space-y-1">
-                                            <p>Ej: Which car do you prefer?</p>
-                                            <p>Ej: What kind of music do you like?</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </CardContent>
-                            <CardFooter className="justify-center border-t pt-6">
-                                <Button onClick={() => handleTopicComplete('wh-questions')} size="lg" className="px-16 font-bold h-14 text-xl">
-                                    Entendido <ArrowRight className="ml-2 h-6 w-6" />
-                                </Button>
-                            </CardFooter>
-                        </Card>
-                    </div>
-                );
+                            );
+            
 
             case 'vocabulario-wh':
                 return <FillInTheBlanksExercise data={whVocabularyExerciseData} onComplete={() => handleTopicComplete('vocabulario-wh')} title="Vocabulario Wh" />;
+            
             case 'ejercicio-gs':
                 return <GenitiveSaxonGsExercise 
                             onComplete={() => handleTopicComplete('ejercicio-gs')} 
                             vocabulary={{ "bicicletas": "bicycles", "tia": "aunt", "hijos": "sons", "gemelos": "twins", "pajaros": "birds", "comida": "food", "llaves": "keys", "nevera": "fridge" }}
                         />;
+            
             case 'ejercicio2-wh':
                 return <WhFillInTheBlanksExercise onComplete={() => handleTopicComplete('ejercicio2-wh')} />;
+            
             case 'ejercicio3-wh':
                 return <WhQuestionsMainExercise3 
                             onComplete={() => handleTopicComplete('ejercicio3-wh')} 
                             vocabulary={{ "próximo": "next", "banda": "band", "cantante": "singer", "jefe": "boss", "familiar": "relative", "fin de semana": "weekend" }}
                         />;
+            
             case 'ejercicio-wh':
                 return <WhQuestionsMainExercise 
                             onComplete={() => handleTopicComplete('ejercicio-wh')} 
@@ -647,10 +657,10 @@ export default function EngA1Class4Page() {
                         />;
 
             default:
-                const practiceTopics = ['who', 'what1', 'what2', 'what-kind-of', 'how', 'how-adjective', 'how-often', 'whose', 'where', 'which', 'when', 'why'];
+                const practiceTopics = ['Who', 'What1', 'What2', 'what-kind-of', 'How', 'how-adjective', 'how-often', 'Whose', 'Where', 'Which', 'When', 'Why'];
                 if (practiceTopics.includes(selectedTopic)) {
                     return <WhQuestionExercise 
-                                exerciseName={topic?.name || ''} 
+                                exerciseName={selectedTopic} 
                                 onComplete={() => handleTopicComplete(selectedTopic)} 
                                 vocabulary={practiceVocab[selectedTopic]}
                             />;
@@ -665,58 +675,60 @@ export default function EngA1Class4Page() {
             <main className="flex-1 p-4 md:p-8">
                 <div className="max-w-7xl mx-auto">
                     <div className="mb-8 text-left text-white">
-                        <Link href="/ingles/a1/unit/1" className="hover:underline text-sm">Volver a la unidad 1</Link>
+                        <Link href="/ingles/a1/unit/1" className="hover:underline text-sm font-bold text-primary flex items-center gap-2">
+                            <ArrowLeft className='h-4 w-4'/> Volver a la Unidad 1
+                        </Link>
                         <h1 className="text-4xl font-bold [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">Clase 4 (A1)</h1>
                     </div>
                     <div className="grid gap-8 md:grid-cols-12">
-                        <div className="md:col-span-3 md:order-2 text-left">
+                        <div className="md:col-span-3 md:order-2 order-1 text-left text-foreground">
                             <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
-                                <CardHeader><CardTitle>Ruta de Aprendizaje</CardTitle></CardHeader>
+                                <CardHeader className='pb-4'><CardTitle className="text-lg uppercase font-black tracking-tighter text-primary">Ruta Clase 4</CardTitle></CardHeader>
                                 <CardContent>
                                     <nav>
                                         <ul className="space-y-1">
                                             {learningPath.map((item) => {
-                                                const isLocked = item.status === 'locked' && !isAdmin;
-                                                const isSelected = selectedTopic === item.key || item.subItems?.some(si => si.key === selectedTopic);
-                                                const StatusIcon = ICONS_CONFIG[item.status] || BookOpen;
+                                                const isL = item.status === 'locked' && !isAdmin;
+                                                const isS = selectedTopic === item.key || item.subItems?.some(si => si.key === selectedTopic);
+                                                const StatusIcon = ICONS_MAP[item.status] || BookOpen;
                                                 return(
                                                     <li key={item.key}>
                                                     {!item.subItems ? (
-                                                        <div onClick={() => handleTopicSelect(item.key)} className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer', isLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === item.key && 'bg-muted text-primary font-semibold')}>
+                                                        <div onClick={() => handleTopicSelect(item.key)} className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer', isL ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', isS && 'bg-muted text-primary font-bold')}>
                                                         <div className="flex items-center gap-3">
                                                             <StatusIcon className={cn("h-5 w-5", item.status === 'completed' ? 'text-green-500' : '')} />
                                                             <span>{item.name}</span>
                                                         </div>
-                                                        {isLocked && <Lock className="h-4 w-4 text-yellow-500" />}
+                                                        {isL && <Lock className="h-4 w-4 text-yellow-500" />}
                                                         </div>
                                                     ) : (
-                                                        <Collapsible defaultOpen={isSelected}>
-                                                        <CollapsibleTrigger className="w-full">
-                                                            <div className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors w-full cursor-pointer', isLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', isSelected && 'bg-muted text-primary font-semibold')}>
-                                                                <div className="flex items-center gap-3">
-                                                                <StatusIcon className={cn("h-5 w-5", item.status === 'completed' ? 'text-green-500' : '')} />
-                                                                <span>{item.name}</span>
+                                                        <Collapsible defaultOpen={isS}>
+                                                            <CollapsibleTrigger className="w-full">
+                                                                <div className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors w-full cursor-pointer', isL ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', isS && 'bg-muted text-primary font-bold')}>
+                                                                    <div className="flex items-center gap-3">
+                                                                        <StatusIcon className={cn("h-5 w-5", item.status === 'completed' ? 'text-green-500' : '')} />
+                                                                        <span>{item.name}</span>
+                                                                    </div>
+                                                                    {isL ? <Lock className="h-4 w-4 text-yellow-500" /> : <ChevronDown className="h-4 w-4 transition-transform [&[data-state=open]]:rotate-180" />}
                                                                 </div>
-                                                                {isLocked ? <Lock className="h-4 w-4 text-yellow-500" /> : <ChevronDown className="h-4 w-4 transition-transform [&[data-state=open]]:rotate-180" />}
-                                                            </div>
-                                                        </CollapsibleTrigger>
-                                                        <CollapsibleContent>
-                                                            <ul className="pl-8 pt-1 space-y-1">
-                                                            {item.subItems.map((subItem) => {
-                                                                const isSubLocked = subItem.status === 'locked' && !isAdmin;
-                                                                const SubIcon = ICONS_CONFIG[subItem.status] || PenSquare;
-                                                                return (
-                                                                    <li key={subItem.key} onClick={() => handleTopicSelect(subItem.key)} className={cn('flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer', isSubLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === subItem.key && 'bg-muted text-primary font-semibold')}>
-                                                                        <div className='flex items-center gap-3'>
-                                                                            <SubIcon className={cn("h-5 w-5", subItem.status === 'completed' ? 'text-green-500' : '')} />
-                                                                            <span>{subItem.name}</span>
-                                                                        </div>
-                                                                        {isSubLocked && <Lock className="h-4 w-4 text-yellow-500" />}
-                                                                    </li>
-                                                                );
-                                                            })}
-                                                            </ul>
-                                                        </CollapsibleContent>
+                                                            </CollapsibleTrigger>
+                                                            <CollapsibleContent>
+                                                                <ul className="pl-8 pt-1 space-y-1">
+                                                                    {item.subItems.map((subItem) => {
+                                                                        const isSubL = subItem.status === 'locked' && !isAdmin;
+                                                                        const SubIcon = ICONS_MAP[subItem.status] || PenSquare;
+                                                                        return (
+                                                                            <li key={subItem.key} onClick={() => handleTopicSelect(subItem.key)} className={cn('flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer', isSubL ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === subItem.key && 'bg-muted text-primary font-bold')}>
+                                                                                <div className='flex items-center gap-3'>
+                                                                                    <SubIcon className={cn("h-5 w-5", subItem.status === 'completed' ? 'text-green-500' : '')} />
+                                                                                    <span>{subItem.name}</span>
+                                                                                </div>
+                                                                                {isSubL && <Lock className="h-4 w-4 text-yellow-500" />}
+                                                                            </li>
+                                                                        );
+                                                                    })}
+                                                                </ul>
+                                                            </CollapsibleContent>
                                                         </Collapsible>
                                                     )}
                                                     </li>
@@ -725,8 +737,8 @@ export default function EngA1Class4Page() {
                                             </ul>
                                         </nav>
                                     <div className="mt-6 pt-6 border-t">
-                                        <div className="flex justify-between items-center text-sm font-medium text-muted-foreground mb-2"><span>Progreso</span><span className="font-bold text-foreground">{Math.round(progressValue)}%</span></div>
-                                        <Progress value={progressValue} className="h-2" />
+                                        <div className="flex justify-between items-center text-xs mb-2 text-muted-foreground"><span>Progreso</span><span className="font-bold text-foreground">{progressValue}%</span></div>
+                                        <Progress value={progressValue} className="h-1.5" />
                                     </div>
                                 </CardContent>
                             </Card>
@@ -735,6 +747,7 @@ export default function EngA1Class4Page() {
                     </div>
                 </div>
             </main>
+            <Footer />
         </div>
     );
 }
