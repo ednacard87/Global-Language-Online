@@ -546,28 +546,92 @@ const exercises = {
         ]
     },
 
-    // --- CLASS 11 A1 ---
+    // ---- Clase 11 (A1) ----
     c11_ex1: {
         title: 'a1class1.exercise',
         prompts: [
-            { spanish: "¿HABLAS CON ELLA HOY? NO, NO QUIERO HABLAR CON ELLA, QUIZAS LA PROXIMA SEMANA:", english: ["do you talk with her today? no, i do not want to talk with her, maybe next week", "do you talk to her today? no, i don't want to talk to her, maybe next week", "do you speak with her today? no, i do not want to speak with her, maybe next week", "do you speak to her today? no, i don't want to speak to her, maybe next week", "do you speak with her today? no, i'd like to talk with her, maybe next week"] },
-            { spanish: "¿ESTAS CON ELLOS? NO, YO ESTOY EN CASA JUGANDO VIDEOJUEGOS", english: ["are you with them? no, i am at home playing videogames", "are you with them? no, i'm at home playing videogames", "are you with them? no, i am at home playing video games", "are you with them? i'm at home playing video games"] },
+            { spanish: "¿HABLAS CON ELLA HOY? NO, NO QUIERO HABLAR CON ELLA, QUIZAS LA PROXIMA SEMANA:", english: ["do you talk with her today? no, i do not want to talk with her, maybe next week", "do you talk to her today? no, i don't want to talk to her, maybe next week"] },
+            { spanish: "¿ESTAS CON ELLOS? NO, YO ESTOY EN CASA JUGANDO VIDEOJUEGOS", english: ["are you with them? no, i am at home playing videogames", "are you with them? i'm at home playing videogames"] },
             { spanish: "¿ELLOS VIAJAN CON NOSOTROS? –NO, ELLOS VIAJAN EL DOMINGO", english: ["do they travel with us? no, they travel on sunday"] },
             { spanish: "YO LLEGO SIN ELLOS A LAS 9", english: ["i arrive without them at 9"] },
-            { spanish: "¿VAMOS CON ELLAS? - SI", english: ["do we go with them? yes, we do", "are we going with them? yes, we are"] },
-            { spanish: "NOSOTROS TOMAMOS UN CAFÉ CON ELLA DURANTE LA REUNIÓN", english: ["we drink a coffee with her during the meeting", "we have a coffee with her during the meeting", "we had a coffee with her during the meeting"] },
-            { spanish: "TU CUÑADA NO HABLA CONMIGO", english: ["your sister in law does not talk with me", "your sister-in-law does not talk with me", "your sister in law doesn't talk to me", "your sister-in-law doesn't talk to me"] },
-            { spanish: "¿JUEGAS CON NOSOTROS? – NO, PORQUE ESTOY JUGANDO CON ELLA:", english: ["do you play with us? no, because i am playing with her", "do you play with us? no, because i'm playing with her"] },
+            { spanish: "¿VAMOS CON ELLAS? - SI", english: ["do we go with them? yes, we do"] },
+            { spanish: "NOSOTROS TOMAMOS UN CAFÉ CON ELLA DURANTE LA REUNIÓN", english: ["we drink a coffee with her during the meeting"] },
+            { spanish: "TU CUÑADA NO HABLA CONMIGO", english: ["your sister-in-law does not talk to me", "your sister-in-law doesn't talk with me"] },
+            { spanish: "¿JUEGAS CON NOSOTROS? – NO, PORQUE ESTOY JUGANDO CON ELLA: ", english: ["do you play with us? no, because i am playing with her", "do you play with us? no, because i'm playing with her"] },
             { spanish: "TUS PRIMOS NO JUEGAN CON NOSOTROS JUEGOS DE MESA", english: ["your cousins do not play board games with us", "your cousins don't play board games with us"] },
-            { spanish: "MI CUÑADO TOCA LA GUITARRA (THE GUITAR) CON EL", english: ["my brother in law plays the guitar with him", "my brother-in-law plays the guitar with him"] },
-            { spanish: "¿A DONDE VAS WITH ELLOS? –NOSOTROS VAMOS A LA IGLESIA", english: ["where do you go with them? we go to the church", "where are you going with them? we are going to the church"] },
+            { spanish: "MI CUÑADO TOCA LA GUITARRA (THE GUITAR) CON EL", english: ["my brother-in-law plays the guitar with him"] },
+            { spanish: "¿A DONDE VAS WITH ELLOS? –NOSOTROS VAMOS A LA IGLESIA", english: ["where do you go with them? we go to church"] },
             { spanish: "NOSOTROS NO VIAJAMOS SIN ELLOS", english: ["we do not travel without them", "we don't travel without them"] },
-            { spanish: "EL NOS LLAMA A LAS 10 DE LA NOCHE", english: ["he calls us at 10 at night", "he calls us at 10 in the night", "he calls us at 10 pm"] },
+            { spanish: "EL NOS LLAMA A LAS 10 DE LA NOCHE", english: ["he calls us at 10 at night", "he calls us at ten p.m."] },
             { spanish: "¿ELLOS VIENEN CON NOSOTROS?", english: ["do they come with us?"] },
-            { spanish: "¿ESTAS HABLANDO CON ELLA?", english: ["are you talking with her?", "are you talking to her?"] },
-            { spanish: "¿ESTUDIAS CON EL?", english: ["do you study with him?"] },
+            { spanish: "¿ESTAS HABLANDO CON ELLA? - NO", english: ["are you talking to her? no", "are you talking with her? no"] },
+            { spanish: "¿ESTUDIAS CON EL? -SI", english: ["do you study with him? yes, i do"] },
         ]
     },
+    c11_ex4: {
+        title: 'a1class1.exercise',
+        prompts: [
+            { spanish: "¿DONDE HABLAS CON ELLOS? HABLO CON ELLOS EN EL TRABAJO", english: ["where do you talk to them? i talk with them at work"] },
+            { spanish: "ELLOS NO NADAN CONMIGO", english: ["they do not swim with me", "they don't swim with me"] },
+            { spanish: "ELLA CANTA CON ELLOS", english: ["she sings with them"] },
+            { spanish: "¿EL ES SU HERMANO? (DE ELLOS)", english: ["is he their brother?"] },
+            { spanish: "¿A DONDE VAS CON ELLA?", english: ["where do you go with her?"] },
+            { spanish: "¿A EL LE GUSTA SU TRABAJO?", english: ["does he like his job?"] },
+            { spanish: "A ELLA LE GUSTA SU CHAQUETA (JACKET) (DE EL)", english: ["she likes his jacket"] },
+            { spanish: "¿TE GUSTA NUESTRA CASA?", english: ["do you like our house?"] },
+            { spanish: "ESTA ES SU FINCA (DE ELLA)", english: ["this is her farm"] },
+            { spanish: "ESTE NO ES EL MIO, ES EL TUYO", english: ["this is not mine, it is yours", "this isn't mine, it's yours"] },
+            { spanish: "ELLOS NO ESTAN CONMIGO", english: ["they are not with me", "they aren't with me"] },
+            { spanish: "EL ES MI HERMANO, TIENE 33 AÑOS", english: ["he is my brother, he is 33 years old"] },
+            { spanish: "YO VOY CON ELLA AL SUPERMERCADO", english: ["i go to the supermarket with her"] },
+            { spanish: "¿ESTAS EN SU CASA? (DE ELLA)", english: ["are you at her house?"] },
+            { spanish: "¿TU HIJO TOCA LA GUITARRA CON EL? –SI", english: ["does your son play the guitar with him? yes, he does"] },
+            { spanish: "¿ESOS SON LOS SUYOS (DE ELLOS) O LOS MIOS?", english: ["are those theirs or mine?"] },
+            { spanish: "ELLOS NOS LLAMAN DESDE ESPAÑA", english: ["they call us from spain"] },
+        ]
+    },
+    c11_ex5: {
+        title: 'a1class1.exercise',
+        prompts: [
+            { spanish: "ELLA QUIERE VER A SU NOVIO – ELLA QUIERE VERLO", english: ["she wants to see her boyfriend - she wants to see him"] },
+            { spanish: "NOSOTROS QUEREMOS ESA CASA- NOSOTROS QUEREMOS TENERLA, PERO ES MUY CARA", english: ["we want that house - we want to have it, but it is very expensive"] },
+            { spanish: "YO QUIERO TENER ESE PERRO- YO QUIERO TENERLO, PERO ES MUY CARO", english: ["i want to have that dog - i want to have it, but it is very expensive"] },
+            { spanish: "A ELLOS NO LES GUSTAN MIS AMIGOS- A ELLOS NO LES GUSTAN", english: ["they do not like my friends - they don't like them"] },
+            { spanish: "A ELLA NO LE GUSTA EL PESCADO- A ELLA NO LE GUSTA, POR EL OLOR", english: ["she does not like fish - she doesn't like it because of the smell"] },
+            { spanish: "ÉL BESA SU ESPOSA ANTES DE SU VIAJE- ÉL LA BESA", english: ["he kisses his wife before his trip - he kisses her"] },
+            { spanish: "NOSOTROS ESTUDIAMOS CON PAUL- NOSOTROS ESTUDIAMOS CON ÉL EN LA BIBLIOTECA", english: ["we study with paul - we study with him in the library"] },
+            { spanish: "JACK VIAJA CON MARY Y JHON – JACK VIAJA CON ELLOS", english: ["jack travels with mary and john - jack travels with them"] },
+            { spanish: "ÉL LLAMA A SU JEFE- ÉL LO LLAMA PORQUE TUVO UN RETRASO EN LA ENTREGA", english: ["he calls his boss - he calls him because he had a delay in the delivery"] },
+            { spanish: "YO AYUDO A MARIA- YO LA AYUDO EN SU TIENDA DE ZAPATOS", english: ["i help maria - i help her in her shoe store"] },
+            { spanish: "YO NO SE TU NOMBRE - ¿PUEDES REPETIRLO?", english: ["i do not know your name - can you repeat it?"] },
+            { spanish: "ELLA LLAMA A SU MAMÁ – ELLA LA LLAMA TODOS LOS DIAS", english: ["she calls her mom - she calls her every day"] },
+            { spanish: "EL NO VE SUS PADRES EN LA CASA, ENTONCES EL LOS LLAMA", english: ["he does not see his parents at home, so he calls them"] },
+            { spanish: "CAMILA QUIERE UNA HAMBURGUESA, PERO NO LA COMPRA PORQUE ELLA NO PUEDE COMERLA", english: ["camila wants a hamburger, but she does not buy it because she cannot eat it"] },
+            { spanish: "LINA VIAJA CON SU SOBRINA A EUROPA Y ELLAS LO DISFRUTAN", english: ["lina travels with her niece to europe and they enjoy it"] },
+            { spanish: "A ELLOS NO LES GUSTA CORRER WITH ELLOS, PORQUE SON PRINCIPIANTES", english: ["they do not like to run with them because they are beginners"] },
+        ]
+    },
+    c11_ex6: {
+        title: 'a1class1.exercise',
+        prompts: [
+            { spanish: "ELLOS NO ESTAN ENOJADOS CON NOSOTROS, ELLOS ESTAN ENOJADOS CON EL", english: ["they are not angry with us, they are angry with him"] },
+            { spanish: "¿DONDE ESTÁ LA CAMARA? - ¿DONDE ESTA LA MIA? TU CAMARA ESTÁ EN EL SOTANO", english: ["where is the camera? - where is mine? your camera is in the basement"] },
+            { spanish: "¿ELLA ES SU HIJA? (DE EL)- ELLA ES MUY ALTA", english: ["is she his daughter? she is very tall"] },
+            { spanish: "ELLOS NO ME AYUDAN BECAUSE ELLOS ESTÁN OCUPADOS EN SU PROYECTO", english: ["they do not help me because they are busy in their project"] },
+            { spanish: "¿ESTUDIAS CON NOSOTROS? – NO,YO TENGO QUE LAVAR LOS PLATOS AHORA MISMO, MI MAMÁ ESTÁ ENOJADA", english: ["do you study with us? no, i have to wash the dishes right now, my mom is angry"] },
+            { spanish: "A ELLA NO LE GUSTA SU VESTIDO- A ELLA NO LE GUSTA EL SUYO (DE ELLA)", english: ["she does not like her dress - she doesn't like hers"] },
+            { spanish: "¿HABLAS CON EL? – NO, NOSOTROS NO HABLAMOS HACE UN AÑO", english: ["do you talk to him? no, we do not talk since a year ago", "do you talk with him? no, we haven't talked for a year"] },
+            { spanish: "¿ESTOS SON TUYOS O MIOS? - ESOS SON MIOS", english: ["are these yours or mine? those are mine"] },
+            { spanish: "ELLOS SON MIS PRIMOS", english: ["they are my cousins"] },
+            { spanish: "ESTA ES SU CANCION (SONG) (DE ELLOS)", english: ["this is their song"] },
+            { spanish: "¿NOSOTROS VAMOS CON ELLOS? -NO", english: ["do we go with them? no"] },
+            { spanish: "EL NO VIVE CONMIGO- EL VIVE CON SU MADRE", english: ["he does not live with me - he lives with his mother"] },
+            { spanish: "¿VIENES CON NOSOTROS? –POR SUPUESTO", english: ["do you come with us? of course"] },
+            { spanish: "ELLA NO COME CON EL- ELLA COME SOLA", english: ["she does not eat with him - she eats alone"] },
+        ]
+    },
+
+    // --- CLASS 12 A1 ---
     c12_ex1: {
         title: 'a1class1.exercise',
         prompts: [
