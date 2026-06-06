@@ -568,6 +568,23 @@ const exercises = {
             { spanish: "¿ESTUDIAS CON EL? -SI", english: ["do you study with him? yes, i do"] },
         ]
     },
+    c11_ex3: {
+        title: 'a1class1.exercise',
+        prompts: [
+            { spanish: "YO VOY A MEDELLIN CON CARLOS Y ANDRES- YO VOY CON ELLOS", english: ["i go to medellin with carlos and andres - i go with them"] },
+            { spanish: "IN BILBAO, THE WINTERS ARE COLD, BUT THE SUMMERS ARE WARM.", english: ["in bilbao, the winters are cold, but the summers are warm"] },
+            { spanish: "MANCHESTER HAS TWO RIVERS AND A CANAL.", english: ["manchester has two rivers and a canal"] },
+            { spanish: "THE TICKETS ARE TOO EXPENSIVE SO I CAN'T GO.", english: ["the tickets are too expensive so i can't go", "the tickets are too expensive so i cannot go"] },
+            { spanish: "YO QUIERO IR ALLÁ CON ELLA PERO NO TENGO TIEMPO", english: ["i want to go there with her but i do not have time", "i want to go there with her but i don't have time"] },
+            { spanish: "¿ELLA QUIERE PIZZA O ENSALADA? – ELLA QUIERE UNA ENSALADA CON POLLO, TOCINETA Y LECHUGA", english: ["does she want pizza or salad? - she wants a salad with chicken, bacon and lettuce"] },
+            { spanish: "SI TU VAS ALLA, COMPRAME UNA CHAQUETA, POR FAVOR", english: ["if you go there, buy me a jacket, please"] },
+            { spanish: "MARK VE TELEVISON MIENTRAS YO HAGO EJERCICIO", english: ["mark watches tv while i exercise", "mark watches television while i do exercise"] },
+            { spanish: "ELLA LOS ESPERA EN LA ESCUELA. (a sus hijos)", english: ["she waits for them at school"] },
+            { spanish: "LA HIJA LLAMA A SU PADRE – EL PAPÁ LA LLAMA TODOS LOS DIAS.", english: ["the daughter calls her father - the dad calls her every day"] },
+            { spanish: "EL BEBÉ BESA A SU MADRE – EL BEBE LA BESA", english: ["the baby kisses his mother - the baby kisses her"] },
+            { spanish: "EL BAILA CON SU HERMANA EN SU CUMPLEAÑOS.", english: ["he dances with his sister on his birthday"] },
+        ]
+    },
     c11_ex4: {
         title: 'a1class1.exercise',
         prompts: [

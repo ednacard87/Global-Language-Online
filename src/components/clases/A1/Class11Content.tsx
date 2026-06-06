@@ -34,7 +34,8 @@ import {
     Trophy,
     Pencil,
     Info,
-    Globe
+    Globe,
+    ListChecks
 } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
@@ -63,7 +64,7 @@ import { Footer } from '@/components/footer';
 
 // --- DATA & CONFIG ---
 
-const progressStorageVersion = 'progress_a1_eng_u3_c11_v1000_final_stable';
+const progressStorageVersion = 'progress_a1_eng_u3_c11_v2000_final_fix';
 const mainProgressKey = 'progress_a1_eng_unit_3_class_11';
 
 const familyVocabularyData = {
@@ -82,20 +83,20 @@ const familyVocabularyData = {
         { spanish: 'TÍA', english: ['AUNT'] },
         { spanish: 'TÍO', english: ['UNCLE'] },
         { spanish: 'PRIMO / PRIMA', english: ['COUSIN'] },
-        { spanish: 'ABUELO', english: ['GRANDFATHER', 'GRANDPA'] },
-        { spanish: 'ABUELA', english: ['GRANDMAMA', 'GRANDMOTHER', 'GRANDMA'] },
+        { spanish: 'ABUELO', english: ['GRANDFATHER'] },
+        { spanish: 'ABUELA', english: ['GRANDMOTHER'] },
         { spanish: 'ABUELOS', english: ['GRANDPARENTS'] },
         { spanish: 'SOBRINO', english: ['NEPHEW'] },
         { spanish: 'SOBRINA', english: ['NIECE'] },
-        { spanish: 'NIETOS (EN GENERAL)', english: ['GRANDCHILDREN'] },
+        { spanish: 'NIETOS (GENERAL)', english: ['GRANDCHILDREN'] },
         { spanish: 'NIETA', english: ['GRANDDAUGHTER'] },
         { spanish: 'NIETO', english: ['GRANDSON'] },
     ],
     inLaws: [
-        { spanish: 'CUÑADO', english: ['BROTHER IN LAW', 'BROTHER-IN-LAW'] },
-        { spanish: 'CUÑADA', english: ['SISTER IN LAW', 'SISTER-IN-LAW'] },
-        { spanish: 'SUEGRO', english: ['FATHER IN LAW', 'FATHER-IN-LAW'] },
-        { spanish: 'SUEGRA', english: ['MOTHER IN LAW', 'MOTHER-IN-LAW'] },
+        { spanish: 'CUÑADO', english: ['BROTHER IN LAW'] },
+        { spanish: 'CUÑADA', english: ['SISTER IN LAW'] },
+        { spanish: 'SUEGRO', english: ['FATHER IN LAW'] },
+        { spanish: 'SUEGRA', english: ['MOTHER IN LAW'] },
     ],
     stepFamily: [
         { spanish: 'HIJASTRO', english: ['STEPSON'] },
@@ -142,7 +143,11 @@ const examplesPhrases = [
     { spanish: "ella esta con ellos?", answers: ["is she with them?"] },
 ];
 
-const ex1Vocab = { "quizás": "maybe", "próxima": "next", "guitarra": "guitar", "iglesia": "church", "juegos de mesa": "board games", "bufanda": "scarf", "sombrilla": "umbrella", "morada": "purple", "guantes": "gloves", "botas": "boots", "grises": "gray/grey", "cuero": "leather" };
+const ex1Vocab = { "quizás": "maybe", "mesa": "table", "guitarra": "guitar", "compañeros": "coworkers", "tarea": "homework", "hablas": "speak / talk", "quién": "who", "donde": "where", "ven": "come", "llamando": "talking" };
+const ex3Vocab = { "vino tinto": "red wine", "hermano": "brother", "bicicleta": "bike / bicycle", "novio": "boyfriend", "hospital": "hospital", "pastel": "cake", "piña": "pineapple", "mientras": "while", "costoso": "expensive", "espera": "waits" };
+const ex4Vocab = { "nadar": "swim", "conmigo": "me", "carro": "car", "finca": "farm", "llamar": "call", "moto": "motorcycle", "helado": "ice cream", "compras": "buy", "carne": "meat", "novia": "girlfriend" };
+const ex5Vocab = { "ver": "see", "tener": "have ", "olor": "smell", "atraso": "delay", "besa": "kisses", "ayuda": "helps", "repetirlo": "repeat it", "principiantes": "beginners" };
+const ex6Vocab = { "enojados": "angry", "sótano": "basement", "platos": "dishes", "hace un año": "a year ago", "suyo": "hers", "nuestro": "ours", "mío": "mine", "vives": "live", "muy a menudo": "very often" };
 
 const ex2Data: CompletionPrompt[] = [
     { parts: ["I LOVE MY MOTHER. I CALL ", " EVERY DAY."], answers: ["HER"] },
@@ -152,24 +157,18 @@ const ex2Data: CompletionPrompt[] = [
     { parts: ["MY FRIENDS ARE AT THE PARK. I AM GOING WITH ", "."], answers: ["THEM"] },
     { parts: ["THIS BAG IS HEAVY. CAN YOU CARRY ", " FOR ME?"], answers: ["IT"] },
     { parts: ["I HATE MY JOB, I WANT TO QUIT ", ""], answers: ["IT"] },
-    { parts: ["MY PARENTS ARE REALLY SAD, I DON’T KNOW WHAT TO DO WITH ", ""], answers: ["THEM"] },
-    { parts: ["SHE LIKES HER HOUSE, BUT SHE IS GOING TO SELL ", ""], answers: ["IT"] },
-    { parts: ["MY BROTHER IS TOO SMART, I NEVER HELP ", " WITH HOMEWORK"], answers: ["HIM"] },
-    { parts: ["WE ARE GOOD STUDENTS, BECAUSE THE TEACHER ALWAYS MOTIVATES ", ""], answers: ["US"] },
-    { parts: ["SHE DOESN’T SEE HER FRIENDS AT THE PARTY, SO SHE CALLS ", ""], answers: ["THEM"] },
+    { parts: ["MY PARENTS ARE REALLY SAD, I DON’T KNOW WHAT TO DO WITH ", "."], answers: ["THEM"] },
+    { parts: ["SHE LIKES HER HOUSE, BUT SHE IS GOING TO SELL ", "."], answers: ["IT"] },
+    { parts: ["I KNOW THEY’RE EXCITED, THEY HAVEN’T SEEN ", " FOR YEARS."], answers: ["ME"] },
+    { parts: ["MY BROTHER IS TOO SMART, I NEVER HELP ", " WITH HOMEWORK."], answers: ["HIM"] },
+    { parts: ["WE ARE GOOD STUDENTS, THE TEACHER ALWAYS MOTIVATES ", "."], answers: ["US"] },
+    { parts: ["SHE DOESN’T SEE HER FRIENDS AT THE PARTY, SO SHE CALLS ", "."], answers: ["THEM"] },
     { parts: ["THEY INVITE ", " TO THEIR HOUSE."], answers: ["ME"] },
-    { parts: ["I KNOW THEY ARE EXCITED, THEY HAVEN’T SEEN ", " FOR YEARS."], answers: ["ME"] },
 ];
-
-const ex3Vocab = { "canal": "canal", "caro": "expensive", "tocineta": "bacon", "lechuga": "lettuce", "chaqueta": "jacket", "por favor": "please", "mientras": "while", "ejercicio": "exercise", "espera": "waits", "padre": "father", "diariamente": "daily", "bebé": "baby", "besa": "kisses", "baila": "dances", "cumpleaños": "birthday" };
-
-const ex4Vocab = { "hablar": "speak", "trabajo": "work", "nadar": "swim", "conmigo": "me", "canta": "sings", "hermano": "brother", "vas": "go", "gustar": "like", "chaqueta": "jacket", "casa": "house", "finca": "farm", "mío/tuyo": "mine/yours", "33 años": "33 years old", "supermercado": "supermarket", "guitarra": "guitar", "suyo/mío": "theirs/mine", "llamar": "call" };
-const ex5Vocab = { "verlo": "see him", "tenerla": "have it", "olor": "smell", "atraso": "delay", "entrega": "delivery", "repetirlo": "repeat it" };
-const ex6Vocab = { "enojados": "angry", "sótano": "basement", "ayudan": "help", "proyecto": "project", "platos": "dishes", "hace un año": "a year ago", "sola": "alone" };
 
 const finalVocabList = Object.values(familyVocabularyData).flat();
 
-interface TopicType {
+interface Topic {
   key: string;
   name: string;
   icon: React.ElementType;
@@ -192,27 +191,32 @@ export default function Class11Content() {
     const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{role?: string, lessonProgress?: any, progress?: any}>(studentDocRef);
     const isAdmin = useMemo(() => (user && (studentProfile?.role === 'admin' || user.email === 'ednacard87@gmail.com')), [user, studentProfile]);
 
-    const [learningPath, setLearningPath] = useState<TopicType[]>([]);
+    const [learningPath, setLearningPath] = useState<Topic[]>([]);
     const [selectedTopic, setSelectedTopic] = useState<string>('');
     const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
     const [isInitialLoading, setIsInitialLoading] = useState(true);
     const [initialLoadComplete, setInitialLoadComplete] = useState(false);
 
+    // Vocab states
     const [vocabAnswers, setVocabAnswers] = useState<Record<string, string[]>>({});
     const [vocabValidation, setVocabValidation] = useState<Record<string, string[]>>({});
     const [canAdvanceVocab, setCanAdvanceVocab] = useState(false);
 
+    // Create 1 State
     const [writingLines, setWritingLines] = useState<string[]>(['', '', '', '']);
     const [writingGrades, setWritingGrades] = useState<Record<number, 'correct' | 'incorrect' | null>>({});
 
-    const initialLearningPath = useMemo((): TopicType[] => [
+    // Final Vocab Success State (Internal to tab)
+    const [finalVocabDone, setFinalVocabFinished] = useState(false);
+
+    const initialLearningPath = useMemo((): Topic[] => [
         { key: 'vocabulary', name: 'Vocabulary (Family)', icon: Users, status: 'active' },
         { key: 'grammar', name: 'Grammar: Object Pronouns', icon: GraduationCap, status: 'locked' },
         { key: 'examples', name: 'Examples', icon: Star, status: 'locked' },
         { key: 'ex1', name: 'Exercise 1', icon: PenSquare, status: 'locked' },
         { key: 'create1', name: 'Create 1', icon: Pencil, status: 'locked' },
         { key: 'ex2', name: 'Exercise 2', icon: PenSquare, status: 'locked' },
-        { key: 'grammar2', name: 'Grammar 2', icon: GraduationCap, status: 'locked' },
+        { key: 'grammar2', name: 'Grammar 2 (Conjunctions)', icon: GraduationCap, status: 'locked' },
         { key: 'ex3', name: 'Exercise 3', icon: PenSquare, status: 'locked' },
         { key: 'ex4', name: 'Exercise 4', icon: PenSquare, status: 'locked' },
         { key: 'vocab_memory', name: 'Vocabulary (Memory)', icon: Gamepad2, status: 'locked' },
@@ -229,7 +233,7 @@ export default function Class11Content() {
         const t = learningPath.find(it => it.key === topicKey);
         if (!isAdmin && t?.status === 'locked') { toast({ variant: "destructive", title: "Contenido Bloqueado" }); return; }
         setSelectedTopic(topicKey);
-        if (['grammar', 'grammar2', 'examples'].includes(topicKey)) handleTopicComplete(topicKey);
+        if (['grammar', 'grammar2'].includes(topicKey)) handleTopicComplete(topicKey);
     };
 
     useEffect(() => {
@@ -246,6 +250,7 @@ export default function Class11Content() {
             savedST = d.lastSelectedTopic || '';
             if (d.create1Data) setWritingLines(d.create1Data);
             if (d.create1Grades) setWritingGrades(d.create1Grades);
+            if (d.finalVocabDone) setFinalVocabFinished(true);
         }
 
         let lastDone = true;
@@ -276,28 +281,24 @@ export default function Class11Content() {
         return Math.round((comp / learningPath.length) * 100);
     }, [learningPath]);
 
-    const isFinalVocabFinished = useMemo(() => {
-        return learningPath.find(t => t.key === 'final_vocab')?.status === 'completed';
-    }, [learningPath]);
-
     useEffect(() => {
         if (!initialLoadComplete || isInitialLoading || isAdmin || !studentDocRef || learningPath.length === 0) return;
         const s: any = { 
             lastSelectedTopic: selectedTopic,
             create1Data: writingLines,
-            create1Grades: writingGrades
+            create1Grades: writingGrades,
+            finalVocabDone: finalVocabDone
         };
         learningPath.forEach(t => s[t.key] = t.status);
         
-        const currentSaved = studentProfile?.lessonProgress?.[progressStorageVersion];
-        if (JSON.stringify(s) !== JSON.stringify(currentSaved)) {
+        if (JSON.stringify(s) !== JSON.stringify(studentProfile?.lessonProgress?.[progressStorageVersion])) {
             updateDocumentNonBlocking(studentDocRef, { 
                 [`lessonProgress.${progressStorageVersion}`]: s, 
                 [`progress.${mainProgressKey}`]: progressValue 
             });
         }
         if (progressValue >= 100) window.dispatchEvent(new CustomEvent('progressUpdated'));
-    }, [learningPath, isAdmin, progressValue, studentDocRef, selectedTopic, isInitialLoading, studentProfile, writingLines, writingGrades, initialLoadComplete]);
+    }, [learningPath, isAdmin, progressValue, studentDocRef, selectedTopic, isInitialLoading, studentProfile, writingLines, writingGrades, initialLoadComplete, finalVocabDone]);
 
     useEffect(() => {
         if (!topicToComplete) return;
@@ -458,7 +459,7 @@ export default function Class11Content() {
                                     ))}
                                 </div>
                                 <div className="p-6 bg-brand-purple/5 rounded-[2rem] border-2 border-dashed border-brand-purple/20 text-foreground">
-                                    <p className="text-lg font-bold italic">"NOTA: Cuando los pronombres objeto tengan como significado “CONTIGO”, “CON EL”, “CON ELLA” etc… hay que apoyarlos con la preposición “WITH”."</p>
+                                    <p className="text-lg font-bold italic">"NOTA: Cuando los pronombres objeto tengan como significado “CONTIGO”, “CON EL”, “CON ELLA” etc… hay que APOYARLOS con la preposición “WITH”."</p>
                                 </div>
                             </CardContent>
                             <CardFooter className="justify-center border-t pt-6"><Button onClick={() => handleTopicComplete('grammar')} size="lg" className="px-16 font-bold h-12 text-white">Entendido</Button></CardFooter>
@@ -479,7 +480,7 @@ export default function Class11Content() {
                                 return (
                                     <div key={idx} className="space-y-2">
                                         <div className="flex justify-between items-center">
-                                            <Label className="text-xs font-bold text-muted-foreground uppercase">Frase {idx + 1}</Label>
+                                            <Label className="text-sm font-bold text-muted-foreground uppercase">Frase {idx + 1}</Label>
                                             <div className="flex gap-2">
                                                 <Button size="icon" variant="ghost" onClick={() => handleToggleWritingGrade(idx, 'correct')} className={cn("h-8 w-8 rounded-full", status === 'correct' ? "bg-green-500 text-white" : "bg-muted")} disabled={!isAdmin}><Check className="h-4 w-4"/></Button>
                                                 <Button size="icon" variant="ghost" onClick={() => handleToggleWritingGrade(idx, 'incorrect')} className={cn("h-8 w-8 rounded-full", status === 'incorrect' ? "bg-red-500 text-white" : "bg-muted")} disabled={!isAdmin}><X className="h-4 w-4"/></Button>
@@ -507,7 +508,8 @@ export default function Class11Content() {
                                         {[
                                             { c: 'Because', p: 'give a reason' },
                                             { c: 'So', p: 'give a consequence / result' },
-                                            { c: 'After / Before', p: 'give the order of events' },
+                                            { c: 'After', p: 'give the order of events' },
+                                            { c: 'Before', p: 'give the order of events' },
                                             { c: 'Until', p: 'until (deadline)' },
                                             { c: 'But', p: 'give a contrast' },
                                             { c: 'And', p: 'give extra information' },
@@ -528,27 +530,42 @@ export default function Class11Content() {
             case 'ex3':
                 return <SimpleTranslationExercise exerciseKey="c11_ex3" course="a1" onComplete={() => handleTopicComplete('ex3')} title="Exercise 3" vocabulary={ex3Vocab} highlightVocabulary={true} />;
             case 'ex4':
-                return <SimpleTranslationExercise exerciseKey="c11_ex4" course="a1" onComplete={() => handleTopicComplete('ex4')} vocabulary={ex4Vocab} highlightVocabulary={true} />;
+                return <SimpleTranslationExercise exerciseKey="c11_ex4" course="a1" onComplete={() => handleTopicComplete('ex4')} title="Exercise 4" vocabulary={ex4Vocab} highlightVocabulary={true} />;
             case 'vocab_memory':
-                return <VocabularyMatchingGame data={familyVocabularyData.nuclear.map(v => ({ spanish: v.spanish, english: v.english }))} onComplete={() => handleTopicComplete('vocab_memory')} title="Family Memory" />;
+                const memoryData = finalVocabList.slice(0, 10);
+                return <VocabularyMatchingGame data={memoryData.map(v => ({ spanish: v.spanish, english: v.english }))} onComplete={() => handleTopicComplete('vocab_memory')} title="Family Memory (10 pairs)" />;
             case 'ex5':
-                return <SimpleTranslationExercise exerciseKey="c11_ex5" course="a1" onComplete={() => handleTopicComplete('ex5')} vocabulary={ex5Vocab} highlightVocabulary={true} />;
+                return <SimpleTranslationExercise exerciseKey="c11_ex5" course="a1" onComplete={() => handleTopicComplete('ex5')} title="Exercise 5" vocabulary={ex5Vocab} highlightVocabulary={true} />;
             case 'ex6':
-                return <SimpleTranslationExercise exerciseKey="c11_ex6" course="a1" onComplete={() => handleTopicComplete('ex6')} vocabulary={ex6Vocab} highlightVocabulary={true} />;
+                return <SimpleTranslationExercise exerciseKey="c11_ex6" course="a1" onComplete={() => handleTopicComplete('ex6')} title="Exercise 6" vocabulary={ex6Vocab} highlightVocabulary={true} />;
             case 'final_vocab':
                 return (
-                    <Card className="shadow-soft border-2 border-brand-purple">
+                    <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm overflow-hidden">
                         <CardHeader>
                             <CardTitle>Final Vocabulary Challenge</CardTitle>
-                            {isFinalVocabFinished && (
-                                <div className="p-4 text-center animate-in zoom-in duration-500">
-                                   <Trophy className="h-12 w-12 text-yellow-400 mx-auto mb-2 animate-bounce" />
-                                   <h3 className="text-xl font-black text-primary uppercase">¡Misión Cumplida!</h3>
-                                </div>
-                            )}
+                            <CardDescription>Traduce los miembros de la familia al inglés para completar la clase.</CardDescription>
                         </CardHeader>
                         <CardContent>
-                             <VerbVocabularyExercise data={finalVocabList.map(v => ({ spanish: v.spanish, english: v.english[0] }))} onComplete={() => handleTopicComplete('final_vocab')} />
+                            {finalVocabDone ? (
+                                <div className="text-center p-12 flex flex-col items-center animate-in fade-in zoom-in duration-500">
+                                    <Trophy className="h-24 w-24 text-yellow-400 mb-6 animate-bounce" />
+                                    <h2 className="text-3xl font-black bg-gradient-to-r from-brand-purple to-brand-teal text-transparent bg-clip-text uppercase tracking-tighter">Congratulations!</h2>
+                                    <p className="text-muted-foreground mt-4 mb-8 text-lg font-medium">¡Has dominado el vocabulario de la familia y completado la Clase 11!</p>
+                                    <Button asChild size="lg" className="px-12 font-bold bg-green-600 hover:bg-green-700 text-white">
+                                        <Link href="/ingles/a1/unit/3">
+                                            Volver a la Unidad <ArrowRight className="ml-2 h-5 w-5" />
+                                        </Link>
+                                    </Button>
+                                </div>
+                            ) : (
+                                <VerbVocabularyExercise 
+                                    data={finalVocabList.map(v => ({ spanish: v.spanish, english: v.english[0] }))} 
+                                    onComplete={() => {
+                                        setFinalVocabFinished(true);
+                                        handleTopicComplete('final_vocab');
+                                    }} 
+                                />
+                            )}
                         </CardContent>
                     </Card>
                 );
@@ -573,11 +590,16 @@ export default function Class11Content() {
                                 <CardHeader><CardTitle className="text-lg uppercase font-black text-primary">Misión</CardTitle></CardHeader>
                                 <CardContent>
                                     <nav><ul className="space-y-1">
-                                        {learningPath.map(item => (
-                                            <li key={item.key} onClick={() => handleTopicSelect(item.key)} className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer text-foreground', (!isAdmin && item.status === 'locked') ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === item.key && 'bg-muted text-primary font-bold')}>
-                                                <div className="flex items-center gap-3">{(item.status === 'completed') ? <CheckCircle className="h-5 w-5 text-green-500" /> : <ICONS_MAP.active className="h-5 w-5" />}<span>{item.name}</span></div>
-                                            </li>
-                                        ))}
+                                        {learningPath.map(item => {
+                                            const isLocked = item.status === 'locked' && !isAdmin;
+                                            const isActive = item.status === 'active';
+                                            const Icon = ICONS_MAP[item.status] || BookOpen;
+                                            return (
+                                                <li key={item.key} onClick={() => handleTopicSelect(item.key)} className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer text-foreground', isLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === item.key && 'bg-muted text-primary font-bold')}>
+                                                    <div className="flex items-center gap-3">{(item.status === 'completed') ? <CheckCircle className="h-5 w-5 text-green-500" /> : <ICONS_MAP.active className="h-5 w-5" />}<span>{item.name}</span></div>
+                                                </li>
+                                            );
+                                        })}
                                     </ul></nav>
                                     <div className="mt-6 pt-6 border-t"><div className="flex justify-between items-center text-xs mb-2"><span>Progreso</span><span className="font-bold">{progressValue}%</span></div><Progress value={progressValue} className="h-1.5" /></div>
                                 </CardContent>
