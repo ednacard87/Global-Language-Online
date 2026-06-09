@@ -467,7 +467,7 @@ export default function Class12Content() {
                                     <AccordionContent className="space-y-2">
                                         <p>Remover la "e" y agregar <span className="font-bold">ING</span>.</p>
                                         <p className="font-mono bg-muted p-2 rounded">Take &rarr; Taking</p>
-                                        <div className="text-destructive font-bold text-sm">Excepciones: See &rarr; Seeing / Make &rarr; Making</div>
+                                        <div className="text-green-500 font-bold text-sm">Excepciones: See &rarr; Seeing / Make &rarr; Making</div>
                                     </AccordionContent>
                                 </AccordionItem>
                                 <AccordionItem value="item-2">
@@ -475,7 +475,7 @@ export default function Class12Content() {
                                     <AccordionContent className="space-y-2">
                                         <p>Si termina en CVC (Consonante-Vocal-Consonante), se dobla la última letra.</p>
                                         <p className="font-mono bg-muted p-2 rounded">Stop &rarr; Stopping / Sit &rarr; Sitting / Win &rarr; Winning</p>
-                                        <div className="text-destructive font-bold text-sm">Excepción X - W - Z: Fix &rarr; Fixing / Draw &rarr; Drawing</div>
+                                        <div className="text-green-500 font-bold text-sm">Excepción X - W - Z: Fix &rarr; Fixing / Draw &rarr; Drawing</div>
                                         <div className="text-blue-500 font-bold text-sm">Nota: Si tiene 2 vocales NO dobla: Read &rarr; Reading / Open &rarr; Opening</div>
                                     </AccordionContent>
                                 </AccordionItem>
@@ -516,6 +516,8 @@ export default function Class12Content() {
                     savePath={`lessonProgress.${progressStorageVersion}.create1`} 
                     savePathGrades={`lessonProgress.${progressStorageVersion}.create1Grades`} 
                 />;
+
+           
             case 'ex3': return <TripleLineTranslationExercise title="Exercise 3: Short Answers" prompts={ex3Prompts} onComplete={() => handleTopicComplete('ex3')} vocabulary={ex3Vocab} />;
             case 'ex4': return <SimpleVsContinuousExercise prompts={ex4Prompts} onComplete={() => handleTopicComplete('ex4')} vocabulary={ex4Vocab} />;
             case 'ex5': return <SimpleTranslationExercise exerciseKey="c12_ex5" course="a1" onComplete={() => handleTopicComplete('ex5')} title="Exercise 5" />;
