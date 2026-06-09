@@ -76,18 +76,18 @@ const ex1Prompts = [
 ];
 
 const ex3Prompts = [
-    { question: "ARE YOU CALLING YOUR MOTHER?", english: "ARE YOU CALLING YOUR MOTHER?", answers: { translation: ["are you calling your mother?"], pos: ["yes, i am"], neg: ["no, i am not", "no, i'm not"] } },
-    { question: "ARE YOU TIRED?", english: "ARE YOU TIRED?", answers: { translation: ["are you tired?"], pos: ["yes, i am"], neg: ["no, i am not", "no, i'm not"] } },
-    { question: "IS SHE SLEEPING?", english: "IS SHE SLEEPING?", answers: { translation: ["is she sleeping?"], pos: ["yes, she is"], neg: ["no, she is not", "no, she isn't"] } },
-    { question: "IS SHE JULIA?", english: "IS SHE JULIA?", answers: { translation: ["is she julia?"], pos: ["yes, she is"], neg: ["no, she is not", "no, she isn't"] } },
-    { question: "ARE THEY ARRIVING ON SUNDAY?", english: "ARE THEY ARRIVING ON SUNDAY?", answers: { translation: ["are they arriving on sunday?"], pos: ["yes, they are"], neg: ["no, they are not", "no, they aren't"] } },
-    { question: "ARE THEY STUDENTS?", english: "ARE THEY STUDENTS?", answers: { translation: ["are they students?"], pos: ["yes, they are"], neg: ["no, they are not", "no, they aren't"] } },
-    { question: "IS HE DRINKING RED WINE?", english: "IS HE DRINKING RED WINE?", answers: { translation: ["is he drinking red wine?"], pos: ["yes, he is"], neg: ["no, he is not", "no, he isn't"] } },
-    { question: "ARE THEY FOOTBALL PLAYERS?", english: "ARE THEY FOOTBALL PLAYERS?", answers: { translation: ["are they football players?", "are they soccer players?"], pos: ["yes, they are"], neg: ["no, they are not", "no, they aren't"] } },
-    { question: "ARE THEY EATING HAMBURGERS?", english: "ARE THEY EATING HAMBURGERS?", answers: { translation: ["are they eating hamburgers?"], pos: ["yes, they are"], neg: ["no, they are not", "no, they aren't"] } },
-    { question: "IS HE DRIVING A TRUCK?", english: "IS HE DRIVING A TRUCK?", answers: { translation: ["is he driving a truck?"], pos: ["yes, he is"], neg: ["no, he is not", "no, he isn't"] } },
-    { question: "IS MARIO SINGING IN THE BATHROOM?", english: "IS MARIO SINGING IN THE BATHROOM?", answers: { translation: ["is mario singing in the bathroom?"], pos: ["yes, he is"], neg: ["no, he is not", "no, he isn't"] } },
-    { question: "IS SHE LOOKING FOR A JOB?", english: "IS SHE LOOKING FOR A JOB?", answers: { translation: ["is she looking for a job?"], pos: ["yes, she is"], neg: ["no, she is not", "no, she isn't"] } },
+    { question: "TU ESTAS LLAMANDO A TU MAMÁ?", english: "ARE YOU CALLING YOUR MOTHER?", answers: { translation: ["are you calling your mother?"], pos: ["yes, i am"], neg: ["no, i am not", "no, i'm not"] } },
+    { question: "TU ESTÁS CANSADO?", english: "ARE YOU TIRED?", answers: { translation: ["are you tired?"], pos: ["yes, i am"], neg: ["no, i am not", "no, i'm not"] } },
+    { question: "ELLA ESTÁ DURMIENDO?", english: "IS SHE SLEEPING?", answers: { translation: ["is she sleeping?"], pos: ["yes, she is"], neg: ["no, she is not", "no, she isn't"] } },
+    { question: "ELLA ES JULIA?", english: "IS SHE JULIA?", answers: { translation: ["is she julia?"], pos: ["yes, she is"], neg: ["no, she is not", "no, she isn't"] } },
+    { question: "ELLOS ESTÁN LLEGANDO EL DOMINGO?", english: "ARE THEY ARRIVING ON SUNDAY?", answers: { translation: ["are they arriving on sunday?"], pos: ["yes, they are"], neg: ["no, they are not", "no, they aren't"] } },
+    { question: "ELLOS SON ESTUDIANTES?", english: "ARE THEY STUDENTS?", answers: { translation: ["are they students?"], pos: ["yes, they are"], neg: ["no, they are not", "no, they aren't"] } },
+    { question: "EL ESTA BEBIENDO VINO?", english: "IS HE DRINKING RED WINE?", answers: { translation: ["is he drinking red wine?"], pos: ["yes, he is"], neg: ["no, he is not", "no, he isn't"] } },
+    { question: "ELLOS SON JUGADORES DE FUTBOL?", english: "ARE THEY FOOTBALL PLAYERS?", answers: { translation: ["are they football players?", "are they soccer players?"], pos: ["yes, they are"], neg: ["no, they are not", "no, they aren't"] } },
+    { question: "ELLOS ESTÁN COMINDO HAMBURGUESAS?", english: "ARE THEY EATING HAMBURGERS?", answers: { translation: ["are they eating hamburgers?"], pos: ["yes, they are"], neg: ["no, they are not", "no, they aren't"] } },
+    { question: "EL ESTA MANEJANDO UN CAMION?", english: "IS HE DRIVING A TRUCK?", answers: { translation: ["is he driving a truck?"], pos: ["yes, he is"], neg: ["no, he is not", "no, he isn't"] } },
+    { question: "MARIO ESTÁ CANTANDO EN EL BAÑO?", english: "IS MARIO SINGING IN THE BATHROOM?", answers: { translation: ["is mario singing in the bathroom?"], pos: ["yes, he is"], neg: ["no, he is not", "no, he isn't"] } },
+    { question: "ELLA ESTA BUSCANDO UN EMPLEO?", english: "IS SHE LOOKING FOR A JOB?", answers: { translation: ["is she looking for a job?"], pos: ["yes, she is"], neg: ["no, she is not", "no, she isn't"] } },
 ];
 
 const ex4Prompts = [
@@ -98,6 +98,7 @@ const ex4Prompts = [
     { spanish: "¿tu estudias ingles?", answers: { simple: ["do you study english?"], continuous: ["are you studying english?"] } },
 ];
 
+//--- Vocabulario de los Ejercicios ----
 const ex1Vocab = { "haciendo": "doing", "durmiendo": "sleeping", "estudiando": "studying", "programación": "programming", "yendo": "going", "escuchando": "listening", "llega": "arrives", "llegando": "arriving", "abuela": "grandmother", "leyendo": "reading" };
 const ex3Vocab = { "llamando": "calling", "cansado": "tired", "durmiendo": "sleeping", "llegando": "arriving", "domingo": "sunday", "estudiantes": "students", "bebiendo": "drinking", "vino tinto": "red wine", "jugadores": "players", "fútbol": "football / soccer", "comiendo": "eating", "hamburguesas": "hamburgers", "conduciendo": "driving", "camión": "truck", "cantando": "singing", "baño": "bathroom", "buscando": "looking for", "trabajo": "job" };
 const ex4Vocab = { "supermercado": "supermarket", "escribe": "writes", "libro": "book", "trabaja": "works", "domingo": "sunday", "canta": "sings", "baño": "bathroom", "estudias": "study" };
@@ -193,6 +194,7 @@ const ManualGradingExercise = ({
     );
 };
 
+// ---- Exercise 3 ---
 const TripleLineTranslationExercise = ({ title, prompts, vocabulary, onComplete }: any) => {
     const { toast } = useToast();
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -241,12 +243,13 @@ const TripleLineTranslationExercise = ({ title, prompts, vocabulary, onComplete 
                         <div key={i} onClick={() => setCurrentIndex(i)} className={cn("h-8 w-8 rounded-full border-2 flex items-center justify-center text-sm font-bold cursor-pointer transition-all", currentIndex === i ? "border-primary ring-2 ring-primary" : "border-muted", completedMap[i] ? "bg-green-500 text-white border-green-500" : "bg-card text-foreground")}>{i + 1}</div>
                     ))}
                 </div>
+                
                 <div className="bg-muted p-4 rounded-lg border text-center font-bold text-xl uppercase">{currentPrompt.question}</div>
                 <div className="space-y-3 font-mono">
                     <div className="flex items-center gap-3"><Label className="w-12 font-bold text-blue-500">(?)</Label><Input value={answers.translation} onChange={e => setAnswers(p => ({...p, translation: e.target.value}))} className={cn(validation.translation === 'correct' ? 'border-green-500' : validation.translation === 'incorrect' ? 'border-red-500' : '')} autoComplete="off" /></div>
                     <div className="flex items-center gap-3"><Label className="w-12 font-bold text-green-500">(+A)</Label><Input value={answers.pos} onChange={e => setAnswers(p => ({...p, pos: e.target.value}))} className={cn(validation.pos === 'correct' ? 'border-green-500' : validation.pos === 'incorrect' ? 'border-red-500' : '')} autoComplete="off" /></div>
                     <div className="flex items-center gap-3"><Label className="w-12 font-bold text-red-500">(-A)</Label><Input value={answers.neg} onChange={e => setAnswers(p => ({...p, neg: e.target.value}))} className={cn(validation.neg === 'correct' ? 'border-green-500' : validation.neg === 'incorrect' ? 'border-red-500' : '')} autoComplete="off" /></div>
-                </div>
+                </div> 
             </CardContent>
             <CardFooter className="justify-between border-t pt-6">
                 <Button variant="outline" onClick={() => setCurrentIndex(p => Math.max(0, p - 1))} disabled={currentIndex === 0}>Anterior</Button>
@@ -436,14 +439,16 @@ export default function Class12Content() {
                         <CardContent className="space-y-6 text-black dark:text-white font-bold text-lg">
                             <div className="p-6 bg-white/20 rounded-2xl border border-black/10">
                                 <p className="text-primary mb-4 uppercase tracking-tighter">¿Qué es?</p>
-                                <p className="mb-4">Se usa para hablar de acciones que están ocurriendo en este preciso momento. Es <span className="text-red-500 underline">obligatorio</span> utilizar el verbo <span className="font-black">To be</span> (am, is, are).</p>
+                                <p className="mb-4">Se usa para hablar de acciones que están ocurriendo en este preciso momento. </p>
+                                <p>  <span className="text-green-500 underline">obligatorio = </span> utilizar el verbo <span className="font-black">To be</span> (am, is, are).</p>
+                                <br/>
                                 <div className="bg-muted/50 p-4 rounded-xl border font-mono">
                                     <p className="text-primary font-black uppercase text-sm mb-2">Estructura Básica:</p>
-                                    <p>(+) Subject + To be + Verb-ING</p>
-                                    <p>(-) Subject + To be + NOT + Verb-ING</p>
-                                    <p>(?) To be + Subject + Verb-ING ?</p>
-                                    <p>(+A) Yes, Subject + To be</p>
-                                    <p>(-A) No, Subject + To be + NOT</p>
+                                    <p>(+) Pronoun + To be + Verb-ING</p>
+                                    <p>(-) Pronoun + To be + NOT + Verb-ING</p>
+                                    <p>(?) To be + Pronoun + Verb-ING ?</p>
+                                    <p>(+A) Yes, Pronoun + To be</p>
+                                    <p>(-A) No, Pronoun + To be + NOT</p>
                                 </div>
                             </div>
                         </CardContent>
