@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Footer } from '@/components/footer';
@@ -20,7 +20,10 @@ import {
     ArrowLeft,
     ArrowRight,
     HelpCircle,
-    Check
+    Check,
+    XCircle,
+    Globe,
+    Info
 } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
@@ -34,26 +37,11 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { VocabularyMatchingGame } from '@/components/dashboard/vocabulary-matching-game';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { VerbVocabularyExercise } from '@/components/kids/exercises/verb-vocabulary';
-
-/**
- * ESTRUCTURA BASE BLINDADA: ZERO CONDITIONAL (B1 NIÑOS)
- * ---------------------------------------------------
- */
-
-type TopicStatus = 'locked' | 'active' | 'completed';
-
-interface Topic {
-  key: string;
-  name: string;
-  icon: React.ElementType;
-  status: TopicStatus;
-}
-
-const progressStorageVersion = 'progress_kids_b1_zero_cond_v5_stable';
-const mainProgressKey = 'progress_kids_b1_zero_conditional';
 
 // --- DATA ---
+
+const progressStorageVersion = 'progress_kids_b1_zero_cond_v10_stable';
+const mainProgressKey = 'progress_kids_b1_zero_conditional';
 
 const vocabularyData = {
     verbs: [
@@ -91,7 +79,6 @@ const vocabularyData = {
     ]
 };
 
-// --- Specific Vocabulary for Exercises ---
 const ex1VocabSpecific = {
     "suelo": "ground", "mojar": "get wet", "calentar": "heat", "hervir": "boil",
     "congelar": "freeze", "convertir": "turn into", "hielo": "ice", "brillar": "shine",
@@ -118,10 +105,10 @@ const ex3VocabSpecific = {
 };
 
 const readingVocabSpecific = {
-    "ciclo del agua": "water cycle", "hecho natural": "natural fact", "calentar": "heat",
-    "tierra": "earth", "evaporarse": "evaporate", "subir": "go up", "vapor": "steam",
-    "alcanzar": "reach", "aire": "air", "formar": "form", "nubes": "clouds",
-    "frío": "cold", "llover": "rain", "crecer": "grow", "beber": "drink", "suelo": "ground"
+    "water cycle": "ciclo del agua", "natural fact": "hecho natural", "heat": "calentar",
+    "earth": "tierra", "evaporate": "evaporarse", "go up": "subir", "steam": "vapor",
+    "reach": "alcanzar", "air": "aire", "form": "formar", "clouds": "nubes",
+    "cold": "frío", "rain": "llover", "grow": "crecer", "drink": "beber", "ground": "suelo"
 };
 
 const ex1Prompts = [
@@ -173,9 +160,25 @@ const BallsExercise = ({ title, prompts, onComplete, vocabulary }: any) => {
     const [answer, setAnswer] = useState('');
     const [status, setStatus] = useState<Record<number, 'correct' | 'incorrect' | 'unchecked'>>({});
 
+    // Reset local index and state when prompts change to avoid index-out-of-bounds errors
+    useEffect(() => {
+        setCurrentIndex(0);
+        setAnswer('');
+        setStatus({});
+    }, [prompts]);
+
+    // Clear answer on index change
+    useEffect(() => {
+        setAnswer('');
+    }, [currentIndex]);
+
+    const currentPrompt = prompts[currentIndex];
+
+    if (!currentPrompt) return null;
+
     const handleCheck = () => {
         const userVal = answer.trim().toLowerCase().replace(/[.?,]/g, '');
-        const isCorrect = prompts[currentIndex].answer.some((a: string) => a.toLowerCase().replace(/[.?,]/g, '') === userVal);
+        const isCorrect = currentPrompt.answer.some((a: string) => a.toLowerCase().replace(/[.?,]/g, '') === userVal);
         
         setStatus(prev => ({ ...prev, [currentIndex]: isCorrect ? 'correct' : 'incorrect' }));
         if (isCorrect) toast({ title: "¡Buen trabajo!" });
@@ -187,10 +190,10 @@ const BallsExercise = ({ title, prompts, onComplete, vocabulary }: any) => {
             <CardHeader>
                 <div className="flex justify-between items-start">
                     <div>
-                        <CardTitle>{title}</CardTitle>
+                        <CardTitle className='text-foreground'>{title}</CardTitle>
                         <div className="flex gap-2 justify-start flex-wrap pt-4">
                             {prompts.map((_: any, i: number) => (
-                                <div key={i} onClick={() => setCurrentIndex(i)} className={cn("h-8 w-8 rounded-full border-2 flex items-center justify-center text-sm font-bold cursor-pointer transition-all", currentIndex === i ? "border-primary ring-2 ring-primary" : "border-muted", status[i] === 'correct' ? "bg-green-500 text-white border-green-500" : status[i] === 'incorrect' ? "bg-red-500 text-white border-red-500" : "bg-card")}>{i + 1}</div>
+                                <div key={i} onClick={() => setCurrentIndex(i)} className={cn("h-8 w-8 rounded-full border-2 flex items-center justify-center text-sm font-bold cursor-pointer transition-all", currentIndex === i ? "border-primary ring-2 ring-primary" : "border-muted", status[i] === 'correct' ? "bg-green-500 text-white border-green-500" : status[i] === 'incorrect' ? "bg-red-500 text-white border-red-500" : "bg-card text-foreground")}>{i + 1}</div>
                             ))}
                         </div>
                     </div>
@@ -203,7 +206,7 @@ const BallsExercise = ({ title, prompts, onComplete, vocabulary }: any) => {
                                 </Button>
                             </PopoverTrigger>
                             <PopoverContent className="w-64">
-                                <div className="space-y-2 text-foreground">
+                                <div className="space-y-2 text-foreground text-left">
                                     <h4 className="font-bold border-b pb-1 text-primary">Vocabulario Útil</h4>
                                     <ScrollArea className="h-48 pr-4">
                                         <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
@@ -222,21 +225,32 @@ const BallsExercise = ({ title, prompts, onComplete, vocabulary }: any) => {
                 </div>
             </CardHeader>
             <CardContent className="space-y-6">
-                <div className="bg-muted p-6 rounded-2xl border-2 border-dashed text-center font-bold text-xl">{prompts[currentIndex].spanish}</div>
+                <div className="bg-muted p-6 rounded-2xl border-2 border-dashed text-center font-bold text-xl uppercase tracking-tighter text-foreground">
+                    {currentPrompt.spanish}
+                </div>
                 <Input value={answer} onChange={e => setAnswer(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleCheck()} className={cn("h-12 text-lg text-foreground", status[currentIndex] === 'correct' ? 'border-green-500 bg-green-50/5' : status[currentIndex] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} placeholder="Tu traducción..." autoComplete="off" />
             </CardContent>
             <CardFooter className="justify-between border-t pt-6">
                 <Button variant="outline" onClick={() => setCurrentIndex(p => Math.max(0, p - 1))} disabled={currentIndex === 0}>Anterior</Button>
                 <div className="flex gap-2">
                     <Button onClick={handleCheck} variant="secondary">Verificar</Button>
-                    <Button onClick={() => currentIndex < prompts.length - 1 ? (setCurrentIndex(i => i + 1), setAnswer('')) : onComplete()} disabled={status[currentIndex] !== 'correct'} className="text-white font-bold">{currentIndex === prompts.length - 1 ? 'Finalizar' : 'Siguiente'}</Button>
+                    <Button onClick={() => currentIndex < prompts.length - 1 ? setCurrentIndex(i => i + 1) : onComplete()} disabled={status[currentIndex] !== 'correct'} className="text-white font-bold">{currentIndex === prompts.length - 1 ? 'Finalizar' : 'Siguiente'}</Button>
                 </div>
             </CardFooter>
         </Card>
     );
 };
 
-// --- PAGE COMPONENT ---
+// --- MAIN COMPONENT ---
+
+interface Topic {
+  key: string;
+  name: string;
+  icon: React.ElementType;
+  status: 'locked' | 'active' | 'completed';
+}
+
+const ICONS_MAP = { locked: Lock, active: BookOpen, completed: CheckCircle };
 
 export default function ZeroConditionalKidsPage() {
     const { t } = useTranslation();
@@ -253,6 +267,10 @@ export default function ZeroConditionalKidsPage() {
     // Reading State
     const [readingAnswers, setReadingAnswers] = useState<Record<string, string>>({});
     const [readingStatus, setReadingStatus] = useState<Record<string, 'correct' | 'incorrect' | 'unchecked'>>({});
+
+    // Final Vocab State
+    const [finalVocabAnswers, setFinalVocabAnswers] = useState<Record<number, string>>({});
+    const [finalVocabValidation, setFinalVocabValidation] = useState<Record<number, 'correct' | 'incorrect' | 'unchecked'>>({});
 
     const studentDocRef = useMemoFirebase(
         () => (user ? doc(firestore, 'students', user.uid) : null),
@@ -290,12 +308,12 @@ export default function ZeroConditionalKidsPage() {
         }
 
         let lastDone = true;
-        for (let i = 0; i < path.length; i++) {
+        for(let i = 0; i < path.length; i++) {
             if (lastDone && path[i].status === 'locked') path[i].status = 'active';
             lastDone = path[i].status === 'completed';
         }
 
-        setLearningPath(path);
+        setLearningPath(path as Topic[]);
         setSelectedTopic(savedSelectedTopic || path.find(p => p.status === 'active')?.key || path[0].key);
         setInitialLoadComplete(true);
         setIsInitialLoading(false);
@@ -306,6 +324,10 @@ export default function ZeroConditionalKidsPage() {
         const completedCount = learningPath.filter(t => t.status === 'completed').length;
         return Math.round((completedCount / learningPath.length) * 100);
     }, [learningPath]);
+
+    const handleTopicComplete = useCallback((completedKey: string) => {
+        setTopicToComplete(completedKey);
+    }, []);
 
     useEffect(() => {
         if (!initialLoadComplete || isInitialLoading || isAdmin || !studentDocRef || learningPath.length === 0) return;
@@ -325,10 +347,6 @@ export default function ZeroConditionalKidsPage() {
             window.dispatchEvent(new CustomEvent('progressUpdated'));
         }
     }, [learningPath, isAdmin, progressValue, studentDocRef, initialLoadComplete, selectedTopic, studentProfile, isInitialLoading]);
-
-    const handleTopicComplete = useCallback((completedKey: string) => {
-        setTopicToComplete(completedKey);
-    }, []);
 
     useEffect(() => {
         if (!topicToComplete) return;
@@ -356,7 +374,7 @@ export default function ZeroConditionalKidsPage() {
                 setTimeout(() => setSelectedTopic(finalNext), 0);
             }
             
-            return newPath;
+            return newPath as Topic[];
         });
 
         setTopicToComplete(null);
@@ -394,19 +412,47 @@ export default function ZeroConditionalKidsPage() {
         }
     };
 
+    const handleFinalVocabInputChange = (index: number, value: string) => {
+        setFinalVocabAnswers(prev => ({ ...prev, [index]: value }));
+        setFinalVocabValidation(prev => ({ ...prev, [index]: 'unchecked' }));
+    };
+
+    const handleCheckFinalVocab = () => {
+        const allVocab = [...vocabularyData.verbs, ...vocabularyData.science, ...vocabularyData.habits];
+        let allCorrect = true;
+        const newValidation: any = {};
+        
+        allVocab.forEach((item, index) => {
+            const userAnswer = (finalVocabAnswers[index] || '').trim().toLowerCase();
+            const isCorrect = userAnswer === item.english.toLowerCase();
+            newValidation[index] = isCorrect ? 'correct' : 'incorrect';
+            if (!isCorrect) allCorrect = false;
+        });
+
+        setFinalVocabValidation(newValidation);
+        if (allCorrect) {
+            toast({ title: "¡Felicidades!", description: "Has completado la misión final con éxito." });
+            handleTopicComplete('final_ex');
+        } else {
+            toast({ variant: 'destructive', title: "Sigue intentando", description: "Algunos términos no son correctos." });
+        }
+    };
+
+    const getFinalVocabInputClass = (index: number) => {
+        const status = finalVocabValidation[index];
+        if (status === 'correct') return 'border-green-500 bg-green-50/5 focus-visible:ring-green-500';
+        if (status === 'incorrect') return 'border-destructive focus-visible:ring-destructive bg-destructive/5';
+        return '';
+    };
+
     const renderContent = () => {
-        if (isInitialLoading) return (
-            <div className="flex flex-col items-center justify-center min-h-[400px]">
-                <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
-                <p className="text-white font-bold animate-pulse">CARGANDO AVENTURA...</p>
-            </div>
-        );
+        if (isInitialLoading) return <div className="flex flex-col items-center justify-center min-h-[400px]"><Loader2 className="h-12 w-12 animate-spin text-primary mb-4" /></div>;
 
         switch (selectedTopic) {
             case 'vocabulary':
                 return (
                     <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground">
-                        <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase">Vocabulary: Zero Conditional</CardTitle></CardHeader>
+                        <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase tracking-tighter">Vocabulary: Zero Conditional</CardTitle></CardHeader>
                         <CardContent>
                             <Accordion type="multiple" defaultValue={['item-1', 'item-2', 'item-3']} className="w-full">
                                 <AccordionItem value="item-1">
@@ -457,13 +503,13 @@ export default function ZeroConditionalKidsPage() {
                 );
             case 'grammar':
                 return (
-                    <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground">
+                    <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground text-left">
                         <CardHeader>
-                            <CardTitle className="text-3xl font-black text-primary uppercase">Zero Conditional</CardTitle>
-                            <CardDescription className="text-lg font-bold">Hechos reales y verdades universales.</CardDescription>
+                            <CardTitle className="text-3xl font-black text-primary uppercase tracking-tighter">Zero Conditional</CardTitle>
+                            <CardDescription className="font-bold text-foreground text-lg">Hechos reales y verdades universales.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-6">
-                            <div className="p-6 bg-slate-100 dark:bg-slate-800/50 rounded-[2rem] border-2 border-dashed border-primary/20 text-foreground">
+                            <div className="p-6 bg-slate-100 dark:bg-slate-800/50 rounded-[2rem] border-2 border-dashed border-primary/20">
                                 <p className="text-lg font-bold mb-4">Lo usamos para hablar de cosas que siempre ocurren si se cumple una condición.</p>
                                 <div className="p-6 bg-primary/10 rounded-2xl border-2 border-primary space-y-2 text-center">
                                     <p className="text-2xl font-black text-primary">IF + PRESENT SIMPLE, PRESENT SIMPLE</p>
@@ -472,12 +518,12 @@ export default function ZeroConditionalKidsPage() {
                                 </div>
                             </div>
                             <div className="grid sm:grid-cols-2 gap-4">
-                                <div className="p-4 bg-muted rounded-xl border">
+                                <div className="p-4 bg-muted rounded-xl border text-foreground">
                                     <p className="font-bold text-primary mb-1">Example 1:</p>
                                     <p className="italic">If you heat ice, it melts.</p>
                                     <p className="text-xs text-muted-foreground">(Si calientas el hielo, se derrite)</p>
                                 </div>
-                                <div className="p-4 bg-muted rounded-xl border">
+                                <div className="p-4 bg-muted rounded-xl border text-foreground">
                                     <p className="font-bold text-primary mb-1">Example 2:</p>
                                     <p className="italic">If plants need water, they die.</p>
                                     <p className="text-xs text-muted-foreground">(Si las plantas necesitan agua, mueren)</p>
@@ -485,17 +531,17 @@ export default function ZeroConditionalKidsPage() {
                             </div>
                         </CardContent>
                         <CardFooter className="justify-center pt-6 border-t">
-                            <Button onClick={() => handleTopicComplete('grammar')} size="lg" className="px-16 font-bold h-12">Entendido</Button>
+                            <Button onClick={() => handleTopicComplete('grammar')} size="lg" className="px-16 font-bold text-white h-12">Entendido</Button>
                         </CardFooter>
                     </Card>
                 );
-            case 'exercise1': return <BallsExercise title="Exercise 1" prompts={ex1Prompts} onComplete={() => handleTopicComplete('exercise1')} vocabulary={ex1VocabSpecific} />;
-            case 'exercise2': return <BallsExercise title="Exercise 2" prompts={ex2Prompts} onComplete={() => handleTopicComplete('exercise2')} vocabulary={ex2VocabSpecific} />;
-            case 'exercise3': return <BallsExercise title="Exercise 3" prompts={ex3Prompts} onComplete={() => handleTopicComplete('exercise3')} vocabulary={ex3VocabSpecific} />;
+            case 'exercise1': return <BallsExercise key="ex1" title="Exercise 1" prompts={ex1Prompts} onComplete={() => handleTopicComplete('exercise1')} vocabulary={ex1VocabSpecific} />;
+            case 'exercise2': return <BallsExercise key="ex2" title="Exercise 2" prompts={ex2Prompts} onComplete={() => handleTopicComplete('exercise2')} vocabulary={ex2VocabSpecific} />;
+            case 'exercise3': return <BallsExercise key="ex3" title="Exercise 3" prompts={ex3Prompts} onComplete={() => handleTopicComplete('exercise3')} vocabulary={ex3VocabSpecific} />;
             case 'vocab_game':
                 return (
                     <Card className="shadow-soft border-2 border-brand-purple text-foreground">
-                        <CardHeader><CardTitle>Vocabulary Game</CardTitle></CardHeader>
+                        <CardHeader><CardTitle className='text-foreground'>Vocabulary Game</CardTitle></CardHeader>
                         <CardContent>
                             <VocabularyMatchingGame 
                                 data={[...vocabularyData.verbs, ...vocabularyData.science, ...vocabularyData.habits].map(v => ({ spanish: v.spanish, english: [v.english] }))} 
@@ -507,11 +553,11 @@ export default function ZeroConditionalKidsPage() {
                 );
             case 'reading':
                 return (
-                    <Card className="shadow-soft border-2 border-brand-purple bg-card/95">
+                    <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left">
                         <CardHeader>
                             <div className="flex justify-between items-start">
                                 <div>
-                                    <CardTitle className="text-foreground">{readingText.title}</CardTitle>
+                                    <CardTitle className='text-foreground'>{readingText.title}</CardTitle>
                                     <CardDescription>Lee el texto y responde para avanzar.</CardDescription>
                                 </div>
                                 <Popover>
@@ -526,10 +572,10 @@ export default function ZeroConditionalKidsPage() {
                                             <h4 className="font-bold border-b pb-1 text-primary">Vocabulario Útil</h4>
                                             <ScrollArea className="h-48 pr-4">
                                                 <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
-                                                    {Object.entries(readingVocabSpecific).map(([es, en]: any) => (
-                                                        <React.Fragment key={es}>
-                                                            <span className="text-muted-foreground capitalize">{es}:</span>
-                                                            <span className="font-semibold text-right">{en}</span>
+                                                    {Object.entries(readingVocabSpecific).map(([en, es]: any) => (
+                                                        <React.Fragment key={en}>
+                                                            <span className="text-muted-foreground capitalize">{en}:</span>
+                                                            <span className="font-semibold text-right">{es}</span>
                                                         </React.Fragment>
                                                     ))}
                                                 </div>
@@ -539,10 +585,10 @@ export default function ZeroConditionalKidsPage() {
                                 </Popover>
                             </div>
                         </CardHeader>
-                        <CardContent className="space-y-6 text-foreground text-left">
-                            <div className="p-6 bg-muted rounded-2xl border italic text-lg leading-relaxed">{readingText.content}</div>
+                        <CardContent className="space-y-6">
+                            <div className="p-6 bg-muted rounded-2xl border italic text-lg leading-relaxed text-foreground">{readingText.content}</div>
                             <Separator />
-                            <div className="space-y-4">
+                            <div className="space-y-4 text-foreground">
                                 {readingText.questions.map(q => (
                                     <div key={q.id} className="space-y-2">
                                         <Label className="font-bold">{q.question}</Label>
@@ -551,24 +597,45 @@ export default function ZeroConditionalKidsPage() {
                                 ))}
                             </div>
                         </CardContent>
-                        <CardFooter className="justify-center border-t pt-6">
+                        <CardFooter className="justify-center border-t pt-6 text-foreground">
                             <Button onClick={checkReading} size="lg" className="px-12 font-bold">Verificar Lectura</Button>
                         </CardFooter>
                     </Card>
                 );
             case 'final_ex':
+                const allVocab = [...vocabularyData.verbs, ...vocabularyData.science, ...vocabularyData.habits];
                 return (
-                    <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground">
-                        <CardHeader>
-                            <CardTitle>Final Vocabulary Challenge</CardTitle>
-                            <CardDescription>Memoriza y traduce para completar la aventura.</CardDescription>
+                    <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm overflow-hidden text-foreground">
+                        <CardHeader className="bg-primary/5 border-b">
+                            <CardTitle className="text-2xl font-black text-primary uppercase">Final Vocabulary Challenge</CardTitle>
+                            <CardDescription className="font-bold text-foreground">Traduce los términos de la lección para finalizar la misión.</CardDescription>
                         </CardHeader>
-                        <CardContent>
-                            <VerbVocabularyExercise 
-                                data={[...vocabularyData.verbs, ...vocabularyData.science].slice(0, 15).map(v => ({ spanish: v.spanish, english: v.english }))}
-                                onComplete={() => handleTopicComplete('final_ex')}
-                            />
+                        <CardContent className="p-0">
+                            <ScrollArea className="h-[500px]">
+                                <div className="p-8">
+                                     <div className="max-w-2xl mx-auto">
+                                        <div className="grid grid-cols-2 gap-x-12 gap-y-4">
+                                            <div className="font-black text-primary uppercase tracking-widest text-xs border-b pb-2">Español</div>
+                                            <div className="font-black text-primary uppercase tracking-widest text-xs border-b pb-2">Inglés</div>
+                                            {allVocab.map((v, i) => (
+                                                <React.Fragment key={i}>
+                                                    <div className="flex items-center font-bold text-base capitalize">{v.spanish}</div>
+                                                    <Input 
+                                                        value={finalVocabAnswers[i] || ''} 
+                                                        onChange={e => handleFinalVocabInputChange(i, e.target.value)}
+                                                        className={cn("h-10 text-lg", getFinalVocabInputClass(i))}
+                                                        autoComplete="off"
+                                                    />
+                                                </React.Fragment>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            </ScrollArea>
                         </CardContent>
+                        <CardFooter className="justify-center border-t p-6 bg-muted/20">
+                            <Button onClick={handleCheckFinalVocab} size="lg" className="px-20 font-black h-14 text-xl shadow-lg">Verificar Misión Final</Button>
+                        </CardFooter>
                     </Card>
                 );
             default: return null;
@@ -580,7 +647,6 @@ export default function ZeroConditionalKidsPage() {
             <DashboardHeader />
             <main className="flex-1 p-4 md:p-8">
                 <div className="max-w-7xl mx-auto">
-                    {/* Header de la clase */}
                     <div className="mb-8 text-left text-white">
                         <Link href="/kids/b1" className="hover:underline text-sm font-bold text-white/80 flex items-center gap-2 mb-2">
                             <ArrowLeft className="h-4 w-4" /> Volver al Curso B1
@@ -591,12 +657,10 @@ export default function ZeroConditionalKidsPage() {
                     </div>
 
                     <div className="grid gap-8 md:grid-cols-12">
-                        {/* Area de Contenido */}
                         <div className="md:col-span-9 md:order-1 order-2">
                             {renderContent()}
                         </div>
 
-                        {/* Sidebar de Navegación */}
                         <div className="md:col-span-3 md:order-2 order-1 text-left text-foreground">
                             <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
                                 <CardHeader className="pb-4 text-foreground">
