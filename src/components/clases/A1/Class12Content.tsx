@@ -221,7 +221,7 @@ const ex2Vocab = { "estudiar": "study", "empresa": "company", "morir": "die", "m
 const ex4Vocab = { "supermercado": "supermarket", "escribe": "writes", "libro": "book", "trabaja": "works", "domingo": "sunday", "canta": "sings", "baño": "bathroom", "estudias": "study" };
 const ex5Vocab = { "ir": "go", "colegio": "school", "empresa": "company", "correr": "run", "parque": "park", "beber": "drink", "vino": "wine", "agua": "water", "jugo de naranja": "orange juice", "baño": "bathroom", "jardín": "garden", "hacer": "do", "viernes": "fridays", "domingos": "sundays", "caminando": "walking" };
 const ex6Vocab = { "hablar": "speak / talk", "alemán": "German", "hablando": "talking / speaking", "inglés": "English", "corriendo": "running", "casa": "home", "haciendo": "doing", "yendo": "going", "vas": "go", "trabajando": "working", "duerme": "sleeps", "durmiendo": "sleeping", "escribiendo": "writing", "libros": "books" };
-const ex9Vocab = { "estudiar": "study", "haciendo": "doing", "beber": "drink", "jugar": "play", "vivir": "live", "llegar": "arrive", "lavar": "wash", "domingos": "sundays", "compañeros": "coworkers" };
+const ex9Vocab = { "estudiar": "study", "cocinar": "to cook", "beber": "drink" , "jugar": "play",  "parque" : "park" , "vivir": "live", "llegar": "arrive", "temprano" : "early" , "lavar": "wash", "todos los días": "every day", "domingos": "sundays"};
 
 // --- HELPERS ---
 
