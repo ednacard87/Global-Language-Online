@@ -177,14 +177,14 @@ const ex8Prompts = [
 const ex9Prompts = [
     { spanish: "¿ ESTUDIAS? -  ESTAS ESTUDIANDO?", answers: { trans: ["do you study? - are you studying?"], pos: ["yes, i do - yes, i am"], neg: ["no, i don't - no, i'm not" , "no, i do not - no, i am not"] } },
     { spanish: "¿ELLA ESTÁ COCINANDO? - ELLOS COCINAN?", answers: { trans: ["is she cooking? - do they cook?"], pos: ["yes, she is - yes, they do"], neg: ["no, she isn't - no, they don't" , "no, she is not - no, they do not"] } },
-    { spanish: "¿ELLOS BEBEN CERVEZA? - QUE ESTÁN BEBIENDO ELLOS?", answers: { trans: ["what do they drink? - what are they drinking?"], pos: ["yes, they do - yes, they are"], neg: ["no, they don't - no, they aren't" , "no, they do not - no, they are not"] } },
+    { spanish: "¿ELLOS BEBEN CERVEZA? - ELLOS ESTAN BEBIENDO AGUA?", answers: { trans: ["do they drink? - are they drinking water?"], pos: ["yes, they do - yes, they are"], neg: ["no, they don't - no, they aren't" , "no, they do not - no, they are not"] } },
     { spanish: "¿ELLOS JUEGAN EN EL PARQUE? - ELLOS ESTÁN JUGANDO EN LA UNIVERSIDAD?", answers: { trans: ["do they play in the park? - are they playing at the university?"], pos: ["yes, they do - yes, they are"], neg: ["no, they don't - no, they aren't" , "no, they do not - no, they are not"] } },
     { spanish: "¿ELLA ESTA VIVIENDO EN BARCELONA? - ELLA VIVE EN MEDELLIN?", answers: { trans: ["is she living in barcelona? - does she live in medellin?"], pos: ["yes, she is - yes, she does"], neg: ["no, she isn't - no, she doesn't" , "no, she is not - no, she does not"] } },
-    { spanish: "¿EL LLEGA A LAS 5 P.M? - ELLA ESTÁ LLEGANDO?", answers: { trans: ["does he arrive at 5 p.m? - is she arriving?"], pos: ["yes, he does - yes, she is"], neg: ["no, he doesn't - no, she isn't" , "no, he does not - no, she is not"] } },
-    { spanish: "¿ESTAS ESTUDIANDO INGLES? - ESTUDIAS INGLES?", answers: { trans: ["where are you living? - where do you live?"], pos: ["yes, i am - yes, i do"], neg: ["no, i'm not - no, i don't" , "no, i am not - no, i do not"] } },
-    { spanish: "¿ESTAS LAVANDO TU CARRO? - LAVAS SU CARRO LOS DOMINGOS? - (DE ÉL)", answers: { trans: ["are you washing your car? - do you wash his car on sundays?"], pos: ["yes, i am", "yes, i do"], neg: ["no, i'm not", "no, i don't"] } },
-    { spanish: "¿ELLA ESTA TRABAJANDO? - ELLA TRABAJA EL DOMINGO?", answers: { trans: ["what is she studying? - what do you study?"], pos: ["yes, she is", "yes, i do"], neg: ["no, she isn't", "no, i don't"] } },
-    { spanish: "¿ESTÁS JUGANDO CON ELLOS? - JUEGAS CON NOSOTROS?", answers: { trans: ["are you playing with them? - do you play with us?"], pos: ["yes, i am", "yes, i do"], neg: ["no, i'm not", "no, i don't"] } },
+    { spanish: "¿EL LLEGA A LAS 5 P.M? - ELLA ESTÁ LLEGANDO TEMPRANO?", answers: { trans: ["does he arrive at 5 p.m? - is she arriving early?"], pos: ["yes, he does - yes, she is"], neg: ["no, he doesn't - no, she isn't" , "no, he does not - no, she is not"] } },
+    { spanish: "¿ESTAS ESTUDIANDO INGLES? - ESTUDIAS INGLES TODOS LOS DIAS?", answers: { trans: ["are you studying english? - do you study english every day?"], pos: ["yes, i am - yes, i do"], neg: ["no, i'm not - no, i don't" , "no, i am not - no, i do not"] } },
+    { spanish: "¿ESTAS LAVANDO TU CARRO? - LAVAS SU CARRO LOS DOMINGOS? - (DE ÉL)", answers: { trans: ["are you washing your car? - do you wash his car on sundays?"], pos: ["yes, i am", "yes, i do"], neg: ["no, i'm not", "no, i don't" , "no, i am not", "no, i do not"] } },
+    { spanish: "¿ELLA ESTA TRABAJANDO? - TRABAJAS EL DOMINGO?", answers: { trans: ["is she working? - do you work on sunday?"], pos: ["yes, she is - yes, i do"], neg: ["no, she isn't - no, i don't" , "no, she is not - no, i do not"] } },
+    { spanish: "¿ESTÁS JUGANDO CON ELLOS? - JUEGAS CON NOSOTROS?", answers: { trans: ["are you playing with them? - do you play with us?"], pos: ["yes, i am - yes, i do"], neg: ["no, i'm not", "no, i don't" , "no, i am not", "no, i do not"] } },
 ];
 
 const finalExPrompts = [
