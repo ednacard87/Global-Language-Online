@@ -94,18 +94,18 @@ const whVocabularyExerciseData = [
 ];
 
 const practiceVocab: Record<string, Record<string, string>> = {
-    'Who': { "quién": "who", "tía": "aunt", "puerta": "door" , "Ese" : "that"},
-    'What1': { "qué": "what", "haces": "do", "lees": "read", "bebe": "drink", "metro": "subway/Train" , "el niño" : "the boy"},
-    'What2': { "cuál": "what", "favorito": "favorite", "música": "music", "deporte": "sport", "comida": "food" },
-    'what-kind-of': { "tipo/clase": "kind/type", "zapatos": "shoes", "ropa": "clothes" },
-    'How': { "cómo": "how", "estás": "are you", "esposo": "husband", "ir": "go" },
-    'how-adjective': { "alto": "tall", "picante": "spicy", "pequeño": "small", "grande": "big", "sopa": "soup" },
-    'how-often': { "que tan seguido": "how often", "gimnasio": "gym", "comes": "eat" },
-    'Whose': { "de quién": "whose", "sombrilla": "umbrella", "llaves": "keys" },
-    'Where': { "dónde": "where", "vas": "are going", "libros": "books", "compras": "buy", "carne": "meat" },
-    'Which': { "cuál": "which", "moto": "motorcycle", "helado": "ice cream", "necesitas": "need", "comprar": "buy" },
-    'When': { "cuándo": "when", "cumpleaños": "birthday", "fiesta": "party", "clase": "class" },
-    'Why': { "por qué": "why", "porque": "because", "triste": "sad", "viaje": "trip", "lejos": "far away" }
+    'Who': {  "tía": "aunt", "puerta": "door" , "Ese" : "that"},
+    'What1': {  "hacer": "to do", "leer": "to read", "metro" : "subway/Train" , "beber": "to drink", "el niño" : "the boy"},
+    'What2': {  "favorito": "favorite", "música": "music", "deporte": "sport", "comida": "food" , "animales" : "animals" },
+    'what-kind-of': { "portátil": "laptop", "zapatos": "shoes", "deporte" : "sport" , "practicar" : "to practice" , "ropa": "clothes" },
+    'How': { "hermanos" : "brothers" , "universidad" : "university" , "esposo": "husband", "ir": "go" },
+    'how-adjective': { "alto": "tall", "picante": "spicy", "pequeño": "small", "grande": "big", "sopa": "soup" , "apartamento" : "apartment" },
+    'how-often': { "gimnasio": "gym", "estudiar" : "to study" , "comes": "eat" , "hablar con": "to talk to" },
+    'Whose': { "Portatil": "laptop", "sombrilla": "umbrella", "llaves": "keys" },
+    'Where': {"libros": "books", "comprar": "to buy", "carne": "meat"},
+    'Which': { "moto": "motorcycle", "helado": "ice cream", "necesitar": "to need", "comprar": "to buy" },
+    'When': { "cumpleaños": "birthday", "fiesta": "party", "clase": "class" , "viaje" : "trip" , "Europa" :  "Europe" },
+    'Why': { "porque": "because", "finca" : "farm" , "padres" : "parents" , "triste": "sad", "visitar" : "to visit" , "viaje": "trip", "durante" : "during" , "lejos": "far away" , "naturaleza" : "nature"}
 };
 
 interface Topic {

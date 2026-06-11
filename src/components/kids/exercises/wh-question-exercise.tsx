@@ -75,7 +75,7 @@ const whExercisesData = {
         prompts: [
             { spanish: '¿QUE TAN SEGUIDO VAS AL GIMNASIO?', english: ["how often do you go to the gym?"] },
             { spanish: '¿QUE TAN SEGUIDO ESTUDIAS INGLES?', english: ["how often do you study english?"] },
-            { spanish: '¿QUÉ TAN SEGUIDO COMES_____________?', english: ["how often do you eat?"] },
+            { spanish: '¿QUÉ TAN SEGUIDO COMES?', english: ["how often do you eat?"] },
             { spanish: '¿QUE TAN SEGUIDO HABLAS CON TU HERMANA?', english: ["how often do you talk to your sister?"] },
             { spanish: '¿QUE TAN SEGUIDO ESTUDIAS QUIZLET?', english: ["how often do you study quizlet?"] }
         ]
@@ -127,7 +127,7 @@ const whExercisesData = {
             { spanish: '¿POR QUÉ ESTAS TRISTE? ------- PORQUE NO PUEDO VISITAR A MI ABUELA.', english: ["why are you sad? because i can't visit my grandmother."] },
             { spanish: '¿POR QUÉ ELLA ESTA FELIZ? – PORQUE ELLA TIENE UN VIAJE A BARCELONA.', english: ["why is she happy? because she has a trip to barcelona."] },
             { spanish: '¿POR QUÉ ESTUDIAS EN NOCHE? – PORQUE YO NO TENGO TIEMPO DURANTE EL DIA.', english: ["why do you study at night? because i don't have time during the day."] },
-            { spanish: '¿POR QUE VIVES LEJOS? – POR QUE A MI ME GUSTA VIVIR EN LA NATURALEZA.', english: ["why do you live far away? because i like to live in nature."] }
+            { spanish: '¿POR QUE VIVES LEJOS? – POR QUE A MI ME GUSTA VIVIR EN LA NATURALEZA.', english: ["why do you live far away? because i like to live in the nature."] }
         ]
     },
     'default': {
