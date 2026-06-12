@@ -80,16 +80,16 @@ const ex1NegativeData = [
 ];
 
 const ex1InterrogativeData = [
-    { spanish: "¿RECICLARÁS TÚ PAPEL?", answer: ["will you recycle paper?"] },
-    { spanish: "¿AHORRAREMOS NOSOTROS ENERGÍA?", answer: ["will we save energy?"] },
-    { spanish: "¿MEJORARÁ EL CALENTAMIENTO GLOBAL?", answer: ["will global warming improve?"] },
-    { spanish: "¿AYUDARÁN ELLOS AL PLANETA?", answer: ["will they help the planet?"] },
-    { spanish: "¿PLANTARÁ ELLA ÁRBOLES?", answer: ["will she plant trees?"] },
+    { spanish: "¿TÚ  RECICLARÁS PAPEL?", answer: ["will you recycle paper?"] },
+    { spanish: "¿NOSOTROS AHORRAREMOS  ENERGÍA?", answer: ["will we save energy?"] },
+    { spanish: "¿EL MEJORARÁ CALENTAMIENTO GLOBAL?", answer: ["will global warming improve?"] },
+    { spanish: "¿ELLOS AYUDARÁN AL PLANETA?", answer: ["will they help the planet?"] },
+    { spanish: "¿ELLA PLANTARÁ ÁRBOLES?", answer: ["will she plant trees?"] },
 ];
 
 const ex2Data = [
     {
-        spanish: "¿RECICLARÁS TÚ PLÁSTICO?",
+        spanish: "¿TÚ RECICLARÁS PLÁSTICO?",
         answers: {
             interrogative: ["will you recycle plastic?"],
             shortAffirmative: ["yes, i will"],
@@ -97,7 +97,7 @@ const ex2Data = [
         }
     },
     {
-        spanish: "¿USARÁ ELLA ENERGÍA RENOVABLE?",
+        spanish: "¿ELLA USARÁ ENERGÍA RENOVABLE?",
         answers: {
             interrogative: ["will she use renewable energy?"],
             shortAffirmative: ["yes, she will"],
@@ -105,7 +105,7 @@ const ex2Data = [
         }
     },
     {
-        spanish: "¿AYUDARÁN ELLOS A LOS ANIMALES?",
+        spanish: "¿ELLOS AYUDARÁN A LOS ANIMALES?",
         answers: {
             interrogative: ["will they help the animals?"],
             shortAffirmative: ["yes, they will"],
@@ -113,7 +113,7 @@ const ex2Data = [
         }
     },
     {
-        spanish: "¿LIMPIARÁS TU HABITACIÓN?",
+        spanish: "¿TU LIMPIARÁS TU HABITACIÓN?",
         answers: {
             interrogative: ["will you clean your room?"],
             shortAffirmative: ["yes, i will"],
@@ -568,12 +568,12 @@ export default function WillKidsClassPage() {
                             <div className="p-6 bg-primary/10 rounded-2xl border-2 border-primary space-y-4">
                                 <p className="text-lg font-bold">Se usa para decisiones espontáneas, promesas o predicciones.</p>
                                 <div className="grid gap-3 font-mono text-base">
-                                    <p><span className="text-green-500 font-bold">(+)</span> Subject + WILL + Verb + Complement</p>
-                                    <p><span className="text-red-500 font-bold">(-)</span> Subject + WILL NOT (WON'T) + Verb + Complement</p>
-                                    <p><span className="text-blue-500 font-bold">(?)</span> WILL + Subject + Verb + Complement?</p>
+                                    <p><span className="text-green-500 font-bold">(+)</span> Pronoun  + WILL + Verb + Complement</p>
+                                    <p><span className="text-red-500 font-bold">(-)</span> Pronoun + WILL NOT (WON'T) + Verb + Complement</p>
+                                    <p><span className="text-blue-500 font-bold">(?)</span> WILL + Pronoun + Verb + Complement?</p>
                                     <Separator />
-                                    <p><span className="text-green-600 font-bold">(+A)</span> Yes, Subject + will</p>
-                                    <p><span className="text-red-600 font-bold">(-A)</span> No, Subject + won't</p>
+                                    <p><span className="text-green-600 font-bold">(+A)</span> Yes, Pronoun + will</p>
+                                    <p><span className="text-red-600 font-bold">(-A)</span> No, Pronoun + won't</p>
                                 </div>
                             </div>
                         </CardContent>
@@ -594,7 +594,7 @@ export default function WillKidsClassPage() {
                                 <div><CardTitle>{readingData.title}</CardTitle></div>
                                 <Popover>
                                     <PopoverTrigger asChild><Button variant="outline" size="sm" className="border-2 border-brand-blue"><BookText className="mr-2 h-4 w-4" /> Vocabulary</Button></PopoverTrigger>
-                                    <PopoverContent className="w-64"><div className="grid grid-cols-2 gap-2 text-sm">{Object.entries({"believe": "creer", "cause": "causar", "survive": "sobrevivir", "together": "juntos"}).map(([en, es]) => (<React.Fragment key={en}><span className="text-muted-foreground">{en}:</span><span className="font-bold text-right">{es}</span></React.Fragment>))}</div></PopoverContent>
+                                    <PopoverContent className="w-64"><div className="grid grid-cols-2 gap-2 text-sm">{Object.entries({ "creer" : "believe", "causar" : "cause", "sobrevivir" : "survive", "juntos" : "together"}).map(([en, es]) => (<React.Fragment key={en}><span className="text-muted-foreground">{en}:</span><span className="font-bold text-right">{es}</span></React.Fragment>))}</div></PopoverContent>
                                 </Popover>
                             </div>
                         </CardHeader>
