@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -19,7 +19,11 @@ import {
     BookText,
     Star,
     Zap,
-    Scale
+    Scale,
+    Mic,
+    Check,
+    X,
+    Pencil
 } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
@@ -39,7 +43,7 @@ import { SimpleTranslationExercise } from '@/components/dashboard/simple-transla
 
 // --- DATA & CONFIG ---
 
-const progressStorageVersion = 'progress_a1_eng_u3_c13_v260_stable';
+const progressStorageVersion = 'progress_a1_eng_u3_c13_v270_with_dictation';
 const mainProgressKey = 'progress_a1_eng_unit_3_class_13';
 
 const ICONS_CONFIG = {
@@ -116,6 +120,121 @@ const mixed3Prompts = [
 ];
 
 // --- AUXILIARY COMPONENTS ---
+
+const ManualGradingExercise = ({ 
+    title,
+    description,
+    onComplete, 
+    studentDocRef, 
+    initialData, 
+    initialGrades,
+    savePath, 
+    savePathGrades,
+    isAdmin,
+    lineCount = 21,
+}: any) => {
+    const [lines, setLines] = useState<string[]>(Array(lineCount).fill(''));
+    const [grades, setGrades] = useState<Record<number, 'correct' | 'incorrect' | null>>(initialGrades || {});
+    const initializedRef = useRef(false);
+
+    useEffect(() => {
+        if (!initializedRef.current && initialData && Array.isArray(initialData)) {
+            const newLines = [...Array(lineCount).fill('')];
+            initialData.forEach((val, i) => { if (i < lineCount) newLines[i] = val || ''; });
+            setLines(newLines);
+            if (initialData.length > 0) initializedRef.current = true;
+        }
+    }, [initialData, lineCount]);
+
+    const handleLineChange = (index: number, value: string) => {
+        const newLines = [...lines];
+        newLines[index] = value;
+        setLines(newLines);
+        if (studentDocRef) updateDocumentNonBlocking(studentDocRef, { [savePath]: newLines });
+    };
+
+    const handleToggleGrade = (index: number, type: 'correct' | 'incorrect') => {
+        if (!isAdmin) return;
+        const newGrades = { ...grades };
+        newGrades[index] = newGrades[index] === type ? null : type;
+        setGrades(newGrades);
+        if (studentDocRef) updateDocumentNonBlocking(studentDocRef, { [savePathGrades]: newGrades });
+    };
+
+    return (
+        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
+            <CardHeader>
+                <div className="flex items-center gap-3">
+                    <div className="p-2 bg-primary/20 rounded-lg text-primary">
+                        {title.includes('DICTATION') ? <Mic className="h-6 w-6" /> : <Pencil className="h-6 w-6" />}
+                    </div>
+                    <div>
+                        <CardTitle>{title}</CardTitle>
+                        <CardDescription>{description}</CardDescription>
+                    </div>
+                </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 gap-3">
+                    {lines.map((line, idx) => {
+                        const status = grades[idx];
+                        const isTitleLine = idx === 0 && title.includes('DICTATION');
+                        return (
+                            <div key={idx} className="flex items-center gap-3">
+                                <span className={cn("font-bold w-8 text-right", isTitleLine ? "text-primary" : "text-muted-foreground")}>
+                                    {idx + 1}.
+                                </span>
+                                <Input 
+                                    value={line} 
+                                    onChange={e => handleLineChange(idx, e.target.value)} 
+                                    className={cn(
+                                        "flex-1 text-lg h-10 transition-all",
+                                        isTitleLine && "font-bold border-primary/50",
+                                        status === 'correct' ? 'border-green-500 bg-green-50/5' : 
+                                        status === 'incorrect' ? 'border-red-500 bg-red-50/5' : ''
+                                    )} 
+                                    placeholder={isTitleLine ? "Escribe el título aquí..." : "Escribe aquí..."}
+                                    autoComplete="off" 
+                                />
+                                <div className="flex gap-1 shrink-0">
+                                    <Button 
+                                        size="icon" 
+                                        variant="ghost" 
+                                        onClick={() => handleToggleGrade(idx, 'correct')} 
+                                        className={cn(
+                                            "h-8 w-8 rounded-full transition-colors", 
+                                            status === 'correct' ? "bg-green-500 text-white hover:bg-green-600" : "bg-muted text-muted-foreground opacity-50"
+                                        )} 
+                                        disabled={!isAdmin}
+                                    >
+                                        <Check className="h-4 w-4"/>
+                                    </Button>
+                                    <Button 
+                                        size="icon" 
+                                        variant="ghost" 
+                                        onClick={() => handleToggleGrade(idx, 'incorrect')} 
+                                        className={cn(
+                                            "h-8 w-8 rounded-full transition-colors", 
+                                            status === 'incorrect' ? "bg-red-500 text-white hover:bg-red-600" : "bg-muted text-muted-foreground opacity-50"
+                                        )} 
+                                        disabled={!isAdmin}
+                                    >
+                                        <X className="h-4 w-4"/>
+                                    </Button>
+                                </div>
+                            </div>
+                        )
+                    })}
+                </div>
+            </CardContent>
+            <CardFooter className="pt-6 border-t flex justify-center">
+                <Button onClick={onComplete} size="lg" className="px-16 font-bold h-14 text-xl">
+                    Avanzar <ArrowRight className="ml-2 h-6 w-6" />
+                </Button>
+            </CardFooter>
+        </Card>
+    );
+};
 
 const BallsExercise = ({ title, prompts, onComplete, vocabulary }: any) => {
     const { toast } = useToast();
@@ -229,6 +348,7 @@ export default function Class13Content() {
         { key: 'ex_inf', name: 'Ejercicio Inferioridad', icon: PenSquare, status: 'locked' },
         { key: 'ex_mixto_2', name: 'Ejercicio Mixto 2', icon: PenSquare, status: 'locked' },
         { key: 'ex_mixto_3', name: 'Ejercicio Mixto 3', icon: PenSquare, status: 'locked' },
+        { key: 'dictation', name: 'Dictation', icon: Mic, status: 'locked' },
     ], []);
 
     const handleTopicComplete = useCallback((completedKey: string) => {
@@ -371,7 +491,7 @@ export default function Class13Content() {
             case 'ex_sup': return <BallsExercise title="Ejercicios Superlativos" prompts={bisPrompts.slice(0, 4)} onComplete={() => handleTopicComplete('ex_sup')} />;
             case 'formacion':
                 return (
-                    <Card className="shadow-soft border-2 border-brand-purple p-6 text-left text-foreground">
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple p-6 text-left text-foreground">
                         <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase">FORMACIÓN Y REGLAS</CardTitle></CardHeader>
                         <CardContent className="space-y-6">
                             <div className="p-4 bg-muted rounded-xl border-l-4 border-primary">
@@ -474,6 +594,21 @@ export default function Class13Content() {
             case 'ex_inf': return <BallsExercise title="Ejercicio de Inferioridad" prompts={inferiorityPrompts} onComplete={() => handleTopicComplete('ex_inf')} />;
             case 'ex_mixto_2': return <BallsExercise title="Ejercicio Mixto 2" prompts={[...irregularPrompts.slice(0, 3), ...equalityPrompts.slice(0, 2), ...inferiorityPrompts.slice(0, 2)]} onComplete={() => handleTopicComplete('ex_mixto_2')} />;
             case 'ex_mixto_3': return <BallsExercise title="Misión Final: Mixto 3" prompts={mixed3Prompts} onComplete={() => handleTopicComplete('ex_mixto_3')} />;
+            case 'dictation':
+                return (
+                    <ManualGradingExercise 
+                        title="DICTATION"
+                        description="Escucha y escribe las frases dictadas por tu profesor."
+                        onComplete={() => handleTopicComplete('dictation')} 
+                        studentDocRef={studentDocRef}
+                        initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.dictationData}
+                        initialGrades={studentProfile?.lessonProgress?.[progressStorageVersion]?.dictationGrades}
+                        savePath={`lessonProgress.${progressStorageVersion}.dictationData`}
+                        savePathGrades={`lessonProgress.${progressStorageVersion}.dictationGrades`}
+                        isAdmin={isAdmin}
+                        lineCount={21}
+                    />
+                );
             default: return null;
         }
     };
@@ -498,9 +633,10 @@ export default function Class13Content() {
                                         <nav><ul className="space-y-1">
                                             {learningPath.map(item => {
                                                 const isLocked = item.status === 'locked' && !isAdmin;
+                                                const isActive = item.status === 'active';
                                                 const Icon = ICONS_CONFIG[item.status as keyof typeof ICONS_CONFIG] || BookOpen;
                                                 return (
-                                                    <li key={item.key} onClick={() => handleTopicSelect(item.key)} className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer text-foreground', isLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === item.key && 'bg-muted text-primary font-bold')}>
+                                                    <li key={item.key} onClick={() => handleTopicSelect(item.key)} className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer text-foreground', isLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === item.key && 'bg-muted text-primary font-bold', isActive && !isAdmin && "animate-pulse-glow")}>
                                                         <div className="flex items-center gap-3">{(item.status === 'completed') ? <CheckCircle className="h-5 w-5 text-green-500" /> : <Icon className="h-5 w-5" />}<span className='truncate max-w-[150px]'>{item.name}</span></div>
                                                         {isLocked && <Lock className="h-4 w-4 text-yellow-500/50" />}
                                                     </li>
