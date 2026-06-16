@@ -291,7 +291,7 @@ const BallsExercise = ({ title, prompts, onComplete, vocabulary }: any) => {
                             <PopoverContent className="w-64">
                                 <ScrollArea className="h-48 pr-4">
                                     <div className="grid grid-cols-2 gap-2 text-sm text-left">
-                                        {Object.entries(vocabulary).map(([es, en]: any) => (<React.Fragment key={es}><span className="text-muted-foreground capitalize">{es}:</span><span className="font-bold text-right">{en}</span></React.Fragment>))}
+                                        {Object.entries(vocabulary).map(([es, en]: any) => (<React.Fragment key={es}><span className="text-muted-foreground capitalize">{es}:</span><span className="font-semibold text-right">{en}</span></React.Fragment>))}
                                     </div>
                                 </ScrollArea>
                             </PopoverContent>
@@ -474,28 +474,80 @@ export default function Class13Content() {
                 );
             case 'grammar_comp':
                 return (
-                    <Card className="shadow-soft border-2 border-brand-purple bg-slate-100 dark:bg-slate-800/50 p-6 text-left">
-                        <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase">COMPARATIVOS (+ER)</CardTitle></CardHeader>
-                        <CardContent className="space-y-4 text-black dark:text-white font-bold">
-                            <p className='text-lg'>Se usan para comparar dos elementos.</p>
-                            <div className="p-4 bg-white/20 rounded-xl border border-black/10 font-mono text-xl">ADJETIVO CORTO + ER + THAN</div>
-                            <p className="italic text-sm text-muted-foreground">Ej: Fast &rarr; Faster than (Más rápido que)</p>
-                        </CardContent>
-                        <CardFooter className="justify-center pt-6 border-t"><Button onClick={() => handleTopicComplete('grammar_comp')} size="lg" className="px-12 font-bold">Continuar</Button></CardFooter>
-                    </Card>
+                    <div className="space-y-6 text-left">
+                        <Card className="shadow-soft border-2 border-brand-purple bg-slate-100 dark:bg-slate-800/50 p-6">
+                            <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase">COMPARATIVOS (+ER)</CardTitle></CardHeader>
+                            <CardContent className="space-y-6 text-foreground font-bold">
+                                <div className="p-6 bg-white/20 rounded-2xl border border-black/10">
+                                    <h4 className="text-primary font-black uppercase text-sm mb-2">USO:</h4>
+                                    <p className="text-lg">SE USA EN INGLÉS PARA COMPARAR DIFERENCIAS ENTRE LOS DOS SUSTANTIVOS A LOS QUE MODIFICA.</p>
+                                </div>
+
+                                <div className="p-6 bg-white/20 rounded-2xl border border-black/10">
+                                    <h4 className="text-primary font-black uppercase text-sm mb-2">MODIFICACIÓN DEL ADJETIVO (ADJECTIVE+ ER):</h4>
+                                    <div className="font-mono text-xl space-y-1">
+                                        <p>small &rarr; <span className="text-primary">SMALLER</span> (más pequeño que)</p>
+                                        <p>high &rarr; <span className="text-primary">HIGHER</span> (más alto que)</p>
+                                    </div>
+                                </div>
+
+                                <div className="p-6 bg-primary/10 rounded-2xl border-2 border-primary text-center">
+                                    <h4 className="text-primary font-black uppercase text-sm mb-2">ESTRUCTURA:</h4>
+                                    <p className="font-mono text-lg uppercase">sustantivo + verbo + adjetivo comparativo + than + sustantivo</p>
+                                </div>
+
+                                <div className="p-6 bg-white/20 rounded-2xl border border-black/10">
+                                    <h4 className="text-primary font-black uppercase text-sm mb-4">TOPICS:</h4>
+                                    <ul className="space-y-3 text-base font-bold">
+                                        <li className="flex gap-2"><span>1-</span> <p>Monosilabos = Adjetivos Cortos <span className="text-primary">(Adjective + ER)</span></p></li>
+                                        <li className="flex gap-2"><span>2-</span> <p>Bisilabos = Adjetivos con 2 silabas <span className="text-primary">(Adjective + ER)</span></p></li>
+                                        <li className="flex gap-2"><span>3-</span> <p>Adjetivos Largos = Tienen mas de 2 silabas <span className="text-primary">(more + adjetivo largo + than)</span></p></li>
+                                        <li className="flex gap-2"><span>4-</span> <p>Adjetivos Irregulares = Cambian en todas sus formas</p></li>
+                                    </ul>
+                                </div>
+                            </CardContent>
+                            <CardFooter className="justify-center border-t pt-6"><Button onClick={() => handleTopicComplete('grammar_comp')} size="lg" className="px-12 font-bold">Continuar</Button></CardFooter>
+                        </Card>
+                    </div>
                 );
             case 'ex_comp': return <BallsExercise title="Ejercicios Comparativos" prompts={monoPrompts} onComplete={() => handleTopicComplete('ex_comp')} vocabulary={exCompVocab} />;
             case 'grammar_sup':
                 return (
-                    <Card className="shadow-soft border-2 border-brand-purple bg-slate-100 dark:bg-slate-800/50 p-6 text-left">
-                        <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase">SUPERLATIVOS (+EST)</CardTitle></CardHeader>
-                        <CardContent className="space-y-4 text-black dark:text-white font-bold">
-                            <p className='text-lg'>Se usan para destacar un elemento dentro de un grupo.</p>
-                            <div className="p-4 bg-white/20 rounded-xl border border-black/10 font-mono text-xl">THE + ADJETIVO CORTO + EST</div>
-                            <p className="italic text-sm text-muted-foreground">Ej: Small &rarr; The smallest (El más pequeño)</p>
-                        </CardContent>
-                        <CardFooter className="justify-center pt-6 border-t"><Button onClick={() => handleTopicComplete('grammar_sup')} size="lg" className="px-12 font-bold">Continuar</Button></CardFooter>
-                    </Card>
+                    <div className="space-y-6 text-left">
+                        <Card className="shadow-soft border-2 border-brand-purple bg-slate-100 dark:bg-slate-800/50 p-6 text-foreground">
+                            <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase">SUPERLATIVOS (+EST)</CardTitle></CardHeader>
+                            <CardContent className="space-y-6 font-bold">
+                                <div className="p-6 bg-white/20 rounded-2xl border border-black/10">
+                                    <h4 className="text-primary font-black uppercase text-sm mb-2">USO:</h4>
+                                    <p className="text-lg">SE EMPLEA PARA DESCRIBIR UN SUSTANTIVO QUE SE ENCUENTRA EN EL EXTREMO SUPERIOR (EL MAS) Ó EL INFERIOR (EL MENOS).</p>
+                                </div>
+
+                                <div className="p-6 bg-white/20 rounded-2xl border border-black/10">
+                                    <h4 className="text-primary font-black uppercase text-sm mb-2">MODIFICACIÓN DEL ADJETIVO (ADJECTIVE+ EST):</h4>
+                                    <div className="font-mono text-xl space-y-1">
+                                        <p>Tall &rarr; <span className="text-primary">The TALLEST</span> (el más alto)</p>
+                                        <p>Fast &rarr; <span className="text-primary">The FASTEST</span> (el más rápido)</p>
+                                    </div>
+                                </div>
+
+                                <div className="p-6 bg-primary/10 rounded-2xl border-2 border-primary text-center">
+                                    <h4 className="text-primary font-black uppercase text-sm mb-2">ESTRUCTURA:</h4>
+                                    <p className="font-mono text-lg uppercase">sustantivo + verbo + THE + Adjetivo superlativo + Sustantivos ó complemento</p>
+                                </div>
+
+                                <div className="p-6 bg-white/20 rounded-2xl border border-black/10">
+                                    <h4 className="text-primary font-black uppercase text-sm mb-4">TOPICS:</h4>
+                                    <ul className="space-y-3 text-base font-bold">
+                                        <li className="flex gap-2"><span>1-</span> <p>Monosilabos = Adjetivos Cortos <span className="text-primary">(Adjective + EST)</span></p></li>
+                                        <li className="flex gap-2"><span>2-</span> <p>Bisilabos = Adjetivos con 2 silabas <span className="text-primary">(Adjective + EST)</span></p></li>
+                                        <li className="flex gap-2"><span>3-</span> <p>Adjetivos Largos = Tienen mas de 2 silabas <span className="text-primary">(The Most + adjetivos largos)</span></p></li>
+                                        <li className="flex gap-2"><span>4-</span> <p>Adjetivos Irregulares = Cambian en todas sus formas</p></li>
+                                    </ul>
+                                </div>
+                            </CardContent>
+                            <CardFooter className="justify-center border-t pt-6"><Button onClick={() => handleTopicComplete('grammar_sup')} size="lg" className="px-12 font-bold">Continuar</Button></CardFooter>
+                        </Card>
+                    </div>
                 );
             case 'ex_sup': return <BallsExercise title="Ejercicios Superlativos" prompts={bisPrompts.slice(0, 4)} onComplete={() => handleTopicComplete('ex_sup')} vocabulary={exSupVocab} />;
             case 'formacion':
@@ -623,7 +675,7 @@ export default function Class13Content() {
     };
 
     return (
-        <div className="flex w-full flex-col min-h-screen ingles-dashboard-bg">
+        <div className="flex w-full flex-col min-h-screen ingles-dashboard-bg text-foreground">
             <DashboardHeader />
             <main className="flex-1 p-4 md:p-8">
                 <div className="max-w-7xl mx-auto">
@@ -638,7 +690,7 @@ export default function Class13Content() {
                             <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
                                 <CardHeader><CardTitle className='text-primary font-black uppercase text-sm'>Tu Aventura</CardTitle></CardHeader>
                                 <CardContent>
-                                    <div className="max-h-[60vh] overflow-y-auto pr-2">
+                                    <div className="max-h-[60vh] overflow-y-auto pr-2 text-foreground">
                                         <nav><ul className="space-y-1">
                                             {learningPath.map(item => {
                                                 const isLocked = item.status === 'locked' && !isAdmin;
