@@ -22,8 +22,7 @@ import {
     Scale,
     Mic,
     Check,
-    X,
-    Pencil
+    X
 } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
@@ -39,11 +38,10 @@ import { Footer } from '@/components/footer';
 import { Separator } from '@/components/ui/separator';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { VocabularyMatchingGame } from '@/components/dashboard/vocabulary-matching-game';
-import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
 
 // --- DATA & CONFIG ---
 
-const progressStorageVersion = 'progress_a1_eng_u3_c13_v270_with_dictation';
+const progressStorageVersion = 'progress_a1_eng_u3_c13_v300_with_vocab_buttons';
 const mainProgressKey = 'progress_a1_eng_unit_3_class_13';
 
 const ICONS_CONFIG = {
@@ -118,6 +116,17 @@ const mixed3Prompts = [
     { spanish: "ELLOS SON MAS AMABLES QUE MIS PARIENTES", answer: ["they are kinder than my relatives"] },
     { spanish: "TU ERES MAS FLACO QUE LUCAS", answer: ["you are thinner than lucas"] },
 ];
+
+// --- VOCABULARIES ---
+const exCompVocab = { "invierno": "winter", "verano": "summer", "barrio": "neighborhood", "alto": "tall", "rápido": "fast", "calle": "street" };
+const exSupVocab = { "fácil": "easy", "educado": "polite", "angosta": "narrow", "humilde": "humble", "pesada": "heavy" };
+const exMonoVocab = { ...exCompVocab, "cálida": "warmer", "delgada": "thinner", "caliente": "hot", "frío": "cold" };
+const exBisVocab = { ...exSupVocab, "chévere": "cool/nice", "tierno": "tender" };
+const exLongVocab = { "caro": "expensive", "peligroso": "dangerous", "artículo": "article", "revista": "magazine", "elegante": "elegant", "famoso": "famous", "difícil": "difficult", "moderna": "modern" };
+const exIrregVocab = { "mejor": "best/better", "lejos": "farther/further", "peor": "worst/worse", "delicioso": "delicious", "aburridor": "boring" };
+const exEqualityVocab = { "tan ... como": "as ... as", "alto": "tall", "caro": "expensive", "inteligente": "intelligent" };
+const exInferiorityVocab = { "menos ... que": "less ... than", "interesante": "interesting", "tímida": "shy" };
+const exMixed3Vocab = { "cantante": "singer", "famosa": "famous", "fría": "colder", "amables": "kinder", "flaco": "thinner", "mejor": "best" };
 
 // --- AUXILIARY COMPONENTS ---
 
@@ -455,9 +464,9 @@ export default function Class13Content() {
                         <CardContent className="space-y-4 text-foreground font-bold">
                             <p>Existen tres grados de comparación para los adjetivos:</p>
                             <ul className="space-y-2 list-disc pl-5">
-                                <li><span className="text-primary">GRADO POSITIVO:</span> El adjetivo en su forma base (Tall, Big).</li>
-                                <li><span className="text-primary">GRADO COMPARATIVO:</span> Se usa para comparar dos cosas (Taller, Bigger).</li>
-                                <li><span className="text-primary">GRADO SUPERLATIVO:</span> Indica el extremo superior (The tallest, The biggest).</li>
+                                <li><span className="text-primary">GRADO POSITIVO:</span> El adjetivo en su forma base (Tall, Big). <br/>  ------------------- Susan es alta = Susan is tall.</li> <br/>   
+                                <li><span className="text-primary">GRADO COMPARATIVO:</span> Se usa para comparar dos cosas (Taller, Bigger). <br/>  ------------------------- Susan es mas alta que Nick = Susan is taller tan Nick </li> <br/>                          
+                                <li><span className="text-primary">GRADO SUPERLATIVO:</span> Indica el extremo superior (The tallest, The biggest). <br/>  ------------------------ Susan es la mas alta = Susan is the Taller.</li> <br/>                        
                             </ul>
                         </CardContent>
                         <CardFooter className="justify-center pt-6 border-t"><Button onClick={() => handleTopicComplete('grados')} size="lg" className="px-12 font-bold">Entendido</Button></CardFooter>
@@ -475,7 +484,7 @@ export default function Class13Content() {
                         <CardFooter className="justify-center pt-6 border-t"><Button onClick={() => handleTopicComplete('grammar_comp')} size="lg" className="px-12 font-bold">Continuar</Button></CardFooter>
                     </Card>
                 );
-            case 'ex_comp': return <BallsExercise title="Ejercicios Comparativos" prompts={monoPrompts} onComplete={() => handleTopicComplete('ex_comp')} />;
+            case 'ex_comp': return <BallsExercise title="Ejercicios Comparativos" prompts={monoPrompts} onComplete={() => handleTopicComplete('ex_comp')} vocabulary={exCompVocab} />;
             case 'grammar_sup':
                 return (
                     <Card className="shadow-soft border-2 border-brand-purple bg-slate-100 dark:bg-slate-800/50 p-6 text-left">
@@ -488,7 +497,7 @@ export default function Class13Content() {
                         <CardFooter className="justify-center pt-6 border-t"><Button onClick={() => handleTopicComplete('grammar_sup')} size="lg" className="px-12 font-bold">Continuar</Button></CardFooter>
                     </Card>
                 );
-            case 'ex_sup': return <BallsExercise title="Ejercicios Superlativos" prompts={bisPrompts.slice(0, 4)} onComplete={() => handleTopicComplete('ex_sup')} />;
+            case 'ex_sup': return <BallsExercise title="Ejercicios Superlativos" prompts={bisPrompts.slice(0, 4)} onComplete={() => handleTopicComplete('ex_sup')} vocabulary={exSupVocab} />;
             case 'formacion':
                 return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple p-6 text-left text-foreground">
@@ -516,7 +525,7 @@ export default function Class13Content() {
                         <CardFooter className="justify-center"><Button onClick={() => handleTopicComplete('monosilabos')} size="lg">Avanzar</Button></CardFooter>
                     </Card>
                 );
-            case 'ex_mono': return <BallsExercise title="Ejercicios Monosílabos" prompts={monoPrompts} onComplete={() => handleTopicComplete('ex_mono')} />;
+            case 'ex_mono': return <BallsExercise title="Ejercicios Monosílabos" prompts={monoPrompts} onComplete={() => handleTopicComplete('ex_mono')} vocabulary={exMonoVocab} />;
             case 'bisilabos':
                 return (
                     <Card className="shadow-soft border-2 border-brand-purple p-6 text-left text-foreground">
@@ -525,7 +534,7 @@ export default function Class13Content() {
                         <CardFooter className="justify-center"><Button onClick={() => handleTopicComplete('bisilabos')} size="lg">Avanzar</Button></CardFooter>
                     </Card>
                 );
-            case 'ex_bis': return <BallsExercise title="Ejercicios Bisílabos" prompts={bisPrompts} onComplete={() => handleTopicComplete('ex_bis')} />;
+            case 'ex_bis': return <BallsExercise title="Ejercicios Bisílabos" prompts={bisPrompts} onComplete={() => handleTopicComplete('ex_bis')} vocabulary={exBisVocab} />;
             case 'largos':
                 return (
                     <Card className="shadow-soft border-2 border-brand-purple p-6 text-left text-foreground">
@@ -546,7 +555,7 @@ export default function Class13Content() {
                         <CardFooter className="justify-center border-t pt-6"><Button onClick={() => handleTopicComplete('largos')} size="lg" className="px-12 font-bold">Entendido</Button></CardFooter>
                     </Card>
                 );
-            case 'ex_largos': return <BallsExercise title="Ejercicios Adjetivos Largos" prompts={longPrompts} onComplete={() => handleTopicComplete('ex_largos')} />;
+            case 'ex_largos': return <BallsExercise title="Ejercicios Largos" prompts={longPrompts} onComplete={() => handleTopicComplete('ex_largos')} vocabulary={exLongVocab} />;
             case 'irregulares':
                 return (
                     <Card className="shadow-soft border-2 border-brand-purple p-6 text-left text-foreground">
@@ -564,8 +573,8 @@ export default function Class13Content() {
                         <CardFooter className="justify-center"><Button onClick={() => handleTopicComplete('irregulares')} size="lg">Avanzar</Button></CardFooter>
                     </Card>
                 );
-            case 'ex_irreg': return <BallsExercise title="Ejercicios Irregulares" prompts={irregularPrompts} onComplete={() => handleTopicComplete('ex_irreg')} />;
-            case 'ex_mixto_1': return <BallsExercise title="Ejercicio Mixto 1" prompts={[...monoPrompts.slice(0, 3), ...longPrompts.slice(0, 3)]} onComplete={() => handleTopicComplete('ex_mixto_1')} />;
+            case 'ex_irreg': return <BallsExercise title="Ejercicios Irregulares" prompts={irregularPrompts} onComplete={() => handleTopicComplete('ex_irreg')} vocabulary={exIrregVocab} />;
+            case 'ex_mixto_1': return <BallsExercise title="Ejercicio Mixto 1" prompts={[...monoPrompts.slice(0, 3), ...longPrompts.slice(0, 3)]} onComplete={() => handleTopicComplete('ex_mixto_1')} vocabulary={{...exMonoVocab, ...exLongVocab}} />;
             case 'igualdad':
                 return (
                     <Card className="shadow-soft border-2 border-brand-purple p-6 text-left text-foreground">
@@ -578,7 +587,7 @@ export default function Class13Content() {
                         <CardFooter className="justify-center border-t pt-6"><Button onClick={() => handleTopicComplete('igualdad')} size="lg" className="px-12 font-bold">Entendido</Button></CardFooter>
                     </Card>
                 );
-            case 'ex_igual': return <BallsExercise title="Ejercicio de Igualdad" prompts={equalityPrompts} onComplete={() => handleTopicComplete('ex_igual')} />;
+            case 'ex_igual': return <BallsExercise title="Ejercicio de Igualdad" prompts={equalityPrompts} onComplete={() => handleTopicComplete('ex_igual')} vocabulary={exEqualityVocab} />;
             case 'inferioridad':
                 return (
                     <Card className="shadow-soft border-2 border-brand-purple p-6 text-left text-foreground">
@@ -591,9 +600,9 @@ export default function Class13Content() {
                         <CardFooter className="justify-center border-t pt-6"><Button onClick={() => handleTopicComplete('inferioridad')} size="lg" className="px-12 font-bold">Entendido</Button></CardFooter>
                     </Card>
                 );
-            case 'ex_inf': return <BallsExercise title="Ejercicio de Inferioridad" prompts={inferiorityPrompts} onComplete={() => handleTopicComplete('ex_inf')} />;
-            case 'ex_mixto_2': return <BallsExercise title="Ejercicio Mixto 2" prompts={[...irregularPrompts.slice(0, 3), ...equalityPrompts.slice(0, 2), ...inferiorityPrompts.slice(0, 2)]} onComplete={() => handleTopicComplete('ex_mixto_2')} />;
-            case 'ex_mixto_3': return <BallsExercise title="Misión Final: Mixto 3" prompts={mixed3Prompts} onComplete={() => handleTopicComplete('ex_mixto_3')} />;
+            case 'ex_inf': return <BallsExercise title="Ejercicio de Inferioridad" prompts={inferiorityPrompts} onComplete={() => handleTopicComplete('ex_inf')} vocabulary={exInferiorityVocab} />;
+            case 'ex_mixto_2': return <BallsExercise title="Ejercicio Mixto 2" prompts={[...irregularPrompts.slice(0, 3), ...equalityPrompts.slice(0, 2), ...inferiorityPrompts.slice(0, 2)]} onComplete={() => handleTopicComplete('ex_mixto_2')} vocabulary={{...exIrregVocab, ...exEqualityVocab, ...exInferiorityVocab}} />;
+            case 'ex_mixto_3': return <BallsExercise title="Misión Final: Mixto 3" prompts={mixed3Prompts} onComplete={() => handleTopicComplete('ex_mixto_3')} vocabulary={exMixed3Vocab} />;
             case 'dictation':
                 return (
                     <ManualGradingExercise 
