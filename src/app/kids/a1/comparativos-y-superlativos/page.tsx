@@ -2,8 +2,9 @@
 
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, Gamepad2, Feather, Bot, Trophy, Loader2, ArrowRight } from 'lucide-react';
+import { BookOpen, PenSquare, Lock, GraduationCap, CheckCircle, Gamepad2, Feather, Bot, Trophy, Loader2, ArrowRight, ArrowLeft } from 'lucide-react';
 import { DashboardHeader } from "@/components/dashboard/header";
+import { Footer } from "@/components/footer";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
@@ -23,11 +24,10 @@ import { BisyllabicExercise } from '@/components/kids/exercises/bisyllabic-exerc
 import { LongAdjectivesExercise } from '@/components/kids/exercises/long-adjectives-exercise';
 import { IrregularAdjectivesExercise } from '@/components/kids/exercises/irregular-adjectives-exercise';
 import { MixedComparativeSuperlativeExercise } from '@/components/kids/exercises/mixed-comparative-superlative-exercise';
-import { HolidayTextExercise } from '@/components/kids/exercises/holiday-text-exercise';
 import { MixedExercise3 } from '@/components/kids/exercises/mixed-exercise-3';
 import { useTranslation } from '@/context/language-context';
 
-const progressStorageKey = 'progress_kids_a1_comparatives_v2_blindado';
+const progressStorageKey = 'progress_kids_a1_comparatives_v7_restored';
 const mainProgressKey = 'progress_kids_a1_comparatives';
 
 type Topic = {
@@ -60,7 +60,7 @@ const monosyllabicData: SyllableExerciseData = [
 ];
 
 const bisyllabicData: SyllableExerciseData = [
-    { spanish: 'FACIL', answers: { adjective: 'easy', comparative: 'easier', superlative: 'the easiest' } },
+    { spanish: 'FÁCIL', answers: { adjective: 'easy', comparative: 'easier', superlative: 'the easiest' } },
     { spanish: 'FELIZ', answers: { adjective: 'happy', comparative: 'happier', superlative: 'the happiest' } },
 ];
 
@@ -74,18 +74,6 @@ const irregularAdjectivesData: SyllableExerciseData = [
     { spanish: 'MALO', answers: { adjective: 'bad', comparative: 'worse', superlative: 'the worst' } },
 ];
 
-const WordSearchGame = ({ onComplete }: { onComplete: () => void }) => {
-    const { toast } = useToast();
-    const words = useMemo(() => ["TALL", "BIG", "SMALL", "HAPPY", "NEW", "LONG", "GOOD", "BAD"], []);
-    return (
-        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 text-center">
-            <CardHeader><CardTitle>Sopa de Letras</CardTitle></CardHeader>
-            <CardContent><p className="text-muted-foreground">¡Busca las palabras y completa el reto!</p><Bot className="h-24 w-24 mx-auto mt-6 text-primary animate-bounce" /></CardContent>
-            <CardFooter className="justify-center"><Button onClick={onComplete} size="lg">¡Lo logré!</Button></CardFooter>
-        </Card>
-    );
-};
-
 export default function KidsComparativosSuperlativosPage() {
     const { t } = useTranslation();
     const { toast } = useToast();
@@ -98,7 +86,7 @@ export default function KidsComparativosSuperlativosPage() {
     const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
 
     const [vocabAnswers, setVocabAnswers] = useState<string[]>(Array(vocabularyData.length).fill(''));
-    const [validation, setValidation] = useState<('correct' | 'incorrect' | 'unchecked')[]>(Array(vocabularyData.length).fill('unchecked'));
+    const [validation, setValidation] = useState<any[]>(Array(vocabularyData.length).fill('unchecked'));
 
     const studentDocRef = useMemoFirebase(() => (user ? doc(firestore, 'students', user.uid) : null), [firestore, user]);
     const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{ role?: string; lessonProgress?: any; progress?: any }>(studentDocRef);
@@ -107,16 +95,15 @@ export default function KidsComparativosSuperlativosPage() {
     
     const initialPath = useMemo((): Topic[] => [
         { key: 'vocabulario', name: 'Vocabulario', icon: BookOpen, status: 'active' },
-        { key: 'comparativos', name: 'Comparativos', icon: GraduationCap, status: 'locked' },
+        { key: 'comparativos', name: 'Gramática: Comparativos', icon: GraduationCap, status: 'locked' },
         { key: 'ex-comp', name: 'Ejercicio Comparativo', icon: PenSquare, status: 'locked' },
-        { key: 'superlativos', name: 'Superlativos', icon: GraduationCap, status: 'locked' },
+        { key: 'superlativos', name: 'Gramática: Superlativos', icon: GraduationCap, status: 'locked' },
         { key: 'ex-super', name: 'Ejercicio Superlativo', icon: PenSquare, status: 'locked' },
-        { key: 'monosilabos', name: 'Monosilabos', icon: Feather, status: 'locked' },
-        { key: 'bisilabos', name: 'Bisilabos', icon: Feather, status: 'locked' },
-        { key: 'largos', name: 'Adjetivos Largos', icon: Feather, status: 'locked' },
-        { key: 'irregulares', name: 'Irregulares', icon: Bot, status: 'locked' },
-        { key: 'sopa', name: 'Sopa de Letras', icon: Gamepad2, status: 'locked' },
-        { key: 'mixtos', name: 'Reto Final', icon: Trophy, status: 'locked' },
+        { key: 'monosilabos', name: 'Misión: Monosílabos', icon: Feather, status: 'locked' },
+        { key: 'bisilabos', name: 'Misión: Bisílabos', icon: Feather, status: 'locked' },
+        { key: 'largos', name: 'Misión: Adjetivos Largos', icon: Feather, status: 'locked' },
+        { key: 'irregulares', name: 'Misión: Irregulares', icon: Bot, status: 'locked' },
+        { key: 'mixtos', name: 'Reto Final Mixto', icon: Trophy, status: 'locked' },
     ], []);
 
     useEffect(() => {
@@ -181,19 +168,23 @@ export default function KidsComparativosSuperlativosPage() {
         }
         setSelectedTopic(key);
         if (['comparativos', 'superlativos', 'monosilabos', 'bisilabos', 'largos', 'irregulares'].includes(key)) {
-          setTopicToComplete(key);
+          handleTopicComplete(key);
         }
     };
 
+    const handleTopicComplete = (key: string) => {
+        setTopicToComplete(key);
+    };
+
     const handleCheckVocab = () => {
-        let ok = false;
+        let count = 0;
         const nv = vocabularyData.map((item, i) => {
             const res = item.english.some(e => e.toLowerCase() === vocabAnswers[i]?.trim().toLowerCase());
-            if (res) ok = true;
+            if (res) count++;
             return res ? 'correct' : 'incorrect';
         });
         setValidation(nv as any);
-        if (ok) { toast({ title: "¡Bien hecho!" }); setTopicToComplete('vocabulario'); }
+        if (count >= 1) { toast({ title: "¡Bien hecho!" }); handleTopicComplete('vocabulario'); }
         else toast({ variant: "destructive", title: "Sigue intentando" });
     };
 
@@ -208,7 +199,7 @@ export default function KidsComparativosSuperlativosPage() {
                             {vocabularyData.map((item, i) => (
                                 <React.Fragment key={i}>
                                     <div className="p-3 bg-muted/30 border rounded-lg font-medium">{item.spanish}</div>
-                                    <Input value={vocabAnswers[i] || ''} onChange={e => { const n = [...vocabAnswers]; n[i] = e.target.value; setVocabAnswers(n); }} className={cn(validation[i] === 'correct' ? 'border-green-500' : validation[i] === 'incorrect' ? 'border-red-500' : '')} />
+                                    <Input value={vocabAnswers[i] || ''} onChange={e => { const n = [...vocabAnswers]; n[i] = e.target.value; setVocabAnswers(n); setValidation(vv => { const nvv = [...vv]; nvv[i] = 'unchecked'; return nvv; }); }} className={cn(validation[i] === 'correct' ? 'border-green-500' : validation[i] === 'incorrect' ? 'border-red-500' : '')} />
                                 </React.Fragment>
                             ))}
                         </CardContent>
@@ -216,16 +207,33 @@ export default function KidsComparativosSuperlativosPage() {
                     </Card>
                 );
             case 'comparativos':
-                return <Card className="p-6"><CardTitle>COMPARATIVOS (+ER)</CardTitle><CardContent className="pt-4 space-y-4"><p>Usamos <strong>-ER</strong> para comparar dos cosas.</p><div className="p-4 bg-muted rounded-lg font-mono">ADJ + ER + THAN</div></CardContent><CardFooter><Button onClick={() => handleTopicComplete('comparativos')}>Entendido</Button></CardFooter></Card>;
-            case 'superlativos':
-                return <Card className="p-6"><CardTitle>SUPERLATIVOS (+EST)</CardTitle><CardContent className="pt-4 space-y-4"><p>Usamos <strong>-EST</strong> para decir que algo es "el más".</p><div className="p-4 bg-muted rounded-lg font-mono">THE + ADJ + EST</div></CardContent><CardFooter><Button onClick={() => handleTopicComplete('superlativos')}>Entendido</Button></CardFooter></Card>;
+                return (
+                    <Card className="p-6 border-2 border-brand-purple bg-slate-100 dark:bg-slate-800/50">
+                        <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase">COMPARATIVOS (+ER)</CardTitle></CardHeader>
+                        <CardContent className="pt-4 space-y-4 text-black dark:text-white font-bold">
+                            <p className='text-lg'>Usamos <strong>-ER</strong> para comparar dos cosas.</p>
+                            <div className="p-4 bg-white/20 rounded-lg border border-black/10 font-mono text-xl">ADJ + ER + THAN</div>
+                        </CardContent>
+                        <CardFooter className="justify-center pt-6"><Button onClick={() => handleTopicComplete('comparativos')} size="lg" className="px-12 font-bold">Entendido</Button></CardFooter>
+                    </Card>
+                );
             case 'ex-comp': return <ComparativeExercise onComplete={() => handleTopicComplete('ex-comp')} />;
+            case 'superlativos':
+                return (
+                    <Card className="p-6 border-2 border-brand-purple bg-slate-100 dark:bg-slate-800/50">
+                        <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase">SUPERLATIVOS (+EST)</CardTitle></CardHeader>
+                        <CardContent className="pt-4 space-y-4 text-black dark:text-white font-bold">
+                            <p className='text-lg'>Usamos <strong>-EST</strong> para decir que algo es "el más" de un grupo.</p>
+                            <div className="p-4 bg-white/20 rounded-lg border border-black/10 font-mono text-xl">THE + ADJ + EST</div>
+                        </CardContent>
+                        <CardFooter className="justify-center pt-6"><Button onClick={() => handleTopicComplete('superlativos')} size="lg" className="px-12 font-bold">Entendido</Button></CardFooter>
+                    </Card>
+                );
             case 'ex-super': return <SuperlativeExercise onComplete={() => handleTopicComplete('ex-super')} />;
             case 'monosilabos': return <SyllableExercise data={monosyllabicData} title="Monosílabos" description="Añade ER o EST." onComplete={() => handleTopicComplete('monosilabos')} columnHeaders={{adjective: 'ADJ', comparative: 'ER', superlative: 'EST'}} />;
-            case 'bisilabos': return <SyllableExercise data={bisyllabicData} title="Bisílabos" description="Terminados en Y." onComplete={() => handleTopicComplete('bisilabos')} columnHeaders={{adjective: 'ADJ', comparative: 'IER', superlative: 'IEST'}} />;
+            case 'bisilabos': return <SyllableExercise data={bisyllabicData} title="Bisílabos" description="Terminados en Y (cambia a IER / IEST)." onComplete={() => handleTopicComplete('bisilabos')} columnHeaders={{adjective: 'ADJ', comparative: 'IER', superlative: 'IEST'}} />;
             case 'largos': return <SyllableExercise data={longAdjectivesData} title="Adjetivos Largos" description="Usa MORE y THE MOST." onComplete={() => handleTopicComplete('largos')} columnHeaders={{adjective: 'ADJ', comparative: 'MORE', superlative: 'THE MOST'}} />;
-            case 'irregulares': return <SyllableExercise data={irregularAdjectivesData} title="Irregulares" description="¡Cuidado! Estos cambian." onComplete={() => handleTopicComplete('irregulares')} columnHeaders={{adjective: 'ADJ', comparative: 'CMP', superlative: 'SUP'}} />;
-            case 'sopa': return <WordSearchGame onComplete={() => handleTopicComplete('sopa')} />;
+            case 'irregulares': return <SyllableExercise data={irregularAdjectivesData} title="Irregulares" description="¡Atención! Estos cambian completamente." onComplete={() => handleTopicComplete('irregulares')} columnHeaders={{adjective: 'ADJ', comparative: 'CMP', superlative: 'SUP'}} />;
             case 'mixtos': return <MixedExercise3 onComplete={() => handleTopicComplete('mixtos')} />;
             default: return null;
         }
@@ -237,24 +245,29 @@ export default function KidsComparativosSuperlativosPage() {
             <main className="flex-1 p-4 md:p-8">
                 <div className="max-w-7xl mx-auto grid gap-8 md:grid-cols-12">
                     <div className="md:col-span-8">
-                        <Link href="/kids/a1" className="hover:underline text-sm text-white/80">Volver al curso</Link>
-                        <h1 className="text-4xl font-black text-white mb-8 [text-shadow:1px_1px_2px_black]">Comparativos y Superlativos 🚀</h1>
+                        <Link href="/kids/a1" className="hover:underline text-sm text-white/80 flex items-center gap-2 mb-4">
+                            <ArrowLeft className="h-4 w-4" /> Volver al curso A1
+                        </Link>
+                        <h1 className="text-4xl font-black text-white mb-8 [text-shadow:1px_1px_2px_black] uppercase tracking-tighter">Comparativos y Superlativos 🚀</h1>
                         {renderContent()}
                     </div>
                     <div className="md:col-span-4">
                         <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95">
-                            <CardHeader><CardTitle>Ruta de Misiones</CardTitle></CardHeader>
+                            <CardHeader><CardTitle className="text-lg uppercase font-black text-primary">Misiones</CardTitle></CardHeader>
                             <CardContent>
                                 <nav><ul className="space-y-1">
                                     {learningPath.map(item => (
-                                        <li key={item.key} onClick={() => handleTopicSelect(item.key)} className={cn('flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer', item.status === 'locked' && !isAdmin ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === item.key && 'bg-muted text-primary font-bold')}>
-                                            {item.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500"/> : <item.icon className={cn("h-5 w-5", item.status === 'locked' ? 'text-yellow-500' : 'text-primary')} />}
-                                            <span className="truncate">{item.name}</span>
+                                        <li key={item.key} onClick={() => handleTopicSelect(item.key)} className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer text-foreground', item.status === 'locked' && !isAdmin ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === item.key && 'bg-muted text-primary font-bold')}>
+                                            <div className="flex items-center gap-3">
+                                                {item.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500"/> : <item.icon className={cn("h-5 w-5", item.status === 'locked' ? 'text-yellow-500' : 'text-primary')} />}
+                                                <span className="truncate">{item.name}</span>
+                                            </div>
+                                            {item.status === 'locked' && !isAdmin && <Lock className="h-4 w-4 text-yellow-500/50" />}
                                         </li>
                                     ))}
                                 </ul></nav>
                                 <div className="mt-6 pt-6 border-t">
-                                    <div className="flex justify-between text-sm mb-2"><span>Avance</span><span className="font-bold">{progressValue}%</span></div>
+                                    <div className="flex justify-between text-xs mb-2 text-muted-foreground uppercase font-bold"><span>Progreso Misión</span><span className="text-primary">{progressValue}%</span></div>
                                     <Progress value={progressValue} className="h-2" />
                                 </div>
                             </CardContent>
@@ -262,6 +275,7 @@ export default function KidsComparativosSuperlativosPage() {
                     </div>
                 </div>
             </main>
+            <Footer />
         </div>
     );
 }
