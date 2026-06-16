@@ -337,26 +337,26 @@ export default function Class13Content() {
     const initialLearningPath = useMemo(() => [
         { key: 'vocabulario', name: 'Vocabulario (Adjetivos)', icon: BookOpen, status: 'active' },
         { key: 'grados', name: 'Grados de los Adjetivos', icon: Scale, status: 'locked' },
-        { key: 'grammar_comp', name: 'Gramática: Comparativos', icon: GraduationCap, status: 'locked' },
-        { key: 'ex_comp', name: 'Ejercicios Comparativos', icon: PenSquare, status: 'locked' },
-        { key: 'grammar_sup', name: 'Gramática: Superlativos', icon: GraduationCap, status: 'locked' },
-        { key: 'ex_sup', name: 'Ejercicios Superlativos', icon: PenSquare, status: 'locked' },
+        { key: 'grammar_comp', name: 'Comparativos', icon: GraduationCap, status: 'locked' },
+        { key: 'ex_comp', name: 'Ejer. Comparativos', icon: PenSquare, status: 'locked' },
+        { key: 'grammar_sup', name: 'Superlativos', icon: GraduationCap, status: 'locked' },
+        { key: 'ex_sup', name: 'Ejer. Superlativos', icon: PenSquare, status: 'locked' },
         { key: 'formacion', name: 'Formación', icon: Info, status: 'locked' },
         { key: 'monosilabos', name: 'Monosílabos', icon: Info, status: 'locked' },
-        { key: 'ex_mono', name: 'Ejercicios Monosílabos', icon: PenSquare, status: 'locked' },
+        { key: 'ex_mono', name: 'Ejer. Monosílabos', icon: PenSquare, status: 'locked' },
         { key: 'bisilabos', name: 'Bisílabos', icon: Info, status: 'locked' },
         { key: 'ex_bis', name: 'Ejercicios Bisílabos', icon: PenSquare, status: 'locked' },
         { key: 'largos', name: 'Adjetivos Largos', icon: Info, status: 'locked' },
         { key: 'ex_largos', name: 'Ejercicios Largos', icon: PenSquare, status: 'locked' },
         { key: 'irregulares', name: 'Irregulares', icon: Zap, status: 'locked' },
         { key: 'ex_irreg', name: 'Ejercicios Irregulares', icon: PenSquare, status: 'locked' },
-        { key: 'ex_mixto_1', name: 'Ejercicio Mixto 1', icon: PenSquare, status: 'locked' },
+        { key: 'ex_mixto_1', name: 'Mixto 1', icon: PenSquare, status: 'locked' },
         { key: 'igualdad', name: 'Comparativo Igualdad', icon: Scale, status: 'locked' },
         { key: 'ex_igual', name: 'Ejercicio Igualdad', icon: PenSquare, status: 'locked' },
         { key: 'inferioridad', name: 'Comparativo Inferioridad', icon: Scale, status: 'locked' },
         { key: 'ex_inf', name: 'Ejercicio Inferioridad', icon: PenSquare, status: 'locked' },
-        { key: 'ex_mixto_2', name: 'Ejercicio Mixto 2', icon: PenSquare, status: 'locked' },
-        { key: 'ex_mixto_3', name: 'Ejercicio Mixto 3', icon: PenSquare, status: 'locked' },
+        { key: 'ex_mixto_2', name: 'Mixto 2', icon: PenSquare, status: 'locked' },
+        { key: 'ex_mixto_3', name: 'Mixto 3', icon: PenSquare, status: 'locked' },
         { key: 'dictation', name: 'Dictation', icon: Mic, status: 'locked' },
     ], []);
 
@@ -466,7 +466,7 @@ export default function Class13Content() {
                             <ul className="space-y-2 list-disc pl-5">
                                 <li><span className="text-primary">GRADO POSITIVO:</span> El adjetivo en su forma base (Tall, Big). <br/>  ------------------- Susan es alta = Susan is tall.</li> <br/>   
                                 <li><span className="text-primary">GRADO COMPARATIVO:</span> Se usa para comparar dos cosas (Taller, Bigger). <br/>  ------------------------- Susan es mas alta que Nick = Susan is taller tan Nick </li> <br/>                          
-                                <li><span className="text-primary">GRADO SUPERLATIVO:</span> Indica el extremo superior (The tallest, The biggest). <br/>  ------------------------ Susan es la mas alta = Susan is the Taller.</li> <br/>                        
+                                <li><span className="text-primary">GRADO SUPERLATIVO:</span> Indica el extremo superior (The tallest, The biggest). <br/>  ------------------------ Susan es la mas alta = Susan is the Tallest.</li> <br/>                        
                             </ul>
                         </CardContent>
                         <CardFooter className="justify-center pt-6 border-t"><Button onClick={() => handleTopicComplete('grados')} size="lg" className="px-12 font-bold">Entendido</Button></CardFooter>
