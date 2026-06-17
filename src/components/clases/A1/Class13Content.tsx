@@ -115,15 +115,22 @@ const monoPrompts = [
     { spanish: "ESTE ES EL PERRO MAS VIEJO DE ESE BARRIO", answer: ["this is the oldest dog in that neighborhood"] },
     { spanish: "¿JUAN ES MAS ALTO QUE SARA?", answer: ["is juan taller than sara?"] },
     { spanish: "MI CARRRO ES MAS RAPIDO QUE EL DE MICHAEL", answer: ["my car is faster than michael's"] },
+    { spanish: "MI CIUDAD ES MAS CALIDA QUE LA TUYA", answer: ["this house is the biggest on this street"] },
+    { spanish: "YO SOY MAS DELGADA QUE RACHEL", answer: ["i am thinner than rachel"] },
+    { spanish: "COLOMBIA ES MAS CALIENTE QUE CHILE", answer: ["Colombia es hotter than Chile"] },
+    { spanish: "CHILE ES MAS FRIO QUE COLOMBIA", answer: ["Chile is colder than Colombia"] },
+    { spanish: "MI RELOJ ES MAS GRANDE QUE EL TUYO", answer: ["my watch is bigger than yours"] },
+    { spanish: "TU CARRO ES MAS NUEVO QUE EL MIO", answer: ["your car is newer than mine"] },
     { spanish: "ESTA CASA ES LA MAS GRANDE DE ESTA CALLE", answer: ["this house is the biggest on this street"] },
 ];
 
 const bisPrompts = [
     { spanish: "ESTE EJERCICIO ES MAS FACIL QUE EL OTRO", answer: ["this exercise is easier than the other one"] },
-    { spanish: "PETER ES EL ESTUDIANTE MAS EDUCADO", answer: ["peter is the most polite student"] },
-    { spanish: "ESTA CALLE ES LA MAS ANGOSTA", answer: ["this street is the narrowest", "this road is the narrowest"] },
-    { spanish: "MARIO ES MAS HUMILDE QUE MARTIN", answer: ["mario is more humble than martin"] },
     { spanish: "ESA CAJA ES MAS PESADA QUE ESTA", answer: ["that box is heavier than this one"] },
+    { spanish: "ESTA CALLE ES LA MAS ANGOSTA", answer: ["this street is the narrowest", "this road is the narrowest"] },   
+    { spanish: "EL SABADO ES EL DIA MAS CHEVERE DE LA SEMANA", answer: ["saturday is the nicest day of the week"] },
+    { spanish: "MI PRIMA LILY ES LA MUJER MAS FELIZ", answer: ["my cousin lily is the happiest woman"] },
+    { spanish: "ESA CALLE ES MAS ANGOSTA QUE LA AVENIDA", answer: ["that street is narrower than the avenue"] },
 ];
 
 const longPrompts = [
@@ -132,6 +139,12 @@ const longPrompts = [
     { spanish: "EL ES MAS ELEGANTE QUE ELLA", answer: ["he is more elegant than her"] },
     { spanish: "UN TIGRE ES MAS PELIGROSO QUE UN GATO", answer: ["a tiger is more dangerous than a cat"] },
     { spanish: "DANI ES MAS INTELIGENTE QUE SU PRIMO", answer: ["dani is more intelligent than his cousin"] },
+    { spanish: "PETER ES EL ESTUDIANTE MAS EDUCADO", answer: ["peter is the most polite student"] },
+    { spanish: "MARIO ES MAS HUMILDE QUE MARTIN", answer: ["mario is more humble than martin"] },
+    { spanish: "EL ESPAÑOL ES MAS DIFICIL QUE EL INGLES", answer: ["spanish is more difficult than english"] },
+    { spanish: "ESA CASA ES MAS CARA QUE ESTA", answer: ["that house is more expensive than this one"] },
+    { spanish: "SHAKIRA ES MAS FAMOSA QUE JUANES ", answer: ["shakira es more famous than juanes "] },
+    { spanish: "LA PROFESORA DE INGLES ES MAS EDUCADA QUE LA DE QUIMICA", answer: ["The english teacher is more polite than the chemistry teacher."] },
 ];
 
 const irregularPrompts = [
@@ -140,6 +153,11 @@ const irregularPrompts = [
     { spanish: "ESE HOMBRE ES EL PEOR ACTOR DE LA PELICULA", answer: ["that man is the worst actor in the movie"] },
     { spanish: "ME SIENTO MEJOR QUE AYER", answer: ["i feel better than yesterday"] },
     { spanish: "EL SABADO ES EL MEJOR DIA DE LA SEMANA", answer: ["saturday is the best day of the week"] },
+    { spanish: "TUNJA ES MAS LEJOS QUE CHIA", answer: ["tunja is farther than chia"] },
+    { spanish: "INGLATERRA ES MAS LEJOS QUE LOS ESTADOS UNIDOS", answer: ["Inglaterra is farther than the United states"] },
+    { spanish: "HITLER FUE EL PEOR HOMBRE DEL MUNDO", answer: ["hitler was the worst man in the world"] },
+    { spanish: "MERYL STREET ES LA MEJOR ACTRIZ", answer: ["meryl street is the best actress"] },
+    { spanish: "ROGER FEDERER ES EL MEJOR JUGADOR DE TENIS", answer: ["roger federer is the best tennis player"] },
 ];
 
 const equalityPrompts = [
@@ -152,6 +170,15 @@ const inferiorityPrompts = [
     { spanish: "ESTE CARRO ES MENOS CARO QUE EL AZUL", answer: ["this car is less expensive than the blue one"] },
     { spanish: "LA MATEMATICA ES MENOS INTERESANTE QUE LA HISTORIA", answer: ["math is less interesting than history", "maths is less interesting than history"] },
     { spanish: "ELLA ES MENOS TIMIDA QUE SU HERMANA", answer: ["she is less shy than her brother"] },
+];
+
+const mixed2Prompts = [
+    { spanish: "COLOMBIA", answer: ["colombia"] },
+    { spanish: "EL LUNES ES EL DIA MAS ABURRIDOR DE LA SEMANA", answer: ["monday is the most boring day of the week"] },
+    { spanish: "EL VINO ES MAS DELICIOSO QUE LA CERVEZA", answer: ["wine is more delicious than the beer"] },
+    { spanish: "ALASKA", answer: ["alaska"] },
+    { spanish: "VENEZUELA", answer: ["Venezuela"] },
+    { spanish: "REINO UNIDO", answer: ["Reino unido"] },
 ];
 
 const mixed3Prompts = [
@@ -170,6 +197,7 @@ const exLongVocab = { "caro": "expensive", "peligroso": "dangerous", "artículo"
 const exIrregVocab = { "mejor": "best/better", "lejos": "farther/further", "peor": "worst/worse", "delicioso": "delicious", "aburridor": "boring" };
 const exEqualityVocab = { "tan ... como": "as ... as", "alto": "tall", "caro": "expensive", "inteligente": "intelligent" };
 const exInferiorityVocab = { "menos ... que": "less ... than", "interesante": "interesting", "tímida": "shy" };
+const exMixed2Vocab = { "edna ": "edna" };
 const exMixed3Vocab = { "cantante": "singer", "famosa": "famous", "fría": "colder", "amables": "kinder", "flaco": "thinner", "mejor": "best" };
 
 // --- HELPERS ---
@@ -794,7 +822,7 @@ export default function Class13Content({ overrideStudentId }: { overrideStudentI
                     </Card>
                 );
             case 'ex_inf': return <BallsExercise title="Ejercicio de Inferioridad" prompts={inferiorityPrompts} onComplete={() => handleTopicComplete('ex_inf')} vocabulary={exInferiorityVocab} />;
-            case 'ex_mixto_2': return <BallsExercise title="Ejercicio Mixto 2" prompts={[...irregularPrompts.slice(0, 3), ...equalityPrompts.slice(0, 2), ...inferiorityPrompts.slice(0, 2)]} onComplete={() => handleTopicComplete('ex_mixto_2')} vocabulary={{...exIrregVocab, ...exEqualityVocab, ...exInferiorityVocab}} />;
+            case 'ex_mixto_2': return <BallsExercise title="Ejercicio Mixto 2" prompts={mixed2Prompts} onComplete={() => handleTopicComplete('ex_mixto_2')} vocabulary={exMixed2Vocab} />;
             case 'ex_mixto_3': return <BallsExercise title="Misión Final: Mixto 3" prompts={mixed3Prompts} onComplete={() => handleTopicComplete('ex_mixto_3')} vocabulary={exMixed3Vocab} />;
             case 'dictation':
                 return (
