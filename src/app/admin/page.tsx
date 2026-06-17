@@ -13,12 +13,13 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { ShieldOff, Shield, Lock, Unlock, Loader2, ChevronDown } from 'lucide-react';
+import { ShieldOff, Shield, Lock, Unlock, Loader2, ChevronDown, Eye } from 'lucide-react';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuCheckboxItem, DropdownMenuLabel, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
+import { useRouter } from 'next/navigation';
 
 interface Student {
   id: string;
@@ -106,6 +107,7 @@ const kidsClassesMap = {
 export default function AdminDashboardPage() {
   const firestore = useFirestore();
   const { toast } = useToast();
+  const router = useRouter();
   
   const [updatingStudentId, setUpdatingStudentId] = useState<string | null>(null);
 
@@ -283,7 +285,7 @@ export default function AdminDashboardPage() {
   const getReadableProgress = (student: Student): React.ReactNode => {
     const { progress, selectedCourse } = student;
     if (!progress || Object.keys(progress).length === 0) {
-      return <span className="text-xs text-muted-foreground">Sin progreso</span>;
+      return <span className="text-xs text-muted-foreground italic">Sin progreso</span>;
     }
 
     const filteredProgress = Object.entries(progress).filter(([key]) => {
@@ -323,16 +325,39 @@ export default function AdminDashboardPage() {
         .join(' ');
 
       return (
-        <div className="flex flex-col">
-          <span className="font-medium truncate max-w-[150px]">{name}</span>
-          <span className="text-xs text-muted-foreground">{Math.round(value)}%</span>
+        <div className="flex flex-col gap-1">
+          <span className="font-bold text-sm truncate max-w-[150px] text-primary">{name}</span>
+          <div className='flex items-center gap-2'>
+              <span className="text-xs font-mono text-muted-foreground">{Math.round(value)}%</span>
+              <Button 
+                variant="outline" 
+                size="icon" 
+                className='h-8 w-8 text-blue-600 border-blue-200 hover:bg-blue-50' 
+                title="Supervisar misión en tiempo real"
+                onClick={() => {
+                    const parts = key.split('_');
+                    let course = parts[1]; // a1, a2, etc
+                    
+                    // Manejo de prefijos según el programa
+                    let courseParam = course;
+                    if (selectedCourse === 'kids') courseParam = `kids-${course}`;
+                    if (selectedCourse === 'espanol') courseParam = `espanol-${course}`;
+
+                    const classNum = parts[parts.length - 1];
+                    // Redirigimos al enrutador dinámico universal con el studentId
+                    router.push(`/${courseParam}/${classNum}?studentId=${student.id}`);
+                }}
+              >
+                  <Eye className='h-4 w-4'/>
+              </Button>
+          </div>
         </div>
       );
     }
 
     const hasCompletedSomething = filteredProgress.some(([, v]) => v >= 100);
     if (hasCompletedSomething) {
-      return <span className="text-xs text-green-600 font-medium">Completado</span>;
+      return <span className="text-xs text-green-600 font-bold uppercase tracking-tighter">Completado</span>;
     }
 
     return <span className="text-xs text-muted-foreground">Sin Empezar</span>;
@@ -348,30 +373,30 @@ export default function AdminDashboardPage() {
     <div className="flex w-full flex-col min-h-screen">
         <DashboardHeader />
         <main className="flex-1 p-4 md:p-8">
-            <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-                <CardHeader>
-                    <CardTitle>Admin Dashboard</CardTitle>
-                    <CardDescription>Manage students and their progress.</CardDescription>
+            <Card className="shadow-soft rounded-lg border-2 border-brand-purple overflow-hidden">
+                <CardHeader className='bg-muted/30 border-b'>
+                    <CardTitle>Panel de Administración</CardTitle>
+                    <CardDescription>Gestión de estudiantes y monitoreo de misiones en tiempo real.</CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className='p-0'>
                     {isLoading ? (
-                        <div className="flex items-center justify-center p-8">
-                            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                        <div className="flex items-center justify-center p-12">
+                            <Loader2 className="h-10 w-10 animate-spin text-primary" />
                         </div>
                     ) : (
                         <Table>
                             <TableHeader>
-                                <TableRow>
-                                    <TableHead>Student</TableHead>
+                                <TableRow className='bg-muted/50'>
+                                    <TableHead>Estudiante</TableHead>
                                     <TableHead>Email</TableHead>
-                                    <TableHead>Status</TableHead>
+                                    <TableHead>Estado</TableHead>
                                     <TableHead>Programa</TableHead>
-                                    <TableHead>Misión Actual</TableHead>
+                                    <TableHead className='min-w-[180px]'>Misión Actual</TableHead>
                                     <TableHead>Cursos</TableHead>
                                     <TableHead>Unidades</TableHead>
                                     <TableHead>Clases</TableHead>
                                     <TableHead>Repasos</TableHead>
-                                    <TableHead className="text-right">Actions</TableHead>
+                                    <TableHead className="text-right">Acciones</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -382,27 +407,27 @@ export default function AdminDashboardPage() {
                                         inglesCourseIds;
 
                                     return (
-                                        <TableRow key={student.id}>
+                                        <TableRow key={student.id} className='hover:bg-muted/10 transition-colors'>
                                             <TableCell className="font-medium">
                                                 <div className="flex items-center gap-3">
-                                                    <Avatar className="h-8 w-8">
+                                                    <Avatar className="h-9 w-9 border-2 border-primary/20">
                                                         <AvatarImage src={student.profileImageUrl} alt={student.name} />
                                                         <AvatarFallback>{student.name.charAt(0)}</AvatarFallback>
                                                     </Avatar>
                                                     <div className="flex flex-col">
-                                                        <span>{student.name}</span>
-                                                        <span className="text-xs text-muted-foreground">{new Date(student.dateJoined).toLocaleDateString()}</span>
+                                                        <span className='font-bold'>{student.name}</span>
+                                                        <span className="text-[10px] text-muted-foreground">{new Date(student.dateJoined).toLocaleDateString()}</span>
                                                     </div>
                                                 </div>
                                             </TableCell>
-                                            <TableCell>{student.email}</TableCell>
+                                            <TableCell className='text-xs font-mono'>{student.email}</TableCell>
                                             <TableCell>
-                                                <Badge variant={student.isBlocked ? 'destructive' : 'secondary'}>
-                                                    {student.isBlocked ? 'Blocked' : 'Active'}
+                                                <Badge variant={student.isBlocked ? 'destructive' : 'secondary'} className='text-[10px] font-bold'>
+                                                    {student.isBlocked ? 'BLOQUEADO' : 'ACTIVO'}
                                                 </Badge>
                                             </TableCell>
                                             <TableCell>
-                                                <Badge variant="outline" className="capitalize">{student.selectedCourse || 'No asignado'}</Badge>
+                                                <Badge variant="outline" className="capitalize text-[10px]">{student.selectedCourse || 'Pendiente'}</Badge>
                                             </TableCell>
                                             <TableCell>
                                               {getReadableProgress(student)}
@@ -416,9 +441,9 @@ export default function AdminDashboardPage() {
                                                             variant={(student.unlockedCourses || []).includes(courseId) ? 'secondary' : 'outline'}
                                                             onClick={() => handleToggleCourseAccess(student.id, courseId, student.unlockedCourses || [])}
                                                             disabled={updatingStudentId === student.id}
-                                                            className="h-8 text-[10px]"
+                                                            className="h-7 text-[10px] px-2 font-bold"
                                                         >
-                                                            {(student.unlockedCourses || []).includes(courseId) ? <Unlock className="mr-1 h-3 w-3" /> : <Lock className="mr-1 h-3 w-3" />}
+                                                            {(student.unlockedCourses || []).includes(courseId) ? <Unlock className="mr-1 h-3 w-3 text-green-600" /> : <Lock className="mr-1 h-3 w-3 text-muted-foreground" />}
                                                             {courseId.toUpperCase()}
                                                         </Button>
                                                     ))}
@@ -429,7 +454,7 @@ export default function AdminDashboardPage() {
                                                     {student.selectedCourse === 'ingles' && courseIdsToShow.map(course => (
                                                         <DropdownMenu key={`${student.id}-unit-${course}`}>
                                                             <DropdownMenuTrigger asChild>
-                                                                <Button variant="outline" size="sm" className="h-8 text-[10px]">{course.toUpperCase()} U</Button>
+                                                                <Button variant="outline" size="sm" className="h-7 text-[10px] px-2">{course.toUpperCase()} U</Button>
                                                             </DropdownMenuTrigger>
                                                             <DropdownMenuContent>
                                                                 {Array.from({ length: unitCountsMap[course] || 0 }, (_, i) => i + 1).map(unitNum => {
@@ -455,7 +480,7 @@ export default function AdminDashboardPage() {
                                                     {courseIdsToShow.map(course => (
                                                         <DropdownMenu key={`${student.id}-class-${course}`}>
                                                             <DropdownMenuTrigger asChild>
-                                                                <Button variant="outline" size="sm" className="h-8 text-[10px]">{course.toUpperCase()} C</Button>
+                                                                <Button variant="outline" size="sm" className="h-7 text-[10px] px-2">{course.toUpperCase()} C</Button>
                                                             </DropdownMenuTrigger>
                                                             <DropdownMenuContent>
                                                                 {student.selectedCourse === 'kids' ? (
@@ -494,7 +519,7 @@ export default function AdminDashboardPage() {
                                                     {student.selectedCourse === 'kids' ? (
                                                         <DropdownMenu>
                                                             <DropdownMenuTrigger asChild>
-                                                                <Button variant="outline" size="sm" className="h-8 w-full text-[10px]">KIDS <ChevronDown className="ml-1 h-3 w-3"/></Button>
+                                                                <Button variant="outline" size="sm" className="h-7 w-full text-[10px] px-2">KIDS <ChevronDown className="ml-1 h-3 w-3"/></Button>
                                                             </DropdownMenuTrigger>
                                                             <DropdownMenuContent>
                                                                 {Array.from({ length: repasosCountMap.kids }, (_, i) => {
@@ -516,7 +541,7 @@ export default function AdminDashboardPage() {
                                                     ) : student.selectedCourse === 'espanol' ? (
                                                         <DropdownMenu>
                                                             <DropdownMenuTrigger asChild>
-                                                                <Button variant="outline" size="sm" className="h-8 w-full text-[10px]">ESPAÑOL <ChevronDown className="ml-1 h-3 w-3"/></Button>
+                                                                <Button variant="outline" size="sm" className="h-7 w-full text-[10px] px-2">ESPAÑOL <ChevronDown className="ml-1 h-3 w-3"/></Button>
                                                             </DropdownMenuTrigger>
                                                             <DropdownMenuContent>
                                                                 {Array.from({ length: repasosCountMap.espanol }, (_, i) => {
@@ -542,7 +567,7 @@ export default function AdminDashboardPage() {
                                                                 return (
                                                                     <DropdownMenu key={`${student.id}-repaso-${courseId}`}>
                                                                         <DropdownMenuTrigger asChild>
-                                                                            <Button variant="outline" size="sm" className="h-8 text-[10px]">{courseId.toUpperCase()} R</Button>
+                                                                            <Button variant="outline" size="sm" className="h-7 text-[10px] px-2">{courseId.toUpperCase()} R</Button>
                                                                         </DropdownMenuTrigger>
                                                                         <DropdownMenuContent>
                                                                             <DropdownMenuLabel>Repasos {courseId.toUpperCase()}</DropdownMenuLabel>

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef, Fragment } from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,17 +12,15 @@ import {
     GraduationCap, 
     CheckCircle, 
     Loader2, 
-    ArrowRight,
-    Trophy,
-    ArrowLeft,
-    Info,
-    BookText,
-    Star,
+    ArrowRight, 
+    BookText, 
+    Check, 
+    X, 
+    Info, 
     Zap,
-    Scale,
+    ArrowLeft,
     Mic,
-    Check,
-    X
+    Scale
 } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
@@ -33,15 +31,15 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { DashboardHeader } from '@/components/dashboard/header';
-import { Footer } from '@/components/footer';
 import { Separator } from '@/components/ui/separator';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { DashboardHeader } from '@/components/dashboard/header';
+import { Footer } from '@/components/footer';
 import { VocabularyMatchingGame } from '@/components/dashboard/vocabulary-matching-game';
 
-// --- DATA & CONFIG ---
+// --- DATA ---
 
-const progressStorageVersion = 'progress_a1_eng_u3_c13_v300_with_vocab_buttons';
+const progressStorageVersion = 'progress_a1_eng_u3_c13_v501_fix';
 const mainProgressKey = 'progress_a1_eng_unit_3_class_13';
 
 const ICONS_CONFIG = {
@@ -107,7 +105,7 @@ const equalityPrompts = [
 const inferiorityPrompts = [
     { spanish: "ESTE CARRO ES MENOS CARO QUE EL AZUL", answer: ["this car is less expensive than the blue one"] },
     { spanish: "LA MATEMATICA ES MENOS INTERESANTE QUE LA HISTORIA", answer: ["math is less interesting than history", "maths is less interesting than history"] },
-    { spanish: "ELLA ES MENOS TIMIDA QUE SU HERMANO", answer: ["she is less shy than her brother"] },
+    { spanish: "ELLA ES MENOS TIMIDA QUE SU HERMANA", answer: ["she is less shy than her brother"] },
 ];
 
 const mixed3Prompts = [
@@ -128,7 +126,77 @@ const exEqualityVocab = { "tan ... como": "as ... as", "alto": "tall", "caro": "
 const exInferiorityVocab = { "menos ... que": "less ... than", "interesante": "interesting", "tímida": "shy" };
 const exMixed3Vocab = { "cantante": "singer", "famosa": "famous", "fría": "colder", "amables": "kinder", "flaco": "thinner", "mejor": "best" };
 
-// --- AUXILIARY COMPONENTS ---
+// --- HELPERS ---
+
+const BallsExercise = ({ title, prompts, onComplete, vocabulary }: any) => {
+    const { toast } = useToast();
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [answer, setAnswer] = useState('');
+    const [status, setStatus] = useState<Record<number, 'correct' | 'incorrect' | 'unchecked'>>({});
+
+    useEffect(() => {
+        setCurrentIndex(0); setAnswer(''); setStatus({});
+    }, [prompts]);
+
+    useEffect(() => {
+        setAnswer('');
+    }, [currentIndex]);
+
+    const currentPrompt = prompts[currentIndex];
+    if (!currentPrompt) return null;
+
+    const handleCheck = () => {
+        const userVal = answer.trim().toLowerCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' ');
+        const corrects = currentPrompt.answer || currentPrompt.english;
+        const isCorrect = corrects.some((a: string) => a.toLowerCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' ') === userVal);
+        setStatus(prev => ({ ...prev, [currentIndex]: isCorrect ? 'correct' : 'incorrect' }));
+        if (isCorrect) toast({ title: "¡Buen trabajo!" });
+        else toast({ variant: 'destructive', title: "Sigue intentando" });
+    };
+
+    return (
+        <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground">
+            <CardHeader>
+                <div className="flex justify-between items-start">
+                    <div className="w-full text-left">
+                        <CardTitle>{title}</CardTitle>
+                        <CardDescription className='font-bold text-foreground mt-1'>Traduce la frase correctamente.</CardDescription>
+                        <div className="flex gap-2 justify-start flex-wrap pt-4">
+                            {prompts.map((_: any, i: number) => (
+                                <div key={i} onClick={() => setCurrentIndex(i)} className={cn("h-8 w-8 rounded-full border-2 flex items-center justify-center text-sm font-bold cursor-pointer transition-all", currentIndex === i ? "border-primary ring-2 ring-primary" : "border-muted", status[i] === 'correct' ? "bg-green-500 text-white border-green-500" : status[i] === 'incorrect' ? "bg-red-500 text-white border-red-500" : "bg-card text-foreground")}>{i + 1}</div>
+                            ))}
+                        </div>
+                    </div>
+                    {vocabulary && (
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button variant="outline" size="sm" className="border-2 border-brand-blue animate-border-pulse shrink-0"><BookText className="mr-2 h-4 w-4" /> Vocabulary</Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-64">
+                                <ScrollArea className="h-48 pr-4">
+                                    <div className="grid grid-cols-2 gap-2 text-sm text-foreground text-left">
+                                        {Object.entries(vocabulary).map(([es, en]: any) => (<React.Fragment key={es}><span className="text-muted-foreground capitalize">{es}:</span><span className="font-semibold text-right">{en}</span></React.Fragment>))}
+                                    </div>
+                                </ScrollArea>
+                            </PopoverContent>
+                        </Popover>
+                    )}
+                </div>
+            </CardHeader>
+            <CardContent className="space-y-6">
+                <div className="bg-muted p-6 rounded-2xl border-2 border-dashed text-center font-bold text-xl uppercase tracking-tighter text-foreground">{currentPrompt.spanish}</div>
+                <Input value={answer} onChange={e => setAnswer(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleCheck()} className={cn("h-12 text-lg text-foreground", status[currentIndex] === 'correct' ? 'border-green-500 bg-green-50/5' : status[currentIndex] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} placeholder="Tu traducción..." autoComplete="off" />
+            </CardContent>
+            <CardFooter className="justify-between border-t pt-6">
+                <Button variant="outline" onClick={() => setCurrentIndex(p => Math.max(0, p - 1))} disabled={currentIndex === 0}>Anterior</Button>
+                <div className="flex gap-2">
+                    <Button onClick={handleCheck} variant="secondary">Verificar</Button>
+                    <Button onClick={() => currentIndex < prompts.length - 1 ? setCurrentIndex(i => i + 1) : onComplete()} disabled={status[currentIndex] !== 'correct'} className="text-white font-bold">{currentIndex === prompts.length - 1 ? 'Finalizar' : 'Siguiente'}</Button>
+                </div>
+            </CardFooter>
+        </Card>
+    );
+};
 
 const ManualGradingExercise = ({ 
     title,
@@ -171,11 +239,11 @@ const ManualGradingExercise = ({
     };
 
     return (
-        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
+        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground">
             <CardHeader>
                 <div className="flex items-center gap-3">
                     <div className="p-2 bg-primary/20 rounded-lg text-primary">
-                        {title.includes('DICTATION') ? <Mic className="h-6 w-6" /> : <Pencil className="h-6 w-6" />}
+                        <Mic className="h-6 w-6" />
                     </div>
                     <div>
                         <CardTitle>{title}</CardTitle>
@@ -187,7 +255,7 @@ const ManualGradingExercise = ({
                 <div className="grid grid-cols-1 gap-3">
                     {lines.map((line, idx) => {
                         const status = grades[idx];
-                        const isTitleLine = idx === 0 && title.includes('DICTATION');
+                        const isTitleLine = idx === 0;
                         return (
                             <div key={idx} className="flex items-center gap-3">
                                 <span className={cn("font-bold w-8 text-right", isTitleLine ? "text-primary" : "text-muted-foreground")}>
@@ -245,84 +313,20 @@ const ManualGradingExercise = ({
     );
 };
 
-const BallsExercise = ({ title, prompts, onComplete, vocabulary }: any) => {
-    const { toast } = useToast();
-    const [currentIndex, setCurrentIndex] = useState(0);
-    const [answer, setAnswer] = useState('');
-    const [status, setStatus] = useState<Record<number, 'correct' | 'incorrect' | 'unchecked'>>({});
+// --- MAIN CONTENT COMPONENT ---
 
-    useEffect(() => {
-        setCurrentIndex(0); setAnswer(''); setStatus({});
-    }, [prompts]);
-
-    useEffect(() => {
-        setAnswer('');
-    }, [currentIndex]);
-
-    const currentPrompt = prompts[currentIndex];
-    if (!currentPrompt) return null;
-
-    const handleCheck = () => {
-        const userVal = answer.trim().toLowerCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' ');
-        const isCorrect = currentPrompt.answer.some((a: string) => a.toLowerCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' ') === userVal);
-        setStatus(prev => ({ ...prev, [currentIndex]: isCorrect ? 'correct' : 'incorrect' }));
-        if (isCorrect) toast({ title: "¡Buen trabajo!" });
-        else toast({ variant: 'destructive', title: "Sigue intentando" });
-    };
-
-    return (
-        <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground">
-            <CardHeader>
-                <div className="flex justify-between items-start">
-                    <div className="w-full text-left">
-                        <CardTitle>{title}</CardTitle>
-                        <CardDescription className='font-bold text-foreground mt-1'>Traduce la frase correctamente.</CardDescription>
-                        <div className="flex gap-2 justify-start flex-wrap pt-4">
-                            {prompts.map((_: any, i: number) => (
-                                <div key={i} onClick={() => setCurrentIndex(i)} className={cn("h-8 w-8 rounded-full border-2 flex items-center justify-center text-sm font-bold cursor-pointer transition-all", currentIndex === i ? "border-primary ring-2 ring-primary" : "border-muted", status[i] === 'correct' ? "bg-green-500 text-white border-green-500" : status[i] === 'incorrect' ? "bg-red-500 text-white border-red-500" : "bg-card text-foreground")}>{i + 1}</div>
-                            ))}
-                        </div>
-                    </div>
-                    {vocabulary && (
-                        <Popover>
-                            <PopoverTrigger asChild>
-                                <Button variant="outline" size="sm" className="border-2 border-brand-blue animate-border-pulse shrink-0"><BookText className="mr-2 h-4 w-4" /> Vocabulary</Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-64">
-                                <ScrollArea className="h-48 pr-4">
-                                    <div className="grid grid-cols-2 gap-2 text-sm text-left">
-                                        {Object.entries(vocabulary).map(([es, en]: any) => (<React.Fragment key={es}><span className="text-muted-foreground capitalize">{es}:</span><span className="font-semibold text-right">{en}</span></React.Fragment>))}
-                                    </div>
-                                </ScrollArea>
-                            </PopoverContent>
-                        </Popover>
-                    )}
-                </div>
-            </CardHeader>
-            <CardContent className="space-y-6">
-                <div className="bg-muted p-6 rounded-2xl border-2 border-dashed text-center font-bold text-xl uppercase tracking-tighter text-foreground">{currentPrompt.spanish}</div>
-                <Input value={answer} onChange={e => setAnswer(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleCheck()} className={cn("h-12 text-lg text-foreground", status[currentIndex] === 'correct' ? 'border-green-500 bg-green-50/5' : status[currentIndex] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} placeholder="Tu traducción..." autoComplete="off" />
-            </CardContent>
-            <CardFooter className="justify-between border-t pt-6">
-                <Button variant="outline" onClick={() => setCurrentIndex(p => Math.max(0, p - 1))} disabled={currentIndex === 0}>Anterior</Button>
-                <div className="flex gap-2">
-                    <Button onClick={handleCheck} variant="secondary">Verificar</Button>
-                    <Button onClick={() => currentIndex < prompts.length - 1 ? setCurrentIndex(i => i + 1) : onComplete()} disabled={status[currentIndex] !== 'correct'} className="text-white font-bold">{currentIndex === prompts.length - 1 ? 'Finalizar' : 'Siguiente'}</Button>
-                </div>
-            </CardFooter>
-        </Card>
-    );
-};
-
-// --- MAIN COMPONENT ---
-
-export default function Class13Content() {
+export default function Class13Content({ overrideStudentId }: { overrideStudentId?: string | null }) {
     const { toast } = useToast();
     const { user, isUserLoading } = useUser();
     const firestore = useFirestore();
-    const studentDocRef = useMemoFirebase(() => (user ? doc(firestore, 'students', user.uid) : null), [firestore, user]);
+
+    const currentUID = overrideStudentId || user?.uid;
+    const studentDocRef = useMemoFirebase(() => (currentUID ? doc(firestore, 'students', currentUID) : null), [firestore, currentUID]);
+    const authUserRef = useMemoFirebase(() => (user ? doc(firestore, 'students', user.uid) : null), [firestore, user]);
+    const { data: authUserProfile } = useDoc<{role?: string}>(authUserRef);
     const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{role?: string, lessonProgress?: any, progress?: any}>(studentDocRef);
-    const isAdmin = useMemo(() => (user && (studentProfile?.role === 'admin' || user.email === 'ednacard87@gmail.com')), [user, studentProfile]);
+
+    const isAdmin = useMemo(() => (user && (authUserProfile?.role === 'admin' || user.email === 'ednacard87@gmail.com')), [user, authUserProfile]);
 
     const [learningPath, setLearningPath] = useState<any[]>([]);
     const [selectedTopic, setSelectedTopic] = useState<string>('');
@@ -337,26 +341,26 @@ export default function Class13Content() {
     const initialLearningPath = useMemo(() => [
         { key: 'vocabulario', name: 'Vocabulario (Adjetivos)', icon: BookOpen, status: 'active' },
         { key: 'grados', name: 'Grados de los Adjetivos', icon: Scale, status: 'locked' },
-        { key: 'grammar_comp', name: 'Comparativos', icon: GraduationCap, status: 'locked' },
-        { key: 'ex_comp', name: 'Ejer. Comparativos', icon: PenSquare, status: 'locked' },
-        { key: 'grammar_sup', name: 'Superlativos', icon: GraduationCap, status: 'locked' },
-        { key: 'ex_sup', name: 'Ejer. Superlativos', icon: PenSquare, status: 'locked' },
-        { key: 'formacion', name: 'Formación', icon: Info, status: 'locked' },
-        { key: 'monosilabos', name: 'Monosílabos', icon: Info, status: 'locked' },
-        { key: 'ex_mono', name: 'Ejer. Monosílabos', icon: PenSquare, status: 'locked' },
-        { key: 'bisilabos', name: 'Bisílabos', icon: Info, status: 'locked' },
-        { key: 'ex_bis', name: 'Ejercicios Bisílabos', icon: PenSquare, status: 'locked' },
-        { key: 'largos', name: 'Adjetivos Largos', icon: Info, status: 'locked' },
-        { key: 'ex_largos', name: 'Ejercicios Largos', icon: PenSquare, status: 'locked' },
+        { key: 'grammar_comp', name: 'Gramatica: Comparativos', icon: GraduationCap, status: 'locked' },
+        { key: 'ex_comp', name: 'Ejercicios Comparativos', icon: PenSquare, status: 'locked' },
+        { key: 'grammar_sup', name: 'Gramatica : Superlativos', icon: GraduationCap, status: 'locked' },
+        { key: 'ex_sup', name: 'Ejercicios Superlativos', icon: PenSquare, status: 'locked' },
+        { key: 'formacion', name: 'Formacion', icon: Info, status: 'locked' },
+        { key: 'monosilabos', name: 'Monosilabos', icon: Info, status: 'locked' },
+        { key: 'ex_mono', name: 'Ejercicios Monosilabos', icon: PenSquare, status: 'locked' },
+        { key: 'bisilabos', name: 'Bisilabos', icon: Info, status: 'locked' },
+        { key: 'ex_bis', name: 'Ejercicios Bisilabos', icon: PenSquare, status: 'locked' },
+        { key: 'largos', name: 'Largos', icon: Info, status: 'locked' },
+        { key: 'ex_largos', name: 'Ejercicios largos', icon: PenSquare, status: 'locked' },
         { key: 'irregulares', name: 'Irregulares', icon: Zap, status: 'locked' },
         { key: 'ex_irreg', name: 'Ejercicios Irregulares', icon: PenSquare, status: 'locked' },
-        { key: 'ex_mixto_1', name: 'Mixto 1', icon: PenSquare, status: 'locked' },
+        { key: 'ex_mixto_1', name: 'Ejercicios MIxto 1', icon: PenSquare, status: 'locked' },
         { key: 'igualdad', name: 'Comparativo Igualdad', icon: Scale, status: 'locked' },
         { key: 'ex_igual', name: 'Ejercicio Igualdad', icon: PenSquare, status: 'locked' },
-        { key: 'inferioridad', name: 'Comparativo Inferioridad', icon: Scale, status: 'locked' },
+        { key: 'inferioridad', name: 'Comparativo de Inferioridad', icon: Scale, status: 'locked' },
         { key: 'ex_inf', name: 'Ejercicio Inferioridad', icon: PenSquare, status: 'locked' },
-        { key: 'ex_mixto_2', name: 'Mixto 2', icon: PenSquare, status: 'locked' },
-        { key: 'ex_mixto_3', name: 'Mixto 3', icon: PenSquare, status: 'locked' },
+        { key: 'ex_mixto_2', name: 'Ejercicio MIxto 2', icon: PenSquare, status: 'locked' },
+        { key: 'ex_mixto_3', name: 'Ejercicio Mixto 3', icon: PenSquare, status: 'locked' },
         { key: 'dictation', name: 'Dictation', icon: Mic, status: 'locked' },
     ], []);
 
@@ -368,14 +372,16 @@ export default function Class13Content() {
         if (isProfileLoading || isUserLoading || !studentProfile || initialLoadComplete) return;
         let path = initialLearningPath.map(t => ({ ...t }));
         let savedST = '';
-        if (isAdmin) path.forEach(t => (t as any).status = 'completed');
-        else if (studentProfile?.lessonProgress?.[progressStorageVersion]) {
-            const d = studentProfile.lessonProgress[progressStorageVersion];
-            path.forEach(t => { if (d[t.key]) (t as any).status = d[t.key]; });
-            savedST = d.lastSelectedTopic || '';
-        }
+        
+        const d = studentProfile.lessonProgress?.[progressStorageVersion] || {};
+        path.forEach(t => { if (d[t.key]) (t as any).status = d[t.key]; });
+        savedST = d.lastSelectedTopic || '';
+
+        if (isAdmin) path.forEach(t => (t as any).status = (t as any).status === 'locked' ? 'active' : (t as any).status);
+
         let lastDone = true;
         for(let i=0; i < path.length; i++) { if (lastDone && (path[i] as any).status === 'locked') (path[i] as any).status = 'active'; lastDone = (path[i] as any).status === 'completed'; }
+        
         setLearningPath(path);
         setSelectedTopic(savedST || path.find(p => p.status === 'active')?.key || path[0].key);
         setInitialLoadComplete(true); setIsInitialLoading(false);
@@ -388,14 +394,15 @@ export default function Class13Content() {
     }, [learningPath]);
 
     useEffect(() => {
-        if (!initialLoadComplete || isInitialLoading || isAdmin || !studentDocRef || learningPath.length === 0) return;
+        if (!initialLoadComplete || isInitialLoading || !studentDocRef || learningPath.length === 0) return;
         const s: any = { lastSelectedTopic: selectedTopic };
         learningPath.forEach(t => s[t.key] = t.status);
+        
         if (JSON.stringify(s) !== JSON.stringify(studentProfile?.lessonProgress?.[progressStorageVersion])) {
             updateDocumentNonBlocking(studentDocRef, { [`lessonProgress.${progressStorageVersion}`]: s, [`progress.${mainProgressKey}`]: progressValue });
         }
         if (progressValue >= 100) window.dispatchEvent(new CustomEvent('progressUpdated'));
-    }, [learningPath, isAdmin, progressValue, studentDocRef, initialLoadComplete, selectedTopic, studentProfile, isInitialLoading]);
+    }, [learningPath, progressValue, studentDocRef, initialLoadComplete, selectedTopic, studentProfile, isInitialLoading]);
 
     useEffect(() => {
         if (!topicToComplete) return;
@@ -411,7 +418,7 @@ export default function Class13Content() {
                     next = np[idx + 1].key;
                 }
             }
-            if (win) setTimeout(() => toast({ title: "¡Siguiente tema desbloqueado!" }), 0);
+            if (win) setTimeout(() => toast({ title: "¡Misión completada!" }), 0);
             if (next) { const n = next; setTimeout(() => setSelectedTopic(n), 0); }
             return np;
         });
@@ -443,7 +450,9 @@ export default function Class13Content() {
             case 'vocabulario':
                 return (
                     <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left">
-                        <CardHeader><CardTitle>Vocabulario (Adjetivos)</CardTitle></CardHeader>
+                        <CardHeader className="flex flex-row items-center justify-between">
+                            <CardTitle>Vocabulario (Adjetivos)</CardTitle>
+                        </CardHeader>
                         <CardContent>
                             <div className="grid grid-cols-2 gap-2 max-w-md mx-auto text-foreground">
                                 {vocabularyData.map((v, i) => (
@@ -466,50 +475,50 @@ export default function Class13Content() {
                             <ul className="space-y-2 list-disc pl-5">
                                 <li><span className="text-primary">GRADO POSITIVO:</span> El adjetivo en su forma base (Tall, Big). <br/>  ------------------- Susan es alta = Susan is tall.</li> <br/>   
                                 <li><span className="text-primary">GRADO COMPARATIVO:</span> Se usa para comparar dos cosas (Taller, Bigger). <br/>  ------------------------- Susan es mas alta que Nick = Susan is taller tan Nick </li> <br/>                          
-                                <li><span className="text-primary">GRADO SUPERLATIVO:</span> Indica el extremo superior (The tallest, The biggest). <br/>  ------------------------ Susan es la mas alta = Susan is the Tallest.</li> <br/>                        
+                                <li><span className="text-primary">GRADO SUPERLATIVO:</span> Indica el extremo superior (The tallest, The biggest). <br/>  ------------------------ Susan es la mas alta = Susan is the Taller.</li> <br/>                        
                             </ul>
                         </CardContent>
                         <CardFooter className="justify-center pt-6 border-t"><Button onClick={() => handleTopicComplete('grados')} size="lg" className="px-12 font-bold">Entendido</Button></CardFooter>
                     </Card>
                 );
-            case 'grammar_comp':
-                return (
-                    <div className="space-y-6 text-left">
-                        <Card className="shadow-soft border-2 border-brand-purple bg-slate-100 dark:bg-slate-800/50 p-6">
-                            <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase">COMPARATIVOS (+ER)</CardTitle></CardHeader>
-                            <CardContent className="space-y-6 text-foreground font-bold">
-                                <div className="p-6 bg-white/20 rounded-2xl border border-black/10">
-                                    <h4 className="text-primary font-black uppercase text-sm mb-2">USO:</h4>
-                                    <p className="text-lg">SE USA EN INGLÉS PARA COMPARAR DIFERENCIAS ENTRE LOS DOS SUSTANTIVOS A LOS QUE MODIFICA.</p>
-                                </div>
-
-                                <div className="p-6 bg-white/20 rounded-2xl border border-black/10">
-                                    <h4 className="text-primary font-black uppercase text-sm mb-2">MODIFICACIÓN DEL ADJETIVO (ADJECTIVE+ ER):</h4>
-                                    <div className="font-mono text-xl space-y-1">
-                                        <p>small &rarr; <span className="text-primary">SMALLER</span> (más pequeño que)</p>
-                                        <p>high &rarr; <span className="text-primary">HIGHER</span> (más alto que)</p>
+                case 'grammar_comp':
+                    return (
+                        <div className="space-y-6 text-left">
+                            <Card className="shadow-soft border-2 border-brand-purple bg-slate-100 dark:bg-slate-800/50 p-6">
+                                <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase">COMPARATIVOS (+ER)</CardTitle></CardHeader>
+                                <CardContent className="space-y-6 text-foreground font-bold">
+                                    <div className="p-6 bg-white/20 rounded-2xl border border-black/10">
+                                        <h4 className="text-primary font-black uppercase text-sm mb-2">USO:</h4>
+                                        <p className="text-lg">SE USA EN INGLÉS PARA COMPARAR DIFERENCIAS ENTRE LOS DOS SUSTANTIVOS A LOS QUE MODIFICA.</p>
                                     </div>
-                                </div>
-
-                                <div className="p-6 bg-primary/10 rounded-2xl border-2 border-primary text-center">
-                                    <h4 className="text-primary font-black uppercase text-sm mb-2">ESTRUCTURA:</h4>
-                                    <p className="font-mono text-lg uppercase">sustantivo + verbo + adjetivo comparativo + than + sustantivo</p>
-                                </div>
-
-                                <div className="p-6 bg-white/20 rounded-2xl border border-black/10">
-                                    <h4 className="text-primary font-black uppercase text-sm mb-4">TOPICS:</h4>
-                                    <ul className="space-y-3 text-base font-bold">
-                                        <li className="flex gap-2"><span>1-</span> <p>Monosilabos = Adjetivos Cortos <span className="text-primary">(Adjective + ER)</span></p></li>
-                                        <li className="flex gap-2"><span>2-</span> <p>Bisilabos = Adjetivos con 2 silabas <span className="text-primary">(Adjective + ER)</span></p></li>
-                                        <li className="flex gap-2"><span>3-</span> <p>Adjetivos Largos = Tienen mas de 2 silabas <span className="text-primary">(more + adjetivo largo + than)</span></p></li>
-                                        <li className="flex gap-2"><span>4-</span> <p>Adjetivos Irregulares = Cambian en todas sus formas</p></li>
-                                    </ul>
-                                </div>
-                            </CardContent>
-                            <CardFooter className="justify-center border-t pt-6"><Button onClick={() => handleTopicComplete('grammar_comp')} size="lg" className="px-12 font-bold">Continuar</Button></CardFooter>
-                        </Card>
-                    </div>
-                );
+    
+                                    <div className="p-6 bg-white/20 rounded-2xl border border-black/10">
+                                        <h4 className="text-primary font-black uppercase text-sm mb-2">MODIFICACIÓN DEL ADJETIVO (ADJECTIVE+ ER):</h4>
+                                        <div className="font-mono text-xl space-y-1">
+                                            <p>small &rarr; <span className="text-primary">SMALLER</span> (más pequeño que)</p>
+                                            <p>high &rarr; <span className="text-primary">HIGHER</span> (más alto que)</p>
+                                        </div>
+                                    </div>
+    
+                                    <div className="p-6 bg-primary/10 rounded-2xl border-2 border-primary text-center">
+                                        <h4 className="text-primary font-black uppercase text-sm mb-2">ESTRUCTURA:</h4>
+                                        <p className="font-mono text-lg uppercase">sustantivo + verbo + adjetivo comparativo + than + sustantivo</p>
+                                    </div>
+    
+                                    <div className="p-6 bg-white/20 rounded-2xl border border-black/10">
+                                        <h4 className="text-primary font-black uppercase text-sm mb-4">TOPICS:</h4>
+                                        <ul className="space-y-3 text-base font-bold">
+                                            <li className="flex gap-2"><span>1-</span> <p>Monosilabos = Adjetivos Cortos <span className="text-primary">(Adjective + ER)</span></p></li>
+                                            <li className="flex gap-2"><span>2-</span> <p>Bisilabos = Adjetivos con 2 silabas <span className="text-primary">(Adjective + ER)</span></p></li>
+                                            <li className="flex gap-2"><span>3-</span> <p>Adjetivos Largos = Tienen mas de 2 silabas <span className="text-primary">(more + adjetivo largo + than)</span></p></li>
+                                            <li className="flex gap-2"><span>4-</span> <p>Adjetivos Irregulares = Cambian en todas sus formas</p></li>
+                                        </ul>
+                                    </div>
+                                </CardContent>
+                                <CardFooter className="justify-center border-t pt-6"><Button onClick={() => handleTopicComplete('grammar_comp')} size="lg" className="px-12 font-bold">Continuar</Button></CardFooter>
+                            </Card>
+                        </div>
+                    );
             case 'ex_comp': return <BallsExercise title="Ejercicios Comparativos" prompts={monoPrompts} onComplete={() => handleTopicComplete('ex_comp')} vocabulary={exCompVocab} />;
             case 'grammar_sup':
                 return (
@@ -573,7 +582,7 @@ export default function Class13Content() {
                 return (
                     <Card className="shadow-soft border-2 border-brand-purple p-6 text-left text-foreground">
                         <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase">MONOSÍLABOS</CardTitle></CardHeader>
-                        <CardContent><p className="text-lg">Adjetivos de una sola sílaba siguen las reglas básicas de (+ER) y (+EST).</p></CardContent>
+                        <CardContent><p className="text-lg font-bold">Adjetivos de una sola sílaba siguen las reglas básicas de (+ER) y (+EST).</p></CardContent>
                         <CardFooter className="justify-center"><Button onClick={() => handleTopicComplete('monosilabos')} size="lg">Avanzar</Button></CardFooter>
                     </Card>
                 );
@@ -582,7 +591,7 @@ export default function Class13Content() {
                 return (
                     <Card className="shadow-soft border-2 border-brand-purple p-6 text-left text-foreground">
                         <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase">BISÍLABOS</CardTitle></CardHeader>
-                        <CardContent><p className="text-lg">Adjetivos de dos sílabas que terminan en "y", "le", "er", "ow" suelen comportarse como cortos.</p></CardContent>
+                        <CardContent><p className="text-lg font-bold">Adjetivos de dos sílabas que terminan en "y", "le", "er", "ow" suelen comportarse como cortos.</p></CardContent>
                         <CardFooter className="justify-center"><Button onClick={() => handleTopicComplete('bisilabos')} size="lg">Avanzar</Button></CardFooter>
                     </Card>
                 );
@@ -631,7 +640,7 @@ export default function Class13Content() {
                 return (
                     <Card className="shadow-soft border-2 border-brand-purple p-6 text-left text-foreground">
                         <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase">COMPARATIVO DE IGUALDAD</CardTitle></CardHeader>
-                        <CardContent className="space-y-4">
+                        <CardContent className="space-y-4 text-foreground">
                             <p className="text-lg font-bold">Se usa para decir que dos cosas son iguales en una cualidad.</p>
                             <div className="p-4 bg-muted rounded-xl font-mono text-xl text-center border-2 border-dashed">AS + ADJETIVO + AS</div>
                             <p className="italic text-muted-foreground text-center">Ej: As tall as (Tan alto como)</p>
