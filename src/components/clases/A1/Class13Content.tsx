@@ -37,9 +37,9 @@ import { DashboardHeader } from '@/components/dashboard/header';
 import { Footer } from '@/components/footer';
 import { VocabularyMatchingGame } from '@/components/dashboard/vocabulary-matching-game';
 
-// --- DATA ---
+// --- CONSTANTS & DATA ---
 
-const progressStorageVersion = 'progress_a1_eng_u3_c13_v501_fix';
+const progressStorageVersion = 'progress_a1_eng_u3_c13_v600_tables_stable';
 const mainProgressKey = 'progress_a1_eng_unit_3_class_13';
 
 const ICONS_CONFIG = {
@@ -61,6 +61,52 @@ const vocabularyData = [
     { spanish: 'SUCIO', english: ['dirty'] },
     { spanish: 'LIMPIO', english: ['clean'] },
     { spanish: 'MOJADO', english: ['wet'] },
+];
+
+// --- ADJECTIVE TABLES DATA ---
+const monosyllabicTableData = [
+    { spanish: 'pequeño', answers: { pos: 'small', comp: 'smaller', sup: 'the smallest' } },
+    { spanish: 'alto', answers: { pos: 'tall', comp: 'taller', sup: 'the tallest' } },
+    { spanish: 'joven', answers: { pos: 'young', comp: 'younger', sup: 'the youngest' } },
+    { spanish: 'viejo', answers: { pos: 'old', comp: 'older', sup: 'the oldest' } },
+    { spanish: 'nuevo', answers: { pos: 'new', comp: 'newer', sup: 'the newest' } },
+    { spanish: 'largo', answers: { pos: 'long', comp: 'longer', sup: 'the longest' } },
+    { spanish: 'corto', answers: { pos: 'short', comp: 'shorter', sup: 'the shortest' } },
+    { spanish: 'gordo', answers: { pos: 'fat', comp: 'fatterer', sup: 'the fattest' } },
+    { spanish: 'grande', answers: { pos: 'big', comp: 'bigger', sup: 'the biggest' } },
+    { spanish: 'caliente', answers: { pos: 'hot', comp: 'hotter', sup: 'the hotest' } },
+    { spanish: 'alto', answers: { pos: 'tall', comp: 'taller', sup: 'the tallest' } },
+    { spanish: 'rapido', answers: { pos: 'fast', comp: 'faster', sup: 'the fastest' } },
+    { spanish: 'delgado', answers: { pos: 'thin', comp: 'thinner', sup: 'the thinnest' } },
+    { spanish: 'mojado', answers: { pos: 'wet', comp: 'wetter', sup: 'the wettest' } },
+    { spanish: 'seco', answers: { pos: 'dry', comp: 'drier', sup: 'the driest' } },
+    { spanish: 'triste', answers: { pos: 'sad', comp: 'sadder', sup: 'the saddest' } },
+    { spanish: 'calido', answers: { pos: 'warm', comp: 'warmer', sup: 'the warmest' } },
+];
+
+const bisyllabicTableData = [
+    { spanish: 'fácil', answers: { pos: 'easy', comp: 'easier', sup: 'the easiest' } },
+    { spanish: 'feliz', answers: { pos: 'happy', comp: 'happier', sup: 'the happiest' } },
+    { spanish: 'loco', answers: { pos: 'crazy', comp: 'crazier', sup: 'the craziest' } },
+    { spanish: 'pesado', answers: { pos: 'heavy', comp: 'heavier', sup: 'the heaviest' } },
+    { spanish: 'tierno', answers: { pos: 'tender', comp: 'tenderer', sup: 'the tenderest' } },
+    { spanish: 'estrecho', answers: { pos: 'narrow', comp: 'narrower', sup: 'the narrowest' } },
+];
+
+const longTableData = [
+    { spanish: 'Caro', answers: { pos: 'expensive', comp: 'more expensive', sup: 'the most expensive' } },
+    { spanish: 'moderno', answers: { pos: 'modern', comp: 'more modern', sup: 'the most modern' } },
+    { spanish: 'hermoso', answers: { pos: 'beautiful', comp: 'more beautiful', sup: 'the most beautiful' } },
+    { spanish: 'inteligente', answers: { pos: 'intelligent', comp: 'more intelligent', sup: 'the most intelligent' } },
+    { spanish: 'elegante', answers: { pos: 'elegant', comp: 'more elegant', sup: 'the most elegant' } },
+    { spanish: 'interesante', answers: { pos: 'interesting', comp: 'more interesting', sup: 'the most interesting' } },
+    { spanish: 'peligroso', answers: { pos: 'dangerous', comp: 'more dangerous', sup: 'the most dangerous' } },
+    { spanish: 'famoso', answers: { pos: 'famous', comp: 'more famous', sup: 'the most famous' } },
+    { spanish: 'dificil', answers: { pos: 'difficult', comp: 'more difficult', sup: 'the most difficult' } },
+    { spanish: 'honesto', answers: { pos: 'honest', comp: 'more honest', sup: 'the most honest' } },
+    { spanish: 'humilde', answers: { pos: 'humble', comp: 'more humble', sup: 'the most humble' } },
+    { spanish: 'educado', answers: { pos: 'polite', comp: 'more polite', sup: 'the most polite' } },
+    { spanish: 'aburrido', answers: { pos: 'bored', comp: 'more bored', sup: 'the most bored' } },
 ];
 
 const monoPrompts = [
@@ -127,6 +173,74 @@ const exInferiorityVocab = { "menos ... que": "less ... than", "interesante": "i
 const exMixed3Vocab = { "cantante": "singer", "famosa": "famous", "fría": "colder", "amables": "kinder", "flaco": "thinner", "mejor": "best" };
 
 // --- HELPERS ---
+
+const AdjectiveTableExercise = ({ data, onComplete, title }: { data: any[], onComplete: () => void, title: string }) => {
+    const { toast } = useToast();
+    const [answers, setAnswers] = useState<Record<number, Record<string, string>>>(
+        data.reduce((acc, _, i) => ({ ...acc, [i]: { pos: '', comp: '', sup: '' } }), {})
+    );
+    const [validation, setValidation] = useState<Record<number, Record<string, 'correct' | 'incorrect' | 'unchecked'>>>(
+        data.reduce((acc, _, i) => ({ ...acc, [i]: { pos: 'unchecked', comp: 'unchecked', sup: 'unchecked' } }), {})
+    );
+
+    const handleCheck = () => {
+        let allOk = true;
+        const newVal: any = {};
+        data.forEach((item, i) => {
+            newVal[i] = {};
+            ['pos', 'comp', 'sup'].forEach(field => {
+                const user = (answers[i][field] || '').trim().toLowerCase().replace(/\s+/g, ' ');
+                const correct = item.answers[field].toLowerCase();
+                if (user === correct) {
+                    newVal[i][field] = 'correct';
+                } else {
+                    newVal[i][field] = 'incorrect';
+                    allOk = false;
+                }
+            });
+        });
+        setValidation(newVal);
+        if (allOk) {
+            toast({ title: "¡Excelente!", description: "Has completado la tabla correctamente." });
+            onComplete();
+        } else {
+            toast({ variant: 'destructive', title: "Sigue intentando", description: "Revisa las celdas en rojo." });
+        }
+    };
+
+    return (
+        <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground text-left">
+            <CardHeader><CardTitle>{title}</CardTitle><CardDescription>Completa las tres formas del adjetivo en inglés.</CardDescription></CardHeader>
+            <CardContent>
+                <div className="overflow-x-auto">
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead className="font-bold">ADJETIVO (ES)</TableHead>
+                                <TableHead className="font-bold">POSITIVO (EN)</TableHead>
+                                <TableHead className="font-bold">COMPARATIVOS</TableHead>
+                                <TableHead className="font-bold">SUPERLATIVOS</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {data.map((item, i) => (
+                                <TableRow key={i}>
+                                    <TableCell className="font-bold uppercase text-xs">{item.spanish}</TableCell>
+                                    <TableCell><Input value={answers[i].pos} onChange={e => setAnswers(p => ({...p, [i]: {...p[i], pos: e.target.value}}))} className={cn("h-10 text-sm", validation[i].pos === 'correct' ? 'border-green-500 bg-green-50/5' : validation[i].pos === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} autoComplete="off" /></TableCell>
+                                    <TableCell><Input value={answers[i].comp} onChange={e => setAnswers(p => ({...p, [i]: {...p[i], comp: e.target.value}}))} className={cn("h-10 text-sm", validation[i].comp === 'correct' ? 'border-green-500 bg-green-50/5' : validation[i].comp === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} autoComplete="off" /></TableCell>
+                                    <TableCell><Input value={answers[i].sup} onChange={e => setAnswers(p => ({...p, [i]: {...p[i], sup: e.target.value}}))} className={cn("h-10 text-sm", validation[i].sup === 'correct' ? 'border-green-500 bg-green-50/5' : validation[i].sup === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} autoComplete="off" /></TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </div>
+            </CardContent>
+            <CardFooter className="justify-center border-t pt-4">
+                <Button onClick={handleCheck} size="lg" className="px-12">Verificar Misión</Button>
+            </CardFooter>
+        </Card>
+    );
+};
 
 const BallsExercise = ({ title, prompts, onComplete, vocabulary }: any) => {
     const { toast } = useToast();
@@ -243,7 +357,7 @@ const ManualGradingExercise = ({
             <CardHeader>
                 <div className="flex items-center gap-3">
                     <div className="p-2 bg-primary/20 rounded-lg text-primary">
-                        <Mic className="h-6 w-6" />
+                        {title.includes('DICTATION') ? <Mic className="h-6 w-6" /> : <Pencil className="h-6 w-6" />}
                     </div>
                     <div>
                         <CardTitle>{title}</CardTitle>
@@ -255,7 +369,7 @@ const ManualGradingExercise = ({
                 <div className="grid grid-cols-1 gap-3">
                     {lines.map((line, idx) => {
                         const status = grades[idx];
-                        const isTitleLine = idx === 0;
+                        const isTitleLine = idx === 0 && title.includes('DICTATION');
                         return (
                             <div key={idx} className="flex items-center gap-3">
                                 <span className={cn("font-bold w-8 text-right", isTitleLine ? "text-primary" : "text-muted-foreground")}>
@@ -341,25 +455,25 @@ export default function Class13Content({ overrideStudentId }: { overrideStudentI
     const initialLearningPath = useMemo(() => [
         { key: 'vocabulario', name: 'Vocabulario (Adjetivos)', icon: BookOpen, status: 'active' },
         { key: 'grados', name: 'Grados de los Adjetivos', icon: Scale, status: 'locked' },
-        { key: 'grammar_comp', name: 'Gramatica: Comparativos', icon: GraduationCap, status: 'locked' },
+        { key: 'grammar_comp', name: 'Gramática: Comparativos', icon: GraduationCap, status: 'locked' },
         { key: 'ex_comp', name: 'Ejercicios Comparativos', icon: PenSquare, status: 'locked' },
-        { key: 'grammar_sup', name: 'Gramatica : Superlativos', icon: GraduationCap, status: 'locked' },
+        { key: 'grammar_sup', name: 'Gramática: Superlativos', icon: GraduationCap, status: 'locked' },
         { key: 'ex_sup', name: 'Ejercicios Superlativos', icon: PenSquare, status: 'locked' },
-        { key: 'formacion', name: 'Formacion', icon: Info, status: 'locked' },
-        { key: 'monosilabos', name: 'Monosilabos', icon: Info, status: 'locked' },
-        { key: 'ex_mono', name: 'Ejercicios Monosilabos', icon: PenSquare, status: 'locked' },
-        { key: 'bisilabos', name: 'Bisilabos', icon: Info, status: 'locked' },
-        { key: 'ex_bis', name: 'Ejercicios Bisilabos', icon: PenSquare, status: 'locked' },
+        { key: 'formacion', name: 'Formación', icon: Info, status: 'locked' },
+        { key: 'monosilabos', name: 'Monosílabos', icon: Info, status: 'locked' },
+        { key: 'ex_mono', name: 'Ejercicios Monosílabos', icon: PenSquare, status: 'locked' },
+        { key: 'bisilabos', name: 'Bisílabos', icon: Info, status: 'locked' },
+        { key: 'ex_bis', name: 'Ejercicios Bisílabos', icon: PenSquare, status: 'locked' },
         { key: 'largos', name: 'Largos', icon: Info, status: 'locked' },
         { key: 'ex_largos', name: 'Ejercicios largos', icon: PenSquare, status: 'locked' },
         { key: 'irregulares', name: 'Irregulares', icon: Zap, status: 'locked' },
         { key: 'ex_irreg', name: 'Ejercicios Irregulares', icon: PenSquare, status: 'locked' },
-        { key: 'ex_mixto_1', name: 'Ejercicios MIxto 1', icon: PenSquare, status: 'locked' },
+        { key: 'ex_mixto_1', name: 'Ejercicios Mixto 1', icon: PenSquare, status: 'locked' },
         { key: 'igualdad', name: 'Comparativo Igualdad', icon: Scale, status: 'locked' },
         { key: 'ex_igual', name: 'Ejercicio Igualdad', icon: PenSquare, status: 'locked' },
         { key: 'inferioridad', name: 'Comparativo de Inferioridad', icon: Scale, status: 'locked' },
         { key: 'ex_inf', name: 'Ejercicio Inferioridad', icon: PenSquare, status: 'locked' },
-        { key: 'ex_mixto_2', name: 'Ejercicio MIxto 2', icon: PenSquare, status: 'locked' },
+        { key: 'ex_mixto_2', name: 'Ejercicio Mixto 2', icon: PenSquare, status: 'locked' },
         { key: 'ex_mixto_3', name: 'Ejercicio Mixto 3', icon: PenSquare, status: 'locked' },
         { key: 'dictation', name: 'Dictation', icon: Mic, status: 'locked' },
     ], []);
@@ -429,7 +543,7 @@ export default function Class13Content({ overrideStudentId }: { overrideStudentI
         const t = learningPath.find(it => it.key === topicKey);
         if (!isAdmin && t?.status === 'locked') { toast({ variant: "destructive", title: "Contenido Bloqueado" }); return; }
         setSelectedTopic(topicKey);
-        const auto = ['grados', 'grammar_comp', 'grammar_sup', 'formacion', 'monosilabos', 'bisilabos', 'largos', 'irregulares', 'igualdad', 'inferioridad'];
+        const auto = ['grados', 'grammar_comp', 'grammar_sup', 'formacion', 'irregulares', 'igualdad', 'inferioridad'];
         if (auto.includes(topicKey)) handleTopicComplete(topicKey);
     };
 
@@ -474,8 +588,8 @@ export default function Class13Content({ overrideStudentId }: { overrideStudentI
                             <p>Existen tres grados de comparación para los adjetivos:</p>
                             <ul className="space-y-2 list-disc pl-5">
                                 <li><span className="text-primary">GRADO POSITIVO:</span> El adjetivo en su forma base (Tall, Big). <br/>  ------------------- Susan es alta = Susan is tall.</li> <br/>   
-                                <li><span className="text-primary">GRADO COMPARATIVO:</span> Se usa para comparar dos cosas (Taller, Bigger). <br/>  ------------------------- Susan es mas alta que Nick = Susan is taller tan Nick </li> <br/>                          
-                                <li><span className="text-primary">GRADO SUPERLATIVO:</span> Indica el extremo superior (The tallest, The biggest). <br/>  ------------------------ Susan es la mas alta = Susan is the Taller.</li> <br/>                        
+                                <li><span className="text-primary">GRADO COMPARATIVO:</span> Se usa para comparar dos cosas (Taller, Bigger). <br/>  ------------------------- Susan es mas alta que Nick = Susan is taller than Nick </li> <br/>                          
+                                <li><span className="text-primary">GRADO SUPERLATIVO:</span> Indica el extremo superior (The tallest, The biggest). <br/>  ------------------------ Susan es la mas alta = Susan is the tallest.</li> <br/>                        
                             </ul>
                         </CardContent>
                         <CardFooter className="justify-center pt-6 border-t"><Button onClick={() => handleTopicComplete('grados')} size="lg" className="px-12 font-bold">Entendido</Button></CardFooter>
@@ -485,18 +599,18 @@ export default function Class13Content({ overrideStudentId }: { overrideStudentI
                     return (
                         <div className="space-y-6 text-left">
                             <Card className="shadow-soft border-2 border-brand-purple bg-slate-100 dark:bg-slate-800/50 p-6">
-                                <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase">COMPARATIVOS (+ER)</CardTitle></CardHeader>
+                                <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase">GRAMÁTICA: COMPARATIVOS (+ER)</CardTitle></CardHeader>
                                 <CardContent className="space-y-6 text-foreground font-bold">
                                     <div className="p-6 bg-white/20 rounded-2xl border border-black/10">
                                         <h4 className="text-primary font-black uppercase text-sm mb-2">USO:</h4>
-                                        <p className="text-lg">SE USA EN INGLÉS PARA COMPARAR DIFERENCIAS ENTRE LOS DOS SUSTANTIVOS A LOS QUE MODIFICA.</p>
+                                        <p className="text-lg uppercase">Se usa en inglés para comparar diferencias entre los dos sustantivos a los que modifica.</p>
                                     </div>
     
                                     <div className="p-6 bg-white/20 rounded-2xl border border-black/10">
                                         <h4 className="text-primary font-black uppercase text-sm mb-2">MODIFICACIÓN DEL ADJETIVO (ADJECTIVE+ ER):</h4>
                                         <div className="font-mono text-xl space-y-1">
-                                            <p>small &rarr; <span className="text-primary">SMALLER</span> (más pequeño que)</p>
-                                            <p>high &rarr; <span className="text-primary">HIGHER</span> (más alto que)</p>
+                                            <p>small &rarr; <span className="text-primary font-black">SMALLER</span> (más pequeño que)</p>
+                                            <p>high &rarr; <span className="text-primary font-black">HIGHER</span> (más alto que)</p>
                                         </div>
                                     </div>
     
@@ -508,9 +622,9 @@ export default function Class13Content({ overrideStudentId }: { overrideStudentI
                                     <div className="p-6 bg-white/20 rounded-2xl border border-black/10">
                                         <h4 className="text-primary font-black uppercase text-sm mb-4">TOPICS:</h4>
                                         <ul className="space-y-3 text-base font-bold">
-                                            <li className="flex gap-2"><span>1-</span> <p>Monosilabos = Adjetivos Cortos <span className="text-primary">(Adjective + ER)</span></p></li>
-                                            <li className="flex gap-2"><span>2-</span> <p>Bisilabos = Adjetivos con 2 silabas <span className="text-primary">(Adjective + ER)</span></p></li>
-                                            <li className="flex gap-2"><span>3-</span> <p>Adjetivos Largos = Tienen mas de 2 silabas <span className="text-primary">(more + adjetivo largo + than)</span></p></li>
+                                            <li className="flex gap-2"><span>1-</span> <p>Monosílabos = Adjetivos Cortos <span className="text-primary">(Adjective + ER)</span></p></li>
+                                            <li className="flex gap-2"><span>2-</span> <p>Bisílabos = Adjetivos con 2 sílabas <span className="text-primary">(Adjective + ER)</span></p></li>
+                                            <li className="flex gap-2"><span>3-</span> <p>Adjetivos Largos = Tienen mas de 2 sílabas <span className="text-primary">(more + adjetivo largo + than)</span></p></li>
                                             <li className="flex gap-2"><span>4-</span> <p>Adjetivos Irregulares = Cambian en todas sus formas</p></li>
                                         </ul>
                                     </div>
@@ -524,18 +638,18 @@ export default function Class13Content({ overrideStudentId }: { overrideStudentI
                 return (
                     <div className="space-y-6 text-left">
                         <Card className="shadow-soft border-2 border-brand-purple bg-slate-100 dark:bg-slate-800/50 p-6 text-foreground">
-                            <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase">SUPERLATIVOS (+EST)</CardTitle></CardHeader>
+                            <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase">GRAMÁTICA: SUPERLATIVOS (+EST)</CardTitle></CardHeader>
                             <CardContent className="space-y-6 font-bold">
                                 <div className="p-6 bg-white/20 rounded-2xl border border-black/10">
                                     <h4 className="text-primary font-black uppercase text-sm mb-2">USO:</h4>
-                                    <p className="text-lg">SE EMPLEA PARA DESCRIBIR UN SUSTANTIVO QUE SE ENCUENTRA EN EL EXTREMO SUPERIOR (EL MAS) Ó EL INFERIOR (EL MENOS).</p>
+                                    <p className="text-lg uppercase">SE EMPLEA PARA DESCRIBIR UN SUSTANTIVO QUE SE ENCUENTRA EN EL EXTREMO SUPERIOR (EL MAS) Ó EL INFERIOR (EL MENOS).</p>
                                 </div>
 
                                 <div className="p-6 bg-white/20 rounded-2xl border border-black/10">
                                     <h4 className="text-primary font-black uppercase text-sm mb-2">MODIFICACIÓN DEL ADJETIVO (ADJECTIVE+ EST):</h4>
                                     <div className="font-mono text-xl space-y-1">
-                                        <p>Tall &rarr; <span className="text-primary">The TALLEST</span> (el más alto)</p>
-                                        <p>Fast &rarr; <span className="text-primary">The FASTEST</span> (el más rápido)</p>
+                                        <p>Tall &rarr; <span className="text-primary font-black">The TALLEST</span> (el más alto)</p>
+                                        <p>Fast &rarr; <span className="text-primary font-black">The FASTEST</span> (el más rápido)</p>
                                     </div>
                                 </div>
 
@@ -547,9 +661,9 @@ export default function Class13Content({ overrideStudentId }: { overrideStudentI
                                 <div className="p-6 bg-white/20 rounded-2xl border border-black/10">
                                     <h4 className="text-primary font-black uppercase text-sm mb-4">TOPICS:</h4>
                                     <ul className="space-y-3 text-base font-bold">
-                                        <li className="flex gap-2"><span>1-</span> <p>Monosilabos = Adjetivos Cortos <span className="text-primary">(Adjective + EST)</span></p></li>
-                                        <li className="flex gap-2"><span>2-</span> <p>Bisilabos = Adjetivos con 2 silabas <span className="text-primary">(Adjective + EST)</span></p></li>
-                                        <li className="flex gap-2"><span>3-</span> <p>Adjetivos Largos = Tienen mas de 2 silabas <span className="text-primary">(The Most + adjetivos largos)</span></p></li>
+                                        <li className="flex gap-2"><span>1-</span> <p>Monosílabos = Adjetivos Cortos <span className="text-primary">(Adjective + EST)</span></p></li>
+                                        <li className="flex gap-2"><span>2-</span> <p>Bisílabos = Adjetivos con 2 sílabas <span className="text-primary">(Adjective + EST)</span></p></li>
+                                        <li className="flex gap-2"><span>3-</span> <p>Adjetivos Largos = Tienen mas de 2 sílabas <span className="text-primary">(The Most + adjetivos largos)</span></p></li>
                                         <li className="flex gap-2"><span>4-</span> <p>Adjetivos Irregulares = Cambian en todas sus formas</p></li>
                                     </ul>
                                 </div>
@@ -565,56 +679,74 @@ export default function Class13Content({ overrideStudentId }: { overrideStudentI
                         <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase">FORMACIÓN Y REGLAS</CardTitle></CardHeader>
                         <CardContent className="space-y-6">
                             <div className="p-4 bg-muted rounded-xl border-l-4 border-primary">
-                                <h4 className="font-bold mb-2">1. Regla del doblado (CVC)</h4>
-                                <p>Si un adjetivo corto termina en Consonante + Vocal + Consonante, se dobla la última letra.</p>
+                                <h4 className="font-bold mb-2 uppercase font-black">1. Regla del doblado (CVC)</h4>
+                                <p className='font-bold'>Si un adjetivo corto termina en Consonante + Vocal + Consonante, se dobla la última letra.</p>
                                 <p className="font-mono mt-2 italic">BIG &rarr; BIGGER / HOT &rarr; HOTTER</p>
                             </div>
                             <div className="p-4 bg-muted rounded-xl border-l-4 border-primary">
-                                <h4 className="font-bold mb-2">2. Terminados en "Y"</h4>
-                                <p>Cambiamos la "y" por "i" y agregamos ER o EST.</p>
+                                <h4 className="font-bold mb-2 uppercase font-black">2. Terminados en "Y"</h4>
+                                <p className='font-bold'>Cambiamos la "y" por "i" y agregamos ER o EST.</p>
                                 <p className="font-mono mt-2 italic">HAPPY &rarr; HAPPIER / THE HAPPIEST</p>
                             </div>
                         </CardContent>
-                        <CardFooter className="justify-center"><Button onClick={() => handleTopicComplete('formacion')} size="lg">Entendido</Button></CardFooter>
+                        <CardFooter className="justify-center"><Button onClick={() => handleTopicComplete('formacion')} size="lg" className='px-12 font-bold'>Entendido</Button></CardFooter>
                     </Card>
                 );
             case 'monosilabos':
                 return (
-                    <Card className="shadow-soft border-2 border-brand-purple p-6 text-left text-foreground">
-                        <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase">MONOSÍLABOS</CardTitle></CardHeader>
-                        <CardContent><p className="text-lg font-bold">Adjetivos de una sola sílaba siguen las reglas básicas de (+ER) y (+EST).</p></CardContent>
-                        <CardFooter className="justify-center"><Button onClick={() => handleTopicComplete('monosilabos')} size="lg">Avanzar</Button></CardFooter>
-                    </Card>
+                    <div className="space-y-6">
+                        <Card className="shadow-soft border-2 border-brand-purple p-6 text-left text-foreground">
+                            <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase">MONOSÍLABOS</CardTitle></CardHeader>
+                            <CardContent><p className="text-lg font-bold">Adjetivos de una sola sílaba siguen las reglas básicas de (+ER) y (+EST).</p></CardContent>
+                        </Card>
+                        <AdjectiveTableExercise 
+                            title="Misión Monosílabos" 
+                            data={monosyllabicTableData} 
+                            onComplete={() => handleTopicComplete('monosilabos')} 
+                        />
+                    </div>
                 );
             case 'ex_mono': return <BallsExercise title="Ejercicios Monosílabos" prompts={monoPrompts} onComplete={() => handleTopicComplete('ex_mono')} vocabulary={exMonoVocab} />;
             case 'bisilabos':
                 return (
-                    <Card className="shadow-soft border-2 border-brand-purple p-6 text-left text-foreground">
-                        <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase">BISÍLABOS</CardTitle></CardHeader>
-                        <CardContent><p className="text-lg font-bold">Adjetivos de dos sílabas que terminan en "y", "le", "er", "ow" suelen comportarse como cortos.</p></CardContent>
-                        <CardFooter className="justify-center"><Button onClick={() => handleTopicComplete('bisilabos')} size="lg">Avanzar</Button></CardFooter>
-                    </Card>
+                    <div className="space-y-6">
+                        <Card className="shadow-soft border-2 border-brand-purple p-6 text-left text-foreground">
+                            <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase">BISÍLABOS</CardTitle></CardHeader>
+                            <CardContent><p className="text-lg font-bold">Adjetivos de dos sílabas que terminan en "y", "le", "er", "ow" suelen comportarse como cortos.</p></CardContent>
+                        </Card>
+                        <AdjectiveTableExercise 
+                            title="Misión Bisílabos" 
+                            data={bisyllabicTableData} 
+                            onComplete={() => handleTopicComplete('bisilabos')} 
+                        />
+                    </div>
                 );
             case 'ex_bis': return <BallsExercise title="Ejercicios Bisílabos" prompts={bisPrompts} onComplete={() => handleTopicComplete('ex_bis')} vocabulary={exBisVocab} />;
             case 'largos':
                 return (
-                    <Card className="shadow-soft border-2 border-brand-purple p-6 text-left text-foreground">
-                        <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase">ADJETIVOS LARGOS</CardTitle></CardHeader>
-                        <CardContent className="space-y-4 font-bold">
-                            <p>Adjetivos de 3 o más sílabas no usan sufijos.</p>
-                            <div className="grid sm:grid-cols-2 gap-4">
-                                <div className="p-4 bg-muted rounded-xl text-foreground">
-                                    <p className="text-primary font-black">COMPARATIVO</p>
-                                    <p className="font-mono">MORE + ADJETIVO</p>
+                    <div className="space-y-6">
+                        <Card className="shadow-soft border-2 border-brand-purple p-6 text-left text-foreground">
+                            <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase">ADJETIVOS LARGOS</CardTitle></CardHeader>
+                            <CardContent className="space-y-4 font-bold">
+                                <p>Adjetivos de 3 o más sílabas no usan sufijos.</p>
+                                <div className="grid sm:grid-cols-2 gap-4">
+                                    <div className="p-4 bg-muted rounded-xl text-foreground">
+                                        <p className="text-primary font-black">COMPARATIVO</p>
+                                        <p className="font-mono">MORE + ADJETIVO</p>
+                                    </div>
+                                    <div className="p-4 bg-muted rounded-xl text-foreground">
+                                        <p className="text-primary font-black">SUPERLATIVO</p>
+                                        <p className="font-mono">THE MOST + ADJETIVO</p>
+                                    </div>
                                 </div>
-                                <div className="p-4 bg-muted rounded-xl text-foreground">
-                                    <p className="text-primary font-black">SUPERLATIVO</p>
-                                    <p className="font-mono">THE MOST + ADJETIVO</p>
-                                </div>
-                            </div>
-                        </CardContent>
-                        <CardFooter className="justify-center border-t pt-6"><Button onClick={() => handleTopicComplete('largos')} size="lg" className="px-12 font-bold">Entendido</Button></CardFooter>
-                    </Card>
+                            </CardContent>
+                        </Card>
+                        <AdjectiveTableExercise 
+                            title="Misión Adjetivos Largos" 
+                            data={longTableData} 
+                            onComplete={() => handleTopicComplete('largos')} 
+                        />
+                    </div>
                 );
             case 'ex_largos': return <BallsExercise title="Ejercicios Largos" prompts={longPrompts} onComplete={() => handleTopicComplete('ex_largos')} vocabulary={exLongVocab} />;
             case 'irregulares':
@@ -623,15 +755,15 @@ export default function Class13Content({ overrideStudentId }: { overrideStudentI
                         <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase">ADJETIVOS IRREGULARES</CardTitle></CardHeader>
                         <CardContent>
                             <Table>
-                                <TableHeader className="bg-muted"><TableRow><TableHead>Positive</TableHead><TableHead>Comparative</TableHead><TableHead>Superlative</TableHead></TableRow></TableHeader>
+                                <TableHeader className="bg-muted"><TableRow><TableHead className='font-black'>Positive</TableHead><TableHead className='font-black'>Comparative</TableHead><TableHead className='font-black'>Superlative</TableHead></TableRow></TableHeader>
                                 <TableBody>
-                                    <TableRow><TableCell className="font-bold">GOOD (Bueno)</TableCell><TableCell className="text-primary">Better</TableCell><TableCell className="text-primary">The best</TableCell></TableRow>
-                                    <TableRow><TableCell className="font-bold">BAD (Malo)</TableCell><TableCell className="text-red-500">Worse</TableCell><TableCell className="text-red-500">The worst</TableCell></TableRow>
-                                    <TableRow><TableCell className="font-bold">FAR (Lejos)</TableCell><TableCell className="text-blue-500">Farther / Further</TableCell><TableCell className="text-blue-500">The farthest / furthest</TableCell></TableRow>
+                                    <TableRow><TableCell className="font-bold uppercase">GOOD (Bueno)</TableCell><TableCell className="text-primary font-black">Better</TableCell><TableCell className="text-primary font-black">The best</TableCell></TableRow>
+                                    <TableRow><TableCell className="font-bold uppercase">BAD (Malo)</TableCell><TableCell className="text-red-500 font-black">Worse</TableCell><TableCell className="text-red-500 font-black">The worst</TableCell></TableRow>
+                                    <TableRow><TableCell className="font-bold uppercase">FAR (Lejos)</TableCell><TableCell className="text-blue-500 font-black">Farther / Further</TableCell><TableCell className="text-blue-500 font-black">The farthest / furthest</TableCell></TableRow>
                                 </TableBody>
                             </Table>
                         </CardContent>
-                        <CardFooter className="justify-center"><Button onClick={() => handleTopicComplete('irregulares')} size="lg">Avanzar</Button></CardFooter>
+                        <CardFooter className="justify-center border-t pt-6"><Button onClick={() => handleTopicComplete('irregulares')} size="lg" className='px-12 font-bold'>Avanzar</Button></CardFooter>
                     </Card>
                 );
             case 'ex_irreg': return <BallsExercise title="Ejercicios Irregulares" prompts={irregularPrompts} onComplete={() => handleTopicComplete('ex_irreg')} vocabulary={exIrregVocab} />;
