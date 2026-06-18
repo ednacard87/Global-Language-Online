@@ -560,7 +560,7 @@ export default function EngA1Class3Page() {
                                     <p className="font-mono text-lg font-bold mt-2">i buy = she buys // i stay = she stays</p>
                                 </div>
                                 <div className="p-6 bg-destructive/5 rounded-[2rem] border-2 border-dashed border-destructive/20 text-center">
-                                    <p className="font-bold text-destructive text-lg">NOTA: Esto solo se utiliza en oraciones afirmativas (+). <br/> En (-) e (?) no se usa.</p>
+                                    <p className="font-mono text-lg font-bold mt-2">NOTA: Esto solo se utiliza en oraciones afirmativas (+). <br/> En (-) e (?) no se usa.</p>
                                 </div>
                             </CardContent>
                             <CardFooter className="justify-center border-t pt-6"><Button onClick={() => handleTopicComplete('grammar2')} size="lg" className="px-12 font-bold">Entendido <ArrowRight className="ml-2" /></Button></CardFooter>
