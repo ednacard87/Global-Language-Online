@@ -109,6 +109,22 @@ const longTableData = [
     { spanish: 'aburrido', answers: { pos: 'bored', comp: 'more bored', sup: 'the most bored' } },
 ];
 
+const ex_comp = [
+    { spanish: "MI CASA ES MAS GRANDE QUE LA TUYA", answer: ["my house is bigger than yours"] },
+    { spanish: "ESTE ESCRITORIO ES MAS PEQUEÑO QUE EL OTRO", answer: ["this desk is smaller than the another one"] },
+    { spanish: "MI PERRO ES MAS RAPIDO QUE EL PERRO DE JIMMY", answer: ["my dog is faster than jimmy's dog"] },
+    { spanish: "JIMMY ES MAS ALTO QUE JACK", answer: ["jimmy is taller than jack"] },
+    { spanish: "SU CASA ES MAS LIMPIA QUE LA DE ELLA (DE EL)", answer: ["his house is cleaner than hers"] },
+    { spanish: "ESTA CALLE ES MAS ANCHA QUE LA AVENIDA", answer: ["this street is wider than the avenue"] },
+];
+
+const ex_sup = [
+    { spanish: "MI CASA ES LA MAS GRANDE DE MI BARRIO", answer: ["my house is the biggest in my neighborhood"] },
+    { spanish: "ESTA CASA ES LA MAS PEQUEÑA DE SU BARRIO (DE ELLA)", answer: ["this house is the smallest in her neighborhood"] },
+    { spanish: "SOY EL MAS ALTO DEL SALON DE CLASE", answer: ["i am the tallest in the classroom"] },
+    { spanish: "PETER ES EL ACTOR MAS VIEJO DE LA PELICULA", answer: ["peter is the oldest actor in the movie"] },
+];
+
 const monoPrompts = [
     { spanish: "EL INVIERNO ES MAS LARGO QUE EL VERANO", answer: ["winter is longer than summer"] },
     { spanish: "SANTA MARTA ES MAS PEQUEÑA QUE BARRANQUILLA", answer: ["santa marta is smaller than barranquilla"] },
@@ -189,10 +205,10 @@ const mixed3Prompts = [
 ];
 
 // --- VOCABULARIES ---
-const exCompVocab = { "invierno": "winter", "verano": "summer", "barrio": "neighborhood", "alto": "tall", "rápido": "fast", "calle": "street" };
-const exSupVocab = { "fácil": "easy", "educado": "polite", "angosta": "narrow", "humilde": "humble", "pesada": "heavy" };
-const exMonoVocab = { ...exCompVocab, "cálida": "warmer", "delgada": "thinner", "caliente": "hot", "frío": "cold" };
-const exBisVocab = { ...exSupVocab, "chévere": "cool/nice", "tierno": "tender" };
+const exCompVocab = { "escritorio " : "desk", "limpio": "clean", "ancho": "wide", "avenida": "avenue"};
+const exSupVocab = { "barrio": "neighborhood", "pequeño": "small" , "salon de clase" : "classroom" , "pelicula" : "movie" };
+const exMonoVocab = { "cálida": "warmer", "delgada": "thinner", "caliente": "hot", "frío": "cold" };
+const exBisVocab = { "chévere": "cool/nice", "tierno": "tender" };
 const exLongVocab = { "caro": "expensive", "peligroso": "dangerous", "artículo": "article", "revista": "magazine", "elegante": "elegant", "famoso": "famous", "difícil": "difficult", "moderna": "modern" };
 const exIrregVocab = { "mejor": "best/better", "lejos": "farther/further", "peor": "worst/worse", "delicioso": "delicious", "aburridor": "boring" };
 const exEqualityVocab = { "tan ... como": "as ... as", "alto": "tall", "caro": "expensive", "inteligente": "intelligent" };
@@ -661,7 +677,7 @@ export default function Class13Content({ overrideStudentId }: { overrideStudentI
                             </Card>
                         </div>
                     );
-            case 'ex_comp': return <BallsExercise title="Ejercicios Comparativos" prompts={monoPrompts} onComplete={() => handleTopicComplete('ex_comp')} vocabulary={exCompVocab} />;
+            case 'ex_comp': return <BallsExercise title="Ejercicios Comparativos" prompts={ex_comp} onComplete={() => handleTopicComplete('ex_comp')} vocabulary={exCompVocab} />;
             case 'grammar_sup':
                 return (
                     <div className="space-y-6 text-left">
@@ -700,7 +716,7 @@ export default function Class13Content({ overrideStudentId }: { overrideStudentI
                         </Card>
                     </div>
                 );
-            case 'ex_sup': return <BallsExercise title="Ejercicios Superlativos" prompts={bisPrompts.slice(0, 4)} onComplete={() => handleTopicComplete('ex_sup')} vocabulary={exSupVocab} />;
+            case 'ex_sup': return <BallsExercise title="Ejercicios Superlativos" prompts={ex_sup} onComplete={() => handleTopicComplete('ex_sup')} vocabulary={exSupVocab} />;
             case 'formacion':
                 return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple p-6 text-left text-foreground">
