@@ -988,7 +988,6 @@ export default function Class12Content() {
                     </div>
                 </div>
             </main>
-            <Footer />
         </div>
     );
 }

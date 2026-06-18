@@ -898,7 +898,6 @@ export default function Class13Content({ overrideStudentId }: { overrideStudentI
                     </div>
                 </div>
             </main>
-            <Footer />
         </div>
     );
 }

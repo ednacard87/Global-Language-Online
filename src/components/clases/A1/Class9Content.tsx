@@ -549,8 +549,7 @@ export default function Class9Content() {
                         </div>
                     </div>
                 </div>
-            </main>
-            <Footer />
+            </main>          
         </div>
     );
 }

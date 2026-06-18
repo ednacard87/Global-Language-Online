@@ -746,8 +746,7 @@ export default function Class4Content() {
                         <div className="md:col-span-9 md:order-1">{renderContent()}</div>
                     </div>
                 </div>
-            </main>
-            <Footer />
+            </main>         
         </div>
     );
 }

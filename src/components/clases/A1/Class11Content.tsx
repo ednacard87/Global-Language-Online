@@ -608,8 +608,7 @@ export default function Class11Content() {
                         <div className="md:col-span-9 md:order-1 order-2">{renderContent()}</div>
                     </div>
                 </div>
-            </main>
-            <Footer />
+            </main>          
         </div>
     );
 }
