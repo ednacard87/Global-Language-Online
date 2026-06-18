@@ -801,9 +801,11 @@ export default function Class13Content({ overrideStudentId }: { overrideStudentI
                             <Table>
                                 <TableHeader className="bg-muted"><TableRow><TableHead className='font-black'>Positive</TableHead><TableHead className='font-black'>Comparative</TableHead><TableHead className='font-black'>Superlative</TableHead></TableRow></TableHeader>
                                 <TableBody>
-                                    <TableRow><TableCell className="font-bold uppercase">GOOD (Bueno)</TableCell><TableCell className="text-primary font-black">Better</TableCell><TableCell className="text-primary font-black">The best</TableCell></TableRow>
-                                    <TableRow><TableCell className="font-bold uppercase">BAD (Malo)</TableCell><TableCell className="text-red-500 font-black">Worse</TableCell><TableCell className="text-red-500 font-black">The worst</TableCell></TableRow>
-                                    <TableRow><TableCell className="font-bold uppercase">FAR (Lejos)</TableCell><TableCell className="text-blue-500 font-black">Farther / Further</TableCell><TableCell className="text-blue-500 font-black">The farthest / furthest</TableCell></TableRow>
+                                    <TableRow><TableCell className="font-bold uppercase">GOOD (Bueno)</TableCell><TableCell className="text-primary">Better (Mejor que otro)</TableCell><TableCell className="text-blue-500">The best (El mejor)</TableCell></TableRow>
+                                    <TableRow><TableCell className="font-bold uppercase">BAD (Malo)</TableCell><TableCell className="text-red-500">Worse (Peor que otro)</TableCell><TableCell className="text-red-500">The worst (El peor)</TableCell></TableRow>
+                                    <TableRow><TableCell className="font-bold uppercase">FAR (Lejos)</TableCell><TableCell className="text-primary">Farther / Further</TableCell><TableCell className="text-blue-500">The farthest / furthest</TableCell></TableRow>
+                                    <TableRow><TableCell className="font-bold uppercase">MUCH (Mucho)</TableCell><TableCell className="text-primary">More (mas)</TableCell><TableCell className="text-blue-500">The Most (La mayoria)</TableCell></TableRow>
+                                    <TableRow><TableCell className="font-bold uppercase">LITTLE (Poco)</TableCell><TableCell className="text-primary">Less (menos)</TableCell><TableCell className="text-blue-500">The Least (el menos)t</TableCell></TableRow>
                                 </TableBody>
                             </Table>
                         </CardContent>
@@ -812,30 +814,53 @@ export default function Class13Content({ overrideStudentId }: { overrideStudentI
                 );
             case 'ex_irreg': return <BallsExercise title="Ejercicios Irregulares" prompts={irregularPrompts} onComplete={() => handleTopicComplete('ex_irreg')} vocabulary={exIrregVocab} />;
             case 'ex_mixto_1': return <BallsExercise title="Ejercicio Mixto 1" prompts={[...monoPrompts.slice(0, 3), ...longPrompts.slice(0, 3)]} onComplete={() => handleTopicComplete('ex_mixto_1')} vocabulary={{...exMonoVocab, ...exLongVocab}} />;
+           
+           
             case 'igualdad':
                 return (
-                    <Card className="shadow-soft border-2 border-brand-purple p-6 text-left text-foreground">
-                        <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase">COMPARATIVO DE IGUALDAD</CardTitle></CardHeader>
-                        <CardContent className="space-y-4 text-foreground">
-                            <p className="text-lg font-bold">Se usa para decir que dos cosas son iguales en una cualidad.</p>
-                            <div className="p-4 bg-muted rounded-xl font-mono text-xl text-center border-2 border-dashed">AS + ADJETIVO + AS</div>
-                            <p className="italic text-muted-foreground text-center">Ej: As tall as (Tan alto como)</p>
-                        </CardContent>
+                    <div className="space-y-6 text-left">
+                        <Card className="shadow-soft border-2 border-brand-purple bg-slate-100 dark:bg-slate-800/50 p-6">
+                            <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase">COMPARATIVO DE IGUALDAD</CardTitle></CardHeader>
+                            <CardContent className="space-y-6 text-foreground font-bold">
+                                <div className="p-6 bg-white/20 rounded-2xl border border-black/10">
+                                    <h4 className="text-primary font-black uppercase text-sm mb-2">USO:</h4>
+                                    <p className="text-lg uppercase">Se usa para decir que dos cosas son iguales en una cualidad.</p>
+                                </div>
+
+                                <div className="p-6 bg-white/20 rounded-2xl border border-black/10">
+                                    <h4 className="text-primary font-black uppercase text-sm mb-2">AS + ADJETIVO + AS</h4>
+                                    <div className="font-mono text-xl space-y-1">
+                                        <p>Tall &rarr; <span className="text-primary font-black">Ej: He is As tall as Richard</span> (El es tan alto como Richard)</p>
+                                    </div>
+                                </div>
+                                </CardContent>
                         <CardFooter className="justify-center border-t pt-6"><Button onClick={() => handleTopicComplete('igualdad')} size="lg" className="px-12 font-bold">Entendido</Button></CardFooter>
                     </Card>
+                    </div>
                 );
+
             case 'ex_igual': return <BallsExercise title="Ejercicio de Igualdad" prompts={equalityPrompts} onComplete={() => handleTopicComplete('ex_igual')} vocabulary={exEqualityVocab} />;
             case 'inferioridad':
                 return (
-                    <Card className="shadow-soft border-2 border-brand-purple p-6 text-left text-foreground">
-                        <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase">COMPARATIVO DE INFERIORIDAD</CardTitle></CardHeader>
-                        <CardContent className="space-y-4">
-                            <p className="text-lg font-bold">Se usa para decir que algo es "menos" que otra cosa.</p>
-                            <div className="p-4 bg-muted rounded-xl font-mono text-xl text-center border-2 border-dashed">LESS + ADJETIVO + THAN</div>
-                            <p className="italic text-muted-foreground text-center">Ej: Less expensive than (Menos caro que)</p>
-                        </CardContent>
-                        <CardFooter className="justify-center border-t pt-6"><Button onClick={() => handleTopicComplete('inferioridad')} size="lg" className="px-12 font-bold">Entendido</Button></CardFooter>
+                    <div className="space-y-6 text-left">
+                        <Card className="shadow-soft border-2 border-brand-purple bg-slate-100 dark:bg-slate-800/50 p-6">
+                            <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase">COMPARATIVO DE INFERIORIDAD</CardTitle></CardHeader>
+                            <CardContent className="space-y-6 text-foreground font-bold">
+                                <div className="p-6 bg-white/20 rounded-2xl border border-black/10">
+                                    <h4 className="text-primary font-black uppercase text-sm mb-2">USO:</h4>
+                                    <p className="text-lg uppercase">Se usa para decir que algo es "menos" que otra cosa..</p>
+                                </div>
+
+                                <div className="p-6 bg-white/20 rounded-2xl border border-black/10">
+                                    <h4 className="text-primary font-black uppercase text-sm mb-2">LESS + ADJETIVO + THAN</h4>
+                                    <div className="font-mono text-xl space-y-1">
+                                        <p> &rarr; <span className="text-primary font-black">Ej: Motorola is Less expensive than Iphone</span> <br/> (Motorola es menos caro que el Iphone)</p>
+                                    </div>
+                                </div>
+                                </CardContent>
+                        <CardFooter className="justify-center border-t pt-6"><Button onClick={() => handleTopicComplete('igualdad')} size="lg" className="px-12 font-bold">Entendido</Button></CardFooter>
                     </Card>
+                    </div>
                 );
             case 'ex_inf': return <BallsExercise title="Ejercicio de Inferioridad" prompts={inferiorityPrompts} onComplete={() => handleTopicComplete('ex_inf')} vocabulary={exInferiorityVocab} />;
             case 'ex_mixto_2': return <BallsExercise title="Ejercicio Mixto 2" prompts={mixed2Prompts} onComplete={() => handleTopicComplete('ex_mixto_2')} vocabulary={exMixed2Vocab} />;
