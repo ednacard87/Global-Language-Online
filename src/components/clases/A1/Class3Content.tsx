@@ -67,7 +67,7 @@ const vocab2Data = [
 const mixedExercise1Data: ExercisePrompt[] = [
     { spanish: "EL BEBE VINO TINTO", answers: { affirmative: ["he drinks red wine"], negative: ["he does not drink red wine", "he doesn't drink red wine"], interrogative: ["does he drink red wine?"] } },
     { spanish: "ELLA JUEGA TENNIS CON SU HERMANO", answers: { affirmative: ["she plays tennis with her brother"], negative: ["she does not play tennis with her brother", "she doesn't play tennis with her brother"], interrogative: ["does she play tennis with her brother?"] } },
-    { spanish: "YO MONTO BICICLETA LOS DOMINGOS", answers: { affirmative: ["i ride a bike on sundays", "i ride a bicycle on sundays"], negative: ["i do not ride a bike on sundays", "i don't ride a bike on sundays"], interrogative: ["do i ride a bike on sundays?"] } },
+    { spanish: "YO MONTO BICICLETA LOS DOMINGOS", answers: { affirmative: ["i ride bike on sundays", "i ride bicycle on sundays"], negative: ["i do not ride bike on sundays", "i don't ride bike on sundays"], interrogative: ["do i ride bike on sundays?"] } },
     { spanish: "TÚ TRABAJAS LOS SABADOS", answers: { affirmative: ["you work on saturdays"], negative: ["you do not work on saturdays", "you don't work on saturdays"], interrogative: ["do you work on saturdays?"] } },
     { spanish: "ELLA VE PELICULAS CON SU NOVIO", answers: { affirmative: ["she watches movies with her boyfriend"], negative: ["she does not watch movies with her boyfriend", "she doesn't watch movies with her boyfriend"], interrogative: ["does she watch movies with her boyfriend?"] } },
     { spanish: "ÉL COME CON SU NOVIA EN ESE RESTAURANTE", answers: { affirmative: ["he eats with his girlfriend in that restaurant"], negative: ["he does not eat with his girlfriend in that restaurant", "he doesn't eat with his girlfriend in that restaurant"], interrogative: ["does he eat with his girlfriend in that restaurant?"] } },
@@ -567,7 +567,7 @@ export default function EngA1Class3Page() {
                         </Card>
                     </div>
                 );
-            case 'mixedExercises1': return <PresentSimpleExercise exerciseData={mixedExercise1Data} onComplete={() => handleTopicComplete('mixedExercises1')} title="Mixed Exercises 1" showShortAnswers={false} vocabulary={{ "vino tinto": "red wine", "hermano": "brother", "bicicleta": "bike / bicycle", "novio": "boyfriend", "hospital": "hospital", "pastel": "cake", "piña": "pineapple" }} />;
+            case 'mixedExercises1': return <PresentSimpleExercise exerciseData={mixedExercise1Data} onComplete={() => handleTopicComplete('mixedExercises1')} title="Mixed Exercises 1" showShortAnswers={false} vocabulary={{ "beber" : "to drink" , "vino tinto": "red wine", "montar" : "to ride" , "hermano": "brother", "bicicleta": "bike / bicycle", "novio": "boyfriend", "hospital": "hospital", "pastel": "cake", "piña": "pineapple", "ver" : "to watch" }} />;
             case 'presentSimpleUses':
                 return (
                     <div className="space-y-6 text-left">
@@ -586,7 +586,7 @@ export default function EngA1Class3Page() {
                         </Card>
                     </div>
                 );
-            case 'ex2_1': return <SimpleTranslationExercise course="a1" exerciseKey="c2_mixed1" onComplete={() => handleTopicComplete('ex2_1')} title="Ejercicio 1" vocabulary={{ "bebe": "drinks", "cerveza": "beer", "escuela": "school", "tio": "uncle", "dos veces": "twice", "tarde": "afternoon" }} highlightVocabulary={true} />;
+            case 'ex2_1': return <SimpleTranslationExercise course="a1" exerciseKey="c2_mixed1" onComplete={() => handleTopicComplete('ex2_1')} title="Ejercicio 1" vocabulary={{ "beber": "to drink", "cerveza": "beer", "escuela": "school", "tio": "uncle", "dos veces": "twice", "tarde": "afternoon" }} highlightVocabulary={true} />;
             case 'ex2_2': return <QAShortAnswerExercise exerciseData={mixedExercise2Sub2Data} onComplete={() => handleTopicComplete('ex2_2')} title="Ejercicio 2" description="Traduce y responde." vocabulary={{ "hablar": "speak", "hamburguesa": "hamburger", "helado": "ice cream", "trabajar": "work", "aqui": "here" }} />;
             case 'vocabulary2':
                 return (
