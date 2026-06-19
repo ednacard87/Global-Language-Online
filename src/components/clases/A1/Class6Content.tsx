@@ -131,16 +131,29 @@ const LinesWritingExercise = ({
     );
 };
 
-export default function EngA1Class6Page() {
+// --- MAIN CONTENT COMPONENT ---
+
+export default function Class6Content({ overrideStudentId }: { overrideStudentId?: string | null }) {
     const { t } = useTranslation();
     const { toast } = useToast();
     const { user, isUserLoading } = useUser();
     const firestore = useFirestore();
 
-    const studentDocRef = useMemoFirebase(() => (user ? doc(firestore, 'students', user.uid) : null), [firestore, user]);
+    const currentUID = overrideStudentId || user?.uid;
+    const studentDocRef = useMemoFirebase(
+        () => (currentUID ? doc(firestore, 'students', currentUID) : null),
+        [firestore, currentUID]
+    );
+    const authUserRef = useMemoFirebase(
+        () => (user ? doc(firestore, 'students', user.uid) : null),
+        [firestore, user]
+    );
+    
+    const { data: authUserProfile } = useDoc<{role?: string}>(authUserRef);
     const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{role?: string, lessonProgress?: any, progress?: any}>(studentDocRef);
 
-    const isAdmin = useMemo(() => (user && (studentProfile?.role === 'admin' || user.email === 'ednacard87@gmail.com')), [user, studentProfile]);
+    const isAdmin = useMemo(() => (user && (authUserProfile?.role === 'admin' || user.email === 'ednacard87@gmail.com')), [user, authUserProfile]);
+
     
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
     const [selectedTopic, setSelectedTopic] = useState<string>('');
@@ -280,24 +293,24 @@ export default function EngA1Class6Page() {
                 );
             case 'grammar':
                 return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-                        <CardHeader><CardTitle>Adjetivos vs Pronombres Posesivos</CardTitle></CardHeader>
-                        <CardContent><Table className="text-base"><TableHeader className="bg-muted"><TableRow><TableHead>ADJ.</TableHead><TableHead>ES</TableHead><TableHead>PRO.</TableHead><TableHead>ES</TableHead></TableRow></TableHeader><TableBody>{possessivesTable.map((row, idx) => (<TableRow key={idx}><TableCell className="font-bold text-primary">{row.adj}</TableCell><TableCell>{row.adjEs}</TableCell><TableCell className="font-bold text-brand-purple">{row.pro}</TableCell><TableCell>{row.proEs}</TableCell></TableRow>))}</TableBody></Table></CardContent>
-                        <CardFooter className="justify-center"><Button onClick={() => handleTopicComplete('grammar')}>Entendido</Button></CardFooter>
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-slate-100 dark:bg-slate-800/50 p-6 text-foreground text-left">
+                        <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase">Adjetivos vs Pronombres Posesivos</CardTitle></CardHeader>
+                        <CardContent><Table className="text-base text-foreground"><TableHeader className="bg-muted"><TableRow><TableHead>ADJ.</TableHead><TableHead>ES</TableHead><TableHead>PRO.</TableHead><TableHead>ES</TableHead></TableRow></TableHeader><TableBody>{possessivesTable.map((row, idx) => (<TableRow key={idx}><TableCell className="font-bold text-primary">{row.adj}</TableCell><TableCell>{row.adjEs}</TableCell><TableCell className="font-bold text-brand-purple">{row.pro}</TableCell><TableCell>{row.proEs}</TableCell></TableRow>))}</TableBody></Table></CardContent>
+                        <CardFooter className="justify-center border-t pt-6"><Button onClick={() => handleTopicComplete('grammar')} size="lg" className="px-12 font-bold">Entendido</Button></CardFooter>
                     </Card>
                 );
             case 'note':
                 return (
-                    <div className="space-y-6 text-left">
+                    <div className="space-y-6 text-left text-foreground">
                         <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-slate-100 dark:bg-slate-800/50">
-                            <CardHeader><CardTitle className="text-xl font-bold text-primary">1- Adjetivos Posesivos</CardTitle></CardHeader>
-                            <CardContent className="text-slate-900 dark:text-slate-100"><p className="text-lg">Siempre en una frase están: <strong>ANTES</strong> del sustantivo.</p><div className="mt-4 p-3 bg-white/50 rounded-lg border font-mono"><p>Example = Ejemplo</p><p className="font-bold text-primary">My house / Your car</p></div></CardContent>
+                            <CardHeader><CardTitle className="text-xl font-bold text-primary uppercase">1- Adjetivos Posesivos</CardTitle></CardHeader>
+                            <CardContent className="text-slate-900 dark:text-slate-100 font-bold"><p className="text-lg">Siempre en una frase están: <span className="underline">ANTES</span> del sustantivo.</p><div className="mt-4 p-4 bg-background/50 rounded-xl border-2 border-dashed font-mono"><p className="text-xs text-muted-foreground uppercase mb-1">Example = Ejemplo</p><p className="font-bold text-primary text-xl">My house / Your car</p></div></CardContent>
                         </Card>
                         <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-slate-100 dark:bg-slate-800/50">
-                            <CardHeader><CardTitle className="text-xl font-bold text-primary">2- Pronombres Posesivos</CardTitle></CardHeader>
-                            <CardContent className="text-slate-900 dark:text-slate-100"><p className="text-lg">Siempre en una frase están: <strong>DESPUÉS</strong> del sustantivo.</p><div className="mt-4 p-3 bg-white/50 rounded-lg border font-mono"><p>Example = Ejemplo</p><p className="font-bold text-primary">That house is mine (Esa casa es mía)</p></div></CardContent>
+                            <CardHeader><CardTitle className="text-xl font-bold text-primary uppercase">2- Pronombres Posesivos</CardTitle></CardHeader>
+                            <CardContent className="text-slate-900 dark:text-slate-100 font-bold"><p className="text-lg">Siempre en una frase están: <span className="underline">DESPUÉS</span> del sustantivo.</p><div className="mt-4 p-4 bg-background/50 rounded-xl border-2 border-dashed font-mono"><p className="text-xs text-muted-foreground uppercase mb-1">Example = Ejemplo</p><p className="font-bold text-primary text-xl">That house is mine (Esa casa es mía)</p></div></CardContent>
                         </Card>
-                        <div className="flex justify-center pt-4"><Button onClick={() => handleTopicComplete('note')} size="lg" className="px-12">Continuar</Button></div>
+                        <div className="flex justify-center pt-4"><Button onClick={() => handleTopicComplete('note')} size="lg" className="px-16 font-bold">Continuar</Button></div>
                     </div>
                 );
                 //los botones de Vocabulario del Ejercicio 6 
