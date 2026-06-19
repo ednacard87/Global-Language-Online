@@ -472,7 +472,7 @@ const ManualGradingExercise = ({
 };
 
 // --- MAIN CONTENT COMPONENT ---
-
+// OJO DEL ADMINISTRADOR
 export default function Class13Content({ overrideStudentId }: { overrideStudentId?: string | null }) {
     const { toast } = useToast();
     const { user, isUserLoading } = useUser();
