@@ -180,12 +180,18 @@ const equalityPrompts = [
     { spanish: "YO SOY TAN ALTO COMO MI HERMANO", answer: ["i am as tall as my brother"] },
     { spanish: "ESTE PORTATIL ES TAN CARO COMO ESE", answer: ["this laptop is as expensive as that one"] },
     { spanish: "ELLA ES TAN INTELIGENTE COMO SU HERMANA", answer: ["she is as intelligent as her sister"] },
+    { spanish: "DONNA ES TAN HERMOSA COMO SUS PRIMAS", answer: ["donna is as beautiful as her cousins"] },
+    { spanish: "FRANK ES TAN FLACO COMO SU PADRE", answer: ["frank is as thin as his father"] },
+    { spanish: "NOAH ES TAN EDUCADO COMO SU MADRE", answer: ["noah is as polite as his mother"] },
 ];
 
 const inferiorityPrompts = [
     { spanish: "ESTE CARRO ES MENOS CARO QUE EL AZUL", answer: ["this car is less expensive than the blue one"] },
-    { spanish: "LA MATEMATICA ES MENOS INTERESANTE QUE LA HISTORIA", answer: ["math is less interesting than history", "maths is less interesting than history"] },
+    { spanish: "MATEMATICAS ES MENOS INTERESANTE QUE HISTORIA", answer: ["math is less interesting than history", "maths is less interesting than history"] },
     { spanish: "ELLA ES MENOS TIMIDA QUE SU HERMANA", answer: ["she is less shy than her brother"] },
+    { spanish: "MARIA NO ES TAN ALTA COMO JOSH", answer: ["maria is not as tall as josh"] },
+    { spanish: "LUCI NO ES TAN DESORDENADA COMO DONNA", answer: ["luci is not as messy as donna"] },
+    { spanish: "CHARLES NO ES TAN GORDO COMO SU PADRE", answer: ["charles is not as fat as his father"] },
 ];
 
 const mixed2Prompts = [
