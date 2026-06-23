@@ -195,12 +195,23 @@ const inferiorityPrompts = [
 ];
 
 const mixed2Prompts = [
-    { spanish: "COLOMBIA", answer: ["colombia"] },
-    { spanish: "EL LUNES ES EL DIA MAS ABURRIDOR DE LA SEMANA", answer: ["monday is the most boring day of the week"] },
-    { spanish: "EL VINO ES MAS DELICIOSO QUE LA CERVEZA", answer: ["wine is more delicious than the beer"] },
-    { spanish: "ALASKA", answer: ["alaska"] },
-    { spanish: "VENEZUELA", answer: ["Venezuela"] },
-    { spanish: "REINO UNIDO", answer: ["Reino unido"] },
+    { spanish: "JON CORRE MAS RAPIDO QUE MARK", answer: ["jon runs faster than mark"] },
+    { spanish: "LA HABITACION DE ANGELA ES MAS LIMPIA QUE LA DE MARTIN", answer: ["angela's room is cleaner than martin's room"] },
+    { spanish: "SOY MAS ALTO QUE BETTY", answer: ["i am taller than betty" , "i'm taller than betty"] },
+    { spanish: "NUEVA YORK ES MAS GRANDE QUE LOS ANGELES", answer: ["new york is bigger than los angeles"] },
+    { spanish: "MARK NO ES TAN LENTO COMO JUAN", answer: ["mark is not as slow as juan"] },
+    { spanish: "LA CASA DE MARY ES MENOS LIMPIA  QUE LA DE JON", answer: ["mary's house is less clean than jon's house"] },
+    { spanish: "BETTY NO ES TAN CHEVERE COMO ANDREW", answer: ["betty is not as nice as andrew"] },
+    { spanish: "CALI NO ES TAN GRANDE COMO BOGOTA", answer: ["cali is not as big as bogota"] },
+    { spanish: "WILLIAM ES TAN GORDO COMO PAUL", answer: ["william is as fat as paul"] },
+    { spanish: "EL CARRO DE PEDRO ES TAN LIMPIO COMO EL DE ANGELA", answer: ["pedro's car is as clean as angela's car"] },
+    { spanish: "MEDELLIN  ES TAN GRANDE COMO CALI", answer: ["medellin is as big as cali"] },
+    { spanish: "YO SOY UN POQUITO MAS BAJITA QUE MI MADRE", answer: ["i am a little shorter than my mother" , "i'm a little shorter than my mother"] },
+    { spanish: "JUAN ES EL MAS VELOZ DEL EQUIPO)", answer: ["juan is the fastest in the team"] },
+    { spanish: "LA HABITACION DE ANGELA ES LA MAS  SUCIA", answer: ["angela's room is the dirtiest"] },
+    { spanish: "NUEVA YORK ES LA CIUDAD MAS GRANDE EN LOS ESTADOS UNIDOS", answer: ["new york is the biggest city in the united states"] },
+    { spanish: "JUAN ES MAS HONESTO QUE MARK", answer: ["juan is more honest than mark"] },
+    { spanish: "MIKE ES EL MAS JOVEN DE LA FAMILIA", answer: ["juan is more honest than mark"] },
 ];
 
 const mixed3Prompts = [
@@ -217,8 +228,8 @@ const exMonoVocab = { "cálida": "warmer", "delgada": "thinner", "caliente": "ho
 const exBisVocab = { "chévere": "cool/nice", "tierno": "tender" };
 const exLongVocab = { "caro": "expensive", "peligroso": "dangerous", "artículo": "article", "revista": "magazine", "elegante": "elegant", "famoso": "famous", "difícil": "difficult", "moderna": "modern" };
 const exIrregVocab = { "mejor": "best/better", "lejos": "farther/further", "peor": "worst/worse", "delicioso": "delicious", "aburridor": "boring" };
-const exEqualityVocab = { "tan ... como": "as ... as", "alto": "tall", "caro": "expensive", "inteligente": "intelligent" };
-const exInferiorityVocab = { "menos ... que": "less ... than", "interesante": "interesting", "tímida": "shy" };
+const exEqualityVocab = { "tan ... como": "as ... as", "alto": "tall", "caro": "expensive", "inteligente": "intelligent" , "portátil": "laptop" , "hermosa": "beautiful" , "primos": "cousins" ,"educado": "polite", "flaco": "thin" };
+const exInferiorityVocab = { "menos ... que": "less ... than", "interesante": "interesting", "tímida": "shy" , "matematicas": "math", "desordenada": "messy", "gordo": "fat" };
 const exMixed2Vocab = { "edna ": "edna" };
 const exMixed3Vocab = { "cantante": "singer", "famosa": "famous", "fría": "colder", "amables": "kinder", "flaco": "thinner", "mejor": "best" };
 
