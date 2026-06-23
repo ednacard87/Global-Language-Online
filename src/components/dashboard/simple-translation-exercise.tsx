@@ -254,9 +254,9 @@ const exercises = {
     c7_ex1: {
         title: 'a1class1.exercise',
         prompts: [
-            { spanish: 'LOS PARQUES SON TRANQUILOS EN LA NOCHE', english: ["the parks are quiet at night"] },
+            { spanish: 'LOS PARQUES SON TRANQUILOS EN LA NOCHE', english: ["parks are quiet at night"] },
             { spanish: 'MI HERMANA ES JOVEN', english: ["my sister is young"] },
-            { spanish: 'LOS JUGOS SON SALUDABLES', english: ["the juices are healthy"] },
+            { spanish: 'LOS JUGOS SON SALUDABLES', english: ["juices are healthy"] },
             { spanish: 'LA PELÍCULA ES INTERESANTE', english: ["the movie is interesting"] },
             { spanish: 'LA CIUDAD MÁS GRANDE DE COLOMBIA ES BOGOTA', english: ["Bogota is the biggest city in Colombia"] },
             { spanish: 'ME GUSTAN LOS ANIMALES, ESPECIALMENTE LOS PERROS', english: ["I like animals, especially dogs"] },
@@ -265,7 +265,7 @@ const exercises = {
             { spanish: 'EL HERMANO DE ANTONIO ES MUY ALTO', english: ["Antonio's brother is very tall"] },
             { spanish: 'ME GUSTAN LAS MARIPOSAS', english: ["i like butterflies"] },
             { spanish: 'A ELLA LE GUSTAN LOS CARROS', english: ["she likes cars"] },
-            { spanish: 'CUANDO ESCUCHO MUSICA, ME GUSTA ESCUCHARLA CON AUDIFONOS PORQUE NO ME GUSTA MOLESTAR OTRAS PERSONAS', english: ["when i listen to music, i like to listen it with headphones because i don't like to bother other people "] },
+            { spanish: 'CUANDO ESCUCHO MUSICA, ME GUSTA ESCUCHARLA CON AUDIFONOS PORQUE NO ME GUSTA MOLESTAR OTRAS PERSONAS', english: ["when i listen to music, i like to listen it with headphones because i don't like to bother other people"] },
         ]
     },
     c7_ex2: {

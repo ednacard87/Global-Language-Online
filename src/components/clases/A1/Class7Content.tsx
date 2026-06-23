@@ -46,7 +46,6 @@ const vocabularyData = [
     { spanish: 'COMPRAR', english: 'TO BUY' },
     { spanish: 'VENIR', english: 'TO COME' },
     { spanish: 'COSTAR', english: 'TO COST' },
-    { spanish: 'COSTAR (PASADO)', english: 'COST' },
     { spanish: 'HACER', english: 'TO DO' },
     { spanish: 'DIBUJAR', english: 'TO DRAW' },
     { spanish: 'BEBER', english: 'TO DRINK' },
@@ -268,7 +267,7 @@ export default function EngA1Class7Page() {
                                 <CardHeader><CardTitle className="text-primary text-xl font-black uppercase">3 - USO ESPECÍFICO</CardTitle></CardHeader>
                                 <CardContent className="space-y-4">
                                     <p className="text-lg text-slate-900 dark:text-slate-100">Se usa cuando se habla de <strong>"algo en particular o específico"</strong>:</p>
-                                    <ul className="space-y-2 font-mono italic text-muted-foreground pl-4">
+                                    <ul className="text-lg text-slate-900 dark:text-slate-100">
                                         <li>1. WHAT IS THE NAME OF THE RESTAURANT?</li>
                                         <li>2. DO YOU REMEMBER THE DAY WHEN WE WENT TO WASHINGTON?</li>
                                         <li>3. THE DOCTOR IS VERY GOOD</li>
@@ -280,7 +279,7 @@ export default function EngA1Class7Page() {
                                 <CardHeader><CardTitle className="text-destructive text-xl font-black uppercase">4 - NO SE USA</CardTitle></CardHeader>
                                 <CardContent className="space-y-4">
                                     <p className="text-lg font-bold text-slate-900 dark:text-slate-100">NO se pone cuando se habla en general o se generaliza:</p>
-                                    <ul className="space-y-2 font-mono italic text-muted-foreground pl-4">
+                                    <ul className="text-lg text-slate-900 dark:text-slate-100">
                                         <li className="flex items-center gap-2"><XCircle className="h-4 w-4 text-destructive" /> I LIKE FOOTBALL (No: I like the football)</li>
                                         <li className="flex items-center gap-2"><XCircle className="h-4 w-4 text-destructive" /> SHE LOVES MUSIC (No: she loves the music)</li>
                                         <li className="flex items-center gap-2"><XCircle className="h-4 w-4 text-destructive" /> PEOPLE ARE STRANGE (No: the people are strange)</li>
