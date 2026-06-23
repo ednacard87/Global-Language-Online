@@ -215,11 +215,20 @@ const mixed2Prompts = [
 ];
 
 const mixed3Prompts = [
-    { spanish: "SHAKIRA ES LA CANTANTE MAS FAMOSA DE COLOMBIA", answer: ["shakira is the most famous singer in colombia"] },
-    { spanish: "ALASKA ES MAS FRIA QUE COLOMBIA", answer: ["alaska is colder than colombia"] },
-    { spanish: "ELLOS SON MAS AMABLES QUE MIS PARIENTES", answer: ["they are kinder than my relatives"] },
-    { spanish: "TU ERES MAS FLACO QUE LUCAS", answer: ["you are thinner than lucas"] },
+    { text: "1. MY MOTHER IS _______ THAN MY FATHER", options: ["OLD", "OLDER", "THE OLDEST", "THE OLD"], answer: "OLDER" },
+    { text: "2. WHAT IS _______ MOVIE YOU HAVE EVER SEEN?", options: ["FUNNY", "FUNNIER", "THE FUNNIEST", "THE FUNNY"], answer: "THE FUNNIEST" },
+    { text: "3. MARY’S HOUSE ISN’T AS _______ AS MINE", options: ["BIGGER", "THE BIGGER", "BIG", "THE BIGGEST"], answer: "BIG" },
+    { text: "4. THAT MOVIE IS BAD, BUT IT ISN’T _______ MOVIE I HAVE EVER SEEN", options: ["BADDEST", "WORSEST", "WORSE", "THE WORST"], answer: "THE WORST" },
+    { text: "5. RACHEL’S HAIR IS NOT _______ THAN JULIA’S", options: ["LONG", "LONGER", "THE LONGEST", "MORE LONG"], answer: "LONGER" },
+    { text: "6. YESTERDAY’S EXAM WAS _______ THAN THE LAST WEEK", options: ["DIFFICULT", "DIFFICULTER", "THE DIFFCULTEST", "MORE DIFFICULT"], answer: "MORE DIFFICULT" },
+    { text: "7. PETER HAS _______ CAR.", options: ["FAST", "FASTER", "THE FASTEST", "THE FASTER"], answer: "THE FASTEST" },
+    { text: "8. I THINK MARY IS _______ WOMAN I’VE EVER SEEN", options: ["BEAUTIFUL", "THE MOST BEAUTIFUL", "THE BEAUTIFULEST"], answer: "THE MOST BEAUTIFUL" },
+    { text: "9. HER ROOM IS ONLY A LITTLE BIT _______ THAN MINE", options: ["BIGGER", "THE BIGGER", "BIG", "THE BIGGEST"], answer: "BIGGER" },
+    { text: "10. HE IS _______ MAN WHEN HE IS PLAYING FOOTBALL", options: ["THE HAPPIER", "HAPPIEST", "THE HAPPY", "HAPPYEST"], answer: "HAPPIEST" },
+    { text: "11. CATHE IS A LITTLE BIT _______ THAN ME", options: ["THE TALLER", "TALLEST", "THE TALL", "TALLIEST"], answer: "THE TALLER" },
+    { text: "12. ALEX IS MUCH _______ THAN PATRICK", options: ["HUMBLER", "THE HUMBLEST", "THE HUMBLE"], answer: "HUMBLER" },
 ];
+
 
 // --- VOCABULARIES ---
 const exCompVocab = { "escritorio " : "desk", "limpio": "clean", "ancho": "wide", "avenida": "avenue"};
@@ -302,6 +311,81 @@ const AdjectiveTableExercise = ({ data, onComplete, title }: { data: any[], onCo
         </Card>
     );
 };
+
+//- EJERCICIO MIXTO 3
+const ChoiceExercise = ({ prompts, onComplete, title, description }: any) => {
+    const { toast } = useToast();
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [status, setStatus] = useState<Record<number, 'correct' | 'incorrect' | 'unchecked'>>({});
+
+    const handleSelect = (option: string) => {
+        const isCorrect = option.toUpperCase() === prompts[currentIndex].answer.toUpperCase();
+        setStatus(prev => ({ ...prev, [currentIndex]: isCorrect ? 'correct' : 'incorrect' }));
+        if (isCorrect) toast({ title: "¡Correcto!" });
+        else toast({ variant: 'destructive', title: "Sigue intentando" });
+    };
+
+    const handleNext = () => {
+        if (currentIndex < prompts.length - 1) {
+            setCurrentIndex(prev => prev + 1);
+        } else {
+            onComplete();
+        }
+    };
+
+    return (
+        <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground">
+            <CardHeader>
+                <div>
+                    <CardTitle>{title}</CardTitle>
+                    <CardDescription className='font-bold text-foreground mt-1'>{description || "Elige la opcion gramaticamente correcta."}</CardDescription>
+                    <div className="flex gap-2 justify-start flex-wrap pt-4">
+                        {prompts.map((_: any, i: number) => (
+                            <div key={i} onClick={() => setCurrentIndex(i)} className={cn("h-8 w-8 rounded-full border-2 flex items-center justify-center text-xs font-bold cursor-pointer transition-all", currentIndex === i ? "border-primary ring-2 ring-primary" : "border-muted", status[i] === 'correct' ? "bg-green-500 text-white border-green-500" : status[i] === 'incorrect' ? "bg-red-500 text-white border-red-500" : "bg-card text-foreground")}>
+                                {i + 1}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </CardHeader>
+            <CardContent className="space-y-8 py-10 text-foreground">
+                <div className="text-2xl font-bold text-center leading-relaxed">
+                    {prompts[currentIndex].text.split('_______').map((part: string, i: number) => (
+                        <React.Fragment key={i}>
+                            {part}
+                            {i < prompts[currentIndex].text.split('_______').length - 1 && (
+                                <span className="text-primary border-b-2 border-dashed border-primary px-4 mx-2">
+                                    {status[currentIndex] === 'correct' ? prompts[currentIndex].answer : '...'}
+                                </span>
+                            )}
+                        </React.Fragment>
+                    ))}
+                </div>
+                <div className="grid grid-cols-2 gap-4 max-w-md mx-auto">
+                    {prompts[currentIndex].options.map((opt: string) => (
+                        <Button 
+                            key={opt} 
+                            onClick={() => handleSelect(opt)} 
+                            variant="outline" 
+                            className={cn(
+                                "h-16 text-lg font-black uppercase",
+                                status[currentIndex] === 'correct' && opt === prompts[currentIndex].answer && "border-green-500 bg-green-50 text-green-700 shadow-md scale-105",
+                                status[currentIndex] === 'incorrect' && opt !== prompts[currentIndex].answer && "border-red-500 bg-red-50 text-red-700"
+                            )}
+                        >
+                            {opt}
+                        </Button>
+                    ))}
+                </div>
+            </CardContent>
+            <CardFooter className="justify-between border-t pt-6">
+                <Button variant="outline" onClick={() => setCurrentIndex(p => Math.max(0, p - 1))} disabled={currentIndex === 0}>Anterior</Button>
+                <Button onClick={handleNext} disabled={status[currentIndex] !== 'correct'} className="px-12 font-bold">Siguiente</Button>
+            </CardFooter>
+        </Card>
+    );
+};
+
 
 const BallsExercise = ({ title, prompts, onComplete, vocabulary }: any) => {
     const { toast } = useToast();
@@ -513,7 +597,7 @@ export default function Class13Content({ overrideStudentId }: { overrideStudentI
     const [vocabValidation, setVocabValidation] = useState<any[]>(Array(vocabularyData.length).fill('unchecked'));
     const [canAdvanceVocab, setCanAdvanceVocab] = useState(false);
 
-    const initialLearningPath = useMemo(() => [
+    const initialLearningPath = useMemo((): any[] => [
         { key: 'vocabulario', name: 'Vocabulario (Adjetivos)', icon: BookOpen, status: 'active' },
         { key: 'grados', name: 'Grados de los Adjetivos', icon: Scale, status: 'locked' },
         { key: 'grammar_comp', name: 'Gramática: Comparativos', icon: GraduationCap, status: 'locked' },
@@ -535,32 +619,23 @@ export default function Class13Content({ overrideStudentId }: { overrideStudentI
         { key: 'inferioridad', name: 'Comparativo de Inferioridad', icon: Scale, status: 'locked' },
         { key: 'ex_inf', name: 'Ejercicio Inferioridad', icon: PenSquare, status: 'locked' },
         { key: 'ex_mixto_2', name: 'Ejercicio Mixto 2', icon: PenSquare, status: 'locked' },
-        { key: 'ex_mixto_3', name: 'Ejercicio Mixto 3', icon: PenSquare, status: 'locked' },
         { key: 'dictation', name: 'Dictation', icon: Mic, status: 'locked' },
+        { key: 'ex_mixto_3', name: 'Ejercicio Mixto 3', icon: PenSquare, status: 'locked' },
     ], []);
 
-    const handleTopicComplete = useCallback((completedKey: string) => {
-        setTopicToComplete(completedKey);
-    }, []);
-
-    useEffect(() => {
+useEffect(() => {
         if (isProfileLoading || isUserLoading || !studentProfile || initialLoadComplete) return;
-        let path = initialLearningPath.map(t => ({ ...t }));
-        let savedST = '';
-        
+        let p = initialLearningPath.map(t => ({ ...t }));
         const d = studentProfile.lessonProgress?.[progressStorageVersion] || {};
-        path.forEach(t => { if (d[t.key]) (t as any).status = d[t.key]; });
-        savedST = d.lastSelectedTopic || '';
-
-        if (isAdmin) path.forEach(t => (t as any).status = (t as any).status === 'locked' ? 'active' : (t as any).status);
-
-        let lastDone = true;
-        for(let i=0; i < path.length; i++) { if (lastDone && (path[i] as any).status === 'locked') (path[i] as any).status = 'active'; lastDone = (path[i] as any).status === 'completed'; }
-        
-        setLearningPath(path);
-        setSelectedTopic(savedST || path.find(p => p.status === 'active')?.key || path[0].key);
+        p.forEach(t => { if (d[t.key]) (t as any).status = d[t.key]; });
+        let last = true;
+        for(let i=0; i < p.length; i++) { if (last && (p[i] as any).status === 'locked') (p[i] as any).status = 'active'; last = (p[i] as any).status === 'completed'; }
+        setLearningPath(p);
+        setSelectedTopic(d.lastSelectedTopic || p.find(it => it.status === 'active')?.key || p[0].key);
         setInitialLoadComplete(true); setIsInitialLoading(false);
     }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading, isUserLoading, initialLoadComplete]);
+
+
 
     const progressValue = useMemo(() => {
         if (learningPath.length === 0) return 0;
@@ -881,7 +956,7 @@ export default function Class13Content({ overrideStudentId }: { overrideStudentI
                 );
             case 'ex_inf': return <BallsExercise title="Ejercicio de Inferioridad" prompts={inferiorityPrompts} onComplete={() => handleTopicComplete('ex_inf')} vocabulary={exInferiorityVocab} />;
             case 'ex_mixto_2': return <BallsExercise title="Ejercicio Mixto 2" prompts={mixed2Prompts} onComplete={() => handleTopicComplete('ex_mixto_2')} vocabulary={exMixed2Vocab} />;
-            case 'ex_mixto_3': return <BallsExercise title="Misión Final: Mixto 3" prompts={mixed3Prompts} onComplete={() => handleTopicComplete('ex_mixto_3')} vocabulary={exMixed3Vocab} />;
+            case 'ex_mixto_3': return <ChoiceExercise title="Misión Final: Mixto 3" prompts={mixed3Prompts} onComplete={() => handleTopicComplete('ex_mixto_3')} vocabulary={exMixed3Vocab} />;
             case 'dictation':
                 return (
                     <ManualGradingExercise 
