@@ -285,6 +285,11 @@ export default function EngA1Class7Page() {
                                         <li className="flex items-center gap-2"><XCircle className="h-4 w-4 text-destructive" /> PEOPLE ARE STRANGE (No: the people are strange)</li>
                                     </ul>
                                 </CardContent>
+                                <CardFooter className="justify-center border-t pt-6 bg-muted/10">
+                                    <Button onClick={() => handleTopicComplete('grammar')} size="lg" className="px-16 font-bold h-14 text-xl">
+                                        Entendido <ArrowRight className="ml-2 h-6 w-6" />
+                                    </Button>
+                                </CardFooter>
                             </Card>
                         </div>
                     </div>
@@ -315,6 +320,11 @@ export default function EngA1Class7Page() {
                                         <p className="font-bold text-slate-900 dark:text-slate-100">USO: Son utilizados para referirnos a algo o alguien en <span className="underline uppercase">Singular</span>.</p>
                                     </div>
                                 </CardContent>
+                                <CardFooter className="justify-center border-t pt-6 bg-muted/10">
+                                    <Button onClick={() => handleTopicComplete('grammar2')} size="lg" className="px-16 font-bold h-14 text-xl">
+                                        Entendido <ArrowRight className="ml-2 h-6 w-6" />
+                                    </Button>
+                                </CardFooter>
                             </Card>
                         </div>
                     </div>
@@ -384,6 +394,7 @@ export default function EngA1Class7Page() {
                                         </div>
                                     </div>
                                 </CardContent>
+                                
                             </Card>
 
                             <Card className="bg-slate-100 dark:bg-slate-900/50 border-border/50 rounded-[2rem] shadow-sm border-2 border-brand-purple/30">
@@ -406,6 +417,11 @@ export default function EngA1Class7Page() {
                                         </div>
                                     </div>
                                 </CardContent>
+                                <CardFooter className="justify-center border-t pt-6 bg-muted/10">
+                                    <Button onClick={() => handleTopicComplete('grammar3')} size="lg" className="px-16 font-bold h-14 text-xl">
+                                        Entendido <ArrowRight className="ml-2 h-6 w-6" />
+                                    </Button>
+                                </CardFooter>
                             </Card>
                         </div>
                     </div>
