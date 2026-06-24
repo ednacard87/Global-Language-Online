@@ -103,7 +103,7 @@ const class3LargeTextEx4Dialogue: DialogueLine[] = [
     { speaker: "MARY", line: "¿VIVES EN BARCELONA?", answer: ["do you live in barcelona?"] },
     { speaker: "JON", line: "NO, NO VIVO EN BARCELONA. VIVO EN MADRID, PERO MI HERMANA VIVE ALLÍ.", answer: ["no, i do not live in barcelona. i live in madrid, but my sister lives there", "no, i don't live in barcelona. i live in madrid, but my sister lives there"] },
     { speaker: "MARY", line: "¿Y LE GUSTA?", answer: ["and does she like it?"] },
-    { speaker: "JON", line: "SÍ, LE ENCANTA BARCELONA. ELLA TRABAJA EN UN BANCO POR LAS MAÑANAS. POR LAS TARDES, ELLA JUEGA AL TENIS CON SU NOVIO O ELLA MIRA LA TV EN CASA. POR LAS NOCHES, ELLA VA A LA PLAYA OR ELLA HACE SU TAREA DE INGLÉS. ESTUDIA INGLÉS LOS SÁBADOS.", answer: ["yes, she loves barcelona. she works in a bank in the mornings. in the afternoons, she plays tennis with her boyfriend or she watches tv at home. in the evenings, she goes to the beach or she does her english homework. she studies english on saturdays"] },
+    { speaker: "JON", line: "SÍ, LE ENCANTA BARCELONA. ELLA TRABAJA EN UN BANCO EN LA MAÑANA. POR LA TARDE, ELLA JUEGA AL TENIS CON SU NOVIO O ELLA MIRA LA TV EN CASA. EN LA NOCHE, ELLA VA A LA PLAYA OR ELLA HACE SU TAREA DE INGLÉS. ESTUDIA INGLÉS LOS SÁBADOS.", answer: ["yes, she loves barcelona. she works in a bank in the morning. in the afternoon, she plays tennis with her boyfriend or she watches tv at home. in the evening, she goes to the beach or she does her english homework. she studies english on saturdays"] },
     { speaker: "MARY", line: "¿ELLA TE VISITA EN MADRID?", answer: ["does she visit you in madrid?"] },
     { speaker: "JON", line: "ELLA NO VIENE A MADRID MUY A MENUDO. YO LA VISITO EN BARCELONA.", answer: ["she does not come to madrid very often. i visit her in barcelona", "she doesn't come to madrid very often. i visit her in barcelona"] },
 ];
@@ -586,9 +586,9 @@ export default function EngA1Class3Page() {
                         </Card>
                     </div>
                 );
-            case 'ex2_1': return <SimpleTranslationExercise course="a1" exerciseKey="c2_mixed1" onComplete={() => handleTopicComplete('ex2_1')} title="Ejercicio 1" vocabulary={{ "beber": "to drink", "cerveza": "beer", "escuela": "school", "tio": "uncle", "dos veces": "twice", "tarde": "afternoon" }} highlightVocabulary={true} />;
-            case 'ex2_2': return <QAShortAnswerExercise exerciseData={mixedExercise2Sub2Data} onComplete={() => handleTopicComplete('ex2_2')} title="Ejercicio 2" description="Traduce y responde." vocabulary={{ "hablar": "speak", "hamburguesa": "hamburger", "helado": "ice cream", "trabajar": "work", "aqui": "here" }} />;
-            case 'vocabulary2':
+            case 'ex2_1': return <SimpleTranslationExercise course="a1" exerciseKey="c2_mixed1" onComplete={() => handleTopicComplete('ex2_1')} title="Ejercicio 1" vocabulary={{ "beber": "to drink", "cerveza": "beer", "escuela": "school", "tio": "uncle", "dos veces": "twice", "tarde": "afternoon" , "visitar" : "to visit" , "ejercicio" : "exercise" , "tren" : "train" , "salir" : "to leave" }} highlightVocabulary={true} />;
+            case 'ex2_2': return <QAShortAnswerExercise exerciseData={mixedExercise2Sub2Data} onComplete={() => handleTopicComplete('ex2_2')} title="Ejercicio 2" description="Traduce y responde." vocabulary={{ "hablar": "speak", "hamburguesa": "hamburger", "helado": "ice cream", "trabajar": "work", "aqui": "here" , "querer" : "to want" , "dormir" : "to sleep" , "necesitar" : "to need" , "libro" : "book" }} />;
+             case 'vocabulary2':
                 return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm p-6 text-left text-foreground">
                         <CardHeader><CardTitle>Vocabulary 2</CardTitle></CardHeader>
@@ -598,7 +598,16 @@ export default function EngA1Class3Page() {
                                 {vocab2Data.map((v, i) => (
                                     <React.Fragment key={i}>
                                         <div className="p-2 border rounded bg-card flex items-center font-medium">{v.es}</div>
-                                        <Input value={vocab2Answers[i] || ''} onChange={e => { const n = [...vocab2Answers]; n[i] = e.target.value; setVocab2Answers(n); setCanAdvanceVocab2(false); }} className={cn(vocab2Validation[i] === 'correct' ? 'border-green-500 bg-green-50' : vocab2Validation[i] === 'incorrect' ? 'border-destructive bg-destructive/5' : '')} autoComplete="off" />
+                                        <Input 
+                                            value={vocab2Answers[i] || ''} 
+                                            onChange={e => { const n = [...vocab2Answers]; n[i] = e.target.value; setVocab2Answers(n); setVocab2Validation(vv => { const nv = [...vv]; nv[i] = 'unchecked'; return nv as any; }); setCanAdvanceVocab2(false); }} 
+                                            className={cn(
+                                                "h-12 border-2", 
+                                                vocab2Validation[i] === 'correct' ? 'border-green-500 focus-visible:ring-green-500' : 
+                                                vocab2Validation[i] === 'incorrect' ? 'border-destructive bg-destructive/5' : ''
+                                            )} 
+                                            autoComplete="off" 
+                                        />
                                     </React.Fragment>
                                 ))}
                             </div>
@@ -607,7 +616,7 @@ export default function EngA1Class3Page() {
                     </Card>
                 );
             case 'ex3_3': return <ShortAnswerPresentSimpleExercise exerciseData={shortAnswerEx3Data} onComplete={() => handleTopicComplete('ex3_3')} title="Ejercicio 3" description="Responde cortamente." vocabulary={{ "like": "gustar", "chocolate": "chocolate", "speak": "hablar", "every day": "cada dia", "together": "juntos", "call": "llamar" }} />;
-            case 'ex3_4': return <LargeTextTranslationExercise title="Ejercicio 4: Diálogo" dialogue={class3LargeTextEx4Dialogue} onComplete={() => handleTopicComplete('ex3_4')} vocabulary={{ "vives": "live", "allí": "there", "encanta": "loves", "banco": "bank", "mañanas": "mornings", "novio": "boyfriend", "tarea": "homework", "visita": "visit", "a menudo": "often" }} />;
+            case 'ex3_4': return <LargeTextTranslationExercise title="Ejercicio 4: Diálogo" dialogue={class3LargeTextEx4Dialogue} onComplete={() => handleTopicComplete('ex3_4')} vocabulary={{ "vives": "live", "allí": "there", "encanta": "loves", "banco": "bank", "mañanas": "mornings", "novio": "boyfriend", "tarea": "homework", "visita": "visit", "muy" : "very" ,"a menudo": "often" , "en la tarde" : "in the afternoon" , "en la noche" : "in the evening" , "venir" : "to come" , "ver tv" : "to watch tv" , "en" : "in" , "en casa" : "at home"}} />;
             case 'can':
                 return (
                     <div className="space-y-6 text-left">
@@ -621,7 +630,7 @@ export default function EngA1Class3Page() {
                                     <ul className="list-disc pl-5 space-y-2 text-lg">
                                         <li>El verbo <span className="font-bold text-primary">can</span> no tiene modificación en presente.</li>
                                         <li>Siempre después del verbo <span className="font-bold text-primary">can</span> hay otro verbo.</li>
-                                        <li>Y ese verbo <span className="font-bold text-destructive underline uppercase">NUNCA</span> tiene el "TO" en la mitad de: can y el otro verbo.</li>
+                                        <li>Y ese verbo <span className="flex items-center gap-2 text-red-600">NUNCA</span> tiene el "TO" en la mitad de: can y el otro verbo.</li>
                                     </ul>
                                     <div className="mt-6 p-4 bg-background rounded-xl border-2 border-dashed">
                                         <p className="font-bold mb-2">Example:</p>
@@ -645,7 +654,7 @@ export default function EngA1Class3Page() {
                                 </div>
                                 <div className="p-6 bg-slate-100 dark:bg-slate-800/50 rounded-[2rem] border border-border/50 text-center">
                                     <h3 className="text-xl font-bold text-primary mb-2 uppercase tracking-tight">CONTRACCION NEGATIVA DE CAN</h3>
-                                    <p className="text-2xl font-black font-mono bg-destructive/10 text-destructive px-6 py-3 rounded-xl border-2 border-dashed border-destructive/20 inline-block">
+                                    <p className="flex items-center gap-2 text-green-600">
                                         CAN + NOT = CAN’T
                                     </p>
                                 </div>
@@ -658,8 +667,8 @@ export default function EngA1Class3Page() {
                         </Card>
                     </div>
                 );
-            case 'can1': return <LinesWritingExercise title="CAN 1" description="Traduce las siguientes frases de forma libre." prompts={can1Prompts} onComplete={() => handleTopicComplete('can1')} studentDocRef={studentDocRef} initialData={studentProfile?.lessonProgress?.[progressStorageKey]?.canData} initialGrades={studentProfile?.lessonProgress?.[progressStorageKey]?.canGrades} savePath={`lessonProgress.${progressStorageKey}.canData`} savePathGrades={`lessonProgress.${progressStorageKey}.canGrades`} isAdmin={isAdmin} vocabulary={{ "ventanas": "windows", "licor": "liquor", "enfermo": "sick", "finca": "farm", "platos": "dishes", "próxima": "next" }} />;
-            case 'can2': return <Can2ManualGradingExercise prompts={can2Prompts} onComplete={() => handleTopicComplete('can2')} vocabulary={{ "vacation": "vacation", "virtual": "virtual", "enseñar": "teach", "saber": "know", "enferma": "sick" }} studentDocRef={studentDocRef} initialData={studentProfile?.lessonProgress?.[progressStorageKey]?.can2Data} initialGrades={studentProfile?.lessonProgress?.[progressStorageKey]?.can2Grades} savePath={`lessonProgress.${progressStorageKey}.can2Data`} savePathGrades={`lessonProgress.${progressStorageKey}.can2Grades`} isAdmin={isAdmin} />;
+            case 'can1': return <LinesWritingExercise title="CAN 1" description="Traduce las siguientes frases de forma libre." prompts={can1Prompts} onComplete={() => handleTopicComplete('can1')} studentDocRef={studentDocRef} initialData={studentProfile?.lessonProgress?.[progressStorageKey]?.canData} initialGrades={studentProfile?.lessonProgress?.[progressStorageKey]?.canGrades} savePath={`lessonProgress.${progressStorageKey}.canData`} savePathGrades={`lessonProgress.${progressStorageKey}.canGrades`} isAdmin={isAdmin} vocabulary={{ "ventanas": "windows", "licor": "liquor", "enfermo": "sick", "finca": "farm", "platos": "dishes", "próxima": "next" , "viajar" : "to travel" , "lavar" : "to wash" , "los,las" : "the" }} />;
+            case 'can2': return <Can2ManualGradingExercise prompts={can2Prompts} onComplete={() => handleTopicComplete('can2')} vocabulary={{ "vacation": "vacation", "virtual": "virtual", "enseñar": "teach", "saber": "know", "enferma": "sick" , "finca" : "farm" , "vacaciones" : "vacation" , "ciudad" : "city" , "vivir" : "to live" , "licor"  : "liquor" , "beber" : "to drink" , "mañana" : "tomorrow" , "frances" : "french" , "matemáticas" : "math" }} studentDocRef={studentDocRef} initialData={studentProfile?.lessonProgress?.[progressStorageKey]?.can2Data} initialGrades={studentProfile?.lessonProgress?.[progressStorageKey]?.can2Grades} savePath={`lessonProgress.${progressStorageKey}.can2Data`} savePathGrades={`lessonProgress.${progressStorageKey}.can2Grades`} isAdmin={isAdmin} />;
             default: return <div className="flex justify-center items-center h-48"><Loader2 className="animate-spin h-10 w-10 text-primary" /></div>;
         }
     };
