@@ -815,14 +815,25 @@ useEffect(() => {
                         <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase">FORMACIÓN Y REGLAS</CardTitle></CardHeader>
                         <CardContent className="space-y-6">
                             <div className="p-4 bg-muted rounded-xl border-l-4 border-primary">
+                                <h4 className="font-bold mb-2 uppercase font-black">1. TERMINADOS EN "E"</h4>
+                                <p className='font-bold'>Si un adjetivo termina en "e", se agrega "-er" o "-est" para formar el comparativo y superlativo respectivamente.</p>
+                                <p className="font-mono mt-2 italic">NICE &rarr; NICER / THE NICEST </p>
+                            </div>  
+                            <div className="p-4 bg-muted rounded-xl border-l-4 border-primary">
+                                <h4 className="font-bold mb-2 uppercase font-black">2. Terminados en "Y"(CVC)</h4>
+                                <p className='font-bold'>Si un adjetivo termina en "Y" precedida de una consonante, cambiamos la "y" por "i" y agregamos ER o EST.</p>
+                                <p className="font-mono mt-2 italic">HAPPY &rarr; HAPPIER / THE HAPPIEST</p>
+                            </div>            
+                            <div className="p-4 bg-muted rounded-xl border-l-4 border-primary">
+                                <h4 className="font-bold mb-2 uppercase font-black">3. Terminados en "Y"</h4>
+                                <p className='font-bold'>Si un adjetivo termina en "Y" precedida de una vocal, no cambiamos la "y" y agregamos ER o EST.</p>
+                                <p className="font-mono mt-2 italic">GRAY &rarr; GRAYER / THE GRAYEST</p>
+                            </div>
+                            
+                             <div className="p-4 bg-muted rounded-xl border-l-4 border-primary">
                                 <h4 className="font-bold mb-2 uppercase font-black">1. Regla del doblado (CVC)</h4>
                                 <p className='font-bold'>Si un adjetivo corto termina en Consonante + Vocal + Consonante, se dobla la última letra.</p>
                                 <p className="font-mono mt-2 italic">BIG &rarr; BIGGER / HOT &rarr; HOTTER</p>
-                            </div>
-                            <div className="p-4 bg-muted rounded-xl border-l-4 border-primary">
-                                <h4 className="font-bold mb-2 uppercase font-black">2. Terminados en "Y"</h4>
-                                <p className='font-bold'>Cambiamos la "y" por "i" y agregamos ER o EST.</p>
-                                <p className="font-mono mt-2 italic">HAPPY &rarr; HAPPIER / THE HAPPIEST</p>
                             </div>
                         </CardContent>
                         <CardFooter className="justify-center"><Button onClick={() => handleTopicComplete('formacion')} size="lg" className='px-12 font-bold'>Entendido</Button></CardFooter>
