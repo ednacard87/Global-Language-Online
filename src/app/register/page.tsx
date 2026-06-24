@@ -9,6 +9,7 @@ import * as z from "zod";
 import { useRouter } from "next/navigation";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { doc } from "firebase/firestore";
+import { Eye, EyeOff } from "lucide-react";
 
 import { DashboardHeader } from "@/components/dashboard/header";
 import {
@@ -68,6 +69,8 @@ export default function RegisterPage() {
   const { toast } = useToast();
   const { t } = useTranslation();
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [showPassword, setShowPassword] = React.useState(false);
+  const [showRepeatPassword, setShowRepeatPassword] = React.useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -253,7 +256,25 @@ export default function RegisterPage() {
                     <FormItem>
                       <FormLabel>{t('registerPage.passwordLabel')}</FormLabel>
                       <FormControl>
-                        <Input type="password" {...field} />
+                        <div className="relative">
+                          <Input type={showPassword ? "text" : "password"} {...field} />
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                            onClick={() => setShowPassword(!showPassword)}
+                          >
+                            {showPassword ? (
+                              <EyeOff className="h-4 w-4 text-muted-foreground" />
+                            ) : (
+                              <Eye className="h-4 w-4 text-muted-foreground" />
+                            )}
+                            <span className="sr-only">
+                              {showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                            </span>
+                          </Button>
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -266,7 +287,25 @@ export default function RegisterPage() {
                     <FormItem>
                       <FormLabel>{t('registerPage.repeatPasswordLabel')}</FormLabel>
                       <FormControl>
-                        <Input type="password" {...field} />
+                        <div className="relative">
+                          <Input type={showRepeatPassword ? "text" : "password"} {...field} />
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                            onClick={() => setShowRepeatPassword(!showRepeatPassword)}
+                          >
+                            {showRepeatPassword ? (
+                              <EyeOff className="h-4 w-4 text-muted-foreground" />
+                            ) : (
+                              <Eye className="h-4 w-4 text-muted-foreground" />
+                            )}
+                            <span className="sr-only">
+                              {showRepeatPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                            </span>
+                          </Button>
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
