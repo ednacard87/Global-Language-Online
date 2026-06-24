@@ -89,7 +89,7 @@ export default function LandingPage() {
               title="INGLES (+16)"
               description="El idioma Global te espera. Domina el mundo y abre puertas."
               buttonText="¡COMENZAR AHORA!"
-              href="/login"
+              href="/register"
               imageUrl={englishCardBg?.imageUrl || ''}
               imageHint={englishCardBg?.imageHint || 'woman headphones'}
               cardClass="english-card"
@@ -98,7 +98,7 @@ export default function LandingPage() {
               title="ESPAÑOL (+18)"
               description="Conecta con hispanohablantes y  Vive la Cultura Latina"
               buttonText="¡DESCUBRE MÁS!"
-              href="/login"
+              href="/register"
               imageUrl={spanishCardBg?.imageUrl || ''}
               imageHint={spanishCardBg?.imageHint || 'person laptop'}
               cardClass="spanish-card"
@@ -107,7 +107,7 @@ export default function LandingPage() {
               title="Zona joven (niños +12)"
               description="Domina el idioma, Supera desafios y desbloquea niveles ."
               buttonText="¡ACEPTAR DESAFIO!"
-              href="/login"
+              href="/register"
               imageUrl={kidsCardBg?.imageUrl || ''}
               imageHint={kidsCardBg?.imageHint || 'cartoon djs'}
               cardClass="kids-card"
