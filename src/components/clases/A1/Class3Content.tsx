@@ -103,7 +103,7 @@ const class3LargeTextEx4Dialogue: DialogueLine[] = [
     { speaker: "MARY", line: "¿VIVES EN BARCELONA?", answer: ["do you live in barcelona?"] },
     { speaker: "JON", line: "NO, NO VIVO EN BARCELONA. VIVO EN MADRID, PERO MI HERMANA VIVE ALLÍ.", answer: ["no, i do not live in barcelona. i live in madrid, but my sister lives there", "no, i don't live in barcelona. i live in madrid, but my sister lives there"] },
     { speaker: "MARY", line: "¿Y LE GUSTA?", answer: ["and does she like it?"] },
-    { speaker: "JON", line: "SÍ, LE ENCANTA BARCELONA. ELLA TRABAJA EN UN BANCO EN LA MAÑANA. POR LA TARDE, ELLA JUEGA AL TENIS CON SU NOVIO O ELLA MIRA LA TV EN CASA. EN LA NOCHE, ELLA VA A LA PLAYA OR ELLA HACE SU TAREA DE INGLÉS. ESTUDIA INGLÉS LOS SÁBADOS.", answer: ["yes, she loves barcelona. she works in a bank in the morning. in the afternoon, she plays tennis with her boyfriend or she watches tv at home. in the evening, she goes to the beach or she does her english homework. she studies english on saturdays"] },
+    { speaker: "JON", line: "SÍ, LE ENCANTA BARCELONA. ELLA TRABAJA EN UN BANCO EN LA MAÑANA. EN LA TARDE, ELLA JUEGA AL TENIS CON SU NOVIO O ELLA MIRA LA TV EN CASA. EN LA NOCHE, ELLA VA A LA PLAYA O ELLA HACE SU TAREA DE INGLÉS. ELLA ESTUDIA INGLÉS LOS SÁBADOS.", answer: ["yes, she loves barcelona. she works in a bank in the morning. in the afternoon, she plays tennis with her boyfriend or she watches tv at home. in the evening, she goes to the beach or she does her english homework. she studies english on saturdays"] },
     { speaker: "MARY", line: "¿ELLA TE VISITA EN MADRID?", answer: ["does she visit you in madrid?"] },
     { speaker: "JON", line: "ELLA NO VIENE A MADRID MUY A MENUDO. YO LA VISITO EN BARCELONA.", answer: ["she does not come to madrid very often. i visit her in barcelona", "she doesn't come to madrid very often. i visit her in barcelona"] },
 ];
@@ -630,7 +630,7 @@ export default function EngA1Class3Page() {
                                     <ul className="list-disc pl-5 space-y-2 text-lg">
                                         <li>El verbo <span className="font-bold text-primary">can</span> no tiene modificación en presente.</li>
                                         <li>Siempre después del verbo <span className="font-bold text-primary">can</span> hay otro verbo.</li>
-                                        <li>Y ese verbo <span className="flex items-center gap-2 text-red-600">NUNCA</span> tiene el "TO" en la mitad de: can y el otro verbo.</li>
+                                        <li>Y ese verbo <span className="text-red-600">NUNCA</span> tiene el "TO" en la mitad de: can y el otro verbo.</li>
                                     </ul>
                                     <div className="mt-6 p-4 bg-background rounded-xl border-2 border-dashed">
                                         <p className="font-bold mb-2">Example:</p>
@@ -654,9 +654,7 @@ export default function EngA1Class3Page() {
                                 </div>
                                 <div className="p-6 bg-slate-100 dark:bg-slate-800/50 rounded-[2rem] border border-border/50 text-center">
                                     <h3 className="text-xl font-bold text-primary mb-2 uppercase tracking-tight">CONTRACCION NEGATIVA DE CAN</h3>
-                                    <p className="flex items-center gap-2 text-green-600">
-                                        CAN + NOT = CAN’T
-                                    </p>
+                                    <p className=" text-green-600"> CAN + NOT = CAN’T </p>                                         
                                 </div>
                             </CardContent>
                             <CardFooter className="justify-center border-t pt-6">
