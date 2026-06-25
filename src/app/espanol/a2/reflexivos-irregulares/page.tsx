@@ -652,7 +652,6 @@ function ReflexivosIrregularesContent() {
                     </div>
                 </div>
             </main>
-            <Footer />
         </div>
     );
 }
