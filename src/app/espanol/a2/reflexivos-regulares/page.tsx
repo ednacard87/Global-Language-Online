@@ -57,7 +57,6 @@ const reflexiveVocab = [
     { en: "TO GET UP", es: "LEVANTARSE" },
     { en: "TO PREPARE ONESELF", es: "PREPARARSE" },
     { en: "TO TAKE OFF", es: "QUITARSE" },
-    { en: "TO FASTEN", es: "ABROCHARSE" },
     { en: "TO STRETCH", es: "ESTIRARSE" },
     { en: "TO CALM DOWN", es: "CALMARSE" },
     { en: "TO TRAIN", es: "ENTRENARSE" },
@@ -97,7 +96,6 @@ const ex3Prompts = [
     { en: "We help each other with homework.", es: ["nosotros nos ayudamos con la tarea", "nos ayudamos con la tarea"] },
     { en: "They fasten their seatbelts.", es: ["ellos se abrochan los cinturones", "se abrochan los cinturones"] },
     { en: "I stretch before running.", es: ["yo me estiro antes de correr", "me estiro antes de correr"] },
-    { en: "She bathes the baby.", es: ["ella baña al bebé"], note: "Cuidado: aquí no es reflexivo si baña a otro, pero el ejercicio busca: ella se baña (reflexivo) -> ella se baña" },
     { en: "She bathes (herself).", es: ["ella se baña", "se baña"] },
     { en: "We fix ourselves up for the wedding.", es: ["nosotros nos arreglamos para la boda", "nos arreglamos para la boda"] },
     { en: "You (informal) allow yourself a break.", es: ["tú te permites un descanso", "te permites un descanso"] },
@@ -106,7 +104,7 @@ const ex3Prompts = [
 
 const readingData = {
     title: "Mi Rutina de la Mañana",
-    content: "Hola, soy Mateo. Todos los días, yo me levanto a las seis de la mañana. Primero, me estiro un poco en la cama. Luego, me ducho con agua fría para despertar. Después de la ducha, me seco bien y me afeito. Mi esposa, Elena, se levanta más tarde. Ella se lava la cara y se maquilla rápidamente. Nosotros nos desayunamos juntos y luego nos preparamos para ir al trabajo. En la oficina, yo me canso un poco por la tarde, pero me relajo cuando llego a casa.",
+    content: "Hola, soy Mateo. Todos los días, yo me levanto a las seis de la mañana. Primero, me estiro un poco en la cama. Luego, me ducho con agua fría para despertar. Después de la ducha, me seco bien y me afeito. Mi esposa, Elena, se levanta más tarde. Ella se lava la cara y se maquilla rápidamente. Nosotros desayunamos juntos y luego nos preparamos para ir al trabajo. En la oficina, yo me canso un poco por la tarde, pero me relajo cuando llego a casa.",
     questions: [
         { q: "¿A qué hora se levanta Mateo?", a: ["a las seis", "a las 6", "a las seis de la mañana"] },
         { q: "¿Qué hace Mateo primero en la cama?", a: ["se estira", "se estira un poco"] },
@@ -125,8 +123,13 @@ const finalExPrompts = [
     { sentence: "Ustedes _______ (cansarse) de caminar mucho.", answer: "se cansan" },
     { sentence: "Él _______ (afeitarse) la barba.", answer: "se afeita" },
     { sentence: "Nosotras _______ (maquillarse) juntas.", answer: "nos maquillamos" },
-    { sentence: "Vosotros _______ (estirarse) después del yoga.", answer: "os estiráis" },
+    { sentence: "Ellos _______ (estirarse) después del yoga.", answer: "se estiran" },
     { sentence: "El perro _______ (bañarse) en el río.", answer: "se baña" },
+    { sentence: "El gato _______ (calmarse) en la caja.", answer: "se calma" },
+    { sentence: "El niño _______ (levantarse) tarde.", answer: "se levanta" },
+    { sentence: "las mujeres _______ (maquillarse) antes de la fiesta.", answer: "se maquillan" },
+    { sentence: "yo _______ (prepararse) el desayuno.", answer: "me preparo" },
+    { sentence: "Ella _______ (cansarse) de entrenar rapido.", answer: "se cansa" },
 ];
 
 // --- HELPER COMPONENTS ---
@@ -176,8 +179,8 @@ const BallsExercise = ({ title, prompts, onComplete, vocabulary }: any) => {
                                 <div className="space-y-2">
                                     {reflexiveVocab.map((v, i) => (
                                         <div key={i} className="flex justify-between text-xs border-b pb-1">
-                                            <span className="text-muted-foreground">{v.en}:</span>
-                                            <span className="font-bold">{v.es}</span>
+                                            <span className="text-muted-foreground text-left">{v.en}:</span>
+                                            <span className="font-bold text-right">{v.es}</span>
                                         </div>
                                     ))}
                                 </div>
@@ -190,13 +193,13 @@ const BallsExercise = ({ title, prompts, onComplete, vocabulary }: any) => {
                 <div className="bg-muted p-6 rounded-2xl border-2 border-dashed text-center font-bold text-xl uppercase tracking-tighter text-foreground">
                     {currentPrompt.en}
                 </div>
-                <Input value={answer} onChange={e => setAnswer(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleCheck()} className={cn("h-12 text-lg text-foreground", status[currentIndex] === 'correct' ? 'border-green-500' : status[currentIndex] === 'incorrect' ? 'border-red-500' : '')} placeholder="Escribe en español..." autoComplete="off" />
+                <Input value={answer} onChange={e => setAnswer(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleCheck()} className={cn("h-12 text-lg text-foreground", status[currentIndex] === 'correct' ? 'border-green-500 bg-green-50/5' : status[currentIndex] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} placeholder="Escribe en español..." autoComplete="off" />
             </CardContent>
             <CardFooter className="justify-between border-t pt-6">
                 <Button variant="outline" onClick={() => setCurrentIndex(p => Math.max(0, p - 1))} disabled={currentIndex === 0}>Anterior</Button>
                 <div className="flex gap-2">
                     <Button onClick={handleCheck} variant="secondary">Verificar</Button>
-                    <Button onClick={() => currentIndex < prompts.length - 1 ? setCurrentIndex(i => i + 1) : onComplete()} disabled={status[currentIndex] !== 'correct'} className="font-bold">Siguiente</Button>
+                    <Button onClick={() => currentIndex < prompts.length - 1 ? setCurrentIndex(i => i + 1) : onComplete()} disabled={status[currentIndex] !== 'correct'} className="font-bold text-white">Siguiente</Button>
                 </div>
             </CardFooter>
         </Card>
@@ -209,8 +212,6 @@ interface Topic {
   icon: React.ElementType;
   status: 'completed' | 'active' | 'locked';
 }
-
-const ICONS_MAP = { locked: Lock, active: BookOpen, completed: CheckCircle };
 
 // --- MAIN PAGE COMPONENT ---
 
@@ -245,7 +246,7 @@ function ReflexivosRegularesContent() {
     const studentDocRef = useMemoFirebase(() => (currentUID ? doc(firestore, 'students', currentUID) : null), [firestore, currentUID]);
     const authUserRef = useMemoFirebase(() => (user ? doc(firestore, 'students', user.uid) : null), [firestore, user]);
     const { data: authUserProfile } = useDoc<{ role?: string }>(authUserRef);
-    const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{ role?: string, lessonProgress?: any, progress?: any }>(studentDocRef);
+    const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{ role?: string, lessonProgress?: any, progress?: any, name?: string }>(studentDocRef);
 
     const isAdmin = useMemo(() => (user && (authUserProfile?.role === 'admin' || user.email === 'ednacard87@gmail.com')), [user, authUserProfile]);
 
@@ -259,6 +260,10 @@ function ReflexivosRegularesContent() {
         { key: 'lectura', name: '7. Lectura', icon: BookText, status: 'locked' },
         { key: 'final_ex', name: '8. Ejercicio Final', icon: Trophy, status: 'locked' },
     ], []);
+
+    const handleTopicComplete = useCallback((completedKey: string) => {
+        setTopicToComplete(completedKey);
+    }, []);
 
     useEffect(() => {
         if (isProfileLoading || isUserLoading || !studentProfile || initialLoadComplete) return;
@@ -391,7 +396,7 @@ function ReflexivosRegularesContent() {
                                         <Input 
                                             value={vocabAnswers[i] || ''} 
                                             onChange={e => { const na = [...vocabAnswers]; na[i] = e.target.value; setVocabAnswers(na); setCanAdvanceVocab(false); setVocabValidation(v => { const nv = [...v]; nv[i] = 'unchecked'; return nv as any; }); }} 
-                                            className={cn("h-8 uppercase font-mono", vocabValidation[i] === 'correct' ? 'border-green-500' : vocabValidation[i] === 'incorrect' ? 'border-red-500' : '')} 
+                                            className={cn("h-8 uppercase font-mono", vocabValidation[i] === 'correct' ? 'border-green-500 bg-green-50/5' : vocabValidation[i] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} 
                                             autoComplete="off"
                                         />
                                     </React.Fragment>
@@ -400,7 +405,7 @@ function ReflexivosRegularesContent() {
                         </CardContent>
                         <CardFooter className="flex justify-between border-t pt-4">
                             <Button onClick={handleCheckVocab} variant="secondary">Verificar</Button>
-                            <Button onClick={() => handleTopicComplete('vocabulario')} disabled={!canAdvanceVocab && !isAdmin}>Avanzar</Button>
+                            <Button onClick={() => handleTopicComplete('vocabulario')} disabled={!canAdvanceVocab && !isAdmin} className='text-white'>Avanzar</Button>
                         </CardFooter>
                     </Card>
                 );
@@ -417,15 +422,15 @@ function ReflexivosRegularesContent() {
                             <div className="space-y-4">
                                 <h3 className="text-xl font-bold text-primary uppercase">Pronombres Reflexivos</h3>
                                 <div className="grid grid-cols-2 gap-4 max-w-sm">
-                                    <div className="p-2 border rounded bg-card"><strong>Yo:</strong> me</div>
-                                    <div className="p-2 border rounded bg-card"><strong>Nosotros:</strong> nos</div>
-                                    <div className="p-2 border rounded bg-card"><strong>Tú:</strong> te</div>
-                                    <div className="p-2 border rounded bg-card"><strong>Vosotros:</strong> os</div>
-                                    <div className="p-2 border rounded bg-card"><strong>Él/Ella/Ud:</strong> se</div>
-                                    <div className="p-2 border rounded bg-card"><strong>Ellos/Ellas:</strong> se</div>
+                                    <div className="p-2 border rounded bg-card text-foreground"><strong>Yo:</strong> me</div>
+                                    <div className="p-2 border rounded bg-card text-foreground"><strong>Nosotros:</strong> nos</div>
+                                    <div className="p-2 border rounded bg-card text-foreground"><strong>Tú:</strong> te</div>
+                                    <div className="p-2 border rounded bg-card text-foreground"><strong>Vosotros:</strong> os</div>
+                                    <div className="p-2 border rounded bg-card text-foreground"><strong>Él/Ella/Ud:</strong> se</div>
+                                    <div className="p-2 border rounded bg-card text-foreground"><strong>Ellos/Ellas:</strong> se</div>
                                 </div>
                             </div>
-                            <div className="p-4 bg-primary/10 rounded-xl border-2 border-dashed border-primary/20">
+                            <div className="p-4 bg-primary/10 rounded-xl border-2 border-dashed border-primary/20 text-foreground">
                                 <p className="font-black text-primary uppercase mb-2">Conjugación (Ej: LAVARSE):</p>
                                 <ul className="grid grid-cols-2 gap-2 font-mono text-sm">
                                     <li>Yo <strong>me lavo</strong></li>
@@ -436,7 +441,7 @@ function ReflexivosRegularesContent() {
                                 </ul>
                             </div>
                         </CardContent>
-                        <CardFooter className="justify-center pt-6 border-t"><Button onClick={() => handleTopicComplete('gramatica')} size="lg" className="px-12 font-bold">Entendido</Button></CardFooter>
+                        <CardFooter className="justify-center pt-6 border-t"><Button onClick={() => handleTopicComplete('gramatica')} size="lg" className="px-12 font-bold text-white">Entendido</Button></CardFooter>
                     </Card>
                 );
             case 'ejercicio1': return <BallsExercise title="Ejercicio 1" prompts={ex1Prompts} onComplete={() => handleTopicComplete('ejercicio1')} />;
@@ -447,36 +452,36 @@ function ReflexivosRegularesContent() {
             case 'lectura':
                 return (
                     <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left">
-                        <CardHeader><CardTitle>{readingData.title}</CardTitle></CardHeader>
+                        <CardHeader><CardTitle className='text-foreground'>{readingData.title}</CardTitle></CardHeader>
                         <CardContent className="space-y-6">
-                            <div className="p-6 bg-muted rounded-2xl border italic text-lg leading-relaxed">{readingData.content}</div>
+                            <div className="p-6 bg-muted rounded-2xl border italic text-lg leading-relaxed text-foreground">{readingData.content}</div>
                             <Separator />
-                            <div className="space-y-4">
+                            <div className="space-y-4 text-foreground">
                                 {readingData.questions.map((q, i) => (
                                     <div key={i} className="space-y-2">
                                         <Label className="font-bold">{q.q}</Label>
-                                        <Input value={readingAns[i] || ''} onChange={e => { const na = [...readingAns]; na[i] = e.target.value; setReadingAns(na); const nv = [...readingVal]; nv[i] = 'unchecked'; setReadingVal(nv as any); }} className={cn("h-10", readingVal[i] === 'correct' ? 'border-green-500 bg-green-50/5' : readingVal[i] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} autoComplete="off" />
+                                        <Input value={readingAns[i] || ''} onChange={e => { const na = [...readingAns]; na[i] = e.target.value; const nv = [...readingVal]; nv[i] = 'unchecked'; setReadingVal(nv as any); }} className={cn("h-10 text-foreground", readingVal[i] === 'correct' ? 'border-green-500 bg-green-50/5' : readingVal[i] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} autoComplete="off" />
                                     </div>
                                 ))}
                             </div>
                         </CardContent>
-                        <CardFooter className="justify-center border-t pt-6"><Button onClick={handleCheckReading} size="lg" className="px-12 font-bold">Verificar Lectura</Button></CardFooter>
+                        <CardFooter className="justify-center border-t pt-6"><Button onClick={handleCheckReading} size="lg" className="px-12 font-bold text-white">Verificar Lectura</Button></CardFooter>
                     </Card>
                 );
             case 'final_ex':
                 return (
                     <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left">
-                        <CardHeader><CardTitle>Ejercicio Final: Conjugación Adecuada</CardTitle></CardHeader>
+                        <CardHeader><CardTitle className='text-foreground'>Ejercicio Final: Conjugación Adecuada</CardTitle></CardHeader>
                         <CardContent className="space-y-4">
                             <ScrollArea className="h-[400px] pr-4">
-                                <div className="space-y-4">
+                                <div className="space-y-4 text-foreground">
                                     {finalExPrompts.map((q, i) => (
                                         <div key={i} className="flex flex-col gap-2 p-3 bg-muted/20 rounded-xl border">
                                             <p className="font-medium text-lg">{q.sentence}</p>
                                             <Input 
                                                 value={finalAns[i] || ''} 
-                                                onChange={e => { const na = [...finalAns]; na[i] = e.target.value; setFinalAns(na); const nv = [...finalVal]; nv[i] = 'unchecked'; setFinalVal(nv as any); }} 
-                                                className={cn("h-10 max-w-[200px]", finalVal[i] === 'correct' ? 'border-green-500 bg-green-50/5' : finalVal[i] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} 
+                                                onChange={e => { const na = [...finalAns]; na[i] = e.target.value; const nv = [...finalVal]; nv[i] = 'unchecked'; setFinalVal(nv as any); }} 
+                                                className={cn("h-10 max-w-[200px] text-foreground", finalVal[i] === 'correct' ? 'border-green-500 bg-green-50/5' : finalVal[i] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} 
                                                 placeholder="Conjugación..."
                                                 autoComplete="off"
                                             />
@@ -485,7 +490,7 @@ function ReflexivosRegularesContent() {
                                 </div>
                             </ScrollArea>
                         </CardContent>
-                        <CardFooter className="justify-center border-t pt-6"><Button onClick={handleCheckFinal} size="lg" className="px-20 font-black h-14 text-xl">Finalizar Misión</Button></CardFooter>
+                        <CardFooter className="justify-center border-t pt-6"><Button onClick={handleCheckFinal} size="lg" className="px-20 font-black h-14 text-xl text-white">Finalizar Misión</Button></CardFooter>
                     </Card>
                 );
             default: return null;
@@ -542,7 +547,7 @@ function ReflexivosRegularesContent() {
                     </div>
                 </div>
             </main>
-            
+           
         </div>
     );
 }
