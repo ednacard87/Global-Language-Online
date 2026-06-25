@@ -19,7 +19,8 @@ import {
     X,
     Info,
     ListChecks,
-    Search
+    Search,
+    Sparkles
 } from 'lucide-react';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -63,6 +64,9 @@ const mixedVocab = [
     { en: "TO TAKE OFF", es: "QUITARSE" },
     { en: "TO STRETCH", es: "ESTIRARSE" },
     { en: "TO BATHE", es: "BAÑARSE" },
+    { en: "TO COMPLAIN", es: "QUEJARSE" },
+    { en: "TO REMOVE ONESELF", es: "RETIRARSE" },
+    { en: "TO REGISTER ONESELF", es: "REGISTRARSE" },
     // Irregulares
     { en: "TO WAKE UP", es: "DESPERTARSE" },
     { en: "TO GO TO BED", es: "ACOSTARSE" },
@@ -178,7 +182,7 @@ const BallsExercise = ({ title, prompts, onComplete, vocabulary }: any) => {
                     </div>
                     <Popover>
                         <PopoverTrigger asChild><Button variant="outline" size="sm" className="border-2 border-brand-blue animate-border-pulse"><BookText className="mr-2 h-4 w-4" /> Vocabulario</Button></PopoverTrigger>
-                        <PopoverContent className="w-64"><ScrollArea className="h-64 pr-4"><div className="space-y-2"><h4 className='font-black text-primary text-xs uppercase mb-2 border-b'>Ayuda de Misión</h4>{Object.entries(vocabulary || globalVocabMap).map(([es, en]: any, i) => (<div key={i} className="flex justify-between text-[10px] border-b border-muted pb-1"><span className="text-muted-foreground text-left uppercase">{en}:</span><span className="font-bold text-right text-primary">{es.toUpperCase()}</span></div>))}</div></ScrollArea></PopoverContent>
+                        <PopoverContent className="w-64"><ScrollArea className="h-64 pr-4"><div className="space-y-2 text-foreground text-left"><h4 className='font-black text-primary text-xs uppercase mb-2 border-b'>Ayuda de Misión</h4>{Object.entries(vocabulary || globalVocabMap).map(([es, en]: any, i) => (<div key={i} className="flex justify-between text-[10px] border-b border-muted pb-1"><span className="text-muted-foreground text-left uppercase">{en}:</span><span className="font-bold text-right text-primary">{es.toUpperCase()}</span></div>))}</div></ScrollArea></PopoverContent>
                     </Popover>
                 </div>
             </CardHeader>
@@ -542,7 +546,7 @@ function ReflexivosMixContent() {
                                             );
                                         })}
                                     </ul></nav>
-                                    <div className="mt-6 pt-6 border-t"><div className="flex justify-between items-center text-xs mb-2 font-black uppercase tracking-widest text-muted-foreground"><span>Progreso Clase</span><span className="text-primary">{progressValue}%</span></div><Progress value={progressValue} className="h-2 rounded-full" /></div>
+                                    <div className="mt-6 pt-6 border-t"><div className="flex justify-between items-center text-xs mb-2 font-black uppercase tracking-widest text-muted-foreground"><span>Progreso Clase</span><span className="text-primary">{progressValue}%</span></div><Progress value={progressValue} className="h-2" /></div>
                                 </CardContent>
                             </Card>
                         </div>
