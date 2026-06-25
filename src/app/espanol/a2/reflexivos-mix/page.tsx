@@ -57,7 +57,6 @@ const mixedVocab = [
     { en: "TO GET TIRED", es: "CANSARSE" },
     { en: "TO GET BORED", es: "ABURRIRSE" },
     { en: "TO RELAX", es: "RELAJARSE" },
-    { en: "TO TRAIN", es: "ENTRENARSE" },
     { en: "TO CALM DOWN", es: "CALMARSE" },
     { en: "TO FIX ONESELF UP", es: "ARREGLARSE" },
     { en: "TO PREPARE ONESELF", es: "PREPARARSE" },
