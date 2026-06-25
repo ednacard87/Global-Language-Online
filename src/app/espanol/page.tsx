@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useMemo, useEffect, useState } from 'react';
@@ -103,7 +102,7 @@ export default function EspanolDashboardPage() {
       () => (user ? doc(firestore, 'students', user.uid) : null),
       [firestore, user]
     );
-    const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{progress?: Record<string, number>, name?: string, photoURL?: string, role?: string, selectedCourse?: string}>(studentDocRef);
+    const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{progress?: Record<string, number>, name?: string, photoURL?: string, role?: string, selectedCourse?: string, unlockedCourses?: string[]}>(studentDocRef);
 
     const isAdmin = useMemo(() => {
         if (!user) return false;
@@ -192,17 +191,17 @@ export default function EspanolDashboardPage() {
           { 
               title: "Curso A1 - Español", 
               description: "Aprende los fundamentos del español.",
-              href: "/a1", 
+              href: "/espanol/a1", 
               progress: a1Progress,
-              locked: isAdmin ? false : introProgress < 100,
+              locked: isAdmin ? false : (introProgress < 100 && !studentProfile?.unlockedCourses?.includes('a1')),
               icon: BookOpen 
           },
           { 
               title: "Curso A2 - Español", 
               description: "Avanza a un nivel pre-intermedio.",
-              href: "/a2", 
+              href: "/espanol/a2", 
               progress: a2Progress,
-              locked: isAdmin ? false : a1Progress < 100,
+              locked: isAdmin ? false : (a1Progress < 100 && !studentProfile?.unlockedCourses?.includes('a2')),
               icon: Gamepad2
           },
           { 
@@ -210,7 +209,7 @@ export default function EspanolDashboardPage() {
             description: "Perfecciona tu español y habla con fluidez.",
             href: "/espanol/b1",
             progress: b1Progress,
-            locked: isAdmin ? false : a2Progress < 100,
+            locked: isAdmin ? false : (a2Progress < 100 && !studentProfile?.unlockedCourses?.includes('b1')),
             icon: Rocket
         },
         ];
@@ -327,13 +326,13 @@ export default function EspanolDashboardPage() {
             <div className="lg:hidden flex flex-col space-y-8">
               <div className="flex justify-between items-center rounded-lg bg-card/80 backdrop-blur-sm border-2 border-brand-purple p-4">
                   <div>
-                      <h1 className="text-2xl font-bold text-primary">WELCOME, {studentProfile?.name?.split(' ')[0] || 'Student'}!</h1>
-                      <p className="text-muted-foreground text-sm">Ready for your next challenge?</p>
+                      <h1 className="text-2xl font-bold text-primary">WELCOME, {studentProfile?.name?.split(' ')[0] || 'Player'}!</h1>
+                      <p className="text-gray-400 text-sm">Ready for your next challenge?</p>
                   </div>
                   <div className="flex items-center gap-4">
                       <Avatar className="h-12 w-12 border-4 border-primary">
-                          <AvatarImage src={user?.photoURL || vrGamerAvatar?.imageUrl} alt={studentProfile?.name || 'Student'} />
-                          <AvatarFallback>{studentProfile?.name?.[0] || 'S'}</AvatarFallback>
+                          <AvatarImage src={user?.photoURL || vrGamerAvatar?.imageUrl} alt={studentProfile?.name || 'Player'} />
+                          <AvatarFallback>{studentProfile?.name?.[0] || 'P'}</AvatarFallback>
                       </Avatar>
                   </div>
               </div>
