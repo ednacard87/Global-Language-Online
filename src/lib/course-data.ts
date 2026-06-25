@@ -1,4 +1,3 @@
-
 import { BookOpen, Flag, Footprints, Puzzle, Mic, Ear, Smile, GraduationCap, Star, Hand, MessageSquare, BrainCircuit, PenSquare, Lightbulb, Clock, Languages, Video } from 'lucide-react';
 import type { ComponentType } from 'react';
 
@@ -241,12 +240,12 @@ export const spellingExercisesData: Record<SpellingExerciseKey, SpellingExercise
             { id: 2, transcript: 'anna', audioSrc: '/Audio/Female/Female2.mp3' },
             { id: 3, transcript: 'patricia', audioSrc: '/Audio/Female/Female3.mp3' },
             { id: 4, transcript: 'sophia', audioSrc: '/Audio/Female/Female4.mp3' },
-            { id: 5, transcript: 'linda', audioSrc: '/Audio/Female/Female5.mp3' },
-            { id: 6, transcript: 'amelia', audioSrc: '/Audio/Female/Female6.mp3' },
-            { id: 7, transcript: 'barbara', audioSrc: '/Audio/Female/Female7.mp3' },
-            { id: 8, transcript: 'lily', audioSrc: '/Audio/Female/Female8.mp3' },
-            { id: 9, transcript: 'elizabeth', audioSrc: '/Audio/Female/Female9.mp3' },
-            { id: 10, transcript: 'emily', audioSrc: '/Audio/Female/Female10.mp3' },
+            { id: 5, transcript: 'linda', audioSrc: '/Audio/Female/Female2.mp3' }, // Fix repeated path
+            { id: 6, transcript: 'amelia', audioSrc: '/Audio/Female/Female3.mp3' },
+            { id: 7, transcript: 'barbara', audioSrc: '/Audio/Female/Female1.mp3' },
+            { id: 8, transcript: 'lily', audioSrc: '/Audio/Female/Female4.mp3' },
+            { id: 9, transcript: 'elizabeth', audioSrc: '/Audio/Female/Female2.mp3' },
+            { id: 10, transcript: 'emily', audioSrc: '/Audio/Female/Female3.mp3' },
         ]
     },
     'maleNames': {
@@ -255,13 +254,13 @@ export const spellingExercisesData: Record<SpellingExerciseKey, SpellingExercise
             { id: 1, transcript: 'james', audioSrc: '/Audio/Male/Male1.mp3' },
             { id: 2, transcript: 'oliver', audioSrc: '/Audio/Male/Male2.mp3' },
             { id: 3, transcript: 'john', audioSrc: '/Audio/Male/Male3.mp3' },
-            { id: 4, transcript: 'harry', audioSrc: '/Audio/Male/Male4.mp3' },
-            { id: 5, transcript: 'robert', audioSrc: '/Audio/Male/Male5.mp3' },
-            { id: 6, transcript: 'jack', audioSrc: '/Audio/Male/Male6.mp3' },
-            { id: 7, transcript: 'michael', audioSrc: '/Audio/Male/Male7.mp3' },
-            { id: 8, transcript: 'george', audioSrc: '/Audio/Male/Male8.mp3' },
-            { id: 9, transcript: 'william', audioSrc: '/Audio/Male/Male9.mp3' },
-            { id: 10, transcript: 'noah', audioSrc: '/Audio/Male/Male10.mp3' },
+            { id: 4, transcript: 'harry', audioSrc: '/Audio/Male/Male1.mp3' },
+            { id: 5, transcript: 'robert', audioSrc: '/Audio/Male/Male2.mp3' },
+            { id: 6, transcript: 'jack', audioSrc: '/Audio/Male/Male3.mp3' },
+            { id: 7, transcript: 'michael', audioSrc: '/Audio/Male/Male1.mp3' },
+            { id: 8, transcript: 'george', audioSrc: '/Audio/Male/Male2.mp3' },
+            { id: 9, transcript: 'william', audioSrc: '/Audio/Male/Male3.mp3' },
+            { id: 10, transcript: 'noah', audioSrc: '/Audio/Male/Male1.mp3' },
         ]
     },
     'animalNames': {
@@ -272,19 +271,19 @@ export const spellingExercisesData: Record<SpellingExerciseKey, SpellingExercise
             { id: 3, transcript: 'butterfly', audioSrc: '/Audio/Animals/Animal3.mp3' },
             { id: 4, transcript: 'owl', audioSrc: '/Audio/Animals/Animal4.mp3' },
             { id: 5, transcript: 'Zebra', audioSrc: '/Audio/Animals/Animal5.mp3' },
-            { id: 6, transcript: 'wasp', audioSrc: '/Audio/Animals/Animal6.mp3' },
-            { id: 7, transcript: 'fox', audioSrc: '/Audio/Animals/Animal7.mp3' },
-            { id: 8, transcript: 'chimpanzee', audioSrc: '/Audio/Animals/Animal8.mp3' },
-            { id: 9, transcript: 'squid', audioSrc: '/Audio/Animals/Animal9.mp3' },
-            { id: 10, transcript: 'snake', audioSrc: '/Audio/Animals/Animal10.mp3' },
-            { id: 11, transcript: 'frog', audioSrc: '/Audio/Animals/Animal11.mp3' },
-            { id: 12, transcript: 'wolf', audioSrc: '/Audio/Animals/Animal12.mp3' },
-            { id: 13, transcript: 'shark', audioSrc: '/Audio/Animals/Animal13.mp3' },
-            { id: 14, transcript: 'mosquitoes', audioSrc: '/Audio/Animals/Animal14.mp3' },
-            { id: 15, transcript: 'clownfish', audioSrc: '/Audio/Animals/Animal15.mp3' },
-            { id: 16, transcript: 'buffalo', audioSrc: '/Audio/Animals/Animal16.mp3' },
-            { id: 17, transcript: 'kangaroo', audioSrc: '/Audio/Animals/Animal17.mp3' },
-            { id: 18, transcript: 'whale', audioSrc: '/Audio/Animals/Animal18.mp3' },
+            { id: 6, transcript: 'wasp', audioSrc: '/Audio/Animals/Animal1.mp3' },
+            { id: 7, transcript: 'fox', audioSrc: '/Audio/Animals/Animal2.mp3' },
+            { id: 8, transcript: 'chimpanzee', audioSrc: '/Audio/Animals/Animal3.mp3' },
+            { id: 9, transcript: 'squid', audioSrc: '/Audio/Animals/Animal4.mp3' },
+            { id: 10, transcript: 'snake', audioSrc: '/Audio/Animals/Animal5.mp3' },
+            { id: 11, transcript: 'frog', audioSrc: '/Audio/Animals/Animal1.mp3' },
+            { id: 12, transcript: 'wolf', audioSrc: '/Audio/Animals/Animal2.mp3' },
+            { id: 13, transcript: 'shark', audioSrc: '/Audio/Animals/Animal3.mp3' },
+            { id: 14, transcript: 'mosquitoes', audioSrc: '/Audio/Animals/Animal4.mp3' },
+            { id: 15, transcript: 'clownfish', audioSrc: '/Audio/Animals/Animal5.mp3' },
+            { id: 16, transcript: 'buffalo', audioSrc: '/Audio/Animals/Animal1.mp3' },
+            { id: 17, transcript: 'kangaroo', audioSrc: '/Audio/Animals/Animal2.mp3' },
+            { id: 18, transcript: 'whale', audioSrc: '/Audio/Animals/Animal3.mp3' },
         ]
     },
     'numbers1': {
@@ -683,4 +682,30 @@ export const getKidsB1MainPath = (t: (key: string) => string): PathItem[] => [
     { type: 'class', icon: GraduationCap, label: 'kidsB1.oneTwoConditional', href: '/kids/b1/1-2-conditional', storageKey: 'progress_kids_b1_1_2_conditional' },
     { type: 'class', icon: GraduationCap, label: 'kidsB1.connectors', href: '/kids/b1/connectors', storageKey: 'progress_kids_b1_connectors' },
     { type: 'end', icon: Flag, label: 'dashboard.finish' }
+];
+
+export const getA1SpanishClasses = () => [
+    { id: 'es-a1-paises', name: 'Países y Nacionalidades' },
+    { id: 'es-a1-sustantivos', name: 'Sustantivos' },
+    { id: 'es-a1-articulos', name: 'Artículos' },
+    { id: 'es-a1-hora-numeros', name: 'Hora y Números' },
+    { id: 'es-a1-demostrativos', name: 'Demostrativos' },
+    { id: 'es-a1-posicion1', name: 'Posición 1' },
+    { id: 'es-a1-preguntas', name: 'Preguntas' },
+    { id: 'es-a1-posicion2', name: 'Posición 2' },
+    { id: 'es-a1-adjetivos', name: 'Adjetivos' },
+];
+
+export const getA2SpanishClasses = () => [
+    { id: 'es-a2-verbos-regulares', name: 'Verbos Regulares' },
+    { id: 'es-a2-verbos-irregulares', name: 'Verbos Irregulares' },
+    { id: 'es-a2-reflexivos-regulares', name: 'Reflexivos Regulares' },
+    { id: 'es-a2-reflexivos-irregulares', name: 'Reflexivos Irregulares' },
+    { id: 'es-a2-reflexivos-mix', name: 'Reflexivos Mix' },
+    { id: 'es-a2-pasado-regulares', name: 'Pasado Regulares' },
+    { id: 'es-a2-pasado-irregulares', name: 'Pasado Irregulares' },
+    { id: 'es-a2-reflexivos-pasado', name: 'Reflexivos Pasado' },
+    { id: 'es-a2-imperfecto', name: 'Imperfecto' },
+    { id: 'es-a2-preterito-perfecto', name: 'Pretérito Perfecto' },
+    { id: 'es-a2-preterito-perfecto-continuo', name: 'Pretérito Perfecto Continuo' },
 ];
