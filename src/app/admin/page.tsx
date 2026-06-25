@@ -13,7 +13,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { ShieldOff, Shield, Lock, Unlock, Loader2, ChevronDown, Eye } from 'lucide-react';
+import { ShieldOff, Shield, Lock, Unlock, Loader2, ChevronDown, Eye, Info } from 'lucide-react';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -101,6 +101,33 @@ const kidsClassesMap = {
         { id: 'kids-b1-second-conditional', name: 'Second Conditional' },
         { id: 'kids-b1-1-2-conditional', name: '1 & 2 Conditional' },
         { id: 'kids-b1-connectors', name: 'Connectors' },
+    ]
+};
+
+const espanolClassesMap = {
+    a1: [
+        { id: 'es-a1-paises', name: 'Países y Nacionalidades' },
+        { id: 'es-a1-sustantivos', name: 'Sustantivos' },
+        { id: 'es-a1-articulos', name: 'Artículos' },
+        { id: 'es-a1-hora-numeros', name: 'Hora y Números' },
+        { id: 'es-a1-demostrativos', name: 'Demostrativos' },
+        { id: 'es-a1-posicion1', name: 'Posición 1' },
+        { id: 'es-a1-preguntas', name: 'Preguntas' },
+        { id: 'es-a1-posicion2', name: 'Posición 2' },
+        { id: 'es-a1-adjetivos', name: 'Adjetivos' },
+    ],
+    a2: [
+        { id: 'es-a2-verbos-regulares', name: 'Verbos Regulares' },
+        { id: 'es-a2-verbos-irregulares', name: 'Verbos Irregulares' },
+        { id: 'es-a2-reflexivos-regulares', name: 'Reflexivos Regulares' },
+        { id: 'es-a2-reflexivos-irregulares', name: 'Reflexivos Irregulares' },
+        { id: 'es-a2-reflexivos-mix', name: 'Reflexivos Mix' },
+        { id: 'es-a2-pasado-regulares', name: 'Pasado Regulares' },
+        { id: 'es-a2-pasado-irregulares', name: 'Pasado Irregulares' },
+        { id: 'es-a2-reflexivos-pasado', name: 'Reflexivos Pasado' },
+        { id: 'es-a2-imperfecto', name: 'Imperfecto' },
+        { id: 'es-a2-preterito-perfecto', name: 'Pretérito Perfecto' },
+        { id: 'es-a2-preterito-perfecto-continuo', name: 'Pretérito Perfecto Continuo' },
     ]
 };
 
@@ -306,12 +333,10 @@ export default function AdminDashboardPage() {
       return <span className="text-xs text-muted-foreground">Sin progreso</span>;
     }
 
-    const activeLesson = filteredProgress
-      .filter(([, value]) => value < 100)
-      .sort((a, b) => b[1] - a[1])[0];
+    const latestSession = filteredProgress.sort((a, b) => b[1] - a[1])[0];
 
-    if (activeLesson) {
-      const [key, value] = activeLesson;
+    if (latestSession) {
+      const [key, value] = latestSession;
       const name = key
         .replace('progress_', '')
         .replace(/_/g, ' ')
@@ -325,39 +350,31 @@ export default function AdminDashboardPage() {
         .join(' ');
 
       return (
-        <div className="flex flex-col gap-1">
-          <span className="font-bold text-sm truncate max-w-[150px] text-primary">{name}</span>
-          <div className='flex items-center gap-2'>
-              <span className="text-xs font-mono text-muted-foreground">{Math.round(value)}%</span>
-              <Button 
-                variant="outline" 
-                size="icon" 
-                className='h-8 w-8 text-blue-600 border-blue-200 hover:bg-blue-50' 
-                title="Supervisar misión en tiempo real"
-                onClick={() => {
-                    const parts = key.split('_');
-                    let course = parts[1]; // a1, a2, etc
-                    
-                    // Manejo de prefijos según el programa
-                    let courseParam = course;
-                    if (selectedCourse === 'kids') courseParam = `kids-${course}`;
-                    if (selectedCourse === 'espanol') courseParam = `espanol-${course}`;
-
-                    const classNum = parts[parts.length - 1];
-                    // Redirigimos al enrutador dinámico universal con el studentId
-                    router.push(`/${courseParam}/${classNum}?studentId=${student.id}`);
-                }}
-              >
-                  <Eye className='h-4 w-4'/>
-              </Button>
+        <div className="flex flex-col gap-2 p-2 bg-blue-50/50 dark:bg-blue-900/10 rounded-lg border border-blue-100 dark:border-blue-900/30">
+          <div className='flex items-center justify-between gap-2'>
+              <span className="font-black text-[11px] truncate max-w-[120px] text-blue-700 dark:text-blue-300 uppercase tracking-tight">{name}</span>
+              <span className="text-xs font-black text-blue-600">{Math.round(value)}%</span>
           </div>
+          <Button 
+            variant="default" 
+            size="sm" 
+            className='h-8 w-full text-[10px] font-black bg-blue-600 hover:bg-blue-700 text-white shadow-sm' 
+            onClick={() => {
+                const parts = key.split('_');
+                let course = parts[1]; 
+                
+                let courseParam = course;
+                if (selectedCourse === 'kids') courseParam = `kids-${course}`;
+                if (selectedCourse === 'espanol') courseParam = `espanol-${course}`;
+
+                const classNum = parts[parts.length - 1];
+                router.push(`/${courseParam}/${classNum}?studentId=${student.id}`);
+            }}
+          >
+              <Eye className='h-3.5 w-3.5 mr-1'/> SUPERVISAR
+          </Button>
         </div>
       );
-    }
-
-    const hasCompletedSomething = filteredProgress.some(([, v]) => v >= 100);
-    if (hasCompletedSomething) {
-      return <span className="text-xs text-green-600 font-bold uppercase tracking-tighter">Completado</span>;
     }
 
     return <span className="text-xs text-muted-foreground">Sin Empezar</span>;
@@ -427,7 +444,7 @@ export default function AdminDashboardPage() {
                                                 </Badge>
                                             </TableCell>
                                             <TableCell>
-                                                <Badge variant="outline" className="capitalize text-[10px]">{student.selectedCourse || 'Pendiente'}</Badge>
+                                                <Badge variant="outline" className="capitalize text-[10px] font-bold border-primary/30">{student.selectedCourse || 'Pendiente'}</Badge>
                                             </TableCell>
                                             <TableCell>
                                               {getReadableProgress(student)}
@@ -485,6 +502,17 @@ export default function AdminDashboardPage() {
                                                             <DropdownMenuContent>
                                                                 {student.selectedCourse === 'kids' ? (
                                                                     (kidsClassesMap[course as keyof typeof kidsClassesMap] || []).map(classInfo => (
+                                                                        <DropdownMenuCheckboxItem
+                                                                            key={classInfo.id}
+                                                                            checked={(student.unlockedClasses || []).includes(classInfo.id)}
+                                                                            onCheckedChange={() => handleToggleClassAccess(student.id, classInfo.id)}
+                                                                            disabled={updatingStudentId === student.id}
+                                                                        >
+                                                                            {classInfo.name}
+                                                                        </DropdownMenuCheckboxItem>
+                                                                    ))
+                                                                ) : student.selectedCourse === 'espanol' ? (
+                                                                    (espanolClassesMap[course as keyof typeof espanolClassesMap] || []).map(classInfo => (
                                                                         <DropdownMenuCheckboxItem
                                                                             key={classInfo.id}
                                                                             checked={(student.unlockedClasses || []).includes(classInfo.id)}
