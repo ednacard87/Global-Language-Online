@@ -513,12 +513,12 @@ export const getA2EspanolPath = (t: (key: string) => string): PathItem[] => [
     { type: 'class', icon: BookOpen, label: 'a2Espanol.reflexivosRegulares', href: '/espanol/a2/reflexivos-regulares', storageKey: 'progress_a2_es_3' },
     { type: 'class', icon: BookOpen, label: 'a2Espanol.reflexivosIrregulares', href: '/espanol/a2/reflexivos-irregulares', storageKey: 'progress_a2_es_4' },
     { type: 'class', icon: BookOpen, label: 'a2Espanol.reflexivosMix', href: '/espanol/a2/reflexivos-mix', storageKey: 'progress_a2_es_5' },
-    { type: 'class', icon: BookOpen, label: 'a2Espanol.pasadoRegulares', href: '#', storageKey: 'progress_a2_es_6' },
-    { type: 'class', icon: BookOpen, label: 'a2Espanol.pasadoIrregulares', href: '#', storageKey: 'progress_a2_es_7' },
-    { type: 'class', icon: BookOpen, label: 'a2Espanol.reflexivosPasado', href: '#', storageKey: 'progress_a2_es_8' },
-    { type: 'class', icon: BookOpen, label: 'a2Espanol.imperfecto', href: '#', storageKey: 'progress_a2_es_9' },
-    { type: 'class', icon: BookOpen, label: 'a2Espanol.preteritoPerfecto', href: '#', storageKey: 'progress_a2_es_10' },
-    { type: 'class', icon: BookOpen, label: 'a2Espanol.preteritoPerfectoContinuo', href: '#', storageKey: 'progress_a2_es_11' },
+    { type: 'class', icon: BookOpen, label: 'a2Espanol.pasadoRegulares', href: '/espanol/a2/pasado-regulares', storageKey: 'progress_a2_es_6' },
+    { type: 'class', icon: BookOpen, label: 'a2Espanol.pasadoIrregulares', href: '/espanol/a2/pasado-irregulares', storageKey: 'progress_a2_es_7' },
+    { type: 'class', icon: BookOpen, label: 'a2Espanol.reflexivosPasado', href: '/espanol/a2/reflexivos-pasado', storageKey: 'progress_a2_es_8' },
+    { type: 'class', icon: BookOpen, label: 'a2Espanol.imperfecto', href: '/espanol/a2/imperfecto', storageKey: 'progress_a2_es_9' },
+    { type: 'class', icon: BookOpen, label: 'a2Espanol.preteritoPerfecto', href: '/espanol/a2/preterito-perfecto', storageKey: 'progress_a2_es_10' },
+    { type: 'class', icon: BookOpen, label: 'a2Espanol.preteritoPerfectoContinuo', href: '/espanol/a2/preterito-perfecto-continuo', storageKey: 'progress_a2_es_11' },
     { type: 'end', icon: Flag, label: 'dashboard.finish' },
 ];
 
