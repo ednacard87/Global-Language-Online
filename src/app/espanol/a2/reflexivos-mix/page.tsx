@@ -365,27 +365,112 @@ function ReflexivosMixContent() {
                 );
             case 'grammar':
                 return (
-                    <Card className="shadow-soft border-2 border-brand-purple bg-slate-100 dark:bg-slate-800/50 p-6 text-foreground text-left">
-                        <CardHeader className='px-0 pb-6 border-b mb-6'><CardTitle className="text-3xl font-black text-primary uppercase">Gramática: Regulares vs Irregulares</CardTitle></CardHeader>
+                    <Card className="shadow-soft border-2 border-brand-purple bg-slate-100 dark:bg-slate-800/50 p-6 text-foreground text-left overflow-hidden">
+                        <CardHeader className='px-0 pb-6 border-b mb-6'>
+                            <CardTitle className="text-3xl font-black text-primary uppercase flex items-center gap-3">
+                                <Sparkles className='text-yellow-500' /> Regulares vs Irregulares
+                            </CardTitle>
+                        </CardHeader>
                         <CardContent className="space-y-8 px-0">
+                            {/* Intro Section */}
                             <div className="p-6 bg-white/60 dark:bg-background/20 rounded-[2rem] border shadow-sm space-y-4">
-                                <p className="text-lg font-bold">Ambos tipos de verbos usan los mismos pronombres reflexivos: <span className="text-primary font-black">me, te, se, nos, os, se</span>.</p>
-                                <Separator />
-                                <div className="grid md:grid-cols-2 gap-6">
-                                    <div className="space-y-2">
-                                        <h4 className="font-black text-primary uppercase text-sm">Regulares</h4>
-                                        <p className="text-sm">La raíz se mantiene igual al conjugar.</p>
-                                        <p className="font-mono text-xs p-2 bg-muted rounded">Lavar &rarr; Me lavo, Te lavas...</p>
+                                <p className="text-lg font-bold leading-relaxed">
+                                    En español, todos los verbos reflexivos comparten la misma base de pronombres (<span className="text-primary font-black">me, te, se, nos, os, se</span>), pero se dividen en dos grandes grupos según cómo cambia el verbo al conjugar:
+                                </p>
+                            </div>
+
+                            <div className="grid md:grid-cols-2 gap-8">
+                                {/* Regulars */}
+                                <div className="space-y-4">
+                                    <div className="flex items-center gap-2 text-primary">
+                                        <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center font-black">1</div>
+                                        <h4 className="text-xl font-black uppercase tracking-tight">Verbos Regulares</h4>
                                     </div>
-                                    <div className="space-y-2">
-                                        <h4 className="font-black text-brand-purple uppercase text-sm">Irregulares</h4>
-                                        <p className="text-sm">La raíz cambia (e&rarr;ie, o&rarr;ue, e&rarr;i).</p>
-                                        <p className="font-mono text-xs p-2 bg-muted rounded">Vestirse &rarr; Me visto, Te vistes...</p>
+                                    <div className="p-5 bg-background/50 rounded-2xl border-l-4 border-primary shadow-sm space-y-2">
+                                        <p className="text-sm">La <span className="font-bold underline">raíz no cambia</span>. Solo quitamos el "SE" del final y conjugamos normal según su terminación (-ar, -er, -ir).</p>
+                                        <div className="bg-muted/50 p-3 rounded font-mono text-xs">
+                                            <p className="text-primary font-bold">Ejemplo: LAVARSE</p>
+                                            <ul className="mt-1 space-y-0.5">
+                                                <li>Yo <strong>me lavo</strong></li>
+                                                <li>Tú <strong>te lavas</strong></li>
+                                                <li>Nosotros <strong>nos lavamos</strong></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Irregulars */}
+                                <div className="space-y-4">
+                                    <div className="flex items-center gap-2 text-brand-purple">
+                                        <div className="h-8 w-8 rounded-full bg-brand-purple/20 flex items-center justify-center font-black">2</div>
+                                        <h4 className="text-xl font-black uppercase tracking-tight">Verbos Irregulares</h4>
+                                    </div>
+                                    <div className="p-5 bg-background/50 rounded-2xl border-l-4 border-brand-purple shadow-sm space-y-2">
+                                        <p className="text-sm">La <span className="font-bold underline text-brand-purple">raíz cambia</span> su vocal al conjugar (e &rarr; ie, o &rarr; ue, e &rarr; i), excepto en <strong>Nosotros</strong>.</p>
+                                        <div className="bg-muted/50 p-3 rounded font-mono text-xs">
+                                            <p className="text-brand-purple font-bold">Ejemplo: DESPERTARSE (e &rarr; ie)</p>
+                                            <ul className="mt-1 space-y-0.5">
+                                                <li>Yo <strong>me despierto</strong></li>
+                                                <li>Tú <strong>te despiertas</strong></li>
+                                                <li>Nosotros <strong>nos despertamos</strong> *</li>
+                                            </ul>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+
+                            <Separator />
+
+                            {/* Conjugation Models */}
+                            <div className='space-y-6'>
+                                <h3 className='text-xl font-black text-primary uppercase tracking-tighter flex items-center gap-2'>
+                                    <ListChecks className='h-6 w-6'/> Modelos de Conjugación Mix
+                                </h3>
+                                <div className='grid gap-4 sm:grid-cols-3'>
+                                    <Card className='p-4 border-2 border-primary/20 bg-primary/5'>
+                                        <h4 className='font-bold text-center border-b pb-2 mb-2 text-primary'>REGULAR (LAVARSE)</h4>
+                                        <ul className='text-xs font-mono space-y-1 text-center'>
+                                            <li>Me lavo</li>
+                                            <li>Te lavas</li>
+                                            <li>Se lava</li>
+                                            <li>Nos lavamos</li>
+                                            <li>Se lavan</li>
+                                        </ul>
+                                    </Card>
+                                    <Card className='p-4 border-2 border-brand-purple/20 bg-brand-purple/5'>
+                                        <h4 className='font-bold text-center border-b pb-2 mb-2 text-brand-purple'>IRREG. e &rarr; ie (SENTIRSE)</h4>
+                                        <ul className='text-xs font-mono space-y-1 text-center'>
+                                            <li>Me s<span className='text-red-500 font-black'>ie</span>nto</li>
+                                            <li>Te s<span className='text-red-500 font-black'>ie</span>ntes</li>
+                                            <li>Se s<span className='text-red-500 font-black'>ie</span>nte</li>
+                                            <li>Nos sentimos</li>
+                                            <li>Se s<span className='text-red-500 font-black'>ie</span>nten</li>
+                                        </ul>
+                                    </Card>
+                                    <Card className='p-4 border-2 border-brand-blue/20 bg-brand-blue/5'>
+                                        <h4 className='font-bold text-center border-b pb-2 mb-2 text-brand-blue'>IRREG. o &rarr; ue (ACOSTARSE)</h4>
+                                        <ul className='text-xs font-mono space-y-1 text-center'>
+                                            <li>Me ac<span className='text-red-500 font-black'>ue</span>sto</li>
+                                            <li>Te ac<span className='text-red-500 font-black'>ue</span>stas</li>
+                                            <li>Se ac<span className='text-red-500 font-black'>ue</span>sta</li>
+                                            <li>Nos acostamos</li>
+                                            <li>Se ac<span className='text-red-500 font-black'>ue</span>stan</li>
+                                        </ul>
+                                    </Card>
+                                </div>
+                                <div className='p-4 bg-yellow-50 dark:bg-yellow-900/10 rounded-xl border border-yellow-200 flex items-start gap-3'>
+                                    <Info className='h-5 w-5 text-yellow-600 shrink-0 mt-0.5' />
+                                    <p className='text-sm italic text-yellow-800 dark:text-yellow-200'>
+                                        <strong>Nota sobre la irregularidad:</strong> Recuerda que los cambios en la raíz (bota de irregularidad) afectan a todas las personas <strong>menos</strong> a "nosotros" y "vosotros".
+                                    </p>
+                                </div>
+                            </div>
                         </CardContent>
-                        <CardFooter className="justify-center border-t pt-6"><Button onClick={() => handleTopicComplete('grammar')} size="lg" className="px-16 font-black h-12 text-white">He comprendido la diferencia</Button></CardFooter>
+                        <CardFooter className="justify-center border-t pt-6">
+                            <Button onClick={() => handleTopicComplete('grammar')} size="lg" className="px-24 font-black h-14 text-xl shadow-xl bg-primary hover:bg-primary/90 text-primary-foreground">
+                                He comprendido la diferencia
+                            </Button>
+                        </CardFooter>
                     </Card>
                 );
             case 'exercise1': return <BallsExercise title="Ejercicio 1 (Mix)" prompts={ex1Prompts} onComplete={() => handleTopicComplete('exercise1')} />;
