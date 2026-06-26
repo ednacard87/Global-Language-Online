@@ -20,7 +20,8 @@ import {
     HelpCircle,
     Check,
     X,
-    Search
+    Search,
+    Pencil
 } from 'lucide-react';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Footer } from '@/components/footer';
@@ -38,9 +39,10 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { VocabularyMatchingGame } from '@/components/dashboard/vocabulary-matching-game';
+import { Textarea } from '@/components/ui/textarea';
 
 // --- CONFIGURACIÓN DE INGENIERÍA ---
-const progressStorageVersion = 'progress_es_a2_reflex_irreg_v2_final_content';
+const progressStorageVersion = 'progress_es_a2_reflex_irreg_v4_final_extended';
 const mainProgressKey = 'progress_a2_es_reflexivos_irregulares';
 
 // --- DATA ---
@@ -59,11 +61,28 @@ const irregularVerbsVocab = [
     { en: "TO REMEMBER", es: "ACORDARSE" },
     { en: "TO MEET (WITH SOMEONE)", es: "ENCONTRARSE" },
     { en: "TO BECOME", es: "VOLVERSE" },
-    { en: "TO REGRATE / SORRY", es: "ARREPENTIRSE" },
+    { en: "TO REGRET / SORRY", es: "ARREPENTIRSE" },
     { en: "TO MEASURE ONESELF", es: "MEDIRSE" },
     { en: "TO SERVE ONESELF", es: "SERVIRSE" },
     { en: "TO BITE ONE'S (LIPS/NAILS)", es: "MORDERSE" },
     { en: "TO TWIST (ANKLE/WRIST)", es: "TORCERSE" },
+    { en: "TO GET DISTRACTED", es: "DISTRAERSE" },
+    { en: "TO FALL DOWN", es: "CAERSE" },
+];
+
+const conjugarVerbsList = [
+    { verb: "DESPERTARSE", type: "ie" },
+    { verb: "ACOSTARSE", type: "ue" },
+    { verb: "VESTIRSE", type: "i" },
+    { verb: "DIVERTIRSE", type: "ie" },
+    { verb: "DORMIRSE", type: "ue" },
+    { verb: "SENTIRSE", type: "ie" },
+    { verb: "DESPEDIRSE", type: "i" },
+    { verb: "REÍRSE", type: "i" },
+    { verb: "SENTARSE", type: "ie" },
+    { verb: "PROBARSE", type: "ue" },
+    { verb: "ACORDARSE", type: "ue" },
+    { verb: "ENCONTRARSE", type: "ue" },
 ];
 
 const ex1Prompts = [
@@ -119,7 +138,7 @@ const finalExPrompts = [
     { sentence: "4. Ella _______ (vestirse) de rojo para la fiesta.", answer: "se viste" },
     { sentence: "5. Tú _______ (sentarse) siempre en ese lugar.", answer: "te sientas" },
     { sentence: "6. Él _______ (sentirse) mal después de comer.", answer: "se siente" },
-    { sentence: "7. Vosotros _______ (despedirse) de sus amigos.", answer: "os despedís" },
+    { sentence: "7. Ellas _______ (despedirse) de sus amigos.", answer: "se despiden" },
     { sentence: "8. El gato _______ (dormirse) bajo el sol.", answer: "se duerme" },
     { sentence: "9. Yo _______ (ponerse) la camisa nueva.", answer: "me pongo" },
     { sentence: "10. Nosotros _______ (acordarse) de tu cumpleaños.", answer: "nos acordamos" },
@@ -128,7 +147,32 @@ const finalExPrompts = [
     { sentence: "13. Yo _______ (reírse) con tus chistes.", answer: "me río" },
     { sentence: "14. Ella _______ (volverse) loca con tanto trabajo.", answer: "se vuelve" },
     { sentence: "15. Nosotros _______ (mantenerse) en contacto por e-mail.", answer: "nos mantenemos" },
+    // +10 additional phrases
+    { sentence: "16. Tú _______ (arrepentirse) de no ir.", answer: "te arrepientes" },
+    { sentence: "17. Yo _______ (medirse) la presión cada día.", answer: "me mido" },
+    { sentence: "18. Él _______ (servirse) un vaso de agua.", answer: "se sirve" },
+    { sentence: "19. El niño _______ (morderse) las uñas.", answer: "se muerde" },
+    { sentence: "20. Ella _______ (torcerse) el tobillo corriendo.", answer: "se tuerce" },
+    { sentence: "21. Ellos _______ (distraerse) con el celular.", answer: "se distraen" },
+    { sentence: "22. El anciano _______ (caerse) en la calle.", answer: "se cae" },
+    { sentence: "23. Yo _______ (reírse) de la situación.", answer: "me río" },
+    { sentence: "24. Nosotros _______ (sentarse) a descansar.", answer: "nos sentamos" },
+    { sentence: "25. Tú _______ (dormirse) en el sofá.", answer: "te duermes" },
 ];
+
+const translationVocabHelp = {
+    "every morning": "cada mañana",
+    "wake up": "despertarse (ie)",
+    "at half past six": "a las seis y media",
+    "at seven": "a las siete",
+    "go to bed": "acostarse (ue)",
+    "feel": "sentirse (ie)",
+    "have fun": "divertirse (ie)",
+    "say goodbye": "despedirse (i)",
+    "laugh": "reírse (i)",
+    "sit down": "sentarse (ie)",
+    "remember": "acordarse (ue)"
+};
 
 const globalVocabMap: Record<string, string> = irregularVerbsVocab.reduce((acc, curr) => {
     acc[curr.es.toLowerCase()] = curr.en.toLowerCase();
@@ -180,7 +224,7 @@ const BallsExercise = ({ title, prompts, onComplete, vocabulary }: any) => {
                         <PopoverContent className="w-64">
                             <ScrollArea className="h-64 pr-4">
                                 <div className="space-y-2">
-                                    <h4 className='font-black text-primary text-xs uppercase mb-2 border-b'>Ayuda de Misión</h4>
+                                    <h4 className='font-black text-primary text-xs uppercase mb-2 border-b text-left'>Ayuda de Misión</h4>
                                     {Object.entries(vocabulary || globalVocabMap).map(([es, en]: any, i) => (
                                         <div key={i} className="flex justify-between text-[10px] border-b border-muted pb-1">
                                             <span className="text-muted-foreground text-left uppercase">{en}:</span>
@@ -228,15 +272,21 @@ function ReflexivosIrregularesContent() {
     const [initialLoadComplete, setInitialLoadComplete] = useState(false);
 
     // States for content
-    const [vocabAnswers, setVocabAnswers] = useState<string[]>(Array(irregularVerbsVocab.length).fill(''));
-    const [vocabValidation, setVocabValidation] = useState<any[]>(Array(irregularVerbsVocab.length).fill('unchecked'));
+    const [vocabAnswers, setVocabAnswers] = useState<string[]>(Array(20).fill(''));
+    const [vocabValidation, setVocabValidation] = useState<any[]>(Array(20).fill('unchecked'));
     const [canAdvanceVocab, setCanAdvanceVocab] = useState(false);
+
+    const [conjIdx, setConjIdx] = useState(0);
+    const [conjAns, setConjAns] = useState<Record<number, string[]>>({});
+    const [conjVal, setConjVal] = useState<Record<number, any[]>>({});
 
     const [readingAns, setReadingAns] = useState<string[]>(Array(readingData.questions.length).fill(''));
     const [readingVal, setReadingVal] = useState<any[]>(Array(readingData.questions.length).fill('unchecked'));
 
     const [finalAns, setFinalAns] = useState<string[]>(Array(finalExPrompts.length).fill(''));
     const [finalVal, setFinalVal] = useState<any[]>(Array(finalExPrompts.length).fill('unchecked'));
+
+    const [translationText, setTranslationText] = useState('');
 
     const studentDocRef = useMemoFirebase(() => (currentUID ? doc(firestore, 'students', currentUID) : null), [firestore, currentUID]);
     const authUserRef = useMemoFirebase(() => (user ? doc(firestore, 'students', user.uid) : null), [firestore, user]);
@@ -249,12 +299,14 @@ function ReflexivosIrregularesContent() {
     const initialLearningPath = useMemo(() => [
         { key: 'vocabulary', name: '1. Vocabulario', icon: BookOpen, status: 'active' },
         { key: 'grammar', name: '2. Gramática', icon: GraduationCap, status: 'locked' },
-        { key: 'exercise1', name: '3. Ejercicio 1', icon: PenSquare, status: 'locked' },
-        { key: 'exercise2', name: '4. Ejercicio 2', icon: PenSquare, status: 'locked' },
-        { key: 'exercise3', name: '5. Ejercicio 3', icon: PenSquare, status: 'locked' },
-        { key: 'vocab_game', name: '6. Vocabulario (Juego)', icon: Gamepad2, status: 'locked' },
-        { key: 'reading', name: '7. Lectura', icon: BookText, status: 'locked' },
-        { key: 'final_ex', name: '8. Ejercicio Final', icon: Trophy, status: 'locked' },
+        { key: 'conjugar', name: '3. Conjugar', icon: Pencil, status: 'locked' },
+        { key: 'exercise1', name: '4. Ejercicio 1', icon: PenSquare, status: 'locked' },
+        { key: 'exercise2', name: '5. Ejercicio 2', icon: PenSquare, status: 'locked' },
+        { key: 'exercise3', name: '6. Ejercicio 3', icon: PenSquare, status: 'locked' },
+        { key: 'vocab_game', name: '7. Vocabulario (Juego)', icon: Gamepad2, status: 'locked' },
+        { key: 'reading', name: '8. Lectura', icon: BookText, status: 'locked' },
+        { key: 'final_ex', name: '9. Ejercicio Final', icon: Trophy, status: 'locked' },
+        { key: 'traducir_texto', name: '10. Traducir Texto', icon: BookText, status: 'locked' },
     ], []);
 
     const handleTopicComplete = (completedKey: string) => {
@@ -370,10 +422,45 @@ function ReflexivosIrregularesContent() {
         }
     };
 
+    const handleConjCheck = () => {
+        const item = conjugarVerbsList[conjIdx];
+        const answers = conjAns[conjIdx] || Array(5).fill('');
+        const base = item.verb.toLowerCase().replace("se", "").slice(0, -2);
+        const ending = item.verb.toLowerCase().replace("se", "").slice(-2);
+        
+        let corrects: string[] = [];
+        if (item.type === 'ie') {
+             // Example: despertar -> despiert
+             const stem = base.replace(/e$/, "ie"); // simplistic for this list
+             const stemFixed = item.verb === 'DESPERTARSE' ? 'despiert' : item.verb === 'SENTARSE' ? 'sient' : item.verb === 'SENTIRSE' ? 'sient' : item.verb === 'DIVERTIRSE' ? 'diviert' : 'error';
+             corrects = [`me ${stemFixed}o`, `te ${stemFixed}as`, `se ${stemFixed}a`, `nos ${base}amos`, `se ${stemFixed}an`];
+             if (ending === 'ir') corrects[2] = `se ${stemFixed}e`;
+             if (ending === 'ir') corrects[3] = `nos ${base}imos`;
+             if (ending === 'ir') corrects[4] = `se ${stemFixed}en`;
+        } else if (item.type === 'ue') {
+             const stemFixed = item.verb === 'ACOSTARSE' ? 'acuest' : item.verb === 'DORMIRSE' ? 'duerm' : item.verb === 'PROBARSE' ? 'prueb' : item.verb === 'ACORDARSE' ? 'acuerd' : item.verb === 'ENCONTRARSE' ? 'encuentr' : 'error';
+             corrects = [`me ${stemFixed}o`, `te ${stemFixed}as`, `se ${stemFixed}a`, `nos ${base}amos`, `se ${stemFixed}an`];
+             if (ending === 'ir') { corrects[2] = `se ${stemFixed}e`; corrects[3] = `nos ${base}imos`; corrects[4] = `se ${stemFixed}en`; }
+        } else if (item.type === 'i') {
+             const stemFixed = item.verb === 'VESTIRSE' ? 'vist' : item.verb === 'DESPEDIRSE' ? 'despid' : item.verb === 'REÍRSE' ? 'rí' : 'error';
+             corrects = [`me ${stemFixed}o`, `te ${stemFixed}es`, `se ${stemFixed}e`, `nos ${base}imos`, `se ${stemFixed}en`];
+             if (item.verb === 'REÍRSE') corrects = ["me río", "te ríes", "se ríe", "nos reímos", "se ríen"];
+        }
+
+        const nv = answers.map((ans, i) => ans.trim().toLowerCase() === corrects[i] ? 'correct' : 'incorrect');
+        setConjVal(p => ({ ...p, [conjIdx]: nv }));
+
+        if (nv.every(v => v === 'correct')) {
+            toast({ title: "¡Verbo conjugado correctamente!" });
+            if (conjIdx < conjugarVerbsList.length - 1) setConjIdx(v => v + 1);
+            else handleTopicComplete('conjugar');
+        } else toast({ variant: "destructive", title: "Hay errores en la conjugación" });
+    };
+
     const handleCheckReading = () => {
         let ok = true;
         const nv = readingData.questions.map((q, i) => {
-            const isCorrect = q.a.some(ans => ans.toLowerCase() === (readingAns[i] || '').trim().toLowerCase());
+            const isCorrect = q.a.some(ans => (readingAns[i] || '').trim().toLowerCase().includes(ans.toLowerCase()));
             if (!isCorrect) ok = false;
             return isCorrect ? 'correct' : 'incorrect';
         });
@@ -408,13 +495,13 @@ function ReflexivosIrregularesContent() {
         switch (selectedTopic) {
             case 'vocabulary':
                 return (
-                    <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground">
+                    <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground text-left">
                         <CardHeader className='bg-primary/5 border-b'>
                             <CardTitle className="text-primary uppercase tracking-tight">Vocabulario: Verbos Reflexivos Irregulares</CardTitle>
                             <CardDescription className='font-bold text-foreground'>Escribe el significado en español para cada verbo.</CardDescription>
                         </CardHeader>
                         <CardContent className="pt-6">
-                            <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm">
+                            <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm text-foreground">
                                 <div className="font-black text-primary border-b pb-2 uppercase tracking-widest text-xs text-left">English</div>
                                 <div className="font-black text-primary border-b pb-2 uppercase tracking-widest text-xs text-left">Español</div>
                                 {irregularVerbsVocab.map((v, i) => (
@@ -422,7 +509,7 @@ function ReflexivosIrregularesContent() {
                                         <div className="flex items-center font-bold text-left py-1">{v.en}</div>
                                         <Input 
                                             value={vocabAnswers[i] || ''} 
-                                            onChange={e => { const na = [...vocabAnswers]; na[i] = e.target.value; setVocabAnswers(na); setVocabValidation(v => { const nv = [...v]; nv[i] = 'unchecked'; return nv as any; }); }} 
+                                            onChange={e => { const na = [...vocabAnswers]; na[i] = e.target.value; setVocabAnswers(na); setVocabValidation(vv => { const nv = [...vv]; nv[i] = 'unchecked'; return nv as any; }); }} 
                                             className={cn("h-10 uppercase font-mono border-2", vocabValidation[i] === 'correct' ? 'border-green-500' : vocabValidation[i] === 'incorrect' ? 'border-red-500' : '')} 
                                             autoComplete="off"
                                         />
@@ -460,7 +547,7 @@ function ReflexivosIrregularesContent() {
                                 </div>
                             </div>
 
-                            <div className='space-y-6'>
+                            <div className='space-y-6 text-foreground'>
                                 <h3 className='text-xl font-black text-primary uppercase tracking-tighter flex items-center gap-2'>
                                     <ListChecks className='h-6 w-6'/> Modelos de Conjugación
                                 </h3>
@@ -502,6 +589,47 @@ function ReflexivosIrregularesContent() {
                         <CardFooter className="justify-center pt-6 border-t"><Button onClick={() => handleTopicComplete('grammar')} size="lg" className="px-16 font-black h-12 text-white shadow-lg">He comprendido la gramática</Button></CardFooter>
                     </Card>
                 );
+            case 'conjugar':
+                const currentVerb = conjugarVerbsList[conjIdx];
+                const persons = ["Yo", "Tú", "Él/Ella/Ud", "Nosotros", "Ellos/Ellas/Uds"];
+                return (
+                    <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left overflow-hidden">
+                        <CardHeader className='bg-primary/5 border-b'>
+                            <div className='flex justify-between items-center'>
+                                <div>
+                                    <CardTitle className='text-primary uppercase'>Misión: Conjugar (Irregulares)</CardTitle>
+                                    <CardDescription>Conjuga el verbo en presente. Recuerda el cambio de raíz {currentVerb.type === 'ie' ? '(e→ie)' : currentVerb.type === 'ue' ? '(o→ue)' : '(e→i)'}.</CardDescription>
+                                </div>
+                                <div className='text-right'><p className='text-xs font-bold text-muted-foreground uppercase tracking-widest'>VERBO {conjIdx + 1} DE {conjugarVerbsList.length}</p></div>
+                            </div>
+                        </CardHeader>
+                        <CardContent className="space-y-6 pt-6">
+                            <div className='text-center p-6 bg-primary/10 rounded-3xl border-2 border-primary/20'><h3 className='text-4xl font-black text-primary uppercase tracking-tighter'>{currentVerb.verb}</h3></div>
+                            <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
+                                {persons.map((p, i) => (
+                                    <div key={i} className='space-y-1'>
+                                        <Label className='font-bold ml-1'>{p}:</Label>
+                                        <Input 
+                                            value={conjAns[conjIdx]?.[i] || ''} 
+                                            onChange={e => {
+                                                const nv = { ...conjAns };
+                                                const currentArr = nv[conjIdx] || Array(5).fill('');
+                                                currentArr[i] = e.target.value;
+                                                nv[conjIdx] = currentArr;
+                                                setConjAns(nv);
+                                                setConjVal(prev => ({ ...prev, [conjIdx]: undefined }));
+                                            }}
+                                            className={cn("h-11 font-mono lowercase border-2", conjVal[conjIdx]?.[i] === 'correct' ? 'border-green-500 bg-green-50/5' : conjVal[conjIdx]?.[i] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')}
+                                            autoComplete='off'
+                                            placeholder="me ..."
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+                        </CardContent>
+                        <CardFooter className="justify-center border-t p-6 bg-muted/20"><Button onClick={handleConjCheck} size="lg" className="px-24 font-black h-14 text-xl shadow-xl bg-primary hover:bg-primary/90 text-primary-foreground">Verificar Verbo <ArrowRight className='ml-2'/></Button></CardFooter>
+                    </Card>
+                );
             case 'exercise1': return <BallsExercise title="Ejercicio 1" prompts={ex1Prompts} onComplete={() => handleTopicComplete('exercise1')} />;
             case 'exercise2': return <BallsExercise title="Ejercicio 2" prompts={ex2Prompts} onComplete={() => handleTopicComplete('exercise2')} />;
             case 'exercise3': return <BallsExercise title="Ejercicio 3" prompts={ex3Prompts} onComplete={() => handleTopicComplete('exercise3')} />;
@@ -530,7 +658,7 @@ function ReflexivosIrregularesContent() {
                                 {readingData.questions.map((q, i) => (
                                     <div key={i} className="space-y-2 p-3 bg-muted/20 rounded-xl border">
                                         <Label className="font-bold text-base">{q.q}</Label>
-                                        <Input value={readingAns[i] || ''} onChange={e => { const na = [...readingAns]; na[i] = e.target.value; setReadingAns(na); const nv = [...readingVal]; nv[i] = 'unchecked'; setReadingVal(nv as any); }} className={cn("h-10 text-foreground", readingVal[i] === 'correct' ? 'border-green-500 bg-green-50/5' : readingVal[i] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} autoComplete="off" />
+                                        <Input value={readingAns[i] || ''} onChange={e => { const na = [...readingAns]; na[i] = e.target.value; const nv = [...readingVal]; nv[i] = 'unchecked'; setReadingVal(nv as any); }} className={cn("h-10 text-foreground", readingVal[i] === 'correct' ? 'border-green-500 bg-green-50/5' : readingVal[i] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} autoComplete="off" />
                                     </div>
                                 ))}
                             </div>
@@ -541,7 +669,7 @@ function ReflexivosIrregularesContent() {
             case 'final_ex':
                 return (
                     <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left overflow-hidden">
-                        <CardHeader className='bg-primary/5 border-b'><CardTitle className='text-primary uppercase'>Misión Final: Conjugación Precisa</CardTitle></CardHeader>
+                        <CardHeader className='bg-primary/5 border-b'><CardTitle className='text-primary uppercase'>Misión: Conjugación Precisa (+25)</CardTitle></CardHeader>
                         <CardContent className="p-0">
                             <ScrollArea className="h-[450px] p-6">
                                 <div className="space-y-4 text-foreground">
@@ -561,7 +689,70 @@ function ReflexivosIrregularesContent() {
                                 </div>
                             </ScrollArea>
                         </CardContent>
-                        <CardFooter className="justify-center border-t p-6 bg-muted/20"><Button onClick={handleCheckFinal} size="lg" className="px-24 font-black h-14 text-xl shadow-xl bg-primary hover:bg-primary/90 text-primary-foreground">Finalizar Misión <Trophy className='ml-2'/></Button></CardFooter>
+                        <CardFooter className="justify-center border-t p-6 bg-muted/20"><Button onClick={handleCheckFinal} size="lg" className="px-24 font-black h-14 text-xl shadow-xl">Verificar Misión Final</Button></CardFooter>
+                    </Card>
+                );
+            case 'traducir_texto':
+                return (
+                    <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left">
+                        <CardHeader>
+                            <div className="flex justify-between items-center">
+                                <div>
+                                    <CardTitle className='text-primary uppercase'>Traducción de Texto: Rutina Irregular</CardTitle>
+                                    <CardDescription className='font-bold text-foreground'>Traduce el siguiente texto al español usando los verbos reflexivos irregulares.</CardDescription>
+                                </div>
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                        <Button variant="outline" size="sm" className="border-2 border-brand-blue animate-border-pulse">
+                                            <BookText className="mr-2 h-4 w-4" /> Vocabulario
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-64">
+                                        <ScrollArea className="h-64 pr-4">
+                                            <div className="space-y-2">
+                                                <h4 className='font-black text-primary text-xs uppercase mb-2 border-b text-left'>Ayuda de Traducción</h4>
+                                                {Object.entries(translationVocabHelp).map(([en, es], i) => (
+                                                    <div key={i} className="flex justify-between text-[10px] border-b border-muted pb-1">
+                                                        <span className="text-muted-foreground text-left uppercase">{en}:</span>
+                                                        <span className="font-bold text-right text-primary">{es.toUpperCase()}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </ScrollArea>
+                                    </PopoverContent>
+                                </Popover>
+                            </div>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                            <div className="p-6 bg-muted/50 rounded-2xl border italic text-lg leading-relaxed text-foreground shadow-sm">
+                                "Every morning, I wake up at half past six. I sit down on the bed and I remember my dreams. Then, I get dressed at seven. In the office, I feel very busy. In the afternoon, I have fun with my friends; we laugh a lot. Finally, I say goodbye and I go to bed early."
+                            </div>
+                            <Separator />
+                            <div className="space-y-2">
+                                <Label className='font-black text-primary uppercase text-sm'>Tu Traducción:</Label>
+                                <Textarea 
+                                    value={translationText}
+                                    onChange={(e) => setTranslationText(e.target.value)}
+                                    placeholder="Escribe el texto en español aquí..."
+                                    className="min-h-[200px] text-lg leading-relaxed"
+                                />
+                            </div>
+                        </CardContent>
+                        <CardFooter className="justify-center border-t pt-6 bg-muted/20">
+                            <Button 
+                                onClick={() => {
+                                    if (translationText.length < 20 && !isAdmin) {
+                                        toast({ variant: 'destructive', title: "Traducción incompleta", description: "Escribe el texto completo para terminar." });
+                                        return;
+                                    }
+                                    handleTopicComplete('traducir_texto');
+                                }} 
+                                size="lg" 
+                                className="px-24 font-black h-16 text-2xl shadow-xl bg-primary hover:bg-primary/90 text-primary-foreground uppercase tracking-tighter"
+                            >
+                                Terminar <Trophy className='ml-3 h-8 w-8' />
+                            </Button>
+                        </CardFooter>
                     </Card>
                 );
             default: return null;
