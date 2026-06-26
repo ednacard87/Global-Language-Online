@@ -158,6 +158,22 @@ const ex4OptionsPrompts = [
     { sentence: "18. ¿Tú _______ (caber) en el asiento?", options: ["Cupiste", "Cabe", "Cupo"], answer: "Cupiste" },
     { sentence: "19. El perro _______ (querer) salir.", options: ["Quiso", "Quise", "Quisieron"], answer: "Quiso" },
     { sentence: "20. Yo _______ (hacer) la cama.", options: ["Hice", "Hizo", "Hicimos"], answer: "Hice" },
+    // 15 frases nuevas
+    { sentence: "21. Ellos _______ (traer) el postre.", options: ["Trajeron", "Trajeron", "Trajo"], answer: "Trajeron" },
+    { sentence: "22. Yo _______ (querer) ir a la playa.", options: ["Quise", "Quiso", "Quisieron"], answer: "Quise" },
+    { sentence: "23. Nosotros _______ (andar) por el bosque.", options: ["Anduvimos", "Anduviste", "Anduvo"], answer: "Anduvimos" },
+    { sentence: "24. ¿Tú _______ (saber) el secreto?", options: ["Supiste", "Sabe", "Supieron"], answer: "Supiste" },
+    { sentence: "25. Ella _______ (hacer) una tarta deliciosa.", options: ["Hizo", "Hice", "Hicimos"], answer: "Hizo" },
+    { sentence: "26. Ellos _______ (estar) en la fiesta de ayer.", options: ["Estuvieron", "Estábamos", "Estuviste"], answer: "Estuvieron" },
+    { sentence: "27. Yo _______ (decir) que sí al proyecto.", options: ["Dije", "Dijo", "Dijeron"], answer: "Dije" },
+    { sentence: "28. Nosotros _______ (tener) mucho miedo.", options: ["Tuvimos", "Tuviste", "Tuvieron"], answer: "Tuvimos" },
+    { sentence: "29. ¿Ustedes _______ (poder) entrar al cine?", options: ["Pudieron", "Pudo", "Pudimos"], answer: "Pudieron" },
+    { sentence: "30. Ella _______ (venir) sola a la reunión.", options: ["Vino", "Vine", "Venimos"], answer: "Vino" },
+    { sentence: "31. Yo _______ (conducir) toda la noche.", options: ["Conduje", "Condujo", "Condujeron"], answer: "Conduje" },
+    { sentence: "32. Ellos _______ (traducir) la carta del inglés.", options: ["Tradujeron", "Tradució", "Tradujiste"], answer: "Tradujeron" },
+    { sentence: "33. Nosotros _______ (hacer) la maleta temprano.", options: ["Hicimos", "Hiciste", "Hicieron"], answer: "Hicimos" },
+    { sentence: "34. ¿Tú _______ (dar) el regalo a tu mamá?", options: ["Diste", "Dió", "Dimos"], answer: "Diste" },
+    { sentence: "35. Ella _______ (traer) buenas noticias hoy.", options: ["Trajo", "Trajeron", "Traje"], answer: "Trajo" },
 ];
 
 const completionPrompts = [
@@ -228,6 +244,68 @@ const translationVocabHelp = {
 
 // --- HELPER COMPONENTS ---
 
+const ChoiceExercise = ({ prompts, onComplete, title }: any) => {
+    const { toast } = useToast();
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [selectedOption, setSelectedOption] = useState<string | null>(null);
+    const [status, setStatus] = useState<Record<number, 'correct' | 'incorrect' | 'unchecked'>>({});
+
+    useEffect(() => {
+        setSelectedOption(null);
+    }, [currentIndex]);
+
+    const handleSelect = (option: string) => {
+        const isCorrect = option === prompts[currentIndex].answer;
+        setSelectedOption(option);
+        setStatus(prev => ({ ...prev, [currentIndex]: isCorrect ? 'correct' : 'incorrect' }));
+        if (isCorrect) toast({ title: "¡Correcto!" });
+        else toast({ variant: 'destructive', title: "Sigue intentando" });
+    };
+
+    return (
+        <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground">
+            <CardHeader>
+                <div className='text-left'>
+                    <CardTitle>{title}</CardTitle>
+                    <CardDescription className='font-bold text-foreground mt-1'>Elige la opción correcta para completar la frase.</CardDescription>
+                    <div className="flex gap-2 justify-start flex-wrap pt-4">
+                        {prompts.map((_: any, i: number) => (
+                            <div key={i} onClick={() => setCurrentIndex(i)} className={cn("h-8 w-8 rounded-full border-2 flex items-center justify-center text-xs font-bold cursor-pointer transition-all", currentIndex === i ? "border-primary ring-2 ring-primary" : "border-muted", status[i] === 'correct' ? "bg-green-500 text-white border-green-500" : status[i] === 'incorrect' ? "bg-red-500 text-white border-red-500" : "bg-card text-foreground")}>{i + 1}</div>
+                        ))}
+                    </div>
+                </div>
+            </CardHeader>
+            <CardContent className="space-y-8 py-10">
+                <div className="text-2xl font-bold text-center leading-relaxed">
+                    {prompts[currentIndex].sentence.split('_______').map((part: string, i: number) => (
+                        <React.Fragment key={i}>{part}{i < prompts[currentIndex].sentence.split('_______').length - 1 && (<span className="text-primary border-b-2 border-dashed border-primary px-4 mx-2">{status[currentIndex] === 'correct' ? prompts[currentIndex].answer : '...'}</span>)}</React.Fragment>
+                    ))}
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-lg mx-auto">
+                    {prompts[currentIndex].options.map((opt: string) => (
+                        <Button 
+                            key={opt} 
+                            onClick={() => handleSelect(opt)} 
+                            variant="outline" 
+                            className={cn(
+                                "h-14 text-lg font-black uppercase transition-all", 
+                                selectedOption === opt && status[currentIndex] === 'correct' && "border-green-500 bg-green-50 text-green-700",
+                                selectedOption === opt && status[currentIndex] === 'incorrect' && "border-red-500 bg-red-50 text-red-700"
+                            )}
+                        >
+                            {opt}
+                        </Button>
+                    ))}
+                </div>
+            </CardContent>
+            <CardFooter className="justify-between border-t pt-6">
+                <Button variant="outline" onClick={() => setCurrentIndex(p => Math.max(0, p - 1))} disabled={currentIndex === 0}>Anterior</Button>
+                <Button onClick={() => currentIndex < prompts.length - 1 ? setCurrentIndex(i => i + 1) : onComplete()} disabled={status[currentIndex] !== 'correct'} className="px-12 font-bold text-white">Siguiente</Button>
+            </CardFooter>
+        </Card>
+    );
+};
+
 const BallsExercise = ({ title, prompts, onComplete, vocabulary }: any) => {
     const { toast } = useToast();
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -279,6 +357,13 @@ const BallsExercise = ({ title, prompts, onComplete, vocabulary }: any) => {
 };
 
 // --- MAIN CONTENT COMPONENT ---
+
+interface Topic {
+    key: string;
+    name: string;
+    icon: React.ElementType;
+    status: 'locked' | 'active' | 'completed';
+}
 
 function PasadoIrregularesContent() {
     const { toast } = useToast();
@@ -471,11 +556,6 @@ function PasadoIrregularesContent() {
         else toast({ variant: 'destructive', title: "Hay errores" });
     };
 
-    const handleChoiceSelect = (option: string, idx: number) => {
-        // Lógica simplificada para ejercicio 4
-        handleTopicComplete('exercise4');
-    };
-
     const renderContent = () => {
         if (isInitialLoading) return <div className="flex flex-col items-center justify-center min-h-[400px]"><Loader2 className="h-12 w-12 animate-spin text-primary mb-4" /></div>;
 
@@ -570,18 +650,11 @@ function PasadoIrregularesContent() {
                 );
             case 'exercise4':
                 return (
-                    <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground">
-                        <CardHeader><CardTitle>Ejercicio 4: Opción Múltiple</CardTitle></CardHeader>
-                        <CardContent className="space-y-4">
-                            {ex4OptionsPrompts.slice(0, 10).map((q, i) => (
-                                <div key={i} className="p-4 border rounded-xl space-y-3">
-                                    <p className="font-bold">{q.sentence}</p>
-                                    <div className="flex gap-2">{q.options.map(opt => <Button key={opt} variant="outline" onClick={() => handleChoiceSelect(opt, i)}>{opt}</Button>)}</div>
-                                </div>
-                            ))}
-                        </CardContent>
-                        <CardFooter><Button onClick={() => handleTopicComplete('exercise4')}>Siguiente Paso</Button></CardFooter>
-                    </Card>
+                    <ChoiceExercise 
+                        title="Ejercicio 4: Opción Múltiple" 
+                        prompts={ex4OptionsPrompts} 
+                        onComplete={() => handleTopicComplete('exercise4')} 
+                    />
                 );
             case 'completar':
                 return (
@@ -599,7 +672,7 @@ function PasadoIrregularesContent() {
                     </Card>
                 );
             case 'final_ex':
-                const finalVerbs = ["TENER", "HACER", "PODER", "ESTAR", "SABER"];
+                const finalVerbs = ["TENER", "HACER", "PODER", "ESTAR", "SABER", "DECIR", "TRAER", "VENIR", "QUERER", "PONER", "CONDUCIR", "TRADUCIR", "ANDAR", "CABER", "DAR"];
                 const currentFinalV = finalVerbs[finalVerbsIdx];
                 return (
                     <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left overflow-hidden">
