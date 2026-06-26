@@ -20,7 +20,9 @@ import {
     Info,
     ListChecks,
     Search,
-    Sparkles
+    Sparkles,
+    Pencil,
+    ArrowRight
 } from 'lucide-react';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -37,9 +39,10 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { VocabularyMatchingGame } from '@/components/dashboard/vocabulary-matching-game';
+import { Textarea } from '@/components/ui/textarea';
 
 // --- CONFIGURACIÓN DE INGENIERÍA ---
-const progressStorageVersion = 'progress_es_a2_reflex_mix_v2_final_content';
+const progressStorageVersion = 'progress_es_a2_reflex_mix_v5_full_extended';
 const mainProgressKey = 'progress_a2_es_reflexivos_mix';
 
 // --- DATA ---
@@ -78,6 +81,21 @@ const mixedVocab = [
     { en: "TO LAUGH", es: "REÍRSE" },
     { en: "TO SIT DOWN", es: "SENTARSE" },
     { en: "TO REMEMBER", es: "ACORDARSE" },
+];
+
+const conjugarVerbsList = [
+    { verb: "LLAMARSE", type: "reg" },
+    { verb: "DESPERTARSE", type: "ie" },
+    { verb: "LAVARSE", type: "reg" },
+    { verb: "ACOSTARSE", type: "ue" },
+    { verb: "VESTIRSE", type: "i" },
+    { verb: "DUCHARSE", type: "reg" },
+    { verb: "DIVERTIRSE", type: "ie" },
+    { verb: "LEVANTARSE", type: "reg" },
+    { verb: "DORMIRSE", type: "ue" },
+    { verb: "PEINARSE", type: "reg" },
+    { verb: "SENTIRSE", type: "ie" },
+    { verb: "DESPEDIRSE", type: "i" },
 ];
 
 const ex1Prompts = [
@@ -133,7 +151,7 @@ const finalExPrompts = [
     { s: "4. Ellos _______ (vestirse) rápido.", a: "se visten" },
     { s: "5. Tú _______ (ducharse) con agua fría.", a: "te duchas" },
     { s: "6. Él _______ (acostarse) en el sofá.", a: "se acuesta" },
-    { s: "7. Vosotros _______ (reírse) mucho.", a: "os reís" },
+    { s: "7. Ustedes _______ (reírse) mucho.", a: "se ríen" },
     { s: "8. El perro _______ (dormirse) afuera.", a: "se duerme" },
     { s: "9. Yo _______ (maquillarse) en el baño.", a: "me maquillo" },
     { s: "10. Nosotros _______ (divertirse) en la playa.", a: "nos divertimos" },
@@ -142,7 +160,31 @@ const finalExPrompts = [
     { s: "13. Tú _______ (acordarse) de mi cumpleaños.", a: "te acuerdas" },
     { s: "14. Yo _______ (sentirse) muy bien hoy.", a: "me siento" },
     { s: "15. Nosotros _______ (peinarse) frente al espejo.", a: "nos peinamos" },
+    { s: "16. Tú _______ (arrepentirse) de no ir.", a: "te arrepientes" },
+    { s: "17. Yo _______ (medirse) la presión.", a: "me mido" },
+    { s: "18. Él _______ (servirse) un vaso de agua.", a: "se sirve" },
+    { s: "19. El niño _______ (morderse) las uñas.", a: "se muerde" },
+    { s: "20. Ella _______ (torcerse) el tobillo.", a: "se tuerce" },
+    { s: "21. Ellos _______ (distraerse) con el celular.", a: "se distraen" },
+    { s: "22. El anciano _______ (caerse) en la calle.", a: "se cae" },
+    { s: "23. Yo _______ (reírse) de la situación.", a: "me río" },
+    { s: "24. Nosotros _______ (sentarse) a descansar.", a: "nos sentimos" },
+    { s: "25. Tú _______ (dormirse) en el sofá.", a: "te duermes" },
 ];
+
+const translationVocabHelp = {
+    "every day": "cada día",
+    "wake up": "despertarse (ie)",
+    "get up": "levantarse",
+    "wash my face": "lavarse la cara",
+    "shower": "ducharse",
+    "get dressed": "vestirse (i)",
+    "comb my hair": "peinarse",
+    "have fun": "divertirse (ie)",
+    "relax": "relajarse",
+    "go to bed": "acostarse (ue)",
+    "fall asleep": "dormirse (ue)"
+};
 
 const globalVocabMap: Record<string, string> = mixedVocab.reduce((acc, curr) => {
     acc[curr.es.toLowerCase()] = curr.en.toLowerCase();
@@ -223,11 +265,17 @@ function ReflexivosMixContent() {
     const [vocabValidation, setVocabValidation] = useState<any[]>(Array(mixedVocab.length).fill('unchecked'));
     const [canAdvanceVocab, setCanAdvanceVocab] = useState(false);
 
+    const [conjIdx, setConjIdx] = useState(0);
+    const [conjAns, setConjAns] = useState<Record<number, string[]>>({});
+    const [conjVal, setConjVal] = useState<Record<number, any[]>>({});
+
     const [readingAns, setReadingAns] = useState<string[]>(Array(readingData.questions.length).fill(''));
     const [readingVal, setReadingVal] = useState<any[]>(Array(readingData.questions.length).fill('unchecked'));
 
     const [finalAns, setFinalAns] = useState<string[]>(Array(finalExPrompts.length).fill(''));
     const [finalVal, setFinalVal] = useState<any[]>(Array(finalExPrompts.length).fill('unchecked'));
+
+    const [translationText, setTranslationText] = useState('');
 
     const studentDocRef = useMemoFirebase(() => (currentUID ? doc(firestore, 'students', currentUID) : null), [firestore, currentUID]);
     const authUserRef = useMemoFirebase(() => (user ? doc(firestore, 'students', user.uid) : null), [firestore, user]);
@@ -240,12 +288,14 @@ function ReflexivosMixContent() {
     const initialLearningPath = useMemo(() => [
         { key: 'vocabulary', name: '1. Vocabulario', icon: BookOpen, status: 'active' },
         { key: 'grammar', name: '2. Gramática', icon: GraduationCap, status: 'locked' },
-        { key: 'exercise1', name: '3. Ejercicio 1', icon: PenSquare, status: 'locked' },
-        { key: 'exercise2', name: '4. Ejercicio 2', icon: PenSquare, status: 'locked' },
-        { key: 'vocab_game', name: '5. Vocabulario (Juego)', icon: Gamepad2, status: 'locked' },
-        { key: 'exercise3', name: '6. Ejercicio 3', icon: PenSquare, status: 'locked' },
-        { key: 'reading', name: '7. Lectura Mix', icon: BookText, status: 'locked' },
-        { key: 'final_ex', name: '8. Ejercicio Final', icon: Trophy, status: 'locked' },
+        { key: 'conjugar', name: '3. Conjugar', icon: Pencil, status: 'locked' },
+        { key: 'exercise1', name: '4. Ejercicio 1', icon: PenSquare, status: 'locked' },
+        { key: 'exercise2', name: '5. Ejercicio 2', icon: PenSquare, status: 'locked' },
+        { key: 'vocab_game', name: '6. Vocabulario (Juego)', icon: Gamepad2, status: 'locked' },
+        { key: 'exercise3', name: '7. Ejercicio 3', icon: PenSquare, status: 'locked' },
+        { key: 'reading', name: '8. Lectura Mix', icon: BookText, status: 'locked' },
+        { key: 'final_ex', name: '9. Ejercicio Final', icon: Trophy, status: 'locked' },
+        { key: 'traducir_texto', name: '10. Traducir Texto', icon: BookText, status: 'locked' },
     ], []);
 
     const handleTopicComplete = useCallback((completedKey: string) => {
@@ -263,7 +313,7 @@ function ReflexivosMixContent() {
         } else if (studentProfile?.lessonProgress?.[progressStorageVersion]) {
             const savedData = studentProfile.lessonProgress[progressStorageVersion];
             path.forEach(item => { if (savedData[item.key]) (item as any).status = savedData[item.key]; });
-            savedST = savedData.lastSelectedTopic || '';
+            savedST = d.lastSelectedTopic || '';
         }
 
         let lastDone = true;
@@ -331,6 +381,38 @@ function ReflexivosMixContent() {
         else { toast({ variant: 'destructive', title: "Sigue intentando" }); }
     };
 
+    const handleConjCheck = () => {
+        const item = conjugarVerbsList[conjIdx];
+        const answers = conjAns[conjIdx] || Array(5).fill('');
+        const root = item.verb.toLowerCase().replace("se", "").slice(0, -2);
+        const ending = item.verb.toLowerCase().replace("se", "").slice(-2);
+        
+        let corrects: string[] = [];
+        if (item.type === 'reg') {
+            if (ending === 'ar') corrects = [`me ${root}o`, `te ${root}as`, `se ${root}a`, `nos ${root}amos`, `se ${root}an`];
+            else if (ending === 'er') corrects = [`me ${root}o`, `te ${root}es`, `se ${root}e`, `nos ${root}emos`, `se ${root}en`];
+            else corrects = [`me ${root}o`, `te ${root}es`, `se ${root}e`, `nos ${root}imos`, `se ${root}en`];
+        } else if (item.type === 'ie') {
+             const stem = item.verb === 'DESPERTARSE' ? 'despiert' : item.verb === 'DIVERTIRSE' ? 'diviert' : 'sient';
+             corrects = [`me ${stem}o`, `te ${stem}${ending === 'ar' ? 'as' : 'es'}`, `se ${stem}${ending === 'ar' ? 'a' : 'e'}`, `nos ${root}${ending === 'ar' ? 'amos' : 'imos'}`, `se ${stem}${ending === 'ar' ? 'an' : 'en'}`];
+        } else if (item.type === 'ue') {
+             const stem = item.verb === 'ACOSTARSE' ? 'acuest' : 'duerm';
+             corrects = [`me ${stem}o`, `te ${stem}${ending === 'ar' ? 'as' : 'es'}`, `se ${stem}${ending === 'ar' ? 'a' : 'e'}`, `nos ${root}${ending === 'ar' ? 'amos' : 'imos'}`, `se ${stem}${ending === 'ar' ? 'an' : 'en'}`];
+        } else if (item.type === 'i') {
+             const stem = item.verb === 'VESTIRSE' ? 'vist' : 'despid';
+             corrects = [`me ${stem}o`, `te ${stem}es`, `se ${stem}e`, `nos ${root}imos`, `se ${stem}en`];
+        }
+
+        const nv = answers.map((ans, i) => ans.trim().toLowerCase() === corrects[i] ? 'correct' : 'incorrect');
+        setConjVal(p => ({ ...p, [conjIdx]: nv }));
+
+        if (nv.every(v => v === 'correct')) {
+            toast({ title: "¡Verbo conjugado correctamente!" });
+            if (conjIdx < conjugarVerbsList.length - 1) setConjIdx(v => v + 1);
+            else handleTopicComplete('conjugar');
+        } else toast({ variant: "destructive", title: "Hay errores en la conjugación" });
+    };
+
     const handleCheckReading = () => {
         let ok = true;
         const nv = readingData.questions.map((q, i) => {
@@ -362,7 +444,7 @@ function ReflexivosMixContent() {
                 return (
                     <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground text-left">
                         <CardHeader className='bg-primary/5 border-b'><CardTitle className="text-primary uppercase">Vocabulario Mix (Regulares e Irregulares)</CardTitle></CardHeader>
-                        <CardContent className="pt-6"><div className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm"><div className="font-black text-primary border-b pb-2 uppercase tracking-widest text-xs">English</div><div className="font-black text-primary border-b pb-2 uppercase tracking-widest text-xs">Español</div>{mixedVocab.map((v, i) => (<Fragment key={i}><div className="flex items-center font-bold py-1 uppercase">{v.en}</div><Input value={vocabAnswers[i] || ''} onChange={e => { const na = [...vocabAnswers]; na[i] = e.target.value; setVocabAnswers(na); setVocabValidation(v => { const nv = [...v]; nv[i] = 'unchecked'; return nv as any; }); }} className={cn("h-10 uppercase font-mono border-2", vocabValidation[i] === 'correct' ? 'border-green-500' : vocabValidation[i] === 'incorrect' ? 'border-red-500' : '')} autoComplete="off" /></Fragment>))}</div></CardContent>
+                        <CardContent className="pt-6"><div className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm"><div className="font-black text-primary border-b pb-2 uppercase tracking-widest text-xs">English</div><div className="font-black text-primary border-b pb-2 uppercase tracking-widest text-xs">Español</div>{mixedVocab.map((v, i) => (<Fragment key={i}><div className="flex items-center font-bold py-1 uppercase text-left">{v.en}</div><Input value={vocabAnswers[i] || ''} onChange={e => { const na = [...vocabAnswers]; na[i] = e.target.value; setVocabAnswers(na); setVocabValidation(v => { const nv = [...v]; nv[i] = 'unchecked'; return nv as any; }); }} className={cn("h-10 uppercase font-mono border-2", vocabValidation[i] === 'correct' ? 'border-green-500' : vocabValidation[i] === 'incorrect' ? 'border-red-500' : '')} autoComplete="off" /></Fragment>))}</div></CardContent>
                         <CardFooter className="flex justify-between border-t pt-6 bg-muted/20"><Button onClick={handleCheckVocab} variant="secondary">Verificar</Button><Button onClick={() => handleTopicComplete('vocabulary')} disabled={!canAdvanceVocab && !isAdmin} className='text-white font-bold'>Avanzar</Button></CardFooter>
                     </Card>
                 );
@@ -375,7 +457,6 @@ function ReflexivosMixContent() {
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-8 px-0">
-                            {/* Intro Section */}
                             <div className="p-6 bg-white/60 dark:bg-background/20 rounded-[2rem] border shadow-sm space-y-4">
                                 <p className="text-lg font-bold leading-relaxed">
                                     En español, todos los verbos reflexivos comparten la misma base de pronombres (<span className="text-primary font-black">me, te, se, nos, os, se</span>), pero se dividen en dos grandes grupos según cómo cambia el verbo al conjugar:
@@ -383,14 +464,13 @@ function ReflexivosMixContent() {
                             </div>
 
                             <div className="grid md:grid-cols-2 gap-8">
-                                {/* Regulars */}
                                 <div className="space-y-4">
                                     <div className="flex items-center gap-2 text-primary">
                                         <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center font-black">1</div>
                                         <h4 className="text-xl font-black uppercase tracking-tight">Verbos Regulares</h4>
                                     </div>
                                     <div className="p-5 bg-background/50 rounded-2xl border-l-4 border-primary shadow-sm space-y-2">
-                                        <p className="text-sm">La <span className="font-bold underline">raíz no cambia</span>. Solo quitamos el "SE" del final y conjugamos normal según su terminación (-ar, -er, -ir).</p>
+                                        <p className="text-sm">La <span className="font-bold underline">raíz no cambia</span>. Solo quitamos el "SE" del final y conjugamos normal.</p>
                                         <div className="bg-muted/50 p-3 rounded font-mono text-xs">
                                             <p className="text-primary font-bold">Ejemplo: LAVARSE</p>
                                             <ul className="mt-1 space-y-0.5">
@@ -401,8 +481,6 @@ function ReflexivosMixContent() {
                                         </div>
                                     </div>
                                 </div>
-
-                                {/* Irregulars */}
                                 <div className="space-y-4">
                                     <div className="flex items-center gap-2 text-brand-purple">
                                         <div className="h-8 w-8 rounded-full bg-brand-purple/20 flex items-center justify-center font-black">2</div>
@@ -424,15 +502,14 @@ function ReflexivosMixContent() {
 
                             <Separator />
 
-                            {/* Conjugation Models */}
                             <div className='space-y-6'>
                                 <h3 className='text-xl font-black text-primary uppercase tracking-tighter flex items-center gap-2'>
                                     <ListChecks className='h-6 w-6'/> Modelos de Conjugación Mix
                                 </h3>
                                 <div className='grid gap-4 sm:grid-cols-3'>
-                                    <Card className='p-4 border-2 border-primary/20 bg-primary/5'>
-                                        <h4 className='font-bold text-center border-b pb-2 mb-2 text-primary'>REGULAR (LAVARSE)</h4>
-                                        <ul className='text-xs font-mono space-y-1 text-center'>
+                                    <Card className='p-4 border-2 border-primary/20 bg-primary/5 text-center'>
+                                        <h4 className='font-bold border-b pb-2 mb-2 text-primary'>REGULAR (LAVARSE)</h4>
+                                        <ul className='text-xs font-mono space-y-1'>
                                             <li>Me lavo</li>
                                             <li>Te lavas</li>
                                             <li>Se lava</li>
@@ -440,9 +517,9 @@ function ReflexivosMixContent() {
                                             <li>Se lavan</li>
                                         </ul>
                                     </Card>
-                                    <Card className='p-4 border-2 border-brand-purple/20 bg-brand-purple/5'>
-                                        <h4 className='font-bold text-center border-b pb-2 mb-2 text-brand-purple'>IRREG. e &rarr; ie (SENTIRSE)</h4>
-                                        <ul className='text-xs font-mono space-y-1 text-center'>
+                                    <Card className='p-4 border-2 border-brand-purple/20 bg-brand-purple/5 text-center'>
+                                        <h4 className='font-bold border-b pb-2 mb-2 text-brand-purple'>IRREG. e &rarr; ie (SENTIRSE)</h4>
+                                        <ul className='text-xs font-mono space-y-1'>
                                             <li>Me s<span className='text-red-500 font-black'>ie</span>nto</li>
                                             <li>Te s<span className='text-red-500 font-black'>ie</span>ntes</li>
                                             <li>Se s<span className='text-red-500 font-black'>ie</span>nte</li>
@@ -450,9 +527,9 @@ function ReflexivosMixContent() {
                                             <li>Se s<span className='text-red-500 font-black'>ie</span>nten</li>
                                         </ul>
                                     </Card>
-                                    <Card className='p-4 border-2 border-brand-blue/20 bg-brand-blue/5'>
-                                        <h4 className='font-bold text-center border-b pb-2 mb-2 text-brand-blue'>IRREG. o &rarr; ue (ACOSTARSE)</h4>
-                                        <ul className='text-xs font-mono space-y-1 text-center'>
+                                    <Card className='p-4 border-2 border-brand-blue/20 bg-brand-blue/5 text-center'>
+                                        <h4 className='font-bold border-b pb-2 mb-2 text-brand-blue'>IRREG. o &rarr; ue (ACOSTARSE)</h4>
+                                        <ul className='text-xs font-mono space-y-1'>
                                             <li>Me ac<span className='text-red-500 font-black'>ue</span>sto</li>
                                             <li>Te ac<span className='text-red-500 font-black'>ue</span>stas</li>
                                             <li>Se ac<span className='text-red-500 font-black'>ue</span>sta</li>
@@ -464,7 +541,7 @@ function ReflexivosMixContent() {
                                 <div className='p-4 bg-yellow-50 dark:bg-yellow-900/10 rounded-xl border border-yellow-200 flex items-start gap-3'>
                                     <Info className='h-5 w-5 text-yellow-600 shrink-0 mt-0.5' />
                                     <p className='text-sm italic text-yellow-800 dark:text-yellow-200'>
-                                        <strong>Nota sobre la irregularidad:</strong> Recuerda que los cambios en la raíz (bota de irregularidad) afectan a todas las personas <strong>menos</strong> a "nosotros" y "vosotros".
+                                        <strong>Nota sobre la irregularidad:</strong> Recuerda que los cambios en la raíz afectan a todas las personas <strong>menos</strong> a "nosotros" y "vosotros".
                                     </p>
                                 </div>
                             </div>
@@ -476,10 +553,51 @@ function ReflexivosMixContent() {
                         </CardFooter>
                     </Card>
                 );
+            case 'conjugar':
+                const currentVerb = conjugarVerbsList[conjIdx];
+                const persons = ["Yo", "Tú", "Él/Ella/Ud", "Nosotros", "Ellos/Ellas/Uds"];
+                return (
+                    <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left overflow-hidden">
+                        <CardHeader className='bg-primary/5 border-b'>
+                            <div className='flex justify-between items-center'>
+                                <div>
+                                    <CardTitle className='text-primary uppercase'>Misión: Conjugar (Mix)</CardTitle>
+                                    <CardDescription>Conjuga el verbo en presente. Identifica si es regular o irregular.</CardDescription>
+                                </div>
+                                <div className='text-right'><p className='text-xs font-bold text-muted-foreground uppercase tracking-widest'>VERBO {conjIdx + 1} DE {conjugarVerbsList.length}</p></div>
+                            </div>
+                        </CardHeader>
+                        <CardContent className="space-y-6 pt-6">
+                            <div className='text-center p-6 bg-primary/10 rounded-3xl border-2 border-primary/20'><h3 className='text-4xl font-black text-primary uppercase tracking-tighter'>{currentVerb.verb}</h3></div>
+                            <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
+                                {persons.map((p, i) => (
+                                    <div key={i} className='space-y-1'>
+                                        <Label className='font-bold ml-1 text-left'>{p}:</Label>
+                                        <Input 
+                                            value={conjAns[conjIdx]?.[i] || ''} 
+                                            onChange={e => {
+                                                const nv = { ...conjAns };
+                                                const currentArr = nv[conjIdx] || Array(5).fill('');
+                                                currentArr[i] = e.target.value;
+                                                nv[conjIdx] = currentArr;
+                                                setConjAns(nv);
+                                                setConjVal(prev => ({ ...prev, [conjIdx]: undefined }));
+                                            }}
+                                            className={cn("h-11 font-mono lowercase border-2", conjVal[conjIdx]?.[i] === 'correct' ? 'border-green-500 bg-green-50/5' : conjVal[conjIdx]?.[i] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')}
+                                            autoComplete='off'
+                                            placeholder="me ..."
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+                        </CardContent>
+                        <CardFooter className="justify-center border-t p-6 bg-muted/20"><Button onClick={handleConjCheck} size="lg" className="px-24 font-black h-14 text-xl shadow-xl bg-primary hover:bg-primary/90 text-primary-foreground">Verificar Verbo <ArrowRight className='ml-2'/></Button></CardFooter>
+                    </Card>
+                );
             case 'exercise1': return <BallsExercise title="Ejercicio 1 (Mix)" prompts={ex1Prompts} onComplete={() => handleTopicComplete('exercise1')} />;
             case 'exercise2': return <BallsExercise title="Ejercicio 2 (Mix)" prompts={ex2Prompts} onComplete={() => handleTopicComplete('exercise2')} />;
-            case 'exercise3': return <BallsExercise title="Ejercicio 3 (Mix)" prompts={ex3Prompts} onComplete={() => handleTopicComplete('exercise3')} />;
             case 'vocab_game': return <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground"><CardHeader><CardTitle className='text-primary uppercase font-black'>Misión: Parejas Mix</CardTitle></CardHeader><CardContent><VocabularyMatchingGame data={mixedVocab.slice(0, 10).map(v => ({ spanish: v.es, english: [v.en] }))} onComplete={() => handleTopicComplete('vocab_game')} title="Encuentra las parejas" /></CardContent></Card>;
+            case 'exercise3': return <BallsExercise title="Ejercicio 3 (Mix)" prompts={ex3Prompts} onComplete={() => handleTopicComplete('exercise3')} />;
             case 'reading':
                 return (
                     <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left overflow-hidden">
@@ -491,7 +609,7 @@ function ReflexivosMixContent() {
                                 <h3 className='font-black text-primary uppercase text-sm'>Preguntas:</h3>
                                 {readingData.questions.map((q, i) => (
                                     <div key={i} className="space-y-2 p-3 bg-muted/20 rounded-xl border">
-                                        <Label className="font-bold">{q.q}</Label>
+                                        <Label className="font-bold text-left">{q.q}</Label>
                                         <Input value={readingAns[i] || ''} onChange={e => { const na = [...readingAns]; na[i] = e.target.value; setReadingAns(na); setReadingVal(v => { const nv = [...v]; nv[i] = 'unchecked'; return nv as any; }); }} className={cn("h-10 text-foreground", readingVal[i] === 'correct' ? 'border-green-500 bg-green-50/5' : readingVal[i] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} autoComplete="off" />
                                     </div>
                                 ))}
@@ -503,9 +621,72 @@ function ReflexivosMixContent() {
             case 'final_ex':
                 return (
                     <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left overflow-hidden">
-                        <CardHeader className='bg-primary/5 border-b'><CardTitle className='text-primary uppercase'>Misión Final: Conjugación Mixta</CardTitle></CardHeader>
+                        <CardHeader className='bg-primary/5 border-b'><CardTitle className='text-primary uppercase'>Misión Final: Conjugación Mixta (+25)</CardTitle></CardHeader>
                         <CardContent className="p-0"><ScrollArea className="h-[450px] p-6"><div className="space-y-4">{finalExPrompts.map((q, i) => (<div key={i} className="flex flex-col gap-2 p-4 bg-muted/10 rounded-2xl border shadow-sm"><p className="font-bold text-lg">{q.s}</p><Input value={finalAns[i] || ''} onChange={e => { const na = [...finalAns]; na[i] = e.target.value; setFinalAns(na); setFinalVal(v => { const nv = [...v]; nv[i] = 'unchecked'; return nv as any; }); }} className={cn("h-10 max-w-[220px] text-lg font-mono border-2", finalVal[i] === 'correct' ? 'border-green-500 bg-green-50/5' : finalVal[i] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} placeholder="Respuesta..." autoComplete="off" /></div>))}</div></ScrollArea></CardContent>
-                        <CardFooter className="justify-center border-t p-6 bg-muted/20"><Button onClick={handleCheckFinal} size="lg" className="px-24 font-black h-14 text-xl shadow-xl bg-primary hover:bg-primary/90 text-primary-foreground">Finalizar Misión <Trophy className='ml-2'/></Button></CardFooter>
+                        <CardFooter className="justify-center border-t p-6 bg-muted/20"><Button onClick={handleCheckFinal} size="lg" className="px-24 font-black h-14 text-xl shadow-xl bg-primary hover:bg-primary/90 text-primary-foreground">Siguiente Misión <ArrowRight className='ml-2'/></Button></CardFooter>
+                    </Card>
+                );
+            case 'traducir_texto':
+                return (
+                    <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left">
+                        <CardHeader>
+                            <div className="flex justify-between items-center">
+                                <div>
+                                    <CardTitle className='text-primary uppercase'>Traducción de Texto: Rutina Mixta</CardTitle>
+                                    <CardDescription className='font-bold text-foreground'>Traduce el siguiente texto al español usando los verbos reflexivos regulares e irregulares.</CardDescription>
+                                </div>
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                        <Button variant="outline" size="sm" className="border-2 border-brand-blue animate-border-pulse">
+                                            <BookText className="mr-2 h-4 w-4" /> Vocabulario
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-64">
+                                        <ScrollArea className="h-64 pr-4">
+                                            <div className="space-y-2">
+                                                <h4 className='font-black text-primary text-xs uppercase mb-2 border-b text-left'>Ayuda de Traducción</h4>
+                                                {Object.entries(translationVocabHelp).map(([en, es], i) => (
+                                                    <div key={i} className="flex justify-between text-[10px] border-b border-muted pb-1">
+                                                        <span className="text-muted-foreground text-left uppercase">{en}:</span>
+                                                        <span className="font-bold text-right text-primary">{es.toUpperCase()}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </ScrollArea>
+                                    </PopoverContent>
+                                </Popover>
+                            </div>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                            <div className="p-6 bg-muted/50 rounded-2xl border italic text-lg leading-relaxed text-foreground shadow-sm">
+                                "Every day, I wake up at seven and I get up slowly. First, I wash my face and then I shower. After that, I get dressed and I comb my hair. My parents wake up later. They have breakfast together and they have fun talking. In the afternoon, we all relax at home. At night, I go to bed at ten and I fall asleep quickly."
+                            </div>
+                            <Separator />
+                            <div className="space-y-2">
+                                <Label className='font-black text-primary uppercase text-sm'>Tu Traducción:</Label>
+                                <Textarea 
+                                    value={translationText}
+                                    onChange={(e) => setTranslationText(e.target.value)}
+                                    placeholder="Escribe el texto en español aquí..."
+                                    className="min-h-[200px] text-lg leading-relaxed"
+                                />
+                            </div>
+                        </CardContent>
+                        <CardFooter className="justify-center border-t pt-6 bg-muted/20">
+                            <Button 
+                                onClick={() => {
+                                    if (translationText.length < 20 && !isAdmin) {
+                                        toast({ variant: 'destructive', title: "Traducción incompleta", description: "Escribe el texto completo para terminar." });
+                                        return;
+                                    }
+                                    handleTopicComplete('traducir_texto');
+                                }} 
+                                size="lg" 
+                                className="px-24 font-black h-16 text-2xl shadow-xl bg-primary hover:bg-primary/90 text-primary-foreground uppercase tracking-tighter"
+                            >
+                                Terminar <Trophy className='ml-3 h-8 w-8' />
+                            </Button>
+                        </CardFooter>
                     </Card>
                 );
             default: return null;
@@ -539,7 +720,7 @@ function ReflexivosMixContent() {
                                             const isSelected = selectedTopic === item.key;
                                             const Icon = item.icon;
                                             return (
-                                                <li key={item.key} onClick={() => handleTopicSelect(item.key)} className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer', isLocked ? 'text-muted-foreground/30 cursor-not-allowed' : 'hover:bg-muted', isSelected && 'bg-muted text-primary font-black border-l-4 border-primary')}>
+                                                <li key={item.key} onClick={() => handleTopicSelect(item.key)} className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer text-foreground', isLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', isSelected && 'bg-muted text-primary font-black border-l-4 border-primary')}>
                                                     <div className="flex items-center gap-3">{item.status === 'completed' ? (<CheckCircle className="h-5 w-5 text-green-500" />) : (<Icon className={cn("h-5 w-5", isLocked ? "text-yellow-500/50" : "text-primary")} />)}<span className="truncate max-w-[150px]">{item.name}</span></div>
                                                     {isLocked && <Lock className="h-3 w-3 text-yellow-500/30" />}
                                                 </li>
