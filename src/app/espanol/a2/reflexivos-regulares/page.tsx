@@ -20,7 +20,8 @@ import {
     X,
     HelpCircle,
     Info,
-    Search
+    Search,
+    Pencil
 } from 'lucide-react';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Footer } from '@/components/footer';
@@ -37,9 +38,10 @@ import { Separator } from '@/components/ui/separator';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { VocabularyMatchingGame } from '@/components/dashboard/vocabulary-matching-game';
+import { Textarea } from '@/components/ui/textarea';
 
 // --- CONFIGURACIÓN DE INGENIERÍA ---
-const progressStorageVersion = 'progress_es_a2_reflex_reg_v2_final';
+const progressStorageVersion = 'progress_es_a2_reflex_reg_v4_final_extended';
 const mainProgressKey = 'progress_a2_es_reflexivos_regulares';
 
 // --- DATA ---
@@ -67,6 +69,12 @@ const reflexiveVocab = [
     { en: "TO FIX ONESELF UP", es: "ARREGLARSE" },
     { en: "TO STAY", es: "QUEDARSE" },
     { en: "TO HELP ONESELF", es: "AYUDARSE" },
+];
+
+const conjugarVerbsList = [
+    "LLAMARSE", "LAVARSE", "DUCHARSE", "BAÑARSE", "PEINARSE", 
+    "CEPILLARSE", "AFEITARSE", "MAQUILLARSE", "SECARSE", 
+    "LEVANTARSE", "PREPARARSE", "QUITARSE"
 ];
 
 const ex1Prompts = [
@@ -115,22 +123,55 @@ const readingData = {
 };
 
 const finalExPrompts = [
-    { sentence: "Yo _______ (lavarse) las manos antes de comer.", answer: "me lavo" },
-    { sentence: "Nosotros _______ (quedarse) en este hotel.", answer: "nos quedamos" },
-    { sentence: "Ellos _______ (ducharse) por la noche.", answer: "se duchan" },
-    { sentence: "Tú _______ (peinarse) frente al espejo.", answer: "te peinas" },
-    { sentence: "Ella _______ (cepillarse) el cabello.", answer: "se cepilla" },
-    { sentence: "Ustedes _______ (cansarse) de caminar mucho.", answer: "se cansan" },
-    { sentence: "Él _______ (afeitarse) la barba.", answer: "se afeita" },
-    { sentence: "Nosotras _______ (maquillarse) juntas.", answer: "nos maquillamos" },
-    { sentence: "Ellos _______ (estirarse) después del yoga.", answer: "se estiran" },
-    { sentence: "El perro _______ (bañarse) en el río.", answer: "se baña" },
-    { sentence: "El gato _______ (calmarse) en la caja.", answer: "se calma" },
-    { sentence: "El niño _______ (levantarse) tarde.", answer: "se levanta" },
-    { sentence: "las mujeres _______ (maquillarse) antes de la fiesta.", answer: "se maquillan" },
-    { sentence: "yo _______ (prepararse) el desayuno.", answer: "me preparo" },
-    { sentence: "Ella _______ (cansarse) de entrenar rapido.", answer: "se cansa" },
+    { sentence: "1. Yo _______ (lavarse) las manos antes de comer.", answer: "me lavo" },
+    { sentence: "2. Nosotros _______ (quedarse) en este hotel.", answer: "nos quedamos" },
+    { sentence: "3. Ellos _______ (ducharse) por la noche.", answer: "se duchan" },
+    { sentence: "4. Tú _______ (peinarse) frente al espejo.", answer: "te peinas" },
+    { sentence: "5. Ella _______ (cepillarse) el cabello.", answer: "se cepilla" },
+    { sentence: "6. Ustedes _______ (cansarse) de caminar mucho.", answer: "se cansan" },
+    { sentence: "7. ÉL _______ (afeitarse) la barba.", answer: "se afeita" },
+    { sentence: "8. Nosotras _______ (maquillarse) juntas.", answer: "nos maquillamos" },
+    { sentence: "9. Ellos _______ (estirarse) después del yoga.", answer: "se estiran" },
+    { sentence: "10. El perro _______ (bañarse) en el río.", answer: "se baña" },
+    { sentence: "11. El gato _______ (calmarse) en la caja.", answer: "se calma" },
+    { sentence: "12. El niño _______ (levantarse) tarde.", answer: "se levanta" },
+    { sentence: "13. Las mujeres _______ (maquillarse) antes de la fiesta.", answer: "se maquillan" },
+    { sentence: "14. Yo _______ (prepararse) el desayuno.", answer: "me preparo" },
+    { sentence: "15. Ella _______ (cansarse) de entrenar rápido.", answer: "se cansa" },
+    { sentence: "16. Tú _______ (bañarse) en el mar.", answer: "te bañas" },
+    { sentence: "17. Él _______ (secarse) las manos.", answer: "se seca" },
+    { sentence: "18. Nosotros _______ (estirarse) antes de correr.", answer: "nos estiramos" },
+    { sentence: "19. Ellas _______ (ayudarse) con la tarea.", answer: "se ayudan" },
+    { sentence: "20. Usted _______ (afeitarse) cada mañana.", answer: "se afeita" },
+    { sentence: "21. Yo _______ (quitarse) la chaqueta.", answer: "me quito" },
+    { sentence: "22. Los niños _______ (lavarse) la cara.", answer: "se lavan" },
+    { sentence: "23. Mi hermana _______ (maquillarse) poco.", answer: "se maquilla" },
+    { sentence: "24. Ustedes _______ (relajarse) en la playa.", answer: "se relajan" },
+    { sentence: "25. Yo _______ (levantarse) a las 8 am.", answer: "me levanto" },
 ];
+
+const translationVocabHelp = {
+    "Every morning": "cada mañana",
+    "wake up": "despertarse",
+    "I get up": "levantarse",
+    "I shower": "ducharse",
+    "Cold water": "agua fría",
+    "wash": "lavarse",
+    "face" : "cara" ,
+    "shave": "afeitarse",
+    "Later": "más tarde",
+    "Puts on makeup": "maquillarse",
+    "Quickly": "rápidamente",
+    "have breakfast": "desayunar",
+    "Together": "juntos",
+    "We prepare ourselves": "nos preparamos",
+    "To go to work": "para ir al trabajo"
+};
+
+const globalVocabMap: Record<string, string> = reflexiveVocab.reduce((acc, curr) => {
+    acc[curr.es.toLowerCase()] = curr.en.toLowerCase();
+    return acc;
+}, {} as Record<string, string>);
 
 // --- HELPER COMPONENTS ---
 
@@ -161,7 +202,7 @@ const BallsExercise = ({ title, prompts, onComplete, vocabulary }: any) => {
                 <div className="flex justify-between items-start">
                     <div className="text-left">
                         <CardTitle>{title}</CardTitle>
-                        <CardDescription className="font-bold text-foreground mt-1">Traduce la frase al español usando verbos reflexivos.</CardDescription>
+                        <CardDescription className="font-bold text-foreground mt-1">Traduce la frase al español usando verbos reflexivos regulares.</CardDescription>
                         <div className="flex gap-2 justify-start flex-wrap pt-4">
                             {prompts.map((_: any, i: number) => (
                                 <div key={i} onClick={() => setCurrentIndex(i)} className={cn("h-8 w-8 rounded-full border-2 flex items-center justify-center text-xs font-bold cursor-pointer transition-all", currentIndex === i ? "border-primary ring-2 ring-primary" : "border-muted", status[i] === 'correct' ? "bg-green-500 text-white border-green-500" : status[i] === 'incorrect' ? "bg-red-500 text-white border-red-500" : "bg-card text-foreground")}>{i + 1}</div>
@@ -176,7 +217,7 @@ const BallsExercise = ({ title, prompts, onComplete, vocabulary }: any) => {
                         </PopoverTrigger>
                         <PopoverContent className="w-64">
                             <ScrollArea className="h-48 pr-4">
-                                <div className="space-y-2">
+                                <div className="space-y-2 text-foreground">
                                     {reflexiveVocab.map((v, i) => (
                                         <div key={i} className="flex justify-between text-xs border-b pb-1">
                                             <span className="text-muted-foreground text-left">{v.en}:</span>
@@ -206,13 +247,6 @@ const BallsExercise = ({ title, prompts, onComplete, vocabulary }: any) => {
     );
 };
 
-interface Topic {
-  key: string;
-  name: string;
-  icon: React.ElementType;
-  status: 'completed' | 'active' | 'locked';
-}
-
 // --- MAIN PAGE COMPONENT ---
 
 function ReflexivosRegularesContent() {
@@ -225,23 +259,31 @@ function ReflexivosRegularesContent() {
     const currentUID = targetStudentId || user?.uid;
 
     const [isInitialLoading, setIsInitialLoading] = useState(true);
-    const [learningPath, setLearningPath] = useState<Topic[]>([]);
+    const [learningPath, setLearningPath] = useState<any[]>([]);
     const [selectedTopic, setSelectedTopic] = useState<string>('');
     const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
     const [initialLoadComplete, setInitialLoadComplete] = useState(false);
 
-    // Vocab states
+    // Misión 1 Vocab
     const [vocabAnswers, setVocabAnswers] = useState<string[]>(Array(reflexiveVocab.length).fill(''));
     const [vocabValidation, setVocabValidation] = useState<('correct' | 'incorrect' | 'unchecked')[]>(Array(reflexiveVocab.length).fill('unchecked'));
     const [canAdvanceVocab, setCanAdvanceVocab] = useState(false);
 
-    // Reading States
+    // Misión 3 Conjugar
+    const [conjVerbsIdx, setConjVerbsIdx] = useState(0);
+    const [conjAnswers, setConjAnswers] = useState<Record<number, string[]>>({});
+    const [conjValidation, setConjValidation] = useState<Record<number, any[]>>({});
+
+    // Misión 7 Lectura
     const [readingAns, setReadingAns] = useState<string[]>(Array(readingData.questions.length).fill(''));
     const [readingVal, setReadingVal] = useState<any[]>(Array(readingData.questions.length).fill('unchecked'));
 
-    // Final Ex States
+    // Misión 9 Final Ex
     const [finalAns, setFinalAns] = useState<string[]>(Array(finalExPrompts.length).fill(''));
     const [finalVal, setFinalVal] = useState<any[]>(Array(finalExPrompts.length).fill('unchecked'));
+
+    // Misión 10 Traducir Texto
+    const [translationText, setTranslationText] = useState('');
 
     const studentDocRef = useMemoFirebase(() => (currentUID ? doc(firestore, 'students', currentUID) : null), [firestore, currentUID]);
     const authUserRef = useMemoFirebase(() => (user ? doc(firestore, 'students', user.uid) : null), [firestore, user]);
@@ -250,15 +292,17 @@ function ReflexivosRegularesContent() {
 
     const isAdmin = useMemo(() => (user && (authUserProfile?.role === 'admin' || user.email === 'ednacard87@gmail.com')), [user, authUserProfile]);
 
-    const initialLearningPath = useMemo((): Topic[] => [
+    const initialLearningPath = useMemo(() => [
         { key: 'vocabulario', name: '1. Vocabulario', icon: BookOpen, status: 'active' },
         { key: 'gramatica', name: '2. Gramática', icon: GraduationCap, status: 'locked' },
-        { key: 'ejercicio1', name: '3. Ejercicio 1', icon: PenSquare, status: 'locked' },
-        { key: 'ejercicio2', name: '4. Ejercicio 2', icon: PenSquare, status: 'locked' },
-        { key: 'ejercicio3', name: '5. Ejercicio 3', icon: PenSquare, status: 'locked' },
-        { key: 'vocab_game', name: '6. Vocabulario (Juego)', icon: Gamepad2, status: 'locked' },
-        { key: 'lectura', name: '7. Lectura', icon: BookText, status: 'locked' },
-        { key: 'final_ex', name: '8. Ejercicio Final', icon: Trophy, status: 'locked' },
+        { key: 'conjugar', name: '3. Conjugar', icon: Pencil, status: 'locked' },
+        { key: 'ejercicio1', name: '4. Ejercicio 1', icon: PenSquare, status: 'locked' },
+        { key: 'ejercicio2', name: '5. Ejercicio 2', icon: PenSquare, status: 'locked' },
+        { key: 'ejercicio3', name: '6. Ejercicio 3', icon: PenSquare, status: 'locked' },
+        { key: 'vocab_game', name: '7. Vocabulario (Juego)', icon: Gamepad2, status: 'locked' },
+        { key: 'lectura', name: '8. Lectura', icon: BookText, status: 'locked' },
+        { key: 'final_ex', name: '9. Ejercicio Final', icon: Trophy, status: 'locked' },
+        { key: 'traducir_texto', name: '10. Traducir Texto', icon: BookText, status: 'locked' },
     ], []);
 
     const handleTopicComplete = useCallback((completedKey: string) => {
@@ -272,22 +316,22 @@ function ReflexivosRegularesContent() {
         let savedSelectedTopic = '';
 
         if (isAdmin && !targetStudentId) {
-            path.forEach(item => { item.status = 'completed'; });
+            path.forEach(item => { (item as any).status = 'completed'; });
         } else if (studentProfile?.lessonProgress?.[progressStorageVersion]) {
             const savedData = studentProfile.lessonProgress[progressStorageVersion];
             path.forEach(item => {
-                if (savedData[item.key]) item.status = savedData[item.key];
+                if (savedData[item.key]) (item as any).status = savedData[item.key];
             });
             savedSelectedTopic = savedData.lastSelectedTopic || '';
         }
 
         let lastDone = true;
         for (let i = 0; i < path.length; i++) {
-            if (lastDone && path[i].status === 'locked') path[i].status = 'active';
-            lastDone = path[i].status === 'completed';
+            if (lastDone && (path[i] as any).status === 'locked') (path[i] as any).status = 'active';
+            lastDone = (path[i] as any).status === 'completed';
         }
 
-        setLearningPath(path as Topic[]);
+        setLearningPath(path);
         setSelectedTopic(savedSelectedTopic || path.find(p => p.status === 'active')?.key || path[0].key);
         setInitialLoadComplete(true);
         setTimeout(() => setIsInitialLoading(false), 800);
@@ -303,6 +347,7 @@ function ReflexivosRegularesContent() {
         if (!initialLoadComplete || isInitialLoading || isAdmin || !studentDocRef || learningPath.length === 0 || targetStudentId) return;
         const statusesToSave: Record<string, any> = { lastSelectedTopic: selectedTopic };
         learningPath.forEach(item => { statusesToSave[item.key] = item.status; });
+
         updateDocumentNonBlocking(studentDocRef, {
             [`lessonProgress.${progressStorageVersion}`]: statusesToSave,
             [`progress.${mainProgressKey}`]: progressValue
@@ -313,7 +358,8 @@ function ReflexivosRegularesContent() {
     useEffect(() => {
         if (!topicToComplete) return;
         setLearningPath(currentPath => {
-            let wasUnlocked = false; let nextToSelect: string | null = null;
+            let wasUnlocked = false;
+            let nextToSelect: string | null = null;
             const newPath = currentPath.map(t => ({ ...t }));
             const idx = newPath.findIndex(t => t.key === topicToComplete);
             if (idx !== -1 && newPath[idx].status !== 'completed') {
@@ -324,9 +370,12 @@ function ReflexivosRegularesContent() {
                     nextToSelect = newPath[idx + 1].key;
                 }
             }
-            if (wasUnlocked) setTimeout(() => toast({ title: "¡Siguiente misión desbloqueada!" }), 0);
-            if (nextToSelect) { const finalNext = nextToSelect; setTimeout(() => setSelectedTopic(finalNext), 0); }
-            return newPath as Topic[];
+            if (wasUnlocked) setTimeout(() => toast({ title: "¡Siguiente tema desbloqueado!" }), 0);
+            if (nextToSelect) {
+                const finalNext = nextToSelect;
+                setTimeout(() => setSelectedTopic(finalNext), 0);
+            }
+            return newPath;
         });
         setTopicToComplete(null);
     }, [topicToComplete, toast]);
@@ -334,7 +383,7 @@ function ReflexivosRegularesContent() {
     const handleTopicSelect = (topicKey: string) => {
         const topic = learningPath.find(t => t.key === topicKey);
         if (!isAdmin && topic?.status === 'locked') {
-            toast({ variant: "destructive", title: "Contenido Bloqueado", description: "Completa la misión anterior para avanzar." });
+            toast({ variant: "destructive", title: "Contenido Bloqueado" });
             return;
         }
         setSelectedTopic(topicKey);
@@ -350,8 +399,37 @@ function ReflexivosRegularesContent() {
         });
         setVocabValidation(nv as any);
         setCanAdvanceVocab(allOk);
-        if (allOk) toast({ title: "¡Excelente!", description: "Vocabulario completado." });
-        else toast({ variant: 'destructive', title: "Sigue intentando" });
+        if (allOk) {
+            toast({ title: "¡Excelente!" });
+            handleTopicComplete('vocabulario');
+        } else {
+            toast({ variant: 'destructive', title: "Sigue intentando" });
+        }
+    };
+
+    const handleConjCheck = () => {
+        const currentVerb = conjugarVerbsList[conjVerbsIdx];
+        const answers = conjAnswers[conjVerbsIdx] || Array(5).fill('');
+        const root = currentVerb.toLowerCase().replace("se", "").slice(0, -2);
+        const ending = currentVerb.toLowerCase().replace("se", "").slice(-2);
+        
+        let corrects: string[] = [];
+        if (ending === 'ar') {
+            corrects = [`me ${root}o`, `te ${root}as`, `se ${root}a`, `nos ${root}amos`, `se ${root}an`];
+        } else if (ending === 'er') {
+            corrects = [`me ${root}o`, `te ${root}es`, `se ${root}e`, `nos ${root}emos`, `se ${root}en`];
+        } else { // ir
+            corrects = [`me ${root}o`, `te ${root}es`, `se ${root}e`, `nos ${root}imos`, `se ${root}en`];
+        }
+
+        const nv = answers.map((ans, i) => ans.trim().toLowerCase() === corrects[i] ? 'correct' : 'incorrect');
+        setConjValidation(p => ({ ...p, [conjVerbsIdx]: nv }));
+
+        if (nv.every(v => v === 'correct')) {
+            toast({ title: "¡Verbo conjugado correctamente!" });
+            if (conjVerbsIdx < conjugarVerbsList.length - 1) setConjVerbsIdx(v => v + 1);
+            else handleTopicComplete('conjugar');
+        } else toast({ variant: "destructive", title: "Hay errores en la conjugación" });
     };
 
     const handleCheckReading = () => {
@@ -362,8 +440,12 @@ function ReflexivosRegularesContent() {
             return isCorrect ? 'correct' : 'incorrect';
         });
         setReadingVal(nv as any);
-        if (ok) { toast({ title: "¡Muy bien!", description: "Lectura superada." }); handleTopicComplete('lectura'); }
-        else toast({ variant: 'destructive', title: "Revisa tus respuestas" });
+        if (ok) {
+            toast({ title: "¡Muy bien!" });
+            handleTopicComplete('lectura');
+        } else {
+            toast({ variant: 'destructive', title: "Revisa tus respuestas" });
+        }
     };
 
     const handleCheckFinal = () => {
@@ -374,8 +456,21 @@ function ReflexivosRegularesContent() {
             return isCorrect ? 'correct' : 'incorrect';
         });
         setFinalVal(nv as any);
-        if (ok) { toast({ title: "¡Misión Cumplida!", description: "Has dominado los verbos reflexivos regulares." }); handleTopicComplete('final_ex'); }
-        else toast({ variant: 'destructive', title: "Sigue intentando" });
+        if (ok) {
+            toast({ title: "¡Misión Cumplida!" });
+            handleTopicComplete('final_ex');
+        } else {
+            toast({ variant: 'destructive', title: "Sigue intentando" });
+        }
+    };
+
+    const handleFinishClass = () => {
+        if (translationText.length < 20 && !isAdmin) {
+            toast({ variant: "destructive", title: "Traducción incompleta", description: "Por favor, traduce el texto completo para terminar." });
+            return;
+        }
+        toast({ title: "¡Clase finalizada!", description: "Has completado la clase de Reflexivos Regulares." });
+        handleTopicComplete('traducir_texto');
     };
 
     const renderContent = () => {
@@ -385,27 +480,30 @@ function ReflexivosRegularesContent() {
             case 'vocabulario':
                 return (
                     <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground">
-                        <CardHeader><CardTitle className="text-primary uppercase">Vocabulario: Verbos Reflexivos Regulares</CardTitle></CardHeader>
-                        <CardContent>
-                            <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm">
+                        <CardHeader className='bg-primary/5 border-b'>
+                            <CardTitle className="text-primary uppercase">Vocabulario: Verbos Reflexivos Regulares</CardTitle>
+                            <CardDescription className='font-bold text-foreground'>Escribe el significado en español para cada verbo.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="pt-6">
+                            <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm text-foreground">
                                 <div className="font-black text-primary border-b pb-2 uppercase tracking-widest text-xs text-left">English</div>
                                 <div className="font-black text-primary border-b pb-2 uppercase tracking-widest text-xs text-left">Español</div>
                                 {reflexiveVocab.map((v, i) => (
                                     <React.Fragment key={i}>
-                                        <div className="flex items-center font-bold text-left">{v.en}</div>
+                                        <div className="flex items-center font-bold text-left py-1">{v.en}</div>
                                         <Input 
                                             value={vocabAnswers[i] || ''} 
-                                            onChange={e => { const na = [...vocabAnswers]; na[i] = e.target.value; setVocabAnswers(na); setCanAdvanceVocab(false); setVocabValidation(v => { const nv = [...v]; nv[i] = 'unchecked'; return nv as any; }); }} 
-                                            className={cn("h-8 uppercase font-mono", vocabValidation[i] === 'correct' ? 'border-green-500 bg-green-50/5' : vocabValidation[i] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} 
+                                            onChange={e => { const na = [...vocabAnswers]; na[i] = e.target.value; setVocabAnswers(na); setVocabValidation(vv => { const nv = [...vv]; nv[i] = 'unchecked'; return nv as any; }); }} 
+                                            className={cn("h-10 uppercase font-mono border-2", vocabValidation[i] === 'correct' ? 'border-green-500' : vocabValidation[i] === 'incorrect' ? 'border-red-500' : '')} 
                                             autoComplete="off"
                                         />
                                     </React.Fragment>
                                 ))}
                             </div>
                         </CardContent>
-                        <CardFooter className="flex justify-between border-t pt-4">
-                            <Button onClick={handleCheckVocab} variant="secondary">Verificar</Button>
-                            <Button onClick={() => handleTopicComplete('vocabulario')} disabled={!canAdvanceVocab && !isAdmin} className='text-white'>Avanzar</Button>
+                        <CardFooter className="flex justify-between border-t pt-6 bg-muted/20">
+                            <Button onClick={handleCheckVocab} variant="secondary">Verificar Vocabulario</Button>
+                            <Button onClick={() => handleTopicComplete('vocabulario')} disabled={!canAdvanceVocab && !isAdmin} className='text-white font-bold px-12'>Avanzar</Button>
                         </CardFooter>
                     </Card>
                 );
@@ -441,7 +539,48 @@ function ReflexivosRegularesContent() {
                                 </ul>
                             </div>
                         </CardContent>
-                        <CardFooter className="justify-center pt-6 border-t"><Button onClick={() => handleTopicComplete('gramatica')} size="lg" className="px-12 font-bold text-white">Entendido</Button></CardFooter>
+                        <CardFooter className="justify-center pt-6 border-t"><Button onClick={() => handleTopicComplete('gramatica')} size="lg" className="px-12 font-bold text-white">He comprendido</Button></CardFooter>
+                    </Card>
+                );
+            case 'conjugar':
+                const currentVerb = conjugarVerbsList[conjVerbsIdx];
+                const persons = ["Yo", "Tú", "Él/Ella/Ud", "Nosotros", "Ellos/Ellas/Uds"];
+                return (
+                    <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left overflow-hidden">
+                        <CardHeader className='bg-primary/5 border-b'>
+                            <div className='flex justify-between items-center'>
+                                <div>
+                                    <CardTitle className='text-primary uppercase'>Misión: Conjugar</CardTitle>
+                                    <CardDescription>Conjuga el verbo reflexivo para todas las personas en presente.</CardDescription>
+                                </div>
+                                <div className='text-right'><p className='text-xs font-bold text-muted-foreground uppercase tracking-widest'>VERBO {conjVerbsIdx + 1} DE {conjugarVerbsList.length}</p></div>
+                            </div>
+                        </CardHeader>
+                        <CardContent className="space-y-6 pt-6 text-foreground">
+                            <div className='text-center p-6 bg-primary/10 rounded-3xl border-2 border-primary/20'><h3 className='text-4xl font-black text-primary uppercase tracking-tighter'>{currentVerb}</h3></div>
+                            <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
+                                {persons.map((p, i) => (
+                                    <div key={i} className='space-y-1'>
+                                        <Label className='font-bold ml-1'>{p}:</Label>
+                                        <Input 
+                                            value={conjAnswers[conjVerbsIdx]?.[i] || ''} 
+                                            onChange={e => {
+                                                const nv = { ...conjAnswers };
+                                                const currentArr = nv[conjVerbsIdx] || Array(5).fill('');
+                                                currentArr[i] = e.target.value;
+                                                nv[conjVerbsIdx] = currentArr;
+                                                setConjAnswers(nv);
+                                                setConjValidation(prev => ({ ...prev, [conjVerbsIdx]: undefined }));
+                                            }}
+                                            className={cn("h-11 font-mono lowercase border-2", conjValidation[conjVerbsIdx]?.[i] === 'correct' ? 'border-green-500 bg-green-50/5' : conjValidation[conjVerbsIdx]?.[i] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')}
+                                            autoComplete='off'
+                                            placeholder="me ..."
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+                        </CardContent>
+                        <CardFooter className="justify-center border-t p-6 bg-muted/20"><Button onClick={handleConjCheck} size="lg" className="px-24 font-black h-14 text-xl shadow-xl bg-primary hover:bg-primary/90 text-primary-foreground">Verificar Verbo <ArrowRight className='ml-2'/></Button></CardFooter>
                     </Card>
                 );
             case 'ejercicio1': return <BallsExercise title="Ejercicio 1" prompts={ex1Prompts} onComplete={() => handleTopicComplete('ejercicio1')} />;
@@ -454,7 +593,7 @@ function ReflexivosRegularesContent() {
                     <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left">
                         <CardHeader><CardTitle className='text-foreground'>{readingData.title}</CardTitle></CardHeader>
                         <CardContent className="space-y-6">
-                            <div className="p-6 bg-muted rounded-2xl border italic text-lg leading-relaxed text-foreground">{readingData.content}</div>
+                            <div className="p-6 bg-muted rounded-2xl border italic text-lg leading-relaxed text-foreground shadow-inner">{readingData.content}</div>
                             <Separator />
                             <div className="space-y-4 text-foreground">
                                 {readingData.questions.map((q, i) => (
@@ -490,7 +629,60 @@ function ReflexivosRegularesContent() {
                                 </div>
                             </ScrollArea>
                         </CardContent>
-                        <CardFooter className="justify-center border-t pt-6"><Button onClick={handleCheckFinal} size="lg" className="px-20 font-black h-14 text-xl text-white">Finalizar Misión</Button></CardFooter>
+                        <CardFooter className="justify-center border-t pt-6"><Button onClick={handleCheckFinal} size="lg" className="px-20 font-black h-14 text-xl text-white">Siguiente Paso</Button></CardFooter>
+                    </Card>
+                );
+            case 'traducir_texto':
+                return (
+                    <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left">
+                        <CardHeader>
+                            <div className="flex justify-between items-center">
+                                <div>
+                                    <CardTitle className='text-primary uppercase'>Traducción de Texto</CardTitle>
+                                    <CardDescription className='font-bold text-foreground'>Traduce el siguiente texto al español usando los verbos reflexivos que aprendiste.</CardDescription>
+                                </div>
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                        <Button variant="outline" size="sm" className="border-2 border-brand-blue animate-border-pulse">
+                                            <BookText className="mr-2 h-4 w-4" /> Vocabulario
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-64">
+                                        <ScrollArea className="h-64 pr-4">
+                                            <div className="space-y-2">
+                                                <h4 className='font-black text-primary text-xs uppercase mb-2 border-b'>Ayuda de Traducción</h4>
+                                                {Object.entries(translationVocabHelp).map(([en, es], i) => (
+                                                    <div key={i} className="flex justify-between text-[10px] border-b border-muted pb-1">
+                                                        <span className="text-muted-foreground text-left uppercase">{en}:</span>
+                                                        <span className="font-bold text-right text-primary">{es.toUpperCase()}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </ScrollArea>
+                                    </PopoverContent>
+                                </Popover>
+                            </div>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                            <div className="p-6 bg-muted/50 rounded-2xl border italic text-lg leading-relaxed text-foreground shadow-sm">
+                                "Every morning, I wake up at six. I get up and I shower with cold water. Then, I wash my face and I shave. My wife Elena gets up later. She washes her face and she puts on makeup quickly. We have breakfast together and then we prepare ourselves to go to work."
+                            </div>
+                            <Separator />
+                            <div className="space-y-2">
+                                <Label className='font-black text-primary uppercase text-sm'>Tu Traducción:</Label>
+                                <Textarea 
+                                    value={translationText}
+                                    onChange={(e) => setTranslationText(e.target.value)}
+                                    placeholder="Escribe el texto en español aquí..."
+                                    className="min-h-[200px] text-lg leading-relaxed"
+                                />
+                            </div>
+                        </CardContent>
+                        <CardFooter className="justify-center border-t pt-6 bg-muted/20">
+                            <Button onClick={handleFinishClass} size="lg" className="px-24 font-black h-16 text-2xl shadow-xl bg-primary hover:bg-primary/90 text-primary-foreground uppercase tracking-tighter">
+                                Terminar <Trophy className='ml-3 h-8 w-8' />
+                            </Button>
+                        </CardFooter>
                     </Card>
                 );
             default: return null;
@@ -512,7 +704,7 @@ function ReflexivosRegularesContent() {
                         </div>
                     )}
                     <div className="mb-8 text-left text-white">
-                        <Link href="/espanol" className="hover:underline text-sm font-bold flex items-center gap-2 mb-2"><ArrowLeft className="h-4 w-4" /> Volver al Curso A2</Link>
+                        <Link href="/espanol/a2" className="hover:underline text-sm font-bold flex items-center gap-2 mb-2"><ArrowLeft className="h-4 w-4" /> Volver al Curso A2</Link>
                         <h1 className="text-4xl font-black [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)] uppercase tracking-tight">Reflexivos Regulares 🇪🇸</h1>
                     </div>
                     <div className="grid gap-8 md:grid-cols-12 text-foreground">
@@ -527,7 +719,7 @@ function ReflexivosRegularesContent() {
                                             const isSelected = selectedTopic === item.key;
                                             const Icon = item.icon;
                                             return (
-                                                <li key={item.key} onClick={() => handleTopicSelect(item.key)} className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer', isLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', isSelected && 'bg-muted text-primary font-black border-l-4 border-primary')}>
+                                                <li key={item.key} onClick={() => handleTopicSelect(item.key)} className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer text-foreground', isLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', isSelected && 'bg-muted text-primary font-black border-l-4 border-primary')}>
                                                     <div className="flex items-center gap-3">
                                                         {item.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500" /> : <Icon className={cn("h-5 w-5", isLocked ? "text-yellow-500" : "text-primary")} />}
                                                         <span className="truncate">{item.name}</span>
@@ -547,7 +739,6 @@ function ReflexivosRegularesContent() {
                     </div>
                 </div>
             </main>
-           
         </div>
     );
 }
