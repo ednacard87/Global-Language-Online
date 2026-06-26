@@ -106,15 +106,18 @@ const kidsClassesMap = {
 
 const espanolClassesMap = {
     a1: [
-        { id: 'es-a1-paises', name: 'Países y Nacionalidades' },
-        { id: 'es-a1-sustantivos', name: 'Sustantivos' },
-        { id: 'es-a1-articulos', name: 'Artículos' },
-        { id: 'es-a1-hora-numeros', name: 'Hora y Números' },
-        { id: 'es-a1-demostrativos', name: 'Demostrativos' },
-        { id: 'es-a1-posicion1', name: 'Posición 1' },
+        { id: 'es-a1-articulos-genero', name: 'Articulos y Genero' },
+        { id: 'es-a1-posesivos-tener', name: 'Posesivos y Tener' },
+        { id: 'es-a1-ser', name: 'Ser' },
+        { id: 'es-a1-estar', name: 'Estar' },
+        { id: 'es-a1-preposiciones-lugar', name: 'Preposiciones de lugar' },
+        { id: 'es-a1-ubicacion', name: 'ubicacion' },
         { id: 'es-a1-preguntas', name: 'Preguntas' },
-        { id: 'es-a1-posicion2', name: 'Posición 2' },
-        { id: 'es-a1-adjetivos', name: 'Adjetivos' },
+        { id: 'es-a1-comida-restaurante', name: 'Comida y restaurante' },
+        { id: 'es-a1-presente-regulares', name: 'Presente simple Regulares' },
+        { id: 'es-a1-demostrativos', name: 'Demostrativos' },
+        { id: 'es-a1-preferencia', name: 'Verbos de Preferencia' },
+        { id: 'es-a1-presente-irregulares', name: 'Presente simple irregulares' },
     ],
     a2: [
         { id: 'es-a2-verbos-regulares', name: 'Verbos Regulares' },
@@ -355,10 +358,8 @@ export default function AdminDashboardPage() {
               <span className="font-black text-[11px] truncate max-w-[120px] text-blue-700 dark:text-blue-300 uppercase tracking-tight">{name}</span>
               <span className="text-xs font-black text-blue-600">{Math.round(value)}%</span>
           </div>
-          <Button 
-            variant="default" 
-            size="sm" 
-            className='h-8 w-full text-[10px] font-black bg-blue-600 hover:bg-blue-700 text-white shadow-sm' 
+          <button 
+            className='h-8 w-full text-[10px] font-black bg-blue-600 hover:bg-blue-700 text-white shadow-sm flex items-center justify-center rounded-md' 
             onClick={() => {
                 const parts = key.split('_');
                 let course = parts[1]; 
@@ -372,7 +373,7 @@ export default function AdminDashboardPage() {
             }}
           >
               <Eye className='h-3.5 w-3.5 mr-1'/> SUPERVISAR
-          </Button>
+          </button>
         </div>
       );
     }

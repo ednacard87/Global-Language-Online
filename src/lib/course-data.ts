@@ -113,6 +113,13 @@ export const getKidsIntro1PathData = (t: (key: string) => string): Topic[] => [
     { key: "tobe-3-grammar", name: t('kidsA1.toBe3Grammar'), icon: GraduationCap, status: 'locked' },
     { key: "tobe-3-exercise", name: t('kidsA1.toBe3Exercise'), icon: PenSquare, status: 'locked' },
 ];
+
+export type Topic = {
+  key: string;
+  name: string;
+  icon: React.ElementType;
+  status: 'locked' | 'active' | 'completed';
+};
   
 export const getIntro1PathData = (t: (key: string, values?: { [key: string]: string | number }) => string): Omit<Topic, 'icon'>[] => [
     { key: "abc", name: t('intro1Page.abc'), status: "active" },
@@ -365,16 +372,19 @@ export const spellingExercisesData: Record<SpellingExerciseKey, SpellingExercise
 
 export const getA1MainPath = (t: (key: string) => string): PathItem[] => [
     { type: 'start', icon: Footprints, label: 'dashboard.start' },
-    { type: 'class', icon: BookOpen, label: 'a1course.countries', href: '#' },
-    { type: 'class', icon: BookOpen, label: 'a1course.nouns', href: '#' },
-    { type: 'class', icon: BookOpen, label: 'a1course.articles', href: '#' },
-    { type: 'class', icon: BookOpen, label: 'a1course.timeAndNumbers', href: '#' },
-    { type: 'class', icon: BookOpen, label: 'a1course.demonstratives', href: '#' },
-    { type: 'class', icon: BookOpen, label: 'a1course.position1', href: '#' },
-    { type: 'class', icon: BookOpen, label: 'a1course.questions', href: '#' },
-    { type: 'class', icon: BookOpen, label: 'a1course.position2', href: '#' },
-    { type: 'class', icon: BookOpen, label: 'a1course.adjectives', href: '#' },
-    { type: 'end', icon: Flag, label: 'dashboard.end' },
+    { type: 'class', icon: BookOpen, label: 'Articulos y Genero', href: '#', storageKey: 'progress_es_a1_articulos_genero' },
+    { type: 'class', icon: BookOpen, label: 'Posesivos y Tener', href: '#', storageKey: 'progress_es_a1_posesivos_tener' },
+    { type: 'class', icon: BookOpen, label: 'Ser', href: '#', storageKey: 'progress_es_a1_ser' },
+    { type: 'class', icon: BookOpen, label: 'Estar', href: '#', storageKey: 'progress_es_a1_estar' },
+    { type: 'class', icon: BookOpen, label: 'Preposiciones de lugar', href: '#', storageKey: 'progress_es_a1_preposiciones_lugar' },
+    { type: 'class', icon: BookOpen, label: 'ubicacion', href: '#', storageKey: 'progress_es_a1_ubicacion' },
+    { type: 'class', icon: BookOpen, label: 'Preguntas', href: '#', storageKey: 'progress_es_a1_preguntas' },
+    { type: 'class', icon: BookOpen, label: 'Comida y restaurante', href: '#', storageKey: 'progress_es_a1_comida_restaurante' },
+    { type: 'class', icon: BookOpen, label: 'Presente simple Regulares', href: '#', storageKey: 'progress_es_a1_presente_regulares' },
+    { type: 'class', icon: BookOpen, label: 'Demostrativos', href: '#', storageKey: 'progress_es_a1_demostrativos' },
+    { type: 'class', icon: BookOpen, label: 'Verbos de Preferencia', href: '#', storageKey: 'progress_es_a1_preferencia' },
+    { type: 'class', icon: BookOpen, label: 'Presente simple irregulares', href: '#', storageKey: 'progress_es_a1_presente_irregulares' },
+    { type: 'end', icon: Flag, label: 'dashboard.finish' },
 ];
 
 export const getA1EngMainPath = (t: (key: string) => string): PathItem[] => [
@@ -685,15 +695,18 @@ export const getKidsB1MainPath = (t: (key: string) => string): PathItem[] => [
 ];
 
 export const getA1SpanishClasses = () => [
-    { id: 'es-a1-paises', name: 'Países y Nacionalidades' },
-    { id: 'es-a1-sustantivos', name: 'Sustantivos' },
-    { id: 'es-a1-articulos', name: 'Artículos' },
-    { id: 'es-a1-hora-numeros', name: 'Hora y Números' },
-    { id: 'es-a1-demostrativos', name: 'Demostrativos' },
-    { id: 'es-a1-posicion1', name: 'Posición 1' },
+    { id: 'es-a1-articulos-genero', name: 'Articulos y Genero' },
+    { id: 'es-a1-posesivos-tener', name: 'Posesivos y Tener' },
+    { id: 'es-a1-ser', name: 'Ser' },
+    { id: 'es-a1-estar', name: 'Estar' },
+    { id: 'es-a1-preposiciones-lugar', name: 'Preposiciones de lugar' },
+    { id: 'es-a1-ubicacion', name: 'ubicacion' },
     { id: 'es-a1-preguntas', name: 'Preguntas' },
-    { id: 'es-a1-posicion2', name: 'Posición 2' },
-    { id: 'es-a1-adjetivos', name: 'Adjetivos' },
+    { id: 'es-a1-comida-restaurante', name: 'Comida y restaurante' },
+    { id: 'es-a1-presente-regulares', name: 'Presente simple Regulares' },
+    { id: 'es-a1-demostrativos', name: 'Demostrativos' },
+    { id: 'es-a1-preferencia', name: 'Verbos de Preferencia' },
+    { id: 'es-a1-presente-irregulares', name: 'Presente simple irregulares' },
 ];
 
 export const getA2SpanishClasses = () => [
