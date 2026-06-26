@@ -37,7 +37,7 @@ interface Student {
 }
 
 const inglesCourseIds = ['a1', 'a2', 'b1', 'b2'];
-const espanolCourseIds = ['a1', 'a2'];
+const espanolCourseIds = ['a1', 'a2', 'b1'];
 const kidsCourseIds = ['a1', 'a2', 'b1'];
 
 const classCountsMap = {
@@ -106,31 +106,39 @@ const kidsClassesMap = {
 
 const espanolClassesMap = {
     a1: [
-        { id: 'es-a1-articulos-genero', name: 'Articulos y Genero' },
-        { id: 'es-a1-posesivos-tener', name: 'Posesivos y Tener' },
+        { id: 'es-a1-articulos-y-genero', name: 'Articulos y Genero' },
+        { id: 'es-a1-posesivos-y-tener', name: 'Posesivos y Tener' },
         { id: 'es-a1-ser', name: 'Ser' },
         { id: 'es-a1-estar', name: 'Estar' },
-        { id: 'es-a1-preposiciones-lugar', name: 'Preposiciones de lugar' },
+        { id: 'es-a1-preposiciones-de-lugar', name: 'Preposiciones de lugar' },
         { id: 'es-a1-ubicacion', name: 'ubicacion' },
         { id: 'es-a1-preguntas', name: 'Preguntas' },
-        { id: 'es-a1-comida-restaurante', name: 'Comida y restaurante' },
-        { id: 'es-a1-presente-regulares', name: 'Presente simple Regulares' },
+        { id: 'es-a1-comida-y-restaurante', name: 'Comida y restaurante' },
+        { id: 'es-a1-presente-simple-regulares', name: 'Presente simple Regulares' },
+        { id: 'es-a1-comparativos-y-superlativos', name: 'Comparativos y Superlativos' },
         { id: 'es-a1-demostrativos', name: 'Demostrativos' },
-        { id: 'es-a1-preferencia', name: 'Verbos de Preferencia' },
-        { id: 'es-a1-presente-irregulares', name: 'Presente simple irregulares' },
+        { id: 'es-a1-verbos-de-preferencia', name: 'Verbos de Preferencia' },
+        { id: 'es-a1-presente-continuo', name: 'Presente Continuo' },
+        { id: 'es-a1-presente-simple-irregulares', name: 'Presente simple irregulares' },
     ],
     a2: [
-        { id: 'es-a2-verbos-regulares', name: 'Verbos Regulares' },
-        { id: 'es-a2-verbos-irregulares', name: 'Verbos Irregulares' },
-        { id: 'es-a2-reflexivos-regulares', name: 'Reflexivos Regulares' },
-        { id: 'es-a2-reflexivos-irregulares', name: 'Reflexivos Irregulares' },
-        { id: 'es-a2-reflexivos-mix', name: 'Reflexivos Mix' },
-        { id: 'es-a2-pasado-regulares', name: 'Pasado Regulares' },
-        { id: 'es-a2-pasado-irregulares', name: 'Pasado Irregulares' },
-        { id: 'es-a2-reflexivos-pasado', name: 'Reflexivos Pasado' },
-        { id: 'es-a2-imperfecto', name: 'Imperfecto' },
-        { id: 'es-a2-preterito-perfecto', name: 'Pretérito Perfecto' },
-        { id: 'es-a2-preterito-perfecto-continuo', name: 'Pretérito Perfecto Continuo' },
+        { id: 'es-a2-reflexivos-regulares', name: 'reflexivos regulares' },
+        { id: 'es-a2-reflexivos-irregulares', name: 'reflexivos irregulares' },
+        { id: 'es-a2-reflexivos-mix', name: 'reflexivos mixtos' },
+        { id: 'es-a2-pasado-regulares', name: 'pasado regulares' },
+        { id: 'es-a2-pasado-irregulares', name: 'pasado irregulares' },
+        { id: 'es-a2-reflexivos-pasado', name: 'reflexivos pasado' },
+        { id: 'es-a2-imperfecto', name: 'imperfecto' },
+        { id: 'es-a2-pasado-vs-imperfecto', name: 'Pasado simple vs imperfecto' },
+        { id: 'es-a2-preterito-perfecto', name: 'preterito perfecto' },
+    ],
+    b1: [
+        { id: 'es-b1-pronombres', name: 'Pronombres' },
+        { id: 'es-b1-doble-pronombre', name: 'Doble Pronombre' },
+        { id: 'es-b1-por-para', name: 'Por/Para' },
+        { id: 'es-b1-futuro', name: 'Futuro' },
+        { id: 'es-b1-imperativo', name: 'Imperativo' },
+        { id: 'es-b1-presente-subjuntivo', name: 'Presente Subjuntivo' },
     ]
 };
 
