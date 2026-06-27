@@ -836,7 +836,7 @@ export default function Class14Content({ overrideStudentId }: { overrideStudentI
                     </div>
                 </div>
             </main>
-            <Footer />
+            
         </div>
     );
 }
