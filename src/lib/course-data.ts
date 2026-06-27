@@ -1,4 +1,4 @@
-import { BookOpen, Flag, Footprints, Puzzle, Mic, Ear, Smile, GraduationCap, Star, Hand, MessageSquare, BrainCircuit, PenSquare, Lightbulb, Clock, Languages, Video } from 'lucide-react';
+import { BookOpen, Flag, Footprints, Puzzle, Mic, Ear, Smile, GraduationCap, Star, Hand, MessageSquare, BrainCircuit, PenSquare, Lightbulb, Clock, Languages, Video, Rocket } from 'lucide-react';
 import type { ComponentType } from 'react';
 
 export interface PathItem {
@@ -204,10 +204,7 @@ export type EnglishIntro2PathKey =
   | 'greetings'
   | 'farewells'
   | 'memory'
-  | 'mixed2'
-  | 'time'
-  | 'time-exercise'
-  | 'countries';
+  | 'mixed2' | 'time' | 'time-exercise' | 'countries';
 
 export interface EnglishIntro2PathItem {
     key: EnglishIntro2PathKey;
@@ -221,7 +218,7 @@ export const getEnglishIntro2PathData = (t: (key: string) => string): EnglishInt
     { key: 'mixed1', name: t('intro2Page.mixed1'), icon: PenSquare, status: 'locked' },
     { key: 'greetings', name: t('intro2Page.greetings'), icon: Hand, status: 'locked' },
     { key: 'farewells', name: t('intro2Page.farewells'), icon: MessageSquare, status: 'locked' },
-    { key: 'memory', name: 'Memory', icon: BrainCircuit, status: 'locked' },
+    { key: 'memory', name: t('intro2Page.memory'), icon: BrainCircuit, status: 'locked' },
     { key: 'mixed2', name: t('intro2Page.mixed2'), icon: PenSquare, status: 'locked' },
     { key: 'time', name: t('intro2Page.time'), icon: Clock, status: 'locked' },
     { key: 'time-exercise', name: t('intro2Page.timeExercise'), icon: PenSquare, status: 'locked' },
@@ -533,12 +530,12 @@ export const getA2EspanolPath = (t: (key: string) => string): PathItem[] => [
 
 export const getB1EspanolPath = (): PathItem[] => [
     { type: 'start', icon: Footprints, label: 'dashboard.start' },
-    { type: 'class', icon: BookOpen, label: 'b1Espanol.pronombres', href: '#', storageKey: 'progress_b1_es_1' },
-    { type: 'class', icon: BookOpen, label: 'b1Espanol.doblePronombre', href: '#', storageKey: 'progress_b1_es_2' },
-    { type: 'class', icon: BookOpen, label: 'b1Espanol.porPara', href: '#', storageKey: 'progress_b1_es_3' },
-    { type: 'class', icon: BookOpen, label: 'b1Espanol.futuro', href: '#', storageKey: 'progress_b1_es_4' },
-    { type: 'class', icon: BookOpen, label: 'b1Espanol.imperativo', href: '#', storageKey: 'progress_b1_es_5' },
-    { type: 'class', icon: BookOpen, label: 'b1Espanol.presenteSubjuntivo', href: '#', storageKey: 'progress_b1_es_6' },
+    { type: 'class', icon: BookOpen, label: 'b1Espanol.pronombres', href: '/espanol/b1/pronombres', storageKey: 'progress_b1_es_1' },
+    { type: 'class', icon: BookOpen, label: 'b1Espanol.doblePronombre', href: '/espanol/b1/doble-pronombre', storageKey: 'progress_b1_es_2' },
+    { type: 'class', icon: BookOpen, label: 'b1Espanol.porPara', href: '/espanol/b1/por-para', storageKey: 'progress_b1_es_3' },
+    { type: 'class', icon: BookOpen, label: 'b1Espanol.futuro', href: '/espanol/b1/futuro', storageKey: 'progress_b1_es_4' },
+    { type: 'class', icon: BookOpen, label: 'b1Espanol.imperativo', href: '/espanol/b1/imperativo', storageKey: 'progress_b1_es_imperativo' },
+    { type: 'class', icon: BookOpen, label: 'b1Espanol.presenteSubjuntivo', href: '/espanol/b1/presente-subjuntivo', storageKey: 'progress_b1_es_presente_subjuntivo' },
     { type: 'end', icon: Flag, label: 'dashboard.finish' }
 ];
 
@@ -561,8 +558,8 @@ export const getB1MainPath = (t: (key: string) => string): PathItem[] => [
     { type: 'practice', icon: Puzzle, label: 'b1course.test1', href: '#', storageKey: 'progress_b1_eng_test_1' },
     { type: 'class', icon: BookOpen, label: 'b1course.unit2', href: '/ingles/b1/unit/2', storageKey: 'progress_b1_unit_2' },
     { type: 'practice', icon: Puzzle, label: 'b1course.review2', href: '#', storageKey: 'progress_b1_eng_review_2' },
-    { type: 'practice', icon: Puzzle, label: 'b1course.test2', href: '#', storageKey: 'progress_b1_eng_test_2' },
-    { type: 'class', icon: BookOpen, label: 'b1course.unit3', href: '/ingles/b1/unit/3', storageKey: 'progress_b1_unit_3' },
+    { type: 'practice', icon: Puzzle, label: 'b1course.test2', href: '#', storageKey: 'progress_b1_eng_review_2' },
+    { type: 'class', icon: BookOpen, label: 'b1course.unit3', href: '/ingles/b1/unit/2', storageKey: 'progress_b1_unit_3' },
     { type: 'practice', icon: Puzzle, label: 'b1course.review3', href: '#', storageKey: 'progress_b1_eng_review_3' },
     { type: 'practice', icon: Puzzle, label: 'b1course.test3', href: '#', storageKey: 'progress_b1_eng_test_3' },
     { type: 'class', icon: BookOpen, label: 'b1course.unit4', href: '/ingles/b1/unit/4', storageKey: 'progress_b1_unit_4' },
@@ -721,4 +718,13 @@ export const getA2SpanishClasses = () => [
     { id: 'es-a2-imperfecto', name: 'imperfecto' },
     { id: 'es-a2-pasado-vs-imperfecto', name: 'Pasado simple vs imperfecto' },
     { id: 'es-a2-preterito-perfecto', name: 'preterito perfecto' },
+];
+
+export const getB1SpanishClasses = () => [
+    { id: 'es-b1-pronombres', name: 'Pronombres' },
+    { id: 'es-b1-doble-pronombre', name: 'Doble Pronombre' },
+    { id: 'es-b1-por-para', name: 'Por/Para' },
+    { id: 'es-b1-futuro', name: 'Futuro' },
+    { id: 'es-b1-imperativo', name: 'Imperativo' },
+    { id: 'es-b1-presente-subjuntivo', name: 'Presente Subjuntivo' },
 ];
