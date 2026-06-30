@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, Suspense, Fragment } from 'react';
@@ -43,7 +44,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 // --- CONFIGURACIÓN DE INGENIERÍA ---
-const progressStorageVersion = 'progress_es_a1_estar_v2_full_content';
+const progressStorageVersion = 'progress_es_a1_estar_v4_reordered';
 const mainProgressKey = 'progress_a1_es_estar';
 
 // --- DATA ---
@@ -168,6 +169,24 @@ const finalExPrompts = [
     { s: "30. El hospital _______ cerca de aquí.", a: "está" },
 ];
 
+const negativeSentencesData = [
+    { en: "I am not at the park.", es: ["no estoy en el parque", "yo no estoy en el parque"] },
+    { en: "You are not sad.", es: ["no estás triste", "tú no estás triste", "tu no estas triste"] },
+    { en: "He is not sick.", es: ["él no está enfermo", "el no esta enfermo", "no está enfermo"] },
+    { en: "She is not busy today.", es: ["ella no está ocupada hoy", "no está ocupada hoy"] },
+    { en: "We are not at the library.", es: ["no estamos en la biblioteca", "nosotros no estamos en la biblioteca"] },
+    { en: "They are not hungry.", es: ["ellos no están hambrientos", "ellas no están hambrientas", "no están hambrientos"] },
+    { en: "The cat is not on the table.", es: ["el gato no está en la mesa", "el gato no está sobre la mesa"] },
+    { en: "My mother is not at the supermarket.", es: ["mi madre no está en el supermercado", "mi mamá no está en el supermercado"] },
+    { en: "The water is not hot.", es: ["el agua no está caliente"] },
+    { en: "I am not free tomorrow.", es: ["no estoy libre mañana", "yo no estoy libre mañana"] },
+    { en: "We are not in the house.", es: ["no estamos en la casa", "nosotros no estamos en la casa"] },
+    { en: "The street is not dirty.", es: ["la calle no está sucia"] },
+    { en: "She is not worried.", es: ["ella no está preocupada", "no está preocupada"] },
+    { en: "They are not at the restaurant.", es: ["ellos no están en el restaurante", "no están en el restaurante"] },
+    { en: "You are not nervous.", es: ["tú no estás nervioso", "usted no está nervioso", "ustedes no están nerviosos"] },
+];
+
 const translationVocabHelp = {
     "hungry": "hambriento", "thirsty": "sediento", "busy": "ocupado", "tired": "cansado",
     "excited": "emocionado", "worried": "preocupado", "nervous": "nervioso",
@@ -199,6 +218,14 @@ const BallsExercise = ({ title, prompts, onComplete, vocabulary, type = 'transla
         else toast({ variant: 'destructive', title: "Sigue intentando" });
     };
 
+    const helpList = useMemo(() => {
+        if (Array.isArray(vocabulary)) return vocabulary;
+        if (typeof vocabulary === 'object' && vocabulary !== null) {
+            return Object.entries(vocabulary).map(([es, en]) => ({ es, en }));
+        }
+        return allVocabList;
+    }, [vocabulary]);
+
     return (
         <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground">
             <CardHeader>
@@ -224,10 +251,10 @@ const BallsExercise = ({ title, prompts, onComplete, vocabulary, type = 'transla
                             <ScrollArea className="h-64 pr-4">
                                 <div className="space-y-2 text-foreground text-left">
                                     <h4 className='font-black text-primary text-xs uppercase mb-2 border-b'>Ayuda de Misión</h4>
-                                    {(vocabulary || allVocabList).map((v: any, i: number) => (
+                                    {helpList.map((v: any, i: number) => (
                                         <div key={i} className="flex justify-between text-[10px] border-b border-muted pb-1">
-                                            <span className="text-muted-foreground text-left uppercase">{v.en || v.spanish}:</span>
-                                            <span className="font-bold text-right text-primary">{v.es || v.answer}</span>
+                                            <span className="text-muted-foreground text-left uppercase">{(v.en || v.spanish || '').toUpperCase()}:</span>
+                                            <span className="font-bold text-right text-primary">{(v.es || v.answer || '').toUpperCase()}</span>
                                         </div>
                                     ))}
                                 </div>
@@ -307,7 +334,8 @@ function EstarContent() {
         { key: 'ex3', name: '6. Ejercicio 3', icon: PenSquare, status: 'locked' },
         { key: 'reading', name: '7. Lectura', icon: BookText, status: 'locked' },
         { key: 'translate_text', name: '8. Traducir Texto', icon: MessageSquare, status: 'locked' },
-        { key: 'final', name: '9. Final', icon: CheckCircle, status: 'locked' },
+        { key: 'ex_neg', name: '9. Ejercicio Negativo', icon: X, status: 'locked' },
+        { key: 'final', name: '10. Ejercicio Final', icon: Trophy, status: 'locked' },
     ], []);
 
     const handleTopicComplete = useCallback((completedKey: string) => {
@@ -564,9 +592,11 @@ function EstarContent() {
                             <div className="p-6 bg-muted/50 rounded-2xl border italic text-lg leading-relaxed text-foreground shadow-sm">"I am very busy today. My brother is at the restaurant because he is hungry. My mother is at the supermarket and my father is at the bank. We are all at house tonight. I am a little tired, but I am calm."</div>
                             <Separator /><div className="space-y-2"><Label className='font-black text-primary uppercase text-sm'>Tu Traducción:</Label><Textarea value={translationText} onChange={(e) => setTranslationText(e.target.value)} placeholder="Escribe el texto en español aquí..." className="min-h-[200px] text-lg leading-relaxed" /></div>
                         </CardContent>
-                        <CardFooter className="justify-center border-t pt-6 bg-muted/20"><Button onClick={() => handleTopicComplete('translate_text')} size="lg" className="px-24 font-black h-16 text-2xl shadow-xl bg-primary hover:bg-primary/90 text-primary-foreground uppercase tracking-tighter">Terminar Misión <Trophy className='ml-3 h-8 w-8' /></Button></CardFooter>
+                        <CardFooter className="justify-center border-t pt-6 bg-muted/20"><Button onClick={() => handleTopicComplete('translate_text')} size="lg" className="px-24 font-black h-16 text-2xl shadow-xl bg-primary hover:bg-primary/90 text-primary-foreground uppercase tracking-tighter">Siguiente Misión <ArrowRight className="ml-2 h-6 w-6" /></Button></CardFooter>
                     </Card>
                 );
+            case 'ex_neg':
+                return <BallsExercise title="Ejercicio Negativo" prompts={negativeSentencesData} onComplete={() => handleTopicComplete('ex_neg')} vocabulary={{ "parque": "park", "triste": "sad", "enfermo": "sick", "ocupada": "busy", "mañana": "tomorrow", "sucia": "dirty", "preocupada": "worried", "restaurante": "restaurant" }} />;
             case 'final':
                 return (
                     <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left overflow-hidden">
@@ -579,7 +609,7 @@ function EstarContent() {
                                 <div key={i} className="flex flex-col gap-2 p-4 bg-muted/10 rounded-2xl border shadow-sm"><p className="font-bold text-lg">{q.s}</p><Input value={finalExAns[i]} onChange={e => { const na = [...finalExAns]; na[i] = e.target.value; setFinalExAns(na); setFinalExVal(v => { const nv = [...v]; nv[i] = 'unchecked'; return nv as any; }); }} className={cn("h-10 max-w-[150px] text-lg font-mono", finalExVal[i] === 'correct' ? 'border-green-500' : finalExVal[i] === 'incorrect' ? 'border-red-500' : '')} placeholder="Respuesta..." autoComplete="off" /></div>
                             ))}
                         </div></ScrollArea></CardContent>
-                        <CardFooter className="justify-center border-t p-6 bg-muted/20"><Button onClick={handleCheckFinal} size="lg" className="px-24 font-black h-14 text-xl shadow-xl">Verificar Todo</Button></CardFooter>
+                        <CardFooter className="justify-center border-t p-6 bg-muted/20"><Button onClick={handleCheckFinal} size="lg" className="px-24 font-black h-14 text-xl shadow-xl">Finalizar Misión</Button></CardFooter>
                     </Card>
                 );
             default: return null;
