@@ -491,8 +491,8 @@ function ArticulosGeneroContent() {
                                 <div className='grid gap-4 md:grid-cols-2'>
                                     <div className='p-4 bg-yellow-50 dark:bg-yellow-900/10 border-l-4 border-yellow-500 rounded-r-xl'>
                                         <h4 className='font-bold text-yellow-800 dark:text-yellow-400'>A tónica inicial:</h4>
-                                        <p className="text-sm italic">Palabras femeninas que empiezan con "a" o "ha" tónica usan <strong>EL</strong> en singular para evitar la cacofonía.</p>
-                                        <p className='text-xs font-mono mt-1'>Ej: El agua / Las aguas, El águila / Las águilas.</p>
+                                        <p className="text-sm italic">Palabras femeninas que empiezan con "a" tónica usan <strong>EL</strong> en singular para evitar la cacofonía.</p>
+                                        <p className='text-xs font-mono mt-1'>Ej: El agua / Las aguas, El águila / Las águilas, El ave / Las aves.</p>
                                     </div>
                                     <div className='p-4 bg-blue-50 dark:bg-blue-900/10 border-l-4 border-blue-500 rounded-r-xl'>
                                         <h4 className='font-bold text-blue-800 dark:text-blue-400'>Palabras en -MA:</h4>
