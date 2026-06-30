@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, Suspense, Fragment } from 'react';
@@ -24,6 +25,7 @@ import {
     X
 } from 'lucide-react';
 import { DashboardHeader } from '@/components/dashboard/header';
+import { Footer } from '@/components/footer';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
@@ -42,7 +44,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 // --- CONFIGURACIÓN DE INGENIERÍA ---
-const progressStorageVersion = 'progress_es_a1_prep_lugar_v7_final_stable';
+const progressStorageVersion = 'progress_es_a1_prep_lugar_v9_final_logic_fix';
 const mainProgressKey = 'progress_a1_es_preposiciones_de_lugar';
 
 const ICONS_MAP = {
@@ -255,7 +257,7 @@ const BallsExercise = ({ title, prompts, onComplete, vocabulary, type = 'transla
                         </CardDescription>
                         <div className="flex gap-2 justify-start flex-wrap pt-4">
                             {prompts.map((_: any, i: number) => (
-                                <div key={i} onClick={() => setCurrentIndex(i)} className={cn("h-8 w-8 rounded-full border-2 flex items-center justify-center text-xs font-bold cursor-pointer transition-all", currentIndex === i ? "border-primary ring-2 ring-primary" : "border-muted", status[i] === 'correct' ? "bg-green-500 text-white border-green-500" : status[i] === 'incorrect' ? "bg-red-500 text-white border-red-500" : "bg-card text-foreground")}>{i + 1}</div>
+                                <div key={i} onClick={() => setCurrentIndex(i)} className={cn("h-8 w-8 rounded-full border-2 flex items-center justify-center text-sm font-bold cursor-pointer transition-all", currentIndex === i ? "border-primary ring-2 ring-primary" : "border-muted", status[i] === 'correct' ? "bg-green-500 text-white border-green-500" : status[i] === 'incorrect' ? "bg-red-500 text-white border-red-500" : "bg-card text-foreground")}>{i + 1}</div>
                             ))}
                         </div>
                     </div>
@@ -313,7 +315,7 @@ function PreposicionesLugarContent() {
     const currentUID = targetStudentId || user?.uid;
 
     const [isInitialLoading, setIsInitialLoading] = useState(true);
-    const [learningPath, setLearningPath] = useState<Topic[]>([]);
+    const [learningPath, setLearningPath] = useState<any[]>([]);
     const [selectedTopic, setSelectedTopic] = useState<string>('');
     const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
     const [initialLoadComplete, setInitialLoadComplete] = useState(false);
@@ -339,7 +341,7 @@ function PreposicionesLugarContent() {
 
     const isAdmin = useMemo(() => (user && (authUserProfile?.role === 'admin' || user.email === 'ednacard87@gmail.com')), [user, authUserProfile]);
 
-    const initialLearningPath = useMemo((): Topic[] => [
+    const initialLearningPath = useMemo(() => [
         { key: 'vocabulary', name: '1. Vocabulario', icon: BookOpen, status: 'active' },
         { key: 'grammar', name: '2. Gramática', icon: GraduationCap, status: 'locked' },
         { key: 'ex1', name: '3. Ejercicio 1', icon: PenSquare, status: 'locked' },
@@ -357,8 +359,8 @@ function PreposicionesLugarContent() {
     }, []);
 
     const handleTopicSelect = (topicKey: string) => {
-        const topic = learningPath.find(t => t.key === topicKey);
-        if (!isAdmin && topic?.status === 'locked') { toast({ variant: "destructive", title: "Contenido Bloqueado" }); return; }
+        const item = learningPath.find(it => it.key === topicKey);
+        if (!isAdmin && item?.status === 'locked') { toast({ variant: "destructive", title: "Contenido Bloqueado" }); return; }
         setSelectedTopic(topicKey);
         if (topicKey === 'grammar') handleTopicComplete('grammar');
     };
@@ -443,7 +445,7 @@ function PreposicionesLugarContent() {
             });
         });
         setVocabValidation(nv);
-        if (okCount >= 10) { setCanAdvanceVocab(true); toast({ title: "¡Buen avance!" }); }
+        if (okCount >= 10) { setCanAdvanceVocab(true); toast({ title: "¡Buen trabajo!" }); }
         else toast({ variant: 'destructive', title: "Necesitas 10 aciertos para avanzar." });
     };
 
@@ -467,7 +469,7 @@ function PreposicionesLugarContent() {
             return isOk ? 'correct' : 'incorrect';
         });
         setFinalExVal(nv as any);
-        if (okCount === finalExPrompts.length) { toast({ title: "¡Dominio Total!" }); handleTopicComplete('final_ex'); }
+        if (okCount === finalExPrompts.length) { toast({ title: "¡Dominio Total!" }); handleTopicComplete('final'); }
         else toast({ variant: 'destructive', title: "Hay errores en la lista." });
     };
 
@@ -576,7 +578,11 @@ function PreposicionesLugarContent() {
                             <div className="p-6 bg-muted/50 rounded-2xl border italic text-lg leading-relaxed text-foreground shadow-sm">"In my house, the living room is large. The sofa is in front of the window. A lamp is next to the sofa and the table is between two chairs. In the kitchen, the fridge is under the shelf. In my bedroom, my books are on the bed and my backpack is behind the door."</div>
                             <Separator /><div className="space-y-2"><Label className='font-black text-primary uppercase text-sm'>Tu Traducción:</Label><Textarea value={translationText} onChange={(e) => setTranslationText(e.target.value)} placeholder="Escribe el texto en español aquí..." className="min-h-[200px] text-lg leading-relaxed" /></div>
                         </CardContent>
-                        <CardFooter className="justify-center border-t pt-6 bg-muted/20"><Button onClick={() => handleTopicComplete('translate_text')} size="lg" className="px-24 font-black h-16 text-2xl shadow-xl bg-primary hover:bg-primary/90 text-primary-foreground uppercase tracking-tighter">Continuar <Trophy className='ml-3 h-8 w-8' /></Button></CardFooter>
+                        <CardFooter className="justify-center border-t pt-6 bg-muted/20">
+                            <Button onClick={() => handleTopicComplete('translate_text')} size="lg" className="px-24 font-black h-16 text-2xl shadow-xl bg-primary hover:bg-primary/90 text-primary-foreground uppercase tracking-tighter">
+                                Siguiente Misión <ArrowRight className='ml-3 h-8 w-8' />
+                            </Button>
+                        </CardFooter>
                     </Card>
                 );
             case 'final': return <BallsExercise title="Final: Frases Negativas" prompts={negativePrompts} onComplete={() => handleTopicComplete('final')} vocabulary={{"cocina": "kitchen", "cuarto": "room", "espejo": "mirror", "maleta": "backpack", "entre": "between", "detrás de": "behind"}} />;
@@ -606,12 +612,12 @@ function PreposicionesLugarContent() {
                         <div className="md:col-span-3 md:order-2 order-1 text-left">
                             <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
                                 <CardHeader className='pb-4 border-b bg-muted/30'><CardTitle className="text-lg font-black text-primary uppercase tracking-tighter flex items-center gap-2"><Trophy className="h-5 w-5 text-primary" /> Misión A1</CardTitle></CardHeader>
-                                <CardContent className='p-4'>
+                                <CardContent className='p-4 text-foreground'>
                                     <nav><ul className="space-y-1">
-                                        {learningPath.map((item) => {
+                                        {learningPath.map(item => {
                                             const isLocked = item.status === 'locked' && !isAdmin;
                                             const isSelected = selectedTopic === item.key;
-                                            const Icon = item.icon;
+                                            const Icon = ICONS_MAP[item.status as keyof typeof ICONS_MAP] || BookOpen;
                                             return (
                                                 <li key={item.key} onClick={() => handleTopicSelect(item.key)} className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer text-foreground', isLocked ? 'text-muted-foreground/30 cursor-not-allowed' : 'hover:bg-muted', isSelected && 'bg-muted text-primary font-black border-l-4 border-primary')}>
                                                     <div className="flex items-center gap-3">{item.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500" /> : <Icon className={cn("h-5 w-5", isLocked ? "text-yellow-500/50" : "text-primary")} />}<span className="truncate max-w-[150px]">{item.name}</span></div>
@@ -627,6 +633,7 @@ function PreposicionesLugarContent() {
                     </div>
                 </div>
             </main>
+            <Footer />
         </div>
     );
 }
