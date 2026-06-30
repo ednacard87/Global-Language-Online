@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo, useCallback, Suspense } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, Suspense, Fragment } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { 
@@ -16,7 +16,12 @@ import {
     ArrowRight,
     Star,
     Loader2,
-    MessageSquare
+    MessageSquare,
+    MapPin,
+    Home,
+    Search,
+    Check,
+    X
 } from 'lucide-react';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -26,17 +31,277 @@ import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocki
 import { doc } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Separator } from '@/components/ui/separator';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { VocabularyMatchingGame } from '@/components/dashboard/vocabulary-matching-game';
+import { Textarea } from '@/components/ui/textarea';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 // --- CONFIGURACIÓN DE INGENIERÍA ---
-const progressStorageVersion = 'progress_es_a1_preposiciones_v1_base';
+const progressStorageVersion = 'progress_es_a1_prep_lugar_v7_final_stable';
 const mainProgressKey = 'progress_a1_es_preposiciones_de_lugar';
 
-interface Topic {
-    key: string;
-    name: string;
-    icon: React.ElementType;
-    status: 'locked' | 'active' | 'completed';
-}
+const ICONS_MAP = {
+    locked: Lock,
+    active: BookOpen,
+    completed: CheckCircle,
+};
+
+// --- DATA ---
+
+const vocabularyData = {
+    casa: [
+        { en: "HOUSE", es: "CASA" },
+        { en: "LIVING ROOM", es: "SALA" },
+        { en: "KITCHEN", es: "COCINA" },
+        { en: "BATHROOM", es: "BAÑO" },
+        { en: "BEDROOM", es: "DORMITORIO" },
+        { en: "DINING ROOM", es: "COMEDOR" },
+        { en: "GARDEN", es: "JARDÍN" },
+        { en: "WALL", es: "PARED" },
+        { en: "FLOOR", es: "PISO" },
+        { en: "WINDOW", es: "VENTANA" },
+        { en: "DOOR", es: "PUERTA" },
+    ],
+    aula: [
+        { en: "CLASSROOM", es: "AULA" },
+        { en: "BLACKBOARD", es: "TABLERO" },
+        { en: "PENCIL", es: "LÁPIZ" },
+        { en: "PEN", es: "LAPICERO" },
+        { en: "NOTEBOOK", es: "CUADERNO" },
+        { en: "ERASER", es: "BORRADOR" },
+        { en: "BACKPACK", es: "MALETA" },
+        { en: "RULER", es: "REGLA" },
+        { en: "CALCULATOR", es: "CALCULADORA" },
+        { en: "MAP", es: "MAPA" },
+        { en: "DESK", es: "ESCRITORIO" },
+    ],
+    muebles: [
+        { en: "SOFA", es: "SOFÁ" },
+        { en: "BED", es: "CAMA" },
+        { en: "TABLE", es: "MESA" },
+        { en: "CHAIR", es: "SILLA" },
+        { en: "LAMP", es: "LÁMPARA" },
+        { en: "SHELF", es: "ESTANTE" },
+        { en: "MIRROR", es: "ESPEJO" },
+        { en: "OVEN", es: "HORNO" },
+        { en: "FRIDGE", es: "NEVERA" },
+        { en: "TELEVISION", es: "TELEVISIÓN" },
+    ]
+};
+
+const allVocabList = [...vocabularyData.casa, ...vocabularyData.aula, ...vocabularyData.muebles];
+
+const ex1Prompts = [
+    { en: "The book is on the table.", es: ["el libro está encima de la mesa", "el libro esta sobre la mesa"] },
+    { en: "The cat is under the chair.", es: ["el gato está debajo de la silla", "el gato esta bajo la silla"] },
+    { en: "The pencil is in front of the notebook.", es: ["el lápiz está delante del cuaderno", "el lapiz esta en frente del cuaderno"] },
+    { en: "The dog is behind the door.", es: ["el perro está detrás de la puerta", "el perro esta detras de la puerta"] },
+    { en: "The lamp is between the bed and the desk.", es: ["la lámpara está entre la cama y el escritorio"] },
+    { en: "The window is next to the shelf.", es: ["la ventana está al lado del estante"] },
+    { en: "The student is inside the classroom.", es: ["el estudiante está dentro del aula", "el estudiante esta en el salon de clase"] },
+];
+
+const ex1Vocab = {
+    "libro": "book", "mesa": "table", "gato": "cat", "silla": "chair", "lápiz": "pencil",
+    "cuaderno": "notebook", "perro": "dog", "puerta": "door", "lámpara": "lamp",
+    "cama": "bed", "escritorio": "desk", "ventana": "window", "estante": "shelf", "aula": "classroom"
+};
+
+const ex2Prompts = [
+    { en: "My backpack is on the floor.", es: ["mi maleta está en el piso", "mi maleta esta sobre el piso"] },
+    { en: "Your keys are under the sofa.", es: ["tus llaves están debajo del sofá", "tus llaves estan bajo el sofa"] },
+    { en: "The teacher is in front of the blackboard.", es: ["el profesor está delante del tablero", "el profesor esta en frente del tablero"] },
+    { en: "The garden is behind the house.", es: ["el jardín está detrás de la casa", "el jardin esta detras de la casa"] },
+    { en: "The fridge is in the kitchen.", es: ["la nevera está en la cocina"] },
+    { en: "The mirror is next to the door.", es: ["el espejo está al lado de la puerta"] },
+    { en: "The ruler is between the pencil and the pen.", es: ["la regla está entre el lápiz y el lapicero"] },
+    { en: "Is the book under the bed?", es: ["¿está el libro debajo de la cama?", "¿el libro esta bajo la cama?"] },
+];
+
+const ex2Vocab = {
+    "maleta": "backpack", "piso": "floor", "llaves": "keys", "sofá": "sofa", "profesor": "teacher",
+    "tablero": "blackboard", "jardín": "garden", "casa": "house", "nevera": "fridge",
+    "cocina": "kitchen", "espejo": "mirror", "regla": "ruler", "lapicero": "pen"
+};
+
+const ex3Prompts = [
+    { en: "The computer is on the desk.", es: ["el computador está encima del escritorio", "el ordenador esta sobre el escritorio"] },
+    { en: "The shoes are under the table.", es: ["los zapatos están debajo de la mesa"] },
+    { en: "There is a map on the wall.", es: ["hay un mapa en la pared", "hay un mapa sobre la pared"] },
+    { en: "The chair is next to the window.", es: ["la silla está al lado de la ventana"] },
+    { en: "The oven is in the kitchen.", es: ["el horno está en la cocina"] },
+    { en: "The car is in front of the house.", es: ["el carro está delante de la casa", "el carro esta en frente de la casa"] },
+    { en: "The park is behind the school.", es: ["el parque está detrás de la escuela", "el parque esta detras del colegio"] },
+    { en: "The pen is inside the backpack.", es: ["el lapicero está dentro de la maleta", "el boligrafo esta en la maleta"] },
+    { en: "Is your father in the living room?", es: ["¿está tu padre en la sala?", "¿tu papa esta en la sala?"] },
+    { en: "The cat is between the sofa and the lamp.", es: ["el gato está entre el sofá y la lámpara"] },
+];
+
+const readingData = {
+    title: "La Casa de Carlos",
+    content: "Carlos vive en una casa hermosa. En la sala, hay un sofá gris y una lámpara está al lado del sofá. La televisión está delante de la mesa. En la cocina, la nevera está entre el horno y la puerta. Carlos tiene un perro que siempre está debajo de la mesa del comedor. En su dormitorio, los libros están encima del estante y su maleta está detrás de la puerta.",
+    questions: [
+        { q: "¿Dónde está la lámpara?", a: ["al lado del sofá", "junto al sofa"] },
+        { q: "¿Dónde está la nevera?", a: ["entre el horno y la puerta"] },
+        { q: "¿Dónde está el perro?", a: ["debajo de la mesa", "bajo la mesa"] },
+        { q: "¿Qué hay encima del estante?", a: ["libros", "los libros"] },
+        { q: "¿Dónde está la maleta?", a: ["detrás de la puerta", "detras de la puerta"] },
+    ]
+};
+
+const finalExPrompts = [
+    { s: "1. El libro está ___ (on) la mesa.", a: "encima de" },
+    { s: "2. El gato está ___ (under) la silla.", a: "debajo de" },
+    { s: "3. La niña está ___ (in front of) la casa.", a: "delante de" },
+    { s: "4. El parque está ___ (behind) el colegio.", a: "detrás de" },
+    { s: "5. Mi casa está ___ (between) el banco y la tienda.", a: "entre" },
+    { s: "6. Tu maleta está ___ (next to) la puerta.", a: "al lado de" },
+    { s: "7. Las llaves están ___ (inside) el bolso.", a: "dentro de" },
+    { s: "8. El perro duerme ___ (under) el sofá.", a: "debajo de" },
+    { s: "9. El tablero está ___ (on) la pared.", a: "en" },
+    { s: "10. La cuchara está ___ (next to) el plato.", a: "al lado de" },
+    { s: "11. Hay un espejo ___ (in front of) la cama.", a: "delante de" },
+    { s: "12. El jardín está ___ (behind) el edificio.", a: "detrás de" },
+    { s: "13. La nevera está ___ (between) la pared y la mesa.", a: "entre" },
+    { s: "14. El lápiz está ___ (inside) el estuche.", a: "dentro de" },
+    { s: "15. El sol está ___ (above) las nubes.", a: "encima de" },
+    { s: "16. El carro está ___ (in front of) el garaje.", a: "delante de" },
+    { s: "17. La farmacia está ___ (next to) el hospital.", a: "al lado de" },
+    { s: "18. El ratón está ___ (under) el escritorio.", a: "debajo de" },
+    { s: "19. Estamos ___ (inside) la clase.", a: "dentro de" },
+    { s: "20. La biblioteca está ___ (between) el parque y el cine.", a: "entre" },
+    { s: "21. El cuadro está ___ (on) la pared.", a: "en" },
+    { s: "22. El borrador está ___ (next to) el tablero.", a: "al lado de" },
+    { s: "23. La maleta está ___ (behind) la silla.", a: "detrás de" },
+    { s: "24. Hay una alfombra ___ (under) la mesa.", a: "debajo de" },
+    { s: "25. Mi teléfono está ___ (inside) mi bolsillo.", a: "dentro de" },
+    { s: "26. La panadería está ___ (in front of) la plaza.", a: "delante de" },
+    { s: "27. El gato salta ___ (on) la cama.", a: "encima de" },
+    { s: "28. El profesor está ___ (between) los estudiantes.", a: "entre" },
+    { s: "29. La ventana está ___ (next to) el escritorio.", a: "al lado de" },
+    { s: "30. El sótano está ___ (under) la casa.", a: "debajo de" },
+];
+
+const negativePrompts = [
+    { en: "The book is not on the table.", es: ["el libro no está encima de la mesa", "el libro no esta sobre la mesa"] },
+    { en: "She is not in the kitchen.", es: ["ella no está en la cocina", "no está en la cocina"] },
+    { en: "The keys are not under the bed.", es: ["las llaves no están debajo de la cama", "las llaves no estan bajo la cama"] },
+    { en: "We are not in front of the school.", es: ["no estamos delante de la escuela", "nosotros no estamos en frente del colegio"] },
+    { en: "The car is not behind the house.", es: ["el carro no está detrás de la casa", "el coche no esta detras de la casa"] },
+    { en: "The lamp is not next to the sofa.", es: ["la lámpara no está al lado del sofá"] },
+    { en: "They are not inside the room.", es: ["ellos no están dentro del cuarto", "no estan en la habitacion"] },
+    { en: "The pencil is not in the backpack.", es: ["el lápiz no está en la maleta", "el lapiz no esta en la mochila"] },
+    { en: "He is not between my mother and my father.", es: ["él no está entre mi madre y mi padre"] },
+    { en: "The map is not on the wall.", es: ["el mapa no está en la pared"] },
+    { en: "The cat is not under the table.", es: ["el gato no está debajo de la mesa"] },
+    { en: "I am not in front of the mirror.", es: ["no estoy delante del espejo", "yo no estoy en frente del espejo"] },
+    { en: "The flowers are not in the garden.", es: ["las flores no están en el jardín"] },
+    { en: "The notebook is not next to the computer.", es: ["el cuaderno no está al lado del computador"] },
+    { en: "You are not behind me.", es: ["tú no estás detrás de mí", "usted no esta detras de mi"] },
+];
+
+const translationVocabHelp = {
+    "my house": "mi casa", "living room": "sala", "large": "grande", "sofa": "sofá",
+    "lamp": "lámpara", "next to": "al lado de", "table": "mesa", "between": "entre",
+    "two chairs": "dos sillas", "kitchen": "cocina", "fridge": "nevera", "under": "debajo de",
+    "window": "ventana", "bedroom": "dormitorio", "on the bed": "encima de la cama",
+    "behind the door": "detrás de la puerta", "in front of": "delante de"
+};
+
+// --- HELPER COMPONENTS ---
+
+const BallsExercise = ({ title, prompts, onComplete, vocabulary, type = 'translate' }: any) => {
+    const { toast } = useToast();
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [answer, setAnswer] = useState('');
+    const [status, setStatus] = useState<Record<number, 'correct' | 'incorrect' | 'unchecked'>>({});
+
+    useEffect(() => { setAnswer(''); }, [currentIndex]);
+
+    const handleCheck = () => {
+        const userVal = answer.trim().toLowerCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' ');
+        let isCorrect = false;
+        
+        if (type === 'translate') {
+            isCorrect = prompts[currentIndex].es.some((a: string) => a.toLowerCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' ') === userVal);
+        } else {
+            isCorrect = userVal === prompts[currentIndex].answer.toLowerCase();
+        }
+        
+        setStatus(prev => ({ ...prev, [currentIndex]: isCorrect ? 'correct' : 'incorrect' }));
+        if (isCorrect) toast({ title: "¡Buen trabajo!" });
+        else toast({ variant: 'destructive', title: "Sigue intentando" });
+    };
+
+    const vocabList = useMemo(() => {
+        if (!vocabulary) return [];
+        if (Array.isArray(vocabulary)) return vocabulary;
+        return Object.entries(vocabulary).map(([es, en]) => ({ es, en: en as string }));
+    }, [vocabulary]);
+
+    return (
+        <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground text-left">
+            <CardHeader>
+                <div className="flex justify-between items-start">
+                    <div className="text-left">
+                        <CardTitle>{title}</CardTitle>
+                        <CardDescription className="font-bold text-foreground mt-1">
+                            {type === 'translate' ? 'Traduce la frase al español.' : 'Escribe la respuesta correcta.'}
+                        </CardDescription>
+                        <div className="flex gap-2 justify-start flex-wrap pt-4">
+                            {prompts.map((_: any, i: number) => (
+                                <div key={i} onClick={() => setCurrentIndex(i)} className={cn("h-8 w-8 rounded-full border-2 flex items-center justify-center text-xs font-bold cursor-pointer transition-all", currentIndex === i ? "border-primary ring-2 ring-primary" : "border-muted", status[i] === 'correct' ? "bg-green-500 text-white border-green-500" : status[i] === 'incorrect' ? "bg-red-500 text-white border-red-500" : "bg-card text-foreground")}>{i + 1}</div>
+                            ))}
+                        </div>
+                    </div>
+                    {vocabList.length > 0 && (
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button variant="outline" size="sm" className="border-2 border-brand-blue animate-border-pulse">
+                                    <BookText className="mr-2 h-4 w-4" />
+                                    Vocabulario
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-64">
+                                <ScrollArea className="h-64 pr-4 text-left text-foreground">
+                                    <div className="space-y-2">
+                                        <h4 className='font-black text-primary text-xs uppercase mb-2 border-b'>Ayuda de Misión</h4>
+                                        {vocabList.map((v: any, i: number) => (
+                                            <div key={i} className="flex justify-between text-[10px] border-b border-muted pb-1">
+                                                <span className="text-muted-foreground uppercase">{v.en}:</span>
+                                                <span className="font-bold text-primary">{v.es.toUpperCase()}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </ScrollArea>
+                            </PopoverContent>
+                        </Popover>
+                    )}
+                </div>
+            </CardHeader>
+            <CardContent className="space-y-6">
+                <div className="bg-muted p-6 rounded-2xl border-2 border-dashed text-center font-bold text-xl uppercase tracking-tighter text-foreground">
+                    {type === 'translate' ? prompts[currentIndex].en : prompts[currentIndex].word}
+                </div>
+                <Input value={answer} onChange={e => setAnswer(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleCheck()} className={cn("h-12 text-lg text-foreground", status[currentIndex] === 'correct' ? 'border-green-500 bg-green-50/5' : status[currentIndex] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} placeholder="Escribe tu respuesta..." autoComplete="off" />
+            </CardContent>
+            <CardFooter className="justify-between border-t pt-6">
+                <Button variant="outline" onClick={() => setCurrentIndex(p => Math.max(0, p - 1))} disabled={currentIndex === 0}>Anterior</Button>
+                <div className="flex gap-2">
+                    <Button onClick={handleCheck} variant="secondary">Verificar</Button>
+                    <Button onClick={() => currentIndex < prompts.length - 1 ? setCurrentIndex(i => i + 1) : onComplete()} disabled={status[currentIndex] !== 'correct'} className="font-bold text-white">Siguiente</Button>
+                </div>
+            </CardFooter>
+        </Card>
+    );
+};
+
+// --- MAIN PAGE ---
 
 function PreposicionesLugarContent() {
     const { toast } = useToast();
@@ -53,6 +318,19 @@ function PreposicionesLugarContent() {
     const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
     const [initialLoadComplete, setInitialLoadComplete] = useState(false);
 
+    // States for content
+    const [vocabAnswers, setVocabAnswers] = useState<Record<string, string[]>>({});
+    const [vocabValidation, setVocabValidation] = useState<Record<string, any[]>>({});
+    const [canAdvanceVocab, setCanAdvanceVocab] = useState(false);
+
+    const [readingAns, setReadingAns] = useState<string[]>(Array(readingData.questions.length).fill(''));
+    const [readingVal, setReadingVal] = useState<any[]>(Array(readingData.questions.length).fill('unchecked'));
+
+    const [finalExAns, setFinalExAns] = useState<string[]>(Array(finalExPrompts.length).fill(''));
+    const [finalExVal, setFinalExVal] = useState<any[]>(Array(finalExPrompts.length).fill('unchecked'));
+
+    const [translationText, setTranslationText] = useState('');
+
     const studentDocRef = useMemoFirebase(() => (currentUID ? doc(firestore, 'students', currentUID) : null), [firestore, currentUID]);
     const authUserRef = useMemoFirebase(() => (user ? doc(firestore, 'students', user.uid) : null), [firestore, user]);
     
@@ -66,15 +344,25 @@ function PreposicionesLugarContent() {
         { key: 'grammar', name: '2. Gramática', icon: GraduationCap, status: 'locked' },
         { key: 'ex1', name: '3. Ejercicio 1', icon: PenSquare, status: 'locked' },
         { key: 'ex2', name: '4. Ejercicio 2', icon: PenSquare, status: 'locked' },
-        { key: 'vocab_game', name: '5. Vocabulario (Juego)', icon: Gamepad2, status: 'locked' },
-        { key: 'ex3', name: '6. Ejercicio 3', icon: PenSquare, status: 'locked' },
+        { key: 'ex3', name: '5. Ejercicio 3', icon: PenSquare, status: 'locked' },
+        { key: 'vocab_game', name: '6. Vocabulario (Juego)', icon: Gamepad2, status: 'locked' },
         { key: 'reading', name: '7. Lectura', icon: BookText, status: 'locked' },
         { key: 'final_ex', name: '8. Ejercicio Final', icon: Trophy, status: 'locked' },
         { key: 'translate_text', name: '9. Traducir Texto', icon: MessageSquare, status: 'locked' },
-        { key: 'final', name: '10. Final', icon: CheckCircle, status: 'locked' },
+        { key: 'final', name: '10. Final (Negativos)', icon: CheckCircle, status: 'locked' },
     ], []);
 
-    // ASYNC FLOW 1: Carga inicial de Firestore
+    const handleTopicComplete = useCallback((completedKey: string) => {
+        setTopicToComplete(completedKey);
+    }, []);
+
+    const handleTopicSelect = (topicKey: string) => {
+        const topic = learningPath.find(t => t.key === topicKey);
+        if (!isAdmin && topic?.status === 'locked') { toast({ variant: "destructive", title: "Contenido Bloqueado" }); return; }
+        setSelectedTopic(topicKey);
+        if (topicKey === 'grammar') handleTopicComplete('grammar');
+    };
+
     useEffect(() => {
         if (isProfileLoading || isUserLoading || !studentProfile || initialLoadComplete) return;
 
@@ -90,13 +378,23 @@ function PreposicionesLugarContent() {
         }
 
         let lastDone = true;
-        for (let i = 0; i < path.length; i++) {
+        for(let i=0; i < path.length; i++) {
             if (lastDone && path[i].status === 'locked') path[i].status = 'active';
             lastDone = path[i].status === 'completed';
         }
 
         setLearningPath(path);
         setSelectedTopic(savedST || path.find(p => p.status === 'active')?.key || path[0].key);
+        
+        const initAns: Record<string, string[]> = {};
+        const initVal: Record<string, any[]> = {};
+        Object.keys(vocabularyData).forEach(cat => {
+            initAns[cat] = Array((vocabularyData as any)[cat].length).fill('');
+            initVal[cat] = Array((vocabularyData as any)[cat].length).fill('unchecked');
+        });
+        setVocabAnswers(initAns);
+        setVocabValidation(initVal);
+
         setInitialLoadComplete(true);
         setTimeout(() => setIsInitialLoading(false), 800);
     }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading, isUserLoading, initialLoadComplete, targetStudentId]);
@@ -107,7 +405,6 @@ function PreposicionesLugarContent() {
         return Math.round((completedCount / learningPath.length) * 100);
     }, [learningPath]);
 
-    // ASYNC FLOW 2: Guardado automático
     useEffect(() => {
         if (!initialLoadComplete || isInitialLoading || isAdmin || !studentDocRef || learningPath.length === 0 || targetStudentId) return;
         const s: Record<string, any> = { lastSelectedTopic: selectedTopic };
@@ -116,7 +413,6 @@ function PreposicionesLugarContent() {
         if (progressValue >= 100) window.dispatchEvent(new CustomEvent('progressUpdated'));
     }, [learningPath, isAdmin, progressValue, studentDocRef, initialLoadComplete, selectedTopic, isInitialLoading, targetStudentId]);
 
-    // ASYNC FLOW 3: Manejo de desbloqueos
     useEffect(() => {
         if (!topicToComplete) return;
         setLearningPath(currentPath => {
@@ -136,49 +432,156 @@ function PreposicionesLugarContent() {
         setTopicToComplete(null);
     }, [topicToComplete, toast]);
 
-    const handleTopicSelect = (topicKey: string) => {
-        const topic = learningPath.find(t => t.key === topicKey);
-        if (!isAdmin && topic?.status === 'locked') { toast({ variant: "destructive", title: "Contenido Bloqueado" }); return; }
-        setSelectedTopic(topicKey);
+    const handleVocabCheck = () => {
+        let okCount = 0;
+        const nv: any = {};
+        Object.keys(vocabularyData).forEach(cat => {
+            nv[cat] = (vocabularyData as any)[cat].map((v: any, i: number) => {
+                const isOk = v.es.toLowerCase() === (vocabAnswers[cat][i] || '').trim().toLowerCase();
+                if (isOk) okCount++;
+                return isOk ? 'correct' : 'incorrect';
+            });
+        });
+        setVocabValidation(nv);
+        if (okCount >= 10) { setCanAdvanceVocab(true); toast({ title: "¡Buen avance!" }); }
+        else toast({ variant: 'destructive', title: "Necesitas 10 aciertos para avanzar." });
     };
 
-    const handleTopicComplete = (completedKey: string) => {
-        setTopicToComplete(completedKey);
+    const handleCheckReading = () => {
+        let allOk = true;
+        const nv = readingData.questions.map((q, i) => {
+            const isOk = q.a.some(ans => (readingAns[i] || '').trim().toLowerCase().includes(ans.toLowerCase()));
+            if (!isOk) allOk = false;
+            return isOk ? 'correct' : 'incorrect';
+        });
+        setReadingVal(nv as any);
+        if (allOk) { toast({ title: "¡Lectura superada!" }); handleTopicComplete('reading'); }
+        else toast({ variant: 'destructive', title: "Revisa tus respuestas." });
+    };
+
+    const handleCheckFinalEx = () => {
+        let okCount = 0;
+        const nv = finalExPrompts.map((q, i) => {
+            const isOk = q.a.toLowerCase() === (finalExAns[i] || '').trim().toLowerCase();
+            if (isOk) okCount++;
+            return isOk ? 'correct' : 'incorrect';
+        });
+        setFinalExVal(nv as any);
+        if (okCount === finalExPrompts.length) { toast({ title: "¡Dominio Total!" }); handleTopicComplete('final_ex'); }
+        else toast({ variant: 'destructive', title: "Hay errores en la lista." });
     };
 
     const renderContent = () => {
-        const topic = learningPath.find(t => t.key === selectedTopic);
-        if (!topic) return null;
+        if (isInitialLoading) return <div className="flex justify-center items-center h-64"><Loader2 className="animate-spin text-primary" /></div>;
 
-        return (
-            <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground text-left overflow-hidden">
-                <CardHeader className='bg-primary/5 border-b'>
-                    <div className='flex items-center gap-3'>
-                        <div className='p-2 bg-primary/20 rounded-lg'>
-                            <topic.icon className='h-6 w-6 text-primary' />
-                        </div>
-                        <div>
-                            <CardTitle className="text-primary uppercase tracking-tighter">{topic.name}</CardTitle>
-                            <CardDescription className='font-bold text-foreground'>Completa esta sección para avanzar en tu misión.</CardDescription>
-                        </div>
-                    </div>
-                </CardHeader>
-                <CardContent className="py-12 flex flex-col items-center justify-center min-h-[350px] text-center space-y-6">
-                    <div className='p-10 bg-muted/30 rounded-full animate-pulse'>
-                        <topic.icon className='h-24 w-24 text-primary/30' />
-                    </div>
-                    <div className='space-y-2'>
-                        <h3 className='text-4xl font-black uppercase tracking-tighter text-primary'>PROXIMAMENTE</h3>
-                        <p className='text-muted-foreground text-xl'>El contenido interactivo para "{topic.name}" se está cargando en la base de datos.</p>
-                    </div>
-                </CardContent>
-                <CardFooter className="justify-center border-t p-6 bg-muted/10">
-                    <Button onClick={() => handleTopicComplete(selectedTopic)} size="lg" className="px-20 font-black h-14 text-xl shadow-xl uppercase tracking-tighter">
-                        Completar Paso <ArrowRight className="ml-2 h-6 w-6" />
-                    </Button>
-                </CardFooter>
-            </Card>
-        );
+        switch (selectedTopic) {
+            case 'vocabulary':
+                return (
+                    <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground text-left">
+                        <CardHeader className='bg-primary/5 border-b'><CardTitle className="text-primary uppercase tracking-tighter">Vocabulario: Casa y Aula</CardTitle><CardDescription className='font-bold text-foreground'>Escribe el significado en español para cada término.</CardDescription></CardHeader>
+                        <CardContent className="pt-6">
+                            <Accordion type="multiple" defaultValue={['casa', 'aula', 'muebles']} className="w-full">
+                                {Object.keys(vocabularyData).map(cat => (
+                                    <AccordionItem key={cat} value={cat}>
+                                        <AccordionTrigger className="capitalize font-black text-primary text-sm tracking-widest">{cat === 'casa' ? 'La Casa' : cat === 'aula' ? 'El Aula' : 'Muebles'}</AccordionTrigger>
+                                        <AccordionContent>
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <div className="font-black text-primary border-b pb-2 uppercase tracking-widest text-xs">English</div><div className="font-black text-primary border-b pb-2 uppercase tracking-widest text-xs">Español</div>
+                                                {(vocabularyData as any)[cat].map((v: any, i: number) => (
+                                                    <Fragment key={i}>
+                                                        <div className="flex items-center font-bold py-1 text-sm">{v.en}</div>
+                                                        <Input value={vocabAnswers[cat][i]} onChange={e => { const na = {...vocabAnswers}; na[cat][i] = e.target.value; setVocabAnswers(na); setVocabValidation(vv => ({...vv, [cat]: vv[cat].map((val: any, idx: number) => idx === i ? 'unchecked' : val)})); setCanAdvanceVocab(false); }} className={cn("h-10 uppercase", vocabValidation[cat]?.[i] === 'correct' ? 'border-green-500' : vocabValidation[cat]?.[i] === 'incorrect' ? 'border-red-500' : '')} autoComplete="off" />
+                                                    </Fragment>
+                                                ))}
+                                            </div>
+                                        </AccordionContent>
+                                    </AccordionItem>
+                                ))}
+                            </Accordion>
+                        </CardContent>
+                        <CardFooter className="flex justify-between border-t pt-6 bg-muted/20"><Button onClick={handleVocabCheck} variant="secondary">Verificar</Button><Button onClick={() => handleTopicComplete('vocabulary')} disabled={!canAdvanceVocab && !isAdmin} className='text-white font-bold'>Avanzar <ArrowRight className='ml-2'/></Button></CardFooter>
+                    </Card>
+                );
+            case 'grammar':
+                return (
+                    <Card className="shadow-soft border-2 border-brand-purple bg-slate-100 dark:bg-slate-800/50 p-6 text-foreground text-left overflow-hidden">
+                        <CardHeader className='px-0 pb-6 border-b mb-6'><CardTitle className="text-3xl font-black text-primary uppercase">Gramática: Preposiciones de Lugar</CardTitle></CardHeader>
+                        <CardContent className="space-y-8 px-0">
+                            <div className="p-6 bg-white/60 dark:bg-background/20 rounded-[2rem] border shadow-sm">
+                                <h3 className="text-xl font-black text-primary uppercase mb-4">Uso de las Preposiciones</h3>
+                                <p className="text-lg leading-relaxed mb-6">Las preposiciones de lugar se utilizan para indicar la posición de un objeto o persona con respecto a otro. <br/> Prepositions of place are used to indicate the position of an object or person in relation to another.</p>
+                                <div className='grid gap-4 sm:grid-cols-2'>
+                                    {[
+                                        { es: "Encima de / Sobre", en: "On / Above" },
+                                        { es: "Debajo de", en: "Under / Below" },
+                                        { es: "Delante de / En frente de", en: "In front of" },
+                                        { es: "Detrás de", en: "Behind" },
+                                        { es: "Entre", en: "Between" },
+                                        { es: "Al lado de", en: "Next to / Beside" },
+                                        { es: "Dentro de", en: "Inside / In" },
+                                        { es: "Fuera de", en: "Outside" }
+                                    ].map((p, i) => (
+                                        <div key={i} className='p-4 bg-background/50 rounded-xl border flex justify-between items-center'>
+                                            <span className='font-bold text-primary'>{p.es}</span>
+                                            <span className='text-sm italic text-muted-foreground'>{p.en}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </CardContent>
+                        <CardFooter className="justify-center pt-6 border-t"><Button onClick={() => handleTopicComplete('grammar')} size="lg" className="px-24 font-black h-14 text-xl shadow-xl">He comprendido la gramática</Button></CardFooter>
+                    </Card>
+                );
+            case 'ex1': return <BallsExercise title="Ejercicio 1" prompts={ex1Prompts} onComplete={() => handleTopicComplete('ex1')} vocabulary={ex1Vocab} />;
+            case 'ex2': return <BallsExercise title="Ejercicio 2" prompts={ex2Prompts} onComplete={() => handleTopicComplete('ex2')} vocabulary={ex2Vocab} />;
+            case 'ex3': return <BallsExercise title="Ejercicio 3: Describir Escenas" prompts={ex3Prompts} onComplete={() => handleTopicComplete('ex3')} vocabulary={{"estante": "shelf", "baño": "bathroom", "bolsillo": "pocket", "edificio": "building", "cuarto": "room"}} />;
+            case 'vocab_game': return <Card className="shadow-soft border-2 border-brand-purple"><CardHeader><CardTitle>Juego de Memoria</CardTitle></CardHeader><CardContent><VocabularyMatchingGame data={allVocabList.map(v => ({ spanish: v.es, english: [v.en] }))} onComplete={() => handleTopicComplete('vocab_game')} title="Encuentra las parejas de la casa" /></CardContent></Card>;
+            case 'reading':
+                return (
+                    <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left overflow-hidden">
+                        <CardHeader className='bg-primary/5 border-b'><CardTitle className='text-primary uppercase tracking-tight'>{readingData.title}</CardTitle></CardHeader>
+                        <CardContent className="space-y-6 pt-6 text-foreground">
+                            <div className="p-6 bg-muted rounded-2xl border italic text-lg leading-relaxed shadow-inner">{readingData.content}</div>
+                            <Separator />
+                            <div className="space-y-4">
+                                <h3 className='font-black text-primary uppercase text-sm'>Comprensión:</h3>
+                                {readingData.questions.map((q, i) => (
+                                    <div key={i} className="space-y-2 p-3 bg-muted/20 rounded-xl border">
+                                        <Label className="font-bold text-foreground">{q.q}</Label>
+                                        <Input value={readingAns[i]} onChange={e => { const na = [...readingAns]; na[i] = e.target.value; setReadingAns(na); setReadingVal(v => { const nv = [...v]; nv[i] = 'unchecked'; return nv as any; }); }} className={cn("h-10", readingVal[i] === 'correct' ? 'border-green-500 bg-green-50/5' : readingVal[i] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} autoComplete="off" />
+                                    </div>
+                                ))}
+                            </div>
+                        </CardContent>
+                        <CardFooter className="justify-center border-t p-6 bg-muted/10"><Button onClick={handleCheckReading} size="lg" className="px-16 font-black h-12 shadow-md">Verificar Lectura</Button></CardFooter>
+                    </Card>
+                );
+            case 'final_ex':
+                return (
+                    <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left overflow-hidden">
+                        <CardHeader className='bg-primary/5 border-b'><CardTitle className='text-primary uppercase tracking-tight'>Ejercicio Final: Completar Preposiciones (30)</CardTitle></CardHeader>
+                        <CardContent className="p-0"><ScrollArea className="h-[450px] p-6"><div className="space-y-4">
+                            {finalExPrompts.map((q, i) => (
+                                <div key={i} className="flex flex-col gap-2 p-4 bg-muted/10 rounded-2xl border shadow-sm"><p className="font-bold text-lg text-foreground">{q.s}</p><Input value={finalExAns[i]} onChange={e => { const na = [...finalExAns]; na[i] = e.target.value; setFinalExAns(na); setFinalExVal(v => { const nv = [...v]; nv[i] = 'unchecked'; return nv as any; }); }} className={cn("h-10 max-w-[150px] text-lg font-mono", finalExVal[i] === 'correct' ? 'border-green-500' : finalExVal[i] === 'incorrect' ? 'border-red-500' : '')} placeholder="Respuesta..." autoComplete="off" /></div>
+                            ))}
+                        </div></ScrollArea></CardContent>
+                        <CardFooter className="justify-center border-t p-6 bg-muted/20"><Button onClick={handleCheckFinalEx} size="lg" className="px-24 font-black h-14 text-xl shadow-xl">Verificar Todo</Button></CardFooter>
+                    </Card>
+                );
+            case 'translate_text':
+                return (
+                    <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground text-left">
+                        <CardHeader><div className="flex justify-between items-center"><div><CardTitle className='text-primary uppercase'>Traducción de Texto: Mi Casa</CardTitle><CardDescription className='font-bold text-foreground'>Traduce el siguiente párrafo al español.</CardDescription></div><Popover><PopoverTrigger asChild><Button variant="outline" size="sm" className="border-2 border-brand-blue animate-border-pulse"><BookText className="mr-2 h-4 w-4" /> Vocabulario</Button></PopoverTrigger><PopoverContent className="w-64"><ScrollArea className="h-48 pr-4"><div className="space-y-2">{Object.entries(translationVocabHelp).map(([en, es], i) => (<div key={i} className="flex justify-between text-xs border-b pb-1"><span className="text-muted-foreground">{en}:</span><span className="font-bold text-primary">{es}</span></div>))}</div></ScrollArea></PopoverContent></Popover></div></CardHeader>
+                        <CardContent className="space-y-6">
+                            <div className="p-6 bg-muted/50 rounded-2xl border italic text-lg leading-relaxed text-foreground shadow-sm">"In my house, the living room is large. The sofa is in front of the window. A lamp is next to the sofa and the table is between two chairs. In the kitchen, the fridge is under the shelf. In my bedroom, my books are on the bed and my backpack is behind the door."</div>
+                            <Separator /><div className="space-y-2"><Label className='font-black text-primary uppercase text-sm'>Tu Traducción:</Label><Textarea value={translationText} onChange={(e) => setTranslationText(e.target.value)} placeholder="Escribe el texto en español aquí..." className="min-h-[200px] text-lg leading-relaxed" /></div>
+                        </CardContent>
+                        <CardFooter className="justify-center border-t pt-6 bg-muted/20"><Button onClick={() => handleTopicComplete('translate_text')} size="lg" className="px-24 font-black h-16 text-2xl shadow-xl bg-primary hover:bg-primary/90 text-primary-foreground uppercase tracking-tighter">Terminar Misión <Trophy className='ml-3 h-8 w-8' /></Button></CardFooter>
+                    </Card>
+                );
+            case 'final': return <BallsExercise title="Final: Frases Negativas" prompts={negativePrompts} onComplete={() => handleTopicComplete('final')} vocabulary={{"cocina": "kitchen", "cuarto": "room", "espejo": "mirror", "maleta": "backpack", "entre": "between", "detrás de": "behind"}} />;
+            default: return null;
+        }
     };
 
     return (
@@ -188,66 +591,36 @@ function PreposicionesLugarContent() {
                 <div className="max-w-7xl mx-auto">
                     {targetStudentId && isAdmin && (
                         <div className="mb-6 bg-yellow-500/20 border-2 border-yellow-500 p-4 rounded-xl flex items-center justify-between shadow-lg backdrop-blur-md">
-                            <div className="flex items-center gap-3 text-yellow-700 dark:text-yellow-400">
-                                <Star className="h-6 w-6 fill-current animate-pulse" />
-                                <p className="font-black uppercase tracking-tighter text-sm">Modo Supervisión Activo: {studentProfile?.name || targetStudentId}</p>
-                            </div>
-                            <Button variant="outline" size="sm" asChild className="border-yellow-600 text-yellow-700 hover:bg-yellow-500/10 transition-colors">
-                                <Link href="/admin">Cerrar Supervisión</Link>
-                            </Button>
+                            <div className="flex items-center gap-3 text-yellow-700 dark:text-yellow-400"><Star className="h-6 w-6 fill-current animate-pulse" /><p className="font-black uppercase tracking-tighter text-sm">Modo Supervisión Activo: {studentProfile?.name || targetStudentId}</p></div>
+                            <Button variant="outline" size="sm" asChild className="border-yellow-600 text-yellow-700 hover:bg-yellow-500/10 transition-colors"><Link href="/admin">Cerrar Supervisión</Link></Button>
                         </div>
                     )}
                     <div className="mb-8 text-left text-white">
-                        <Link href="/espanol/a1" className="hover:underline text-sm font-bold text-white/80 flex items-center gap-2 mb-2">
-                            <ArrowLeft className="h-4 w-4" /> Volver al Curso A1
-                        </Link>
-                        <h1 className="text-4xl font-black [text-shadow:2px_2px_4px_rgba(0,0,0,0.5)] uppercase tracking-tight">Preposiciones de Lugar 🇪🇸</h1>
+                        <Link href="/espanol/a1" className="hover:underline text-sm font-bold text-white/80 flex items-center gap-2 mb-2"><ArrowLeft className="h-4 w-4" /> Volver al Curso A1</Link>
+                        <h1 className="text-4xl font-black [text-shadow:2px_2px_4px_rgba(0,0,0,0.5)] uppercase tracking-tight flex items-center gap-3">
+                           <MapPin className='h-10 w-10 text-primary' /> Preposiciones de Lugar 🇪🇸
+                        </h1>
                     </div>
-                    <div className="grid gap-8 md:grid-cols-12">
+                    <div className="grid gap-8 md:grid-cols-12 text-foreground">
                         <div className="md:col-span-9 md:order-1 order-2">{renderContent()}</div>
                         <div className="md:col-span-3 md:order-2 order-1 text-left">
                             <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
-                                <CardHeader className="pb-4 border-b bg-muted/30">
-                                    <CardTitle className="text-lg font-black text-primary uppercase tracking-tighter flex items-center gap-2">
-                                        <Trophy className="h-5 w-5 text-primary" /> Misión A1
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent className="p-4">
-                                    <nav>
-                                        <ul className="space-y-1">
-                                            {learningPath.map((item) => {
-                                                const isLocked = item.status === 'locked' && !isAdmin;
-                                                const isSelected = selectedTopic === item.key;
-                                                const Icon = item.icon;
-                                                return (
-                                                    <li key={item.key} onClick={() => handleTopicSelect(item.key)}
-                                                        className={cn(
-                                                            'flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer text-foreground',
-                                                            isLocked ? 'text-muted-foreground/30 cursor-not-allowed' : 'hover:bg-muted',
-                                                            isSelected && 'bg-muted text-primary font-black border-l-4 border-primary'
-                                                        )}
-                                                    >
-                                                        <div className="flex items-center gap-3">
-                                                            {item.status === 'completed' ? (
-                                                                <CheckCircle className="h-5 w-5 text-green-500" />
-                                                            ) : (
-                                                                <Icon className={cn("h-5 w-5", isLocked ? "text-yellow-500/50" : "text-primary")} />
-                                                            )}
-                                                            <span className="truncate max-w-[150px]">{item.name}</span>
-                                                        </div>
-                                                        {isLocked && <Lock className="h-3 w-3 text-yellow-500/30" />}
-                                                    </li>
-                                                );
-                                            })}
-                                        </ul>
-                                    </nav>
-                                    <div className="mt-6 pt-6 border-t">
-                                        <div className="flex justify-between items-center text-xs mb-2 font-black uppercase tracking-widest text-muted-foreground">
-                                            <span>Progreso Clase</span>
-                                            <span className="text-primary">{progressValue}%</span>
-                                        </div>
-                                        <Progress value={progressValue} className="h-2 rounded-full" />
-                                    </div>
+                                <CardHeader className='pb-4 border-b bg-muted/30'><CardTitle className="text-lg font-black text-primary uppercase tracking-tighter flex items-center gap-2"><Trophy className="h-5 w-5 text-primary" /> Misión A1</CardTitle></CardHeader>
+                                <CardContent className='p-4'>
+                                    <nav><ul className="space-y-1">
+                                        {learningPath.map((item) => {
+                                            const isLocked = item.status === 'locked' && !isAdmin;
+                                            const isSelected = selectedTopic === item.key;
+                                            const Icon = item.icon;
+                                            return (
+                                                <li key={item.key} onClick={() => handleTopicSelect(item.key)} className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer text-foreground', isLocked ? 'text-muted-foreground/30 cursor-not-allowed' : 'hover:bg-muted', isSelected && 'bg-muted text-primary font-black border-l-4 border-primary')}>
+                                                    <div className="flex items-center gap-3">{item.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500" /> : <Icon className={cn("h-5 w-5", isLocked ? "text-yellow-500/50" : "text-primary")} />}<span className="truncate max-w-[150px]">{item.name}</span></div>
+                                                    {isLocked && <Lock className="h-3 w-3 text-yellow-500/30" />}
+                                                </li>
+                                            );
+                                        })}
+                                    </ul></nav>
+                                    <div className="mt-6 pt-6 border-t"><div className="flex justify-between items-center text-xs mb-2 font-black uppercase tracking-widest text-muted-foreground"><span>Progreso Clase</span><span className="text-primary">{progressValue}%</span></div><Progress value={progressValue} className="h-2 rounded-full" /></div>
                                 </CardContent>
                             </Card>
                         </div>
@@ -258,12 +631,17 @@ function PreposicionesLugarContent() {
     );
 }
 
+export interface Topic {
+    key: string;
+    name: string;
+    icon: React.ElementType;
+    status: 'locked' | 'active' | 'completed';
+}
+
 export default function PreposicionesLugarPage() {
     return (
         <Suspense fallback={
-            <div className="flex h-screen w-full items-center justify-center bg-background">
-                <Loader2 className="animate-spin h-12 w-12 text-primary" />
-            </div>
+            <div className="flex h-screen w-full items-center justify-center bg-background"><Loader2 className="animate-spin h-12 w-12 text-primary" /></div>
         }>
             <PreposicionesLugarContent />
         </Suspense>
