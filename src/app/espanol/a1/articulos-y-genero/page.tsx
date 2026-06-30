@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, Suspense, Fragment } from 'react';
@@ -491,8 +490,8 @@ function ArticulosGeneroContent() {
                                 <div className='grid gap-4 md:grid-cols-2'>
                                     <div className='p-4 bg-yellow-50 dark:bg-yellow-900/10 border-l-4 border-yellow-500 rounded-r-xl'>
                                         <h4 className='font-bold text-yellow-800 dark:text-yellow-400'>A tónica inicial:</h4>
-                                        <p className="text-sm italic">Palabras femeninas que empiezan con "a" tónica usan <strong>EL</strong> en singular para evitar la cacofonía.</p>
-                                        <p className='text-xs font-mono mt-1'>Ej: El agua / Las aguas, El águila / Las águilas, El ave / Las aves.</p>
+                                        <p className="text-sm italic">Palabras femeninas que empiezan con "a" o "ha" tónica usan <strong>EL</strong> en singular para evitar la cacofonía.</p>
+                                        <p className='text-xs font-mono mt-1'>Ej: El agua / Las aguas, El águila / Las águilas.</p>
                                     </div>
                                     <div className='p-4 bg-blue-50 dark:bg-blue-900/10 border-l-4 border-blue-500 rounded-r-xl'>
                                         <h4 className='font-bold text-blue-800 dark:text-blue-400'>Palabras en -MA:</h4>
@@ -583,7 +582,7 @@ function ArticulosGeneroContent() {
                             <div className="p-6 bg-muted/50 rounded-2xl border italic text-lg leading-relaxed text-foreground shadow-sm">"The classroom is large. There is a red pencil on the desk. The blackboard is white and the walls are gray. A student has the yellow rulers and a blue notebook. The door is brown and the floor is clean."</div>
                             <Separator /><div className="space-y-2"><Label className='font-black text-primary uppercase text-sm'>Tu Traducción:</Label><Textarea value={translationText} onChange={(e) => setTranslationText(e.target.value)} placeholder="Escribe el texto en español aquí..." className="min-h-[200px] text-lg leading-relaxed" /></div>
                         </CardContent>
-                        <CardFooter className="justify-center border-t pt-6 bg-muted/20"><Button onClick={() => handleTopicComplete('translate_text')} size="lg" className="px-24 font-black h-16 text-2xl shadow-xl bg-primary hover:bg-primary/90 text-primary-foreground uppercase tracking-tighter">Terminar Misión <Trophy className='ml-3 h-8 w-8' /></Button></CardFooter>
+                        <CardFooter className="justify-center border-t pt-6 bg-muted/20"><Button onClick={() => handleTopicComplete('translate_text')} size="lg" className="px-24 font-black h-16 text-2xl shadow-xl bg-primary hover:bg-primary/90 text-primary-foreground uppercase tracking-tighter">Siguiente Misión <ArrowRight className='ml-3 h-8 w-8' /></Button></CardFooter>
                     </Card>
                 );
             case 'final': return <BallsExercise title="Final: Colores y Objetos" prompts={finalMissionPrompts} onComplete={() => handleTopicComplete('final')} vocabulary={{"libro": "book", "silla": "chair", "lápices": "pencils", "pared": "wall", "borradores": "erasers", "cuadernos": "notebooks", "llave": "key", "ventanas": "windows", "tablero": "blackboard", "maleta": "backpack", "flores": "flowers", "rosado": "pink", "marron": "brown"}} />;
