@@ -110,6 +110,7 @@ const espanolClassesMap = {
         { id: 'es-a1-posesivos-y-tener', name: 'Posesivos y Tener' },
         { id: 'es-a1-ser', name: 'Ser' },
         { id: 'es-a1-estar', name: 'Estar' },
+        { id: 'es-a1-ser-y-estar', name: 'Ser y Estar' },
         { id: 'es-a1-preposiciones-de-lugar', name: 'Preposiciones de lugar' },
         { id: 'es-a1-ubicacion', name: 'ubicacion' },
         { id: 'es-a1-preguntas', name: 'Preguntas' },
