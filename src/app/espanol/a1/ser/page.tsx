@@ -23,7 +23,9 @@ import {
     Info,
     Search,
     UserCircle,
-    Users
+    Users,
+    Clock,
+    Globe
 } from 'lucide-react';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -44,7 +46,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 // --- CONFIGURACIÓN DE INGENIERÍA ---
-const progressStorageVersion = 'progress_es_a1_ser_v4_full_content';
+const progressStorageVersion = 'progress_es_a1_ser_v5_with_uses';
 const mainProgressKey = 'progress_a1_es_ser';
 
 // --- DATA ---
@@ -231,6 +233,14 @@ const BallsExercise = ({ title, prompts, onComplete, vocabulary, type = 'transla
         else toast({ variant: 'destructive', title: "Sigue intentando" });
     };
 
+    const helpList = useMemo(() => {
+        if (Array.isArray(vocabulary)) return vocabulary;
+        if (typeof vocabulary === 'object' && vocabulary !== null) {
+            return Object.entries(vocabulary).map(([es, en]) => ({ es, en: en as string }));
+        }
+        return allVocabList;
+    }, [vocabulary]);
+
     return (
         <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground">
             <CardHeader>
@@ -256,10 +266,10 @@ const BallsExercise = ({ title, prompts, onComplete, vocabulary, type = 'transla
                             <ScrollArea className="h-64 pr-4">
                                 <div className="space-y-2 text-foreground text-left">
                                     <h4 className='font-black text-primary text-xs uppercase mb-2 border-b'>Ayuda de Misión</h4>
-                                    {(vocabulary || allVocabList).map((v: any, i: number) => (
+                                    {helpList.map((v: any, i: number) => (
                                         <div key={i} className="flex justify-between text-[10px] border-b border-muted pb-1">
-                                            <span className="text-muted-foreground text-left uppercase">{v.en}:</span>
-                                            <span className="font-bold text-right text-primary">{v.es}</span>
+                                            <span className="text-muted-foreground text-left uppercase">{(v.en || '').toUpperCase()}:</span>
+                                            <span className="font-bold text-right text-primary">{(v.es || '').toUpperCase()}</span>
                                         </div>
                                     ))}
                                 </div>
@@ -622,7 +632,7 @@ function SerContent() {
                 return (
                     <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left overflow-hidden">
                         <CardHeader className='bg-primary/5 border-b'>
-                            <div className="flex justify-between items-center w-full">
+                            <div className='flex justify-between items-center w-full'>
                                 <CardTitle className='text-primary uppercase tracking-tight'>Ejercicio Final: SER (30 frases)</CardTitle>
                                 <Popover>
                                     <PopoverTrigger asChild>
@@ -662,7 +672,11 @@ function SerContent() {
                             <div className="p-6 bg-muted/50 rounded-2xl border italic text-lg leading-relaxed text-foreground shadow-sm">"My brother is tall and blonde. He is a very cheerful and kind engineer. I am a creative and serious student. My father is a brave doctor. My sister is pretty and shy, she is a famous artist. We are a very happy family."</div>
                             <Separator /><div className="space-y-2"><Label className='font-black text-primary uppercase text-sm'>Tu Traducción:</Label><Textarea value={translationText} onChange={(e) => setTranslationText(e.target.value)} placeholder="Escribe el texto en español aquí..." className="min-h-[200px] text-lg leading-relaxed" /></div>
                         </CardContent>
-                        <CardFooter className="justify-center border-t pt-6 bg-muted/20"><Button onClick={() => handleTopicComplete('translate_text')} size="lg" className="px-24 font-black h-16 text-2xl shadow-xl bg-primary hover:bg-primary/90 text-primary-foreground uppercase tracking-tighter">Terminar Misión <Trophy className='ml-3 h-8 w-8' /></Button></CardFooter>
+                        <CardFooter className="justify-center border-t pt-6 bg-muted/20">
+                            <Button onClick={() => handleTopicComplete('translate_text')} size="lg" className="px-24 font-black h-16 text-2xl shadow-xl bg-primary hover:bg-primary/90 text-primary-foreground uppercase tracking-tighter">
+                                Siguiente Misión <ArrowRight className='ml-3 h-8 w-8' />
+                            </Button>
+                        </CardFooter>
                     </Card>
                 );
             case 'final': return <BallsExercise title="Final: Frases Negativas" prompts={negativePrompts} onComplete={() => handleTopicComplete('final')} />;

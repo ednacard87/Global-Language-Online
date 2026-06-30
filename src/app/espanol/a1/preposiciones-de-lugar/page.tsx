@@ -633,7 +633,7 @@ function PreposicionesLugarContent() {
                     </div>
                 </div>
             </main>
-            <Footer />
+            
         </div>
     );
 }

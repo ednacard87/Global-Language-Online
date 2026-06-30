@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, Suspense, Fragment } from 'react';
@@ -450,7 +451,7 @@ function SerYEstarContent() {
     const handleCheckReading = () => {
         let allOk = true;
         const nv = readingData.questions.map((q, i) => {
-            const ok = q.a.some(ans => (readingAns[i] || '').trim().toLowerCase().includes(ans.toLowerCase()));
+            const ok = q.a.some(ans => ans.toLowerCase() === (readingAns[i] || '').trim().toLowerCase());
             if (!ok) allOk = false;
             return ok ? 'correct' : 'incorrect';
         });
@@ -512,7 +513,7 @@ function SerYEstarContent() {
                 );
             case 'grammar':
                 return (
-                    <Card className="shadow-soft border-2 border-brand-purple bg-slate-100 dark:bg-slate-800/50 p-6 text-foreground text-left overflow-hidden">
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-slate-100 dark:bg-slate-800/50 p-6 text-foreground text-left overflow-hidden">
                         <CardHeader className='px-0 pb-6 border-b mb-6'><CardTitle className="text-3xl font-black text-primary uppercase">SER vs ESTAR</CardTitle></CardHeader>
                         <CardContent className="space-y-8 px-0">
                             <div className="grid md:grid-cols-2 gap-8">
@@ -538,7 +539,9 @@ function SerYEstarContent() {
                                 </div>
                             </div>
                         </CardContent>
-                        <CardFooter className="justify-center pt-6 border-t"><Button onClick={() => handleTopicComplete('grammar')} size="lg" className="px-24 font-black h-14 text-xl shadow-xl">He comprendido la diferencia</Button></CardFooter>
+                        <CardFooter className="justify-center border-t pt-6">
+                            <Button onClick={() => handleTopicComplete('grammar')} size="lg" className="px-24 font-black h-14 text-xl shadow-xl bg-primary hover:bg-primary/90 text-primary-foreground">He comprendido la diferencia</Button>
+                        </CardFooter>
                     </Card>
                 );
             case 'exercise1': return <BallsExercise title="Ejercicio 1: Verbo SER" prompts={ex1SerPrompts} onComplete={() => handleTopicComplete('exercise1')} vocabulary={globalVocabMap} />;
@@ -593,7 +596,11 @@ function SerYEstarContent() {
                             <div className="p-6 bg-muted/50 rounded-2xl border italic text-lg leading-relaxed text-foreground shadow-sm">"My name is John. I am a tall and friendly student. Today I am at home with my family. My father is an engineer and he is very serious at work, but today he is happy. My mother is a nurse and she is at the hospital now. My sister is young and she is in the park with her dog. The weather is sunny and the sky is blue. We are a happy family."</div>
                             <Separator /><div className="space-y-2"><Label className='font-black text-primary uppercase text-sm'>Tu Traducción:</Label><Textarea value={translationText} onChange={(e) => setTranslationText(e.target.value)} placeholder="Escribe el texto en español aquí..." className="min-h-[200px] text-lg leading-relaxed" /></div>
                         </CardContent>
-                        <CardFooter className="justify-center border-t pt-6 bg-muted/20"><Button onClick={() => handleTopicComplete('exercise4')} size="lg" className="px-24 font-black h-16 text-2xl shadow-xl bg-primary hover:bg-primary/90 text-primary-foreground uppercase tracking-tighter">Terminar Misión <Trophy className='ml-3 h-8 w-8' /></Button></CardFooter>
+                        <CardFooter className="justify-center border-t pt-6 bg-muted/20">
+                            <Button onClick={() => handleTopicComplete('exercise4')} size="lg" className="px-24 font-black h-16 text-2xl shadow-xl bg-primary hover:bg-primary/90 text-primary-foreground uppercase tracking-tighter">
+                                Siguiente Misión <ArrowRight className='ml-3 h-8 w-8' />
+                            </Button>
+                        </CardFooter>
                     </Card>
                 );
             case 'final': return <BallsExercise title="Final: Frases Negativas" prompts={negativeMissionPrompts} onComplete={() => handleTopicComplete('final')} vocabulary={globalVocabMap} />;
