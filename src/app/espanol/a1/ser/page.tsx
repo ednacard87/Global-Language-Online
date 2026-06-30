@@ -544,8 +544,42 @@ function SerContent() {
                                     <TableRow><TableCell className='font-bold'>Ellos / Ellas / Ustedes</TableCell><TableCell>SON</TableCell></TableRow>
                                 </TableBody></Table>
                             </div>
+
+                            <div className="p-6 bg-white/60 dark:bg-background/20 rounded-[2rem] border shadow-sm">
+                                <h3 className="text-xl font-black text-primary uppercase mb-4 flex items-center gap-2">
+                                    <Info className="h-5 w-5" /> 2. Usos del Verbo SER
+                                </h3>
+                                <p className="mb-4 text-muted-foreground">El verbo <strong>SER</strong> se utiliza para cualidades permanentes o de larga duración:</p>
+                                <div className="grid gap-4 sm:grid-cols-2">
+                                    <div className="p-4 bg-muted/30 rounded-xl border-l-4 border-primary">
+                                        <h4 className="font-bold text-sm uppercase text-primary">Identidad y Relaciones</h4>
+                                        <p className="text-sm italic">Yo soy Juan. Ellos son mis padres.</p>
+                                    </div>
+                                    <div className="p-4 bg-muted/30 rounded-xl border-l-4 border-primary">
+                                        <h4 className="font-bold text-sm uppercase text-primary">Origen y Nacionalidad</h4>
+                                        <p className="text-sm italic">Él es de México. Somos colombianos.</p>
+                                    </div>
+                                    <div className="p-4 bg-muted/30 rounded-xl border-l-4 border-primary">
+                                        <h4 className="font-bold text-sm uppercase text-primary">Profesión</h4>
+                                        <p className="text-sm italic">Ella es doctora. Soy estudiante.</p>
+                                    </div>
+                                    <div className="p-4 bg-muted/30 rounded-xl border-l-4 border-primary">
+                                        <h4 className="font-bold text-sm uppercase text-primary">Características Físicas/Personalidad</h4>
+                                        <p className="text-sm italic">El perro es grande. Eres inteligente.</p>
+                                    </div>
+                                    <div className="p-4 bg-muted/30 rounded-xl border-l-4 border-primary">
+                                        <h4 className="font-bold text-sm uppercase text-primary">Tiempo y Fecha</h4>
+                                        <p className="text-sm italic">Hoy es lunes. Son las tres de la tarde.</p>
+                                    </div>
+                                    <div className="p-4 bg-muted/30 rounded-xl border-l-4 border-primary">
+                                        <h4 className="font-bold text-sm uppercase text-primary">Material y Posesión</h4>
+                                        <p className="text-sm italic">La mesa es de madera. El libro es mío.</p>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div className="p-6 bg-white/60 dark:bg-background/20 rounded-[2rem] border shadow-sm space-y-4">
-                                <h3 className="text-xl font-black text-primary uppercase mb-2">2. Adjetivos y Concordancia</h3>
+                                <h3 className="text-xl font-black text-primary uppercase mb-2">3. Adjetivos y Concordancia</h3>
                                 <div className='grid gap-4 md:grid-cols-2'>
                                     <div className='p-4 bg-primary/10 rounded-xl border border-primary/20'>
                                         <h4 className='font-bold text-primary'>Género:</h4>
