@@ -99,7 +99,7 @@ const ex3Prompts = [
     { en: "He buys bread.", es: ["él compra pan", "el compra pan"] },
     { en: "We sell the car.", es: ["nosotros vendemos el carro", "vendemos el carro"] },
     { en: "They wait for the bus.", es: ["ellos esperan el bus", "ellas esperan el bus"] },
-    { en: "She looks at the sky.", es: ["ella mira el cielo", "mira el cielo"] },
+    { spanish: "ella mira el cielo", en: "She looks at the sky." },
     { en: "I call my mother.", es: ["yo llamo a mi madre", "llamo a mi mamá", "llamo a mi mama"] },
     { en: "You help your friend.", es: ["tú ayudas a tu amigo", "ayudas a tu amigo"] },
     { en: "We use the computer.", es: ["nosotros usamos el computador", "usamos el computador"] },
@@ -462,7 +462,7 @@ function PresenteSimpleRegularesContent() {
                         <CardContent className="space-y-8 px-0">
                             <div className="p-6 bg-white/60 dark:bg-background/20 rounded-[2rem] border shadow-sm">
                                 <h3 className="text-xl font-black text-primary uppercase mb-4">1. Verbos en -AR (Ej: Hablar)</h3>
-                                <p className="mb-4 text-muted-foreground">The stem remains the same, only the ending changes.</p>
+                                <p className="mb-4 text-muted-foreground">La raíz se mantiene igual, solo cambia la terminación.</p>
                                 <Table><TableHeader className='bg-muted/50'><TableRow><TableHead>Pronombre</TableHead><TableHead>Sufijo</TableHead><TableHead>Ejemplo</TableHead></TableRow></TableHeader>
                                 <TableBody>
                                     <TableRow><TableCell className='font-bold'>Yo</TableCell><TableCell>-O</TableCell><TableCell>HablO</TableCell></TableRow>
@@ -502,25 +502,63 @@ function PresenteSimpleRegularesContent() {
                 const curVerb = conjugationVerbsList[conjIdx];
                 const pronouns = ["Yo", "Tú", "Él/Ella", "Nosotros", "Ellos/Ellas"];
                 return (
-                    <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left">
+                    <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left overflow-hidden">
                         <CardHeader className='bg-primary/5 border-b'>
-                            <div className="flex justify-between items-center">
-                                <div><CardTitle className='text-primary uppercase tracking-tighter'>Misión: Conjugación ({conjIdx + 1}/15)</CardTitle></div>
-                                <div className='p-2 bg-primary/20 rounded-lg text-primary font-black uppercase text-xs'>{curVerb.v} (-{curVerb.type})</div>
+                            <div className="flex justify-between items-center w-full">
+                                <div>
+                                    <CardTitle className='text-primary uppercase tracking-tighter'>Misión: Conjugación</CardTitle>
+                                    <CardDescription>Completa la tabla de verbos regulares ({conjIdx + 1}/15)</CardDescription>
+                                </div>
+                                <div className='px-4 py-1 bg-primary/10 rounded-full border border-primary/20 text-xs font-bold text-primary uppercase'>
+                                    Grupo -{curVerb.type.toUpperCase()}
+                                </div>
                             </div>
                         </CardHeader>
-                        <CardContent className="space-y-6 pt-6">
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <CardContent className="space-y-8 pt-8">
+                            <div className="flex flex-col items-center justify-center p-8 bg-gradient-to-br from-primary/5 to-brand-purple/5 rounded-[2.5rem] border-2 border-dashed border-primary/20">
+                                <span className="text-xs font-black text-muted-foreground uppercase tracking-[0.2em] mb-2">Verbo a conjugar</span>
+                                <h3 className="text-5xl md:text-6xl font-black text-primary uppercase tracking-tighter drop-shadow-sm">
+                                    {curVerb.v}
+                                </h3>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto">
                                 {pronouns.map((p, i) => (
-                                    <div key={i} className="flex items-center gap-3">
-                                        <Label className="w-20 font-bold">{p}:</Label>
-                                        <Input value={conjAnswers[i]} onChange={e => { const na = [...conjAnswers]; na[i] = e.target.value; setConjAnswers(na); setConjValidation(vv => { const nvv = [...vv]; nvv[i] = 'unchecked'; return nvv as any; }); }} className={cn("h-10", conjValidation[i] === 'correct' ? 'border-green-500 bg-green-50/5' : conjValidation[i] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} autoComplete="off" />
+                                    <div key={i} className="space-y-1.5">
+                                        <div className="flex justify-between px-1">
+                                            <Label className="text-xs font-black uppercase text-muted-foreground">{p}</Label>
+                                            {conjValidation[i] === 'correct' && <Check className="h-3 w-3 text-green-500" />}
+                                            {conjValidation[i] === 'incorrect' && <X className="h-3 w-3 text-red-500" />}
+                                        </div>
+                                        <Input 
+                                            value={conjAnswers[i]} 
+                                            onChange={e => { 
+                                                const na = [...conjAnswers]; 
+                                                na[i] = e.target.value; 
+                                                setConjAnswers(na); 
+                                                setConjValidation(vv => { const nvv = [...vv]; nvv[i] = 'unchecked'; return nvv as any; }); 
+                                            }} 
+                                            className={cn(
+                                                "h-12 text-lg font-bold border-2 transition-all", 
+                                                conjValidation[i] === 'correct' ? 'border-green-500 bg-green-50/5 focus-visible:ring-green-500' : 
+                                                conjValidation[i] === 'incorrect' ? 'border-red-500 bg-red-50/5 focus-visible:ring-red-500' : 
+                                                'border-muted focus-visible:ring-primary'
+                                            )} 
+                                            placeholder="..."
+                                            autoComplete="off" 
+                                        />
                                     </div>
                                 ))}
                             </div>
                         </CardContent>
-                        <CardFooter className="justify-center border-t p-6 bg-muted/20">
-                            <Button onClick={handleConjCheck} size="lg" className="px-12 font-black h-12 shadow-md">Verificar Verbo</Button>
+                        <CardFooter className="justify-center border-t p-8 bg-muted/5">
+                            <Button 
+                                onClick={handleConjCheck} 
+                                size="lg" 
+                                className="px-20 font-black h-14 text-xl shadow-xl transition-all active:scale-95 group"
+                            >
+                                Verificar Verbo <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                            </Button>
                         </CardFooter>
                     </Card>
                 );
