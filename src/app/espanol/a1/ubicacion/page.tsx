@@ -633,7 +633,7 @@ function UbicacionContent() {
                     </div>
                 </div>
             </main>
-            <Footer />
+            
         </div>
     );
 }
