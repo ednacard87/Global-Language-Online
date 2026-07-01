@@ -335,7 +335,7 @@ export default function Intro1Page() {
         { english: 'Your', spanish: 'Tu / Tus (de ti)' },
         { english: 'His', spanish: 'Su / Sus (de él)' },
         { english: 'Her', spanish: 'Su / Sus (de ella)' },
-        { english: 'Its', spanish: 'Su / Sus (de eso)' },
+        { english: 'Its', spanish: 'Su / Sus (del animal)' },
         { english: 'Our', spanish: 'Nuestro / Nuestra / Nuestros / Nuestras' },
         { english: 'Your', spanish: 'Su / Sus (de ustedes)' },
         { english: 'Their', spanish: 'Su / Sus (de ellos/as)' },
