@@ -38,16 +38,16 @@ const AbcPronunciationExercise = ({ onGameComplete }: { onGameComplete: () => vo
         { pronunciation: '(ar) (i) (di)', answer: 'red' },
         { pronunciation: '(es) (iu) (en)', answer: 'sun' },
         { pronunciation: '(em) (ou) (ou) (en)', answer: 'moon' },
-        { pronunciation: '(es) (ti) (iu) (di) (i) (en) (ti)', answer: 'student' }
-        { pronunciation: '(pi) (i) (ei) (ci) (i)', answer: 'peace' }
-        { pronunciation: '(ef) (ar) (i) (i)', answer: 'free' }
-        { pronunciation: '(dabliu) (ou) (ar) (el) (di)', answer: 'world' }
-        { pronunciation: '(es) (ti) (ar) (i) (i) (ti)', answer: 'street' }
-        { pronunciation: '(ef) (ou) (ou) (di)', answer: 'food' }
-        { pronunciation: '(ar) (i) (es) (ti) (ei) (iu) (ar) (ei) (en) (ti)', answer: 'restaurant' }
-        { pronunciation: '(ci) (ou) (em) (pi) (iu) (ti) (i) (ar)', answer: 'computer' }
-        { pronunciation: '(es) (eich) (ou) (i) (es) ', answer: 'shoes' }
-        { pronunciation: '(gi) (ou) (di) ', answer: 'god' }
+        { pronunciation: '(es) (ti) (iu) (di) (i) (en) (ti)', answer: 'student' },
+        { pronunciation: '(pi) (i) (ei) (ci) (i)', answer: 'peace' },
+        { pronunciation: '(ef) (ar) (i) (i)', answer: 'free' },
+        { pronunciation: '(dabliu) (ou) (ar) (el) (di)', answer: 'world' },
+        { pronunciation: '(es) (ti) (ar) (i) (i) (ti)', answer: 'street' },
+        { pronunciation: '(ef) (ou) (ou) (di)', answer: 'food' },
+        { pronunciation: '(ar) (i) (es) (ti) (ei) (iu) (ar) (ei) (en) (ti)', answer: 'restaurant' },
+        { pronunciation: '(ci) (ou) (em) (pi) (iu) (ti) (i) (ar)', answer: 'computer' },
+        { pronunciation: '(es) (eich) (ou) (i) (es) ', answer: 'shoes' },
+        { pronunciation: '(gi) (ou) (di) ', answer: 'god' },
         { pronunciation: '(ci) (i) (el) (el) (pi) (eich) (ou) (en) (i)', answer: 'cellphone' }
     ];
 
