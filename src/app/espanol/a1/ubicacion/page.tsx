@@ -44,7 +44,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 // --- CONFIGURACIÓN DE INGENIERÍA ---
-const progressStorageVersion = 'progress_es_a1_ubicacion_v5_bilingual_final';
+const progressStorageVersion = 'progress_es_a1_ubicacion_v10_vocab_fix';
 const mainProgressKey = 'progress_a1_es_ubicacion';
 
 const ICONS_MAP = {
@@ -175,6 +175,24 @@ const translationVocabHelp = {
     "next to": "al lado de", "behind": "detrás de", "in front of": "delante de", "traffic light": "semáforo"
 };
 
+const ex1Vocab = {
+    "hospital": "hospital", "cerca": "near", "hay": "there is / there are", "parque": "park",
+    "aquí": "here", "taxi": "taxi", "calle": "street", "supermercado": "supermarket",
+    "carro": "car", "banco": "bank", "buses": "buses", "abierto": "open"
+};
+
+const ex2Vocab = {
+    "farmacia": "pharmacy", "al lado de": "next to", "banco": "bank", "biblioteca": "library",
+    "grande": "big", "estación": "station", "detrás de": "behind", "iglesia": "church",
+    "motos": "motorcycles", "estadio": "stadium", "lejos": "far", "jardín": "garden", "oficina de correo": "post office"
+};
+
+const readingVocab = {
+    "ciudad": "city", "museo de arte": "art museum", "en frente de": "in front of",
+    "bicicleta": "bicycle", "todos los días": "every day", "padre": "father",
+    "plaza principal": "main square", "festival de música": "music festival"
+};
+
 const globalVocabMap: Record<string, string> = cityVocab.reduce((acc, curr) => {
     acc[curr.es.toLowerCase()] = curr.en.toLowerCase();
     return acc;
@@ -205,8 +223,14 @@ const BallsExercise = ({ title, prompts, onComplete, vocabulary, type = 'transla
         else toast({ variant: 'destructive', title: "Sigue intentando" });
     };
 
+    const vocabList = useMemo(() => {
+        if (!vocabulary) return [];
+        if (Array.isArray(vocabulary)) return vocabulary;
+        return Object.entries(vocabulary).map(([es, en]) => ({ es, en: en as string }));
+    }, [vocabulary]);
+
     return (
-        <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground">
+        <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground text-left">
             <CardHeader>
                 <div className="flex justify-between items-start">
                     <div className="text-left text-foreground">
@@ -214,35 +238,38 @@ const BallsExercise = ({ title, prompts, onComplete, vocabulary, type = 'transla
                         <CardDescription className="font-bold text-foreground mt-1">Traduce la frase al español.</CardDescription>
                         <div className="flex gap-2 justify-start flex-wrap pt-4">
                             {prompts.map((_: any, i: number) => (
-                                <div key={i} onClick={() => setCurrentIndex(i)} className={cn("h-8 w-8 rounded-full border-2 flex items-center justify-center text-xs font-bold cursor-pointer transition-all", currentIndex === i ? "border-primary ring-2 ring-primary" : "border-muted", status[i] === 'correct' ? "bg-green-500 text-white border-green-500" : status[i] === 'incorrect' ? "bg-red-500 text-white border-red-500" : "bg-card text-foreground")}>{i + 1}</div>
+                                <div key={i} onClick={() => setCurrentIndex(i)} className={cn("h-8 w-8 rounded-full border-2 flex items-center justify-center text-sm font-bold cursor-pointer transition-all", currentIndex === i ? "border-primary ring-2 ring-primary" : "border-muted", status[i] === 'correct' ? "bg-green-500 text-white border-green-500" : status[i] === 'incorrect' ? "bg-red-500 text-white border-red-500" : "bg-card text-foreground")}>{i + 1}</div>
                             ))}
                         </div>
                     </div>
-                    <Popover>
-                        <PopoverTrigger asChild>
-                            <Button variant="outline" size="sm" className="border-2 border-brand-blue animate-border-pulse">
-                                <BookText className="mr-2 h-4 w-4" /> Vocabulario
-                            </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-64">
-                            <ScrollArea className="h-64 pr-4">
-                                <div className="space-y-2 text-foreground text-left">
-                                    <h4 className='font-black text-primary text-xs uppercase mb-2 border-b'>Ayuda de Misión</h4>
-                                    {Object.entries(vocabulary || globalVocabMap).map(([es, en]: any, i) => (
-                                        <div key={i} className="flex justify-between text-[10px] border-b border-muted pb-1">
-                                            <span className="text-muted-foreground text-left uppercase">{en}:</span>
-                                            <span className="font-bold text-right text-primary">{es.toUpperCase()}</span>
-                                        </div>
-                                    ))}
-                                </div>
-                            </ScrollArea>
-                        </PopoverContent>
-                    </Popover>
+                    {vocabList.length > 0 && (
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button variant="outline" size="sm" className="border-2 border-brand-blue animate-border-pulse">
+                                    <BookText className="mr-2 h-4 w-4" />
+                                    Vocabulary
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-64">
+                                <ScrollArea className="h-64 pr-4 text-left text-foreground">
+                                    <div className="space-y-2">
+                                        <h4 className='font-black text-primary text-xs uppercase mb-2 border-b'>Ayuda de Misión</h4>
+                                        {vocabList.map((v: any, i: number) => (
+                                            <div key={i} className="flex justify-between text-[10px] border-b border-muted pb-1">
+                                                <span className="text-muted-foreground uppercase">{v.en}:</span>
+                                                <span className="font-bold text-primary">{v.es.toUpperCase()}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </ScrollArea>
+                            </PopoverContent>
+                        </Popover>
+                    )}
                 </div>
             </CardHeader>
             <CardContent className="space-y-6">
                 <div className="bg-muted p-6 rounded-2xl border-2 border-dashed text-center font-bold text-xl uppercase tracking-tighter text-foreground">
-                    {prompts[currentIndex].en}
+                    {type === 'translate' ? prompts[currentIndex].en : prompts[currentIndex].word}
                 </div>
                 <Input value={answer} onChange={e => setAnswer(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleCheck()} className={cn("h-12 text-lg text-foreground", status[currentIndex] === 'correct' ? 'border-green-500 bg-green-50/5' : status[currentIndex] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} placeholder="Escribe en español..." autoComplete="off" />
             </CardContent>
@@ -282,8 +309,8 @@ function UbicacionContent() {
     const [initialLoadComplete, setInitialLoadComplete] = useState(false);
 
     // States for content
-    const [vocabAnswers, setVocabAnswers] = useState<string[]>(Array(cityVocab.length).fill(''));
-    const [vocabValidation, setVocabValidation] = useState<any[]>(Array(cityVocab.length).fill('unchecked'));
+    const [vocabAnswers, setVocabAnswers] = useState<Record<string, string[]>>({});
+    const [vocabValidation, setVocabValidation] = useState<Record<string, any[]>>({});
     const [canAdvanceVocab, setCanAdvanceVocab] = useState(false);
 
     const [readingAns, setReadingAns] = useState<string[]>(Array(readingData.questions.length).fill(''));
@@ -345,6 +372,16 @@ function UbicacionContent() {
 
         setLearningPath(path);
         setSelectedTopic(savedST || path.find(p => p.status === 'active')?.key || path[0].key);
+        
+        const initAns: Record<string, string[]> = {};
+        const initVal: Record<string, any[]> = {};
+        Object.keys({ "lugares": cityVocab.slice(0, 22), "transporte": cityVocab.slice(22) }).forEach(cat => {
+            initAns[cat] = Array(cat === "lugares" ? 22 : 10).fill('');
+            initVal[cat] = Array(cat === "lugares" ? 22 : 10).fill('unchecked');
+        });
+        setVocabAnswers(initAns);
+        setVocabValidation(initVal);
+
         setInitialLoadComplete(true);
         setTimeout(() => setIsInitialLoading(false), 800);
     }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading, isUserLoading, initialLoadComplete, targetStudentId]);
@@ -384,12 +421,16 @@ function UbicacionContent() {
 
     const handleVocabCheck = () => {
         let okCount = 0;
-        const nv = cityVocab.map((item, idx) => {
-            const isCorrect = item.es.toLowerCase() === (vocabAnswers[idx] || '').trim().toLowerCase();
-            if (isCorrect) okCount++;
-            return isCorrect ? 'correct' : 'incorrect';
+        const nv: any = {};
+        const categories = { "lugares": cityVocab.slice(0, 22), "transporte": cityVocab.slice(22) };
+        Object.keys(categories).forEach(cat => {
+            nv[cat] = categories[cat as keyof typeof categories].map((v: any, i: number) => {
+                const isOk = v.es.toLowerCase() === (vocabAnswers[cat][i] || '').trim().toLowerCase();
+                if (isOk) okCount++;
+                return isOk ? 'correct' : 'incorrect';
+            });
         });
-        setVocabValidation(nv as any);
+        setVocabValidation(nv);
         if (okCount >= 10) { setCanAdvanceVocab(true); toast({ title: "¡Buen trabajo!" }); }
         else toast({ variant: 'destructive', title: "Necesitas 10 aciertos para avanzar." });
     };
@@ -413,18 +454,34 @@ function UbicacionContent() {
             case 'vocabulary':
                 return (
                     <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground text-left">
-                        <CardHeader className='bg-primary/5 border-b'><CardTitle className="text-primary uppercase tracking-tighter">Vocabulario: Ciudad y Transporte</CardTitle><CardDescription className='font-bold text-foreground'>Escribe el significado en español para cada término.</CardDescription></CardHeader>
-                        <CardContent className="pt-6"><ScrollArea className="h-[450px] pr-4"><div className="grid grid-cols-2 gap-4">
-                            <div className="font-black text-primary border-b pb-2 uppercase tracking-widest text-xs">English</div><div className="font-black text-primary border-b pb-2 uppercase tracking-widest text-xs">Español</div>
-                            {cityVocab.map((v, i) => (<Fragment key={i}><div className="flex items-center font-bold py-1 text-sm">{v.en}</div><Input value={vocabAnswers[i]} onChange={e => { const na = [...vocabAnswers]; na[i] = e.target.value; setVocabAnswers(na); setVocabValidation(vv => { const nv = [...vv]; nv[i] = 'unchecked'; return nv as any; }); setCanAdvanceVocab(false); }} className={cn("h-10 uppercase", vocabValidation[i] === 'correct' ? 'border-green-500' : vocabValidation[i] === 'incorrect' ? 'border-red-500' : '')} autoComplete="off" /></Fragment>))}
-                        </div></ScrollArea></CardContent>
+                        <CardHeader><CardTitle className="text-primary uppercase tracking-tighter">Vocabulario: Ciudad y Transporte</CardTitle><CardDescription className='font-bold text-foreground'>Escribe el significado en español para cada término.</CardDescription></CardHeader>
+                        <CardContent className="pt-6">
+                            <Accordion type="multiple" defaultValue={['lugares', 'transporte']} className="w-full">
+                                {["lugares", "transporte"].map(cat => (
+                                    <AccordionItem key={cat} value={cat}>
+                                        <AccordionTrigger className="capitalize font-black text-primary text-sm tracking-widest">{cat === 'lugares' ? 'Lugares de la Ciudad' : 'Transportes'}</AccordionTrigger>
+                                        <AccordionContent>
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <div className="font-black text-primary border-b pb-2 uppercase tracking-widest text-xs">English</div><div className="font-black text-primary border-b pb-2 uppercase tracking-widest text-xs">Español</div>
+                                                {(cat === 'lugares' ? cityVocab.slice(0, 22) : cityVocab.slice(22)).map((v: any, i: number) => (
+                                                    <Fragment key={i}>
+                                                        <div className="flex items-center font-bold py-1 text-sm">{v.en}</div>
+                                                        <Input value={vocabAnswers[cat][i]} onChange={e => { const na = {...vocabAnswers}; na[cat][i] = e.target.value; setVocabAnswers(na); setVocabValidation(vv => ({...vv, [cat]: vv[cat].map((val: any, idx: number) => idx === i ? 'unchecked' : val)})); setCanAdvanceVocab(false); }} className={cn("h-10 uppercase", vocabValidation[cat]?.[i] === 'correct' ? 'border-green-500' : vocabValidation[cat]?.[i] === 'incorrect' ? 'border-red-500' : '')} autoComplete="off" />
+                                                    </Fragment>
+                                                ))}
+                                            </div>
+                                        </AccordionContent>
+                                    </AccordionItem>
+                                ))}
+                            </Accordion>
+                        </CardContent>
                         <CardFooter className="flex justify-between border-t pt-6 bg-muted/20"><Button onClick={handleVocabCheck} variant="secondary">Verificar</Button><Button onClick={() => handleTopicComplete('vocabulary')} disabled={!canAdvanceVocab && !isAdmin} className='text-white font-bold'>Avanzar <ArrowRight className='ml-2'/></Button></CardFooter>
                     </Card>
                 );
             case 'grammar':
                 return (
                     <Card className="shadow-soft border-2 border-brand-purple bg-slate-100 dark:bg-slate-800/50 p-6 text-foreground text-left overflow-hidden">
-                        <CardHeader className='px-0 pb-6 border-b mb-6'><CardTitle className="text-3xl font-black text-primary uppercase">Gramática: Ubicación y Existencia / Location and Existence</CardTitle></CardHeader>
+                        <CardHeader className='px-0 pb-6 border-b mb-6'><CardTitle className="text-3xl font-black text-primary uppercase">Gramática: Ubicación y Existencia</CardTitle></CardHeader>
                         <CardContent className="space-y-8 px-0">
                             <div className="p-6 bg-white/60 dark:bg-background/20 rounded-[2rem] border shadow-sm">
                                 <h3 className="text-xl font-black text-primary uppercase mb-4">1. Hay vs. Está / Están</h3>
@@ -467,21 +524,48 @@ function UbicacionContent() {
                         <CardFooter className="justify-center pt-6 border-t"><Button onClick={() => handleTopicComplete('grammar')} size="lg" className="px-24 font-black h-14 text-xl shadow-xl">He comprendido la gramática</Button></CardFooter>
                     </Card>
                 );
-            case 'ex1': return <BallsExercise title="Ejercicio 1" prompts={ex1Prompts} onComplete={() => handleTopicComplete('ex1')} />;
-            case 'ex2': return <BallsExercise title="Ejercicio 2" prompts={ex2Prompts} onComplete={() => handleTopicComplete('ex2')} />;
+            case 'ex1': return <BallsExercise title="Ejercicio 1" prompts={ex1Prompts} onComplete={() => handleTopicComplete('ex1')} vocabulary={ex1Vocab} />;
+            case 'ex2': return <BallsExercise title="Ejercicio 2" prompts={ex2Prompts} onComplete={() => handleTopicComplete('ex2')} vocabulary={ex2Vocab} />;
             case 'ex3': return <BallsExercise title="Ejercicio 3: Ubicar Objetos" prompts={ex3Prompts} onComplete={() => handleTopicComplete('ex3')} vocabulary={{"estante": "shelf", "baño": "bathroom", "bolsillo": "pocket", "edificio": "building", "cuarto": "room"}} />;
             case 'vocab_game': return <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm"><CardHeader><CardTitle>Juego de Memoria: Ciudad</CardTitle></CardHeader><CardContent><VocabularyMatchingGame data={cityVocab.slice(0, 12).map(v => ({ spanish: v.es, english: [v.en] }))} onComplete={() => handleTopicComplete('vocab_game')} title="Encuentra las parejas" /></CardContent></Card>;
             case 'reading':
                 return (
                     <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left overflow-hidden">
-                        <CardHeader className='bg-primary/5 border-b'><CardTitle className='text-primary uppercase tracking-tight'>{readingData.title}</CardTitle></CardHeader>
+                        <CardHeader className='bg-primary/5 border-b'>
+                            <div className='flex justify-between items-center w-full'>
+                                <CardTitle className='text-primary uppercase tracking-tight'>{readingData.title}</CardTitle>
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                        <Button variant="outline" size="sm" className="border-2 border-brand-blue animate-border-pulse">
+                                            <BookText className="mr-2 h-4 w-4" />
+                                            Vocabulario
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-64">
+                                        <div className="space-y-2 text-foreground text-left">
+                                            <h4 className="font-bold border-b pb-1 text-primary">Vocabulario Lectura</h4>
+                                            <ScrollArea className="h-48 pr-4">
+                                                <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
+                                                    {Object.entries(readingVocab).map(([es, en]: any) => (
+                                                        <React.Fragment key={es}>
+                                                            <span className="text-muted-foreground capitalize">{es}:</span>
+                                                            <span className="font-semibold text-right">{en}</span>
+                                                        </React.Fragment>
+                                                    ))}
+                                                </div>
+                                            </ScrollArea>
+                                        </div>
+                                    </PopoverContent>
+                                </Popover>
+                            </div>
+                        </CardHeader>
                         <CardContent className="space-y-6 pt-6">
                             <div className="p-6 bg-muted rounded-2xl border italic text-lg leading-relaxed text-foreground shadow-inner">{readingData.content}</div>
                             <Separator />
                             <div className="space-y-4">
                                 <h3 className='font-black text-primary uppercase text-sm'>Preguntas de Comprensión:</h3>
                                 {readingData.questions.map((q, i) => (
-                                    <div key={i} className="space-y-2 p-3 bg-muted/20 rounded-xl border"><Label className="font-bold">{q.q}</Label><Input value={readingAns[i]} onChange={e => { const na = [...readingAns]; na[i] = e.target.value; setReadingVal(v => { const nv = [...v]; nv[i] = 'unchecked'; return nv as any; }); }} className={cn("h-10", readingVal[i] === 'correct' ? 'border-green-500 bg-green-50/5' : readingVal[i] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} autoComplete="off" /></div>
+                                    <div key={i} className="space-y-2 p-3 bg-muted/20 rounded-xl border"><Label className="font-bold">{q.q}</Label><Input value={readingAns[i]} onChange={e => { const na = [...readingAns]; na[i] = e.target.value; setReadingAns(na); setReadingVal(v => { const nv = [...v]; nv[i] = 'unchecked'; return nv as any; }); }} className={cn("h-10", readingVal[i] === 'correct' ? 'border-green-500 bg-green-50/5' : readingVal[i] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} autoComplete="off" /></div>
                                 ))}
                             </div>
                         </CardContent>
@@ -533,7 +617,7 @@ function UbicacionContent() {
                                         {learningPath.map((item) => {
                                             const isLocked = item.status === 'locked' && !isAdmin;
                                             const isSelected = selectedTopic === item.key;
-                                            const Icon = item.icon;
+                                            const Icon = ICONS_MAP[item.status as keyof typeof ICONS_MAP] || BookOpen;
                                             return (
                                                 <li key={item.key} onClick={() => handleTopicSelect(item.key)} className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer text-foreground', isLocked ? 'text-muted-foreground/30 cursor-not-allowed' : 'hover:bg-muted', isSelected && 'bg-muted text-primary font-black border-l-4 border-primary')}>
                                                     <div className="flex items-center gap-3">{item.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500" /> : <Icon className={cn("h-5 w-5", isLocked ? "text-yellow-500/50" : "text-primary")} />}<span className="truncate max-w-[150px]">{item.name}</span></div>
