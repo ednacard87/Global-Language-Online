@@ -39,6 +39,16 @@ const AbcPronunciationExercise = ({ onGameComplete }: { onGameComplete: () => vo
         { pronunciation: '(es) (iu) (en)', answer: 'sun' },
         { pronunciation: '(em) (ou) (ou) (en)', answer: 'moon' },
         { pronunciation: '(es) (ti) (iu) (di) (i) (en) (ti)', answer: 'student' }
+        { pronunciation: '(pi) (i) (ei) (ci) (i)', answer: 'peace' }
+        { pronunciation: '(ef) (ar) (i) (i)', answer: 'free' }
+        { pronunciation: '(dabliu) (ou) (ar) (el) (di)', answer: 'world' }
+        { pronunciation: '(es) (ti) (ar) (i) (i) (ti)', answer: 'street' }
+        { pronunciation: '(ef) (ou) (ou) (di)', answer: 'food' }
+        { pronunciation: '(ar) (i) (es) (ti) (ei) (iu) (ar) (ei) (en) (ti)', answer: 'restaurant' }
+        { pronunciation: '(ci) (ou) (em) (pi) (iu) (ti) (i) (ar)', answer: 'computer' }
+        { pronunciation: '(es) (eich) (ou) (i) (es) ', answer: 'shoes' }
+        { pronunciation: '(gi) (ou) (di) ', answer: 'god' }
+        { pronunciation: '(ci) (i) (el) (el) (pi) (eich) (ou) (en) (i)', answer: 'cellphone' }
     ];
 
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -119,7 +129,7 @@ const alphabetWithPronunciation = [
     { letter: 'S', pronunciation: 'es', audioSrc: '/Audio/Alphabet/S.mp3' }, { letter: 'T', pronunciation: 'ti', audioSrc: '/Audio/Alphabet/T.mp3' },
     { letter: 'U', pronunciation: 'iu', audioSrc: '/Audio/Alphabet/U.mp3' },
     { letter: 'V', pronunciation: 'vi', audioSrc: '/Audio/Alphabet/V.mp3' }, { letter: 'W', pronunciation: 'da-bliú', audioSrc: '/Audio/Alphabet/W.mp3' }, { letter: 'X', pronunciation: 'ex', audioSrc: '/Audio/Alphabet/X.mp3' },
-    { letter: 'Y', pronunciation: 'guai', audioSrc: '/Audio/Alphabet/Y.mp3' }, { letter: 'Z', pronunciation: 'Zi', audioSrc: '/Audio/Alphabet/Z.mp3' }
+    { letter: 'Y', pronunciation: 'guai', audioSrc: '/Audio/Alphabet/Y.mp3' }, { letter: 'Z', pronunciation: 'Zed', audioSrc: '/Audio/Alphabet/Z.mp3' }
 ];
 
 function AlphabetGrid({ highlightedItem, onHighlight }: { highlightedItem: string | null; onHighlight: (letter: string) => void; }) {
