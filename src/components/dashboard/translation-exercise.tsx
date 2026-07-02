@@ -149,8 +149,8 @@ const answerKeys = {
             affirmative: ["Tommy is your dog", "Tommy's your dog"],
             negative: ["Tommy is not your dog", "Tommy isn't your dog", "Tommy's not your dog"],
             interrogative: ["is Tommy your dog?"],
-            shortAffirmative: ["yes, he is"],
-            shortNegative: ["no, he is not", "no, he isn't"],
+            shortAffirmative: ["yes, he is" ,"yes, it is"],
+            shortNegative: ["no, he is not", "no, he isn't" , "no, it is not" , "no, it isn't"],
         }
     ],
     exercises3: [
