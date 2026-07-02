@@ -73,7 +73,7 @@ const reflexiveVocab = [
 
 const conjugarVerbsList = [
     "LLAMARSE", "LAVARSE", "DUCHARSE", "BAÑARSE", "PEINARSE", 
-    "CEPILLARSE", "AFEITARSE", "MAQUILLARSE", "SECARSE", 
+    "CEPILLARSE", "AFEITARSE", "MAQUILLARSE", "ESTIRARSE", 
     "LEVANTARSE", "PREPARARSE", "QUITARSE"
 ];
 
