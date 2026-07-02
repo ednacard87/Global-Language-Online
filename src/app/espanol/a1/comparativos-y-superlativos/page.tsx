@@ -226,7 +226,7 @@ const GrammarContent = ({ onComplete }: { onComplete: () => void }) => {
     );
 };
 
-const TranslationExercise = ({ title, exercises, onComplete }: { title: string, exercises: { sentence: string, correct: string[] }[], onComplete: () => void }) => {
+const TranslationExercise = ({ title, exercises, onComplete, vocabulary }: { title: string, exercises: { sentence: string, correct: string[] }[], onComplete: () => void, vocabulary?: { en: string, es: string }[] }) => {
     const [currentExercise, setCurrentExercise] = useState(0);
     const [userAnswers, setUserAnswers] = useState<Record<number, string>>({});
     const [results, setResults] = useState<Record<number, boolean | null>>({});
@@ -266,7 +266,29 @@ const TranslationExercise = ({ title, exercises, onComplete }: { title: string, 
     return (
         <div className="p-6 w-full max-w-2xl mx-auto flex flex-col items-center">
             <div className="w-full mb-4">
-                <h3 className="text-2xl font-bold text-primary mb-2 text-center">{title}</h3>
+                <div className="flex justify-center items-center mb-2 relative">
+                    <h3 className="text-2xl font-bold text-primary text-center">{title}</h3>
+                    {vocabulary && (
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button variant="outline" className="absolute right-0"><HelpCircle className="mr-2 h-4 w-4" /> Vocabulario</Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-80">
+                                <div className="grid gap-4">
+                                   <h4 className="font-medium leading-none">Vocabulario Clave</h4>
+                                    <div className="grid gap-2">
+                                        {vocabulary.map(word => (
+                                            <div key={word.en} className="grid grid-cols-2 items-center gap-2">
+                                                <span className="font-semibold">{word.en}</span>
+                                                <span className="text-muted-foreground">{word.es}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </PopoverContent>
+                        </Popover>
+                    )}
+                </div>
                 <Progress value={progress} className="w-full h-2" />
                 <p className="text-sm text-muted-foreground mt-2 text-center">{Object.values(results).filter(r => r === true).length} / {exercises.length}</p>
             </div>
@@ -323,29 +345,33 @@ const VocabularyGame = ({ onComplete }: { onComplete: () => void }) => {
         { type: 'en', value: 'The best', id: 10 }, { type: 'es', value: 'El mejor', id: 10 }
     ], []);
 
-    const [shuffledWords, setShuffledWords] = useState<typeof words>([]);
+    const [shuffledWords, setShuffledWords] = useState<(typeof words[0] & { uniqueId: number })[]>([]);
     const [selected, setSelected] = useState<number[]>([]);
     const [matched, setMatched] = useState<number[]>([]);
-    const [isCompleted, setIsCompleted] = useState(false);
     const { toast } = useToast();
 
     useEffect(() => {
-        setShuffledWords([...words, ...words].sort(() => 0.5 - Math.random()));
+        const duplicatedWords = [...words, ...words.map(w => ({ ...w, type: w.type + '_copy' }))];
+        const allWords = duplicatedWords.sort(() => 0.5 - Math.random());
+        setShuffledWords(allWords.map((w, i) => ({...w, uniqueId: i })));
     }, [words]);
 
     useEffect(() => {
-        if (matched.length === words.length / 2 && !isCompleted) {
-            setIsCompleted(true);
+        if (matched.length === words.length) {
+            toast({ title: "¡Juego Completado!", description: "¡Excelente memoria!", className: "bg-blue-500 text-white" });
             onComplete();
         }
-    }, [matched, words.length, onComplete, isCompleted]);
+    }, [matched, words.length, onComplete, toast]);
 
     useEffect(() => {
         if (selected.length === 2) {
-            const [first, second] = selected;
-            if (shuffledWords[first].id === shuffledWords[second].id) {
-                setMatched(prev => [...prev, shuffledWords[first].id]);
-                toast({ title: "¡Correcto!", description: "¡Buen trabajo!", className: "bg-green-500 text-white" });
+            const [firstIndex, secondIndex] = selected;
+            const firstWord = shuffledWords[firstIndex];
+            const secondWord = shuffledWords[secondIndex];
+
+            if (firstWord.id === secondWord.id && firstWord.type !== secondWord.type) {
+                setMatched(prev => [...prev, firstWord.id]);
+                toast({ title: "¡Correcto!", className: "bg-green-500 text-white" });
             } else {
                  toast({ title: "Incorrecto", description: "Intentalo de nuevo.", variant: "destructive" });
             }
@@ -354,7 +380,8 @@ const VocabularyGame = ({ onComplete }: { onComplete: () => void }) => {
     }, [selected, shuffledWords, toast]);
 
     const handleSelect = (index: number) => {
-        if (selected.length < 2 && !selected.includes(index) && !matched.includes(shuffledWords[index].id)) {
+        const word = shuffledWords[index];
+        if (selected.length < 2 && !selected.includes(index) && !matched.includes(word.id)) {
             setSelected(prev => [...prev, index]);
         }
     };
@@ -365,7 +392,7 @@ const VocabularyGame = ({ onComplete }: { onComplete: () => void }) => {
             <div className="grid grid-cols-4 gap-4">
                 {shuffledWords.map((word, index) => (
                     <div 
-                        key={index}
+                        key={word.uniqueId}
                         onClick={() => handleSelect(index)}
                         className={cn("h-24 flex items-center justify-center p-2 rounded-lg cursor-pointer transition-all duration-300", {
                             "bg-muted hover:bg-primary/10": !selected.includes(index),
@@ -386,13 +413,25 @@ const ReadingContent = ({ onComplete }: { onComplete: () => void }) => {
         title: "Una competencia en la ciudad",
         content: "En mi ciudad, hay dos restaurantes famosos: 'La Cuchara Rapida' y 'El Tenedor Elegante'. 'La Cuchara Rapida' es mas barato que 'El Tenedor Elegante', pero la comida en 'El Tenedor Elegante' es mejor. El parque de la ciudad es el lugar mas bonito de todos, y es mas grande que mi casa. La biblioteca es el edificio mas viejo de la ciudad. Mi amigo Juan es mas alto que yo, pero yo soy mas rapido. En la escuela, la clase de matematicas es la mas dificil, pero la clase de español es la mas facil para mi.",
         questions: [
-            { q: "¿Cual restaurante es mas barato?", a: ["la cuchara rapida"] },
-            { q: "¿Que lugar es el mas bonito de la ciudad?", a: ["el parque", "el parque de la ciudad"] },
-            { q: "¿Que clase es la mas dificil para el narrador?", a: ["matematicas", "la clase de matematicas"] },
-            { q: "¿Quien es mas alto, el narrador o Juan?", a: ["juan"] },
-            { q: "¿Como es la comida en 'El Tenedor Elegante'?", a: ["mejor"] },
+            { q: "Cual restaurante es mas barato?", a: ["la cuchara rapida"] },
+            { q: "Que lugar es el mas bonito de la ciudad?", a: ["el parque", "el parque de la ciudad"] },
+            { q: "Que clase es la mas dificil para el narrador?", a: ["matematicas", "la clase de matematicas"] },
+            { q: "Quien es mas alto, el narrador o Juan?", a: ["juan"] },
+            { q: "Como es la comida en 'El Tenedor Elegante'?", a: ["mejor"] },
         ]
     }), []);
+
+    const vocabulary = useMemo(() => [
+        { en: "cheaper", es: "mas barato" },
+        { en: "better", es: "mejor" },
+        { en: "the most beautiful", es: "el mas bonito" },
+        { en: "bigger", es: "mas grande" },
+        { en: "the oldest", es: "el mas viejo" },
+        { en: "taller", es: "mas alto" },
+        { en: "faster", es: "mas rapido" },
+        { en: "the most difficult", es: "la mas dificil" },
+        { en: "the easiest", es: "la mas facil" },
+    ], []);
     
     const [currentQuestion, setCurrentQuestion] = useState(0);
     const [userAnswers, setUserAnswers] = useState<Record<number, string>>({});
@@ -432,8 +471,31 @@ const ReadingContent = ({ onComplete }: { onComplete: () => void }) => {
 
     return (
         <div className="p-6 w-full max-w-3xl mx-auto flex flex-col items-center">
-            <h3 className="text-2xl font-bold text-primary mb-4 text-center">{readingData.title}</h3>
-            <p className="mb-6 bg-muted p-4 rounded-lg text-left">{readingData.content}</p>
+             <div className="w-full mb-4">
+                <div className="flex justify-center items-center mb-2 relative">
+                    <h3 className="text-2xl font-bold text-primary text-center">{readingData.title}</h3>
+                    <Popover>
+                        <PopoverTrigger asChild>
+                            <Button variant="outline" className="absolute right-0"><HelpCircle className="mr-2 h-4 w-4" /> Vocabulario</Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-80">
+                            <div className="grid gap-4">
+                               <h4 className="font-medium leading-none">Vocabulario Clave</h4>
+                                <div className="grid gap-2">
+                                    {vocabulary.map(word => (
+                                        <div key={word.en} className="grid grid-cols-2 items-center gap-2">
+                                            <span className="font-semibold">{word.en}</span>
+                                            <span className="text-muted-foreground">{word.es}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </PopoverContent>
+                    </Popover>
+                </div>
+            </div>
+
+            <p className="mb-6 bg-muted p-4 rounded-lg text-left w-full">{readingData.content}</p>
 
             <div className="w-full mb-4">
                 <Progress value={progress} className="w-full h-2" />
@@ -497,6 +559,24 @@ const FinalExercise = ({ onComplete }: { onComplete: () => void }) => {
         { parts: ["Esta pregunta es ", " (facil) de todas."], answer: "la mas facil" },
     ], []);
 
+    const vocabulary = useMemo(() => [
+        { en: "alta", es: "mas alta" },
+        { en: "rapido", es: "mas rapido" },
+        { en: "buena", es: "mejor" },
+        { en: "joven", es: "la mas joven" },
+        { en: "fria", es: "la mas fria" },
+        { en: "dificil", es: "mas dificil" },
+        { en: "caro", es: "el mas caro" },
+        { en: "grande", es: "mas grande" },
+        { en: "feliz", es: "el mas feliz" },
+        { en: "interesante", es: "mas interesante" },
+        { en: "alto", es: "mas alto" },
+        { en: "largo", es: "el mas largo" },
+        { en: "malo", es: "peor" },
+        { en: "frio", es: "el mas frio" },
+        { en: "facil", es: "la mas facil" },
+    ], []);
+
     const [userAnswers, setUserAnswers] = useState<Record<number, string>>({});
     const [results, setResults] = useState<Record<number, boolean | null>>({});
 
@@ -523,7 +603,27 @@ const FinalExercise = ({ onComplete }: { onComplete: () => void }) => {
 
     return (
          <div className="p-6 w-full max-w-3xl mx-auto">
-            <h3 className="text-2xl font-bold text-primary mb-6">Ejercicio Final: Completa las frases</h3>
+            <div className="flex justify-center items-center mb-6 relative">
+                <h3 className="text-2xl font-bold text-primary text-center">Ejercicio Final: Completa las frases</h3>
+                <Popover>
+                    <PopoverTrigger asChild>
+                        <Button variant="outline" className="absolute right-0"><HelpCircle className="mr-2 h-4 w-4" /> Vocabulario</Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-80">
+                        <div className="grid gap-4">
+                           <h4 className="font-medium leading-none">Vocabulario Clave</h4>
+                            <div className="grid gap-2">
+                                {vocabulary.map(word => (
+                                    <div key={word.en} className="grid grid-cols-2 items-center gap-2">
+                                        <span className="font-semibold">{word.en}</span>
+                                        <span className="text-muted-foreground">{word.es}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </PopoverContent>
+                </Popover>
+            </div>
             <div className="space-y-4 text-left">
                 {sentences.map((sentence, index) => (
                     <div key={index} className="flex items-center gap-2 flex-wrap">
@@ -611,11 +711,25 @@ const FinalNegativeForm = ({ onComplete }: { onComplete: () => void }) => {
         { sentence: "The exam was not easier than I thought.", correct: ["el examen no fue mas facil de lo que pensaba"] },
     ];
 
+    const vocabulary = [
+        { en: "bigger", es: "mas grande" },
+        { en: "the tallest", es: "la mas alta" },
+        { en: "faster", es: "mas rapido" },
+        { en: "the best", es: "la mejor" },
+        { en: "older", es: "mayor" },
+        { en: "more interesting", es: "mas interesante" },
+        { en: "the worst", es: "el peor" },
+        { en: "slower", es: "mas lento" },
+        { en: "the cheapest", es: "el mas barato" },
+        { en: "easier", es: "mas facil" },
+    ];
+
     return (
         <TranslationExercise 
             title="Practica Final: Formas Negativas"
             exercises={exercises}
             onComplete={onComplete}
+            vocabulary={vocabulary}
         />
     );
 };
@@ -796,8 +910,25 @@ function ComparativosSuperlativosContent() {
                         { sentence: "This book is more interesting than the last one.", correct: ["este libro es mas interesante que el ultimo"] },
                         { sentence: "The weather today is better than yesterday.", correct: ["el clima hoy es mejor que ayer"] },
                         { sentence: "An elephant is bigger than a mouse.", correct: ["un elefante es mas grande que un raton"] },
+                        { sentence: "This house is more expensive than the apartment.", correct: ["esta casa es mas cara que el apartamento"] },
+                        { sentence: "The new phone is worse than the old one.", correct: ["el nuevo telefono es peor que el viejo"] },
+                        { sentence: "He is younger than his sister.", correct: ["el es mas joven que su hermana"] },
+                        { sentence: "The park is more beautiful than the street.", correct: ["el parque es mas bonito que la calle"] },
+                        { sentence: "The test was easier than I expected.", correct: ["el examen fue mas facil de lo que esperaba"] },
                     ]}
                     onComplete={onComplete}
+                    vocabulary={[
+                        { en: "faster", es: "mas rapido" },
+                        { en: "taller", es: "mas alta" },
+                        { en: "more interesting", es: "mas interesante" },
+                        { en: "better", es: "mejor" },
+                        { en: "bigger", es: "mas grande" },
+                        { en: "more expensive", es: "mas caro" },
+                        { en: "worse", es: "peor" },
+                        { en: "younger", es: "mas joven" },
+                        { en: "more beautiful", es: "mas bonito" },
+                        { en: "easier", es: "mas facil" },
+                    ]}
                 />;
                 break;
             case 'ex2':
@@ -808,9 +939,25 @@ function ComparativosSuperlativosContent() {
                         { sentence: "She is the smartest student in the class.", correct: ["ella es la estudiante mas inteligente de la clase"] },
                         { sentence: "It was the best day of my life.", correct: ["fue el mejor dia de mi vida"] },
                         { sentence: "This is the most expensive car in the world.", correct: ["este es el coche mas caro del mundo", "este es el carro mas caro del mundo"] },
+                        { sentence: "He is the fastest runner on the team.", correct: ["el es el corredor mas rapido del equipo"] },
+                        { sentence: "That was the worst movie I have ever seen.", correct: ["esa fue la peor pelicula que he visto"] },
                         { sentence: "The cheetah is the fastest animal.", correct: ["el guepardo es el animal mas rapido"] },
+                        { sentence: "This is the easiest exercise in the book.", correct: ["este es el ejercicio mas facil del libro"] },
+                        { sentence: "My grandmother is the oldest person in my family.", correct: ["mi abuela es la persona mas vieja de mi familia", "mi abuela es la persona mayor de mi familia"] },
+                        { sentence: "This is the most beautiful place I've visited.", correct: ["este es el lugar mas bonito que he visitado"] },
                     ]}
                     onComplete={onComplete}
+                    vocabulary={[
+                        { en: "the tallest", es: "el mas alto" },
+                        { en: "the smartest", es: "la mas inteligente" },
+                        { en: "the best", es: "el mejor" },
+                        { en: "the most expensive", es: "el mas caro" },
+                        { en: "the fastest", es: "el mas rapido" },
+                        { en: "the worst", es: "la peor" },
+                        { en: "the easiest", es: "el mas facil" },
+                        { en: "the oldest", es: "la mas vieja" },
+                        { en: "the most beautiful", es: "el mas bonito" },
+                    ]}
                 />;
                 break;
              case 'vocab_game':
@@ -825,8 +972,37 @@ function ComparativosSuperlativosContent() {
                         { sentence: "This is the most difficult question.", correct: ["esta es la pregunta mas dificil"] },
                         { sentence: "A plane is faster than a car.", correct: ["un avion es mas rapido que un coche", "un avion es mas rapido que un carro"] },
                         { sentence: "This is the worst idea.", correct: ["esta es la peor idea"] },
+                        { sentence: "She is more patient than her friend.", correct: ["ella es mas paciente que su amiga"] },
+                        { sentence: "This is the cheapest option.", correct: ["esta es la opcion mas barata"] },
+                        { sentence: "My dog is friendlier than my cat.", correct: ["mi perro es mas amigable que mi gato"] },
+                        { sentence: "The new version is better.", correct: ["la nueva version es mejor"] },
+                        { sentence: "It's the most famous painting in the museum.", correct: ["es la pintura mas famosa del museo"] },
+                        { sentence: "A lion is more dangerous than a sheep.", correct: ["un leon es mas peligroso que una oveja"] },
+                        { sentence: "This is the smallest box.", correct: ["esta es la caja mas pequena"] },
+                        { sentence: "My homework is harder than yours.", correct: ["mi tarea es mas dificil que la tuya"] },
+                        { sentence: "He is the tallest boy in the school.", correct: ["el es el chico mas alto de la escuela"] },
+                        { sentence: "The city is more crowded than the countryside.", correct: ["la ciudad esta mas poblada que el campo"] },
+                        { sentence: "This is the most boring book I've read.", correct: ["este es el libro mas aburrido que he leido"] },
+                        { sentence: "She is a better singer than him.", correct: ["ella es mejor cantante que el"] },
+                        { sentence: "This is the coldest winter we've had.", correct: ["este es el invierno mas frio que hemos tenido"] },
+                        { sentence: "The final exam was the hardest.", correct: ["el examen final fue el mas dificil"] },
+                        { sentence: "The sun is bigger than the moon.", correct: ["el sol es mas grande que la luna"] },
                     ]}
                     onComplete={onComplete}
+                    vocabulary={[
+                        { en: "the biggest", es: "el mas grande" },
+                        { en: "older", es: "mayor" },
+                        { en: "the most difficult", es: "la mas dificil" },
+                        { en: "faster", es: "mas rapido" },
+                        { en: "the worst", es: "la peor" },
+                        { en: "more patient", es: "mas paciente" },
+                        { en: "the cheapest", es: "la mas barata" },
+                        { en: "friendlier", es: "mas amigable" },
+                        { en: "better", es: "mejor" },
+                        { en: "more dangerous", es: "mas peligroso" },
+                        { en: "harder", es: "mas dificil" },
+                        { en: "the most boring", es: "el mas aburrido" },
+                    ]}
                 />;
                 break;
             case 'reading':
