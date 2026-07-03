@@ -43,7 +43,7 @@ import { VocabularyMatchingGame } from '@/components/dashboard/vocabulary-matchi
 import { Textarea } from '@/components/ui/textarea';
 
 // --- CONFIGURACIÓN DE INGENIERÍA ---
-const progressStorageVersion = 'progress_es_a1_pres_irreg_v1_full';
+const progressStorageVersion = 'progress_es_a1_pres_irreg_v2_ex_expansion';
 const mainProgressKey = 'progress_a1_es_presente_simple_irregulares';
 
 // --- DATA ---
@@ -112,35 +112,60 @@ const irregularConjVerbs = [
 const ex1Prompts = [
     { en: "I am a doctor.", es: ["yo soy doctor", "soy doctor"] },
     { en: "You are tired.", es: ["tú estás cansado", "tu estas cansado", "estás cansado", "estas cansado"] },
-    { en: "He has a book.", es: ["él tiene un libro", "el tiene un libro", "tiene un libro"] },
+    { en: "He has a book.", es: ["él tiene un libro", "el tiene un libro"] },
     { en: "We go to the cinema.", es: ["nosotros vamos al cine", "vamos al cine"] },
-    { en: "They are in the house.", es: ["ellos están en la casa", "ellas estan en la casa", "están en la casa"] },
+    { en: "They are in the house.", es: ["ellos están en la casa", "ellas estan en la casa"] },
     { en: "She is from Mexico.", es: ["ella es de méxico", "es de mexico"] },
     { en: "I have to study.", es: ["yo tengo que estudiar", "tengo que estudiar"] },
+    { en: "I am a student.", es: ["yo soy estudiante", "soy estudiante"] },
+    { en: "You are in the office.", es: ["tú estás en la oficina", "tu estas en la oficina"] },
+    { en: "She is intelligent.", es: ["ella es inteligente", "es inteligente"] },
+    { en: "We have a car.", es: ["nosotros tenemos un coche", "tenemos un coche"] },
+    { en: "They go to the beach.", es: ["ellos van a la playa", "ellas van a la playa"] },
+    { en: "I want to travel.", es: ["yo quiero viajar", "quiero viajar"] },
+    { en: "You can do it.", es: ["tú puedes hacerlo", "tu puedes hacerlo", "puedes hacerlo"] },
+    { en: "He is a good person.", es: ["él es una buena persona", "el es una buena persona"] }
 ];
 
 const ex2Prompts = [
     { en: "I want a coffee.", es: ["yo quiero un café", "quiero un cafe"] },
-    { en: "You can play.", es: ["tú puedes jugar", "tu puedes jugar", "puedes jugar"] },
-    { en: "He thinks a lot.", es: ["él piensa mucho", "el piensa mucho", "piensa mucho"] },
+    { en: "You can play.", es: ["tú puedes jugar", "tu puedes jugar"] },
+    { en: "He thinks a lot.", es: ["él piensa mucho", "el piensa mucho"] },
     { en: "We sleep eight hours.", es: ["nosotros dormimos ocho horas", "dormimos ocho horas"] },
-    { en: "They ask for help.", es: ["ellos piden ayuda", "ellas piden ayuda", "piden ayuda"] },
-    { en: "She closes the door.", es: ["ella cierra la puerta", "cierra la puerta"] },
+    { en: "They ask for help.", es: ["ellos piden ayuda", "ellas piden ayuda"] },
+    { en: "She closes the door.", es: ["ella cierra la puerta"] },
     { en: "I find the key.", es: ["yo encuentro la llave", "encuentro la llave"] },
-    { en: "You return late.", es: ["tú vuelves tarde", "tu vuelves tarde", "vuelves tarde"] },
+    { en: "You return late.", es: ["tú vuelves tarde", "tu vuelves tarde"] },
+    { en: "I play soccer.", es: ["yo juego futbol", "juego al futbol"] },
+    { en: "She feels good.", es: ["ella se siente bien", "se siente bien"] },
+    { en: "We begin the class.", es: ["nosotros empezamos la clase", "empezamos la clase"] },
+    { en: "They lose the game.", es: ["ellos pierden el juego", "pierden el juego"] },
+    { en: "I serve the food.", es: ["yo sirvo la comida", "sirvo la comida"] },
+    { en: "You repeat the word.", es: ["tú repites la palabra", "repites la palabra"] },
+    { en: "The concert costs fifty dollars.", es: ["el concierto cuesta cincuenta dolares", "el concierto cuesta 50 dolares"] },
+    { en: "I remember your name.", es: ["yo recuerdo tu nombre", "recuerdo tu nombre"] },
+    { en: "We fly to Spain.", es: ["nosotros volamos a españa", "volamos a españa"] },
+    { en: "He shows the photo.", es: ["él muestra la foto", "el muestra la foto"] },
+    { en: "You laugh a lot.", es: ["tú ríes mucho", "te ríes mucho"] },
+    { en: "They follow the leader.", es: ["ellos siguen al líder", "siguen al lider"] }
 ];
 
 const ex3Prompts = [
-    { en: "I do my homework.", es: ["yo hago mi tarea", "hago mi tarea"] },
-    { en: "You put the book on the table.", es: ["tú pones el libro en la mesa", "pones el libro en la mesa"] },
-    { en: "He leaves at eight.", es: ["él sale a las ocho", "el sale a las ocho", "sale a las ocho"] },
-    { en: "We say the truth.", es: ["nosotros decimos la verdad", "decimos la verdad"] },
-    { en: "They see a movie.", es: ["ellos ven una película", "ellas ven una pelicula", "ven una pelicula"] },
-    { en: "I know the answer.", es: ["yo sé la respuesta", "sé la respuesta", "se la respuesta"] },
-    { en: "You give a gift.", es: ["tú das un regalo", "das un regalo"] },
-    { en: "She brings food.", es: ["ella trae comida", "trae comida"] },
-    { en: "I know your brother.", es: ["yo conozco a tu hermano", "conozco a tu hermano"] },
-    { en: "We hear a noise.", es: ["nosotros oímos un ruido", "oimos un ruido"] },
+    { en: "I don't go to the gym.", es: ["yo no voy al gimnasio", "no voy al gimnasio"] },
+    { en: "You don't have time.", es: ["tú no tienes tiempo", "no tienes tiempo"] },
+    { en: "He is not an engineer.", es: ["él no es ingeniero", "el no es ingeniero"] },
+    { en: "We don't want problems.", es: ["nosotros no queremos problemas", "no queremos problemas"] },
+    { en: "They don't sleep here.", es: ["ellos no duermen aquí", "no duermen aqui"] },
+    { en: "She doesn't say anything.", es: ["ella no dice nada", "no dice nada"] },
+    { en: "I don't know the address.", es: ["yo no sé la dirección", "no se la direccion"] },
+    { en: "You don't see the car.", es: ["tú no ves el coche", "no ves el coche"] },
+    { en: "We don't play tennis.", es: ["nosotros no jugamos tenis", "no jugamos al tenis"] },
+    { en: "He doesn't put sugar in his coffee.", es: ["él no pone azúcar en su café", "el no pone azucar en su cafe"] },
+    { en: "They don't leave early.", es: ["ellos no salen temprano", "no salen temprano"] },
+    { en: "I don't hear the music.", es: ["yo no oigo la música", "no oigo la musica"] },
+    { en: "You don't bring the books.", es: ["tú no traes los libros", "no traes los libros"] },
+    { en: "She is not happy.", es: ["ella no está feliz", "no esta feliz"] },
+    { en: "We don't know Paris.", es: ["nosotros no conocemos parís", "no conocemos paris"] }
 ];
 
 const readingData = {
@@ -191,16 +216,19 @@ const finalExPrompts = [
 const negativePrompts = [
     { en: "I am not a student.", es: ["yo no soy estudiante", "no soy estudiante"] },
     { en: "You are not at home.", es: ["tú no estás en casa", "no estas en casa"] },
-    { en: "He does not have money.", es: ["él no tiene dinero", "el no tiene dinero", "no tiene dinero"] },
+    { en: "He does not have money.", es: ["él no tiene dinero", "el no tiene dinero"] },
     { en: "We do not go to the party.", es: ["nosotros no vamos a la fiesta", "no vamos a la fiesta"] },
-    { en: "They do not want to eat.", es: ["ellos no quieren comer", "ellas no quieren comer", "no quieren comer"] },
-    { en: "She cannot come.", es: ["ella no puede venir", "no puede venir"] },
+    { en: "They do not want to eat.", es: ["ellos no quieren comer", "ellas no quieren comer"] },
+    { en: "She can not come.", es: ["ella no puede venir", "no puede venir"] },
     { en: "I do not see the problem.", es: ["yo no veo el problema", "no veo el problema"] },
     { en: "You do not know the answer.", es: ["tú no sabes la respuesta", "no sabes la respuesta"] },
-    { en: "He does not do anything.", es: ["él no hace nada", "el no hace nada", "no hace nada"] },
+    { en: "He does not do anything.", es: ["él no hace nada", "el no hace nada"] },
     { en: "We do not sleep well.", es: ["nosotros no dormimos bien", "no dormimos bien"] },
-    { en: "They do not ask for anything.", es: ["ellos no piden nada", "ellas no piden nada", "no piden nada"] },
+    { en: "They do not ask for anything.", es: ["ellos no piden nada", "ellas no piden nada"] },
     { en: "I do not leave today.", es: ["yo no salgo hoy", "no salgo hoy"] },
+    { en: "Mary does not translate the book.", es: ["maría no traduce el libro"] },
+    { en: "Peter does not drive a car.", es: ["peter no conduce un carro"] },
+    { en: "Jon doesn't know spanish because he doesn't study.", es: ["jon no sabe español porque no estudia", "jon no sabe español porque el no estudia"] },
 ];
 
 // --- HELPER COMPONENTS ---
@@ -211,15 +239,35 @@ const BallsExercise = ({ title, prompts, onComplete, vocabulary }: any) => {
     const [answer, setAnswer] = useState('');
     const [status, setStatus] = useState<Record<number, 'correct' | 'incorrect' | 'unchecked'>>({});
 
-    useEffect(() => { setAnswer(''); }, [currentIndex]);
+    useEffect(() => {
+        setCurrentIndex(0);
+        setAnswer('');
+        setStatus({});
+    }, [prompts]);
 
     const handleCheck = () => {
+        const currentPrompt = prompts[currentIndex];
+        if (!currentPrompt?.es) return;
+
         const userVal = answer.trim().toLowerCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' ');
-        const isCorrect = prompts[currentIndex].es.some((a: string) => a.toLowerCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' ') === userVal);
+        const isCorrect = currentPrompt.es.some((a: string) => a.toLowerCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' ') === userVal);
+        
         setStatus(prev => ({ ...prev, [currentIndex]: isCorrect ? 'correct' : 'incorrect' }));
-        if (isCorrect) toast({ title: "¡Buen trabajo!" });
-        else toast({ variant: 'destructive', title: "Sigue intentando" });
+        
+        if (isCorrect) {
+            toast({ title: "¡Buen trabajo!" });
+        } else {
+            toast({ variant: 'destructive', title: "Sigue intentando" });
+        }
     };
+
+    if (!prompts || prompts.length === 0 || !prompts[currentIndex]) {
+        return (
+            <div className="flex justify-center items-center h-64">
+                <Loader2 className="animate-spin text-primary h-12 w-12" />
+            </div>
+        );
+    }
 
     return (
         <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground">
@@ -234,31 +282,33 @@ const BallsExercise = ({ title, prompts, onComplete, vocabulary }: any) => {
                             ))}
                         </div>
                     </div>
-                    <Popover>
-                        <PopoverTrigger asChild>
-                            <Button variant="outline" size="sm" className="border-2 border-brand-blue animate-border-pulse">
-                                <BookText className="mr-2 h-4 w-4" /> Vocabulario
-                            </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-64">
-                            <ScrollArea className="h-64 pr-4">
-                                <div className="space-y-2 text-foreground text-left">
-                                    <h4 className='font-black text-primary text-xs uppercase mb-2 border-b'>Ayuda de Misión</h4>
-                                    {Object.entries(vocabulary || {}).map(([en, es]: any, i) => (
-                                        <div key={i} className="flex justify-between text-[10px] border-b border-muted pb-1">
-                                            <span className="text-muted-foreground text-left uppercase">{en}:</span>
-                                            <span className="font-bold text-right text-primary">{es.toUpperCase()}</span>
-                                        </div>
-                                    ))}
-                                </div>
-                            </ScrollArea>
-                        </PopoverContent>
-                    </Popover>
+                    {vocabulary && Object.keys(vocabulary).length > 0 && (
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button variant="outline" size="sm" className="border-2 border-brand-blue animate-border-pulse">
+                                    <BookText className="mr-2 h-4 w-4" /> Vocabulario
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-64">
+                                <ScrollArea className="h-64 pr-4">
+                                    <div className="space-y-2 text-foreground text-left">
+                                        <h4 className='font-black text-primary text-xs uppercase mb-2 border-b'>Ayuda de Misión</h4>
+                                        {Object.entries(vocabulary).map(([en, es]: any, i) => (
+                                            <div key={i} className="flex justify-between text-[10px] border-b border-muted pb-1">
+                                                <span className="text-muted-foreground text-left uppercase">{en}:</span>
+                                                <span className="font-bold text-right text-primary">{es.toUpperCase()}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </ScrollArea>
+                            </PopoverContent>
+                        </Popover>
+                    )}
                 </div>
             </CardHeader>
             <CardContent className="space-y-6">
                 <div className="bg-muted p-6 rounded-2xl border-2 border-dashed text-center font-bold text-xl uppercase tracking-tighter text-foreground">
-                    {prompts[currentIndex].en}
+                    {prompts[currentIndex]?.en}
                 </div>
                 <Input value={answer} onChange={e => setAnswer(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleCheck()} className={cn("h-12 text-lg text-foreground", status[currentIndex] === 'correct' ? 'border-green-500 bg-green-50/5' : status[currentIndex] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} placeholder="Escribe en español..." autoComplete="off" />
             </CardContent>
@@ -626,10 +676,10 @@ function PresenteSimpleIrregularesContent() {
                         </CardFooter>
                     </Card>
                 );
-            case 'ex1': return <BallsExercise title="Ejercicio 1: Ser, Estar, Tener, Ir" prompts={ex1Prompts} onComplete={() => handleTopicComplete('ex1')} vocabulary={{ "doctor": "doctor", "tired": "cansado", "book": "libro", "cinema": "cine", "house": "casa", "Mexico": "México", "to study": "estudiar"}} />;
-            case 'ex2': return <BallsExercise title="Ejercicio 2: Verbos de cambio de raíz" prompts={ex2Prompts} onComplete={() => handleTopicComplete('ex2')} vocabulary={{ "coffee": "café", "to play": "jugar", "a lot": "mucho", "eight hours": "ocho horas", "help": "ayuda", "door": "puerta", "key": "llave", "late": "tarde" }} />;
+            case 'ex1': return <BallsExercise title="Ejercicio 1: Verbos Fundamentales (15)" prompts={ex1Prompts} onComplete={() => handleTopicComplete('ex1')} vocabulary={{ "doctor": "doctor", "tired": "cansado", "book": "libro", "cinema": "cine", "house": "casa", "student": "estudiante", "office": "oficina", "car": "coche", "beach": "playa", "to travel": "viajar", "to do": "hacer" }} />;
+            case 'ex2': return <BallsExercise title="Ejercicio 2: Cambio de Raíz (20)" prompts={ex2Prompts} onComplete={() => handleTopicComplete('ex2')} vocabulary={{ "coffee": "café", "to play": "jugar", "a lot": "mucho", "eight hours": "ocho horas", "help": "ayuda", "door": "puerta", "key": "llave", "late": "tarde", "soccer": "fútbol", "game": "juego", "food": "comida", "word": "palabra", "photo": "foto", "leader": "líder" }} />;
             case 'vocab_game': return <Card className="shadow-soft border-2 border-brand-purple bg-card/95"><CardHeader><CardTitle>Juego de Memoria</CardTitle></CardHeader><CardContent><VocabularyMatchingGame data={irregularVerbsVocab.slice(0, 10).map(v => ({ spanish: v.es, english: [v.en] }))} onComplete={() => handleTopicComplete('vocab_game')} title="Encuentra las parejas de verbos" /></CardContent></Card>;
-            case 'ex3': return <BallsExercise title="Ejercicio 3: Verbos con 'Yo' irregular" prompts={ex3Prompts} onComplete={() => handleTopicComplete('ex3')} vocabulary={{ "homework": "tarea", "table": "mesa", "at eight": "a las ocho", "truth": "verdad", "movie": "película", "answer": "respuesta", "gift": "regalo", "food": "comida", "brother": "hermano", "noise": "ruido" }} />;
+            case 'ex3': return <BallsExercise title="Ejercicio 3: Frases Negativas (15)" prompts={ex3Prompts} onComplete={() => handleTopicComplete('ex3')} vocabulary={{ "gym": "gimnasio", "time": "tiempo", "engineer": "ingeniero", "problems": "problemas", "here": "aquí", "anything": "nada", "address": "dirección", "car": "coche", "tennis": "tenis", "sugar": "azúcar", "early": "temprano", "music": "música", "books": "libros", "happy": "feliz", "Paris": "París" }} />;
             case 'reading':
                 return (
                     <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left overflow-hidden">
@@ -670,7 +720,7 @@ function PresenteSimpleIrregularesContent() {
                         <CardFooter className="justify-center border-t pt-6 bg-muted/20"><Button onClick={() => handleTopicComplete('translate_text')} size="lg" className="px-24 font-black h-16 text-2xl shadow-xl bg-primary hover:bg-primary/90 text-primary-foreground uppercase tracking-tighter">Siguiente Misión <ArrowRight className='ml-3 h-8 w-8' /></Button></CardFooter>
                     </Card>
                 );
-            case 'final': return <BallsExercise title="Final: Frases Negativas" prompts={negativePrompts} onComplete={() => handleTopicComplete('final')} vocabulary={{ "student": "estudiante", "at home": "en casa", "money": "dinero", "party": "fiesta", "to eat": "comer", "to come": "venir", "problem": "problema", "answer": "respuesta", "anything": "nada", "well": "bien", "today": "hoy" }} />;
+            case 'final': return <BallsExercise title="Final: Repaso de Negativas" prompts={negativePrompts} onComplete={() => handleTopicComplete('final')} vocabulary={{ "student": "estudiante", "at home": "en casa", "money": "dinero", "party": "fiesta", "to eat": "comer", "to come": "venir", "problem": "problema", "answer": "respuesta", "anything": "nada", "well": "bien", "today": "hoy" }} />;
             default: return null;
         }
     };
