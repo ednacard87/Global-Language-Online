@@ -971,8 +971,7 @@ function ComparativosSuperlativosContent() {
                         { sentence: "He is younger than his sister.", correct: ["el es mas joven que su hermana"] },
                         { sentence: "The park is more beautiful than the street.", correct: ["el parque es mas bonito que la calle"] },
                         { sentence: "The test was easier than I expected.", correct: ["el examen fue mas facil de lo que esperaba"] },
-                        { sentence: "This computer is not better than the other one.", correct: ["esta computadora no es mejor que la otra"] },
-                        { sentence: "Your dog is prettier than mine.", correct: ["tu perro es mas bonito que el mio"] },
+                        { sentence: "The exam was not easier than I thought.", correct: ["el examen no fue mas facil de lo que pensaba"] },
                     ]}
                     onComplete={onComplete}
                     vocabulary={[
@@ -1003,8 +1002,6 @@ function ComparativosSuperlativosContent() {
                         { sentence: "This is the easiest exercise in the book.", correct: ["este es el ejercicio mas facil del libro"] },
                         { sentence: "My grandmother is the oldest person in my family.", correct: ["mi abuela es la persona mas vieja de mi familia", "mi abuela es la persona mayor de mi familia"] },
                         { sentence: "This is the most beautiful place I've visited.", correct: ["este es el lugar mas bonito que he visitado"] },
-                        { sentence: "That house is not the biggest.", correct: ["esa casa no es la mas grande"] },
-                        { sentence: "My mother is not the oldest.", correct: ["mi madre no es la mas vieja"] },
                     ]}
                     onComplete={onComplete}
                     vocabulary={[
