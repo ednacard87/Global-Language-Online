@@ -21,7 +21,7 @@ import {
     HelpCircle
 } from 'lucide-react';
 import { DashboardHeader } from '@/components/dashboard/header';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
 import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
@@ -31,9 +31,92 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Textarea } from '@/components/ui/textarea';
+import { MultiStepExercise } from '@/components/dashboard/multi-step-exercise';
 
-const progressStorageVersion = 'progress_es_a1_comp_sup_v1_base';
+const progressStorageVersion = 'progress_es_a1_comp_sup_v4_expanded_ex1';
 const mainProgressKey = 'progress_a1_es_comparativos_y_superlativos';
+
+const ex1Exercises = [
+    { sentence: "My car is faster than yours.", correct: ["mi coche es mas rapido que el tuyo", "mi carro es mas rapido que el tuyo"] },
+    { sentence: "She is taller than her brother.", correct: ["ella es mas alta que su hermano"] },
+    { sentence: "This book is more interesting than the last one.", correct: ["este libro es mas interesante que el ultimo"] },
+    { sentence: "The weather today is better than yesterday.", correct: ["el clima hoy es mejor que ayer"] },
+    { sentence: "An elephant is bigger than a mouse.", correct: ["un elefante es mas grande que un raton"] },
+    { sentence: "This house is more expensive than the apartment.", correct: ["esta casa es mas cara que el apartamento"] },
+    { sentence: "The new phone is worse than the old one.", correct: ["el nuevo telefono es peor que el viejo"] },
+    { sentence: "He is younger than his sister.", correct: ["el es mas joven que su hermana"] },
+    { sentence: "The park is more beautiful than the street.", correct: ["el parque es mas bonito que la calle"] },
+    { sentence: "The test was easier than I expected.", correct: ["el examen fue mas facil de lo que esperaba"] },
+    { sentence: "A book is cheaper than a computer.", correct: ["un libro es mas barato que una computadora"] },
+    { sentence: "She is more intelligent than him.", correct: ["ella es mas inteligente que el"] },
+    { sentence: "Summer is hotter than winter.", correct: ["el verano es mas caluroso que el invierno"] },
+    { sentence: "This exam is more difficult than the last one.", correct: ["este examen es mas dificil que el anterior"] },
+    { sentence: "He is stronger than his opponent.", correct: ["el es mas fuerte que su oponente"] },
+];
+
+const ex1Vocabulary = [
+    { en: "faster", es: "mas rapido" },
+    { en: "taller", es: "mas alta" },
+    { en: "more interesting", es: "mas interesante" },
+    { en: "better", es: "mejor" },
+    { en: "bigger", es: "mas grande" },
+    { en: "more expensive", es: "mas caro" },
+    { en: "worse", es: "peor" },
+    { en: "younger", es: "mas joven" },
+    { en: "more beautiful", es: "mas bonito" },
+    { en: "easier", es: "mas facil" },
+    { en: "cheaper", es: "mas barato" },
+    { en: "more intelligent", es: "mas inteligente" },
+    { en: "hotter", es: "mas caluroso" },
+    { en: "more difficult", es: "mas dificil" },
+    { en: "stronger", es: "mas fuerte" },
+];
+
+const ex4Prompts = [
+    { q: "El coche es ______ rápido ______ la bicicleta. (más)", a: ["más", "que"] },
+    { q: "Mi casa es ______ grande ______ la tuya. (más)", a: ["más", "que"] },
+    { q: "Juan es ______ alto ______ su hermano. (tan)", a: ["tan", "como"] },
+    { q: "Este libro es ______ interesante ______ la película. (menos)", a: ["menos", "que"] },
+    { q: "Las manzanas son ______ saludables ______ los dulces. (más)", a: ["más", "que"] },
+    { q: "Yo soy ______ joven ______ tú. (tan)", a: ["tan", "como"] },
+    { q: "El tren es ______ lento ______ el avión. (más)", a: ["más", "que"] },
+    { q: "La pizza es ______ deliciosa ______ la ensalada. (tan)", a: ["tan", "como"] },
+    { q: "Ella es ______ inteligente ______ él. (más)", a: ["más", "que"] },
+    { q: "El helado de chocolate es ______ bueno ______ el de fresa. (tan)", a: ["tan", "como"] },
+    { q: "El sol es ______ brillante ______ la luna. (más)", a: ["más", "que"] },
+    { q: "El verano es ______ cálido ______ el invierno. (más)", a: ["más", "que"] },
+    { q: "Leer es ______ relajante ______ ver la tele. (tan)", a: ["tan", "como"] },
+    { q: "Este examen es ______ difícil ______ el anterior. (menos)", a: ["menos", "que"] },
+    { q: "Mi mochila es ______ pesada ______ la tuya. (más)", a: ["más", "que"] },
+    { q: "El español es ______ fácil ______ el chino. (tan)", a: ["tan", "como"] },
+    { q: "Los perros son ______ leales ______ los gatos. (más)", a: ["más", "que"] },
+    { q: "Correr es ______ cansado ______ caminar. (más)", a: ["más", "que"] },
+    { q: "El agua es ______ barata ______ el refresco. (más)", a: ["más", "que"] },
+    { q: "Esta silla es ______ cómoda ______ aquella. (menos)", a: ["menos", "que"] },
+];
+
+const ex5Prompts = [
+    { q: "Mi casa es ______ ______ ______ del barrio. (la, grande)", a: ["la", "más", "grande"] },
+    { q: "Juan es ______ ______ ______ de la clase. (el, alto)", a: ["el", "más", "alto"] },
+    { q: "Esta es ______ ______ ______ que he comido. (la, pizza, rica)", a: ["la", "pizza", "más rica"] },
+    { q: "Es ______ ______ ______ de la ciudad. (el, parque, bonito)", a: ["el", "parque", "más bonito"] },
+    { q: "Ana es ______ ______ ______ de todas. (la, inteligente)", a: ["la", "más", "inteligente"] },
+    { q: "Fue ______ ______ ______ de mi vida. (el, día, feliz)", a: ["el", "día", "más feliz"] },
+    { q: "Compraron ______ ______ ______ de la tienda. (el, coche, caro)", a: ["el", "coche", "más caro"] },
+    { q: "El Everest es ______ ______ ______ del mundo. (la, montaña, alta)", a: ["la", "montaña", "más alta"] },
+    { q: "Este es ______ ______ ______ que he leído. (el, libro, interesante)", a: ["el", "libro", "más interesante"] },
+    { q: "Son ______ ______ ______ del equipo. (los, jugadores, rápidos)", a: ["los", "jugadores", "más rápidos"] },
+    { q: "Esta es ______ ______ ______ que he visto. (la, película, aburrida)", a: ["la", "película", "más aburrida"] },
+    { q: "Él es ______ ______ ______ que conozco. (la, persona, amable)", a: ["la", "persona", "más amable"] },
+    { q: "Vivimos en ______ ______ ______ de la calle. (la, casa, pequeña)", a: ["la", "casa", "más pequeña"] },
+    { q: "Esta sopa es ______ ______ ______ del menú. (la, mejor)", a: ["la", "mejor", "sopa"] },
+    { q: "Fue ______ ______ ______ de todos. (el, peor, error)", a: ["el", "peor", "error"] },
+    { q: "Es ______ ______ ______ de la ciudad. (el, restaurante, barato)", a: ["el", "restaurante", "más barato"] },
+    { q: "Son ______ ______ ______ que tengo. (los, zapatos, nuevos)", a: ["los", "zapatos", "más nuevos"] },
+    { q: "Ella es ______ ______ ______ de la oficina. (la, empleada, joven)", a: ["la", "empleada", "más joven"] },
+    { q: "El Nilo es ______ ______ ______ del mundo. (el, río, largo)", a: ["el", "río", "más largo"] },
+    { q: "Es ______ ______ ______ del año. (la, estación, fría)", a: ["la", "estación", "más fría"] },
+];
 
 interface Topic {
     key: string;
@@ -62,21 +145,10 @@ const VocabularyContent = ({ onComplete }: { onComplete: () => void }) => {
     { en: "Less", es: "Menos" },
     { en: "Than", es: "Que" },
     { en: "As... as", es: "Tan... como" },
-        { en: "big", es: "grande" },
-        { en: "small", es: "pequeno" },
-        { en: "tall", es: "alto" },
-        { en: "short", es: "bajo" },
-        { en: "long", es: "largo" },
         { en: "young", es: "joven" },
         { en: "old", es: "viejo" },
         { en: "beautiful", es: "bonito" },
         { en: "ugly", es: "feo" },
-        { en: "good", es: "bueno" },
-        { en: "bad", es: "malo" },
-        { en: "fast", es: "rapido" },
-        { en: "slow", es: "lento" },
-        { en: "expensive", es: "caro" },
-        { en: "cheap", es: "barato" },
         { en: "easy", es: "facil" },
         { en: "difficult", es: "dificil" },
         { en: "strong", es: "fuerte" },
@@ -88,8 +160,6 @@ const VocabularyContent = ({ onComplete }: { onComplete: () => void }) => {
         { en: "dirty", es: "sucio" },
         { en: "hot", es: "caliente" },
         { en: "cold", es: "frio" },
-        { en: "interesting", es: "interesante" },
-        { en: "boring", es: "aburrido" },
         { en: "rich", es: "rico" },
         { en: "poor", es: "pobre" },
         { en: "early", es: "temprano" },
@@ -116,7 +186,7 @@ const VocabularyContent = ({ onComplete }: { onComplete: () => void }) => {
         const newResults: Record<string, boolean> = {};
         let allCorrect = true;
         vocabularyList.forEach(item => {
-            const isCorrect = userAnswers[item.en]?.trim().toLowerCase() === item.es;
+            const isCorrect = userAnswers[item.en]?.trim().toLowerCase() === item.es.split('/')[0].toLowerCase();
             newResults[item.en] = isCorrect;
             if (!isCorrect) {
                 allCorrect = false;
@@ -784,11 +854,13 @@ function ComparativosSuperlativosContent() {
         { key: 'ex1', name: '3. Ejercicio 1', icon: PenSquare, status: 'locked' },
         { key: 'ex2', name: '4. Ejercicio 2', icon: PenSquare, status: 'locked' },
         { key: 'vocab_game', name: '5. Vocabulario (Juego)', icon: Gamepad2, status: 'locked' },
-        { key: 'ex3', name: '6. Ejercicio 3', icon: PenSquare, status: 'locked' },
-        { key: 'reading', name: '7. Lectura', icon: BookText, status: 'locked' },
-        { key: 'final_ex', name: '8. Ejercicio Final', icon: Trophy, status: 'locked' },
-        { key: 'translate_text', name: '9. Traducir Texto', icon: MessageSquare, status: 'locked' },
-        { key: 'final', name: '10. Final', icon: CheckCircle, status: 'locked' },
+        { key: 'ex4', name: '6. Ejercicio 3', icon: PenSquare, status: 'locked' },
+        { key: 'ex3', name: '7. Ejercicio 4', icon: PenSquare, status: 'locked' },
+        { key: 'ex5', name: '8. Ejercicio 5', icon: PenSquare, status: 'locked' },
+        { key: 'reading', name: '9. Lectura', icon: BookText, status: 'locked' },
+        { key: 'final_ex', name: '10. Ejercicio Final', icon: Trophy, status: 'locked' },
+        { key: 'translate_text', name: '11. Traducir Texto', icon: MessageSquare, status: 'locked' },
+        { key: 'final', name: '12. Final', icon: CheckCircle, status: 'locked' },
     ], []);
 
     // FLOW 1: Carga y Sincronización de Datos desde Firestore.
@@ -922,31 +994,9 @@ function ComparativosSuperlativosContent() {
             case 'ex1':
                 content = <TranslationExercise 
                     title="Ejercicio 1: Comparativos"
-                    exercises={[
-                        { sentence: "My car is faster than yours.", correct: ["mi coche es mas rapido que el tuyo", "mi carro es mas rapido que el tuyo"] },
-                        { sentence: "She is taller than her brother.", correct: ["ella es mas alta que su hermano"] },
-                        { sentence: "This book is more interesting than the last one.", correct: ["este libro es mas interesante que el ultimo"] },
-                        { sentence: "The weather today is better than yesterday.", correct: ["el clima hoy es mejor que ayer"] },
-                        { sentence: "An elephant is bigger than a mouse.", correct: ["un elefante es mas grande que un raton"] },
-                        { sentence: "This house is more expensive than the apartment.", correct: ["esta casa es mas cara que el apartamento"] },
-                        { sentence: "The new phone is worse than the old one.", correct: ["el nuevo telefono es peor que el viejo"] },
-                        { sentence: "He is younger than his sister.", correct: ["el es mas joven que su hermana"] },
-                        { sentence: "The park is more beautiful than the street.", correct: ["el parque es mas bonito que la calle"] },
-                        { sentence: "The test was easier than I expected.", correct: ["el examen fue mas facil de lo que esperaba"] },
-                    ]}
+                    exercises={ex1Exercises}
                     onComplete={onComplete}
-                    vocabulary={[
-                        { en: "faster", es: "mas rapido" },
-                        { en: "taller", es: "mas alta" },
-                        { en: "more interesting", es: "mas interesante" },
-                        { en: "better", es: "mejor" },
-                        { en: "bigger", es: "mas grande" },
-                        { en: "more expensive", es: "mas caro" },
-                        { en: "worse", es: "peor" },
-                        { en: "younger", es: "mas joven" },
-                        { en: "more beautiful", es: "mas bonito" },
-                        { en: "easier", es: "mas facil" },
-                    ]}
+                    vocabulary={ex1Vocabulary}
                 />;
                 break;
             case 'ex2':
@@ -981,9 +1031,17 @@ function ComparativosSuperlativosContent() {
              case 'vocab_game':
                 content = <VocabularyGame onComplete={onComplete} />;
                 break;
-            case 'ex3':
+            case 'ex4': // This is now logically Exercise 3
+                 content = <MultiStepExercise 
+                    title="Ejercicio 3: Comparativos (Completar)"
+                    prompts={ex4Prompts}
+                    onComplete={onComplete}
+                    instruction="Completa los espacios en blanco para formar la comparación correcta."
+                 />;
+                 break;
+            case 'ex3': // This is now logically Exercise 4
                  content = <TranslationExercise 
-                    title="Ejercicio 3: Mixto"
+                    title="Ejercicio 4: Mixto"
                     exercises={[
                         { sentence: "The blue whale is the biggest animal.", correct: ["la ballena azul es el animal mas grande"] },
                         { sentence: "My brother is older than me.", correct: ["mi hermano es mayor que yo"] },
@@ -1023,6 +1081,14 @@ function ComparativosSuperlativosContent() {
                     ]}
                 />;
                 break;
+            case 'ex5':
+                 content = <MultiStepExercise 
+                    title="Ejercicio 5: Superlativos (Completar)"
+                    prompts={ex5Prompts}
+                    onComplete={onComplete}
+                    instruction="Completa los espacios en blanco para formar el superlativo correcto."
+                 />;
+                 break;
             case 'reading':
                 content = <ReadingContent onComplete={onComplete} />;
                 break;
