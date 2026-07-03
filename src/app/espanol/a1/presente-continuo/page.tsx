@@ -36,7 +36,7 @@ import { VocabularyMatchingGame } from '@/components/dashboard/vocabulary-matchi
 import { Textarea } from '@/components/ui/textarea';
 
 // --- CONFIGURACIÓN DE INGENIERÍA ---
-const progressStorageVersion = 'progress_es_a1_pres_cont_v15_button_text_fix'; // Renamed for clarity
+const progressStorageVersion = 'progress_es_a1_pres_cont_v18_final_button_text';
 const mainProgressKey = 'progress_a1_es_presente_continuo';
 
 // --- DATA (COMPLETA) ---
@@ -47,7 +47,26 @@ const gerundFormationVerbs = [
     { v: "HABLAR", gerund: "hablando" }, { v: "COMER", gerund: "comiendo" }, { v: "VIVIR", gerund: "viviendo" }, { v: "LEER", gerund: "leyendo" }, { v: "DORMIR", gerund: "durmiendo" }, { v: "PEDIR", gerund: "pidiendo" }, { v: "TRABAJAR", gerund: "trabajando" }, { v: "APRENDER", gerund: "aprendiendo" }, { v: "ESCRIBIR", gerund: "escribiendo" }, { v: "OIR", gerund: "oyendo" }, { v: "REIR", gerund: "riendo" }, { v: "SEGUIR", gerund: "siguiendo" }, { v: "TRAER", gerund: "trayendo" }, { v: "CONSTRUIR", gerund: "construyendo" }, { v: "JUGAR", gerund: "jugando" },
 ];
 const ex1Prompts = [
-    { en: "I am talking.", es: ["estoy hablando", "yo estoy hablando"] }, { en: "You are studying.", es: ["estás estudiando", "tú estás estudiando"] }, { en: "He is working.", es: ["está trabajando", "él está trabajando"] }, { en: "We are singing.", es: ["estamos cantando", "nosotros estamos cantando"] }, { en: "They are dancing.", es: ["están bailando", "ellos están bailando"] }, { en: "She is cooking.", es: ["está cocinando", "ella está cocinando"] }, { en: "I am painting.", es: ["estoy pintando", "yo estoy pintando"] }, { en: "You are cleaning.", es: ["estás limpiando", "tú estás limpiando"] }, { en: "We are walking in the park.", es: ["estamos caminando en el parque", "nosotros estamos caminando en el parque"] }, { en: "They are traveling to Spain.", es: ["están viajando a españa", "ellos están viajando a españa"] }
+    { en: "I am talking.", es: ["estoy hablando", "yo estoy hablando"] }, 
+    { en: "You are studying.", es: ["estás estudiando", "tú estás estudiando"] }, 
+    { en: "He is working.", es: ["está trabajando", "él está trabajando"] }, 
+    { en: "We are singing.", es: ["estamos cantando", "nosotros estamos cantando"] }, 
+    { en: "They are dancing.", es: ["están bailando", "ellos están bailando"] }, 
+    { en: "She is cooking.", es: ["está cocinando", "ella está cocinando"] }, 
+    { en: "I am painting.", es: ["estoy pintando", "yo estoy pintando"] }, 
+    { en: "You are cleaning.", es: ["estás limpiando", "tú estás limpiando"] }, 
+    { en: "We are walking in the park.", es: ["estamos caminando en el parque", "nosotros estamos caminando en el parque"] }, 
+    { en: "They are traveling to Spain.", es: ["están viajando a españa", "ellos están viajando a españa"] },
+    { en: "You (formal) are waiting for the bus.", es: ["usted está esperando el autobús", "está esperando el autobús"] },
+    { en: "She is buying new shoes.", es: ["ella está comprando zapatos nuevos", "está comprando zapatos nuevos"] },
+    { en: "We are listening to music.", es: ["nosotros estamos escuchando música", "estamos escuchando música"] },
+    { en: "You all are preparing dinner.", es: ["ustedes están preparando la cena", "están preparando la cena"] },
+    { en: "They are helping at home.", es: ["ellos están ayudando en casa", "están ayudando en casa"] },
+    { en: "I am looking for my keys.", es: ["yo estoy buscando mis llaves", "estoy buscando mis llaves"] },
+    { en: "You are paying the bill.", es: ["tú estás pagando la cuenta", "estás pagando la cuenta"] },
+    { en: "He is using the computer.", es: ["él está usando la computadora", "está usando la computadora"] },
+    { en: "We are visiting the museum.", es: ["nosotros estamos visitando el museo", "estamos visitando el museo"] },
+    { en: "They (fem.) are swimming.", es: ["ellas están nadando", "están nadando"] }
 ];
 const ex2Prompts = [
     { en: "I am eating an apple.", es: ["estoy comiendo una manzana", "yo estoy comiendo una manzana"] }, { en: "You are learning Spanish.", es: ["estás aprendiendo español", "tú estás aprendiendo español"] }, { en: "He is living in a big house.", es: ["está viviendo en una casa grande", "él está viviendo en una casa grande"] }, { en: "We are drinking water.", es: ["estamos bebiendo agua", "nosotros estamos bebiendo agua"] }, { en: "They are writing a book.", es: ["están escribiendo un libro", "ellos están escribiendo un libro"] }, { en: "She is running fast.", es: ["está corriendo rápido", "ella está corriendo rápido"] }, { en: "I am opening the window.", es: ["estoy abriendo la ventana", "yo estoy abriendo la ventana"] }, { en: "You are understanding the class.", es: ["estás comprendiendo la clase", "tú estás comprendiendo la clase"] }, { en: "We are selling the car.", es: ["estamos vendiendo el coche", "nosotros estamos vendiendo el coche"] }, { en: "They are suffering a lot.", es: ["están sufriendo mucho", "ellos están sufriendo mucho"] }
@@ -69,87 +88,132 @@ const negativePrompts = [
     { en: "I am not working.", es: ["no estoy trabajando", "yo no estoy trabajando"] }, { en: "You are not eating.", es: ["no estás comiendo", "tú no estás comiendo"] }, { en: "He is not sleeping.", es: ["no está durmiendo", "él no está durmiendo"] }, { en: "We are not studying.", es: ["no estamos estudiando", "nosotros no estamos estudiando"] }, { en: "They are not playing.", es: ["no están jugando", "ellos no están jugando"] }, { en: "She is not cooking.", es: ["no está cocinando", "ella no está cocinando"] }, { en: "I am not reading.", es: ["no estoy leyendo", "yo no estoy leyendo"] }, { en: "You are not running.", es: ["no estás corriendo", "tú no estás corriendo"] }, { en: "He is not writing.", es: ["no está escribiendo", "él no está escribiendo"] }, { en: "We are not singing.", es: ["no estamos cantando", "nosotros no estamos cantando"] },
 ];
 
-// --- NUEVO COMPONENTE DE EJERCICIO INTERACTIVO Y ESTABLE ---
-const InteractiveExercise = ({ title, prompts, onComplete }: { title: string, prompts: { en: string, es: string[] }[], onComplete: () => void }) => {
+// --- NUEVO COMPONENTE DE EJERCICIO INDIVIDUAL ---
+const SingleStepExercise = ({ title, prompts, onComplete }: { title: string, prompts: { en: string, es: string[] }[], onComplete: () => void }) => {
     const { toast } = useToast();
-    const [answers, setAnswers] = useState<string[]>(() => Array(prompts.length).fill(''));
-    const [validation, setValidation] = useState<('correct' | 'incorrect' | 'unchecked')[]>(() => Array(prompts.length).fill('unchecked'));
-    const [canAdvance, setCanAdvance] = useState(false);
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [currentAnswer, setCurrentAnswer] = useState('');
+    const [statuses, setStatuses] = useState<('correct' | 'incorrect' | 'unchecked')[]>(() => Array(prompts.length).fill('unchecked'));
 
     useEffect(() => {
-        setAnswers(Array(prompts.length).fill(''));
-        setValidation(Array(prompts.length).fill('unchecked'));
-        setCanAdvance(false);
+        setCurrentIndex(0);
+        setCurrentAnswer('');
+        setStatuses(Array(prompts.length).fill('unchecked'));
     }, [prompts]);
 
-    const handleAnswerChange = (index: number, value: string) => {
-        const newAnswers = [...answers];
-        newAnswers[index] = value;
-        setAnswers(newAnswers);
-        
-        const newValidation = [...validation];
-        if (newValidation[index] !== 'unchecked') {
-            newValidation[index] = 'unchecked';
-            setValidation(newValidation);
+    useEffect(() => {
+        // Reset answer when moving to a new prompt that is not yet correct
+        if (statuses[currentIndex] !== 'correct') {
+             setCurrentAnswer('');
         }
-        
-        setCanAdvance(false);
-    };
+    }, [currentIndex, statuses]);
 
     const handleCheck = () => {
-        let allCorrect = true;
-        const newValidation = prompts.map((prompt, index) => {
-            const userAnswer = answers[index].trim().toLowerCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' ');
-            const isCorrect = prompt.es.some(correctAnswer => 
-                correctAnswer.toLowerCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' ') === userAnswer
-            );
-            
-            if (!isCorrect) {
-                allCorrect = false;
-            }
-            return isCorrect ? 'correct' : 'incorrect';
-        });
-        setValidation(newValidation as ('correct' | 'incorrect' | 'unchecked')[]);
+        const prompt = prompts[currentIndex];
+        if (!prompt) return;
 
-        if (allCorrect) {
-            toast({ title: "¡Excelente!", description: "Todas las respuestas son correctas. Ya puedes avanzar." });
-            setCanAdvance(true);
+        const userAnswer = currentAnswer.trim().toLowerCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' ');
+        const isCorrect = prompt.es.some(correctAnswer =>
+            correctAnswer.toLowerCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' ') === userAnswer
+        );
+
+        const newStatuses = [...statuses];
+        newStatuses[currentIndex] = isCorrect ? 'correct' : 'incorrect';
+        setStatuses(newStatuses);
+
+        if (isCorrect) {
+            toast({ title: "¡Correcto!" });
+            // Automatically move to the next question if correct
+            if (currentIndex < prompts.length - 1) {
+                 setTimeout(() => setCurrentIndex(i => i + 1), 800);
+            }
         } else {
-            toast({ variant: 'destructive', title: "Hay errores", description: "Revisa las respuestas marcadas en rojo." });
-            setCanAdvance(false);
+            toast({ variant: 'destructive', title: "Incorrecto, intenta de nuevo." });
         }
     };
 
+    const goToNext = () => {
+        if (currentIndex < prompts.length - 1) {
+            setCurrentIndex(i => i + 1);
+        } else {
+            checkCompletion();
+        }
+    };
+    
+    const checkCompletion = () => {
+         if (statuses.every(s => s === 'correct')) {
+             toast({ title: "¡Felicidades!", description: "Has completado el ejercicio.", className: "bg-green-500 text-white" });
+             onComplete();
+         } else {
+             toast({ variant: 'destructive', title: "Aún hay errores", description: "Completa todas las frases correctamente para finalizar." });
+             const firstIncorrect = statuses.findIndex(s => s !== 'correct');
+             if (firstIncorrect !== -1) {
+                 setCurrentIndex(firstIncorrect);
+             }
+         }
+    };
+
+    const isCurrentCorrect = statuses[currentIndex] === 'correct';
+    const allDone = useMemo(() => statuses.every(s => s === 'correct'), [statuses]);
+
     return (
-        <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground text-left">
+         <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground">
             <CardHeader>
                 <CardTitle className="text-primary uppercase tracking-tighter">{title}</CardTitle>
-                <CardDescription className='font-bold text-foreground'>Traduce las siguientes frases al español.</CardDescription>
-            </CardHeader>
-            <CardContent className="pt-6 space-y-4">
-                {prompts.map((prompt, index) => (
-                    <div key={index} className="space-y-2">
-                        <Label htmlFor={`ex-${index}`} className="font-semibold text-muted-foreground">{index + 1}. {prompt.en}</Label>
-                        <Input
-                            id={`ex-${index}`}
-                            placeholder="Escribe tu respuesta aquí..."
-                            value={answers[index]}
-                            onChange={(e) => handleAnswerChange(index, e.target.value)}
+                 <CardDescription className="font-bold text-foreground mt-1">Frase {currentIndex + 1} de {prompts.length}</CardDescription>
+                <div className="flex gap-1.5 justify-center flex-wrap pt-4">
+                    {prompts.map((_, i) => (
+                        <div
+                            key={i}
+                            onClick={() => setCurrentIndex(i)}
                             className={cn(
-                                "h-10 text-base bg-background/70 border-2",
-                                validation[index] === 'unchecked' && 'border-input',
-                                validation[index] === 'correct' && 'border-green-500',
-                                validation[index] === 'incorrect' && 'border-red-500'
+                                "h-3 flex-1 rounded-full cursor-pointer transition-all",
+                                "min-w-[20px]",
+                                currentIndex === i && "ring-2 ring-primary ring-offset-2 ring-offset-background",
+                                statuses[i] === 'correct' ? "bg-green-500" : 
+                                statuses[i] === 'incorrect' ? "bg-red-500" : "bg-muted"
                             )}
                         />
-                    </div>
-                ))}
+                    ))}
+                </div>
+            </CardHeader>
+            <CardContent className="flex flex-col items-center space-y-6 pt-6 text-center">
+                 <p className="text-sm font-semibold text-muted-foreground uppercase tracking-widest">Traduce al español</p>
+                <div className="bg-muted p-6 rounded-2xl border-2 border-dashed text-center font-bold text-2xl uppercase tracking-tighter text-foreground min-h-[8rem] flex items-center justify-center w-full">
+                    {prompts[currentIndex]?.en}
+                </div>
+                <Input
+                    value={currentAnswer}
+                    onChange={e => setCurrentAnswer(e.target.value)}
+                    onKeyDown={e => { if (e.key === 'Enter') { isCurrentCorrect ? goToNext() : handleCheck(); } }}
+                    className={cn(
+                        "h-12 text-lg text-foreground text-center max-w-md border-2",
+                        isCurrentCorrect ? 'border-green-500' : 
+                        statuses[currentIndex] === 'incorrect' ? 'border-red-500' : 'border-input'
+                    )}
+                    placeholder="Escribe en español..."
+                    autoComplete="off"
+                    disabled={isCurrentCorrect}
+                />
             </CardContent>
-            <CardFooter className="justify-between border-t pt-6 bg-muted/20">
-                <Button onClick={handleCheck} variant="secondary">Verificar</Button>
-                <Button onClick={onComplete} disabled={!canAdvance} className='text-white font-bold'>
-                    Siguiente Ejercicio <ArrowRight className='ml-2 h-4 w-4'/>
-                </Button>
+            <CardFooter className="justify-between border-t pt-6 bg-muted/10">
+                <Button variant="outline" onClick={() => setCurrentIndex(p => Math.max(0, p - 1))} disabled={currentIndex === 0}>Anterior</Button>
+                <div className="flex gap-2">
+                    {!isCurrentCorrect && (
+                         <Button onClick={handleCheck} variant="secondary">
+                             Verificar
+                         </Button>
+                    )}
+                    {allDone ? (
+                         <Button onClick={onComplete} className="font-bold text-white bg-green-600 hover:bg-green-700 animate-pulse">
+                             Completar Ejercicio <Trophy className='ml-2 h-4 w-4'/>
+                         </Button>
+                    ) : (
+                        <Button onClick={goToNext} disabled={!isCurrentCorrect}>
+                            Siguiente <ArrowRight className='ml-2 h-4 w-4'/>
+                        </Button>
+                    )}
+                </div>
             </CardFooter>
         </Card>
     );
@@ -334,14 +398,14 @@ function PresenteContinuoContent() {
             case 'vocabulary': return <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground text-left"><CardHeader className='bg-primary/5 border-b'><CardTitle className="text-primary uppercase tracking-tighter">Vocabulario: Verbos (40)</CardTitle><CardDescription className='font-bold text-foreground'>Escribe el infinitivo en español.</CardDescription></CardHeader><CardContent className="pt-6"><ScrollArea className="h-[450px] pr-4"><div className="grid grid-cols-2 gap-4">{presenteContinuoVerbsVocab.map((v, i) => (<Fragment key={i}><div className="flex items-center font-bold py-1 text-sm">{v.en}</div><Input value={vocabAnswers[i]} onChange={e => { const na = [...vocabAnswers]; na[i] = e.target.value; setVocabAnswers(na); setVocabValidation(vv => { const nv = [...vv]; nv[i] = 'unchecked'; return nv as any; }); setCanAdvanceVocab(false); }} className={cn("h-10 uppercase", vocabValidation[i] === 'correct' ? 'border-green-500' : vocabValidation[i] === 'incorrect' ? 'border-red-500' : '')} autoComplete="off" /></Fragment>))}</div></ScrollArea></CardContent><CardFooter className="flex justify-between border-t pt-6 bg-muted/20"><Button onClick={handleVocabCheck} variant="secondary">Verificar</Button><Button onClick={() => handleTopicComplete('vocabulary')} disabled={!canAdvanceVocab && !isAdmin} className='text-white font-bold'>Avanzar <ArrowRight className='ml-2'/></Button></CardFooter></Card>;
             case 'grammar': return <Card className="shadow-soft border-2 border-brand-purple bg-slate-100 dark:bg-slate-800/50 p-6 text-foreground text-left overflow-hidden"><CardHeader className='px-0 pb-6 border-b mb-6'><CardTitle className="text-3xl font-black text-primary uppercase">Gramática: Presente Continuo</CardTitle></CardHeader><CardContent className="space-y-8 px-0"><div className="p-6 bg-white/60 dark:bg-background/20 rounded-[2rem] border shadow-sm"><h3 className="text-xl font-black text-primary uppercase mb-4">La Fórmula: ESTAR + Gerundio</h3><p className="mb-4 text-muted-foreground">El presente continuo se usa para describir acciones que están sucediendo en este preciso momento. La fórmula es simple: el verbo <span className='font-bold text-primary'>ESTAR</span> conjugado + el <span className='font-bold text-primary'>gerundio</span>.</p><p className='font-bold text-center text-2xl p-4 bg-primary/10 rounded-lg text-primary tracking-wider'>Yo <span className="text-blue-500">estoy</span> <span className="text-red-500">hablando</span></p></div><div className="p-6 bg-white/60 dark:bg-background/20 rounded-[2rem] border shadow-sm"><h3 className="text-xl font-black text-primary uppercase mb-4">1. Conjugación de ESTAR</h3><ul className="list-disc pl-5 space-y-2 text-lg"><li>Yo: <span className="font-bold">estoy</span></li><li>Tú: <span className="font-bold">estás</span></li><li>Él/Ella/Usted: <span className="font-bold">está</span></li><li>Nosotros/as: <span className="font-bold">estamos</span></li><li>Ellos/Ellas/Ustedes: <span className="font-bold">están</span></li></ul></div><div className="p-6 bg-white/60 dark:bg-background/20 rounded-[2rem] border shadow-sm"><h3 className="text-xl font-black text-primary uppercase mb-4">2. Formación del Gerundio Regular</h3><ul className="list-disc pl-5 space-y-2 text-lg"><li>Verbos -AR (Hablar) → <span className="font-bold">hablando</span></li><li>Verbos -ER (Comer) → <span className="font-bold">comiendo</span></li><li>Verbos -IR (Vivir) → <span className="font-bold">viviendo</span></li></ul></div><div className="p-6 bg-white/60 dark:bg-background/20 rounded-[2rem] border shadow-sm"><h3 className="text-xl font-black text-primary uppercase mb-4">3. Gerundios Irregulares Comunes</h3><ul className="list-disc pl-5 space-y-2 text-lg"><li>Cambio E → I: Pedir → <span className="font-bold">pidiendo</span></li><li>Cambio O → U: Dormir → <span className="font-bold">durmiendo</span></li><li>Terminación -YENDO: Leer → <span className="font-bold">leyendo</span></li><li>Terminación -YENDO: Oír → <span className="font-bold">oyendo</span></li></ul></div></CardContent><CardFooter className="justify-center pt-6 border-t"><Button onClick={() => handleTopicComplete('grammar')} size="lg" className="px-24 font-black h-14 text-xl shadow-xl">Comprendido</Button></CardFooter></Card>;
             case 'gerund_formation': const curGerundVerb = gerundFormationVerbs[gerundIdx]; return <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left overflow-hidden"><CardHeader className='bg-primary/5 border-b'><CardTitle className='text-primary uppercase tracking-tighter'>Misión: Formar el Gerundio</CardTitle><CardDescription>Escribe el gerundio del verbo ({gerundIdx + 1}/{gerundFormationVerbs.length})</CardDescription></CardHeader><CardContent className="space-y-8 pt-8 flex flex-col items-center"><div className="p-8 bg-gradient-to-br from-primary/5 to-brand-purple/5 rounded-[2.5rem] border-2 border-dashed border-primary/20"><span className="text-xs font-black text-muted-foreground uppercase tracking-[0.2em] mb-2">Infinitivo</span><h3 className="text-5xl md:text-6xl font-black text-primary uppercase tracking-tighter drop-shadow-sm">{curGerundVerb.v}</h3></div><Input value={gerundAnswer} onChange={e => { setGerundAnswer(e.target.value); setGerundValidation('unchecked'); }} onKeyDown={e => e.key === 'Enter' && handleGerundCheck()} className={cn("h-14 text-2xl font-bold text-center max-w-sm border-2", gerundValidation === 'correct' ? 'border-green-500' : gerundValidation === 'incorrect' ? 'border-red-500' : '')} placeholder="Escribe el gerundio..." autoComplete="off" /></CardContent><CardFooter className="justify-center border-t p-8 bg-muted/5"><Button onClick={handleGerundCheck} size="lg" className="px-20 font-black h-14 text-xl shadow-xl">Verificar <ArrowRight className="ml-2 h-5 w-5" /></Button></CardFooter></Card>;
-            case 'ex1': return <InteractiveExercise title="Ejercicio 1: Verbos -AR" prompts={ex1Prompts} onComplete={() => handleTopicComplete('ex1')} />;
-            case 'ex2': return <InteractiveExercise title="Ejercicio 2: Verbos -ER/-IR" prompts={ex2Prompts} onComplete={() => handleTopicComplete('ex2')} />;
+            case 'ex1': return <SingleStepExercise title="Ejercicio 1: Verbos -AR" prompts={ex1Prompts} onComplete={() => handleTopicComplete('ex1')} />;
+            case 'ex2': return <SingleStepExercise title="Ejercicio 2: Verbos -ER/-IR" prompts={ex2Prompts} onComplete={() => handleTopicComplete('ex2')} />;
             case 'vocab_game': return <Card className="shadow-soft border-2 border-brand-purple bg-card/95"><CardHeader><CardTitle>Juego de Memoria</CardTitle></CardHeader><CardContent><VocabularyMatchingGame data={presenteContinuoVerbsVocab.slice(0, 10).map(v => ({ spanish: v.es, english: [v.en] }))} onComplete={() => handleTopicComplete('vocab_game')} title="Encuentra las parejas de verbos" /></CardContent></Card>;
-            case 'ex3': return <InteractiveExercise title="Ejercicio 3: Gerundios Irregulares" prompts={ex3Prompts} onComplete={() => handleTopicComplete('ex3')} />;
+            case 'ex3': return <SingleStepExercise title="Ejercicio 3: Gerundios Irregulares" prompts={ex3Prompts} onComplete={() => handleTopicComplete('ex3')} />;
             case 'reading': return <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left overflow-hidden"><CardHeader className='bg-primary/5 border-b'><CardTitle className='text-primary uppercase tracking-tight'>{readingData.title}</CardTitle></CardHeader><CardContent className="space-y-6 pt-6"><div className="p-6 bg-muted rounded-2xl border italic text-lg leading-relaxed text-foreground shadow-inner">{readingData.content}</div><Separator /><div className="space-y-4"><h3 className='font-black text-primary uppercase text-sm'>Preguntas de Comprensión:</h3>{readingData.questions.map((q, i) => (<div key={i} className="space-y-2 p-3 bg-muted/20 rounded-xl border"><Label className="font-bold">{q.q}</Label><Input value={readingAns[i]} onChange={e => { const na = [...readingAns]; na[i] = e.target.value; setReadingAns(na); setReadingVal(v => { const nv = [...v]; nv[i] = 'unchecked'; return nv as any; }); }} className={cn("h-10", readingVal[i] === 'correct' ? 'border-green-500 bg-green-50/5' : readingVal[i] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} autoComplete="off" /></div>))}</div></CardContent><CardFooter className="justify-center border-t p-6 bg-muted/10"><Button onClick={handleCheckReading} size="lg" className="px-16 font-black h-12 shadow-md">Verificar Lectura</Button></CardFooter></Card>;
             case 'final_ex': return <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left overflow-hidden"><CardHeader className='bg-primary/5 border-b'><CardTitle className='text-primary uppercase tracking-tight'>Ejercicio Final: Completar Frases (15)</CardTitle></CardHeader><CardContent className="p-0"><ScrollArea className="h-[450px] p-6"><div className="space-y-4">{finalExPrompts.map((q, i) => (<div key={i} className="flex flex-col gap-2 p-4 bg-muted/10 rounded-2xl border shadow-sm"><p className="font-bold text-lg">{q.s}</p><Input value={finalExAns[i]} onChange={e => { const na = [...finalExAns]; na[i] = e.target.value; setFinalExAns(na); setFinalExVal(v => { const nv = [...v]; nv[i] = 'unchecked'; return nv as any; }); }} className={cn("h-10 max-w-sm text-lg", finalExVal[i] === 'correct' ? 'border-green-500' : finalExVal[i] === 'incorrect' ? 'border-red-500' : '')} placeholder="Respuesta..." autoComplete="off" /></div>))}</div></ScrollArea></CardContent><CardFooter className="justify-center border-t p-6 bg-muted/20"><Button onClick={handleCheckFinalEx} size="lg" className="px-24 font-black h-14 text-xl shadow-xl">Verificar Todo</Button></CardFooter></Card>;
             case 'translate_text': return <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground text-left"><CardHeader><div><CardTitle className='text-primary uppercase'>Traducción de Texto</CardTitle><CardDescription className='font-bold text-foreground'>Traduce el siguiente párrafo al español.</CardDescription></div></CardHeader><CardContent className="space-y-6 pt-6"><div className="p-6 bg-muted/50 rounded-2xl border italic text-lg leading-relaxed text-foreground shadow-sm">"Right now, I am sitting in a café. I am drinking a coffee and my friend is reading a book. We are talking about our plans. Outside, many people are walking. A musician is playing the guitar. It is a beautiful day and we are feeling very happy."</div><Separator /><div className="space-y-2"><Label className='font-black text-primary uppercase text-sm'>Tu Traducción:</Label><Textarea value={translationText} onChange={(e) => setTranslationText(e.target.value)} placeholder="Escribe el texto en español aquí..." className="min-h-[200px] text-lg leading-relaxed" /></div></CardContent><CardFooter className="justify-center border-t pt-6 bg-muted/20"><Button onClick={() => handleTopicComplete('translate_text')} size="lg" className="px-24 font-black h-16 text-2xl shadow-xl bg-primary hover:bg-primary/90 text-primary-foreground uppercase tracking-tighter">Misión Final <ArrowRight className='ml-3 h-8 w-8' /></Button></CardFooter></Card>;
-            case 'final': return <InteractiveExercise title="Ejercicio Final: Frases Negativas" prompts={negativePrompts} onComplete={() => handleTopicComplete('final')} />;
+            case 'final': return <SingleStepExercise title="Ejercicio Final: Frases Negativas" prompts={negativePrompts} onComplete={() => handleTopicComplete('final')} />;
             default: return <div className="text-center p-8">Selecciona una misión para comenzar.</div>;
         }
     };
