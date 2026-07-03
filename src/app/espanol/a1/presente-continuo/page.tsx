@@ -36,7 +36,7 @@ import { VocabularyMatchingGame } from '@/components/dashboard/vocabulary-matchi
 import { Textarea } from '@/components/ui/textarea';
 
 // --- CONFIGURACIÓN DE INGENIERÍA ---
-const progressStorageVersion = 'progress_es_a1_pres_cont_v18_final_button_text';
+const progressStorageVersion = 'progress_es_a1_pres_cont_v19_all_20_phrases';
 const mainProgressKey = 'progress_a1_es_presente_continuo';
 
 // --- DATA (COMPLETA) ---
@@ -69,23 +69,84 @@ const ex1Prompts = [
     { en: "They (fem.) are swimming.", es: ["ellas están nadando", "están nadando"] }
 ];
 const ex2Prompts = [
-    { en: "I am eating an apple.", es: ["estoy comiendo una manzana", "yo estoy comiendo una manzana"] }, { en: "You are learning Spanish.", es: ["estás aprendiendo español", "tú estás aprendiendo español"] }, { en: "He is living in a big house.", es: ["está viviendo en una casa grande", "él está viviendo en una casa grande"] }, { en: "We are drinking water.", es: ["estamos bebiendo agua", "nosotros estamos bebiendo agua"] }, { en: "They are writing a book.", es: ["están escribiendo un libro", "ellos están escribiendo un libro"] }, { en: "She is running fast.", es: ["está corriendo rápido", "ella está corriendo rápido"] }, { en: "I am opening the window.", es: ["estoy abriendo la ventana", "yo estoy abriendo la ventana"] }, { en: "You are understanding the class.", es: ["estás comprendiendo la clase", "tú estás comprendiendo la clase"] }, { en: "We are selling the car.", es: ["estamos vendiendo el coche", "nosotros estamos vendiendo el coche"] }, { en: "They are suffering a lot.", es: ["están sufriendo mucho", "ellos están sufriendo mucho"] }
+    { en: "I am eating an apple.", es: ["estoy comiendo una manzana", "yo estoy comiendo una manzana"] },
+    { en: "You are learning Spanish.", es: ["estás aprendiendo español", "tú estás aprendiendo español"] },
+    { en: "He is living in a big house.", es: ["está viviendo en una casa grande", "él está viviendo en una casa grande"] },
+    { en: "We are drinking water.", es: ["estamos bebiendo agua", "nosotros estamos bebiendo agua"] },
+    { en: "They are writing a book.", es: ["están escribiendo un libro", "ellos están escribiendo un libro"] },
+    { en: "She is running fast.", es: ["está corriendo rápido", "ella está corriendo rápido"] },
+    { en: "I am opening the window.", es: ["estoy abriendo la ventana", "yo estoy abriendo la ventana"] },
+    { en: "You are understanding the class.", es: ["estás comprendiendo la clase", "tú estás comprendiendo la clase"] },
+    { en: "We are selling the car.", es: ["estamos vendiendo el coche", "nosotros estamos vendiendo el coche"] },
+    { en: "They are suffering a lot.", es: ["están sufriendo mucho", "ellos están sufriendo mucho"] },
+    { en: "He is learning to drive.", es: ["él está aprendiendo a conducir", "está aprendiendo a conducir"] },
+    { en: "We are choosing a movie.", es: ["nosotros estamos escogiendo una película", "estamos escogiendo una película"] },
+    { en: "You are receiving good news.", es: ["tú estás recibiendo buenas noticias", "estás recibiendo buenas noticias"] },
+    { en: "I am breaking the old routine.", es: ["yo estoy rompiendo la vieja rutina", "estoy rompiendo la vieja rutina"] },
+    { en: "They are believing in the project.", es: ["ellos están creyendo en el proyecto", "están creyendo en el proyecto"] },
+    { en: "She is hiding behind the door.", es: ["ella se está escondiendo detrás de la puerta", "se está escondiendo detrás de la puerta"] },
+    { en: "We are covering the furniture.", es: ["nosotros estamos cubriendo los muebles", "estamos cubriendo los muebles"] },
+    { en: "You all are discussing the topic.", es: ["ustedes están discutiendo el tema", "están discutiendo el tema"] },
+    { en: "I am sharing my food.", es: ["yo estoy compartiendo mi comida", "estoy compartiendo mi comida"] },
+    { en: "He is promising to change.", es: ["él está prometiendo cambiar", "está prometiendo cambiar"] }
 ];
 const ex3Prompts = [
-    { en: "I am reading a book.", es: ["estoy leyendo un libro", "yo estoy leyendo un libro"] }, { en: "You are sleeping.", es: ["estás durmiendo", "tú estás durmiendo"] }, { en: "He is asking for help.", es: ["está pidiendo ayuda", "él está pidiendo ayuda"] }, { en: "We are saying the truth.", es: ["estamos diciendo la verdad", "nosotros estamos diciendo la verdad"] }, { en: "They are following me.", es: ["me están siguiendo", "están siguiéndome"] }, { en: "She is serving the dinner.", es: ["está sirviendo la cena", "ella está sirviendo la cena"] }, { en: "I am feeling sick.", es: ["me estoy sintiendo mal", "estoy sintiéndome mal"] }, { en: "You are laughing.", es: ["te estás riendo", "estás riéndote"] }, { en: "They are building a house.", es: ["están construyendo una casa", "ellos están construyendo una casa"] }, { en: "He is bringing the drinks.", es: ["está trayendo las bebidas", "él está trayendo las bebidas"] }
+    { en: "I am reading a book.", es: ["estoy leyendo un libro", "yo estoy leyendo un libro"] },
+    { en: "You are sleeping.", es: ["estás durmiendo", "tú estás durmiendo"] },
+    { en: "He is asking for help.", es: ["está pidiendo ayuda", "él está pidiendo ayuda"] },
+    { en: "We are saying the truth.", es: ["estamos diciendo la verdad", "nosotros estamos diciendo la verdad"] },
+    { en: "They are following me.", es: ["me están siguiendo", "están siguiéndome"] },
+    { en: "She is serving the dinner.", es: ["está sirviendo la cena", "ella está sirviendo la cena"] },
+    { en: "I am feeling sick.", es: ["me estoy sintiendo mal", "estoy sintiéndome mal"] },
+    { en: "You are laughing.", es: ["te estás riendo", "estás riéndote"] },
+    { en: "They are building a house.", es: ["están construyendo una casa", "ellos están construyendo una casa"] },
+    { en: "He is bringing the drinks.", es: ["está trayendo las bebidas", "él está trayendo las bebidas"] },
+    { en: "I am going to the market.", es: ["yo estoy yendo al mercado", "estoy yendo al mercado"] },
+    { en: "You are hearing that noise.", es: ["tú estás oyendo ese ruido", "estás oyendo ese ruido"] },
+    { en: "He is falling from the tree.", es: ["él se está cayendo del arbol", "se está cayendo del arbol"] },
+    { en: "We are bringing the food.", es: ["nosotros estamos trayendo la comida", "estamos trayendo la comida"] },
+    { en: "They are laughing at the joke.", es: ["ellos se están riendo del chiste", "se están riendo del chiste"] },
+    { en: "She is smiling at me.", es: ["ella me está sonriendo", "me está sonriendo"] },
+    { en: "I am following your instructions.", es: ["yo estoy siguiendo tus instrucciones", "estoy siguiendo tus instrucciones"] },
+    { en: "You are serving the food.", es: ["tú estás sirviendo la comida", "estás sirviendo la comida"] },
+    { en: "He is repeating the sentence.", es: ["él está repitiendo la frase", "está repitiendo la frase"] },
+    { en: "We are getting dressed for the party.", es: ["nosotros nos estamos vistiendo para la fiesta", "nos estamos vistiendo para la fiesta"] }
 ];
 const readingData = {
-    title: "Un Domingo en Casa",
-    content: "Hoy es domingo y toda mi familia está en casa. Yo estoy leyendo un libro interesante en el sofá. Mi mamá está cocinando en la cocina; huele delicioso. Mi papá está trabajando en el jardín. Mis hermanos están jugando videojuegos en su habitación, están gritando mucho. El perro está durmiendo a mis pies. Es un día tranquilo, y estoy sintiéndome muy feliz y relajado.",
+    title: "Mi Ciudad Activa",
+    content: "En mi ciudad, la gente siempre está haciendo algo. Ahora mismo, yo estoy sentado en un café. Un músico está tocando la guitarra en la calle. Muchas personas están caminando y hablando. Unos niños están corriendo en el parque. Una mujer está vendiendo flores. Los carros están avanzando lentamente. Me gusta mi ciudad porque siempre está cambiando y moviéndose.",
     questions: [
-        { q: "¿Qué estoy haciendo yo?", a: ["leyendo un libro", "estás leyendo un libro"] }, { q: "¿Qué está haciendo mi mamá?", a: ["cocinando", "está cocinando"] }, { q: "¿Dónde está trabajando mi papá?", a: ["en el jardín"] }, { q: "¿Qué están haciendo mis hermanos?", a: ["jugando videojuegos"] }, { q: "¿Cómo me estoy sintiendo?", a: ["feliz y relajado"] },
+        { q: "¿Dónde estoy sentado?", a: ["en un café"] },
+        { q: "¿Qué está haciendo el músico?", a: ["tocando la guitarra"] },
+        { q: "¿Qué están haciendo los niños?", a: ["corriendo en el parque"] },
+        { q: "¿Qué está vendiendo la mujer?", a: ["flores"] },
+        { q: "¿Por qué me gusta mi ciudad?", a: ["porque siempre está cambiando y moviéndose"] }
     ]
 };
 const finalExPrompts = [
     { s: "1. Yo _______ (hablar) por teléfono.", a: "estoy hablando" }, { s: "2. Tú _______ (comer) una pizza.", a: "estás comiendo" }, { s: "3. Él _______ (vivir) en Londres.", a: "está viviendo" }, { s: "4. Nosotros _______ (estudiar) mucho.", a: "estamos estudiando" }, { s: "5. Ellos _______ (correr) en el parque.", a: "están corriendo" }, { s: "6. Ella _______ (cantar) muy bien.", a: "está cantando" }, { s: "7. Yo _______ (leer) el periódico.", a: "estoy leyendo" }, { s: "8. Tú _______ (dormir) profundamente.", a: "estás durmiendo" }, { s: "9. Él _______ (escribir) un correo.", a: "está escribiendo" }, { s: "10. Nosotros _______ (aprender) español.", a: "estamos aprendiendo" }, { s: "11. Ellos _______ (jugar) al fútbol.", a: "están jugando" }, { s: "12. Ella _______ (hacer) la cena.", a: "está haciendo" }, { s: "13. Yo _______ (ver) la televisión.", a: "estoy viendo" }, { s: "14. Tú _______ (pedir) un favor.", a: "estás pidiendo" }, { s: "15. Nosotros _______ (viajar) a México.", a: "estamos viajando" },
 ];
 const negativePrompts = [
-    { en: "I am not working.", es: ["no estoy trabajando", "yo no estoy trabajando"] }, { en: "You are not eating.", es: ["no estás comiendo", "tú no estás comiendo"] }, { en: "He is not sleeping.", es: ["no está durmiendo", "él no está durmiendo"] }, { en: "We are not studying.", es: ["no estamos estudiando", "nosotros no estamos estudiando"] }, { en: "They are not playing.", es: ["no están jugando", "ellos no están jugando"] }, { en: "She is not cooking.", es: ["no está cocinando", "ella no está cocinando"] }, { en: "I am not reading.", es: ["no estoy leyendo", "yo no estoy leyendo"] }, { en: "You are not running.", es: ["no estás corriendo", "tú no estás corriendo"] }, { en: "He is not writing.", es: ["no está escribiendo", "él no está escribiendo"] }, { en: "We are not singing.", es: ["no estamos cantando", "nosotros no estamos cantando"] },
+    { en: "I am not working.", es: ["no estoy trabajando", "yo no estoy trabajando"] },
+    { en: "You are not eating.", es: ["no estás comiendo", "tú no estás comiendo"] },
+    { en: "He is not sleeping.", es: ["no está durmiendo", "él no está durmiendo"] },
+    { en: "We are not studying.", es: ["no estamos estudiando", "nosotros no estamos estudiando"] },
+    { en: "They are not playing.", es: ["no están jugando", "ellos no están jugando"] },
+    { en: "She is not cooking.", es: ["no está cocinando", "ella no está cocinando"] },
+    { en: "I am not reading.", es: ["no estoy leyendo", "yo no estoy leyendo"] },
+    { en: "You are not running.", es: ["no estás corriendo", "tú no estás corriendo"] },
+    { en: "He is not writing.", es: ["no está escribiendo", "él no está escribiendo"] },
+    { en: "We are not singing.", es: ["no estamos cantando", "nosotros no estamos cantando"] },
+    { en: "They are not dancing.", es: ["no están bailando", "ellos no están bailando"] },
+    { en: "I am not drinking coffee.", es: ["no estoy bebiendo café", "yo no estoy bebiendo café"] },
+    { en: "You are not living here.", es: ["no estás viviendo aquí", "tú no estás viviendo aquí"] },
+    { en: "She is not opening the door.", es: ["no está abriendo la puerta", "ella no está abriendo la puerta"] },
+    { en: "We are not following the news.", es: ["no estamos siguiendo las noticias", "nosotros no estamos siguiendo las noticias"] },
+    { en: "They are not laughing.", es: ["no se están riendo", "no están riéndose"] },
+    { en: "I am not feeling well.", es: ["no me estoy sintiendo bien", "no estoy sintiéndome bien"] },
+    { en: "He is not bringing anything.", es: ["no está trayendo nada", "él no está trayendo nada"] },
+    { en: "You are not asking correctly.", es: ["no estás pidiendo correctamente", "tú no estás pidiendo correctamente"] },
+    { en: "They are not building the house.", es: ["no están construyendo la casa", "ellos no están construyendo la casa"] }
 ];
 
 // --- NUEVO COMPONENTE DE EJERCICIO INDIVIDUAL ---
