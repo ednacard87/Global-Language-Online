@@ -33,9 +33,10 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { VocabularyMatchingGame } from '@/components/dashboard/vocabulary-matching-game';
+import { Textarea } from '@/components/ui/textarea';
 
 // --- Engineering Configuration ---
-const progressStorageVersion = 'progress_es_a1_verbos_preferencia_v3_bug_fix';
+const progressStorageVersion = 'progress_es_a1_verbos_preferencia_v5_vocab_buttons';
 const mainProgressKey = 'progress_a1_es_verbos_preferencia';
 
 // --- Data ---
@@ -58,111 +59,129 @@ const preferenceVocab = [
     { en: "The noise", es: "El ruido" },
 ];
 
-const ex1Prompts = Array(20).fill(0).map((_, i) => {
-    const prompts = [
-        { q: "A mí me ______ la pizza.", a: "gusta" },
-        { q: "A ellos les ______ los deportes.", a: "gustan" },
-        { q: "A ti te ______ leer.", a: "gusta" },
-        { q: "A nosotros nos ______ las películas de ciencia ficción.", a: "gustan" },
-        { q: "A ella le ______ el café por la mañana.", a: "gusta" },
-        { q: "A ustedes les ______ los días soleados.", a: "gustan" },
-        { q: "A mí no me ______ las arañas.", a: "gustan" },
-        { q: "A mi hermano le ______ escuchar música rock.", a: "gusta" },
-        { q: "A mis padres les ______ los documentales.", a: "gustan" },
-        { q: "¿Te ______ el helado de chocolate?", a: "gusta" },
-        { q: "A nosotros nos ______ las fresas.", a: "gustan" },
-        { q: "A María le ______ caminar por la playa.", a: "gusta" },
-        { q: "A mí me ______ mucho tus zapatos.", a: "gustan" },
-        { q: "A los niños les ______ jugar afuera.", a: "gusta" },
-        { q: "A ti te ______ las matemáticas.", a: "gustan" },
-        { q: "A mi jefe le ______ el orden.", a: "gusta" },
-        { q: "A ellas les ______ los gatos negros.", a: "gustan" },
-        { q: "Me ______ la idea.", a: "gusta" },
-        { q: "Nos ______ los conciertos en vivo.", a: "gustan" },
-        { q: "Le ______ la comida picante.", a: "gusta" },
-    ];
-    return prompts[i];
-});
+const ex1Prompts = [
+    { en: "I like pizza.", es: ["me gusta la pizza"] },
+    { en: "They like sports.", es: ["a ellos les gustan los deportes", "les gustan los deportes"] },
+    { en: "You like to read.", es: ["a ti te gusta leer", "te gusta leer"] },
+    { en: "We like science fiction movies.", es: ["a nosotros nos gustan las películas de ciencia ficción", "nos gustan las películas de ciencia ficción"] },
+    { en: "She likes coffee in the morning.", es: ["a ella le gusta el café por la mañana", "le gusta el café por la mañana"] },
+    { en: "You all like sunny days.", es: ["a ustedes les gustan los días soleados", "les gustan los días soleados"] },
+    { en: "I don't like spiders.", es: ["no me gustan las arañas"] },
+    { en: "My brother likes to listen to rock music.", es: ["a mi hermano le gusta escuchar música rock"] },
+    { en: "My parents like documentaries.", es: ["a mis padres les gustan los documentales"] },
+    { en: "Do you like chocolate ice cream?", es: ["te gusta el helado de chocolate?", "a ti te gusta el helado de chocolate?"] },
+    { en: "We like strawberries.", es: ["nos gustan las fresas"] },
+    { en: "Maria likes to walk on the beach.", es: ["a maría le gusta caminar por la playa"] },
+    { en: "I like your shoes a lot.", es: ["me gustan mucho tus zapatos"] },
+    { en: "The children like to play outside.", es: ["a los niños les gusta jugar afuera"] },
+    { en: "You like mathematics.", es: ["a ti te gustan las matemáticas", "te gustan las matemáticas"] },
+    { en: "My boss likes order.", es: ["a mi jefe le gusta el orden"] },
+    { en: "They (fem.) like black cats.", es: ["a ellas les gustan los gatos negros"] },
+    { en: "I like the idea.", es: ["me gusta la idea"] },
+    { en: "We like live concerts.", es: ["nos gustan los conciertos en vivo"] },
+    { en: "He likes spicy food.", es: ["a él le gusta la comida picante", "le gusta la comida picante"] },
+];
+const ex1Vocab = [
+    {en: "Pizza", es: "la pizza"}, {en: "Sports", es: "los deportes"}, {en: "To read", es: "leer"}, {en: "Movies", es: "las películas"}, {en: "Coffee", es: "el café"}, {en: "Spiders", es: "las arañas"}, {en: "To listen", es: "escuchar"}, {en: "Documentaries", es: "los documentales"}, {en: "Ice cream", es: "el helado"}, {en: "Shoes", es: "los zapatos"}, {en: "To play", es: "jugar"}, {en: "Idea", es: "la idea"}
+];
 
-const ex2Prompts = Array(20).fill(0).map((_, i) => {
-    const prompts = [
-        { q: "A Juan ______ gusta el café.", a: "le" },
-        { q: "A mis amigos y a mí ______ encanta viajar.", a: "nos" },
-        { q: "¿A ti ______ molesta el ruido?", a: "te" },
-        { q: "A mí ______ duelen los pies.", a: "me" },
-        { q: "A ustedes ______ parece una buena idea.", a: "les" },
-        { q: "A nosotros no ______ importa la hora.", a: "nos" },
-        { q: "A ella ______ aburren las matemáticas.", a: "le" },
-        { q: "A ellos ______ encantan los perros.", a: "les" },
-        { q: "¿A usted ______ interesa la historia?", a: "le" },
-        { q: "A mí ______ gusta mucho este libro.", a: "me" },
-        { q: "A ti y a tu hermano ______ queda bien esa ropa.", a: "les" },
-        { q: "A nosotros ______ duelen las manos.", a: "nos" },
-        { q: "A los turistas ______ interesa la cultura local.", a: "les" },
-        { q: "(A mí) ______ parece increíble.", a: "me" },
-        { q: "¿(A ti) ______ apetece un helado?", a: "te" },
-        { q: "A mi madre ______ preocupa la situación.", a: "le" },
-        { q: "A mis abuelos ______ gusta recibir visitas.", a: "les" },
-        { q: "(A nosotros) ______ encanta la playa.", a: "nos" },
-        { q: "A ti ______ duele la cabeza, ¿verdad?", a: "te" },
-        { q: "(A mí) no ______ gustan las despedidas.", a: "me" },
-    ];
-    return prompts[i];
-});
+const ex2Prompts = [
+    { q: "A Juan ______ gusta el café.", a: "le" },
+    { q: "A mis amigos y a mí ______ encanta viajar.", a: "nos" },
+    { q: "¿A ti ______ molesta el ruido?", a: "te" },
+    { q: "A mí ______ duelen los pies.", a: "me" },
+    { q: "A ustedes ______ parece una buena idea.", a: "les" },
+    { q: "A nosotros no ______ importa la hora.", a: "nos" },
+    { q: "A ella ______ aburren las matemáticas.", a: "le" },
+    { q: "A ellos ______ encantan los perros.", a: "les" },
+    { q: "¿A usted ______ interesa la historia?", a: "le" },
+    { q: "A mí ______ gusta mucho este libro.", a: "me" },
+    { q: "A ti y a tu hermano ______ queda bien esa ropa.", a: "les" },
+    { q: "A nosotros ______ duelen las manos.", a: "nos" },
+    { q: "A los turistas ______ interesa la cultura local.", a: "les" },
+    { q: "(A mí) ______ parece increíble.", a: "me" },
+    { q: "¿(A ti) ______ apetece un helado?", a: "te" },
+    { q: "A mi madre ______ preocupa la situación.", a: "le" },
+    { q: "A mis abuelos ______ gusta recibir visitas.", a: "les" },
+    { q: "(A nosotros) ______ encanta la playa.", a: "nos" },
+    { q: "A ti ______ duele la cabeza, ¿verdad?", a: "te" },
+    { q: "(A mí) no ______ gustan las despedidas.", a: "me" },
+];
 
-const ex3Prompts = Array(20).fill(0).map((_, i) => {
-    const prompts = [
-        { q: "A mí me ______ las películas de terror. (encantar)", a: "encantan" },
-        { q: "A ella no le ______ la política. (interesar)", a: "interesa" },
-        { q: "A nosotros nos ______ los pies después de caminar. (doler)", a: "duelen" },
-        { q: "A ti te ______ el ruido fuerte. (molestar)", a: "molesta" },
-        { q: "A ellos les ______ mucho los videojuegos. (aburrir)", a: "aburren" },
-        { q: "A mi padre le ______ el fútbol. (importar)", a: "importa" },
-        { q: "A mí me ______ bien estos pantalones. (quedar)", a: "quedan" },
-        { q: "A ustedes les ______ la comida exótica. (interesar)", a: "interesa" },
-        { q: "A nosotros nos ______ las mañanas frías. (encantar)", a: "encantan" },
-        { q: "A mi perro le ______ los truenos. (molestar)", a: "molestan" },
-        { q: "Me ______ la espalda. (doler)", a: "duele" },
-        { q: "Nos ______ las novelas de misterio. (interesar)", a: "interesan" },
-        { q: "Te ______ raro que no llame. (parecer)", a: "parece" },
-        { q: "Les ______ las mentiras. (molestar)", a: "molestan" },
-        { q: "Me ______ solo cinco euros. (quedar)", a: "quedan" },
-        { q: "Le ______ mucho su familia. (importar)", a: "importa" },
-        { q: "Nos ______ las matemáticas. (aburrir)", a: "aburren" },
-        { q: "Me ______ los días de lluvia. (encantar)", a: "encantan" },
-        { q: "Te ______ las muelas. (doler)", a: "duelen" },
-        { q: "Les ______ geniales tus ideas. (parecer)", a: "parecen" },
-    ];
-    return prompts[i];
-});
+const ex3Prompts = [
+    { en: "I love horror movies.", es: ["me encantan las películas de terror"] },
+    { en: "She is not interested in politics.", es: ["a ella no le interesa la política", "no le interesa la política"] },
+    { en: "Our feet hurt after walking.", es: ["a nosotros nos duelen los pies después de caminar", "nos duelen los pies después de caminar"] },
+    { en: "Loud noise bothers you.", es: ["a ti te molesta el ruido fuerte", "te molesta el ruido fuerte"] },
+    { en: "Video games bore them.", es: ["a ellos les aburren los videojuegos", "les aburren los videojuegos"] },
+    { en: "Soccer is important to my father.", es: ["a mi padre le importa el fútbol"] },
+    { en: "These pants fit me well.", es: ["a mí me quedan bien estos pantalones", "me quedan bien estos pantalones"] },
+    { en: "You all are interested in exotic food.", es: ["a ustedes les interesa la comida exótica"] },
+    { en: "We love cold mornings.", es: ["a nosotros nos encantan las mañanas frías"] },
+    { en: "Thunder bothers my dog.", es: ["a mi perro le molestan los truenos"] },
+    { en: "My back hurts.", es: ["me duele la espalda"] },
+    { en: "Mystery novels interest us.", es: ["nos interesan las novelas de misterio"] },
+    { en: "It seems strange to you that he doesn't call.", es: ["te parece raro que no llame", "a ti te parece raro que no llame"] },
+    { en: "Lies bother them.", es: ["a ellos les molestan las mentiras", "les molestan las mentiras"] },
+    { en: "I only have five euros left.", es: ["me quedan solo cinco euros"] },
+    { en: "His family is very important to him.", es: ["a él le importa mucho su familia"] },
+    { en: "Math bores us.", es: ["nos aburren las matemáticas"] },
+    { en: "I love rainy days.", es: ["me encantan los días de lluvia"] },
+    { en: "Your teeth hurt.", es: ["te duelen las muelas", "a ti te duelen las muelas"] },
+    { en: "Your ideas seem great to them.", es: ["a ellos les parecen geniales tus ideas"] },
+];
+const ex3Vocab = [
+    {en: "To love (things)", es: "encantar"}, {en: "To interest", es: "interesar"}, {en: "To hurt", es: "doler"}, {en: "To bother", es: "molestar"}, {en: "To bore", es: "aburrir"}, {en: "To matter", es: "importar"}, {en: "To fit (clothing)", es: "quedar"}, {en: "To seem", es: "parecer"}, {en: "Feet", es: "los pies"}, {en: "Noise", es: "el ruido"}, {en: "Back (body)", es: "la espalda"}, {en: "Lies", es: "las mentiras"}
+];
 
-const finalExPrompts = Array(20).fill(0).map((_, i) => {
-    const prompts = [
-        { en: "I like the blue car.", es: ["me gusta el coche azul"] },
-        { en: "They love to dance.", es: ["a ellos les encanta bailar", "les encanta bailar"] },
-        { en: "My head hurts.", es: ["me duele la cabeza"] },
-        { en: "History interests us.", es: ["a nosotros nos interesa la historia", "nos interesa la historia"] },
-        { en: "The noise bothers her.", es: ["a ella le molesta el ruido", "le molesta el ruido"] },
-        { en: "Do you like fruits?", es: ["a ti te gustan las frutas?", "te gustan las frutas?"] },
-        { en: "We love dogs.", es: ["a nosotros nos encantan los perros", "nos encantan los perros"] },
-        { en: "His feet hurt.", es: ["a él le duelen los pies", "le duelen los pies"] },
-        { en: "The idea seems good to me.", es: ["a mí me parece buena la idea", "me parece buena la idea"] },
-        { en: "The news doesn't matter to them.", es: ["a ellos no les importa la noticia", "no les importa la noticia"] },
-        { en: "I like to travel.", es: ["me gusta viajar"] },
-        { en: "You love chocolate.", es: ["a ti te encanta el chocolate", "te encanta el chocolate"] },
-        { en: "His stomach hurts.", es: ["a él le duele el estómago", "le duele el estómago"] },
-        { en: "Are you bothered by the smoke?", es: ["a ti te molesta el humo?", "te molesta el humo?"] },
-        { en: "We are interested in art.", es: ["a nosotros nos interesa el arte", "nos interesa el arte"] },
-        { en: "They like horror movies.", es: ["a ellos les gustan las películas de terror", "les gustan las películas de terror"] },
-        { en: "My eyes hurt.", es: ["me duelen los ojos"] },
-        { en: "She loves sunny days.", es: ["a ella le encantan los días soleados", "le encantan los días soleados"] },
-        { en: "It seems strange to us.", es: ["a nosotros nos parece raro", "nos parece raro"] },
-        { en: "I have two euros left.", es: ["me quedan dos euros"] },
-    ];
-    return prompts[i];
-});
+const readingData = {
+    title: "Cosas que nos gustan",
+    content: "En mi familia, a todos nos gustan cosas diferentes. A mí me encanta leer libros de aventuras. A mi hermana le interesan mucho los animales; ella tiene dos perros y un gato. A mis padres les gusta escuchar música clásica. Los fines de semana, a nosotros nos gusta ver películas juntos, pero a mi hermana le aburren las películas de acción. A ella le gustan más las comedias. A mi abuelo le duele un poco la espalda, así que no le gusta caminar mucho, pero le encanta jugar ajedrez. A todos nos encanta la pizza que hace mi mamá los viernes. ¡Es la mejor!",
+    questions: [
+        { q: "¿Qué tipo de libros me encantan?", a: ["libros de aventuras"] },
+        { q: "¿Qué le interesa a mi hermana?", a: ["los animales"] },
+        { q: "¿Qué tipo de películas le aburren a la hermana?", a: ["las de acción", "las películas de acción"] },
+        { q: "¿Qué le duele al abuelo?", a: ["la espalda"] },
+        { q: "¿Qué le encanta a toda la familia los viernes?", a: ["la pizza", "la pizza que hace mi mamá"] }
+    ]
+};
 
-// --- Reusable Sentence Fill-in-the-blank component (CORRECTED) ---
+const finalExPrompts = [
+    { en: "I like the blue car.", es: ["me gusta el coche azul"] },
+    { en: "They love to dance.", es: ["a ellos les encanta bailar", "les encanta bailar"] },
+    { en: "My head hurts.", es: ["me duele la cabeza"] },
+    { en: "History interests us.", es: ["a nosotros nos interesa la historia", "nos interesa la historia"] },
+    { en: "The noise bothers her.", es: ["a ella le molesta el ruido", "le molesta el ruido"] },
+    { en: "Do you like fruits?", es: ["a ti te gustan las frutas?", "te gustan las frutas?"] },
+    { en: "We love dogs.", es: ["a nosotros nos encantan los perros", "nos encantan los perros"] },
+    { en: "His feet hurt.", es: ["a él le duelen los pies", "le duelen los pies"] },
+    { en: "The idea seems good to me.", es: ["a mí me parece buena la idea", "me parece buena la idea"] },
+    { en: "The news doesn't matter to them.", es: ["a ellos no les importa la noticia", "no les importa la noticia"] },
+    { en: "I like to travel.", es: ["me gusta viajar"] },
+    { en: "You love chocolate.", es: ["a ti te encanta el chocolate", "te encanta el chocolate"] },
+    { en: "His stomach hurts.", es: ["a él le duele el estómago", "le duele el estómago"] },
+    { en: "Are you bothered by the smoke?", es: ["a ti te molesta el humo?", "te molesta el humo?"] },
+    { en: "We are interested in art.", es: ["a nosotros nos interesa el arte", "nos interesa el arte"] },
+    { en: "They like horror movies.", es: ["a ellos les gustan las películas de terror", "les gustan las películas de terror"] },
+    { en: "My eyes hurt.", es: ["me duelen los ojos"] },
+    { en: "She loves sunny days.", es: ["a ella le encantan los días soleados", "le encantan los días soleados"] },
+    { en: "It seems strange to us.", es: ["a nosotros nos parece raro", "nos parece raro"] },
+    { en: "I have two euros left.", es: ["me quedan dos euros"] },
+];
+const finalExVocab = [
+    {en: "Car", es: "el coche"}, {en: "To dance", es: "bailar"}, {en: "Head", es: "la cabeza"}, {en: "History", es: "la historia"}, {en: "To travel", es: "viajar"}, {en: "Stomach", es: "el estómago"}, {en: "Smoke", es: "el humo"}, {en: "Art", es: "el arte"}, {en: "Eyes", es: "los ojos"}, {en: "Strange", es: "raro"}, {en: "To have left", es: "quedar"}
+];
+
+const translationTextData = {
+    title: "Traduce este texto",
+    paragraph: "I love Spanish classes because many things interest me. I like the grammar, but the new verbs bother me a little because they are difficult. My classmates and I love to practice conversation. My head hurts when I don't understand, but it doesn't matter. The important thing is to learn. It seems to me that Spanish is a very beautiful language.",
+    vocabulary: [
+        {en: "Classes", es: "las clases"}, {en: "To interest", es: "interesar"}, {en: "Grammar", es: "la gramática"}, {en: "To bother", es: "molestar"}, {en: "Difficult", es: "difícil"}, {en: "Classmates", es: "los compañeros"}, {en: "To practice", es: "practicar"}, {en: "Conversation", es: "la conversación"}, {en: "To hurt", es: "doler"}, {en: "To understand", es: "entender"}, {en: "To matter", es: "importar"}, {en: "To seem", es: "parecer"}
+    ]
+};
+
+
+// --- Reusable Sentence Fill-in-the-blank component ---
 const FillInTheBlankExercise = ({ title, prompts, onComplete, instruction }: { title: string, prompts: { q: string, a: string }[], onComplete: () => void, instruction: string }) => {
     const { toast } = useToast();
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -257,12 +276,13 @@ const FillInTheBlankExercise = ({ title, prompts, onComplete, instruction }: { t
 };
 
 
-// --- Reusable Translation Exercise Component ---
-const SingleStepExercise = ({ title, prompts, onComplete }: { title: string, prompts: { en: string, es: string[] }[], onComplete: () => void }) => {
+// --- Reusable Translation Exercise Component (with Vocab button) ---
+const SingleStepExercise = ({ title, prompts, onComplete, vocabulary }: { title: string, prompts: { en: string, es: string[] }[], onComplete: () => void, vocabulary?: {en: string, es: string}[] }) => {
     const { toast } = useToast();
     const [currentIndex, setCurrentIndex] = useState(0);
     const [currentAnswer, setCurrentAnswer] = useState('');
     const [statuses, setStatuses] = useState<('correct' | 'incorrect' | 'unchecked')[]>(() => Array(prompts.length).fill('unchecked'));
+    const [showVocab, setShowVocab] = useState(false);
 
     useEffect(() => {
         if (statuses[currentIndex] !== 'correct') {
@@ -320,8 +340,26 @@ const SingleStepExercise = ({ title, prompts, onComplete }: { title: string, pro
     return (
          <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground">
             <CardHeader>
-                <CardTitle className="text-primary uppercase tracking-tighter">{title}</CardTitle>
-                 <CardDescription className="font-bold text-foreground mt-1">Frase {currentIndex + 1} de {prompts.length}</CardDescription>
+                <div className="flex justify-between items-start">
+                    <div className="flex-1">
+                        <CardTitle className="text-primary uppercase tracking-tighter">{title}</CardTitle>
+                        <CardDescription className="font-bold text-foreground mt-1">Frase {currentIndex + 1} de {prompts.length}</CardDescription>
+                    </div>
+                    {vocabulary && (
+                        <Button variant="outline" size="sm" onClick={() => setShowVocab(!showVocab)}>
+                            <BookOpen className="mr-2 h-4 w-4" />
+                            {showVocab ? 'Ocultar' : 'Mostrar'} Vocab.
+                        </Button>
+                    )}
+                </div>
+                {showVocab && vocabulary && (
+                    <ScrollArea className="h-32 w-full mt-4"><div className="p-4 bg-muted rounded-lg border text-sm">
+                        <h4 className="font-bold mb-2 text-primary">Vocabulario del Ejercicio</h4>
+                        <ul className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-2">{
+                            vocabulary.map(v => <li key={v.en}><strong>{v.en}:</strong> {v.es}</li>)
+                        }</ul>
+                    </div></ScrollArea>
+                )}
                 <div className="flex gap-1.5 justify-center flex-wrap pt-4">
                     {prompts.map((_, i) => (
                         <div key={i} onClick={() => setCurrentIndex(i)} className={cn("h-3 flex-1 rounded-full cursor-pointer transition-all", "min-w-[20px]", currentIndex === i && "ring-2 ring-primary ring-offset-2 ring-offset-background", statuses[i] === 'correct' ? "bg-green-500" : statuses[i] === 'incorrect' ? "bg-red-500" : "bg-muted")} />
@@ -381,6 +419,10 @@ function VerbosPreferenciaContent() {
     const [vocabAnswers, setVocabAnswers] = useState<string[]>(Array(preferenceVocab.length).fill(''));
     const [vocabValidation, setVocabValidation] = useState<any[]>(Array(preferenceVocab.length).fill('unchecked'));
     const [canAdvanceVocab, setCanAdvanceVocab] = useState(false);
+    const [readingAns, setReadingAns] = useState<string[]>(Array(readingData.questions.length).fill(''));
+    const [readingVal, setReadingVal] = useState<any[]>(Array(readingData.questions.length).fill('unchecked'));
+    const [translationText, setTranslationText] = useState('');
+    const [showTranslateVocab, setShowTranslateVocab] = useState(false);
 
     const studentDocRef = useMemoFirebase(() => (currentUID ? doc(firestore, 'students', currentUID) : null), [firestore, currentUID]);
     const authUserRef = useMemoFirebase(() => (user ? doc(firestore, 'students', user.uid) : null), [firestore, user]);
@@ -394,11 +436,13 @@ function VerbosPreferenciaContent() {
         { key: 'vocabulary', name: '1. Vocabulario', icon: BookOpen, status: 'active' },
         { key: 'grammar1', name: '2. Gramática: Estructura', icon: GraduationCap, status: 'locked' },
         { key: 'grammar2', name: '3. Gramática: Singular/Plural', icon: GraduationCap, status: 'locked' },
-        { key: 'ex1', name: '4. Ejercicio 1: gusta/gustan', icon: PenSquare, status: 'locked' },
+        { key: 'ex1', name: '4. Ejercicio 1: Traducción', icon: PenSquare, status: 'locked' },
         { key: 'ex2', name: '5. Ejercicio 2: Pronombres', icon: PenSquare, status: 'locked' },
         { key: 'vocab_game', name: '6. Vocabulario (Juego)', icon: Gamepad2, status: 'locked' },
-        { key: 'ex3', name: '7. Ejercicio 3: Otros Verbos', icon: PenSquare, status: 'locked' },
-        { key: 'final_ex', name: '8. Ejercicio Final', icon: Trophy, status: 'locked' },
+        { key: 'reading', name: '7. Lectura', icon: BookText, status: 'locked' },
+        { key: 'ex3', name: '8. Ejercicio 3: Traducción', icon: PenSquare, status: 'locked' },
+        { key: 'final_ex', name: '9. Ejercicio Final', icon: Trophy, status: 'locked' },
+        { key: 'translate_text', name: '10. Traducir Texto', icon: MessageSquare, status: 'locked' },
     ], []);
 
     useEffect(() => {
@@ -479,6 +523,19 @@ function VerbosPreferenciaContent() {
         else toast({ variant: 'destructive', title: `Necesitas ${8 - okCount} más aciertos para avanzar.` });
     };
 
+    const handleCheckReading = () => {
+        let allOk = true;
+        const nv = readingData.questions.map((q, i) => {
+            const isOk = q.a.some(ans => (readingAns[i] || '').trim().toLowerCase().includes(ans.toLowerCase()));
+            if (!isOk) allOk = false;
+            return isOk ? 'correct' : 'incorrect';
+        });
+        setReadingVal(nv as any);
+        if (allOk) { toast({ title: "¡Lectura superada!" }); handleTopicComplete('reading'); }
+        else toast({ variant: 'destructive', title: "Revisa tus respuestas." });
+    };
+
+
     const renderContent = () => {
         if (isInitialLoading) return <div className="flex justify-center items-center h-96"><Loader2 className="animate-spin text-primary h-12 w-12" /></div>;
 
@@ -486,11 +543,13 @@ function VerbosPreferenciaContent() {
             case 'vocabulary': return <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm"><CardHeader><CardTitle>Vocabulario: Verbos de Preferencia</CardTitle><CardDescription>Escribe el verbo o sustantivo en español.</CardDescription></CardHeader><CardContent><div className="grid grid-cols-2 gap-4">{preferenceVocab.map((v, i) => (<Fragment key={i}><Label className='font-semibold'>{v.en}</Label><Input value={vocabAnswers[i]} onChange={e => { const na = [...vocabAnswers]; na[i] = e.target.value; setVocabAnswers(na); const newValidation = [...vocabValidation]; newValidation[i] = 'unchecked'; setVocabValidation(newValidation); setCanAdvanceVocab(false); }} className={cn("h-10 uppercase", vocabValidation[i] === 'correct' ? 'border-green-500' : vocabValidation[i] === 'incorrect' ? 'border-red-500' : '')} /></Fragment>))}</div></CardContent><CardFooter className="flex justify-between border-t pt-6"><Button onClick={handleVocabCheck} variant="secondary">Verificar</Button><Button onClick={() => handleTopicComplete('vocabulary')} disabled={!canAdvanceVocab && !isAdmin}>Avanzar <ArrowRight className='ml-2 h-4 w-4' /></Button></CardFooter></Card>;
             case 'grammar1': return <Card className="shadow-soft border-2 border-brand-purple"><CardHeader><CardTitle>Gramática: La Estructura Especial</CardTitle></CardHeader><CardContent className="space-y-6"><div><h3 className='font-bold text-lg text-primary'>Estructura Inversa</h3><p>Con verbos como GUSTAR, la persona que siente la emoción (I, you, he) se convierte en un objeto indirecto en español (me, te, le). La cosa que provoca la emoción es el sujeto de la oración.</p><p className='mt-2 p-3 bg-muted rounded-lg font-mono'>I like music → <span className='text-blue-500'>Me</span> <span className='text-red-500'>gusta</span> <span className='text-green-500'>la música</span>.</p></div><div><h3 className='font-bold text-lg text-primary'>Pronombres de Objeto Indirecto</h3><p>Estos son los pronombres que SIEMPRE se usan con estos verbos:</p><ul className="list-none space-y-2 mt-2">{[ {p: "(A mí)", i: "me"}, {p: "(A ti)", i: "te"}, {p: "(A él/ella/usted)", i: "le"}, {p: "(A nosotros/as)", i: "nos"}, {p: "(A ellos/as/ustedes)", i: "les"}].map(item => <li key={item.i} className='flex items-center'><span className='w-1/3 text-muted-foreground'>{item.p}</span><span className='font-bold text-lg'>{item.i}</span></li>)}</ul><p className='text-sm text-muted-foreground mt-2'>La parte entre paréntesis (A mí, A ti...) es opcional y se usa para dar énfasis o aclarar.</p></div></CardContent><CardFooter className='justify-end'><Button onClick={() => handleTopicComplete('grammar1')}>Comprendido <CheckCircle className='ml-2 h-4 w-4' /></Button></CardFooter></Card>;
             case 'grammar2': return <Card className="shadow-soft border-2 border-brand-purple"><CardHeader><CardTitle>Gramática: Singular vs. Plural</CardTitle></CardHeader><CardContent className="space-y-6"><div><h3 className='font-bold text-lg text-primary'>Usando el Singular (gusta, encanta, duele)</h3><p>Usa la forma singular del verbo cuando la cosa que te gusta es:</p><ul className='list-disc pl-5 mt-2 space-y-1'><li>Un sustantivo singular: <span className='font-mono'>Me gusta <strong>el libro</strong>.</span></li><li>Un verbo en infinitivo: <span className='font-mono'>Nos encanta <strong>viajar</strong>.</span></li></ul></div><div><h3 className='font-bold text-lg text-primary'>Usando el Plural (gustan, encantan, duelen)</h3><p>Usa la forma plural del verbo cuando la cosa que te gusta es un sustantivo plural:</p><ul className='list-disc pl-5 mt-2 space-y-1'><li><span className='font-mono'>Te gustan <strong>los perros</strong>.</span></li><li><span className='font-mono'>Les duelen <strong>las muelas</strong>.</span></li></ul></div><div className='p-4 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg text-yellow-800 dark:text-yellow-300'><p><strong>¡Recuerda!</strong> El verbo concuerda con la cosa (el sujeto), no con la persona (el objeto indirecto).</p></div></CardContent><CardFooter className='justify-end'><Button onClick={() => handleTopicComplete('grammar2')}>¡Listo! <CheckCircle className='ml-2 h-4 w-4' /></Button></CardFooter></Card>;
-            case 'ex1': return <FillInTheBlankExercise title="Ejercicio 1: gusta vs. gustan" prompts={ex1Prompts} onComplete={() => handleTopicComplete('ex1')} instruction="Completa la frase con 'gusta' o 'gustan'." />;
-            case 'ex2': return <FillInTheBlankExercise title="Ejercicio 2: Los Pronombres" prompts={ex2Prompts} onComplete={() => handleTopicComplete('ex2')} instruction="Completa la frase con el pronombre correcto." />;
+            case 'ex1': return <SingleStepExercise title="Ejercicio 1: Traducción (gusta/gustan)" prompts={ex1Prompts} onComplete={() => handleTopicComplete('ex1')} vocabulary={ex1Vocab} />;
+            case 'ex2': return <FillInTheBlankExercise title="Ejercicio 2: Los Pronombres" prompts={ex2Prompts} onComplete={() => handleTopicComplete('ex2')} instruction="Completa la frase con el pronombre correcto (me, te, le, nos, les)." />;
             case 'vocab_game': return <Card className="shadow-soft border-2 border-brand-purple bg-card/95"><CardHeader><CardTitle>Juego de Vocabulario</CardTitle></CardHeader><CardContent><VocabularyMatchingGame data={preferenceVocab.slice(0, 8).map(v => ({ spanish: v.es, english: [v.en] }))} onComplete={() => handleTopicComplete('vocab_game')} title="Encuentra las parejas" /></CardContent></Card>;
-            case 'ex3': return <FillInTheBlankExercise title="Ejercicio 3: Otros Verbos de Preferencia" prompts={ex3Prompts} onComplete={() => handleTopicComplete('ex3')} instruction="Completa la frase con la forma correcta del verbo indicado." />;
-            case 'final_ex': return <SingleStepExercise title="Ejercicio Final: Traducción" prompts={finalExPrompts} onComplete={() => handleTopicComplete('final_ex')} />;
+            case 'reading': return <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left overflow-hidden"><CardHeader className='bg-primary/5 border-b'><CardTitle className='text-primary uppercase tracking-tight'>{readingData.title}</CardTitle></CardHeader><CardContent className="space-y-6 pt-6"><div className="p-6 bg-muted rounded-2xl border italic text-lg leading-relaxed text-foreground shadow-inner">{readingData.content}</div><Separator /><div className="space-y-4"><h3 className='font-black text-primary uppercase text-sm'>Preguntas de Comprensión:</h3>{readingData.questions.map((q, i) => (<div key={i} className="space-y-2 p-3 bg-muted/20 rounded-xl border"><Label className="font-bold">{q.q}</Label><Input value={readingAns[i]} onChange={e => { const na = [...readingAns]; na[i] = e.target.value; setReadingAns(na); setReadingVal(v => { const nv = [...v]; nv[i] = 'unchecked'; return nv as any; }); }} className={cn("h-10", readingVal[i] === 'correct' ? 'border-green-500 bg-green-50/5' : readingVal[i] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} autoComplete="off" /></div>))}</div></CardContent><CardFooter className="justify-center border-t p-6 bg-muted/10"><Button onClick={handleCheckReading} size="lg" className="px-16 font-black h-12 shadow-md">Verificar Lectura</Button></CardFooter></Card>;
+            case 'ex3': return <SingleStepExercise title="Ejercicio 3: Traducción (Otros Verbos)" prompts={ex3Prompts} onComplete={() => handleTopicComplete('ex3')} vocabulary={ex3Vocab} />;
+            case 'final_ex': return <SingleStepExercise title="Ejercicio Final: Traducción General" prompts={finalExPrompts} onComplete={() => handleTopicComplete('final_ex')} vocabulary={finalExVocab} />;
+            case 'translate_text': return <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground text-left"><CardHeader><div className="flex justify-between items-start"><div className="flex-1"><CardTitle className='text-primary uppercase'>{translationTextData.title}</CardTitle><CardDescription className='font-bold text-foreground'>Traduce el siguiente párrafo al español.</CardDescription></div><Button variant="outline" size="sm" onClick={() => setShowTranslateVocab(!showTranslateVocab)}><BookOpen className="mr-2 h-4 w-4" />{showTranslateVocab ? 'Ocultar' : 'Mostrar'} Vocab.</Button></div>{showTranslateVocab && <ScrollArea className="h-32 w-full mt-4"><div className="p-4 bg-muted rounded-lg border text-sm"><h4 className="font-bold mb-2 text-primary">Vocabulario del Ejercicio</h4><ul className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-2">{translationTextData.vocabulary.map(v => <li key={v.en}><strong>{v.en}:</strong> {v.es}</li>)}</ul></div></ScrollArea>}</CardHeader><CardContent className="space-y-6 pt-6"><div className="p-6 bg-muted/50 rounded-2xl border italic text-lg leading-relaxed text-foreground shadow-sm">{translationTextData.paragraph}</div><Separator /><div className="space-y-2"><Label className='font-black text-primary uppercase text-sm'>Tu Traducción:</Label><Textarea value={translationText} onChange={(e) => setTranslationText(e.target.value)} placeholder="Escribe el texto en español aquí..." className="min-h-[200px] text-lg leading-relaxed" /></div></CardContent><CardFooter className="justify-center border-t pt-6 bg-muted/20"><Button onClick={() => handleTopicComplete('translate_text')} size="lg" className="px-24 font-black h-16 text-2xl shadow-xl bg-primary hover:bg-primary/90 text-primary-foreground uppercase tracking-tighter">Misión Final <ArrowRight className='ml-3 h-8 w-8' /></Button></CardFooter></Card>;
             default: return <div className="text-center p-8">Selecciona una misión para comenzar.</div>;
         }
     };
