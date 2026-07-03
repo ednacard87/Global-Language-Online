@@ -36,7 +36,7 @@ import { VocabularyMatchingGame } from '@/components/dashboard/vocabulary-matchi
 import { Textarea } from '@/components/ui/textarea';
 
 // --- Engineering Configuration ---
-const progressStorageVersion = 'progress_es_a1_demostrativos_v2_fix';
+const progressStorageVersion = 'progress_es_a1_demostrativos_v3_40vocab';
 const mainProgressKey = 'progress_a1_es_demostrativos';
 
 // --- Data ---
@@ -44,19 +44,18 @@ const demonstrativesVocab = [
     { en: "Book", es: "El libro" },
     { en: "House", es: "La casa" },
     { en: "Cars", es: "Los coches" },
-    { en: "Chair", es: "La silla" },
-    { en: "Pens", es: "Los bolígrafos" },
-    { en: "Table", es: "La mesa" },
+    { en: "Chairs", es: "Las sillas" },
+    { en: "Pen", es: "El bolígrafo" },
+    { en: "Tables", es: "Las mesas" },
     { en: "Boy", es: "El chico" },
     { en: "Girls", es: "Las chicas" },
     { en: "Mountain", es: "La montaña" },
     { en: "Trees", es: "Los árboles" },
     { en: "Apple", es: "La manzana" },
-    { en: "Dog", es: "El perro" },
-    { en: "Shoes", es: "Los zapatos" },
-    { en: "Key", es: "La llave" },
-    { en: "Flowers", es: "Las flores" },
-    { en: "City", es: "La ciudad" },
+    { en: "Dogs", es: "Los perros" },
+    { en: "Shoe", es: "El zapato" },
+    { en: "Keys", es: "Las llaves" },
+    { en: "Flower", es: "La flor" },
     { en: "Cities", es: "Las ciudades" },
     { en: "Computer", es: "La computadora" },
     { en: "Phones", es: "Los teléfonos" },
@@ -508,13 +507,15 @@ function DemostrativosContent() {
     const handleVocabCheck = () => {
         let okCount = 0;
         const nv = demonstrativesVocab.map((item, idx) => {
-            const isCorrect = item.es.toLowerCase().split(' ').pop() === (vocabAnswers[idx] || '').trim().toLowerCase().split(' ').pop();
+            const userAnswer = (vocabAnswers[idx] || '').trim().toLowerCase();
+            const correctAnswer = item.es.toLowerCase().replace(/^(el|la|los|las) /, '');
+            const isCorrect = userAnswer === correctAnswer;
             if (isCorrect) okCount++;
             return isCorrect ? 'correct' : 'incorrect';
         });
         setVocabValidation(nv as any);
-        if (okCount >= 8) { setCanAdvanceVocab(true); toast({ title: "¡Buen avance!" }); }
-        else toast({ variant: 'destructive', title: `Necesitas ${8 - okCount} más aciertos para avanzar.` });
+        if (okCount >= 20) { setCanAdvanceVocab(true); toast({ title: "¡Excelente! Vocabulario dominado." }); }
+        else toast({ variant: 'destructive', title: `Necesitas ${20 - okCount} más aciertos para avanzar.` });
     };
 
     const handleCheckReading = () => {
@@ -534,13 +535,13 @@ function DemostrativosContent() {
         if (isInitialLoading) return <div className="flex justify-center items-center h-96"><Loader2 className="animate-spin text-primary h-12 w-12" /></div>;
 
         switch (selectedTopic) {
-            case 'vocabulary': return <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm"><CardHeader><CardTitle>Vocabulario: Demostrativos</CardTitle><CardDescription>Escribe el sustantivo en español (sin el artículo).</CardDescription></CardHeader><CardContent><div className="grid grid-cols-2 gap-4">{demonstrativesVocab.map((v, i) => (<Fragment key={i}><Label className='font-semibold'>{v.en}</Label><Input value={vocabAnswers[i]} onChange={e => { const na = [...vocabAnswers]; na[i] = e.target.value; setVocabAnswers(na); const newValidation = [...vocabValidation]; newValidation[i] = 'unchecked'; setVocabValidation(newValidation); setCanAdvanceVocab(false); }} className={cn("h-10", vocabValidation[i] === 'correct' ? 'border-green-500' : vocabValidation[i] === 'incorrect' ? 'border-red-500' : '')} /></Fragment>))}</div></CardContent><CardFooter className="flex justify-between border-t pt-6"><Button onClick={handleVocabCheck} variant="secondary">Verificar</Button><Button onClick={() => handleTopicComplete('vocabulary')} disabled={!canAdvanceVocab && !isAdmin}>Avanzar <ArrowRight className='ml-2 h-4 w-4' /></Button></CardFooter></Card>;
+            case 'vocabulary': return <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm"><CardHeader><CardTitle>Vocabulario: Demostrativos</CardTitle><CardDescription>Escribe el sustantivo en español (sin el artículo, ej: libro, casa).</CardDescription></CardHeader><CardContent><div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">{demonstrativesVocab.map((v, i) => (<div key={i} className="space-y-1"><Label className='font-semibold'>{v.en}</Label><Input value={vocabAnswers[i]} onChange={e => { const na = [...vocabAnswers]; na[i] = e.target.value; setVocabAnswers(na); const newValidation = [...vocabValidation]; newValidation[i] = 'unchecked'; setVocabValidation(newValidation); setCanAdvanceVocab(false); }} className={cn("h-10", vocabValidation[i] === 'correct' ? 'border-green-500' : vocabValidation[i] === 'incorrect' ? 'border-red-500' : '')} /></div>))}</div></CardContent><CardFooter className="flex justify-between border-t pt-6"><Button onClick={handleVocabCheck} variant="secondary">Verificar</Button><Button onClick={() => handleTopicComplete('vocabulary')} disabled={!canAdvanceVocab && !isAdmin}>Avanzar <ArrowRight className='ml-2 h-4 w-4' /></Button></CardFooter></Card>;
             case 'grammar1': return <GrammarCard title="Gramática: Cercanía (This/These)" onComplete={() => handleTopicComplete('grammar1')}><p>Usamos <strong className="text-primary">este, esta, estos, estas</strong> para señalar algo o alguien que está cerca del hablante.</p><p className="text-muted-foreground">Corresponde a "this" y "these" en inglés y se asocia con la palabra <strong className="text-primary">"aquí"</strong> o <strong className="text-primary">"acá"</strong>.</p><DemonstrativeTable data={{ mascSing: "este", femSing: "esta", mascPlur: "estos", femPlur: "estas" }} /><p className='mt-4'>Ejemplo: <span className='font-mono bg-muted p-1 rounded'>Me gusta <strong>este</strong> libro (aquí).</span></p></GrammarCard>;
             case 'grammar2': return <GrammarCard title="Gramática: Distancia Media (That/Those)" onComplete={() => handleTopicComplete('grammar2')}><p>Usamos <strong className="text-primary">ese, esa, esos, esas</strong> para señalar algo o alguien que está a una distancia media, o cerca de la persona con la que hablamos.</p><p className="text-muted-foreground">Corresponde a "that" y "those" en inglés y se asocia con la palabra <strong className="text-primary">"ahí"</strong>.</p><DemonstrativeTable data={{ mascSing: "ese", femSing: "esa", mascPlur: "esos", femPlur: "esas" }} /><p className='mt-4'>Ejemplo: <span className='font-mono bg-muted p-1 rounded'>Pásame <strong>esa</strong> silla (ahí).</span></p></GrammarCard>;
             case 'grammar3': return <GrammarCard title="Gramática: Lejanía (That/Those over there)" onComplete={() => handleTopicComplete('grammar3')}><p>Usamos <strong className="text-primary">aquel, aquella, aquellos, aquellas</strong> para señalar algo o alguien que está lejos tanto del hablante como del oyente.</p><p className="text-muted-foreground">Corresponde a "that/those over there" en inglés y se asocia con la palabra <strong className="text-primary">"allí"</strong> o <strong className="text-primary">"allá"</strong>.</p><DemonstrativeTable data={{ mascSing: "aquel", femSing: "aquella", mascPlur: "aquellos", femPlur: "aquellas" }} /><div className="mt-4"><p>Ejemplo: <span className='font-mono bg-muted p-1 rounded'>Mira <strong>aquellas</strong> montañas (allá).</span></p><p className="mt-4 p-4 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg text-yellow-800 dark:text-yellow-300"><strong>Nota:</strong> También existen las formas neutras <strong className="font-bold">esto, eso, aquello</strong>. Se usan para referirse a ideas, situaciones o cosas no identificadas. Ej: <span className="font-mono">¿Qué es eso?</span></p></div></GrammarCard>;
             case 'ex1': return <FillInTheBlankExercise title="Ejercicio 1: Elige la distancia" prompts={ex1Prompts} onComplete={() => handleTopicComplete('ex1')} instruction="Completa con este, ese, aquel (y sus formas) según la pista." />;
             case 'ex2': return <SingleStepExercise title="Ejercicio 2: Género y Número" prompts={ex2Prompts} onComplete={() => handleTopicComplete('ex2')} vocabulary={ex2Vocab} />;
-            case 'vocab_game': return <Card className="shadow-soft border-2 border-brand-purple bg-card/95"><CardHeader><CardTitle>Juego de Vocabulario</CardTitle></CardHeader><CardContent><VocabularyMatchingGame data={demonstrativesVocab.slice(0, 8).map(v => ({ spanish: v.es, english: [v.en] }))} onComplete={() => handleTopicComplete('vocab_game')} title="Encuentra las parejas" /></CardContent></Card>;
+            case 'vocab_game': return <Card className="shadow-soft border-2 border-brand-purple bg-card/95"><CardHeader><CardTitle>Juego de Vocabulario</CardTitle></CardHeader><CardContent><VocabularyMatchingGame data={demonstrativesVocab.slice(0, 10).map(v => ({ spanish: v.es, english: [v.en] }))} onComplete={() => handleTopicComplete('vocab_game')} title="Encuentra las parejas" /></CardContent></Card>;
             case 'reading': return <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left overflow-hidden"><CardHeader className='bg-primary/5 border-b'><CardTitle className='text-primary uppercase tracking-tight'>{readingData.title}</CardTitle></CardHeader><CardContent className="space-y-6 pt-6"><div className="p-6 bg-muted rounded-2xl border italic text-lg leading-relaxed text-foreground shadow-inner">{readingData.content}</div><Separator /><div className="space-y-4"><h3 className='font-black text-primary uppercase text-sm'>Preguntas de Comprensión:</h3>{readingData.questions.map((q, i) => (<div key={i} className="space-y-2 p-3 bg-muted/20 rounded-xl border"><Label className="font-bold">{q.q}</Label><Input value={readingAns[i]} onChange={e => { const na = [...readingAns]; na[i] = e.target.value; setReadingAns(na); setReadingVal(v => { const nv = [...v]; nv[i] = 'unchecked'; return nv as any; }); }} className={cn("h-10", readingVal[i] === 'correct' ? 'border-green-500 bg-green-50/5' : readingVal[i] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} autoComplete="off" /></div>))}</div></CardContent><CardFooter className="justify-center border-t p-6 bg-muted/10"><Button onClick={handleCheckReading} size="lg" className="px-16 font-black h-12 shadow-md">Verificar Lectura</Button></CardFooter></Card>;
             case 'final_ex': return <SingleStepExercise title="Ejercicio Final: Traducción General" prompts={finalExPrompts} onComplete={() => handleTopicComplete('final_ex')} vocabulary={finalExVocab} />;
             case 'translate_text': return <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground text-left"><CardHeader><div className="flex justify-between items-start"><div className="flex-1"><CardTitle className='text-primary uppercase'>{translationTextData.title}</CardTitle><CardDescription className='font-bold text-foreground'>Traduce el siguiente párrafo al español.</CardDescription></div><Button variant="outline" size="sm" onClick={() => setShowTranslateVocab(!showTranslateVocab)}><BookOpen className="mr-2 h-4 w-4" />{showTranslateVocab ? 'Ocultar' : 'Mostrar'} Vocab.</Button></div>{showTranslateVocab && <ScrollArea className="h-32 w-full mt-4"><div className="p-4 bg-muted rounded-lg border text-sm"><h4 className="font-bold mb-2 text-primary">Vocabulario del Ejercicio</h4><ul className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-2">{translationTextData.vocabulary.map(v => <li key={v.en}><strong>{v.en}:</strong> {v.es}</li>)}</ul></div></ScrollArea>}</CardHeader><CardContent className="space-y-6 pt-6"><div className="p-6 bg-muted/50 rounded-2xl border italic text-lg leading-relaxed text-foreground shadow-sm">{translationTextData.paragraph}</div><Separator /><div className="space-y-2"><Label className='font-black text-primary uppercase text-sm'>Tu Traducción:</Label><Textarea value={translationText} onChange={(e) => setTranslationText(e.target.value)} placeholder="Escribe el texto en español aquí..." className="min-h-[200px] text-lg leading-relaxed" /></div></CardContent><CardFooter className="justify-center border-t pt-6 bg-muted/20"><Button onClick={() => handleTopicComplete('translate_text')} size="lg" className="px-24 font-black h-16 text-2xl shadow-xl bg-primary hover:bg-primary/90 text-primary-foreground uppercase tracking-tighter">Misión Final <ArrowRight className='ml-3 h-8 w-8' /></Button></CardFooter></Card>;
