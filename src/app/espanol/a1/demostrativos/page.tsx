@@ -43,9 +43,9 @@ const mainProgressKey = 'progress_a1_es_demostrativos';
 const demonstrativesVocab = [
     { en: "Book", es: "El libro" },
     { en: "House", es: "La casa" },
-    { en: "Cars", es: "Los coches" , "Los carros" },
+    { en: "Cars", es: "Los carros" },
     { en: "Chairs", es: "Las sillas" },
-    { en: "Pen", es: "El boligrafo" , "El lapicero" },
+    { en: "Pen", es: "El lapicero" },
     { en: "Tables", es: "Las mesas" },
     { en: "Boy", es: "El chico" },
     { en: "Girls", es: "Las chicas" },

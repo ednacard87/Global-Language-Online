@@ -33,7 +33,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Textarea } from '@/components/ui/textarea';
 import { MultiStepExercise } from '@/components/dashboard/multi-step-exercise';
 
-const progressStorageVersion = 'progress_es_a1_comp_sup_v4_expanded_ex1';
+const progressStorageVersion = 'progress_es_a1_comp_sup_v5_expanded_ex2';
 const mainProgressKey = 'progress_a1_es_comparativos_y_superlativos';
 
 const ex1Exercises = [
@@ -70,6 +70,41 @@ const ex1Vocabulary = [
     { en: "hotter", es: "mas caluroso" },
     { en: "more difficult", es: "mas dificil" },
     { en: "stronger", es: "mas fuerte" },
+];
+
+const ex2Exercises = [
+    { sentence: "This is the tallest building in the city.", correct: ["este es el edificio mas alto de la ciudad"] },
+    { sentence: "She is the smartest student in the class.", correct: ["ella es la estudiante mas inteligente de la clase"] },
+    { sentence: "It was the best day of my life.", correct: ["fue el mejor dia de mi vida"] },
+    { sentence: "This is the most expensive car in the world.", correct: ["este es el coche mas caro del mundo", "este es el carro mas caro del mundo"] },
+    { sentence: "He is the fastest runner on the team.", correct: ["el es el corredor mas rapido del equipo"] },
+    { sentence: "That was the worst movie I have ever seen.", correct: ["esa fue la peor pelicula que he visto"] },
+    { sentence: "The cheetah is the fastest animal.", correct: ["el guepardo es el animal mas rapido"] },
+    { sentence: "This is the easiest exercise in the book.", correct: ["este es el ejercicio mas facil del libro"] },
+    { sentence: "My grandmother is the oldest person in my family.", correct: ["mi abuela es la persona mas vieja de mi familia", "mi abuela es la persona mayor de mi familia"] },
+    { sentence: "This is the most beautiful place I've visited.", correct: ["este es el lugar mas bonito que he visitado"] },
+    { sentence: "This is the coldest winter.", correct: ["este es el invierno mas frio"] },
+    { sentence: "This is the most dangerous animal in the jungle.", correct: ["este es el animal mas peligroso de la selva"] },
+    { sentence: "He is the most famous actor.", correct: ["el es el actor mas famoso"] },
+    { sentence: "This is the highest mountain in the country.", correct: ["esta es la montaña mas alta del pais"] },
+    { sentence: "It's the cheapest restaurant in town.", correct: ["es el restaurante mas barato del pueblo"] },
+];
+
+const ex2Vocabulary = [
+    { en: "the tallest", es: "el mas alto" },
+    { en: "the smartest", es: "la mas inteligente" },
+    { en: "the best", es: "el mejor" },
+    { en: "the most expensive", es: "el mas caro" },
+    { en: "the fastest", es: "el mas rapido" },
+    { en: "the worst", es: "la peor" },
+    { en: "the easiest", es: "el mas facil" },
+    { en: "the oldest", es: "la mas vieja" },
+    { en: "the most beautiful", es: "el mas bonito" },
+    { en: "the coldest", es: "el mas frio" },
+    { en: "the most dangerous", es: "el mas peligroso" },
+    { en: "the most famous", es: "el mas famoso" },
+    { en: "the highest", es: "la mas alta" },
+    { en: "the cheapest", es: "el mas barato" },
 ];
 
 const ex4Prompts = [
@@ -1002,30 +1037,9 @@ function ComparativosSuperlativosContent() {
             case 'ex2':
                  content = <TranslationExercise 
                     title="Ejercicio 2: Superlativos"
-                    exercises={[
-                        { sentence: "This is the tallest building in the city.", correct: ["este es el edificio mas alto de la ciudad"] },
-                        { sentence: "She is the smartest student in the class.", correct: ["ella es la estudiante mas inteligente de la clase"] },
-                        { sentence: "It was the best day of my life.", correct: ["fue el mejor dia de mi vida"] },
-                        { sentence: "This is the most expensive car in the world.", correct: ["este es el coche mas caro del mundo", "este es el carro mas caro del mundo"] },
-                        { sentence: "He is the fastest runner on the team.", correct: ["el es el corredor mas rapido del equipo"] },
-                        { sentence: "That was the worst movie I have ever seen.", correct: ["esa fue la peor pelicula que he visto"] },
-                        { sentence: "The cheetah is the fastest animal.", correct: ["el guepardo es el animal mas rapido"] },
-                        { sentence: "This is the easiest exercise in the book.", correct: ["este es el ejercicio mas facil del libro"] },
-                        { sentence: "My grandmother is the oldest person in my family.", correct: ["mi abuela es la persona mas vieja de mi familia", "mi abuela es la persona mayor de mi familia"] },
-                        { sentence: "This is the most beautiful place I've visited.", correct: ["este es el lugar mas bonito que he visitado"] },
-                    ]}
+                    exercises={ex2Exercises}
                     onComplete={onComplete}
-                    vocabulary={[
-                        { en: "the tallest", es: "el mas alto" },
-                        { en: "the smartest", es: "la mas inteligente" },
-                        { en: "the best", es: "el mejor" },
-                        { en: "the most expensive", es: "el mas caro" },
-                        { en: "the fastest", es: "el mas rapido" },
-                        { en: "the worst", es: "la peor" },
-                        { en: "the easiest", es: "el mas facil" },
-                        { en: "the oldest", es: "la mas vieja" },
-                        { en: "the most beautiful", es: "el mas bonito" },
-                    ]}
+                    vocabulary={ex2Vocabulary}
                 />;
                 break;
              case 'vocab_game':
