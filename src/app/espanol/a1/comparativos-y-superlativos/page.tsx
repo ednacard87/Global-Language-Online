@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo, useCallback, Suspense, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, Suspense, Fragment } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { 
@@ -18,7 +18,11 @@ import {
     Loader2,
     MessageSquare,
     Scale,
-    HelpCircle
+    HelpCircle,
+    Pencil,
+    Zap,
+    Info,
+    ListChecks
 } from 'lucide-react';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -31,127 +35,347 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Textarea } from '@/components/ui/textarea';
-import { MultiStepExercise } from '@/components/dashboard/multi-step-exercise';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Label } from '@/components/ui/label';
+import { Separator } from '@/components/ui/separator';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { VocabularyMatchingGame } from '@/components/dashboard/vocabulary-matching-game';
 
-const progressStorageVersion = 'progress_es_a1_comp_sup_v5_expanded_ex2';
+const progressStorageVersion = 'progress_es_a1_comp_sup_v42_final_fix_all';
 const mainProgressKey = 'progress_a1_es_comparativos_y_superlativos';
 
-const ex1Exercises = [
-    { sentence: "My car is faster than yours.", correct: ["mi coche es mas rapido que el tuyo", "mi carro es mas rapido que el tuyo"] },
-    { sentence: "She is taller than her brother.", correct: ["ella es mas alta que su hermano"] },
-    { sentence: "This book is more interesting than the last one.", correct: ["este libro es mas interesante que el ultimo"] },
-    { sentence: "The weather today is better than yesterday.", correct: ["el clima hoy es mejor que ayer"] },
-    { sentence: "An elephant is bigger than a mouse.", correct: ["un elefante es mas grande que un raton"] },
-    { sentence: "This house is more expensive than the apartment.", correct: ["esta casa es mas cara que el apartamento"] },
-    { sentence: "The new phone is worse than the old one.", correct: ["el nuevo telefono es peor que el viejo"] },
-    { sentence: "He is younger than his sister.", correct: ["el es mas joven que su hermana"] },
-    { sentence: "The park is more beautiful than the street.", correct: ["el parque es mas bonito que la calle"] },
-    { sentence: "The test was easier than I expected.", correct: ["el examen fue mas facil de lo que esperaba"] },
-    { sentence: "A book is cheaper than a computer.", correct: ["un libro es mas barato que una computadora"] },
-    { sentence: "She is more intelligent than him.", correct: ["ella es mas inteligente que el"] },
-    { sentence: "Summer is hotter than winter.", correct: ["el verano es mas caluroso que el invierno"] },
-    { sentence: "This exam is more difficult than the last one.", correct: ["este examen es mas dificil que el anterior"] },
-    { sentence: "He is stronger than his opponent.", correct: ["el es mas fuerte que su oponente"] },
+// --- DATA ---
+
+const vocabularyList = [
+    { en: "Tall", es: "Alto" }, { en: "Short", es: "Bajo" }, { en: "Big", es: "Grande" },
+    { en: "Small", es: "Pequeño" }, { en: "Fast", es: "Rápido" }, { en: "Slow", es: "Lento" },
+    { en: "Expensive", es: "Caro" }, { en: "Cheap", es: "Barato" }, { en: "Interesting", es: "Interesante" },
+    { en: "Boring", es: "Aburrido" }, { en: "Good", es: "Bueno" }, { en: "Bad", es: "Malo" },
+    { en: "Better", es: "Mejor" }, { en: "Worse", es: "Peor" }, { en: "More", es: "Más" },
+    { en: "Less", es: "Menos" }, { en: "Than", es: "Que" }, { en: "As... as", es: "Tan... como" },
+    { en: "Young", es: "Joven" }, { en: "Old", es: "Viejo" }, { en: "Beautiful", es: "Bonito" },
+    { en: "Difficult", es: "Difícil" }, { en: "Easy", es: "Fácil" }, { en: "Strong", es: "Fuerte" },
+    { en: "Weak", es: "Débil" }, { en: "Clean", es: "Limpio" }, { en: "Dirty", es: "Sucio" },
+    { en: "Safe", es: "Seguro" }, { en: "Dangerous", es: "Peligroso" }, { en: "Friendly", es: "Amistoso" },
+    { en: "Selfish", es: "Egoísta" }, { en: "Intelligent", es: "Inteligente" }, { en: "Funny", es: "Divertido" },
+    { en: "Serious", es: "Serio" }, { en: "Wide", es: "Ancho" }, { en: "Narrow", es: "Estrecho" },
+    { en: "Heavy", es: "Pesado" }, { en: "Light", es: "Ligero" }, { en: "Happy", es: "Feliz" },
+    { en: "Sad", es: "Triste" }
 ];
 
-const ex1Vocabulary = [
-    { en: "faster", es: "mas rapido" },
-    { en: "taller", es: "mas alta" },
-    { en: "more interesting", es: "mas interesante" },
-    { en: "better", es: "mejor" },
-    { en: "bigger", es: "mas grande" },
-    { en: "more expensive", es: "mas caro" },
-    { en: "worse", es: "peor" },
-    { en: "younger", es: "mas joven" },
-    { en: "more beautiful", es: "mas bonito" },
-    { en: "easier", es: "mas facil" },
-    { en: "cheaper", es: "mas barato" },
-    { en: "more intelligent", es: "mas inteligente" },
-    { en: "hotter", es: "mas caluroso" },
-    { en: "more difficult", es: "mas dificil" },
-    { en: "stronger", es: "mas fuerte" },
+const irregularTable = [
+    { adjective: "BUENO (Good)", comparative: "MEJOR (Better)", superlative: "EL MEJOR (The best)" },
+    { adjective: "MALO (Bad)", comparative: "PEOR (Worse)", superlative: "EL PEOR (The worst)" },
+    { adjective: "VIEJO (Old - Age)", comparative: "MAYOR (Older)", superlative: "EL MAYOR (The oldest)" },
+    { adjective: "JOVEN (Young)", comparative: "MENOR (Younger)", superlative: "EL MENOR (The youngest)" },
+    { adjective: "GRANDE (Big - Size)", comparative: "MAYOR (Greater)", superlative: "EL MAYOR (The greatest)" },
+    { adjective: "PEQUEÑO (Small - Size)", comparative: "MENOR (Smaller)", superlative: "EL MENOR (The smallest)" },
 ];
 
-const ex2Exercises = [
-    { sentence: "This is the tallest building in the city.", correct: ["este es el edificio mas alto de la ciudad"] },
-    { sentence: "She is the smartest student in the class.", correct: ["ella es la estudiante mas inteligente de la clase"] },
-    { sentence: "It was the best day of my life.", correct: ["fue el mejor dia de mi vida"] },
-    { sentence: "This is the most expensive car in the world.", correct: ["este es el coche mas caro del mundo", "este es el carro mas caro del mundo"] },
-    { sentence: "He is the fastest runner on the team.", correct: ["el es el corredor mas rapido del equipo"] },
-    { sentence: "That was the worst movie I have ever seen.", correct: ["esa fue la peor pelicula que he visto"] },
-    { sentence: "The cheetah is the fastest animal.", correct: ["el guepardo es el animal mas rapido"] },
-    { sentence: "This is the easiest exercise in the book.", correct: ["este es el ejercicio mas facil del libro"] },
-    { sentence: "My grandmother is the oldest person in my family.", correct: ["mi abuela es la persona mas vieja de mi familia", "mi abuela es la persona mayor de mi familia"] },
-    { sentence: "This is the most beautiful place I've visited.", correct: ["este es el lugar mas bonito que he visitado"] },
-    { sentence: "This is the coldest winter.", correct: ["este es el invierno mas frio"] },
-    { sentence: "This is the most dangerous animal in the jungle.", correct: ["este es el animal mas peligroso de la selva"] },
-    { sentence: "He is the most famous actor.", correct: ["el es el actor mas famoso"] },
-    { sentence: "This is the highest mountain in the country.", correct: ["esta es la montaña mas alta del pais"] },
-    { sentence: "It's the cheapest restaurant in town.", correct: ["es el restaurante mas barato del pueblo"] },
+const ex1Prompts = [
+    { en: "The cat is small.", es: ["el gato es pequeño"] },
+    { en: "The house is big.", es: ["la casa es grande"] },
+    { en: "She is tall.", es: ["ella es alta"] },
+    { en: "He is short.", es: ["él es bajo", "el es bajo"] },
+    { en: "The car is fast.", es: ["el carro es rápido", "el coche es rápido"] },
+    { en: "The book is interesting.", es: ["el libro es interesante"] },
+    { en: "The phone is expensive.", es: ["el teléfono es caro", "el celular es caro"] },
 ];
 
-const ex2Vocabulary = [
-    { en: "the tallest", es: "el mas alto" },
-    { en: "the smartest", es: "la mas inteligente" },
-    { en: "the best", es: "el mejor" },
-    { en: "the most expensive", es: "el mas caro" },
-    { en: "the fastest", es: "el mas rapido" },
-    { en: "the worst", es: "la peor" },
-    { en: "the easiest", es: "el mas facil" },
-    { en: "the oldest", es: "la mas vieja" },
-    { en: "the most beautiful", es: "el mas bonito" },
-    { en: "the coldest", es: "el mas frio" },
-    { en: "the most dangerous", es: "el mas peligroso" },
-    { en: "the most famous", es: "el mas famoso" },
-    { en: "the highest", es: "la mas alta" },
-    { en: "the cheapest", es: "el mas barato" },
+const ex2Prompts = [
+    { en: "He is taller than me.", es: ["él es más alto que yo", "el es mas alto que yo"] },
+    { en: "This is cheaper than that.", es: ["esto es más barato que eso", "esto es mas barato que eso"] },
+    { en: "My dog is faster than your cat.", es: ["mi perro es más rápido que tu gato", "mi perro es mas rapido que tu gato"] },
+    { en: "Spanish is easier than Chinese.", es: ["el español es más fácil que el chino", "el espanol es mas facil que el chino"] },
+    { en: "A car is more expensive than a bike.", es: ["un carro es más caro que una bicicleta", "un coche es mas caro que una bicicleta"] },
+    { en: "She is older than her sister.", es: ["ella es mayor que su hermana", "ella es mas vieja que su hermana"] },
+    { en: "My car is faster than yours.", es: ["mi coche es mas rapido que el tuyo", "mi carro es mas rapido que el tuyo"] },
+    { en: "She is taller than her brother.", es: ["ella es mas alta que su hermano"] },
+    { en: "This book is more interesting than the last one.", es: ["este libro es mas interesante que el ultimo"] },
+    { en: "The weather today is better than yesterday.", es: ["el clima hoy es mejor que ayer"] },
+    { en: "An elephant is bigger than a mouse.", es: ["un elefante es mas grande que un raton"] },
+    { en: "This house is more expensive than the apartment.", es: ["esta casa es mas cara que el apartamento"] },
+    { en: "The new phone is worse than the old one.", es: ["el nuevo telefono es peor que el viejo"] },
+    { en: "He is younger than his sister.", es: ["el es mas joven que su hermana"] },
+    { en: "The park is more beautiful than the street.", es: ["el parque es mas bonito que la calle"] },
+    { en: "The test was easier than I expected.", es: ["el examen fue mas facil de lo que esperaba"] },
+    { en: "A book is cheaper than a computer.", es: ["un libro es mas barato que una computadora"] },
+    { en: "She is more intelligent than him.", es: ["ella es mas inteligente que el"] },
+    { en: "Summer is hotter than winter.", es: ["el verano es mas caluroso que el invierno"] },
+    { en: "This exam is more difficult than the last one.", es: ["este examen es mas dificil que el anterior"] },
+    { en: "He is stronger than his opponent.", es: ["el es mas fuerte que su oponente"] },
+];
+const ex3Prompts = [
+    { en: "This is the tallest building in the city.", es: ["este es el edificio mas alto de la ciudad"] },
+    { en: "She is the smartest student in the class.", es: ["ella es la estudiante mas inteligente de la clase"] },
+    { en:"It was the best day of my life.", es: ["fue el mejor dia de mi vida"] },
+    { en: "This is the most expensive car in the world.", es: ["este es el coche mas caro del mundo", "este es el carro mas caro del mundo"] },
+    { en: "He is the fastest runner on the team.", es: ["el es el corredor mas rapido del equipo"] },
+    { en: "That was the worst movie I have ever seen.", es: ["esa fue la peor pelicula que he visto"] },
+    { en: "The cheetah is the fastest animal.", es: ["el guepardo es el animal mas rapido"] },
+    { en: "This is the easiest exercise in the book.", es: ["este es el ejercicio mas facil del libro"] },
+    { en: "My grandmother is the oldest person in my family.", es: ["mi abuela es la persona mas vieja de mi familia", "mi abuela es la persona mayor de mi familia"] },
+    { en: "This is the most beautiful place I've visited.", es: ["este es el lugar mas bonito que he visitado"] },
+    { en: "This is the coldest winter.", es: ["este es el invierno mas frio"] },
+    { en: "This is the most dangerous animal in the jungle.", es: ["este es el animal mas peligroso de la selva"] },
+    { en: "He is the most famous actor.", es: ["el es el actor mas famoso"] },
+    { en: "This is the highest mountain in the country.", es: ["esta es la montaña mas alta del pais"] },
+    { en: "It's the cheapest restaurant in town.", es: ["es el restaurante mas barato del pueblo"] },
 ];
 
 const ex4Prompts = [
-    { q: "El coche es ______ rápido ______ la bicicleta. (más)", a: ["más", "que"] },
-    { q: "Mi casa es ______ grande ______ la tuya. (más)", a: ["más", "que"] },
-    { q: "Juan es ______ alto ______ su hermano. (tan)", a: ["tan", "como"] },
-    { q: "Este libro es ______ interesante ______ la película. (menos)", a: ["menos", "que"] },
-    { q: "Las manzanas son ______ saludables ______ los dulces. (más)", a: ["más", "que"] },
-    { q: "Yo soy ______ joven ______ tú. (tan)", a: ["tan", "como"] },
-    { q: "El tren es ______ lento ______ el avión. (más)", a: ["más", "que"] },
-    { q: "La pizza es ______ deliciosa ______ la ensalada. (tan)", a: ["tan", "como"] },
-    { q: "Ella es ______ inteligente ______ él. (más)", a: ["más", "que"] },
-    { q: "El helado de chocolate es ______ bueno ______ el de fresa. (tan)", a: ["tan", "como"] },
-    { q: "El sol es ______ brillante ______ la luna. (más)", a: ["más", "que"] },
-    { q: "El verano es ______ cálido ______ el invierno. (más)", a: ["más", "que"] },
-    { q: "Leer es ______ relajante ______ ver la tele. (tan)", a: ["tan", "como"] },
-    { q: "Este examen es ______ difícil ______ el anterior. (menos)", a: ["menos", "que"] },
-    { q: "Mi mochila es ______ pesada ______ la tuya. (más)", a: ["más", "que"] },
-    { q: "El español es ______ fácil ______ el chino. (tan)", a: ["tan", "como"] },
-    { q: "Los perros son ______ leales ______ los gatos. (más)", a: ["más", "que"] },
-    { q: "Correr es ______ cansado ______ caminar. (más)", a: ["más", "que"] },
-    { q: "El agua es ______ barata ______ el refresco. (más)", a: ["más", "que"] },
-    { q: "Esta silla es ______ cómoda ______ aquella. (menos)", a: ["menos", "que"] },
+    { en: "This is better.", es: ["esto es mejor"] },
+    { en: "That is worse.", es: ["eso es peor"] },
+    { en: "I am better than you.", es: ["soy mejor que tú", "soy mejor que tu"] },
+    { en: "He is worse than me.", es: ["él es peor que yo", "el es peor que yo"] },
+    { en: "This is the best.", es: ["esto es lo mejor"] },
+    { en: "That is the worst.", es: ["eso es lo peor"] },
+    { en: "I am older than her.", es: ["soy mayor que ella", "soy mas viejo que ella"] },
 ];
 
-const ex5Prompts = [
-    { q: "Mi casa es ______ ______ ______ del barrio. (la, grande)", a: ["la", "más", "grande"] },
-    { q: "Juan es ______ ______ ______ de la clase. (el, alto)", a: ["el", "más", "alto"] },
-    { q: "Esta es ______ ______ ______ que he comido. (la, pizza, rica)", a: ["la", "pizza", "más rica"] },
-    { q: "Es ______ ______ ______ de la ciudad. (el, parque, bonito)", a: ["el", "parque", "más bonito"] },
-    { q: "Ana es ______ ______ ______ de todas. (la, inteligente)", a: ["la", "más", "inteligente"] },
-    { q: "Fue ______ ______ ______ de mi vida. (el, día, feliz)", a: ["el", "día", "más feliz"] },
-    { q: "Compraron ______ ______ ______ de la tienda. (el, coche, caro)", a: ["el", "coche", "más caro"] },
-    { q: "El Everest es ______ ______ ______ del mundo. (la, montaña, alta)", a: ["la", "montaña", "más alta"] },
-    { q: "Este es ______ ______ ______ que he leído. (el, libro, interesante)", a: ["el", "libro", "más interesante"] },
-    { q: "Son ______ ______ ______ del equipo. (los, jugadores, rápidos)", a: ["los", "jugadores", "más rápidos"] },
-    { q: "Esta es ______ ______ ______ que he visto. (la, película, aburrida)", a: ["la", "película", "más aburrida"] },
-    { q: "Él es ______ ______ ______ que conozco. (la, persona, amable)", a: ["la", "persona", "más amable"] },
-    { q: "Vivimos en ______ ______ ______ de la calle. (la, casa, pequeña)", a: ["la", "casa", "más pequeña"] },
-    { q: "Esta sopa es ______ ______ ______ del menú. (la, mejor)", a: ["la", "mejor", "sopa"] },
-    { q: "Fue ______ ______ ______ de todos. (el, peor, error)", a: ["el", "peor", "error"] },
-    { q: "Es ______ ______ ______ de la ciudad. (el, restaurante, barato)", a: ["el", "restaurante", "más barato"] },
-    { q: "Son ______ ______ ______ que tengo. (los, zapatos, nuevos)", a: ["los", "zapatos", "más nuevos"] },
-    { q: "Ella es ______ ______ ______ de la oficina. (la, empleada, joven)", a: ["la", "empleada", "más joven"] },
-    { q: "El Nilo es ______ ______ ______ del mundo. (el, río, largo)", a: ["el", "río", "más largo"] },
-    { q: "Es ______ ______ ______ del año. (la, estación, fría)", a: ["la", "estación", "más fría"] },
+const ex5ChoiceData = [
+    { spanish: "Ella es la más bonita", options: ["She is prettier", "She is the most beautiful", "She is beautiful", "She is as beautiful"], answer: "She is the most beautiful" },
+    { spanish: "Mi carro es más rápido que el tuyo", options: ["My car is fast", "My car is as fast as yours", "My car is faster than yours", "My car is the fastest"], answer: "My car is faster than yours" },
+    { spanish: "Este libro es mejor", options: ["This book is good", "This book is better", "This book is the best", "This book is bad"], answer: "This book is better" },
+    { spanish: "Soy el más alto de la clase", options: ["I am taller", "I am tall", "I am the tallest of the class", "I am more tall"], answer: "I am the tallest of the class" },
+    { spanish: "Esa película es la peor", options: ["That movie is bad", "That movie is worse", "That movie is the worst", "That movie is not good"], answer: "That movie is the worst" },
+    { spanish: "Tú eres más joven que yo", options: ["You are younger than me", "You are the youngest", "You are young", "You are less young"], answer: "You are younger than me" },
+    { spanish: "Esto es más barato", options: ["This is cheap", "This is cheaper", "This is the cheapest", "This is more cheap"], answer: "This is cheaper" },
 ];
+
+const finalCompletionData = [
+    { en: "My brother is taller than me.", text: "Mi hermano es _______ que yo.", answer: "más alto" },
+    { en: "This book is the best.", text: "Este libro es _______.", answer: "el mejor" },
+    { en: "The car is more expensive than the bike.", text: "El carro es _______ que la bicicleta.", answer: "más caro" },
+    { en: "I am as intelligent as you.", text: "Soy _______ como tú.", answer: "tan inteligente" },
+    { en: "This is the worst day.", text: "Este es _______.", answer: "el peor día" },
+    { en: "She is younger than her sister.", text: "Ella es _______ que su hermana.", answer: "menor" },
+    { en: "Madrid is bigger than Valencia.", text: "Madrid es _______ que Valencia.", answer: "más grande" },
+    { en: "This soup is hotter than that one.", text: "Esta sopa está _______ que esa.", answer: "más caliente" },
+    { en: "He is the most famous actor.", text: "Él es _______.", answer: "el más famoso" },
+    { en: "The Nile is the longest river.", text: "El Nilo es _______.", answer: "el más largo" },
+    { en: "My house is as small as yours.", text: "Mi casa es _______ como la tuya.", answer: "tan pequeña" },
+    { en: "This city is noisier than the town.", text: "Esta ciudad es _______ que el pueblo.", answer: "más ruidosa" },
+    { en: "That exercise is more difficult.", text: "Ese ejercicio es _______.", answer: "más difícil" },
+    { en: "She is the best doctor.", text: "Ella es _______.", answer: "la mejor" },
+    { en: "I am older than him.", text: "Soy _______ que él.", answer: "mayor" },
+    { en: "The cat is faster than the dog.", text: "El gato es _______ que el perro.", answer: "más rápido" },
+    { en: "This building is the highest.", text: "Este edificio es _______.", answer: "el más alto" },
+    { en: "The water is colder today.", text: "El agua está _______ que ayer.", answer: "más fría" },
+    { en: "We are as tired as they are.", text: "Estamos _______ como ellos.", answer: "tan cansados" },
+    { en: "This phone is less expensive.", text: "Este teléfono es _______.", answer: "menos caro" },
+    { en: "They are the strongest players.", text: "Ellos son _______.", answer: "los más fuertes" },
+    { en: "That movie is more boring.", text: "Esa película es _______.", answer: "más aburrida" },
+    { en: "I am shorter than my father.", text: "Soy _______ que mi padre.", answer: "más bajo" },
+    { en: "This is the cleanest room.", text: "Esta es _______.", answer: "la más limpia" },
+    { en: "Your shoes are newer than mine.", text: "Tus zapatos son _______ que los míos.", answer: "más nuevos" },
+    { en: "He is as friendly as she is.", text: "Él es _______ como ella.", answer: "tan amigable" },
+    { en: "This bread is better than the other.", text: "Este pan es _______ que el otro.", answer: "mejor" },
+    { en: "They are the poorest children.", text: "Ellos son _______.", answer: "los más pobres" },
+    { en: "This street is narrower.", text: "Esta calle es _______.", answer: "más estrecha" },
+    { en: "I have less money than you.", text: "Tengo _______ que tú.", answer: "menos dinero" },
+];
+
+const negativePrompts = [
+    { en: "I am not taller than my father.", es: ["no soy más alto que mi padre", "yo no soy mas alto que mi padre"] },
+    { en: "This is not the most expensive car.", es: ["este no es el carro más caro", "este no es el coche mas caro"] },
+    { en: "She is not older than me.", es: ["ella no es mayor que yo"] },
+    { en: "The cat is not faster than the dog.", es: ["el gato no es más rápido que el perro"] },
+    { en: "We are not the best in the class.", es: ["no somos los mejores de la clase"] },
+    { en: "The city is not cleaner than the town.", es: ["la ciudad no es más limpia que el pueblo"] },
+    { en: "This book is not more interesting than that one.", es: ["este libro no es más interesante que ese"] },
+    { en: "He is not the tallest student.", es: ["él no es el estudiante más alto"] },
+    { en: "The food is not better here.", es: ["la comida no es mejor aquí"] },
+    { en: "I am not the most intelligent.", es: ["no soy el más inteligente"] },
+    { en: "This movie is not better than the other.", es: ["esta película no es mejor que la otra"] },
+    { en: "You are not the youngest in the group.", es: ["no eres el más joven del grupo"] },
+    { en: "The hotel is not as expensive as yours.", es: ["el hotel no es tan caro como el tuyo"] },
+    { en: "They are not the best players.", es: ["ellos no son los mejores jugadores"] },
+    { en: "It is not the worst day.", es: ["no es el peor día"] }
+];
+
+const readingData = {
+    title: "Una competencia en la ciudad",
+    text: "En mi ciudad hay dos restaurantes: 'La Cuchara Rápida' y 'El Tenedor Elegante'. La Cuchara Rápida es más barato que El Tenedor Elegante, pero la comida en El Tenedor Elegante es mejor. El parque de la ciudad es el lugar más bonito de todos, y es más grande que mi casa. La biblioteca es el edificio más viejo de la ciudad. Mi amigo Juan es más alto que yo, pero yo soy más rápido. En la escuela, la clase de matemáticas es la más difícil, pero la clase de español es la más fácil para mí.",
+    questions: [
+        { q: "¿Qué restaurante es más barato?", a: ["la cuchara rapida", "la cuchara rápida"] },
+        { q: "¿Cuál es el lugar más bonito de la ciudad?", a: ["el parque", "el parque de la ciudad"] },
+        { q: "¿Cuál es el edificio más viejo?", a: ["la biblioteca"] },
+        { q: "¿Quién es más alto, Juan o el narrador?", a: ["juan"] },
+        { q: "¿Cuál es la clase más difícil para el narrador?", a: ["matematicas", "matemáticas", "clase de matematicas"] }
+    ]
+};
+
+// --- HELPER COMPONENTS ---
+
+const BallsExercise = ({ title, description, prompts, onComplete, vocabulary }: any) => {
+    const { toast } = useToast();
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [answer, setAnswer] = useState('');
+    const [status, setStatus] = useState<Record<number, 'correct' | 'incorrect' | 'unchecked'>>({});
+
+    useEffect(() => { setAnswer(''); }, [currentIndex]);
+
+    const handleCheck = () => {
+        const userVal = answer.trim().toLowerCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' ');
+        const isCorrect = prompts[currentIndex].es.some((a: string) => a.toLowerCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' ') === userVal);
+        setStatus(prev => ({ ...prev, [currentIndex]: isCorrect ? 'correct' : 'incorrect' }));
+        if (isCorrect) toast({ title: "¡Buen trabajo!" });
+        else toast({ variant: 'destructive', title: "Sigue intentando" });
+    };
+
+    return (
+        <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground">
+            <CardHeader>
+                <div className="flex justify-between items-start">
+                    <div className="text-left">
+                        <CardTitle className="text-primary uppercase tracking-tighter">{title}</CardTitle>
+                        <CardDescription className="font-bold text-foreground mt-1">{description || "Traduce la frase al español."}</CardDescription>
+                        <div className="flex gap-2 justify-start flex-wrap pt-4">
+                            {prompts.map((_: any, i: number) => (
+                                <div key={i} onClick={() => setCurrentIndex(i)} className={cn("h-8 w-8 rounded-full border-2 flex items-center justify-center text-xs font-bold cursor-pointer transition-all", currentIndex === i ? "border-primary ring-2 ring-primary scale-110 shadow-md" : "border-muted", status[i] === 'correct' ? "bg-green-500 text-white border-green-500" : status[i] === 'incorrect' ? "bg-red-500 text-white border-red-500" : "bg-card text-foreground")}>{i + 1}</div>
+                            ))}
+                        </div>
+                    </div>
+                    {vocabulary && (
+                        <Popover>
+                            <PopoverTrigger asChild><Button variant="outline" size="sm" className="border-2 border-brand-blue animate-border-pulse"><BookText className="mr-2 h-4 w-4" /> Vocabulario</Button></PopoverTrigger>
+                            <PopoverContent className="w-64"><ScrollArea className="h-64 pr-4"><div className="space-y-2 text-foreground text-left">
+                                <h4 className='font-black text-primary text-xs uppercase mb-2 border-b'>Ayuda de Misión</h4>
+                                {Object.entries(vocabulary).map(([en, es]: any, i) => (<div key={i} className="flex justify-between text-[10px] border-b border-muted pb-1"><span className="text-muted-foreground uppercase">{en}:</span><span className="font-bold text-primary">{es.toUpperCase()}</span></div>))}
+                            </div></ScrollArea></PopoverContent>
+                        </Popover>
+                    )}
+                </div>
+            </CardHeader>
+            <CardContent className="space-y-6 pt-6">
+                <div className="p-10 bg-muted rounded-[2.5rem] border-2 border-dashed border-primary/20 flex flex-col items-center justify-center min-h-[12rem]">
+                    <span className="text-xs font-black text-muted-foreground uppercase tracking-[0.2em] mb-4">Translate to Spanish</span>
+                    <h3 className="text-3xl md:text-4xl font-black text-primary text-center uppercase tracking-tighter leading-tight">{prompts[currentIndex]?.en}</h3>
+                </div>
+                <Input value={answer} onChange={e => setAnswer(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleCheck()} className={cn("h-14 text-xl font-bold text-center border-2", status[currentIndex] === 'correct' ? 'border-green-500 bg-green-50/5' : status[currentIndex] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} placeholder="Escribe en español..." autoComplete="off" />
+            </CardContent>
+            <CardFooter className="justify-between border-t p-6 bg-muted/5">
+                <Button variant="outline" onClick={() => setCurrentIndex(p => Math.max(0, p - 1))} disabled={currentIndex === 0}>Anterior</Button>
+                <div className="flex gap-3">
+                    <Button onClick={handleCheck} variant="secondary" className="font-bold">Verificar</Button>
+                    <Button onClick={() => currentIndex < prompts.length - 1 ? setCurrentIndex(i => i + 1) : onComplete()} disabled={status[currentIndex] !== 'correct'} className="font-black px-10 text-white shadow-xl">
+                        {currentIndex === prompts.length - 1 ? 'Finalizar Paso' : 'Siguiente'} <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                </div>
+            </CardFooter>
+        </Card>
+    );
+};
+
+const ChoiceExercise = ({ title, description, prompts, onComplete }: any) => {
+    const { toast } = useToast();
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [status, setStatus] = useState<Record<number, 'correct' | 'incorrect' | 'unchecked'>>({});
+
+    const handleSelect = (option: string) => {
+        const isCorrect = option.toUpperCase() === prompts[currentIndex].answer.toUpperCase();
+        setStatus(prev => ({ ...prev, [currentIndex]: isCorrect ? 'correct' : 'incorrect' }));
+        if (isCorrect) toast({ title: "¡Correcto!" });
+        else toast({ variant: 'destructive', title: "Incorrecto" });
+    };
+
+    return (
+        <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground">
+            <CardHeader>
+                <div className="text-left">
+                    <CardTitle className='text-primary uppercase'>{title}</CardTitle>
+                    <CardDescription className='font-bold text-foreground'>{description}</CardDescription>
+                    <div className="flex gap-2 justify-start flex-wrap pt-4">
+                        {prompts.map((_: any, i: number) => (
+                            <div key={i} onClick={() => setCurrentIndex(i)} className={cn("h-8 w-8 rounded-full border-2 flex items-center justify-center text-xs font-bold cursor-pointer transition-all", currentIndex === i ? "border-primary ring-2 ring-primary scale-110 shadow-md" : "border-muted", status[i] === 'correct' ? "bg-green-500 text-white border-green-500" : status[i] === 'incorrect' ? "bg-red-500 text-white border-red-500" : "bg-card text-foreground")}>{i + 1}</div>
+                        ))}
+                    </div>
+                </div>
+            </CardHeader>
+            <CardContent className="space-y-8 py-10">
+                <div className="p-8 bg-muted rounded-2xl border-2 border-dashed text-center">
+                    <p className="text-sm text-muted-foreground uppercase font-black mb-2">Frase en Español:</p>
+                    <h3 className="text-2xl font-black text-primary uppercase">{prompts[currentIndex].spanish}</h3>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto">
+                    {prompts[currentIndex].options.map((opt: string) => (
+                        <Button key={opt} onClick={() => handleSelect(opt)} variant="outline" className={cn("h-16 text-lg font-bold transition-all", status[currentIndex] === 'correct' && opt === prompts[currentIndex].answer && "border-green-500 bg-green-50 text-green-700 shadow-md scale-105")}>{opt}</Button>
+                    ))}
+                </div>
+            </CardContent>
+            <CardFooter className="justify-between border-t pt-6">
+                <Button variant="outline" onClick={() => setCurrentIndex(p => Math.max(0, p - 1))} disabled={currentIndex === 0}>Anterior</Button>
+                <Button onClick={() => currentIndex < prompts.length - 1 ? setCurrentIndex(i => i + 1) : onComplete()} disabled={status[currentIndex] !== 'correct'} className="px-12 font-black shadow-lg">
+                    {currentIndex === prompts.length - 1 ? 'Finalizar' : 'Siguiente'} <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+            </CardFooter>
+        </Card>
+    );
+};
+
+const CompletionExercise = ({ title, description, prompts, onComplete }: any) => {
+    const { toast } = useToast();
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [answer, setAnswer] = useState('');
+    const [status, setStatus] = useState<Record<number, 'correct' | 'incorrect' | 'unchecked'>>({});
+
+    useEffect(() => { setAnswer(''); }, [currentIndex]);
+
+    const handleCheck = () => {
+        const isCorrect = prompts[currentIndex].answer.toLowerCase() === answer.trim().toLowerCase();
+        setStatus(prev => ({ ...prev, [currentIndex]: isCorrect ? 'correct' : 'incorrect' }));
+        if (isCorrect) toast({ title: "¡Correcto!" });
+        else toast({ variant: 'destructive', title: "Sigue intentando" });
+    };
+
+    return (
+        <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left">
+            <CardHeader>
+                <CardTitle className='text-primary uppercase'>{title}</CardTitle>
+                <CardDescription className='font-bold text-foreground'>{description}</CardDescription>
+                <div className="flex gap-2 justify-start flex-wrap pt-4">
+                    {prompts.map((_: any, i: number) => (
+                        <div key={i} onClick={() => setCurrentIndex(i)} className={cn("h-8 w-8 rounded-full border-2 flex items-center justify-center text-xs font-bold cursor-pointer transition-all", currentIndex === i ? "border-primary ring-2 ring-primary scale-110 shadow-md" : "border-muted", status[i] === 'correct' ? "bg-green-500 text-white border-green-500" : status[i] === 'incorrect' ? "bg-red-500 text-white border-red-500" : "bg-card text-foreground")}>{i + 1}</div>
+                    ))}
+                </div>
+            </CardHeader>
+            <CardContent className="space-y-6 pt-6">
+                <div className="p-6 bg-muted rounded-2xl border italic text-xl text-center shadow-inner">
+                    <p className='text-sm text-muted-foreground uppercase font-black mb-2'>Completa la frase en español:</p>
+                    <p className='mb-4 font-bold text-primary'>"{prompts[currentIndex].en}"</p>
+                    <div className='font-mono bg-background p-4 rounded-xl border-2 border-dashed'>
+                        {prompts[currentIndex].text.split('_______').map((part: string, i: number) => (
+                            <Fragment key={i}>
+                                {part}
+                                {i < prompts[currentIndex].text.split('_______').length - 1 && (
+                                    <span className={cn("border-b-2 border-primary px-4 mx-2", status[currentIndex] === 'correct' ? "text-green-500 font-bold" : "text-muted-foreground")}>
+                                        {status[currentIndex] === 'correct' ? prompts[currentIndex].answer : '_______'}
+                                    </span>
+                                )}
+                            </Fragment>
+                        ))}
+                    </div>
+                </div>
+                <div className="space-y-2">
+                    <Label className='font-black uppercase text-xs'>Escribe la palabra o frase faltante en ESPAÑOL:</Label>
+                    <Input value={answer} onChange={e => setAnswer(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleCheck()} className={cn("h-14 text-xl text-center", status[currentIndex] === 'correct' ? 'border-green-500 bg-green-50/5' : status[currentIndex] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} autoComplete="off" />
+                </div>
+            </CardContent>
+            <CardFooter className="justify-between border-t p-6 bg-muted/10">
+                <Button variant="outline" onClick={() => setCurrentIndex(p => Math.max(0, p - 1))} disabled={currentIndex === 0}>Anterior</Button>
+                <div className='flex gap-2'>
+                    <Button onClick={handleCheck} variant="secondary">Verificar</Button>
+                    <Button onClick={() => currentIndex < prompts.length - 1 ? setCurrentIndex(i => i + 1) : onComplete()} disabled={status[currentIndex] !== 'correct'} className='font-bold shadow-md'>
+                        {currentIndex === prompts.length - 1 ? 'Finalizar Paso' : 'Siguiente'} <ArrowRight className='ml-2 h-4 w-4'/>
+                    </Button>
+                </div>
+            </CardFooter>
+        </Card>
+    );
+};
+
+// --- MAIN CONTENT ---
 
 interface Topic {
     key: string;
@@ -160,720 +384,26 @@ interface Topic {
     status: 'locked' | 'active' | 'completed';
 }
 
-const VocabularyContent = ({ onComplete }: { onComplete: () => void }) => {
-    const vocabularyList = useMemo(() => [
-        { en: "Tall", es: "Alto/a" },
-    { en: "Short", es: "Bajo/a" },
-    { en: "Big", es: "Grande" },
-    { en: "Small", es: "Pequeño/a" },
-    { en: "Fast", es: "Rápido/a" },
-    { en: "Slow", es: "Lento/a" },
-    { en: "Expensive", es: "Caro/a" },
-    { en: "Cheap", es: "Barato/a" },
-    { en: "Interesting", es: "Interesante" },
-    { en: "Boring", es: "Aburrido/a" },
-    { en: "Good", es: "Bueno/a" },
-    { en: "Bad", es: "Malo/a" },
-    { en: "Better", es: "Mejor" },
-    { en: "Worse", es: "Peor" },
-    { en: "More", es: "Más" },
-    { en: "Less", es: "Menos" },
-    { en: "Than", es: "Que" },
-    { en: "As... as", es: "Tan... como" },
-        { en: "young", es: "joven" },
-        { en: "old", es: "viejo" },
-        { en: "beautiful", es: "bonito" },
-        { en: "ugly", es: "feo" },
-        { en: "easy", es: "facil" },
-        { en: "difficult", es: "dificil" },
-        { en: "strong", es: "fuerte" },
-        { en: "weak", es: "debil" },
-        { en: "happy", es: "feliz" },
-        { en: "sad", es: "triste" },
-        { en: "new", es: "nuevo" },
-        { en: "clean", es: "limpio" },
-        { en: "dirty", es: "sucio" },
-        { en: "hot", es: "caliente" },
-        { en: "cold", es: "frio" },
-        { en: "rich", es: "rico" },
-        { en: "poor", es: "pobre" },
-        { en: "early", es: "temprano" },
-        { en: "late", es: "tarde" },
-        { en: "bright", es: "brillante" },
-        { en: "dark", es: "oscuro" },
-        { en: "heavy", es: "pesado" },
-        { en: "light", es: "ligero" },
-        { en: "wide", es: "ancho" },
-        { en: "narrow", es: "estrecho" },
-        { en: "smart", es: "inteligente" },
-        { en: "stupid", es: "tonto" },
-    ].sort(() => Math.random() - 0.5), []);
-
-    const [userAnswers, setUserAnswers] = useState<Record<string, string>>({});
-    const [results, setResults] = useState<Record<string, boolean | null>>({});
-
-    const handleInputChange = (en: string, value: string) => {
-        setUserAnswers(prev => ({ ...prev, [en]: value }));
-        setResults(prev => ({ ...prev, [en]: null }));
-    };
-
-    const handleCheck = () => {
-        const newResults: Record<string, boolean> = {};
-        let allCorrect = true;
-        vocabularyList.forEach(item => {
-            const isCorrect = userAnswers[item.en]?.trim().toLowerCase() === item.es.split('/')[0].toLowerCase();
-            newResults[item.en] = isCorrect;
-            if (!isCorrect) {
-                allCorrect = false;
-            }
-        });
-        setResults(newResults);
-        if (allCorrect) {
-            onComplete();
-        }
-    };
-
-    return (
-        <div className="p-6 w-full max-w-3xl mx-auto">
-            <p className="text-lg text-center mb-6">Traduce las siguientes palabras al español.</p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
-                {vocabularyList.map((item) => (
-                    <div key={item.en} className="grid grid-cols-2 gap-2 items-center">
-                        <span className="p-2 bg-muted rounded-md text-sm font-semibold text-right">{item.en}</span>
-                        <Input 
-                            type="text" 
-                            placeholder="Traduccion..." 
-                            className={cn(
-                                "text-sm",
-                                results[item.en] === true && "border-green-500 border-2",
-                                results[item.en] === false && "border-red-500 border-2"
-                            )}
-                            value={userAnswers[item.en] || ''}
-                            onChange={(e) => handleInputChange(item.en, e.target.value)}
-                        />
-                    </div>
-                ))}
-            </div>
-            <div className="flex justify-center mt-8">
-                 <Button onClick={handleCheck} size="lg" className="px-20 font-black h-14 text-xl shadow-xl uppercase tracking-tighter">
-                    Verificar <CheckCircle className="ml-2 h-6 w-6" />
-                </Button>
-            </div>
-        </div>
-    );
-};
-
-const GrammarContent = ({ onComplete }: { onComplete: () => void }) => {
-    const grammarCards = useMemo(() => [
-        {
-            title: "Comparatives / Comparativos",
-            content: "Español: Usamos los comparativos para comparar dos cosas, personas o lugares.\n\nEnglish: We use comparatives to compare two things, people, or places.",
-            example: "Español: La formula general es: `mas` + `adjetivo` + `que`.\n\nEnglish: The general formula is: `more` + `adjective` + `than`."
-        },
-        {
-            title: "Ejemplo de Comparativo",
-            content: "Español: `Juan es mas alto que Maria.`\n\nEnglish: `Juan is taller than Maria.`",
-            example: "Español: Aqui comparamos la altura de Juan con la de Maria.\n\nEnglish: Here we compare Juan's height with Maria's."
-        },
-        {
-            title: "Superlatives / Superlativos",
-            content: "Español: Usamos los superlativos para destacar una cualidad al maximo nivel dentro de un grupo.\n\nEnglish: We use superlatives to highlight a quality to the highest degree within a group.",
-            example: "Español: La formula es: `el/la/los/las` + `mas` + `adjetivo` + `de` o `del`.\n\nEnglish: The formula is: `the` + `most` + `adjective` + `of` or `in`."
-        },
-        {
-            title: "Ejemplo de Superlativo",
-            content: "Español: `El Everest es la montana mas alta del mundo.`\n\nEnglish: `Mount Everest is the highest mountain in the world.`",
-            example: "Español: Destacamos que ninguna otra montana en el grupo (el mundo) es mas alta.\n\nEnglish: We are highlighting that no other mountain in the group (the world) is higher."
-        },
-        {
-            title: "Irregular Adjectives / Adjetivos Irregulares",
-            content: "Español: Algunos adjetivos tienen formas comparativas y superlativas especiales. No usan `mas`.\n\nEnglish: Some adjectives have special comparative and superlative forms. They don't use `more`.",
-            example: "Bueno -> Mejor -> El/La mejor (Good -> Better -> The best)\nMalo -> Peor -> El/La peor (Bad -> Worse -> The worst)"
-        },
-        {
-            title: "Ejemplo con Irregulares",
-            content: "Español: `Este chocolate es mejor que las verduras.` (Comparativo)\n\nEnglish: `This chocolate is better than vegetables.` (Comparative)",
-            example: "Español: `Este es el peor dia de mi vida.` (Superlativo)\n\nEnglish: `This is the worst day of my life.` (Superlative)"
-        }
-    ], []);
-
-    const [currentCard, setCurrentCard] = useState(0);
-
-    const handleNext = () => {
-        if (currentCard < grammarCards.length - 1) {
-            setCurrentCard(prev => prev + 1);
-        } else {
-            onComplete();
-        }
-    };
-
-    const handlePrev = () => {
-        if (currentCard > 0) {
-            setCurrentCard(prev => prev - 1);
-        }
-    };
-
-    const progress = ((currentCard + 1) / grammarCards.length) * 100;
-    const card = grammarCards[currentCard];
-
-    return (
-        <div className="p-6 w-full max-w-2xl mx-auto flex flex-col items-center">
-            <div className="w-full mb-6">
-                <Progress value={progress} className="w-full h-2" />
-                <p className="text-sm text-muted-foreground mt-2 text-center">{currentCard + 1} / {grammarCards.length}</p>
-            </div>
-
-            <Card className="w-full min-h-[300px] flex flex-col justify-center items-center text-center shadow-lg">
-                <CardHeader>
-                    <CardTitle className="text-2xl font-bold text-primary">{card.title}</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4 whitespace-pre-line">
-                    <p className="text-lg">{card.content}</p>
-                    {card.example && <p className="text-md bg-muted p-3 rounded-lg">{card.example}</p>}
-                </CardContent>
-            </Card>
-
-            <div className="flex w-full justify-between mt-6">
-                <Button variant="outline" onClick={handlePrev} disabled={currentCard === 0}> 
-                    <ArrowLeft className="mr-2 h-4 w-4" /> Anterior
-                </Button>
-                {currentCard === grammarCards.length - 1 ? (
-                    <Button onClick={onComplete} className="font-bold">
-                        Entendido <CheckCircle className="ml-2 h-4 w-4" />
-                    </Button>
-                ) : (
-                    <Button onClick={handleNext}>Siguiente <ArrowRight className="ml-2 h-4 w-4" /> </Button>
-                )}
-            </div>
-        </div>
-    );
-};
-
-const TranslationExercise = ({ title, exercises, onComplete, vocabulary }: { title: string, exercises: { sentence: string, correct: string[] }[], onComplete: () => void, vocabulary?: { en: string, es: string }[] }) => {
-    const [currentExercise, setCurrentExercise] = useState(0);
-    const [userAnswers, setUserAnswers] = useState<Record<number, string>>({});
-    const [results, setResults] = useState<Record<number, boolean | null>>({});
+function ComparativosSuperlativosContent({ overrideStudentId }: { overrideStudentId?: string | null }) {
     const { toast } = useToast();
-
-    const currentPrompt = exercises[currentExercise];
-
-    const handleCheck = () => {
-        const userAnswer = userAnswers[currentExercise]?.trim().toLowerCase() || '';
-        const isCorrect = currentPrompt.correct.some(c => c.toLowerCase() === userAnswer);
-        setResults(prev => ({ ...prev, [currentExercise]: isCorrect }));
-        if (isCorrect) {
-            toast({ title: "¡Correcto!", className: "bg-green-500 text-white" });
-        } else {
-            toast({ title: "Respuesta incorrecta", description: "¡Intentalo de nuevo!", variant: "destructive" });
-        }
-    };
-
-    const handleNext = () => {
-        if (currentExercise < exercises.length - 1) {
-            setCurrentExercise(prev => prev + 1);
-        } else {
-            onComplete();
-        }
-    };
-
-    const handleInputChange = (value: string) => {
-        setUserAnswers(prev => ({...prev, [currentExercise]: value}));
-        if (results[currentExercise] !== null) {
-            setResults(prev => ({...prev, [currentExercise]: null}));
-        }
-    }
-    
-    const progress = (Object.values(results).filter(r => r === true).length / exercises.length) * 100;
-    const isCurrentCorrect = results[currentExercise] === true;
-
-    return (
-        <div className="p-6 w-full max-w-2xl mx-auto flex flex-col items-center">
-            <div className="w-full mb-4">
-                <div className="flex justify-center items-center mb-2 relative">
-                    <h3 className="text-2xl font-bold text-primary text-center">{title}</h3>
-                    {vocabulary && (
-                        <Popover>
-                            <PopoverTrigger asChild>
-                                <Button variant="outline" className="absolute right-0"><HelpCircle className="mr-2 h-4 w-4" /> Vocabulario</Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-80">
-                                <div className="grid gap-4">
-                                   <h4 className="font-medium leading-none">Vocabulario Clave</h4>
-                                    <div className="grid gap-2">
-                                        {vocabulary.map(word => (
-                                            <div key={word.en} className="grid grid-cols-2 items-center gap-2">
-                                                <span className="font-semibold">{word.en}</span>
-                                                <span className="text-muted-foreground">{word.es}</span>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            </PopoverContent>
-                        </Popover>
-                    )}
-                </div>
-                <Progress value={progress} className="w-full h-2" />
-                <p className="text-sm text-muted-foreground mt-2 text-center">{Object.values(results).filter(r => r === true).length} / {exercises.length}</p>
-            </div>
-
-            <Card className="w-full min-h-[250px] flex flex-col justify-center items-center text-center shadow-lg p-6">
-                <p className="font-semibold text-lg mb-4 text-center">{currentPrompt.sentence}</p>
-                <Input 
-                    value={userAnswers[currentExercise] || ''}
-                    onChange={(e) => handleInputChange(e.target.value)}
-                    placeholder="Escribe tu traduccion..."
-                    className={cn(
-                        "text-center text-lg h-12",
-                        results[currentExercise] === true && "border-green-500 border-2",
-                        results[currentExercise] === false && "border-red-500 border-2"
-                    )}
-                    disabled={isCurrentCorrect}
-                />
-            </Card>
-
-            <div className="flex w-full justify-between items-center mt-6">
-                 <Button variant="outline" onClick={() => setCurrentExercise(p => p - 1)} disabled={currentExercise === 0}>
-                    <ArrowLeft className="mr-2 h-4 w-4" /> Anterior
-                </Button>
-                
-                {!isCurrentCorrect ? (
-                    <Button onClick={handleCheck} size="lg">Verificar</Button>
-                ) : (
-                    currentExercise < exercises.length - 1 ? (
-                         <Button onClick={handleNext} size="lg" className="bg-green-600 hover:bg-green-700">
-                             Siguiente <ArrowRight className="ml-2 h-4 w-4" />
-                         </Button>
-                    ) : (
-                         <Button onClick={onComplete} size="lg" className="bg-green-600 hover:bg-green-700">
-                             Finalizar <Trophy className="ml-2 h-4 w-4" />
-                         </Button>
-                    )
-                )}
-            </div>
-        </div>
-    );
-};
-
-const VocabularyGame = ({ onComplete }: { onComplete: () => void }) => {
-    const words = useMemo(() => [
-        { type: 'en', value: 'Better', id: 1 }, { type: 'es', value: 'Mejor', id: 1 },
-        { type: 'en', value: 'Worse', id: 2 }, { type: 'es', value: 'Peor', id: 2 },
-        { type: 'en', value: 'Faster', id: 3 }, { type: 'es', value: 'Mas rapido', id: 3 },
-        { type: 'en', value: 'Slower', id: 4 }, { type: 'es', value: 'Mas lento', id: 4 },
-        { type: 'en', value: 'Stronger', id: 5 }, { type: 'es', value: 'Mas fuerte', id: 5 },
-        { type: 'en', value: 'The oldest', id: 6 }, { type: 'es', value: 'El mas viejo', id: 6 },
-        { type: 'en', value: 'The cheapest', id: 7 }, { type: 'es', value: 'El mas barato', id: 7 },
-        { type: 'en', value: 'The biggest', id: 8 }, { type: 'es', value: 'El mas grande', id: 8 },
-        { type: 'en', value: 'The smallest', id: 9 }, { type: 'es', value: 'El mas pequeno', id: 9 },
-        { type: 'en', value: 'The best', id: 10 }, { type: 'es', value: 'El mejor', id: 10 }
-    ], []);
-
-    const [shuffledWords, setShuffledWords] = useState<(typeof words[0] & { uniqueId: number })[]>([]);
-    const [selected, setSelected] = useState<number[]>([]);
-    const [matched, setMatched] = useState<number[]>([]);
-    const { toast } = useToast();
-
-    useEffect(() => {
-        const duplicatedWords = [...words, ...words.map(w => ({ ...w, type: w.type + '_copy' }))];
-        const allWords = duplicatedWords.sort(() => 0.5 - Math.random());
-        setShuffledWords(allWords.map((w, i) => ({...w, uniqueId: i })));
-    }, [words]);
-
-    useEffect(() => {
-        if (matched.length === words.length) {
-            toast({ title: "¡Juego Completado!", description: "¡Excelente memoria!", className: "bg-blue-500 text-white" });
-            onComplete();
-        }
-    }, [matched, words.length, onComplete, toast]);
-
-    useEffect(() => {
-        if (selected.length === 2) {
-            const [firstIndex, secondIndex] = selected;
-            const firstWord = shuffledWords[firstIndex];
-            const secondWord = shuffledWords[secondIndex];
-
-            if (firstWord.id === secondWord.id && firstWord.type !== secondWord.type) {
-                setMatched(prev => [...prev, firstWord.id]);
-                toast({ title: "¡Correcto!", className: "bg-green-500 text-white" });
-            } else {
-                 toast({ title: "Incorrecto", description: "Intentalo de nuevo.", variant: "destructive" });
-            }
-            setTimeout(() => setSelected([]), 1000);
-        }
-    }, [selected, shuffledWords, toast]);
-
-    const handleSelect = (index: number) => {
-        const word = shuffledWords[index];
-        if (selected.length < 2 && !selected.includes(index) && !matched.includes(word.id)) {
-            setSelected(prev => [...prev, index]);
-        }
-    };
-
-    return (
-        <div className="p-6 w-full max-w-xl mx-auto">
-            <h3 className="text-2xl font-bold text-primary mb-4 text-center">Juego de Memoria</h3>
-            <div className="grid grid-cols-4 gap-4">
-                {shuffledWords.map((word, index) => (
-                    <div 
-                        key={word.uniqueId}
-                        onClick={() => handleSelect(index)}
-                        className={cn("h-24 flex items-center justify-center p-2 rounded-lg cursor-pointer transition-all duration-300", {
-                            "bg-muted hover:bg-primary/10": !selected.includes(index),
-                            "bg-primary text-primary-foreground transform scale-105": selected.includes(index),
-                            "bg-green-500 text-white opacity-50 cursor-not-allowed": matched.includes(word.id),
-                        })}
-                    >
-                        <span className="text-center font-semibold">{word.value}</span>
-                    </div>
-                ))}
-            </div>
-        </div>
-    );
-};
-
-const ReadingContent = ({ onComplete }: { onComplete: () => void }) => {
-    const readingData = useMemo(() => ({
-        title: "Una competencia en la ciudad",
-        content: "En mi ciudad, hay dos restaurantes famosos: 'La Cuchara Rapida' y 'El Tenedor Elegante'. 'La Cuchara Rapida' es mas barato que 'El Tenedor Elegante', pero la comida en 'El Tenedor Elegante' es mejor. El parque de la ciudad es el lugar mas bonito de todos, y es mas grande que mi casa. La biblioteca es el edificio mas viejo de la ciudad. Mi amigo Juan es mas alto que yo, pero yo soy mas rapido. En la escuela, la clase de matematicas es la mas dificil, pero la clase de español es la mas facil para mi.",
-        questions: [
-            { q: "Cual restaurante es mas barato?", a: ["la cuchara rapida"] },
-            { q: "Que lugar es el mas bonito de la ciudad?", a: ["el parque", "el parque de la ciudad"] },
-            { q: "Que clase es la mas dificil para el narrador?", a: ["matematicas", "la clase de matematicas"] },
-            { q: "Quien es mas alto, el narrador o Juan?", a: ["juan"] },
-            { q: "Como es la comida en 'El Tenedor Elegante'?", a: ["mejor"] },
-        ]
-    }), []);
-
-    const vocabulary = useMemo(() => [
-        { en: "cheaper", es: "mas barato" },
-        { en: "better", es: "mejor" },
-        { en: "the most beautiful", es: "el mas bonito" },
-        { en: "bigger", es: "mas grande" },
-        { en: "the oldest", es: "el mas viejo" },
-        { en: "taller", es: "mas alto" },
-        { en: "faster", es: "mas rapido" },
-        { en: "the most difficult", es: "la mas dificil" },
-        { en: "the easiest", es: "la mas facil" },
-    ], []);
-    
-    const [currentQuestion, setCurrentQuestion] = useState(0);
-    const [userAnswers, setUserAnswers] = useState<Record<number, string>>({});
-    const [results, setResults] = useState<Record<number, boolean | null>>({});
-    const { toast } = useToast();
-
-    const currentPrompt = readingData.questions[currentQuestion];
-
-    const handleCheck = () => {
-        const userAnswer = userAnswers[currentQuestion]?.trim().toLowerCase() || '';
-        const isCorrect = currentPrompt.a.some(c => c.toLowerCase() === userAnswer);
-        setResults(prev => ({ ...prev, [currentQuestion]: isCorrect }));
-        if (isCorrect) {
-            toast({ title: "¡Correcto!", className: "bg-green-500 text-white" });
-        } else {
-            toast({ title: "Respuesta incorrecta", description: "¡Intentalo de nuevo!", variant: "destructive" });
-        }
-    };
-
-    const handleNext = () => {
-        if (currentQuestion < readingData.questions.length - 1) {
-            setCurrentQuestion(prev => prev + 1);
-        } else {
-            onComplete();
-        }
-    };
-
-    const handleInputChange = (value: string) => {
-        setUserAnswers(prev => ({...prev, [currentQuestion]: value}));
-        if (results[currentQuestion] !== null) {
-            setResults(prev => ({...prev, [currentQuestion]: null}));
-        }
-    }
-    
-    const progress = (Object.values(results).filter(r => r === true).length / readingData.questions.length) * 100;
-    const isCurrentCorrect = results[currentQuestion] === true;
-
-    return (
-        <div className="p-6 w-full max-w-3xl mx-auto flex flex-col items-center">
-             <div className="w-full mb-4">
-                <div className="flex justify-center items-center mb-2 relative">
-                    <h3 className="text-2xl font-bold text-primary text-center">{readingData.title}</h3>
-                    <Popover>
-                        <PopoverTrigger asChild>
-                            <Button variant="outline" className="absolute right-0"><HelpCircle className="mr-2 h-4 w-4" /> Vocabulario</Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-80">
-                            <div className="grid gap-4">
-                               <h4 className="font-medium leading-none">Vocabulario Clave</h4>
-                                <div className="grid gap-2">
-                                    {vocabulary.map(word => (
-                                        <div key={word.en} className="grid grid-cols-2 items-center gap-2">
-                                            <span className="font-semibold">{word.en}</span>
-                                            <span className="text-muted-foreground">{word.es}</span>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        </PopoverContent>
-                    </Popover>
-                </div>
-            </div>
-
-            <p className="mb-6 bg-muted p-4 rounded-lg text-left w-full">{readingData.content}</p>
-
-            <div className="w-full mb-4">
-                <Progress value={progress} className="w-full h-2" />
-                <p className="text-sm text-muted-foreground mt-2 text-center">{Object.values(results).filter(r => r === true).length} / {readingData.questions.length}</p>
-            </div>
-
-            <Card className="w-full min-h-[200px] flex flex-col justify-center items-center text-center shadow-lg p-6">
-                <p className="font-semibold text-lg mb-4 text-center">{currentPrompt.q}</p>
-                <Input 
-                    value={userAnswers[currentQuestion] || ''}
-                    onChange={(e) => handleInputChange(e.target.value)}
-                    placeholder="Escribe tu respuesta..."
-                    className={cn(
-                        "text-center text-lg h-12",
-                        results[currentQuestion] === true && "border-green-500 border-2",
-                        results[currentQuestion] === false && "border-red-500 border-2"
-                    )}
-                    disabled={isCurrentCorrect}
-                />
-            </Card>
-
-            <div className="flex w-full justify-between items-center mt-6">
-                 <Button variant="outline" onClick={() => setCurrentQuestion(p => p - 1)} disabled={currentQuestion === 0}>
-                    <ArrowLeft className="mr-2 h-4 w-4" /> Anterior
-                </Button>
-                
-                {!isCurrentCorrect ? (
-                    <Button onClick={handleCheck} size="lg">Verificar</Button>
-                ) : (
-                    currentQuestion < readingData.questions.length - 1 ? (
-                         <Button onClick={handleNext} size="lg" className="bg-green-600 hover:bg-green-700">
-                             Siguiente <ArrowRight className="ml-2 h-4 w-4" />
-                         </Button>
-                    ) : (
-                         <Button onClick={onComplete} size="lg" className="bg-green-600 hover:bg-green-700">
-                             Finalizar <Trophy className="ml-2 h-4 w-4" />
-                         </Button>
-                    )
-                )}
-            </div>
-        </div>
-    );
-};
-
-const FinalExercise = ({ onComplete }: { onComplete: () => void }) => {
-    const sentences = useMemo(() => [
-        { parts: ["El Everest es la montana ", " (alta) del mundo."], answer: "mas alta" },
-        { parts: ["Mi coche es ", " (rapido) que el tuyo."], answer: "mas rapido" },
-        { parts: ["Esta es la ", " (buena) pelicula que he visto."], answer: "mejor" },
-        { parts: ["Ella es ", " (joven) de la clase."], answer: "la mas joven" },
-        { parts: ["Invierno es la estacion ", " (fria) del año."], answer: "la mas fria" },
-        { parts: ["Este examen fue ", " (dificil) que el anterior."], answer: "mas dificil" },
-        { parts: ["Es el hotel ", " (caro) de la ciudad."], answer: "el mas caro" },
-        { parts: ["Tu casa es ", " (grande) que la mia."], answer: "mas grande" },
-        { parts: ["Hoy es el dia ", " (feliz) de mi vida."], answer: "el mas feliz" },
-        { parts: ["Este libro es ", " (interesante) que el de ayer."], answer: "mas interesante" },
-        { parts: ["Mi hermano es ", " (alto) que mi padre."], answer: "mas alto" },
-        { parts: ["El Amazonas es el rio ", " (largo) del mundo."], answer: "el mas largo" },
-        { parts: ["El resultado del examen fue ", " (malo) de lo esperado."], answer: "peor" },
-        { parts: ["La Antartida es el lugar ", " (frio) de la Tierra."], answer: "el mas frio" },
-        { parts: ["Esta pregunta es ", " (facil) de todas."], answer: "la mas facil" },
-    ], []);
-
-    const vocabulary = useMemo(() => [
-        { en: "alta", es: "mas alta" },
-        { en: "rapido", es: "mas rapido" },
-        { en: "buena", es: "mejor" },
-        { en: "joven", es: "la mas joven" },
-        { en: "fria", es: "la mas fria" },
-        { en: "dificil", es: "mas dificil" },
-        { en: "caro", es: "el mas caro" },
-        { en: "grande", es: "mas grande" },
-        { en: "feliz", es: "el mas feliz" },
-        { en: "interesante", es: "mas interesante" },
-        { en: "alto", es: "mas alto" },
-        { en: "largo", es: "el mas largo" },
-        { en: "malo", es: "peor" },
-        { en: "frio", es: "el mas frio" },
-        { en: "facil", es: "la mas facil" },
-    ], []);
-
-    const [userAnswers, setUserAnswers] = useState<Record<number, string>>({});
-    const [results, setResults] = useState<Record<number, boolean | null>>({});
-
-    const handleInputChange = (index: number, value: string) => {
-        setUserAnswers(prev => ({ ...prev, [index]: value }));
-        setResults(prev => ({ ...prev, [index]: null }));
-    };
-
-    const handleCheck = () => {
-        const newResults: Record<number, boolean> = {};
-        let allCorrect = true;
-        sentences.forEach((item, index) => {
-            const isCorrect = userAnswers[index]?.trim().toLowerCase() === item.answer;
-            newResults[index] = isCorrect;
-            if (!isCorrect) {
-                allCorrect = false;
-            }
-        });
-        setResults(newResults);
-        if (allCorrect) {
-            onComplete();
-        }
-    };
-
-    return (
-         <div className="p-6 w-full max-w-3xl mx-auto">
-            <div className="flex justify-center items-center mb-6 relative">
-                <h3 className="text-2xl font-bold text-primary text-center">Ejercicio Final: Completa las frases</h3>
-                <Popover>
-                    <PopoverTrigger asChild>
-                        <Button variant="outline" className="absolute right-0"><HelpCircle className="mr-2 h-4 w-4" /> Vocabulario</Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-80">
-                        <div className="grid gap-4">
-                           <h4 className="font-medium leading-none">Vocabulario Clave</h4>
-                            <div className="grid gap-2">
-                                {vocabulary.map(word => (
-                                    <div key={word.en} className="grid grid-cols-2 items-center gap-2">
-                                        <span className="font-semibold">{word.en}</span>
-                                        <span className="text-muted-foreground">{word.es}</span>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </PopoverContent>
-                </Popover>
-            </div>
-            <div className="space-y-4 text-left">
-                {sentences.map((sentence, index) => (
-                    <div key={index} className="flex items-center gap-2 flex-wrap">
-                        <span>{index + 1}.</span>
-                        <span>{sentence.parts[0]}</span>
-                        <Input 
-                            className={cn(
-                                "inline-block w-36",
-                                results[index] === true && "border-green-500 border-2",
-                                results[index] === false && "border-red-500 border-2"
-                            )}
-                            value={userAnswers[index] || ''}
-                            onChange={(e) => handleInputChange(index, e.target.value)}
-                        />
-                        <span>{sentence.parts[1]}</span>
-                    </div>
-                ))}
-            </div>
-             <div className="flex justify-center mt-8">
-                <Button onClick={handleCheck} size="lg" className="px-20 font-black h-14 text-xl shadow-xl uppercase tracking-tighter">
-                    Verificar <CheckCircle className="ml-2 h-6 w-6" />
-                </Button>
-            </div>
-        </div>
-    );
-};
-
-const TranslateTextContent = ({ onComplete }: { onComplete: () => void }) => {
-    const textToTranslate = "My city is a very interesting place. The central park is the most beautiful area and it's bigger than my school. There's a new restaurant that is more expensive than the old one, but the food is better. The library is the oldest building. I think learning Spanish is easier than learning German. My dog is faster than my cat, but my cat is smarter.";
-    const vocabulary = [
-        { en: "Interesting", es: "Interesante" },
-        { en: "Beautiful", es: "Bonito/Hermoso" },
-        { en: "Bigger", es: "Mas grande" },
-        { en: "Expensive", es: "Caro" },
-        { en: "Better", es: "Mejor" },
-        { en: "Oldest", es: "El mas viejo/antiguo" },
-        { en: "Easier", es: "Mas facil" },
-        { en: "Faster", es: "Mas rapido" },
-        { en: "Smarter", es: "Mas inteligente" }
-    ];
-
-    return (
-        <div className="p-6 w-full max-w-3xl mx-auto text-left">
-             <div className="flex justify-between items-center mb-4">
-                <h3 className="text-2xl font-bold text-primary">Traducir Texto</h3>
-                 <Popover>
-                    <PopoverTrigger asChild>
-                        <Button variant="outline"><HelpCircle className="mr-2 h-4 w-4" /> Vocabulario</Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-80">
-                        <div className="grid gap-4">
-                           <h4 className="font-medium leading-none">Vocabulario Clave</h4>
-                            <div className="grid gap-2">
-                                {vocabulary.map(word => (
-                                    <div key={word.en} className="grid grid-cols-2 items-center gap-2">
-                                        <span className="font-semibold">{word.en}</span>
-                                        <span className="text-muted-foreground">{word.es}</span>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </PopoverContent>
-                </Popover>
-            </div>
-            <p className="bg-muted p-4 rounded-lg mb-4">{textToTranslate}</p>
-            <Textarea placeholder="Escribe tu traduccion aqui..." rows={8} />
-            <div className="flex justify-center mt-6">
-                <Button onClick={onComplete} size="lg">Entregar Traduccion</Button>
-            </div>
-        </div>
-    );
-};
-
-const FinalNegativeForm = ({ onComplete }: { onComplete: () => void }) => {
-    const exercises = [
-        { sentence: "My house is not bigger than yours.", correct: ["mi casa no es mas grande que la tuya"] },
-        { sentence: "She is not the tallest in the class.", correct: ["ella no es la mas alta de la clase"] },
-        { sentence: "This car is not faster than a train.", correct: ["este coche no es mas rapido que un tren"] },
-        { sentence: "This is not the best movie.", correct: ["esta no es la mejor pelicula"] },
-        { sentence: "He is not older than his brother.", correct: ["el no es mayor que su hermano"] },
-        { sentence: "The book is not more interesting than the film.", correct: ["el libro no es mas interesante que la pelicula"] },
-        { sentence: "It's not the worst day of my life.", correct: ["no es el peor dia de mi vida"] },
-        { sentence: "My cat is not slower than a turtle.", correct: ["mi gato no es mas lento que una tortuga"] },
-        { sentence: "This restaurant is not the cheapest.", correct: ["este restaurante no es el mas barato"] },
-        { sentence: "The exam was not easier than I thought.", correct: ["el examen no fue mas facil de lo que pensaba"] },
-    ];
-
-    const vocabulary = [
-        { en: "bigger", es: "mas grande" },
-        { en: "the tallest", es: "la mas alta" },
-        { en: "faster", es: "mas rapido" },
-        { en: "the best", es: "la mejor" },
-        { en: "older", es: "mayor" },
-        { en: "more interesting", es: "mas interesante" },
-        { en: "the worst", es: "el peor" },
-        { en: "slower", es: "mas lento" },
-        { en: "the cheapest", es: "el mas barato" },
-        { en: "easier", es: "mas facil" },
-    ];
-
-    return (
-        <TranslationExercise 
-            title="Practica Final: Formas Negativas"
-            exercises={exercises}
-            onComplete={onComplete}
-            vocabulary={vocabulary}
-        />
-    );
-};
-
-
-function ComparativosSuperlativosContent() {
-    const { toast } = useToast();
-    const searchParams = useSearchParams();
     const { user, isUserLoading: isAuthLoading } = useUser();
     const firestore = useFirestore();
 
-    const suppressSave = useRef(false);
-    const isInitialized = useRef(false);
+    const currentUID = overrideStudentId || user?.uid;
 
-    const targetStudentId = searchParams.get('studentId');
-    const currentUID = targetStudentId || user?.uid;
-
-    const [isUIVisible, setIsUIVisible] = useState(false);
+    const [isInitialLoading, setIsInitialLoading] = useState(true);
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
     const [selectedTopic, setSelectedTopic] = useState<string>('');
     const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
+
+    // Reading specific states
+    const [readingAnswers, setReadingAnswers] = useState<string[]>(Array(readingData.questions.length).fill(''));
+    const [readingVal, setReadingVal] = useState<any[]>(Array(readingData.questions.length).fill('unchecked'));
+
+    const [vocabAnswers, setVocabAnswers] = useState<string[]>(Array(vocabularyList.length).fill(''));
+    const [vocabValidation, setVocabValidation] = useState<any[]>(Array(vocabularyList.length).fill('unchecked'));
+    const [canAdvanceVocab, setCanAdvanceVocab] = useState(false);
+    const [translationText, setTranslationText] = useState('');
 
     const studentDocRef = useMemoFirebase(() => (currentUID ? doc(firestore, 'students', currentUID) : null), [firestore, currentUID]);
     const authUserRef = useMemoFirebase(() => (user ? doc(firestore, 'students', user.uid) : null), [firestore, user]);
@@ -885,52 +415,48 @@ function ComparativosSuperlativosContent() {
 
     const initialLearningPath = useMemo((): Topic[] => [
         { key: 'vocabulary', name: '1. Vocabulario', icon: BookOpen, status: 'active' },
-        { key: 'grammar', name: '2. Gramatica', icon: GraduationCap, status: 'locked' },
+        { key: 'grammar', name: '2. Gramática', icon: GraduationCap, status: 'locked' },
         { key: 'ex1', name: '3. Ejercicio 1', icon: PenSquare, status: 'locked' },
         { key: 'ex2', name: '4. Ejercicio 2', icon: PenSquare, status: 'locked' },
-        { key: 'vocab_game', name: '5. Vocabulario (Juego)', icon: Gamepad2, status: 'locked' },
-        { key: 'ex4', name: '6. Ejercicio 3', icon: PenSquare, status: 'locked' },
-        { key: 'ex3', name: '7. Ejercicio 4', icon: PenSquare, status: 'locked' },
-        { key: 'ex5', name: '8. Ejercicio 5', icon: PenSquare, status: 'locked' },
-        { key: 'reading', name: '9. Lectura', icon: BookText, status: 'locked' },
-        { key: 'final_ex', name: '10. Ejercicio Final', icon: Trophy, status: 'locked' },
-        { key: 'translate_text', name: '11. Traducir Texto', icon: MessageSquare, status: 'locked' },
-        { key: 'final', name: '12. Final', icon: CheckCircle, status: 'locked' },
+        { key: 'ex3', name: '5. Ejercicio 3', icon: PenSquare, status: 'locked' },
+        { key: 'grammar2', name: '6. Gramática 2 (Irregulares)', icon: GraduationCap, status: 'locked' },
+        { key: 'vocab_game', name: '7. Vocabulario (Juego)', icon: Gamepad2, status: 'locked' },
+        { key: 'ex4', name: '8. Ejercicio 4 (Irregulares)', icon: PenSquare, status: 'locked' },
+        { key: 'ex5', name: '9. Ejercicio 5 (Selección)', icon: PenSquare, status: 'locked' },
+        { key: 'reading', name: '10. Lectura', icon: BookText, status: 'locked' },
+        { key: 'final_ex', name: '11. Ejercicio Final', icon: Trophy, status: 'locked' },
+        { key: 'translate_text', name: '12. Traducir Texto', icon: MessageSquare, status: 'locked' },
+        { key: 'final', name: '13. Final (Negativos)', icon: CheckCircle, status: 'locked' },
     ], []);
 
-    // FLOW 1: Carga y Sincronización de Datos desde Firestore.
+    const handleTopicComplete = useCallback((completedKey: string) => {
+        setTopicToComplete(completedKey);
+    }, []);
+
     useEffect(() => {
         if (isProfileLoading || isAuthLoading || !studentProfile) return;
 
-        if (!isInitialized.current) {
-             suppressSave.current = true; // Previene el guardado durante la carga inicial.
+        let path = initialLearningPath.map(topic => ({ ...topic }));
+        let savedST = '';
 
-            let path = initialLearningPath.map(topic => ({ ...topic }));
-            let savedSelectedTopic = '';
-
-            if (isAdmin && !targetStudentId) {
-                path.forEach(item => { item.status = 'completed'; });
-            } else if (studentProfile.lessonProgress?.[progressStorageVersion]) {
-                const savedData = studentProfile.lessonProgress[progressStorageVersion];
-                path.forEach(item => {
-                    if (savedData[item.key]) item.status = savedData[item.key];
-                });
-                savedSelectedTopic = savedData.lastSelectedTopic || '';
-            }
-
-            let lastDone = true;
-            for (let i = 0; i < path.length; i++) {
-                if (lastDone && path[i].status === 'locked') path[i].status = 'active';
-                lastDone = path[i].status === 'completed';
-            }
-
-            setLearningPath(path);
-            setSelectedTopic(savedSelectedTopic || path.find(p => p.status === 'active')?.key || path[0].key);
-            
-            isInitialized.current = true;
-            setIsUIVisible(true); // Muestra la UI
+        if (isAdmin && !overrideStudentId) {
+            path.forEach(item => { item.status = 'completed'; });
+        } else if (studentProfile?.lessonProgress?.[progressStorageVersion]) {
+            const d = studentProfile.lessonProgress[progressStorageVersion];
+            path.forEach(item => { if (d[item.key]) item.status = d[item.key]; });
+            savedST = d.lastSelectedTopic || '';
         }
-    }, [studentProfile, isProfileLoading, isAuthLoading, isAdmin, initialLearningPath, targetStudentId]);
+
+        let lastDone = true;
+        for (let i = 0; i < path.length; i++) {
+            if (lastDone && path[i].status === 'locked') path[i].status = 'active';
+            lastDone = path[i].status === 'completed';
+        }
+
+        setLearningPath(path as Topic[]);
+        setSelectedTopic(savedST || path.find(p => p.status === 'active')?.key || path[0].key);
+        setIsInitialLoading(false);
+    }, [studentProfile, isProfileLoading, isAuthLoading, isAdmin, initialLearningPath, overrideStudentId]);
 
     const progressValue = useMemo(() => {
         if (learningPath.length === 0) return 0;
@@ -938,205 +464,197 @@ function ComparativosSuperlativosContent() {
         return Math.round((completedCount / learningPath.length) * 100);
     }, [learningPath]);
 
-    // FLOW 2: Guardado de Progreso a Firestore.
     useEffect(() => {
-        if (!isInitialized.current || isAdmin || targetStudentId) return;
-        if (suppressSave.current) {
-            suppressSave.current = false;
-            return;
-        }
+        if (isInitialLoading || isAdmin || !studentDocRef || learningPath.length === 0 || overrideStudentId) return;
+        const s: Record<string, any> = { lastSelectedTopic: selectedTopic };
+        learningPath.forEach(item => { s[item.key] = item.status; });
+        updateDocumentNonBlocking(studentDocRef, { [`lessonProgress.${progressStorageVersion}`]: s, [`progress.${mainProgressKey}`]: progressValue });
+        if (progressValue >= 100) window.dispatchEvent(new CustomEvent('progressUpdated'));
+    }, [learningPath, isAdmin, progressValue, studentDocRef, selectedTopic, isInitialLoading, overrideStudentId]);
 
-        const statusesToSave: Record<string, any> = { lastSelectedTopic: selectedTopic };
-        learningPath.forEach(item => { statusesToSave[item.key] = item.status; });
-        
-        updateDocumentNonBlocking(studentDocRef, { 
-            [`lessonProgress.${progressStorageVersion}`]: statusesToSave, 
-            [`progress.${mainProgressKey}`]: progressValue 
-        });
-        
-        if (progressValue >= 100) {
-            window.dispatchEvent(new CustomEvent('progressUpdated'));
-        }
-    }, [learningPath, selectedTopic, progressValue, studentDocRef, isAdmin, targetStudentId]);
-
-    // FLOW 3: Desbloqueo de Siguiente Tópico.
     useEffect(() => {
         if (!topicToComplete) return;
-        
-        setLearningPath(currentPath => {
-            let wasUnlocked = false; 
-            let nextToSelect: string | null = null;
-            const newPath = currentPath.map(t => ({ ...t }));
-            const idx = newPath.findIndex(t => t.key === topicToComplete);
-            
-            if (idx !== -1 && newPath[idx].status !== 'completed') {
-                newPath[idx].status = 'completed';
-                if (idx + 1 < newPath.length && newPath[idx + 1].status === 'locked') {
-                    newPath[idx + 1].status = 'active'; 
-                    wasUnlocked = true; 
-                    nextToSelect = newPath[idx + 1].key;
+        setLearningPath(curr => {
+            let win = false; let next: string | null = null;
+            const np = curr.map(t => ({ ...t }));
+            const idx = np.findIndex(t => t.key === topicToComplete);
+            if (idx !== -1 && np[idx].status !== 'completed') {
+                np[idx].status = 'completed';
+                if (idx + 1 < np.length && np[idx + 1].status === 'locked') {
+                    np[idx + 1].status = 'active'; win = true; next = np[idx + 1].key;
                 }
             }
-            
-            if (wasUnlocked) {
-                 setTimeout(() => toast({ title: "¡Siguiente mision desbloqueada!" }), 0);
-            }
-            if (nextToSelect) { 
-                const finalNext = nextToSelect; 
-                setTimeout(() => setSelectedTopic(finalNext), 0); 
-            }
-            return newPath;
+            if (win) setTimeout(() => toast({ title: "¡Siguiente misión desbloqueada!" }), 0);
+            if (next) { const n = next; setTimeout(() => setSelectedTopic(n), 0); }
+            return np as Topic[];
         });
-        
         setTopicToComplete(null);
     }, [topicToComplete, toast]);
 
     const handleTopicSelect = (topicKey: string) => {
-        const topic = learningPath.find(t => t.key === topicKey);
-        if (!isAdmin && topic?.status === 'locked') { 
-            toast({ variant: "destructive", title: "Contenido Bloqueado", description: "Completa la mision anterior para avanzar." }); 
-            return; 
-        }
+        const t = learningPath.find(it => it.key === topicKey);
+        if (!isAdmin && t?.status === 'locked') { toast({ variant: "destructive", title: "Contenido Bloqueado" }); return; }
         setSelectedTopic(topicKey);
+        if (['grammar', 'grammar2'].includes(topicKey)) handleTopicComplete(topicKey);
     };
 
-    const handleTopicComplete = useCallback((completedKey: string) => {
-        setTopicToComplete(completedKey);
-    }, []);
+    const handleVocabCheck = () => {
+        let okCount = 0;
+        const nv = vocabularyList.map((v, i) => {
+            const res = v.es.toLowerCase() === (vocabAnswers[i] || '').trim().toLowerCase();
+            if (res) okCount++; return res ? 'correct' : 'incorrect';
+        });
+        setVocabValidation(nv);
+        if (okCount >= 10) { setCanAdvanceVocab(true); toast({ title: "¡Buen avance!" }); }
+        else toast({ variant: 'destructive', title: "Necesitas 10 aciertos para avanzar." });
+    };
+
+    const handleCheckReading = () => {
+        let allOk = true;
+        const newVal = readingData.questions.map((q, i) => {
+            const isOk = q.a.some(ans => (readingAnswers[i] || '').trim().toLowerCase().includes(ans.toLowerCase()));
+            if (!isOk) allOk = false;
+            return isOk ? 'correct' : 'incorrect';
+        });
+        setReadingVal(newVal);
+        if (allOk) { toast({ title: "¡Lectura superada!" }); handleTopicComplete('reading'); }
+        else toast({ variant: 'destructive', title: "Revisa tus respuestas." });
+    };
 
     const renderContent = () => {
-        if (!isUIVisible) {
-            return (
-                <div className="flex items-center justify-center min-h-[400px]">
-                    <Loader2 className="animate-spin h-12 w-12 text-primary" />
-                </div>
-            );
-        }
-        
-        const topic = learningPath.find(t => t.key === selectedTopic);
-        if (!topic) return null;
+        if (isInitialLoading) return <div className="flex justify-center items-center h-96"><Loader2 className="animate-spin text-primary h-12 w-12" /></div>;
 
-        const onComplete = () => handleTopicComplete(selectedTopic);
-
-        let content;
         switch (selectedTopic) {
             case 'vocabulary':
-                content = <VocabularyContent onComplete={onComplete} />;
-                break;
+                return (
+                    <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left">
+                        <CardHeader className='bg-primary/5 border-b'><CardTitle className="text-primary uppercase tracking-tighter">Vocabulario: Comparación (40)</CardTitle><CardDescription className='font-bold text-foreground'>Escribe el significado en español para desbloquear la misión (Mín. 10).</CardDescription></CardHeader>
+                        <CardContent className="pt-6"><ScrollArea className="h-[450px] pr-4"><div className="grid grid-cols-2 gap-4">
+                            <div className="font-black text-primary border-b pb-2 uppercase tracking-widest text-xs">English</div><div className="font-black text-primary border-b pb-2 uppercase tracking-widest text-xs">Español</div>
+                            {vocabularyList.map((v, i) => (<Fragment key={i}><div className="flex items-center font-bold py-1 text-sm">{v.en}</div><Input value={vocabAnswers[i]} onChange={e => { const na = [...vocabAnswers]; na[i] = e.target.value; setVocabAnswers(na); setVocabValidation(vv => { const nv = [...vv]; nv[i] = 'unchecked'; return nv; }); setCanAdvanceVocab(false); }} className={cn("h-10 uppercase", vocabValidation[i] === 'correct' ? 'border-green-500 bg-green-50/10' : vocabValidation[i] === 'incorrect' ? 'border-red-500 bg-red-50/10' : '')} autoComplete="off" /></Fragment>))}
+                        </div></ScrollArea></CardContent>
+                        <CardFooter className="flex justify-between border-t pt-6 bg-muted/20"><Button onClick={handleVocabCheck} variant="secondary">Verificar</Button><Button onClick={() => handleTopicComplete('vocabulary')} disabled={!canAdvanceVocab && !isAdmin} className='text-white font-bold'>Avanzar <ArrowRight className='ml-2 h-4 w-4'/></Button></CardFooter>
+                    </Card>
+                );
             case 'grammar':
-                content = <GrammarContent onComplete={onComplete} />;
-                break;
-            case 'ex1':
-                content = <TranslationExercise 
-                    title="Ejercicio 1: Comparativos"
-                    exercises={ex1Exercises}
-                    onComplete={onComplete}
-                    vocabulary={ex1Vocabulary}
-                />;
-                break;
-            case 'ex2':
-                 content = <TranslationExercise 
-                    title="Ejercicio 2: Superlativos"
-                    exercises={ex2Exercises}
-                    onComplete={onComplete}
-                    vocabulary={ex2Vocabulary}
-                />;
-                break;
-             case 'vocab_game':
-                content = <VocabularyGame onComplete={onComplete} />;
-                break;
-            case 'ex4': // This is now logically Exercise 3
-                 content = <MultiStepExercise 
-                    title="Ejercicio 3: Comparativos (Completar)"
-                    prompts={ex4Prompts}
-                    onComplete={onComplete}
-                    instruction="Completa los espacios en blanco para formar la comparación correcta."
-                 />;
-                 break;
-            case 'ex3': // This is now logically Exercise 4
-                 content = <TranslationExercise 
-                    title="Ejercicio 4: Mixto"
-                    exercises={[
-                        { sentence: "The blue whale is the biggest animal.", correct: ["la ballena azul es el animal mas grande"] },
-                        { sentence: "My brother is older than me.", correct: ["mi hermano es mayor que yo"] },
-                        { sentence: "This is the most difficult question.", correct: ["esta es la pregunta mas dificil"] },
-                        { sentence: "A plane is faster than a car.", correct: ["un avion es mas rapido que un coche", "un avion es mas rapido que un carro"] },
-                        { sentence: "This is the worst idea.", correct: ["esta es la peor idea"] },
-                        { sentence: "She is more patient than her friend.", correct: ["ella es mas paciente que su amiga"] },
-                        { sentence: "This is the cheapest option.", correct: ["esta es la opcion mas barata"] },
-                        { sentence: "My dog is friendlier than my cat.", correct: ["mi perro es mas amigable que mi gato"] },
-                        { sentence: "The new version is better.", correct: ["la nueva version es mejor"] },
-                        { sentence: "It's the most famous painting in the museum.", correct: ["es la pintura mas famosa del museo"] },
-                        { sentence: "A lion is more dangerous than a sheep.", correct: ["un leon es mas peligroso que una oveja"] },
-                        { sentence: "This is the smallest box.", correct: ["esta es la caja mas pequena"] },
-                        { sentence: "My homework is harder than yours.", correct: ["mi tarea es mas dificil que la tuya"] },
-                        { sentence: "He is the tallest boy in the school.", correct: ["el es el chico mas alto de la escuela"] },
-                        { sentence: "The city is more crowded than the countryside.", correct: ["la ciudad esta mas poblada que el campo"] },
-                        { sentence: "This is the most boring book I've read.", correct: ["este es el libro mas aburrido que he leido"] },
-                        { sentence: "She is a better singer than him.", correct: ["ella es mejor cantante que el"] },
-                        { sentence: "This is the coldest winter we've had.", correct: ["este es el invierno mas frio que hemos tenido"] },
-                        { sentence: "The final exam was the hardest.", correct: ["el examen final fue el mas dificil"] },
-                        { sentence: "The sun is bigger than the moon.", correct: ["el sol es mas grande que la luna"] },
-                    ]}
-                    onComplete={onComplete}
-                    vocabulary={[
-                        { en: "the biggest", es: "el mas grande" },
-                        { en: "older", es: "mayor" },
-                        { en: "the most difficult", es: "la mas dificil" },
-                        { en: "faster", es: "mas rapido" },
-                        { en: "the worst", es: "la peor" },
-                        { en: "more patient", es: "mas paciente" },
-                        { en: "the cheapest", es: "la mas barata" },
-                        { en: "friendlier", es: "mas amigable" },
-                        { en: "better", es: "mejor" },
-                        { en: "more dangerous", es: "mas peligroso" },
-                        { en: "harder", es: "mas dificil" },
-                        { en: "the most boring", es: "el mas aburrido" },
-                    ]}
-                />;
-                break;
-            case 'ex5':
-                 content = <MultiStepExercise 
-                    title="Ejercicio 5: Superlativos (Completar)"
-                    prompts={ex5Prompts}
-                    onComplete={onComplete}
-                    instruction="Completa los espacios en blanco para formar el superlativo correcto."
-                 />;
-                 break;
-            case 'reading':
-                content = <ReadingContent onComplete={onComplete} />;
-                break;
-            case 'final_ex':
-                content = <FinalExercise onComplete={onComplete} />;
-                break;
-            case 'translate_text':
-                content = <TranslateTextContent onComplete={onComplete} />;
-                break;
-            case 'final':
-                content = <FinalNegativeForm onComplete={onComplete} />;
-                break;
-            default:
-                return null;
-        }
-
-        return (
-            <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground text-left overflow-hidden">
-                <CardHeader className='bg-primary/5 border-b'>
-                    <div className='flex items-center gap-3'>
-                        <div className='p-2 bg-primary/20 rounded-lg text-primary'>
-                            <topic.icon className='h-6 w-6' />
-                        </div>
-                        <div>
-                            <CardTitle className="text-primary uppercase tracking-tighter">{topic.name}</CardTitle>
-                            <CardDescription className='font-bold text-foreground'>Completa esta seccion para avanzar en tu mision.</CardDescription>
-                        </div>
+                return (
+                    <div className="space-y-6 text-left">
+                        <Card className="shadow-soft border-2 border-brand-purple bg-slate-100 dark:bg-slate-800/50 p-6 text-foreground overflow-hidden">
+                            <CardHeader className='px-0 pb-6 border-b mb-6'><CardTitle className="text-3xl font-black text-primary uppercase">Gramática: Comparativos y Superlativos</CardTitle></CardHeader>
+                            <CardContent className="space-y-8 px-0">
+                                <div className="p-6 bg-white/60 dark:bg-background/20 rounded-[2rem] border shadow-sm">
+                                    <h3 className="text-xl font-black text-primary uppercase mb-4">1. Comparativos (Comparisons)</h3>
+                                    <p className="mb-4 text-muted-foreground italic">Used to compare two elements. / Se usan para comparar dos elementos.</p>
+                                    <div className="p-6 bg-primary/10 rounded-2xl border-2 border-primary text-center">
+                                        <p className="text-2xl font-black text-primary uppercase tracking-tighter">MÁS + ADJETIVO + QUE</p>
+                                        <Separator className="bg-primary/20" />
+                                        <p className="font-mono text-sm italic">"Juan es más alto que Pedro" (Juan is taller than Pedro)</p>
+                                    </div>
+                                </div>
+                                <div className="p-6 bg-white/60 dark:bg-background/20 rounded-[2rem] border shadow-sm">
+                                    <h3 className="text-xl font-black text-brand-purple uppercase mb-4">2. Superlativos (The Best)</h3>
+                                    <p className="mb-4 text-muted-foreground italic">Highlight an element within a group. / Destacan un elemento dentro de un grupo.</p>
+                                    <div className="p-6 bg-brand-purple/10 rounded-2xl border-2 border-brand-purple text-center">
+                                        <p className="text-2xl font-black text-brand-purple uppercase tracking-tighter">EL/LA MÁS + ADJETIVO + DE</p>
+                                        <Separator className="bg-brand-purple/20" />
+                                        <p className="font-mono text-sm italic">"El Everest es la montaña más alta del mundo" (The Everest is the highest...)</p>
+                                    </div>
+                                </div>
+                            </CardContent>
+                            <CardFooter className="justify-center border-t pt-6"><Button onClick={() => handleTopicComplete('grammar')} size="lg" className="px-24 font-black h-14 text-xl shadow-xl">Comprendido</Button></CardFooter>
+                        </Card>
                     </div>
-                </CardHeader>
-                <CardContent className="py-12 flex flex-col items-center justify-center min-h-[400px]">
-                    {content}
-                </CardContent>
-            </Card>
-        );
+                );
+            case 'grammar2':
+                return (
+                    <Card className="shadow-soft border-2 border-brand-purple bg-slate-100 dark:bg-slate-800/50 p-6 text-foreground text-left">
+                        <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase flex items-center gap-2"><Scale className="h-6 w-6" /> Gramática 2: Irregulares</CardTitle></CardHeader>
+                        <CardContent className="space-y-6">
+                            <p className='font-bold'>Existen adjetivos que no siguen la regla general y cambian completamente en su forma comparativa y superlativa.</p>
+                            <div className='bg-background/50 rounded-xl border p-2'>
+                                <Table>
+                                    <TableHeader className='bg-primary/10'>
+                                        <TableRow>
+                                            <TableHead className='font-black'>Adjetivo (Normal)</TableHead>
+                                            <TableHead className='font-black'>Comparativo</TableHead>
+                                            <TableHead className='font-black'>Superlativo</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {irregularTable.map((row, i) => (
+                                            <TableRow key={i}>
+                                                <TableCell className='font-bold'>{row.adjective}</TableCell>
+                                                <TableCell className='text-primary font-black'>{row.comparative}</TableCell>
+                                                <TableCell className='text-brand-purple font-black'>{row.superlative}</TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </div>
+                        </CardContent>
+                        <CardFooter className='justify-center border-t pt-6'><Button onClick={() => handleTopicComplete('grammar2')} size="lg" className="px-20 font-bold">He aprendido los irregulares</Button></CardFooter>
+                    </Card>
+                );
+            case 'ex1': return <BallsExercise title="Misión 1: Traducción Básica" prompts={ex1Prompts} onComplete={() => handleTopicComplete('ex1')} vocabulary={{"cat": "gato", "house": "casa", "fast": "rápido", "interesting": "interesante"}} />;
+            case 'ex2': return <BallsExercise title="Misión 2: Comparativos" prompts={ex2Prompts} onComplete={() => handleTopicComplete('ex2')} vocabulary={{"taller": "más alto", "cheaper": "más barato", "easier": "más fácil", "than": "que"}} />;
+            case 'ex3': return <BallsExercise title="Misión 3: Superlativos" prompts={ex3Prompts} onComplete={() => handleTopicComplete('ex3')} vocabulary={{"tallest": "el más alto", "best": "el mejor", "worst": "el peor", "longest": "el más largo"}} />;
+            case 'vocab_game': return <VocabularyMatchingGame data={vocabularyList.slice(0, 10).map(v => ({ spanish: v.es, english: [v.en] }))} onComplete={() => handleTopicComplete('vocab_game')} title="Memoria de Comparación" />;
+            case 'ex4': return <BallsExercise title="Misión 4: Irregulares" prompts={ex4Prompts} onComplete={() => handleTopicComplete('ex4')} vocabulary={{"better": "mejor", "worse": "peor", "best": "lo mejor", "worst": "lo peor"}} />;
+            case 'ex5': return <ChoiceExercise title="Misión 5: Selección de Traducción" description="Escoge la opción que traduzca correctamente la frase al inglés." prompts={ex5ChoiceData} onComplete={() => handleTopicComplete('ex5')} />;
+            case 'reading':
+                return (
+                    <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left overflow-hidden">
+                        <CardHeader className='bg-primary/5 border-b'>
+                            <div className="flex justify-between items-center">
+                                <CardTitle className='text-primary uppercase tracking-tight'>Lectura: Una competencia en la ciudad</CardTitle>
+                                <Popover>
+                                    <PopoverTrigger asChild><Button variant="outline" size="sm" className='border-brand-blue border-2'><BookText className="mr-2 h-4 w-4" /> Vocabulario</Button></PopoverTrigger>
+                                    <PopoverContent className="w-64"><ScrollArea className="h-40">{Object.entries({ "spoon": "cuchara", "fork": "tenedor", "neighborhood": "barrio", "building": "edificio", "fast": "rápido" }).map(([en, es], i) => (<div key={i} className="flex justify-between text-xs border-b pb-1"><span>{en}:</span><span className="font-bold text-primary">{es}</span></div>))}</ScrollArea></PopoverContent>
+                                </Popover>
+                            </div>
+                        </CardHeader>
+                        <CardContent className="space-y-6 pt-6">
+                            <div className="p-6 bg-muted rounded-2xl border italic text-lg leading-relaxed shadow-inner">"{readingData.text}"</div>
+                            <Separator />
+                            <div className="space-y-4">
+                                <h3 className='font-black text-primary uppercase text-sm'>Preguntas de Comprensión:</h3>
+                                {readingData.questions.map((q, i) => (
+                                    <div key={i} className="space-y-2 p-3 bg-muted/20 rounded-xl border">
+                                        <Label className="font-bold">{q.q}</Label>
+                                        <Input value={readingAnswers[i]} onChange={e => { const na = [...readingAnswers]; na[i] = e.target.value; setReadingAnswers(na); setReadingVal(v => { const nv = [...v]; nv[i] = 'unchecked'; return nv; }); }} className={cn("h-10", readingVal[i] === 'correct' ? 'border-green-500 bg-green-50/5' : readingVal[i] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} autoComplete="off" />
+                                    </div>
+                                ))}
+                            </div>
+                        </CardContent>
+                        <CardFooter className="justify-center border-t p-6 bg-muted/10"><Button onClick={handleCheckReading} size="lg" className="px-16 font-black h-12 shadow-md">Verificar Lectura</Button></CardFooter>
+                    </Card>
+                );
+            case 'final_ex': return <CompletionExercise title="Ejercicio Final: Completación" description="Completa la frase en español basada en el prompt en inglés." prompts={finalCompletionData} onComplete={() => handleTopicComplete('final_ex')} />;
+            case 'translate_text':
+                return (
+                    <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground text-left">
+                        <CardHeader>
+                            <div className="flex justify-between items-center">
+                                <div><CardTitle className='text-primary uppercase'>Traducción de Texto</CardTitle><CardDescription className='font-bold text-foreground'>Traduce el párrafo comparativo para desbloquear el reto final.</CardDescription></div>
+                                <Popover>
+                                    <PopoverTrigger asChild><Button variant="outline" size="sm" className='border-brand-blue border-2'><BookText className="mr-2 h-4 w-4" /> Vocabulario</Button></PopoverTrigger>
+                                    <PopoverContent className="w-64"><ScrollArea className="h-40">{Object.entries({ "city": "ciudad", "school": "escuela", "expensive": "caro", "better": "mejor", "smarter": "más inteligente" }).map(([en, es], i) => (<div key={i} className="flex justify-between text-xs border-b pb-1"><span>{en}:</span><span className="font-bold text-primary">{es}</span></div>))}</ScrollArea></PopoverContent>
+                                </Popover>
+                            </div>
+                        </CardHeader>
+                        <CardContent className="space-y-6 pt-6">
+                            <div className="p-6 bg-muted/50 rounded-2xl border italic text-lg leading-relaxed text-foreground shadow-sm">"My city is a very interesting place. The central park is the most beautiful area and it's bigger than my school. There's a new restaurant that is more expensive than the old one, but the food is better. I think learning Spanish is easier than learning German. My dog is faster than my cat, but my cat is smarter."</div>
+                            <Separator />
+                            <div className="space-y-2"><Label className='font-black text-primary uppercase text-sm'>Tu Traducción:</Label><Textarea value={translationText} onChange={(e) => setTranslationText(e.target.value)} placeholder="Escribe el texto en español aquí..." className="min-h-[200px] text-lg leading-relaxed" /></div>
+                        </CardContent>
+                        <CardFooter className="justify-center border-t pt-6 bg-muted/20">
+                            <Button onClick={() => handleTopicComplete('translate_text')} size="lg" className="px-24 font-black h-16 text-2xl shadow-xl bg-primary hover:bg-primary/90 text-primary-foreground uppercase tracking-tighter">Siguiente Misión <ArrowRight className='ml-3 h-8 w-8' /></Button>
+                        </CardFooter>
+                    </Card>
+                );
+            case 'final': return <BallsExercise title="Reto Final: Negativos" description="Traduce las frases negativas de comparación." prompts={negativePrompts} onComplete={() => handleTopicComplete('final')} vocabulary={{"not": "no", "taller": "más alto", "expensive": "caro", "better": "mejor"}} />;
+            default: return null;
+        }
     };
 
     return (
@@ -1144,75 +662,41 @@ function ComparativosSuperlativosContent() {
             <DashboardHeader />
             <main className="flex-1 p-4 md:p-8">
                 <div className="max-w-7xl mx-auto">
-                    {targetStudentId && isAdmin && (
+                    {overrideStudentId && isAdmin && (
                         <div className="mb-6 bg-yellow-500/20 border-2 border-yellow-500 p-4 rounded-xl flex items-center justify-between shadow-lg backdrop-blur-md">
                             <div className="flex items-center gap-3 text-yellow-700 dark:text-yellow-400">
                                 <Star className="h-6 w-6 fill-current animate-pulse" />
-                                <p className="font-black uppercase tracking-tighter text-sm">Modo Supervision Activo: {studentProfile?.name || targetStudentId}</p>
+                                <p className="font-black uppercase tracking-tighter text-sm">Modo Supervisión: {studentProfile?.name || overrideStudentId}</p>
                             </div>
-                            <Button variant="outline" size="sm" asChild className="border-yellow-600 text-yellow-700 hover:bg-yellow-500/10 transition-colors">
-                                <Link href="/admin">Cerrar Supervision</Link>
-                            </Button>
+                            <Button variant="outline" size="sm" asChild className="border-yellow-600 text-yellow-700 hover:bg-yellow-500/10 transition-colors"><Link href="/admin">Cerrar Supervisión</Link></Button>
                         </div>
                     )}
-                    
                     <div className="mb-8 text-left text-white">
-                        <Link href="/espanol/a1" className="hover:underline text-sm font-bold text-white/80 flex items-center gap-2 mb-2">
-                            <ArrowLeft className="h-4 w-4" /> Volver al Curso A1
-                        </Link>
-                        <h1 className="text-4xl font-black [text-shadow:2px_2px_4px_rgba(0,0,0,0.5)] uppercase tracking-tight flex items-center gap-3">
-                            <Scale className='h-10 w-10 text-primary' /> Comparativos y Superlativos 🇪🇸
-                        </h1>
+                        <Link href="/espanol/a1" className="hover:underline text-sm font-bold text-white/80 flex items-center gap-2 mb-2"><ArrowLeft className="h-4 w-4" /> Volver al Curso A1</Link>
+                        <h1 className="text-4xl font-black [text-shadow:2px_2px_4px_rgba(0,0,0,0.5)] uppercase tracking-tight flex items-center gap-3"><Scale className='h-10 w-10 text-primary' /> Comparativos y Superlativos 🇪🇸</h1>
                     </div>
-
-                    <div className="grid gap-8 md:grid-cols-12">
-                        <div className="md:col-span-9 md:order-1 order-2">
-                            {renderContent()}
-                        </div>
-
+                    <div className="grid gap-8 md:grid-cols-12 text-foreground">
+                        <div className="md:col-span-9 md:order-1 order-2">{renderContent()}</div>
                         <div className="md:col-span-3 md:order-2 order-1 text-left">
                             <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
-                                <CardHeader className="pb-4 border-b bg-muted/30">
-                                    <CardTitle className="text-lg font-black text-primary uppercase tracking-tighter flex items-center gap-2">
-                                        <Trophy className="h-5 w-5 text-primary" /> Mision A1
-                                    </CardTitle>
-                                </CardHeader>
+                                <CardHeader className="pb-4 border-b bg-muted/30"><CardTitle className="text-lg font-black text-primary uppercase tracking-tighter flex items-center gap-2"><Trophy className="h-5 w-5 text-primary" /> Misión A1</CardTitle></CardHeader>
                                 <CardContent className="p-4">
-                                    <nav>
-                                        <ul className="space-y-1">
-                                            {learningPath.map((item) => {
-                                                const isLocked = item.status === 'locked' && !isAdmin;
-                                                const isSelected = selectedTopic === item.key;
-                                                const Icon = item.icon;
-                                                return (
-                                                    <li key={item.key} onClick={() => handleTopicSelect(item.key)}
-                                                        className={cn(
-                                                            'flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer text-foreground',
-                                                            isLocked ? 'text-muted-foreground/30 cursor-not-allowed' : 'hover:bg-muted',
-                                                            isSelected && 'bg-muted text-primary font-black border-l-4 border-primary shadow-sm'
-                                                        )}
-                                                    >
-                                                        <div className="flex items-center gap-3">
-                                                            {item.status === 'completed' ? (
-                                                                <CheckCircle className="h-5 w-5 text-green-500" />
-                                                            ) : (
-                                                                <Icon className={cn("h-5 w-5", isLocked ? "text-yellow-500/50" : "text-primary")} />
-                                                            )}
-                                                            <span className="truncate max-w-[150px]">{item.name}</span>
-                                                        </div>
-                                                        {isLocked && <Lock className="h-3 w-3 text-yellow-500/30" />}
-                                                    </li>
-                                                );
-                                            })}
-                                        </ul>
-                                    </nav>
-                                    <div className="mt-6 pt-6 border-t">
-                                        <div className="flex justify-between items-center text-xs mb-2 font-black uppercase tracking-widest text-muted-foreground">
-                                            <span>Progreso Clase</span>
-                                            <span className="text-primary">{progressValue}%</span>
-                                        </div>
-                                        <Progress value={progressValue} className="h-2 rounded-full" />
-                                    </div>
+                                    <nav><ul className="space-y-1">
+                                        {learningPath.map((item) => {
+                                            const isLocked = item.status === 'locked' && !isAdmin;
+                                            const isSelected = selectedTopic === item.key;
+                                            const Icon = item.icon;
+                                            return (
+                                                <li key={item.key} onClick={() => handleTopicSelect(item.key)} className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer text-foreground', isLocked ? 'text-muted-foreground/30 cursor-not-allowed' : 'hover:bg-muted', isSelected && 'bg-muted text-primary font-black border-l-4 border-primary shadow-sm')}>
+                                                    <div className="flex items-center gap-3">
+                                                        {item.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500" /> : <Icon className={cn("h-5 w-5", isLocked ? "text-yellow-500/50" : "text-primary")} />}
+                                                        <span className="truncate max-w-[150px]">{item.name}</span>
+                                                    </div>
+                                                </li>
+                                            );
+                                        })}
+                                    </ul></nav>
+                                    <div className="mt-6 pt-6 border-t"><div className="flex justify-between items-center text-xs mb-2 font-black uppercase tracking-widest text-muted-foreground"><span>Progreso</span><span className="text-primary">{progressValue}%</span></div><Progress value={progressValue} className="h-2 rounded-full" /></div>
                                 </CardContent>
                             </Card>
                         </div>
@@ -1224,13 +708,5 @@ function ComparativosSuperlativosContent() {
 }
 
 export default function ComparativosSuperlativosPage() {
-    return (
-        <Suspense fallback={
-            <div className="flex h-screen w-full items-center justify-center bg-background">
-                <Loader2 className="animate-spin h-12 w-12 text-primary" />
-            </div>
-        }>
-            <ComparativosSuperlativosContent />
-        </Suspense>
-    );
+    return (<Suspense fallback={<div className="flex h-screen w-full items-center justify-center bg-background"><Loader2 className="animate-spin h-12 w-12 text-primary" /></div>}><ComparativosSuperlativosContent /></Suspense>);
 }
