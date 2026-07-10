@@ -29,6 +29,7 @@ interface Student {
   isBlocked?: boolean;
   profileImageUrl?: string;
   progress?: Record<string, number>;
+  lessonProgress?: Record<string, any>; // Add lessonProgress for more detailed info
   unlockedQuizzes?: Record<string, boolean>;
   unlockedCourses?: string[];
   unlockedClasses?: string[];
@@ -322,73 +323,110 @@ export default function AdminDashboardPage() {
   };
 
   const getReadableProgress = (student: Student): React.ReactNode => {
-    const { progress, selectedCourse } = student;
+    const { progress, selectedCourse, lessonProgress } = student;
+
     if (!progress || Object.keys(progress).length === 0) {
-      return <span className="text-xs text-muted-foreground italic">Sin progreso</span>;
+        return <span className="text-xs text-muted-foreground italic">Sin progreso</span>;
     }
 
-    const filteredProgress = Object.entries(progress).filter(([key]) => {
-      const lowerKey = key.toLowerCase();
-      if (selectedCourse === 'ingles') {
-        return !lowerKey.includes('kids') && !lowerKey.includes('espanol') && !lowerKey.startsWith('progress_es_');
-      }
-      if (selectedCourse === 'kids') {
-        return lowerKey.includes('kids');
-      }
-      if (selectedCourse === 'espanol') {
-        return lowerKey.includes('espanol') || lowerKey.startsWith('progress_es_');
-      }
-      return true;
+    const courseProgressKeys = Object.keys(progress).filter(key => {
+        const lowerKey = key.toLowerCase();
+        if (selectedCourse === 'ingles') return !lowerKey.includes('kids') && !lowerKey.includes('espanol') && !lowerKey.startsWith('progress_es_');
+        if (selectedCourse === 'kids') return lowerKey.includes('kids');
+        if (selectedCourse === 'espanol') return lowerKey.includes('espanol') || lowerKey.startsWith('progress_es_');
+        return true;
     });
 
-    if (filteredProgress.length === 0) {
-      return <span className="text-xs text-muted-foreground">Sin progreso</span>;
+    if (courseProgressKeys.length === 0) {
+        return <span className="text-xs text-muted-foreground">Sin progreso</span>;
     }
 
-    const latestSession = filteredProgress.sort((a, b) => b[1] - a[1])[0];
+    // Find active lessons (progress > 0 and < 100)
+    const activeLessons = courseProgressKeys
+        .map(key => ({ key, value: progress[key] }))
+        .filter(item => item.value > 0 && item.value < 100);
 
-    if (latestSession) {
-      const [key, value] = latestSession;
-      const name = key
-        .replace('progress_', '')
-        .replace(/_/g, ' ')
-        .replace('a1 eng unit', 'Ing A1 U')
-        .replace('class', 'Clase')
-        .replace('kids', 'Niños')
-        .replace('intro', 'Intro ')
-        .replace('Progress', '')
-        .split(' ')
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(' ');
+    let sessionToShow: { key: string; value: number; } | null = null;
 
-      return (
-        <div className="flex flex-col gap-2 p-2 bg-blue-50/50 dark:bg-blue-900/10 rounded-lg border border-blue-100 dark:border-blue-900/30">
-          <div className='flex items-center justify-between gap-2'>
-              <span className="font-black text-[11px] truncate max-w-[120px] text-blue-700 dark:text-blue-300 uppercase tracking-tight">{name}</span>
-              <span className="text-xs font-black text-blue-600">{Math.round(value)}%</span>
-          </div>
-          <button 
-            className='h-8 w-full text-[10px] font-black bg-blue-600 hover:bg-blue-700 text-white shadow-sm flex items-center justify-center rounded-md' 
-            onClick={() => {
-                const parts = key.split('_');
-                let course = parts[1]; 
-                
-                let courseParam = course;
-                if (selectedCourse === 'kids') courseParam = `kids-${course}`;
-                if (selectedCourse === 'espanol') courseParam = `espanol-${course}`;
+    if (activeLessons.length > 0) {
+        // If there are active lessons, find the one with the highest key (most advanced)
+        activeLessons.sort((a, b) => b.key.localeCompare(a.key));
+        sessionToShow = activeLessons[0];
+    } else {
+        // If no active lessons, find the latest completed lesson
+        const completedLessons = courseProgressKeys
+            .map(key => ({ key, value: progress[key] }))
+            .filter(item => item.value >= 100);
+        
+        if (completedLessons.length > 0) {
+            // Find the one with the highest key (most recently completed in terms of order)
+            completedLessons.sort((a, b) => b.key.localeCompare(a.key));
+            sessionToShow = completedLessons[0];
+        }
+    }
+    
+    // Fallback to the original logic if no specific session is found
+    if (!sessionToShow && courseProgressKeys.length > 0) {
+         const allLessons = courseProgressKeys.map(key => ({ key, value: progress[key] }));
+         allLessons.sort((a, b) => b.key.localeCompare(a.key));
+         sessionToShow = allLessons[0];
+    }
 
-                const classNum = parts[parts.length - 1];
-                router.push(`/${courseParam}/${classNum}?studentId=${student.id}`);
-            }}
-          >
-              <Eye className='h-3.5 w-3.5 mr-1'/> SUPERVISAR
-          </button>
-        </div>
-      );
+    if (sessionToShow) {
+        const { key, value } = sessionToShow;
+        const name = key
+            .replace('progress_', '')
+            .replace(/_/g, ' ')
+            .replace('a1 eng unit', 'Ing A1 U')
+            .replace('class', 'Clase')
+            .replace('kids', 'Niños')
+            .replace('espanol', 'Español')
+            .replace('intro', 'Intro')
+            .replace('Progress', '')
+            .split(' ')
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(' ');
+
+        const getPathForSupervision = () => {
+            const parts = key.split('_');
+            
+            if (key.startsWith('progress_a1_eng_unit')) { // e.g., progress_a1_eng_unit_3_class_14
+                const course = parts[1];
+                const unit = parts[4];
+                const classNum = parts[6];
+                return `/ingles/${course}/unit/${unit}/class/${classNum}?studentId=${student.id}`;
+            }
+            if (key.startsWith('progress_es')) { // e.g., progress_es_a1_comparativos_y_superlativos
+                const level = parts[2];
+                const slug = parts.slice(3).join('-');
+                return `/espanol/${level}/${slug}?studentId=${student.id}`;
+            }
+             if (key.startsWith('progress_kids')) { // e.g., progress_kids_a1_to-be
+                const level = parts[2];
+                const slug = parts.slice(3).join('-');
+                return `/kids/${level}/${slug}?studentId=${student.id}`;
+            }
+            return '#'; // Fallback
+        }
+
+        return (
+            <div className="flex flex-col gap-2 p-2 bg-blue-50/50 dark:bg-blue-900/10 rounded-lg border border-blue-100 dark:border-blue-900/30">
+                <div className='flex items-center justify-between gap-2'>
+                    <span className="font-black text-[11px] truncate max-w-[120px] text-blue-700 dark:text-blue-300 uppercase tracking-tight">{name}</span>
+                    <span className="text-xs font-black text-blue-600">{Math.round(value)}%</span>
+                </div>
+                <button 
+                    className='h-8 w-full text-[10px] font-black bg-blue-600 hover:bg-blue-700 text-white shadow-sm flex items-center justify-center rounded-md' 
+                    onClick={() => router.push(getPathForSupervision())}
+                >
+                    <Eye className='h-3.5 w-3.5 mr-1'/> SUPERVISAR
+                </button>
+            </div>
+        );
     }
 
     return <span className="text-xs text-muted-foreground">Sin Empezar</span>;
-  };
+};
 
   const visibleStudents = useMemo(() => {
     return (displayedStudents || []).filter(student => 
