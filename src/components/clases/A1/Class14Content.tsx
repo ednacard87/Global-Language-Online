@@ -11,7 +11,6 @@ import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { DashboardHeader } from '@/components/dashboard/header';
-import { Footer } from '@/components/footer';
 import { 
     BookOpen, 
     PenSquare, 
@@ -27,8 +26,7 @@ import {
     ArrowLeft,
     Star,
     Check,
-    X,
-    HelpCircle
+    X
 } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
@@ -39,7 +37,7 @@ import { VocabularyMatchingGame } from '@/components/dashboard/vocabulary-matchi
 import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
 
 // --- CONFIGURACIÓN ---
-const progressStorageVersion = 'progress_a1_eng_u3_c14_v285_stable';
+const progressStorageVersion = 'progress_a1_eng_u3_c14_v290_fixed';
 const mainProgressKey = 'progress_a1_eng_unit_3_class_14';
 
 // --- DATA ---
@@ -223,7 +221,6 @@ const DictationGradingExercise = ({ title, description, prompts, onComplete, stu
     const [grades, setGrades] = useState<Record<number, 'correct' | 'incorrect' | null>>(initialGrades || {});
     const initializedRef = useRef(false);
 
-    // Sync from props (Firestore) - Admins always see student updates
     useEffect(() => {
         if (isAdmin || !initializedRef.current) {
             if (initialLines && Array.isArray(initialLines)) {
@@ -237,13 +234,12 @@ const DictationGradingExercise = ({ title, description, prompts, onComplete, stu
         }
     }, [initialLines, prompts.length, isAdmin]);
 
-    // Sync grades separately
     useEffect(() => {
         if (initialGrades) setGrades(initialGrades);
     }, [initialGrades]);
 
     const handleLineChange = (idx: number, val: string) => {
-        if (isAdmin) return; // Admins cannot edit student lines
+        if (isAdmin) return;
         const newLines = [...lines];
         newLines[idx] = val;
         setLines(newLines);
@@ -390,7 +386,6 @@ export default function Class14Content({ overrideStudentId }: { overrideStudentI
 
     const [learningPath, setLearningPath] = useState<any[]>([]);
     const [selectedTopic, setSelectedTopic] = useState<string>('');
-    const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
     const [isInitialLoading, setIsInitialLoading] = useState(true);
     const [initialLoadComplete, setInitialLoadComplete] = useState(false);
 
@@ -420,7 +415,6 @@ export default function Class14Content({ overrideStudentId }: { overrideStudentI
         { key: 'final_exercise', name: '11. Final Exercise', icon: Trophy, status: 'locked' },
     ], []);
 
-    // Sync non-learning-path data in real-time (especially for admin)
     useEffect(() => {
         if (!studentProfile) return;
         const data = studentProfile.lessonProgress?.[progressStorageVersion];
@@ -486,45 +480,42 @@ export default function Class14Content({ overrideStudentId }: { overrideStudentI
         }
     }, [learningPath, isAdmin, progressValue, studentDocRef, initialLoadComplete, selectedTopic, isInitialLoading, create1Text]);
 
-    useEffect(() => {
-        if (!topicToComplete) return;
-    
+    const handleTopicComplete = (completedKey: string) => {
+        if (isAdmin) return;
+
+        let nextToSelect: string | null = null;
+        let wasUnlocked = false;
+
         setLearningPath(currentPath => {
-            let wasUnlocked = false;
-            let nextToSelect: string | null = null;
-            const newPath = currentPath.map(t => ({ ...t }));
-          
-            let topicFound = false;
-            for (let i = 0; i < newPath.length && !topicFound; i++) {
-                const currentTopic = newPath[i];
-  
-                if (currentTopic.key === topicToComplete) {
-                    if (currentTopic.status !== 'completed') {
-                        currentTopic.status = 'completed';
-                    }
+            const newPath = currentPath.map(topic => ({
+                ...topic,
+                subItems: topic.subItems ? topic.subItems.map(si => ({ ...si })) : undefined
+            }));
+
+            let found = false;
+            for (let i = 0; i < newPath.length && !found; i++) {
+                const topic = newPath[i];
+
+                if (topic.key === completedKey) {
+                    topic.status = 'completed';
                     if (i + 1 < newPath.length && newPath[i + 1].status === 'locked') {
-                        const nextMain = newPath[i + 1];
-                        nextMain.status = 'active';
+                        newPath[i + 1].status = 'active';
+                        const firstSub = newPath[i + 1].subItems?.[0];
+                        if (firstSub) firstSub.status = 'active';
+                        nextToSelect = firstSub?.key || newPath[i + 1].key;
                         wasUnlocked = true;
-                        nextToSelect = nextMain.key;
                     }
-                    topicFound = true;
+                    found = true;
                 }
             }
-            
-            if (wasUnlocked) {
-                setTimeout(() => toast({ title: "¡Misión completada!" }), 0);
-            }
-            if (nextToSelect) {
-                const finalNext = nextToSelect;
-                setTimeout(() => setSelectedTopic(finalNext), 0);
-            }
-            
             return newPath;
         });
 
-        setTopicToComplete(null);
-    }, [topicToComplete, toast]);
+        if (wasUnlocked) {
+            toast({ title: "¡Misión completada!" });
+            if (nextToSelect) setSelectedTopic(nextToSelect);
+        }
+    };
 
     const handleTopicSelect = (topicKey: string) => {
         const topic = learningPath.find(t => t.key === topicKey);
@@ -654,7 +645,7 @@ export default function Class14Content({ overrideStudentId }: { overrideStudentI
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground text-left">
                         <CardHeader>
                             <CardTitle>Create 1</CardTitle>
-                            <CardDescription className="text-lg font-bold text-black">
+                            <CardDescription className="text-lg font-bold text-black dark:text-white">
                                 DID YOU GO TO THE CIRCUS? WHY? DID YOU LIKE IT OR NOT?
                             </CardDescription>
                         </CardHeader>
@@ -909,5 +900,4 @@ export default function Class14Content({ overrideStudentId }: { overrideStudentI
         </div>
     );
 }
-
 
