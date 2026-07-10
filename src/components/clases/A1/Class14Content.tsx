@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
-import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,7 +9,6 @@ import { Separator } from '@/components/ui/separator';
 import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { DashboardHeader } from '@/components/dashboard/header';
 import { 
     BookOpen, 
     PenSquare, 
@@ -22,11 +20,10 @@ import {
     Pencil, 
     Gamepad2, 
     BookText, 
-    Trophy,
-    ArrowLeft,
     Star,
     Check,
-    X
+    X,
+    Trophy
 } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
@@ -37,7 +34,7 @@ import { VocabularyMatchingGame } from '@/components/dashboard/vocabulary-matchi
 import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
 
 // --- CONFIGURACIÓN ---
-const progressStorageVersion = 'progress_a1_eng_u3_c14_v290_fixed';
+const progressStorageVersion = 'progress_a1_eng_u3_c14_v500_full_sync';
 const mainProgressKey = 'progress_a1_eng_unit_3_class_14';
 
 // --- DATA ---
@@ -59,7 +56,7 @@ const ex1Prompts = [
 
 const ex2Prompts = [
     { spanish: "¿DONDE ESTA EL ARBOL MAS ALTO? (HIGH)-", answer: ["where is the highest tree?"] },
-    { spanish: "EL PUEDE AYUDARNOS-", answer: ["he can help us"] },
+    { spanish: "EL PUADE AYUDARNOS-", answer: ["he can help us"] },
     { spanish: "NOSOTROS NO ESTAMOS MANEJANDO UN CAMION-", answer: ["we are not driving a truck", "we're not driving a truck", "we aren't driving a truck"] },
     { spanish: "¿ELLA JUEGA CON EL? -", answer: ["does she play with him?"] },
     { spanish: "¿BARRANQUILLA ES MAS CALIENTE QUE CARTAGENA? -", answer: ["is barranquilla hotter than cartagena?"] },
@@ -97,19 +94,13 @@ const finalExPrompts = [
     { question: "¿ESTÁS MANEJANDO UN CARRO O UNA MOTO?", trans: ["are you driving a car or a motorcycle?", "are you driving a car or a bike?"], pos: ["yes, i am"], neg: ["no, i am not", "no, i'm not"] },
     { question: "¿NOSOTROS ESTAMOS ESTUDIANDO INGLES UNA VEZ A LA SEMANA?", trans: ["are we studying english once a week?"], pos: ["yes, we are"], neg: ["no, we are not", "no, we aren't"] },
     { question: "¿ÉL ESTA DIBUJANDO?", trans: ["is he drawing?"], pos: ["yes, he is"], neg: ["no, he is not", "no, he isn't"] },
-    { question: "¿ELLOS ESTAN CANTANDO EN LA FIESTA?", trans: ["are they singing at the party?"], pos: ["yes, they are"], neg: ["no, they are not", "no, they aren't"] },
+    { question: "¿ELLOS ESTAN CANTANDO EN LA FIESTA?", trans: ["are they singing at the party?"], pos: ["yes, they are"], neg: ["no, we are not", "no, we aren't"] },
     { question: "¿ESTÁS LLAMANDO A TU MAMÁ TODOS LOS DIAS?", trans: ["are you calling your mom every day?", "are you calling your mother every day?"], pos: ["yes, i am"], neg: ["no, i am not", "no, i'm not"] },
     { question: "¿ELLA ESTÁ LEYENDO UN LIBRO?", trans: ["is she reading a book?"], pos: ["yes, she is"], neg: ["no, she is not", "no, she isn't"] },
     { question: "¿ELLOS ESTÁN VIAJANDO?", trans: ["are they traveling?"], pos: ["yes, they are"], neg: ["no, they are not", "no, they aren't"] },
     { question: "¿ÉL ESTA VIENDO TELEVISION?", trans: ["is he watching tv?", "is he watching television?"], pos: ["yes, he is"], neg: ["no, he is not", "no, he isn't"] },
     { question: "¿MARK ESTA YENDO A LONDRES O ROMA?", trans: ["is mark going to london or rome?"], pos: ["yes, he is"], neg: ["no, he is not", "no, he isn't"] },
 ];
-
-const ICONS_MAP = {
-    locked: Lock,
-    active: BookOpen,
-    completed: CheckCircle,
-};
 
 // --- HELPER COMPONENTS ---
 
@@ -135,7 +126,7 @@ const ChoiceExercise = ({ prompts, onComplete, title, description }: any) => {
                 }
                 return prev;
             });
-            toast({ variant: 'destructive', title: "Sigue intentando", description: "La respuesta no es correcta." });
+            toast({ variant: 'destructive', title: "Sigue intentando" });
         }
     };
 
@@ -219,17 +210,23 @@ const ChoiceExercise = ({ prompts, onComplete, title, description }: any) => {
 const DictationGradingExercise = ({ title, description, prompts, onComplete, studentDocRef, isAdmin, storageKeyLines, storageKeyGrades, initialLines, initialGrades }: any) => {
     const [lines, setLines] = useState<string[]>(Array(prompts.length).fill(''));
     const [grades, setGrades] = useState<Record<number, 'correct' | 'incorrect' | null>>(initialGrades || {});
-    const initializedRef = useRef(false);
 
+    // Sincronización Real-Time para el administrador
     useEffect(() => {
-        if (isAdmin || !initializedRef.current) {
-            if (initialLines && Array.isArray(initialLines)) {
-                const newLines = [...Array(prompts.length).fill('')];
-                initialLines.forEach((val: string, i: number) => { if (i < prompts.length) newLines[i] = val || ''; });
+        if (initialLines && Array.isArray(initialLines)) {
+            const newLines = [...Array(prompts.length).fill('')];
+            initialLines.forEach((val: string, i: number) => { if (i < prompts.length) newLines[i] = val || ''; });
+            
+            if (isAdmin) {
+                // El administrador siempre recibe los datos de la nube
                 setLines(newLines);
-                if (!isAdmin && newLines.some(l => l !== '')) {
-                    initializedRef.current = true;
-                }
+            } else {
+                // El estudiante mantiene su copia local para evitar saltos, 
+                // pero carga la remota si su campo está vacío (ej. al entrar)
+                setLines(current => {
+                    const hasLocalData = current.some(l => l !== '');
+                    return hasLocalData ? current : newLines;
+                });
             }
         }
     }, [initialLines, prompts.length, isAdmin]);
@@ -239,11 +236,13 @@ const DictationGradingExercise = ({ title, description, prompts, onComplete, stu
     }, [initialGrades]);
 
     const handleLineChange = (idx: number, val: string) => {
-        if (isAdmin) return;
+        if (isAdmin) return; // Solo el alumno escribe
         const newLines = [...lines];
         newLines[idx] = val;
         setLines(newLines);
-        if (studentDocRef) updateDocumentNonBlocking(studentDocRef, { [`lessonProgress.${progressStorageVersion}.${storageKeyLines}`]: newLines });
+        if (studentDocRef) {
+            updateDocumentNonBlocking(studentDocRef, { [`lessonProgress.${progressStorageVersion}.${storageKeyLines}`]: newLines });
+        }
     };
 
     const handleToggleGrade = (idx: number, type: 'correct' | 'incorrect') => {
@@ -251,14 +250,19 @@ const DictationGradingExercise = ({ title, description, prompts, onComplete, stu
         const newGrades = { ...grades };
         newGrades[idx] = newGrades[idx] === type ? null : type;
         setGrades(newGrades);
-        if (studentDocRef) updateDocumentNonBlocking(studentDocRef, { [`lessonProgress.${progressStorageVersion}.${storageKeyGrades}`]: newGrades });
+        if (studentDocRef) {
+            updateDocumentNonBlocking(studentDocRef, { [`lessonProgress.${progressStorageVersion}.${storageKeyGrades}`]: newGrades });
+        }
     };
 
     return (
         <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground text-left">
-            <CardHeader className='bg-primary/5 border-b'><CardTitle>{title}</CardTitle><CardDescription className='font-bold text-foreground'>{description}</CardDescription></CardHeader>
+            <CardHeader className='bg-primary/5 border-b'>
+                <CardTitle>{title}</CardTitle>
+                <CardDescription className='font-bold text-foreground'>{description}</CardDescription>
+            </CardHeader>
             <CardContent className="p-6 space-y-4">
-                <ScrollArea className="h-[500px] pr-4">
+                <ScrollArea className="h-[500px] pr-4 text-foreground">
                     <div className="space-y-4">
                         {prompts.map((_: any, idx: number) => {
                             const status = grades[idx];
@@ -269,13 +273,13 @@ const DictationGradingExercise = ({ title, description, prompts, onComplete, stu
                                     <Input 
                                         value={lines[idx] || ''} 
                                         onChange={e => handleLineChange(idx, e.target.value)} 
-                                        className={cn("flex-1 h-10 transition-all", isTitleLine && "font-bold text-lg border-primary/50", status === 'correct' ? 'border-green-500 border-2 bg-green-50/10' : status === 'incorrect' ? 'border-red-500 border-2 bg-red-50/10' : '')} 
+                                        className={cn("flex-1 h-10 transition-all text-foreground", isTitleLine && "font-bold text-lg border-primary/50", status === 'correct' ? 'border-green-500 border-2 bg-green-50/10' : status === 'incorrect' ? 'border-red-500 border-2 bg-red-50/10' : '')} 
                                         autoComplete="off"
                                         readOnly={isAdmin}
                                     />
                                     <div className="flex gap-1 shrink-0">
-                                        <Button size="icon" variant="ghost" onClick={() => handleToggleGrade(idx, 'correct')} className={cn("h-8 w-8 rounded-full", status === 'correct' ? "bg-green-500 text-white" : "bg-muted")} disabled={!isAdmin}><Check className="h-4 w-4"/></Button>
-                                        <Button size="icon" variant="ghost" onClick={() => handleToggleGrade(idx, 'incorrect')} className={cn("h-8 w-8 rounded-full", status === 'incorrect' ? "bg-red-500 text-white" : "bg-muted")} disabled={!isAdmin}><X className="h-4 w-4"/></Button>
+                                        <Button size="icon" variant="ghost" onClick={() => handleToggleGrade(idx, 'correct')} className={cn("h-8 w-8 rounded-full transition-colors", status === 'correct' ? "bg-green-500 text-white" : "bg-muted text-muted-foreground opacity-50")} disabled={!isAdmin}><Check className="h-4 w-4"/></Button>
+                                        <Button size="icon" variant="ghost" onClick={() => handleToggleGrade(idx, 'incorrect')} className={cn("h-8 w-8 rounded-full transition-colors", status === 'incorrect' ? "bg-red-500 text-white" : "bg-muted text-muted-foreground opacity-50")} disabled={!isAdmin}><X className="h-4 w-4"/></Button>
                                     </div>
                                 </div>
                             );
@@ -283,7 +287,9 @@ const DictationGradingExercise = ({ title, description, prompts, onComplete, stu
                     </div>
                 </ScrollArea>
             </CardContent>
-            <CardFooter className="justify-center border-t pt-6 bg-muted/20"><Button onClick={onComplete} size="lg" className="px-16 font-black h-14 text-xl shadow-lg">Avanzar <ArrowRight className="ml-2 h-6 w-6" /></Button></CardFooter>
+            <CardFooter className="justify-center border-t pt-6 bg-muted/20">
+                <Button onClick={onComplete} size="lg" className="px-16 font-black h-14 text-xl shadow-lg">Avanzar <ArrowRight className="ml-2 h-6 w-6" /></Button>
+            </CardFooter>
         </Card>
     );
 };
@@ -340,19 +346,19 @@ const FinalExerciseComp = ({ prompts, onComplete, title }: any) => {
                 </div>
             </CardHeader>
             <CardContent className="space-y-6">
-                <div className="bg-muted p-4 rounded-lg border text-center font-bold text-xl uppercase">{prompts[currentIndex].question}</div>
+                <div className="bg-muted p-4 rounded-lg border text-center font-bold text-xl uppercase text-foreground">{prompts[currentIndex].question}</div>
                 <div className="space-y-4 max-w-lg mx-auto font-mono text-base">
                     <div className="flex items-center gap-4">
                         <Label className="w-12 font-bold text-blue-500 text-center">(?)</Label>
-                        <Input value={ans.trans} onChange={e => setAns(p => ({...p, trans: e.target.value}))} className={cn("flex-1", val.trans === 'correct' ? 'border-green-500' : val.trans === 'incorrect' ? 'border-red-500' : '')} autoComplete="off" />
+                        <Input value={ans.trans} onChange={e => setAns(p => ({...p, trans: e.target.value}))} className={cn("flex-1 text-foreground", val.trans === 'correct' ? 'border-green-500' : val.trans === 'incorrect' ? 'border-red-500' : '')} autoComplete="off" />
                     </div>
                     <div className="flex items-center gap-4">
                         <Label className="w-12 font-bold text-green-500 text-center">(+A)</Label>
-                        <Input value={ans.pos} onChange={e => setAns(p => ({...p, pos: e.target.value}))} className={cn("flex-1", val.pos === 'correct' ? 'border-green-500' : val.pos === 'incorrect' ? 'border-red-500' : '')} autoComplete="off" />
+                        <Input value={ans.pos} onChange={e => setAns(p => ({...p, pos: e.target.value}))} className={cn("flex-1 text-foreground", val.pos === 'correct' ? 'border-green-500' : val.pos === 'incorrect' ? 'border-red-500' : '')} autoComplete="off" />
                     </div>
                     <div className="flex items-center gap-4">
                         <Label className="w-12 font-bold text-red-500 text-center">(-A)</Label>
-                        <Input value={ans.neg} onChange={e => setAns(p => ({...p, neg: e.target.value}))} className={cn("flex-1", val.neg === 'correct' ? 'border-green-500' : val.neg === 'incorrect' ? 'border-red-500' : '')} autoComplete="off" />
+                        <Input value={ans.neg} onChange={e => setAns(p => ({...p, neg: e.target.value}))} className={cn("flex-1 text-foreground", val.neg === 'correct' ? 'border-green-500' : val.neg === 'incorrect' ? 'border-red-500' : '')} autoComplete="off" />
                     </div>
                 </div>
             </CardContent>
@@ -367,7 +373,7 @@ const FinalExerciseComp = ({ prompts, onComplete, title }: any) => {
     );
 };
 
-// --- COMPONENTE PRINCIPAL ---
+// --- MAIN CLASS COMPONENT ---
 
 export default function Class14Content({ overrideStudentId }: { overrideStudentId?: string | null }) {
     const { t } = useTranslation();
@@ -377,10 +383,11 @@ export default function Class14Content({ overrideStudentId }: { overrideStudentI
 
     const currentUID = overrideStudentId || user?.uid;
     const studentDocRef = useMemoFirebase(() => (currentUID ? doc(firestore, 'students', currentUID) : null), [firestore, currentUID]);
-    const authUserRef = useMemoFirebase(() => (user ? doc(firestore, 'students', user.uid) : null), [firestore, user]);
+    const authUserRef = useMemoFirebase(() => (user ? doc(firestore, 'students', user.uid) : null), [firestore, user]
+    );
     
     const { data: authUserProfile } = useDoc<{role?: string}>(authUserRef);
-    const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{role?: string, lessonProgress?: any, progress?: any}>(studentDocRef);
+    const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{role?: string, lessonProgress?: any, progress?: any, name?: string}>(studentDocRef);
 
     const isAdmin = useMemo(() => (user && (authUserProfile?.role === 'admin' || user.email === 'ednacard87@gmail.com')), [user, authUserProfile]);
 
@@ -389,15 +396,11 @@ export default function Class14Content({ overrideStudentId }: { overrideStudentI
     const [isInitialLoading, setIsInitialLoading] = useState(true);
     const [initialLoadComplete, setInitialLoadComplete] = useState(false);
 
-    // State for vocabulary exercise
     const [vocabAnswers, setVocabAnswers] = useState<string[]>(Array(materialsVocab.length).fill(''));
     const [vocabValidation, setVocabValidation] = useState<any[]>(Array(materialsVocab.length).fill('unchecked'));
     const [canAdvanceVocab, setCanAdvanceVocab] = useState(false);
 
-    // Create 1 State
     const [create1Text, setCreate1Text] = useState('');
-
-    // Reading State
     const [readingAnswers, setReadingAnswers] = useState<Record<string, string>>({});
     const [readingValidation, setReadingValidation] = useState<Record<string, 'correct' | 'incorrect' | 'unchecked'>>({});
 
@@ -415,35 +418,69 @@ export default function Class14Content({ overrideStudentId }: { overrideStudentI
         { key: 'final_exercise', name: '11. Final Exercise', icon: Trophy, status: 'locked' },
     ], []);
 
-    useEffect(() => {
-        if (!studentProfile) return;
-        const data = studentProfile.lessonProgress?.[progressStorageVersion];
-        if (data?.create1Text !== undefined) {
-            setCreate1Text(data.create1Text);
-        }
-    }, [studentProfile]);
+    const handleTopicComplete = useCallback((completedKey: string) => {
+        if (isAdmin) return;
+
+        setLearningPath(currentPath => {
+            const newPath = [...currentPath];
+            let nextToSelect: string | null = null;
+            const idx = newPath.findIndex(t => t.key === completedKey);
+            
+            if (idx !== -1 && newPath[idx].status !== 'completed') {
+                newPath[idx].status = 'completed';
+                if (idx + 1 < newPath.length && newPath[idx + 1].status === 'locked') {
+                    newPath[idx + 1].status = 'active';
+                    nextToSelect = newPath[idx + 1].key;
+                }
+            }
+
+            if (nextToSelect) {
+                const finalNext = nextToSelect;
+                setTimeout(() => {
+                    toast({ title: "¡Misión completada!" });
+                    setSelectedTopic(finalNext);
+                }, 0);
+            }
+            return newPath;
+        });
+    }, [isAdmin, toast]);
 
     useEffect(() => {
-        if (isProfileLoading || isUserLoading || !studentProfile || initialLoadComplete) return;
+        if (isProfileLoading || isUserLoading || !studentProfile) return;
+
+        const data = studentProfile.lessonProgress?.[progressStorageVersion];
+        
+        // Actualización Reactiva de datos para el administrador
+        if (data) {
+            if (isAdmin) {
+                if (data.create1Text !== undefined) setCreate1Text(data.create1Text);
+                if (data.readingAnswers) setReadingAnswers(data.readingAnswers);
+                if (data.readingValidation) setReadingValidation(data.readingValidation);
+            }
+        }
+
+        if (initialLoadComplete) return;
 
         let path = initialLearningPath.map(t => ({ ...t }));
         let savedST = '';
 
+        if (data) {
+            path.forEach(item => { if (data[item.key]) (item as any).status = data[item.key]; });
+            savedST = data.lastSelectedTopic || '';
+            if (!isAdmin) {
+                if (data.create1Text !== undefined) setCreate1Text(data.create1Text);
+                if (data.readingAnswers) setReadingAnswers(data.readingAnswers);
+                if (data.readingValidation) setReadingValidation(data.readingValidation);
+            }
+        }
+
         if (isAdmin && !overrideStudentId) {
             path.forEach(item => { (item as any).status = 'completed'; });
-        } else if(studentProfile?.lessonProgress?.[progressStorageVersion]) {
-            const data = studentProfile.lessonProgress[progressStorageVersion];
-            path.forEach(item => {
-                if (data[item.key]) (item as any).status = data[item.key];
-            });
-            savedST = data.lastSelectedTopic || '';
         }
 
         let lastDone = true;
         for(let i=0; i < path.length; i++) {
-            if (lastDone && (path[i] as any).status === 'locked') {
-                (path[i] as any).status = 'active';
-            }
+            if (lastDone && (path[i] as any).status === 'locked') (path[i] as any).status = 'active';
             lastDone = (path[i] as any).status === 'completed';
         }
 
@@ -464,58 +501,19 @@ export default function Class14Content({ overrideStudentId }: { overrideStudentI
 
         const statusesToSave: Record<string, any> = { 
             lastSelectedTopic: selectedTopic,
-            create1Text: create1Text
+            create1Text,
+            readingAnswers,
+            readingValidation
         };
-        learningPath.forEach(item => {
-            statusesToSave[item.key] = item.status;
-        });
+        learningPath.forEach(item => { statusesToSave[item.key] = item.status; });
 
         updateDocumentNonBlocking(studentDocRef, {
             [`lessonProgress.${progressStorageVersion}`]: statusesToSave,
             [`progress.${mainProgressKey}`]: Math.round(progressValue)
         });
 
-        if (progressValue >= 100) {
-            window.dispatchEvent(new CustomEvent('progressUpdated'));
-        }
-    }, [learningPath, isAdmin, progressValue, studentDocRef, initialLoadComplete, selectedTopic, isInitialLoading, create1Text]);
-
-    const handleTopicComplete = (completedKey: string) => {
-        if (isAdmin) return;
-
-        let nextToSelect: string | null = null;
-        let wasUnlocked = false;
-
-        setLearningPath(currentPath => {
-            const newPath = currentPath.map(topic => ({
-                ...topic,
-                subItems: topic.subItems ? topic.subItems.map(si => ({ ...si })) : undefined
-            }));
-
-            let found = false;
-            for (let i = 0; i < newPath.length && !found; i++) {
-                const topic = newPath[i];
-
-                if (topic.key === completedKey) {
-                    topic.status = 'completed';
-                    if (i + 1 < newPath.length && newPath[i + 1].status === 'locked') {
-                        newPath[i + 1].status = 'active';
-                        const firstSub = newPath[i + 1].subItems?.[0];
-                        if (firstSub) firstSub.status = 'active';
-                        nextToSelect = firstSub?.key || newPath[i + 1].key;
-                        wasUnlocked = true;
-                    }
-                    found = true;
-                }
-            }
-            return newPath;
-        });
-
-        if (wasUnlocked) {
-            toast({ title: "¡Misión completada!" });
-            if (nextToSelect) setSelectedTopic(nextToSelect);
-        }
-    };
+        if (progressValue >= 100) window.dispatchEvent(new CustomEvent('progressUpdated'));
+    }, [learningPath, isAdmin, progressValue, studentDocRef, initialLoadComplete, selectedTopic, isInitialLoading, create1Text, readingAnswers, readingValidation]);
 
     const handleTopicSelect = (topicKey: string) => {
         const topic = learningPath.find(t => t.key === topicKey);
@@ -533,44 +531,28 @@ export default function Class14Content({ overrideStudentId }: { overrideStudentI
             if (!isCorrect) allOk = false;
             return isCorrect ? 'correct' : 'incorrect';
         });
-
         setVocabValidation(nv as any);
         setCanAdvanceVocab(allOk);
-
-        if (allOk) {
-            toast({ title: "¡Excelente!", description: "Has traducido todo el léxico correctamente." });
-        } else {
-            toast({ variant: 'destructive', title: "Sigue intentando", description: "Algunos términos no son correctos." });
-        }
+        if (allOk) toast({ title: "¡Excelente!", description: "Has traducido todo el léxico correctamente." });
+        else toast({ variant: 'destructive', title: "Sigue intentando" });
     };
 
     const handleCheckReading = () => {
+        if (isAdmin) return;
         let allOk = true;
-        const newValidation: any = {};
-
+        const newValidation: Record<string, 'correct' | 'incorrect' | 'unchecked'> = {};
         readingData.questions.forEach(q => {
             const userAnswer = (readingAnswers[q.id] || '').trim().toLowerCase();
             const isCorrect = q.answers.some(ans => ans.toLowerCase() === userAnswer);
-            
-            if (isCorrect) {
-                newValidation[q.id] = 'correct';
-            } else {
-                newValidation[q.id] = 'incorrect';
-                allOk = false;
-            }
+            newValidation[q.id] = isCorrect ? 'correct' : 'incorrect';
+            if (!isCorrect) allOk = false;
         });
-
         setReadingValidation(newValidation);
-
         if (allOk) {
-            toast({ title: "¡Muy bien!", description: "Has respondido todas las preguntas correctamente." });
+            toast({ title: "¡Muy bien!", description: "Respuestas correctas." });
             handleTopicComplete('lectura');
         } else {
-            toast({
-                variant: 'destructive',
-                title: "Respuestas incorrectas",
-                description: "Por favor, revisa tus respuestas a la lectura."
-            });
+            toast({ variant: 'destructive', title: "Respuestas incorrectas" });
         }
     };
 
@@ -581,40 +563,26 @@ export default function Class14Content({ overrideStudentId }: { overrideStudentI
             case 'vocabulary':
                 return (
                     <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground text-left">
-                        <CardHeader>
-                            <CardTitle>LEXICO: MATERIALES Y TEJIDOS (MATERIALS AND FABRICS)</CardTitle>
-                        </CardHeader>
+                        <CardHeader><CardTitle>LEXICO: MATERIALES Y TEJIDOS</CardTitle></CardHeader>
                         <CardContent>
-                            <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-lg">
-                                <div className="font-bold p-3 bg-muted rounded-lg text-left uppercase tracking-widest text-xs text-primary">Español</div>
-                                <div className="font-bold p-3 bg-muted rounded-lg text-left uppercase tracking-widest text-xs text-primary">Inglés</div>
+                            <div className="grid grid-cols-2 gap-4 text-lg">
+                                <div className="font-bold p-3 bg-muted rounded-lg uppercase text-xs text-primary">Español</div>
+                                <div className="font-bold p-3 bg-muted rounded-lg uppercase text-xs text-primary">Inglés</div>
                                 {materialsVocab.map((item, idx) => (
                                     <React.Fragment key={idx}>
-                                        <div className="p-3 bg-card border rounded-lg flex items-center font-bold">
-                                            {item.es}
-                                        </div>
-                                        <div className="p-3 bg-card border rounded-lg flex items-center">
-                                            <Input
-                                                value={vocabAnswers[idx] || ''}
-                                                onChange={(e) => {
-                                                    const newAnswers = [...vocabAnswers];
-                                                    newAnswers[idx] = e.target.value;
-                                                    setVocabAnswers(newAnswers);
-                                                    setVocabValidation(prev => {
-                                                        const newVal = [...prev];
-                                                        newVal[idx] = 'unchecked';
-                                                        return newVal;
-                                                    });
-                                                    setCanAdvanceVocab(false);
-                                                }}
-                                                className={cn(
-                                                    "h-10 text-lg uppercase font-mono",
-                                                    vocabValidation[idx] === 'correct' ? 'border-green-500 bg-green-50/10' : 
-                                                    vocabValidation[idx] === 'incorrect' ? 'border-red-500 bg-red-50/10' : ''
-                                                )}
-                                                autoComplete="off"
-                                            />
-                                        </div>
+                                        <div className="p-3 border rounded-lg font-bold">{item.es}</div>
+                                        <Input
+                                            value={vocabAnswers[idx] || ''}
+                                            onChange={(e) => {
+                                                if (isAdmin) return;
+                                                const na = [...vocabAnswers]; na[idx] = e.target.value; setVocabAnswers(na);
+                                                const nv = [...vocabValidation]; nv[idx] = 'unchecked'; setVocabValidation(nv);
+                                                setCanAdvanceVocab(false);
+                                            }}
+                                            className={cn("h-10 text-lg uppercase font-mono text-foreground", vocabValidation[idx] === 'correct' ? 'border-green-500 bg-green-50/10' : vocabValidation[idx] === 'incorrect' ? 'border-red-500 bg-red-50/10' : '')}
+                                            autoComplete="off"
+                                            readOnly={isAdmin}
+                                        />
                                     </React.Fragment>
                                 ))}
                             </div>
@@ -628,8 +596,8 @@ export default function Class14Content({ overrideStudentId }: { overrideStudentI
             case 'dictation1':
                 return (
                     <DictationGradingExercise 
-                        title="DICTATION 1 = COMPARATIVES AND SUPERLATIVE ADJECTIVES"
-                        description="Escucha y escribe las frases dictadas. El primer renglón es para el título."
+                        title="DICTATION 1: COMPARATIVES & SUPERLATIVES"
+                        description="Escribe las frases dictadas. (Supervisión activa)"
                         prompts={Array(30).fill('')}
                         onComplete={() => handleTopicComplete('dictation1')} 
                         studentDocRef={studentDocRef}
@@ -645,83 +613,50 @@ export default function Class14Content({ overrideStudentId }: { overrideStudentI
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground text-left">
                         <CardHeader>
                             <CardTitle>Create 1</CardTitle>
-                            <CardDescription className="text-lg font-bold text-black dark:text-white">
-                                DID YOU GO TO THE CIRCUS? WHY? DID YOU LIKE IT OR NOT?
-                            </CardDescription>
+                            <CardDescription className="text-lg font-bold text-foreground">DID YOU GO TO THE CIRCUS? WHY? DID YOU LIKE IT OR NOT?</CardDescription>
                         </CardHeader>
                         <CardContent>
                             <textarea
                                 value={create1Text}
-                                onChange={(e) => {
-                                    if (isAdmin) return;
-                                    setCreate1Text(e.target.value);
-                                    if (studentDocRef) {
-                                        updateDocumentNonBlocking(studentDocRef, { [`lessonProgress.${progressStorageVersion}.create1Text`]: e.target.value });
-                                    }
-                                }}
+                                onChange={(e) => { if (!isAdmin) setCreate1Text(e.target.value); }}
                                 readOnly={isAdmin}
-                                className={cn(
-                                    "w-full min-h-[250px] p-4 rounded-xl border bg-background text-lg leading-relaxed focus:ring-2 focus:ring-primary focus:outline-none",
-                                    isAdmin && "bg-muted cursor-default"
-                                )}
-                                placeholder={isAdmin ? "El estudiante aún no ha escrito nada..." : "Escribe tu respuesta aquí..."}
+                                className={cn("w-full min-h-[250px] p-4 rounded-xl border bg-background text-lg leading-relaxed text-foreground focus:ring-2 focus:ring-primary", isAdmin && "bg-muted cursor-default")}
+                                placeholder={isAdmin ? "El alumno no ha escrito nada..." : "Escribe tu respuesta aquí..."}
                             />
                         </CardContent>
-                        <CardFooter className="justify-center border-t pt-6">
-                            <Button onClick={() => handleTopicComplete('create1')} size="lg" className="px-20 font-black h-14 text-xl shadow-lg">
-                                Avanzar <ArrowRight className="ml-2 h-6 w-6" />
-                            </Button>
-                        </CardFooter>
+                        <CardFooter className="justify-center border-t pt-6"><Button onClick={() => handleTopicComplete('create1')} size="lg" className="px-20 font-bold h-14">Avanzar</Button></CardFooter>
                     </Card>
                 );
             case 'exercise1':
                 return <ChoiceExercise prompts={ex1Prompts} onComplete={() => handleTopicComplete('exercise1')} title="EXERCISE: COMPARATIVOS Y SUPERLATIVOS" />;
             case 'exercise2':
                 return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground">
+                    <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground">
                         <CardHeader className='flex flex-row items-center justify-between'>
-                            <div className='text-left'>
-                                <CardTitle>Exercise 2</CardTitle>
-                                <CardDescription>Translate the sentences.</CardDescription>
-                            </div>
+                            <div className='text-left'><CardTitle>Exercise 2</CardTitle><CardDescription>Translate the sentences.</CardDescription></div>
                             <Popover>
                                 <PopoverTrigger asChild>
-                                    <Button variant="outline" size="sm" className='border-brand-blue border-2 animate-border-pulse'>
-                                        <BookText className="mr-2 h-4 w-4" />
-                                        Vocabulary
-                                    </Button>
+                                    <Button variant="outline" size="sm" className='border-brand-blue border-2'><BookText className="mr-2 h-4 w-4" /> Vocabulary</Button>
                                 </PopoverTrigger>
                                 <PopoverContent className="w-64">
-                                    <div className="space-y-2 text-foreground text-left">
-                                        <h4 className="font-bold border-b pb-1 text-primary">Vocabulario Útil</h4>
-                                        <ScrollArea className="h-48 pr-4">
-                                            <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
-                                                {Object.entries(ex2VocabMap).map(([es, en]) => (
-                                                    <React.Fragment key={es}>
-                                                        <span className="text-muted-foreground capitalize">{es}:</span>
-                                                        <span className="font-semibold text-right">{en}</span>
-                                                    </React.Fragment>
-                                                ))}
-                                            </div>
-                                        </ScrollArea>
-                                    </div>
+                                    <ScrollArea className="h-48 pr-4 text-foreground">
+                                        <div className="grid grid-cols-2 gap-2 text-sm">
+                                            {Object.entries(ex2VocabMap).map(([es, en]) => (
+                                                <React.Fragment key={es}><span className="text-muted-foreground capitalize">{es}:</span><span className="font-bold text-right">{en}</span></React.Fragment>
+                                            ))}
+                                        </div>
+                                    </ScrollArea>
                                 </PopoverContent>
                             </Popover>
                         </CardHeader>
-                        <CardContent>
-                            <SimpleTranslationExercise 
-                                exerciseKey="c14_ex2_final" 
-                                prompts={ex2Prompts}
-                                onComplete={() => handleTopicComplete('exercise2')} 
-                            />
-                        </CardContent>
+                        <CardContent><SimpleTranslationExercise exerciseKey="c14_ex2_final" prompts={ex2Prompts} onComplete={() => handleTopicComplete('exercise2')} isAdmin={isAdmin} /></CardContent>
                     </Card>
                 );
             case 'dictation2':
                 return (
                     <DictationGradingExercise 
-                        title="DICTATION 2 = AT WORK"
-                        description="Escucha y escribe las frases dictadas. El primer renglón es para el título."
+                        title="DICTATION 2: AT WORK"
+                        description="Escribe las frases dictadas. (Supervisión activa)"
                         prompts={Array(31).fill('')}
                         onComplete={() => handleTopicComplete('dictation2')} 
                         studentDocRef={studentDocRef}
@@ -735,17 +670,8 @@ export default function Class14Content({ overrideStudentId }: { overrideStudentI
             case 'vocab_game':
                 return (
                     <Card className="shadow-soft border-2 border-brand-purple">
-                        <CardHeader>
-                            <CardTitle>Vocabulary (Game)</CardTitle>
-                            <CardDescription>Empareja el léxico de materiales.</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <VocabularyMatchingGame 
-                                data={materialsVocab.map(v => ({ spanish: v.es, english: [v.en] }))} 
-                                onComplete={() => handleTopicComplete('vocab_game')} 
-                                title="Misión: Encuentra las parejas" 
-                            />
-                        </CardContent>
+                        <CardHeader><CardTitle>Vocabulary Game</CardTitle></CardHeader>
+                        <CardContent><VocabularyMatchingGame data={materialsVocab.map(v => ({ spanish: v.es, english: [v.en] }))} onComplete={() => handleTopicComplete('vocab_game')} title="Misión: Encuentra las parejas" /></CardContent>
                     </Card>
                 );
             case 'exercise3':
@@ -754,7 +680,7 @@ export default function Class14Content({ overrideStudentId }: { overrideStudentI
                 return (
                     <DictationGradingExercise 
                         title="CREATE 2"
-                        description="INVENTA 2 FRASES (+), 2 (-) Y 2 (?) CON LOS PRONOMBRES OBJETO EN PARENTESIS: (ME- YOU- HIM- HER- IT – US- THEM)"
+                        description="INVENTA 2 FRASES (+), 2 (-) Y 2 (?) CON PRONOMBRES OBJETO."
                         prompts={Array(6).fill('')}
                         onComplete={() => handleTopicComplete('create2')} 
                         studentDocRef={studentDocRef}
@@ -767,136 +693,41 @@ export default function Class14Content({ overrideStudentId }: { overrideStudentI
                 );
             case 'lectura':
                 return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground text-left">
-                        <CardHeader>
-                            <CardTitle>{readingData.title}</CardTitle>
-                            <CardDescription>Practica tu comprensión de lectura con este texto.</CardDescription>
-                        </CardHeader>
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 text-foreground text-left">
+                        <CardHeader><CardTitle>{readingData.title}</CardTitle><CardDescription>Lee y responde. (Supervisión: {studentProfile?.name || currentUID})</CardDescription></CardHeader>
                         <CardContent className="space-y-6">
-                            <div className="p-6 bg-muted rounded-2xl border italic text-lg leading-relaxed shadow-inner">
-                                {readingData.content}
-                            </div>
-                            <Separator />
-                            <div className="space-y-4">
-                                {readingData.questions.map(q => (
-                                    <div key={q.id} className="grid gap-2">
-                                        <Label htmlFor={q.id} className='text-left font-bold'>{q.question}</Label>
-                                        <Input
-                                            id={q.id}
-                                            value={readingAnswers[q.id] || ''}
-                                            onChange={(e) => {
-                                                if (isAdmin) return;
-                                                const newAnswers = { ...readingAnswers, [q.id]: e.target.value };
-                                                setReadingAnswers(newAnswers);
-                                                const newValidation = { ...readingValidation, [q.id]: 'unchecked' };
-                                                setReadingValidation(newValidation);
-                                            }}
-                                            readOnly={isAdmin}
-                                            className={cn(
-                                                'mt-1 text-lg h-12', 
-                                                readingValidation[q.id] === 'correct' && 'border-green-500 bg-green-50/5', 
-                                                readingValidation[q.id] === 'incorrect' && 'border-destructive bg-destructive/5'
-                                            )}
-                                            placeholder="Escribe tu respuesta aquí..."
-                                            autoComplete="off"
-                                        />
-                                    </div>
-                                ))}
-                            </div>
+                            <div className="p-6 bg-muted rounded-2xl border italic text-lg leading-relaxed shadow-inner">{readingData.content}</div>
+                            <Separator /><div className="space-y-4">{readingData.questions.map(q => (
+                                <div key={q.id} className="grid gap-2"><Label htmlFor={q.id} className='font-bold'>{q.question}</Label>
+                                <Input id={q.id} value={readingAnswers[q.id] || ''} onChange={(e) => { if (!isAdmin) setReadingAnswers({...readingAnswers, [q.id]: e.target.value}); }} readOnly={isAdmin} className={cn('mt-1 text-lg h-12', readingValidation[q.id] === 'correct' ? 'border-green-500 bg-green-50/5' : readingValidation[q.id] === 'incorrect' ? 'border-destructive bg-destructive/5' : '')} autoComplete="off" /></div>
+                            ))}</div>
                         </CardContent>
-                        <CardFooter className="justify-center border-t pt-6">
-                            <Button onClick={handleCheckReading} size="lg" className="px-12 font-bold" disabled={isAdmin}>
-                                Verificar Lectura
-                            </Button>
-                        </CardFooter>
+                        <CardFooter className="justify-center pt-6"><Button onClick={handleCheckReading} size="lg" className="px-12 font-bold" disabled={isAdmin}>Verificar Lectura</Button></CardFooter>
                     </Card>
                 );
             case 'final_exercise':
-                return (
-                    <FinalExerciseComp 
-                        prompts={finalExPrompts}
-                        onComplete={() => handleTopicComplete('final_exercise')}
-                        title="EXERCISE: SHORT ANSWERS CON EL PRESENTE CONTINUO"
-                    />
-                );
-            default:
-                return null;
+                return <FinalExerciseComp prompts={finalExPrompts} onComplete={() => handleTopicComplete('final_exercise')} title="EXERCISE: SHORT ANSWERS" />;
+            default: return null;
         }
     };
 
     return (
-        <div className="flex w-full flex-col min-h-screen ingles-dashboard-bg text-foreground">
-            <DashboardHeader />
-            <main className="flex-1 p-4 md:p-8">
-                <div className="max-w-7xl mx-auto">
-                    <div className="mb-8 text-left text-white">
-                        <Link href="/ingles/a1/unit/3" className="hover:underline text-sm font-bold text-primary flex items-center gap-2">
-                            <ArrowLeft className='h-4 w-4'/> Volver a la Unidad 3
-                        </Link>
-                        <h1 className="text-4xl font-bold [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)] uppercase tracking-tight">
-                            Clase 14 (A1) ⚡
-                        </h1>
-                    </div>
-
-                    <div className="grid gap-8 md:grid-cols-12 text-foreground">
-                        {/* Contenido Principal */}
-                        <div className="md:col-span-9 md:order-1 order-2">
-                            {renderContent()}
-                        </div>
-
-                        {/* Sidebar de Ruta */}
-                        <div className="md:col-span-3 md:order-2 order-1 text-left">
-                            <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
-                                <CardHeader className="pb-4">
-                                    <CardTitle className="text-lg font-black text-primary uppercase tracking-tighter flex items-center gap-2">
-                                        <Star className="h-5 w-5 fill-primary" />
-                                        Tu Misión
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <nav>
-                                        <ul className="space-y-1">
-                                            {learningPath.map((item) => {
-                                                const isLocked = item.status === 'locked' && !isAdmin;
-                                                const isSelected = selectedTopic === item.key;
-                                                const Icon = ICONS_MAP[item.status as keyof typeof ICONS_MAP] || BookOpen;
-
-                                                return (
-                                                    <li key={item.key} onClick={() => handleTopicSelect(item.key)}
-                                                        className={cn(
-                                                            'flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer',
-                                                            isLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted',
-                                                            isSelected && 'bg-muted text-primary font-black border-l-4 border-primary'
-                                                        )}
-                                                    >
-                                                        <div className="flex items-center gap-3">
-                                                            {item.status === 'completed' ? (
-                                                                <CheckCircle className="h-5 w-5 text-green-500" />
-                                                            ) : (
-                                                                <Icon className={cn("h-5 w-5", isLocked ? "text-yellow-500" : "text-primary")} />
-                                                            )}
-                                                            <span className="truncate max-w-[150px]">{item.name}</span>
-                                                        </div>
-                                                        {isLocked && <Lock className="h-4 w-4 text-yellow-500/50" />}
-                                                    </li>
-                                                );
-                                            })}
-                                        </ul>
-                                    </nav>
-                                    <div className="mt-6 pt-6 border-t">
-                                        <div className="flex justify-between items-center text-xs mb-2 font-black uppercase tracking-widest text-muted-foreground">
-                                            <span>Avance</span>
-                                            <span className="text-primary">{progressValue}%</span>
-                                        </div>
-                                        <Progress value={progressValue} className="h-2" />
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        </div>
-                    </div>
-                </div>
-            </main>
-            
+        <div className="grid gap-8 md:grid-cols-12 text-foreground animate-in fade-in duration-500">
+            <div className="md:col-span-9 md:order-1 order-2">{renderContent()}</div>
+            <div className="md:col-span-3 md:order-2 order-1 text-left">
+                <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
+                    <CardHeader className="pb-4"><CardTitle className="text-lg font-black text-primary uppercase flex items-center gap-2"><Star className="h-5 w-5 fill-primary" /> Tu Misión</CardTitle></CardHeader>
+                    <CardContent><nav><ul className="space-y-1">
+                        {learningPath.map((item) => (
+                            <li key={item.key} onClick={() => handleTopicSelect(item.key)} className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer', (item.status === 'locked' && !isAdmin) ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === item.key && 'bg-muted text-primary font-black border-l-4 border-primary')}>
+                                <div className="flex items-center gap-3">{item.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500" /> : <item.icon className={cn("h-5 w-5", item.status === 'locked' ? "text-yellow-500" : "text-primary")} />}<span className="truncate max-w-[150px]">{item.name}</span></div>
+                                {item.status === 'locked' && !isAdmin && <Lock className="h-4 w-4 text-yellow-500/50" />}
+                            </li>
+                        ))}
+                    </ul></nav>
+                    <div className="mt-6 pt-6 border-t"><div className="flex justify-between items-center text-xs mb-2 font-black uppercase text-muted-foreground"><span>Avance</span><span className="text-primary">{progressValue}%</span></div><Progress value={progressValue} className="h-2" /></div></CardContent>
+                </Card>
+            </div>
         </div>
     );
 }
