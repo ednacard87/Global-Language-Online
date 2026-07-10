@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -23,7 +24,8 @@ import {
     Star,
     Check,
     X,
-    Trophy
+    Trophy,
+    ArrowLeft
 } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
@@ -32,6 +34,7 @@ import { doc } from 'firebase/firestore';
 import { cn } from '@/lib/utils';
 import { VocabularyMatchingGame } from '@/components/dashboard/vocabulary-matching-game';
 import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
+import { DashboardHeader } from '@/components/dashboard/header';
 
 // --- CONFIGURACIÓN ---
 const progressStorageVersion = 'progress_a1_eng_u3_c14_v500_full_sync';
@@ -712,22 +715,35 @@ export default function Class14Content({ overrideStudentId }: { overrideStudentI
     };
 
     return (
-        <div className="grid gap-8 md:grid-cols-12 text-foreground animate-in fade-in duration-500">
-            <div className="md:col-span-9 md:order-1 order-2">{renderContent()}</div>
-            <div className="md:col-span-3 md:order-2 order-1 text-left">
-                <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
-                    <CardHeader className="pb-4"><CardTitle className="text-lg font-black text-primary uppercase flex items-center gap-2"><Star className="h-5 w-5 fill-primary" /> Tu Misión</CardTitle></CardHeader>
-                    <CardContent><nav><ul className="space-y-1">
-                        {learningPath.map((item) => (
-                            <li key={item.key} onClick={() => handleTopicSelect(item.key)} className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer', (item.status === 'locked' && !isAdmin) ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === item.key && 'bg-muted text-primary font-black border-l-4 border-primary')}>
-                                <div className="flex items-center gap-3">{item.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500" /> : <item.icon className={cn("h-5 w-5", item.status === 'locked' ? "text-yellow-500" : "text-primary")} />}<span className="truncate max-w-[150px]">{item.name}</span></div>
-                                {item.status === 'locked' && !isAdmin && <Lock className="h-4 w-4 text-yellow-500/50" />}
-                            </li>
-                        ))}
-                    </ul></nav>
-                    <div className="mt-6 pt-6 border-t"><div className="flex justify-between items-center text-xs mb-2 font-black uppercase text-muted-foreground"><span>Avance</span><span className="text-primary">{progressValue}%</span></div><Progress value={progressValue} className="h-2" /></div></CardContent>
-                </Card>
-            </div>
+        <div className="flex w-full flex-col min-h-screen ingles-dashboard-bg">
+            <DashboardHeader />
+            <main className="flex-1 p-4 md:p-8">
+                <div className="max-w-7xl mx-auto">
+                    <div className="mb-8 text-left text-white">
+                        <Link href="/ingles/a1/unit/3" className="hover:underline text-sm font-bold text-primary flex items-center gap-2">
+                            <ArrowLeft className='h-4 w-4'/> Volver a la Unidad 3
+                        </Link>
+                        <h1 className="text-4xl font-bold [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">Clase 14 (A1)</h1>
+                    </div>
+                    <div className="grid gap-8 md:grid-cols-12 text-foreground animate-in fade-in duration-500">
+                        <div className="md:col-span-9 md:order-1 order-2">{renderContent()}</div>
+                        <div className="md:col-span-3 md:order-2 order-1 text-left">
+                            <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
+                                <CardHeader className="pb-4"><CardTitle className="text-lg font-black text-primary uppercase flex items-center gap-2"><Star className="h-5 w-5 fill-primary" /> Tu Misión</CardTitle></CardHeader>
+                                <CardContent><nav><ul className="space-y-1">
+                                    {learningPath.map((item) => (
+                                        <li key={item.key} onClick={() => handleTopicSelect(item.key)} className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer', (item.status === 'locked' && !isAdmin) ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === item.key && 'bg-muted text-primary font-black border-l-4 border-primary')}>
+                                            <div className="flex items-center gap-3">{item.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500" /> : <item.icon className={cn("h-5 w-5", item.status === 'locked' ? "text-yellow-500" : "text-primary")} />}<span className="truncate max-w-[150px]">{item.name}</span></div>
+                                            {item.status === 'locked' && !isAdmin && <Lock className="h-4 w-4 text-yellow-500/50" />}
+                                        </li>
+                                    ))}
+                                </ul></nav>
+                                <div className="mt-6 pt-6 border-t"><div className="flex justify-between items-center text-xs mb-2 font-black uppercase text-muted-foreground"><span>Avance</span><span className="text-primary">{progressValue}%</span></div><Progress value={progressValue} className="h-2" /></div></CardContent>
+                            </Card>
+                        </div>
+                    </div>
+                </div>
+            </main>
         </div>
     );
 }
