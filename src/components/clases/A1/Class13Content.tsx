@@ -341,7 +341,7 @@ const ChoiceExercise = ({ prompts, onComplete, title, description }: any) => {
                     <CardDescription className='font-bold text-foreground mt-1'>{description || "Elige la opcion gramaticamente correcta."}</CardDescription>
                     <div className="flex gap-2 justify-start flex-wrap pt-4">
                         {prompts.map((_: any, i: number) => (
-                            <div key={i} onClick={() => setCurrentIndex(i)} className={cn("h-8 w-8 rounded-full border-2 flex items-center justify-center text-xs font-bold cursor-pointer transition-all", currentIndex === i ? "border-primary ring-2 ring-primary" : "border-muted", status[i] === 'correct' ? "bg-green-500 text-white border-green-500" : status[i] === 'incorrect' ? "bg-red-500 text-white border-red-500" : "bg-card text-foreground")}>
+                            <div key={i} onClick={() => setCurrentIndex(i)} className={cn("h-8 w-8 rounded-full border-2 flex items-center justify-center text-sm font-bold cursor-pointer transition-all", currentIndex === i ? "border-primary ring-2 ring-primary" : "border-muted", status[i] === 'correct' ? "bg-green-500 text-white border-green-500" : status[i] === 'incorrect' ? "bg-red-500 text-white border-red-500" : "bg-card text-foreground")}>
                                 {i + 1}
                             </div>
                         ))}
@@ -623,7 +623,7 @@ export default function Class13Content({ overrideStudentId }: { overrideStudentI
         { key: 'ex_mixto_3', name: 'Ejercicio Mixto 3', icon: PenSquare, status: 'locked' },
     ], []);
 
-useEffect(() => {
+    useEffect(() => {
         if (isProfileLoading || isUserLoading || !studentProfile || initialLoadComplete) return;
         let p = initialLearningPath.map(t => ({ ...t }));
         const d = studentProfile.lessonProgress?.[progressStorageVersion] || {};
@@ -674,6 +674,10 @@ useEffect(() => {
         });
         setTopicToComplete(null);
     }, [topicToComplete, toast]);
+
+    const handleTopicComplete = useCallback((topicKey: string) => {
+        setTopicToComplete(topicKey);
+    }, []);
 
     const handleTopicSelect = (topicKey: string) => {
         const t = learningPath.find(it => it.key === topicKey);
@@ -961,7 +965,7 @@ useEffect(() => {
                                     </div>
                                 </div>
                                 </CardContent>
-                        <CardFooter className="justify-center border-t pt-6"><Button onClick={() => handleTopicComplete('igualdad')} size="lg" className="px-12 font-bold">Entendido</Button></CardFooter>
+                        <CardFooter className="justify-center border-t pt-6"><Button onClick={() => handleTopicComplete('inferioridad')} size="lg" className="px-12 font-bold">Entendido</Button></CardFooter>
                     </Card>
                     </div>
                 );
