@@ -9,11 +9,12 @@ import { useParams } from 'next/navigation';
 import Link from "next/link";
 import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
 import { doc } from 'firebase/firestore';
+import { Loader2 } from "lucide-react";
 
 export default function A1EngUnitPage() {
   const { t } = useTranslation();
   const params = useParams();
-  const unitId = params.unitId as string;
+  const unitId = params?.unitId as string;
 
   const { user } = useUser();
   const firestore = useFirestore();
@@ -31,14 +32,9 @@ export default function A1EngUnitPage() {
   }, [user, studentProfile]);
 
   const [pathItems, setPathItems] = useState<PathItem[]>([]);
-  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  useEffect(() => {
-    if (!isClient || !unitId || isProfileLoading) return;
+    if (!unitId || isProfileLoading) return;
 
     const initialPath = getA1EngUnitPath(unitId, t);
     
@@ -94,7 +90,7 @@ export default function A1EngUnitPage() {
     }
 
     setPathItems(itemsWithLockState);
-  }, [t, unitId, isClient, isAdmin, studentProfile, isProfileLoading]);
+  }, [t, unitId, isAdmin, studentProfile, isProfileLoading]);
 
   const unitProgress = useMemo(() => {
     const classItems = pathItems.filter(item => item.type === 'class');
@@ -116,26 +112,38 @@ export default function A1EngUnitPage() {
     }
   }, [unitProgress, unitId, studentDocRef, isProfileLoading, studentProfile]);
 
+  if (!unitId) {
+    return (
+        <div className="flex w-full flex-col ingles-dashboard-bg min-h-screen">
+            <DashboardHeader />
+            <div className="flex flex-1 justify-center items-center">
+                <Loader2 className="h-12 w-12 animate-spin text-brand-purple" />
+            </div>
+        </div>
+    );
+  }
+
   return (
     <div className="flex w-full flex-col ingles-dashboard-bg min-h-screen">
       <DashboardHeader />
       <main className="flex flex-1 flex-col items-center gap-8 p-4 md:py-12">
         <div className="text-center">
-            <h1 className="text-4xl font-bold text-brand-purple dark:text-primary [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">{isClient ? t('a1course.unitTitle', { unit: unitId }) : ''}</h1>
+            <h1 className="text-4xl font-bold text-brand-purple dark:text-primary [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">
+                {t('a1course.unitTitle', { unit: unitId })}
+            </h1>
             <Link href="/ingles/a1" className="text-sm font-bold text-primary hover:underline mt-2 inline-block">
-                &larr; {isClient ? t('dashboard.courseA1') : ''}
+                &larr; {t('dashboard.courseA1')}
             </Link>
         </div>
         <div className="w-full max-w-4xl">
             <MazeGame 
                 pathItems={pathItems} 
-                title={isClient ? t('a1course.unitPath') : ''} 
-                description={isClient ? t('a1course.unitPathDescription') : ''}
-                isLoading={!isClient || isProfileLoading}
+                title={t('a1course.unitPath')} 
+                description={t('a1course.unitPathDescription')}
+                isLoading={isProfileLoading}
             />
         </div>
       </main>
     </div>
   );
 }
-
