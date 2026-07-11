@@ -5,13 +5,15 @@ import { DashboardHeader } from "@/components/dashboard/header";
 import { MazeGame } from "@/components/dashboard/maze-game";
 import { getA1EngUnitPath, PathItem } from "@/lib/course-data";
 import { useTranslation } from "@/context/language-context";
+import { useParams } from 'next/navigation';
 import Link from "next/link";
 import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
 import { doc } from 'firebase/firestore';
 
-export default function A1EngUnitPage({ params }: { params: { unitId: string } }) {
+export default function A1EngUnitPage() {
   const { t } = useTranslation();
-  const { unitId } = params;
+  const params = useParams();
+  const unitId = params.unitId as string;
 
   const { user } = useUser();
   const firestore = useFirestore();
