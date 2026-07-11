@@ -6,7 +6,6 @@ import Class14Content from '@/components/clases/A1/Class14Content';
 import { useSearchParams } from 'next/navigation';
 import { Loader2, ArrowLeft } from 'lucide-react';
 import { DashboardHeader } from '@/components/dashboard/header';
-import { Footer } from '@/components/footer';
 import Link from 'next/link';
 
 /**
@@ -35,7 +34,7 @@ function Class14PageContent() {
                     <Class14Content overrideStudentId={targetStudentId} />
                 </div>
             </main>
-            <Footer />
+           
         </div>
     );
 }

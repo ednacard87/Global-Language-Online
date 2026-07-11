@@ -142,7 +142,7 @@ function ClassContentLoader() {
           )}
         </div>
       </main>
-      <Footer />
+      
     </div>
   );
 }
