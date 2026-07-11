@@ -1,57 +1,139 @@
 'use client';
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { DashboardHeader } from "@/components/dashboard/header";
 import { MazeGame } from "@/components/dashboard/maze-game";
+import { getA1EngUnitPath, PathItem } from "@/lib/course-data";
+import { useTranslation } from "@/context/language-context";
 import { useParams } from 'next/navigation';
 import Link from "next/link";
-import { BookOpen, Flag, Footprints } from 'lucide-react';
-
-export interface PathItem {
-    type: string;
-    icon: React.ComponentType<{ className?: string }>;
-    label: string;
-    href?: string;
-}
+import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
+import { doc } from 'firebase/firestore';
 
 export default function A1EngUnitPage() {
+  const { t } = useTranslation();
   const params = useParams();
   const unitId = params.unitId as string;
+
+  const { user } = useUser();
+  const firestore = useFirestore();
+  const studentDocRef = useMemoFirebase(
+    () => (user ? doc(firestore, 'students', user.uid) : null),
+    [firestore, user]
+  );
+  const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{role?: 'admin' | 'student', progress?: Record<string, number>, unlockedClasses?: string[]}>(studentDocRef);
+
+  const isAdmin = useMemo(() => {
+      if (!user) return false;
+      return studentProfile?.role === 'admin' || user.email === 'ednacard87@gmail.com';
+  }, [user, studentProfile]);
+
   const [pathItems, setPathItems] = useState<PathItem[]>([]);
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    // Este código ignora el "mapa" y crea una lista de clases de prueba
-    const hardcodedPath: PathItem[] = [
-      { type: 'start', icon: Footprints, label: 'Inicio de Prueba' },
-      { type: 'class', icon: BookOpen, label: `Clase de Prueba 1 (Unidad ${unitId})`, href: '#' },
-      { type: 'class', icon: BookOpen, label: `Clase de Prueba 2 (Unidad ${unitId})`, href: '#' },
-      { type: 'class', icon: BookOpen, label: `Clase de Prueba 3 (Unidad ${unitId})`, href: '#' },
-      { type: 'end', icon: Flag, label: 'Final de Prueba' },
-    ];
-    setPathItems(hardcodedPath);
-  }, [unitId]);
+    setIsClient(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isClient || !unitId || isProfileLoading) return;
+
+    const initialPath = getA1EngUnitPath(unitId, t);
+    
+    const updatedItems = initialPath.map(item => {
+      if (item.storageKey && studentProfile?.progress) {
+        const itemProgress = studentProfile.progress[item.storageKey] || 0;
+        return { ...item, progress: itemProgress };
+      }
+      return item;
+    });
+
+    const itemsWithLockState = updatedItems.reduce((acc, item, index) => {
+        if (isAdmin) {
+            acc.push({ ...item, locked: false });
+            return acc;
+        }
+        
+        if (item.href && item.href !== '#') {
+            const classId = `a1-${item.href.split('/').pop()}`;
+            if (studentProfile?.unlockedClasses?.includes(classId)) {
+                acc.push({ ...item, locked: false });
+                return acc;
+            }
+        }
+        
+        if (index === 0) {
+            acc.push({ ...item, locked: false });
+            return acc;
+        }
+
+        const prevItem = acc[index - 1];
+        let isLocked = true;
+
+        if (prevItem.locked) {
+            isLocked = true;
+        } else {
+            if (prevItem.storageKey) {
+                isLocked = (prevItem.progress ?? 0) < 100;
+            } else {
+                isLocked = false;
+            }
+        }
+
+        acc.push({ ...item, locked: isLocked });
+        return acc;
+    }, [] as PathItem[]);
+
+
+    itemsWithLockState.forEach(item => item.className = '');
+    const nextActiveItem = itemsWithLockState.find(item => !item.locked && (item.progress ?? 0) < 100 && (item.type === 'class' || item.type === 'practice'));
+    if(nextActiveItem) {
+      nextActiveItem.className = 'animate-pulse-glow';
+    }
+
+    setPathItems(itemsWithLockState);
+  }, [t, unitId, isClient, isAdmin, studentProfile, isProfileLoading]);
+
+  const unitProgress = useMemo(() => {
+    const classItems = pathItems.filter(item => item.type === 'class');
+    if (!classItems.length) return 100;
+    const totalProgress = classItems.reduce((sum, item) => sum + (item.progress ?? 0), 0);
+    return Math.round(totalProgress / classItems.length);
+  }, [pathItems]);
+
+  useEffect(() => {
+    if (!isProfileLoading && studentDocRef && unitId) {
+        const progressKey = `progress_a1_eng_unit_${unitId}`;
+        const currentSavedProgress = studentProfile?.progress?.[progressKey] || 0;
+        
+        if (unitProgress !== currentSavedProgress) {
+            updateDocumentNonBlocking(studentDocRef, {
+                [`progress.${progressKey}`]: unitProgress
+            });
+        }
+    }
+  }, [unitProgress, unitId, studentDocRef, isProfileLoading, studentProfile]);
 
   return (
     <div className="flex w-full flex-col ingles-dashboard-bg min-h-screen">
       <DashboardHeader />
       <main className="flex flex-1 flex-col items-center gap-8 p-4 md:py-12">
         <div className="text-center">
-            <h1 className="text-4xl font-bold text-brand-purple dark:text-primary">
-              Unidad de Prueba {unitId}
-            </h1>
+            <h1 className="text-4xl font-bold text-brand-purple dark:text-primary [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">{isClient ? t('a1course.unitTitle', { unit: unitId }) : ''}</h1>
             <Link href="/ingles/a1" className="text-sm font-bold text-primary hover:underline mt-2 inline-block">
-                &larr; Volver al Curso A1
+                &larr; {isClient ? t('dashboard.courseA1') : ''}
             </Link>
         </div>
         <div className="w-full max-w-4xl">
             <MazeGame 
                 pathItems={pathItems} 
-                title="Ruta de Prueba"
-                description="Si ves esto, la página funciona. El problema es el archivo course-data.ts."
-                isLoading={false}
+                title={isClient ? t('a1course.unitPath') : ''} 
+                description={isClient ? t('a1course.unitPathDescription') : ''}
+                isLoading={!isClient || isProfileLoading}
             />
         </div>
       </main>
     </div>
   );
 }
+

@@ -1,4 +1,3 @@
-
 import { BookOpen, Flag, Footprints, Puzzle, Mic, Ear, Smile, GraduationCap, Star, Hand, MessageSquare, BrainCircuit, PenSquare, Lightbulb, Clock, Languages, Video, Rocket } from 'lucide-react';
 import type { ComponentType } from 'react';
 
@@ -280,7 +279,7 @@ export const spellingExercisesData: Record<SpellingExerciseKey, SpellingExercise
             { id: 7, transcript: 'fox', audioSrc: '/Audio/Animals/Animal7.mp3' },
             { id: 8, transcript: 'chimpanzee', audioSrc: '/Audio/Animals/Animal8.mp3' },
             { id: 9, transcript: 'squid', audioSrc: '/Audio/Animals/Animal9.mp3' },
-            { id: 10, transcript: 'snake', audioSrc: '/Audio/Animals/Animal0.mp3' },
+            { id: 10, transcript: 'snake', audioSrc: '/Audio/Animals/Animal10.mp3' },
             { id: 11, transcript: 'frog', audioSrc: '/Audio/Animals/Animal11.mp3' },
             { id: 12, transcript: 'wolf', audioSrc: '/Audio/Animals/Animal12.mp3' },
             { id: 13, transcript: 'shark', audioSrc: '/Audio/Animals/Animal13.mp3' },
@@ -445,33 +444,8 @@ export const getA1UnitPath = (unitId: string | number, t: (key: string) => strin
         ]
     };
     return unitPaths[String(unitId)] || [];
-}
+};
 
-export const getA1EngUnitPath = (unitId: string | number, t: (key: string) => string): PathItem[] => {
-    const unitPaths: {[key: string]: PathItem[]} = {
-        '1': [
-            { type: 'start', icon: Footprints, label: 'dashboard.start' },
-            ...Array.from({ length: 5 }, (_, i) => ({ type: 'class' as const, icon: BookOpen, label: `Class ${i + 1} (A1)`, href: `/ingles/a1/class/${i + 1}`, storageKey: `progress_a1_eng_unit_1_class_${i + 1}` })),
-            { type: 'end', icon: Flag, label: 'dashboard.finish' },
-        ],
-        '2': [
-            { type: 'start', icon: Footprints, label: 'dashboard.start' },
-             ...Array.from({ length: 5 }, (_, i) => ({ type: 'class' as const, icon: BookOpen, label: `Class ${i + 6} (A1)`, href: `/ingles/a1/class/${i + 6}`, storageKey: `progress_a1_eng_unit_2_class_${i + 6}` })),
-            { type: 'end', icon: Flag, label: 'dashboard.finish' },
-        ],
-        '3': [
-            { type: 'start', icon: Footprints, label: 'dashboard.start' },
-            { type: 'class', icon: BookOpen, label: 'Class 11 (A1)', href: '/ingles/a1/class/11', storageKey: 'progress_a1_eng_unit_3_class_11' },
-            { type: 'class', icon: BookOpen, label: 'Class 12 (A1)', href: '/ingles/a1/class/12', storageKey: 'progress_a1_eng_unit_3_class_12' },
-            { type: 'class', icon: BookOpen, label: 'Class 13 (A1)', href: '/ingles/a1/class/13', storageKey: 'progress_a1_eng_unit_3_class_13' },
-            { type: 'class', icon: BookOpen, label: 'Class 14 (A1)', href: '/ingles/a1/class/14', storageKey: 'progress_a1_eng_unit_3_class_14' },
-            { type: 'class', icon: BookOpen, label: 'Class 15 (A1)', href: '/ingles/a1/class/15', storageKey: 'progress_a1_eng_unit_3_class_15' },
-            { type: 'class', icon: BookOpen, label: 'Class 16 (A1)', href: '/ingles/a1/class/16', storageKey: 'progress_a1_eng_unit_3_class_16' },
-            { type: 'end', icon: Flag, label: 'dashboard.finish' },
-        ]
-    };
-    return unitPaths[String(unitId)] || [];
-}
 
 export const getA2EngMainPath = (t: (key: string) => string): PathItem[] => [
     { type: 'start', icon: Footprints, label: 'dashboard.start' },
@@ -516,6 +490,32 @@ export const getA2EngUnitPath = (unitId: string | number, t: (key: string) => st
     return unitPaths[String(unitId)] || [];
 }
 
+export const getA1EngUnitPath = (unitId: string | number, t: (key: string) => string): PathItem[] => {
+    const unitPaths: {[key: string]: PathItem[]} = {
+        '1': [
+            { type: 'start', icon: Footprints, label: 'dashboard.start' },
+            ...Array.from({ length: 5 }, (_, i) => ({ type: 'class' as const, icon: BookOpen, label: `Class ${i + 1} (A1)`, href: `/ingles/a1/class/${i + 1}`, storageKey: `progress_a1_eng_unit_1_class_${i + 1}` })),
+            { type: 'end', icon: Flag, label: 'dashboard.finish' },
+        ],
+        '2': [
+            { type: 'start', icon: Footprints, label: 'dashboard.start' },
+             ...Array.from({ length: 5 }, (_, i) => ({ type: 'class' as const, icon: BookOpen, label: `Class ${i + 6} (A1)`, href: `/ingles/a1/class/${i + 6}`, storageKey: `progress_a1_eng_unit_2_class_${i + 6}` })),
+            { type: 'end', icon: Flag, label: 'dashboard.finish' },
+        ],
+        '3': [
+            { type: 'start', icon: Footprints, label: 'dashboard.start' },
+            { type: 'class', icon: BookOpen, label: 'Class 11 (A1)', href: '/ingles/a1/class/11', storageKey: 'progress_a1_eng_unit_3_class_11' },
+            { type: 'class', icon: BookOpen, label: 'Class 12 (A1)', href: '/ingles/a1/class/12', storageKey: 'progress_a1_eng_unit_3_class_12' },
+            { type: 'class', icon: BookOpen, label: 'Class 13 (A1)', href: '/ingles/a1/class/13', storageKey: 'progress_a1_eng_unit_3_class_13' },
+            { type: 'class', icon: BookOpen, label: 'Class 14 (A1)', href: '/ingles/a1/class/14', storageKey: 'progress_a1_eng_unit_3_class_14' },
+            { type: 'class', icon: BookOpen, label: 'Class 15 (A1)', href: '/ingles/a1/class/15', storageKey: 'progress_a1_eng_unit_3_class_15' },
+            { type: 'class', icon: BookOpen, label: 'Class 16 (A1)', href: '/ingles/a1/class/16', storageKey: 'progress_a1_eng_unit_3_class_16' },
+            { type: 'end', icon: Flag, label: 'dashboard.finish' },
+        ]
+    };
+    return unitPaths[String(unitId)] || [];
+}
+
 export const getA2EspanolPath = (t: (key: string) => string): PathItem[] => [
     { type: 'start', icon: Footprints, label: 'dashboard.start' },
     { type: 'class', icon: BookOpen, label: 'reflexivos regulares', href: '/espanol/a2/reflexivos-regulares', storageKey: 'progress_a2_es_reflexivos_regulares' },
@@ -545,7 +545,7 @@ export const getA2UnitPath = (unitId: string | number, t: (key: string) => strin
     const unitPaths: {[key: string]: PathItem[]} = {
         '1': [
             { type: 'start', icon: Footprints, label: 'dashboard.start' },
-            ...Array.from({ length: 5 }, (_, i) => ({ type: 'class' as const, icon: BookOpen, label: `Clase ${i + 1}`, href: `#`, storageKey: `progress_a2_es_unit_1_class_${i + 1}` })),
+            ...Array.from({ length: 5 }, (_, i) => ({ type: 'class' as const, icon: BookOpen, label: `Clase ${i + 1}`, href: '#', storageKey: `progress_a2_es_unit_1_class_${i + 1}` })),
             { type: 'end', icon: Flag, label: 'dashboard.finish' },
         ],
     };
@@ -574,22 +574,22 @@ export const getB1UnitPath = (unitId: string | number, t: (key: string) => strin
     const unitPaths: {[key: string]: PathItem[]} = {
         '1': [
             { type: 'start', icon: Footprints, label: 'dashboard.start' },
-            ...Array.from({ length: 5 }, (_, i) => ({ type: 'class' as const, icon: BookOpen, label: `Class ${i + 1} (B1)`, href: `/ingles/b1/class/${i + 1}`, storageKey: `progress_b1_eng_unit_1_class_${i + 1}` })),\
+            ...Array.from({ length: 5 }, (_, i) => ({ type: 'class' as const, icon: BookOpen, label: `Class ${i + 1} (B1)`, href: `/ingles/b1/class/${i + 1}`, storageKey: `progress_b1_eng_unit_1_class_${i + 1}` })),
             { type: 'end', icon: Flag, label: 'dashboard.finish' },
         ],
         '2': [
             { type: 'start', icon: Footprints, label: 'dashboard.start' },
-             ...Array.from({ length: 5 }, (_, i) => ({ type: 'class' as const, icon: BookOpen, label: `Class ${i + 6} (B1)`, href: `/ingles/b1/class/${i + 6}`, storageKey: `progress_b1_eng_unit_2_class_${i + 6}` })),\
+             ...Array.from({ length: 5 }, (_, i) => ({ type: 'class' as const, icon: BookOpen, label: `Class ${i + 6} (B1)`, href: `/ingles/b1/class/${i + 6}`, storageKey: `progress_b1_eng_unit_2_class_${i + 6}` })),
             { type: 'end', icon: Flag, label: 'dashboard.finish' },
         ],
         '3': [
             { type: 'start', icon: Footprints, label: 'dashboard.start' },
-             ...Array.from({ length: 5 }, (_, i) => ({ type: 'class' as const, icon: BookOpen, label: `Class ${i + 11} (B1)`, href: `/ingles/b1/class/${i + 11}`, storageKey: `progress_b1_eng_unit_3_class_${i + 11}` })),\
+             ...Array.from({ length: 5 }, (_, i) => ({ type: 'class' as const, icon: BookOpen, label: `Class ${i + 11} (B1)`, href: `/ingles/b1/class/${i + 11}`, storageKey: `progress_b1_eng_unit_3_class_${i + 11}` })),
             { type: 'end', icon: Flag, label: 'dashboard.finish' },
         ],
         '4': [
             { type: 'start', icon: Footprints, label: 'dashboard.start' },
-             ...Array.from({ length: 5 }, (_, i) => ({ type: 'class' as const, icon: BookOpen, label: `Class ${i + 16} (B1)`, href: `/ingles/b1/class/${i + 16}`, storageKey: `progress_b1_eng_unit_4_class_${i + 16}` })),\
+             ...Array.from({ length: 5 }, (_, i) => ({ type: 'class' as const, icon: BookOpen, label: `Class ${i + 16} (B1)`, href: `/ingles/b1/class/${i + 16}`, storageKey: `progress_b1_eng_unit_4_class_${i + 16}` })),
             { type: 'end', icon: Flag, label: 'dashboard.finish' },
         ]
     };
@@ -617,28 +617,28 @@ export const getB2UnitPath = (unitId: string | number, t: (key: string) => strin
     const unitPaths: {[key: string]: PathItem[]} = {
         '1': [
             { type: 'start', icon: Footprints, label: 'dashboard.start' },
-            ...Array.from({ length: 5 }, (_, i) => ({ type: 'class' as const, icon: BookOpen, label: `Class ${i + 1} (B2)`, href: `/ingles/b2/class/${i + 1}`, storageKey: `progress_b2_eng_unit_1_class_${i + 1}` })),\
+            ...Array.from({ length: 5 }, (_, i) => ({ type: 'class' as const, icon: BookOpen, label: `Class ${i + 1} (B2)`, href: `/ingles/b2/class/${i + 1}`, storageKey: `progress_b2_eng_unit_1_class_${i + 1}` })),
             { type: 'practice', icon: Puzzle, label: 'b2course.review1-5', href: '#' },
             { type: 'practice', icon: Puzzle, label: 'b2course.test1-5', href: '#' },
             { type: 'end', icon: Flag, label: 'dashboard.finish' },
         ],
         '2': [
             { type: 'start', icon: Footprints, label: 'dashboard.start' },
-             ...Array.from({ length: 5 }, (_, i) => ({ type: 'class' as const, icon: BookOpen, label: `Class ${i + 6} (B2)`, href: `/ingles/b2/class/${i + 6}`, storageKey: `progress_b2_eng_unit_2_class_${i + 6}` })),\
+             ...Array.from({ length: 5 }, (_, i) => ({ type: 'class' as const, icon: BookOpen, label: `Class ${i + 6} (B2)`, href: `/ingles/b2/class/${i + 6}`, storageKey: `progress_b2_eng_unit_2_class_${i + 6}` })),
             { type: 'practice', icon: Puzzle, label: 'b2course.review6-10', href: '#' },
             { type: 'practice', icon: Puzzle, label: 'b2course.test6-10', href: '#' },
             { type: 'end', icon: Flag, label: 'dashboard.finish' },
         ],
         '3': [
             { type: 'start', icon: Footprints, label: 'dashboard.start' },
-             ...Array.from({ length: 5 }, (_, i) => ({ type: 'class' as const, icon: BookOpen, label: `Class ${i + 11} (B2)`, href: `/ingles/b2/class/${i + 11}`, storageKey: `progress_b2_eng_unit_3_class_${i + 11}` })),\
+             ...Array.from({ length: 5 }, (_, i) => ({ type: 'class' as const, icon: BookOpen, label: `Class ${i + 11} (B2)`, href: `/ingles/b2/class/${i + 11}`, storageKey: `progress_b2_eng_unit_3_class_${i + 11}` })),
             { type: 'practice', icon: Puzzle, label: 'b2course.review11-15', href: '#' },
             { type: 'practice', icon: Puzzle, label: 'b2course.test11-15', href: '#' },
             { type: 'end', icon: Flag, label: 'dashboard.finish' },
         ],
         '4': [
             { type: 'start', icon: Footprints, label: 'dashboard.start' },
-             ...Array.from({ length: 5 }, (_, i) => ({ type: 'class' as const, icon: BookOpen, label: `Class ${i + 16} (B2)`, href: `/ingles/b2/class/${i + 16}`, storageKey: `progress_b2_eng_unit_4_class_${i + 16}` })),\
+             ...Array.from({ length: 5 }, (_, i) => ({ type: 'class' as const, icon: BookOpen, label: `Class ${i + 16} (B2)`, href: `/ingles/b2/class/${i + 16}`, storageKey: `progress_b2_eng_unit_4_class_${i + 16}` })),
             { type: 'practice', icon: Puzzle, label: 'b2course.review16-20', href: '#' },
             { type: 'practice', icon: Puzzle, label: 'b2course.test16-20', href: '#' },
             { type: 'end', icon: Flag, label: 'dashboard.finish' },
@@ -731,30 +731,3 @@ export const getB1SpanishClasses = () => [
     { id: 'es-b1-imperativo', name: 'Imperativo' },
     { id: 'es-b1-presente-subjuntivo', name: 'Presente Subjuntivo' },
 ];
-
-// ADDED CORRECT FUNCTION AT THE END
-export const getA1EngUnitPath = (unitId: string | number, t: (key: string) => string): PathItem[] => {
-    const unitPaths: {[key: string]: PathItem[]} = {
-        '1': [
-            { type: 'start', icon: Footprints, label: 'dashboard.start' },
-            ...Array.from({ length: 5 }, (_, i) => ({ type: 'class' as const, icon: BookOpen, label: `Class ${i + 1} (A1)`, href: `/ingles/a1/class/${i + 1}`, storageKey: `progress_a1_eng_unit_1_class_${i + 1}` })),
-            { type: 'end', icon: Flag, label: 'dashboard.finish' },
-        ],
-        '2': [
-            { type: 'start', icon: Footprints, label: 'dashboard.start' },
-             ...Array.from({ length: 5 }, (_, i) => ({ type: 'class' as const, icon: BookOpen, label: `Class ${i + 6} (A1)`, href: `/ingles/a1/class/${i + 6}`, storageKey: `progress_a1_eng_unit_2_class_${i + 6}` })),
-            { type: 'end', icon: Flag, label: 'dashboard.finish' },
-        ],
-        '3': [
-            { type: 'start', icon: Footprints, label: 'dashboard.start' },
-            { type: 'class', icon: BookOpen, label: 'Class 11 (A1)', href: '/ingles/a1/class/11', storageKey: 'progress_a1_eng_unit_3_class_11' },
-            { type: 'class', icon: BookOpen, label: 'Class 12 (A1)', href: '/ingles/a1/class/12', storageKey: 'progress_a1_eng_unit_3_class_12' },
-            { type: 'class', icon: BookOpen, label: 'Class 13 (A1)', href: '/ingles/a1/class/13', storageKey: 'progress_a1_eng_unit_3_class_13' },
-            { type: 'class', icon: BookOpen, label: 'Class 14 (A1)', href: '/ingles/a1/class/14', storageKey: 'progress_a1_eng_unit_3_class_14' },
-            { type: 'class', icon: BookOpen, label: 'Class 15 (A1)', href: '/ingles/a1/class/15', storageKey: 'progress_a1_eng_unit_3_class_15' },
-            { type: 'class', icon: BookOpen, label: 'Class 16 (A1)', href: '/ingles/a1/class/16', storageKey: 'progress_a1_eng_unit_3_class_16' },
-            { type: 'end', icon: Flag, label: 'dashboard.finish' },
-        ]
-    };
-    return unitPaths[String(unitId)] || [];
-}
