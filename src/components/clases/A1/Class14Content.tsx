@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
@@ -81,7 +82,7 @@ const readingData = {
     questions: [
         { id: 'q1', question: "What materials are used for modern houses?", answers: ["steel and glass", "glass and steel"] },
         { id: 'q2', question: "Which materials are good for summer?", answers: ["cotton and silk", "silk and cotton"] },
-        { id: 'q3', vote: "What are gold and silver used for?", answers: ["expensive jewelry", "jewelry"] }
+        { id: 'q3', question: "What are gold and silver used for?", answers: ["expensive jewelry", "jewelry"] }
     ]
 };
 
@@ -162,7 +163,6 @@ const DictationGradingExercise = ({ title, prompts, onComplete, studentDocRef, i
             if (isAdmin) {
                 setLines(newLines);
             } else {
-                // Escudo de escritura: solo actualizamos si el cambio viene de afuera y no estamos escribiendo activamente
                 setLines(curr => {
                     const hasLocalChange = curr.some((l, idx) => l !== lastStudentDataRef.current[idx]);
                     return hasLocalChange ? curr : newLines;
@@ -379,10 +379,10 @@ export default function Class14Content({ overrideStudentId }: { overrideStudentI
                 return (
                     <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground text-left">
                         <CardHeader><CardTitle>LEXICO: MATERIALES Y TEJIDOS</CardTitle></CardHeader>
-                        <CardContent><div className="grid grid-cols-2 gap-4 text-lg">
+                        <CardContent><div className="grid grid-cols-2 gap-4 text-lg text-foreground">
                             {materialsVocab.map((v, i) => (<React.Fragment key={i}><div className="p-3 border rounded-lg font-bold">{v.es}</div><Input value={vocabAnswers[i]} onChange={e => { if (isAdmin) return; const na = [...vocabAnswers]; na[i] = e.target.value; setVocabAnswers(na); const nv = [...vocabValidation]; nv[i] = 'unchecked'; setVocabValidation(nv); }} className={cn("uppercase", vocabValidation[i] === 'correct' ? 'border-green-500 bg-green-50/10' : vocabValidation[i] === 'incorrect' ? 'border-red-500 bg-red-50/10' : '')} readOnly={isAdmin} /></React.Fragment>))}
                         </div></CardContent>
-                        <CardFooter className="flex justify-between border-t pt-6 mt-4"><Button onClick={() => { let all = true; const nv = materialsVocab.map((v, i) => { const ok = v.en.toUpperCase() === vocabAnswers[i].trim().toUpperCase(); if (!ok) all = false; return ok ? 'correct' : 'incorrect'; }); setVocabValidation(nv); if (all) toast({ title: "¡Perfecto!" }); }} variant="secondary">Verificar</Button><Button onClick={() => handleTopicComplete('vocabulary')} disabled={!vocabValidation.every(v => v === 'correct') && !isAdmin}>Avanzar</Button></CardFooter>
+                        <CardFooter className="flex justify-between border-t pt-6 mt-4 text-foreground"><Button onClick={() => { let all = true; const nv = materialsVocab.map((v, i) => { const ok = v.en.toUpperCase() === vocabAnswers[i].trim().toUpperCase(); if (!ok) all = false; return ok ? 'correct' : 'incorrect'; }); setVocabValidation(nv); if (all) toast({ title: "¡Perfecto!" }); }} variant="secondary">Verificar</Button><Button onClick={() => handleTopicComplete('vocabulary')} disabled={!vocabValidation.every(v => v === 'correct') && !isAdmin} className='text-white font-bold'>Avanzar</Button></CardFooter>
                     </Card>
                 );
             case 'dictation1':
