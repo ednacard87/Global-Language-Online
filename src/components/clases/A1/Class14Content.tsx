@@ -152,10 +152,12 @@ const ChoiceExercise = ({ prompts, onComplete, title }: any) => {
 };
 
 const DictationGradingExercise = ({ title, prompts, onComplete, studentDocRef, isAdmin, storageKeyLines, storageKeyGrades, initialLines, initialGrades }: any) => {
+    const { toast } = useToast();
     const [lines, setLines] = useState<string[]>(Array(prompts.length).fill(''));
     const [grades, setGrades] = useState<Record<number, 'correct' | 'incorrect' | null>>(initialGrades || {});
     const lastStudentDataRef = useRef<string[]>([]);
 
+    // Sincronización en tiempo real de líneas (para que el Admin vea al alumno)
     useEffect(() => {
         if (initialLines && Array.isArray(initialLines)) {
             const newLines = [...Array(prompts.length).fill('')];
@@ -173,6 +175,13 @@ const DictationGradingExercise = ({ title, prompts, onComplete, studentDocRef, i
         }
     }, [initialLines, prompts.length, isAdmin]);
 
+    // SINCRONIZACIÓN EN TIEMPO REAL DE CALIFICACIONES (Para que el Alumno vea al Admin)
+    useEffect(() => {
+        if (initialGrades) {
+            setGrades(initialGrades);
+        }
+    }, [initialGrades]);
+
     const handleLineChange = (idx: number, val: string) => {
         if (isAdmin) return;
         const nl = [...lines]; nl[idx] = val; 
@@ -183,38 +192,51 @@ const DictationGradingExercise = ({ title, prompts, onComplete, studentDocRef, i
 
     const handleToggleGrade = (idx: number, type: 'correct' | 'incorrect') => {
         if (!isAdmin) return;
-        const ng = { ...grades }; ng[idx] = ng[idx] === type ? null : type; setGrades(ng);
+        const ng = { ...grades }; 
+        ng[idx] = ng[idx] === type ? null : type; 
+        setGrades(ng);
         if (studentDocRef) updateDocumentNonBlocking(studentDocRef, { [`lessonProgress.${progressStorageVersion}.${storageKeyGrades}`]: ng });
     };
 
     return (
         <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground">
             <CardHeader className='bg-primary/5 border-b'><CardTitle>{title}</CardTitle></CardHeader>
-            <CardContent className="p-6"><ScrollArea className="h-[500px] pr-4">
-                <div className="space-y-4">
-                    {prompts.map((_: any, i: number) => (
-                        <div key={i} className="flex items-center gap-3">
-                            <span className="font-bold w-10 text-right text-muted-foreground">{i + 1}.</span>
-                            <Input value={lines[i] || ''} onChange={e => handleLineChange(i, e.target.value)} className={cn("flex-1 h-10 transition-all", grades[i] === 'correct' ? 'border-green-500 bg-green-50/10' : grades[i] === 'incorrect' ? 'border-red-500 bg-red-50/10' : '')} readOnly={isAdmin} />
-                            <div className="flex gap-1 shrink-0">
-                                <Button size="icon" variant="ghost" onClick={() => handleToggleGrade(i, 'correct')} className={cn("h-8 w-8 rounded-full", grades[i] === 'correct' ? "bg-green-500 text-white" : "bg-muted opacity-50")} disabled={!isAdmin}><Check className="h-4 w-4"/></Button>
-                                <Button size="icon" variant="ghost" onClick={() => handleToggleGrade(i, 'incorrect')} className={cn("h-8 w-8 rounded-full", grades[i] === 'incorrect' ? "bg-red-500 text-white" : "bg-muted opacity-50")} disabled={!isAdmin}><X className="h-4 w-4"/></Button>
+            <CardContent className="p-6">
+                <ScrollArea className="h-[500px] pr-4">
+                    <div className="space-y-4">
+                        {prompts.map((_: any, i: number) => (
+                            <div key={i} className="flex items-center gap-3">
+                                <span className="font-bold w-10 text-right text-muted-foreground">{i + 1}.</span>
+                                <Input 
+                                    value={lines[i] || ''} 
+                                    onChange={e => handleLineChange(i, e.target.value)} 
+                                    className={cn(
+                                        "flex-1 h-10 transition-all font-medium",
+                                        grades[i] === 'correct' ? 'border-green-500 bg-green-500/10' : 
+                                        grades[i] === 'incorrect' ? 'border-red-500 bg-red-500/10' : ''
+                                    )} 
+                                    readOnly={isAdmin} 
+                                />
+                                <div className="flex gap-1 shrink-0">
+                                    <Button size="icon" variant="ghost" onClick={() => handleToggleGrade(i, 'correct')} className={cn("h-8 w-8 rounded-full", grades[i] === 'correct' ? "bg-green-500 text-white" : "bg-muted opacity-50")} disabled={!isAdmin}><Check className="h-4 w-4"/></Button>
+                                    <Button size="icon" variant="ghost" onClick={() => handleToggleGrade(i, 'incorrect')} className={cn("h-8 w-8 rounded-full", grades[i] === 'incorrect' ? "bg-red-500 text-white" : "bg-muted opacity-50")} disabled={!isAdmin}><X className="h-4 w-4"/></Button>
+                                </div>
                             </div>
-                        </div>
-                    ))}
-                </div>
-            </ScrollArea></CardContent>
+                        ))}
+                    </div>
+                </ScrollArea>
+            </CardContent>
             <CardFooter className="justify-center border-t pt-6"><Button onClick={onComplete} size="lg" className="px-16 font-bold h-14">Avanzar <ArrowRight className="ml-2 h-6 w-6" /></Button></CardFooter>
         </Card>
     );
 };
 
-const TripleLineTranslationExercise = ({ title, prompts, onComplete, vocabulary }: any) => {
+const TripleLineTranslationExerciseInternal = ({ title, prompts, onComplete }: any) => {
     const { toast } = useToast();
     const [currentIndex, setCurrentIndex] = useState(0);
     const [ans, setAns] = useState({ trans: '', pos: '', neg: '' });
     const [val, setVal] = useState<any>({ trans: 'unchecked', pos: 'unchecked', neg: 'unchecked' });
-    const [completedMap, setCompletedMap] = useState<Record<number, boolean>>({});
+    const [completed, setCompleted] = useState<Record<number, boolean>>({});
 
     useEffect(() => {
         setAns({ trans: '', pos: '', neg: '' });
@@ -222,21 +244,17 @@ const TripleLineTranslationExercise = ({ title, prompts, onComplete, vocabulary 
     }, [currentIndex]);
 
     const handleCheck = () => {
-        const fields: (keyof typeof ans)[] = ['trans', 'pos', 'neg'];
-        const keysInPrompt = ['trans', 'pos', 'neg'];
         const newVal = { ...val };
-        let allOk = true;
-
-        fields.forEach((field, i) => {
-            const userVal = ans[field].trim().toLowerCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' ');
-            const corrects = prompts[currentIndex][keysInPrompt[i]].map((a: string) => a.toLowerCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' '));
-            if (field === 'trans' && !ans.trans.trim().endsWith('?')) { allOk = false; newVal.trans = 'incorrect'; }
-            else if (corrects.includes(userVal)) newVal[f] = 'correct';
-            else { allOk = false; newVal[f] = 'incorrect'; }
+        let ok = true;
+        ['trans', 'pos', 'neg'].forEach(f => {
+            const user = ans[f as keyof typeof ans].trim().toLowerCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' ');
+            const cors = prompts[currentIndex][f].map((a: string) => a.toLowerCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' '));
+            if (f === 'trans' && !ans.trans.trim().endsWith('?')) { ok = false; newVal.trans = 'incorrect'; }
+            else if (cors.includes(user)) newVal[f] = 'correct'; 
+            else { ok = false; newVal[f] = 'incorrect'; }
         });
-
         setVal(newVal);
-        if (allOk) { toast({ title: "¡Perfecto!" }); setCompletedMap(p => ({ ...p, [currentIndex]: true })); }
+        if (ok) { toast({ title: "¡Perfecto!" }); setCompleted(p => ({ ...p, [currentIndex]: true })); }
         else toast({ variant: 'destructive', title: "Revisa tus respuestas" });
     };
 
@@ -248,7 +266,7 @@ const TripleLineTranslationExercise = ({ title, prompts, onComplete, vocabulary 
                         <CardTitle>{title}</CardTitle>
                         <div className="flex gap-2 justify-start flex-wrap pt-4">
                             {prompts.map((_: any, i: number) => (
-                                <div key={i} onClick={() => setCurrentIndex(i)} className={cn("h-8 w-8 rounded-full border-2 flex items-center justify-center text-xs font-bold cursor-pointer transition-all", currentIndex === i ? "border-primary ring-2 ring-primary" : "border-muted", completedMap[i] ? "bg-green-500 text-white border-green-500" : "bg-card text-foreground")}>{i + 1}</div>
+                                <div key={i} onClick={() => setCurrentIndex(i)} className={cn("h-8 w-8 rounded-full border-2 flex items-center justify-center text-xs font-bold cursor-pointer transition-all", currentIndex === i ? "border-primary ring-2 ring-primary" : "border-muted", completed[i] ? "bg-green-500 text-white border-green-500" : "bg-card text-foreground")}>{i + 1}</div>
                             ))}
                         </div>
                     </div>
@@ -256,17 +274,17 @@ const TripleLineTranslationExercise = ({ title, prompts, onComplete, vocabulary 
             </CardHeader>
             <CardContent className="space-y-6">
                 <div className="bg-muted p-4 rounded-lg border text-center font-bold text-xl uppercase">{prompts[currentIndex].question}</div>
-                <div className="space-y-4 font-mono">
-                    <div className="flex items-center gap-4"><Label className="w-10 font-bold text-blue-500 text-center">(?)</Label><Input value={ans.trans} onChange={e => setAns(p => ({...p, trans: e.target.value}))} className={cn(val.trans === 'correct' ? 'border-green-500' : val.trans === 'incorrect' ? 'border-red-500' : '')} autoComplete="off" /></div>
-                    <div className="flex items-center gap-4"><Label className="w-10 font-bold text-green-500 text-center">(+A)</Label><Input value={ans.pos} onChange={e => setAns(p => ({...p, pos: e.target.value}))} className={cn(val.pos === 'correct' ? 'border-green-500' : val.pos === 'incorrect' ? 'border-red-500' : '')} autoComplete="off" /></div>
-                    <div className="flex items-center gap-4"><Label className="w-10 font-bold text-red-500 text-center">(-A)</Label><Input value={ans.neg} onChange={e => setAns(p => ({...p, neg: e.target.value}))} className={cn(val.neg === 'correct' ? 'border-green-500' : val.neg === 'incorrect' ? 'border-red-500' : '')} autoComplete="off" /></div>
+                <div className="space-y-4 font-mono text-base max-w-lg mx-auto">
+                    <div className="flex items-center gap-4"><Label className="w-12 font-bold text-blue-500 text-center">(?)</Label><Input value={ans.trans} onChange={e => setAns(p => ({...p, trans: e.target.value}))} className={cn("flex-1", val.trans === 'correct' ? 'border-green-500' : val.trans === 'incorrect' ? 'border-red-500' : '')} autoComplete="off" /></div>
+                    <div className="flex items-center gap-4"><Label className="w-12 font-bold text-green-500 text-center">(+A)</Label><Input value={ans.pos} onChange={e => setAns(p => ({...p, pos: e.target.value}))} className={cn("flex-1", val.pos === 'correct' ? 'border-green-500' : val.pos === 'incorrect' ? 'border-red-500' : '')} autoComplete="off" /></div>
+                    <div className="flex items-center gap-4"><Label className="w-12 font-bold text-red-500 text-center">(-A)</Label><Input value={ans.neg} onChange={e => setAns(p => ({...p, neg: e.target.value}))} className={cn("flex-1", val.neg === 'correct' ? 'border-green-500' : val.neg === 'incorrect' ? 'border-red-500' : '')} autoComplete="off" /></div>
                 </div>
             </CardContent>
             <CardFooter className="justify-between border-t pt-6">
                 <Button variant="outline" onClick={() => setCurrentIndex(p => Math.max(0, p - 1))} disabled={currentIndex === 0}>Anterior</Button>
                 <div className="flex gap-2">
                     <Button onClick={handleCheck} variant="secondary">Verificar</Button>
-                    <Button onClick={() => currentIndex < prompts.length - 1 ? setCurrentIndex(i => i + 1) : onComplete()} disabled={!completedMap[currentIndex]} className="font-bold">Siguiente</Button>
+                    <Button onClick={() => currentIndex < prompts.length - 1 ? setCurrentIndex(i => i + 1) : onComplete()} disabled={!completed[currentIndex]} className="font-bold">Siguiente</Button>
                 </div>
             </CardFooter>
         </Card>
@@ -351,9 +369,8 @@ export default function Class14Content({ overrideStudentId }: { overrideStudentI
         return Math.round((comp / learningPath.length) * 100);
     }, [learningPath]);
 
+    // BLINDAJE DE AUTOGUARDADO: Solo ocurre para el estudiante en su propia cuenta
     useEffect(() => {
-        // BLINDAJE DE PERMISOS: Solo el estudiante actual (dueño del documento) o el admin (si no está supervisando) pueden autoguardar.
-        // Si hay overrideStudentId, significa que un admin está VIENDO, no debe gatillar autoguardados que fallen por reglas de seguridad.
         if (!initialLoadComplete || isInitialLoading || isAdmin || !studentDocRef || learningPath.length === 0 || overrideStudentId || !user) return;
         const s: any = { lastSelectedTopic: selectedTopic, create1Text, readingAnswers, readingValidation: readingVal };
         learningPath.forEach(t => s[t.key] = t.status);
@@ -412,7 +429,7 @@ export default function Class14Content({ overrideStudentId }: { overrideStudentI
                         <CardContent className="space-y-6">
                             <div className="p-6 bg-muted rounded-2xl border italic text-lg leading-relaxed shadow-inner">{readingData.content}</div>
                             <Separator /><div className="space-y-4">{readingData.questions.map(q => (
-                                <div key={q.id} className="grid gap-2"><Label htmlFor={q.id} className='font-bold'>{q.question}</Label>
+                                <div key={q.id} className="space-y-2"><Label htmlFor={q.id} className='font-bold'>{q.question}</Label>
                                 <Input id={q.id} value={readingAnswers[q.id] || ''} onChange={(e) => { if (!isAdmin) setReadingAnswers({...readingAnswers, [q.id]: e.target.value}); }} readOnly={isAdmin} className={cn('mt-1 text-lg h-12', readingVal[q.id] === 'correct' ? 'border-green-500 bg-green-50/5' : readingVal[q.id] === 'incorrect' ? 'border-destructive bg-destructive/5' : '')} autoComplete="off" /></div>
                             ))}</div>
                         </CardContent>
@@ -427,7 +444,7 @@ export default function Class14Content({ overrideStudentId }: { overrideStudentI
                         }} size="lg" className="px-12 font-bold" disabled={isAdmin}>Verificar Lectura</Button></CardFooter>
                     </Card>
                 );
-            case 'final_exercise': return <TripleLineTranslationExercise title="Final Exercise: Short Answers" prompts={finalExPrompts} onComplete={() => handleTopicComplete('final_exercise')} />;
+            case 'final_exercise': return <TripleLineTranslationExerciseInternal title="Final Exercise: Short Answers" prompts={finalExPrompts} onComplete={() => handleTopicComplete('final_exercise')} />;
             default: return null;
         }
     };
