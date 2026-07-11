@@ -276,19 +276,19 @@ export const spellingExercisesData: Record<SpellingExerciseKey, SpellingExercise
             { id: 3, transcript: 'butterfly', audioSrc: '/Audio/Animals/Animal3.mp3' },
             { id: 4, transcript: 'owl', audioSrc: '/Audio/Animals/Animal4.mp3' },
             { id: 5, transcript: 'Zebra', audioSrc: '/Audio/Animals/Animal5.mp3' },
-            { id: 6, transcript: 'wasp', audioSrc: '/Audio/Animals/Animal1.mp3' },
-            { id: 7, transcript: 'fox', audioSrc: '/Audio/Animals/Animal2.mp3' },
-            { id: 8, transcript: 'chimpanzee', audioSrc: '/Audio/Animals/Animal3.mp3' },
-            { id: 9, transcript: 'squid', audioSrc: '/Audio/Animals/Animal4.mp3' },
-            { id: 10, transcript: 'snake', audioSrc: '/Audio/Animals/Animal5.mp3' },
-            { id: 11, transcript: 'frog', audioSrc: '/Audio/Animals/Animal1.mp3' },
-            { id: 12, transcript: 'wolf', audioSrc: '/Audio/Animals/Animal2.mp3' },
-            { id: 13, transcript: 'shark', audioSrc: '/Audio/Animals/Animal3.mp3' },
-            { id: 14, transcript: 'mosquitoes', audioSrc: '/Audio/Animals/Animal4.mp3' },
-            { id: 15, transcript: 'clownfish', audioSrc: '/Audio/Animals/Animal5.mp3' },
-            { id: 16, transcript: 'buffalo', audioSrc: '/Audio/Animals/Animal1.mp3' },
-            { id: 17, transcript: 'kangaroo', audioSrc: '/Audio/Animals/Animal2.mp3' },
-            { id: 18, transcript: 'whale', audioSrc: '/Audio/Animals/Animal3.mp3' },
+            { id: 6, transcript: 'wasp', audioSrc: '/Audio/Animals/Animal6.mp3' },
+            { id: 7, transcript: 'fox', audioSrc: '/Audio/Animals/Animal7.mp3' },
+            { id: 8, transcript: 'chimpanzee', audioSrc: '/Audio/Animals/Animal8.mp3' },
+            { id: 9, transcript: 'squid', audioSrc: '/Audio/Animals/Animal9.mp3' },
+            { id: 10, transcript: 'snake', audioSrc: '/Audio/Animals/Animal0.mp3' },
+            { id: 11, transcript: 'frog', audioSrc: '/Audio/Animals/Animal11.mp3' },
+            { id: 12, transcript: 'wolf', audioSrc: '/Audio/Animals/Animal12.mp3' },
+            { id: 13, transcript: 'shark', audioSrc: '/Audio/Animals/Animal13.mp3' },
+            { id: 14, transcript: 'mosquitoes', audioSrc: '/Audio/Animals/Animal14.mp3' },
+            { id: 15, transcript: 'clownfish', audioSrc: '/Audio/Animals/Animal15.mp3' },
+            { id: 16, transcript: 'buffalo', audioSrc: '/Audio/Animals/Animal16.mp3' },
+            { id: 17, transcript: 'kangaroo', audioSrc: '/Audio/Animals/Animal17.mp3' },
+            { id: 18, transcript: 'whale', audioSrc: '/Audio/Animals/Animal18.mp3' },
         ]
     },
     'numbers1': {
@@ -509,7 +509,7 @@ export const getA2EngUnitPath = (unitId: string | number, t: (key: string) => st
         ],
         '4': [
             { type: 'start', icon: Footprints, label: 'dashboard.start' },
-             ...Array.from({ length: 5 }, (_, i) => ({ type: 'class' as const, icon: BookOpen, label: `Class ${i + 16} (A2)`, href: `/ingles/a2/class/${i + 16}`, storageKey: `progress_a2_eng_unit_4_class_${i + 16}` })),\
+             ...Array.from({ length: 5 }, (_, i) => ({ type: 'class' as const, icon: BookOpen, label: `Class ${i + 16} (A2)`, href: `/ingles/a2/class/${i + 16}`, storageKey: `progress_a2_eng_unit_4_class_${i + 16}` })),
             { type: 'end', icon: Flag, label: 'dashboard.finish' },
         ]
     };
