@@ -1,17 +1,16 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo } from "react";
 import { DashboardHeader } from "@/components/dashboard/header";
 import { MazeGame } from "@/components/dashboard/maze-game";
-import { getB1UnitPath, PathItem } from "@/lib/course-data";
+import { getA1EngUnitPath, PathItem } from "@/lib/course-data";
 import { useTranslation } from "@/context/language-context";
 import { useParams } from 'next/navigation';
 import Link from "next/link";
 import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
 import { doc } from 'firebase/firestore';
 
-export default function B1UnitPage() {
+export default function A1EngUnitPage() {
   const { t } = useTranslation();
   const params = useParams();
   const unitId = params.unitId as string;
@@ -39,7 +38,7 @@ export default function B1UnitPage() {
   useEffect(() => {
     if (!isClient || !unitId || isProfileLoading) return;
 
-    const initialPath = getB1UnitPath(unitId, t);
+    const initialPath = getA1EngUnitPath(unitId, t);
     
     const updatedItems = initialPath.map(item => {
       if (item.storageKey && studentProfile?.progress) {
@@ -54,15 +53,15 @@ export default function B1UnitPage() {
             acc.push({ ...item, locked: false });
             return acc;
         }
-
+        
         if (item.href && item.href !== '#') {
-            const classId = `b1-${item.href.split('/').pop()}`;
+            const classId = `a1-${item.href.split('/').pop()}`;
             if (studentProfile?.unlockedClasses?.includes(classId)) {
                 acc.push({ ...item, locked: false });
                 return acc;
             }
         }
-
+        
         if (index === 0) {
             acc.push({ ...item, locked: false });
             return acc;
@@ -104,7 +103,7 @@ export default function B1UnitPage() {
 
   useEffect(() => {
     if (!isProfileLoading && studentDocRef && unitId) {
-        const progressKey = `progress_b1_unit_${unitId}`;
+        const progressKey = `progress_a1_eng_unit_${unitId}`;
         const currentSavedProgress = studentProfile?.progress?.[progressKey] || 0;
         
         if (unitProgress !== currentSavedProgress) {
@@ -120,16 +119,16 @@ export default function B1UnitPage() {
       <DashboardHeader />
       <main className="flex flex-1 flex-col items-center gap-8 p-4 md:py-12">
         <div className="text-center">
-            <h1 className="text-4xl font-bold text-brand-purple dark:text-primary [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">{isClient ? t('b1course.unitTitle', { unit: unitId }) : ''}</h1>
-            <Link href="/ingles/b1" className="text-sm font-bold text-primary hover:underline mt-2 inline-block">
-                &larr; {isClient ? t('b1course.backToB1') : ''}
+            <h1 className="text-4xl font-bold text-brand-purple dark:text-primary [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">{isClient ? t('a1course.unitTitle', { unit: unitId }) : ''}</h1>
+            <Link href="/ingles/a1" className="text-sm font-bold text-primary hover:underline mt-2 inline-block">
+                &larr; {isClient ? t('dashboard.courseA1') : ''}
             </Link>
         </div>
-        <div className="w-full max-w-7xl">
+        <div className="w-full max-w-4xl">
             <MazeGame 
                 pathItems={pathItems} 
-                title={isClient ? t('b1course.unitPath') : ''} 
-                description={isClient ? t('b1course.unitPathDescription') : ''}
+                title={isClient ? t('a1course.unitPath') : ''} 
+                description={isClient ? t('a1course.unitPathDescription') : ''}
                 isLoading={!isClient || isProfileLoading}
             />
         </div>
@@ -137,3 +136,4 @@ export default function B1UnitPage() {
     </div>
   );
 }
+
