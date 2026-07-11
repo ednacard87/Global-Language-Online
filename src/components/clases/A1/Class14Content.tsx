@@ -25,6 +25,7 @@ import {
     Check,
     X,
     Trophy,
+    ArrowLeft
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
@@ -229,9 +230,9 @@ const TripleLineTranslationExercise = ({ title, prompts, onComplete, vocabulary 
         fields.forEach((field, i) => {
             const userVal = ans[field].trim().toLowerCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' ');
             const corrects = prompts[currentIndex][keysInPrompt[i]].map((a: string) => a.toLowerCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' '));
-            if (field === 'trans' && !ans.trans.trim().endsWith('?')) { allOk = false; newVal[field] = 'incorrect'; }
-            else if (corrects.includes(userVal)) newVal[field] = 'correct';
-            else { allOk = false; newVal[field] = 'incorrect'; }
+            if (field === 'trans' && !ans.trans.trim().endsWith('?')) { allOk = false; newVal.trans = 'incorrect'; }
+            else if (corrects.includes(userVal)) newVal[f] = 'correct';
+            else { allOk = false; newVal[f] = 'incorrect'; }
         });
 
         setVal(newVal);
@@ -272,7 +273,7 @@ const TripleLineTranslationExercise = ({ title, prompts, onComplete, vocabulary 
     );
 };
 
-// --- MAIN COMPONENT ---
+// --- MAIN CLASS COMPONENT ---
 
 export default function Class14Content({ overrideStudentId }: { overrideStudentId?: string | null }) {
     const { toast } = useToast();
@@ -282,6 +283,7 @@ export default function Class14Content({ overrideStudentId }: { overrideStudentI
     const currentUID = overrideStudentId || user?.uid;
     const studentDocRef = useMemoFirebase(() => (currentUID ? doc(firestore, 'students', currentUID) : null), [firestore, currentUID]);
     const authUserRef = useMemoFirebase(() => (user ? doc(firestore, 'students', user.uid) : null), [firestore, user]);
+    
     const { data: authUserProfile } = useDoc<{role?: string}>(authUserRef);
     const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{role?: string, lessonProgress?: any, progress?: any, name?: string}>(studentDocRef);
 
@@ -350,12 +352,14 @@ export default function Class14Content({ overrideStudentId }: { overrideStudentI
     }, [learningPath]);
 
     useEffect(() => {
-        if (!initialLoadComplete || isInitialLoading || isAdmin || !studentDocRef || learningPath.length === 0) return;
+        // BLINDAJE DE PERMISOS: Solo el estudiante actual (dueño del documento) o el admin (si no está supervisando) pueden autoguardar.
+        // Si hay overrideStudentId, significa que un admin está VIENDO, no debe gatillar autoguardados que fallen por reglas de seguridad.
+        if (!initialLoadComplete || isInitialLoading || isAdmin || !studentDocRef || learningPath.length === 0 || overrideStudentId || !user) return;
         const s: any = { lastSelectedTopic: selectedTopic, create1Text, readingAnswers, readingValidation: readingVal };
         learningPath.forEach(t => s[t.key] = t.status);
         updateDocumentNonBlocking(studentDocRef, { [`lessonProgress.${progressStorageVersion}`]: s, [`progress.${mainProgressKey}`]: progressValue });
         if (progressValue >= 100) window.dispatchEvent(new CustomEvent('progressUpdated'));
-    }, [learningPath, isAdmin, progressValue, studentDocRef, initialLoadComplete, selectedTopic, isInitialLoading, create1Text, readingAnswers, readingVal]);
+    }, [learningPath, isAdmin, progressValue, studentDocRef, initialLoadComplete, selectedTopic, isInitialLoading, create1Text, readingAnswers, readingVal, overrideStudentId, user]);
 
     useEffect(() => {
         if (!topicToComplete) return;

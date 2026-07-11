@@ -7,16 +7,17 @@ import { DashboardHeader } from '@/components/dashboard/header';
 import { Footer } from '@/components/footer';
 import { useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
-import { Loader2, AlertCircle, Star, ArrowLeft } from 'lucide-react';
+import { Loader2, AlertCircle, Star } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 
 /**
- * ENRUTADOR DINÁMICO UNIVERSAL BLINDADO (MODO SUPERVISIÓN)
- * --------------------------------------------------------
- * Este archivo centraliza la lógica de carga para evitar errores de despliegue en Vercel.
+ * ENRUTADOR DINÁMICO UNIVERSAL (V2 - ESTABILIZADO)
+ * ------------------------------------------------
+ * Centraliza la carga de clases para evitar errores de despliegue y permitir
+ * la supervisión en tiempo real.
  */
 
 const courseFolderMap: Record<string, string> = {
@@ -48,22 +49,24 @@ const LoadingSpinner = () => (
 );
 
 const ComingSoonScreen = ({ folder, classId }: { folder: string, classId: string }) => (
-  <Card className="max-w-2xl mx-auto mt-20 border-dashed border-2 border-brand-purple bg-card/50 backdrop-blur-sm rounded-3xl overflow-hidden shadow-soft text-foreground">
-    <CardHeader className="text-center pt-10">
-      <div className="flex justify-center mb-6">
-        <div className="p-5 bg-primary/10 rounded-full animate-bounce">
-          <AlertCircle className="h-16 w-16 text-primary" />
+  <div className="max-w-2xl mx-auto mt-20">
+    <Card className="border-dashed border-2 border-brand-purple bg-card/50 backdrop-blur-sm rounded-3xl overflow-hidden shadow-soft text-foreground">
+        <CardHeader className="text-center pt-10">
+        <div className="flex justify-center mb-6">
+            <div className="p-5 bg-primary/10 rounded-full animate-bounce">
+            <AlertCircle className="h-16 w-16 text-primary" />
+            </div>
         </div>
-      </div>
-      <CardTitle className="text-4xl font-black uppercase tracking-tighter text-primary">¡Misión en Preparación!</CardTitle>
-    </CardHeader>
-    <CardContent className="text-center space-y-8 pb-10">
-      <p className="text-xl text-muted-foreground leading-relaxed px-6">
-        Estamos preparando el contenido de la <span className="font-bold text-foreground">Clase {classId}</span> en el sector <span className="font-bold text-foreground">{folder}</span>.
-      </p>
-      <Button asChild variant="default" size="lg" className="rounded-full px-10 font-bold h-14 shadow-lg"><Link href="/">Volver al Panel</Link></Button>
-    </CardContent>
-  </Card>
+        <CardTitle className="text-4xl font-black uppercase tracking-tighter text-primary">¡Misión en Preparación!</CardTitle>
+        </CardHeader>
+        <CardContent className="text-center space-y-8 pb-10">
+        <p className="text-xl text-muted-foreground leading-relaxed px-6">
+            Estamos preparando el contenido de la <span className="font-bold text-foreground">Clase {classId}</span> en el sector <span className="font-bold text-foreground">{folder}</span>.
+        </p>
+        <Button asChild variant="default" size="lg" className="rounded-full px-10 font-bold h-14 shadow-lg"><Link href="/">Volver al Panel</Link></Button>
+        </CardContent>
+    </Card>
+  </div>
 );
 
 function ClassContentLoader() {
@@ -79,7 +82,8 @@ function ClassContentLoader() {
   const folderName = courseFolderMap[courseParam] || courseParam.toUpperCase();
   const bgClass = courseBgMap[courseParam] || 'bg-background';
 
-  const [LoadedComponent, setLoadedComponent] = useState<{ Component: React.ComponentType<any> } | null>(null);
+  // Usamos un objeto para envolver el componente y evitar que React intente ejecutarlo como un actualizador de estado
+  const [loadedComponent, setLoadedComponent] = useState<{ Component: React.ComponentType<any> } | null>(null);
   const [notFound, setNotFound] = useState(false);
   const [isLoadingComponent, setIsLoadingComponent] = useState(true);
 
@@ -127,7 +131,15 @@ function ClassContentLoader() {
             </div>
           )}
           
-          {(isUserLoading || isLoadingComponent) ? <LoadingSpinner /> : notFound ? <ComingSoonScreen folder={folderName} classId={classId} /> : LoadedComponent ? <LoadedComponent.Component overrideStudentId={isAdmin ? targetStudentId : null} /> : <LoadingSpinner />}
+          {(isUserLoading || isLoadingComponent) ? (
+            <LoadingSpinner />
+          ) : notFound ? (
+            <ComingSoonScreen folder={folderName} classId={classId} />
+          ) : loadedComponent ? (
+            <loadedComponent.Component overrideStudentId={isAdmin ? targetStudentId : null} />
+          ) : (
+            <LoadingSpinner />
+          )}
         </div>
       </main>
       <Footer />
