@@ -5,15 +5,13 @@ import { DashboardHeader } from "@/components/dashboard/header";
 import { MazeGame } from "@/components/dashboard/maze-game";
 import { getA1EngUnitPath, PathItem } from "@/lib/course-data";
 import { useTranslation } from "@/context/language-context";
-import { useParams } from 'next/navigation';
 import Link from "next/link";
 import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
 import { doc } from 'firebase/firestore';
 
-export default function A1EngUnitPage() {
+export default function A1EngUnitPage({ params }: { params: { unitId: string } }) {
   const { t } = useTranslation();
-  const params = useParams();
-  const unitId = params.unitId as string;
+  const { unitId } = params;
 
   const { user } = useUser();
   const firestore = useFirestore();
@@ -21,7 +19,9 @@ export default function A1EngUnitPage() {
     () => (user ? doc(firestore, 'students', user.uid) : null),
     [firestore, user]
   );
-  const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{role?: 'admin' | 'student', progress?: Record<string, number>, unlockedClasses?: string[]}>(studentDocRef);
+  const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{role?: 'admin' | 'student', progress?: Record<string, number>, unlockedClasses?: string[]}>(
+    studentDocRef
+  );
 
   const isAdmin = useMemo(() => {
       if (!user) return false;
