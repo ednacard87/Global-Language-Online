@@ -545,7 +545,7 @@ export const getA2UnitPath = (unitId: string | number, t: (key: string) => strin
     const unitPaths: {[key: string]: PathItem[]} = {
         '1': [
             { type: 'start', icon: Footprints, label: 'dashboard.start' },
-            ...Array.from({ length: 5 }, (_, i) => ({ type: 'class' as const, icon: BookOpen, label: `Clase ${i + 1}`, href: `#`, storageKey: `progress_a2_es_unit_1_class_${i + 1}` })),\
+            ...Array.from({ length: 5 }, (_, i) => ({ type: 'class' as const, icon: BookOpen, label: `Clase ${i + 1}`, href: `#`, storageKey: `progress_a2_es_unit_1_class_${i + 1}` })),
             { type: 'end', icon: Flag, label: 'dashboard.finish' },
         ],
     };
