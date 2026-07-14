@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -14,13 +13,15 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { ShieldOff, Shield, Lock, Unlock, Loader2, ChevronDown, Eye, Info, Star } from 'lucide-react';
+import { ShieldOff, Shield, Lock, Unlock, Loader2, Eye, Star, ListChecks, Layers } from 'lucide-react';
 import { DashboardHeader } from '@/components/dashboard/header';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuCheckboxItem, DropdownMenuLabel, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { useRouter } from 'next/navigation';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { cn } from '@/lib/utils';
 
 interface Student {
   id: string;
@@ -42,27 +43,17 @@ const inglesCourseIds = ['a1', 'a2', 'b1', 'b2'];
 const espanolCourseIds = ['a1', 'a2', 'b1'];
 const kidsCourseIds = ['a1', 'a2', 'b1'];
 
-const classCountsMap = {
-    a1: 16,
-    a2: 20,
-    b1: 20,
-    b2: 20,
-};
+const unitCounts: Record<string, number> = { a1: 3, a2: 4, b1: 4, b2: 4 };
+const classCounts: Record<string, number> = { a1: 16, a2: 20, b1: 20, b2: 20 };
 
-const unitCountsMap: Record<string, number> = {
-    a1: 3,
-    a2: 4,
-    b1: 4,
-    b2: 4,
-};
-
-const repasosCountMap = {
-    a1: 3,
-    a2: 4,
-    b1: 4,
-    b2: 4,
-    kids: 3,
-    espanol: 3,
+// Mapeo de slugs para cursos no numéricos
+const courseSlugs: Record<string, string[]> = {
+  'es-a1': ['articulos-y-genero', 'posesivos-y-tener', 'ser', 'estar', 'ser-y-estar', 'preposiciones-de-lugar', 'ubicacion', 'preguntas', 'comida-y-restaurante', 'presente-simple-regulares', 'comparativos-y-superlativos', 'demostrativos', 'verbos-de-preferencia', 'presente-continuo', 'presente-simple-irregulares'],
+  'es-a2': ['reflexivos-regulares', 'reflexivos-irregulares', 'reflexivos-mix', 'pasado-regulares', 'pasado-irregulares', 'reflexivos-pasado', 'imperfecto', 'pasado-vs-imperfecto', 'preterito-perfecto'],
+  'es-b1': ['pronombres', 'doble-pronombre', 'por-para', 'futuro', 'imperativo', 'presente-subjuntivo'],
+  'kids-a1': ['to-be', 'present-simple', 'can', 'genitivo-sajon', 'wh-questions', 'posesivos', 'verbos-preferencia', 'demostrativos', 'one-ones', 'present-continuous', 'pronombres-objeto', 'comparativos-y-superlativos', 'adverbios-de-frecuencia'],
+  'kids-a2': ['at-on-in-1', 'at-on-in-2', 'pasado-simple', 'pasado-continuo', 'contables-y-no-contables', 'presente-perfecto', 'used-to'],
+  'kids-b1': ['will', 'may', 'be-going-to', 'zero-conditional', 'first-conditional', 'would-like-to', 'should', 'must-have-to', 'second-conditional', '1-2-conditional', 'connectors']
 };
 
 export default function AdminDashboardPage() {
@@ -77,7 +68,7 @@ export default function AdminDashboardPage() {
     [firestore]
   );
   
-  const { data: displayedStudents, isLoading, error } = useCollection<Omit<Student, 'id'>>(studentsCollectionRef);
+  const { data: displayedStudents, isLoading } = useCollection<Omit<Student, 'id'>>(studentsCollectionRef);
 
   const handleToggleBlockStudent = async (studentId: string, isBlocked: boolean) => {
     if (!firestore) return;
@@ -93,21 +84,6 @@ export default function AdminDashboardPage() {
     }
   };
 
-  const handleToggleRepasoAccess = async (studentId: string, repasoKey: string, currentStatus: boolean) => {
-    if (!firestore) return;
-    setUpdatingStudentId(studentId);
-    const studentRef = doc(firestore, 'students', studentId);
-    const student = displayedStudents?.find(s => s.id === studentId);
-    try {
-        await setDoc(studentRef, { unlockedQuizzes: { ...student?.unlockedQuizzes, [repasoKey]: !currentStatus } }, { merge: true });
-        toast({ title: "Acceso Actualizado" });
-    } catch (error: any) {
-        toast({ variant: "destructive", title: "Error", description: error.message });
-    } finally {
-        setUpdatingStudentId(null);
-    }
-  };
-
   const handleToggleCourseAccess = async (studentId: string, courseId: string, currentlyUnlocked: string[]) => {
     if (!firestore) return;
     setUpdatingStudentId(studentId);
@@ -117,7 +93,7 @@ export default function AdminDashboardPage() {
         : [...currentlyUnlocked, courseId];
     try {
         await setDoc(studentRef, { unlockedCourses: updatedCourses }, { merge: true });
-        toast({ title: "Acceso Actualizado" });
+        toast({ title: "Nivel Actualizado" });
     } catch(error: any) {
         toast({ variant: "destructive", title: "Error", description: error.message });
     } finally {
@@ -125,41 +101,31 @@ export default function AdminDashboardPage() {
     }
   };
 
-  const handleToggleClassAccess = async (studentId: string, classId: string) => {
+  const handleToggleUnitAccess = async (studentId: string, unitId: string, currentlyUnlocked: string[]) => {
     if (!firestore) return;
-    setUpdatingStudentId(studentId);
-    const student = displayedStudents?.find(s => s.id === studentId);
-    if (!student) return;
-    const currentlyUnlocked = student.unlockedClasses || [];
+    const studentRef = doc(firestore, 'students', studentId);
+    const updatedUnits = currentlyUnlocked.includes(unitId)
+        ? currentlyUnlocked.filter(u => u !== unitId)
+        : [...currentlyUnlocked, unitId];
+    try {
+        await setDoc(studentRef, { unlockedUnits: updatedUnits }, { merge: true });
+        toast({ title: currentlyUnlocked.includes(unitId) ? "Unidad Bloqueada" : "Unidad Desbloqueada" });
+    } catch(error: any) {
+        toast({ variant: "destructive", title: "Error", description: error.message });
+    }
+  };
+
+  const handleToggleClassAccess = async (studentId: string, classId: string, currentlyUnlocked: string[]) => {
+    if (!firestore) return;
+    const studentRef = doc(firestore, 'students', studentId);
     const updatedClasses = currentlyUnlocked.includes(classId)
         ? currentlyUnlocked.filter(c => c !== classId)
         : [...currentlyUnlocked, classId];
     try {
-        await setDoc(doc(firestore, 'students', studentId), { unlockedClasses: updatedClasses }, { merge: true });
-        toast({ title: "Acceso Actualizado" });
+        await setDoc(studentRef, { unlockedClasses: updatedClasses }, { merge: true });
+        toast({ title: currentlyUnlocked.includes(classId) ? "Clase Bloqueada" : "Clase Desbloqueada" });
     } catch(error: any) {
         toast({ variant: "destructive", title: "Error", description: error.message });
-    } finally {
-        setUpdatingStudentId(null);
-    }
-  };
-
-  const handleToggleUnitAccess = async (studentId: string, unitKey: string) => {
-    if (!firestore) return;
-    setUpdatingStudentId(studentId);
-    const student = displayedStudents?.find(s => s.id === studentId);
-    if (!student) return;
-    const currentlyUnlocked = student.unlockedUnits || [];
-    const updatedUnits = currentlyUnlocked.includes(unitKey)
-        ? currentlyUnlocked.filter(u => u !== unitKey)
-        : [...currentlyUnlocked, unitKey];
-    try {
-        await setDoc(doc(firestore, 'students', studentId), { unlockedUnits: updatedUnits }, { merge: true });
-        toast({ title: "Acceso a Unidad Actualizado" });
-    } catch(error: any) {
-        toast({ variant: "destructive", title: "Error", description: error.message });
-    } finally {
-        setUpdatingStudentId(null);
     }
   };
 
@@ -169,7 +135,7 @@ export default function AdminDashboardPage() {
 
     const courseProgressKeys = Object.keys(progress).filter(key => {
         const lowerKey = key.toLowerCase();
-        if (selectedCourse === 'ingles') return !lowerKey.includes('kids') && !lowerKey.includes('espanol') && !lowerKey.startsWith('progress_es_');
+        if (selectedCourse === 'ingles') return !lowerKey.includes('kids') && !lowerKey.includes('espanol');
         if (selectedCourse === 'kids') return lowerKey.includes('kids');
         if (selectedCourse === 'espanol') return lowerKey.includes('espanol') || lowerKey.startsWith('progress_es_');
         return true;
@@ -186,24 +152,10 @@ export default function AdminDashboardPage() {
 
         const getPathForSupervision = () => {
             const parts = key.split('_');
-            if (key.startsWith('progress_a1_eng_unit')) {
-                const classNum = parts[6];
-                return `/a1/${classNum}?studentId=${student.id}`;
-            }
-            if (key.startsWith('progress_a2_eng_unit')) {
-                const classNum = parts[6];
-                return `/a2/${classNum}?studentId=${student.id}`;
-            }
-            if (key.startsWith('progress_es')) {
-                const level = parts[2];
-                const slug = parts.slice(3).join('-');
-                return `/espanol/${level}/${slug}?studentId=${student.id}`;
-            }
-            if (key.startsWith('progress_kids')) {
-                const level = parts[2];
-                const slug = parts.slice(3).join('-');
-                return `/kids/${level}/${slug}?studentId=${student.id}`;
-            }
+            if (key.includes('a1_eng')) return `/a1/${parts[parts.length-1]}?studentId=${student.id}`;
+            if (key.includes('a2_eng')) return `/a2/${parts[parts.length-1]}?studentId=${student.id}`;
+            if (key.includes('b1_eng')) return `/b1/${parts[parts.length-1]}?studentId=${student.id}`;
+            if (key.startsWith('progress_es_')) return `/espanol-a1/${parts[parts.length-1]}?studentId=${student.id}`;
             return '#';
         };
 
@@ -225,6 +177,142 @@ export default function AdminDashboardPage() {
     return <span className="text-xs text-muted-foreground">Sin Empezar</span>;
   };
 
+  const renderGranularAuthorizations = (student: Student) => {
+    if (!student.selectedCourse) return null;
+
+    const isEnglish = student.selectedCourse === 'ingles';
+    const isSpanish = student.selectedCourse === 'espanol';
+    const isKids = student.selectedCourse === 'kids';
+
+    const coursePrefix = isSpanish ? 'es-' : (isKids ? 'kids-' : '');
+
+    return (
+        <div className="flex flex-col gap-3 mt-3 pt-3 border-t">
+            {/* Gestión de Unidades (Visual mejorada con estados claros) */}
+            {isEnglish && (
+                <div className="space-y-1">
+                    <p className="text-[9px] font-black text-primary uppercase flex items-center gap-1">
+                        <Layers className="h-2 w-2" /> UNIDADES
+                    </p>
+                    <div className="flex flex-wrap gap-1">
+                        {(student.unlockedCourses || []).map(courseId => {
+                            const count = unitCounts[courseId] || 0;
+                            if (count === 0) return null;
+                            return Array.from({ length: count }, (_, i) => {
+                                const uId = `${courseId}-unit-${i + 1}`;
+                                const isUnlocked = (student.unlockedUnits || []).includes(uId);
+                                return (
+                                    <Button 
+                                        key={uId} 
+                                        size="sm" 
+                                        variant={isUnlocked ? 'secondary' : 'outline'} 
+                                        onClick={() => handleToggleUnitAccess(student.id, uId, student.unlockedUnits || [])}
+                                        className={cn(
+                                            "h-6 text-[9px] px-1.5 font-black transition-all",
+                                            isUnlocked ? "bg-green-100 border-green-500 text-green-700 hover:bg-green-200" : "text-muted-foreground"
+                                        )}
+                                    >
+                                        {isUnlocked ? <Unlock className="mr-1 h-2 w-2 text-green-600" /> : <Lock className="mr-1 h-2 w-2 text-muted-foreground" />}
+                                        {courseId.toUpperCase()} U{i + 1}
+                                    </Button>
+                                );
+                            });
+                        })}
+                    </div>
+                </div>
+            )}
+
+            {/* Gestión de Clases mediante Popover */}
+            <Popover>
+                <PopoverTrigger asChild>
+                    <Button size="sm" variant="outline" className="h-7 text-[10px] font-bold w-full">
+                        <ListChecks className="mr-1 h-3 w-3" /> GESTIONAR CLASES
+                    </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-80 shadow-2xl border-2 border-primary/20">
+                    <div className="space-y-4">
+                        <div className='border-b pb-2 text-foreground'>
+                            <h4 className="font-black text-sm text-primary uppercase">Autorización de Clases</h4>
+                            <p className='text-[10px] text-muted-foreground'>Habilita o deshabilita clases individuales para {student.name}.</p>
+                        </div>
+                        <ScrollArea className="h-[300px] pr-2">
+                            <div className='space-y-6'>
+                                {(student.unlockedCourses || []).map(courseId => {
+                                    const listKey = `${coursePrefix}${courseId}`;
+                                    const slugs = courseSlugs[listKey];
+                                    
+                                    // Si es inglés o no tiene slugs definidos, usamos números
+                                    if (isEnglish || !slugs) {
+                                        const count = classCounts[courseId] || 0;
+                                        if (count === 0) return null;
+                                        return (
+                                            <div key={`classes-${courseId}`} className="space-y-3">
+                                                <Badge variant="outline" className="text-[10px] font-black bg-primary/5 text-primary border-primary/20 uppercase">
+                                                    {courseId.toUpperCase()} Missions
+                                                </Badge>
+                                                <div className="grid grid-cols-5 gap-1.5">
+                                                    {Array.from({ length: count }, (_, i) => {
+                                                        const cId = `${courseId}-${i + 1}`;
+                                                        const isUnlocked = (student.unlockedClasses || []).includes(cId);
+                                                        return (
+                                                            <Button 
+                                                                key={cId} 
+                                                                size="sm" 
+                                                                variant={isUnlocked ? 'secondary' : 'outline'} 
+                                                                onClick={() => handleToggleClassAccess(student.id, cId, student.unlockedClasses || [])}
+                                                                className={cn(
+                                                                    "h-9 text-[11px] p-0 font-black transition-all",
+                                                                    isUnlocked && "bg-green-100 border-green-500 text-green-700 hover:bg-green-200"
+                                                                )}
+                                                            >
+                                                                {i + 1}
+                                                            </Button>
+                                                        );
+                                                    })}
+                                                </div>
+                                            </div>
+                                        );
+                                    }
+
+                                    // Para Español y Niños usamos los slugs
+                                    return (
+                                        <div key={`classes-${courseId}`} className="space-y-3">
+                                            <Badge variant="outline" className="text-[10px] font-black bg-primary/5 text-primary border-primary/20 uppercase">
+                                                {listKey.toUpperCase()} Missions
+                                            </Badge>
+                                            <div className="grid grid-cols-5 gap-1.5">
+                                                {slugs.map((slug, i) => {
+                                                    const cId = `${listKey}-${slug}`;
+                                                    const isUnlocked = (student.unlockedClasses || []).includes(cId);
+                                                    return (
+                                                        <Button 
+                                                            key={cId} 
+                                                            size="sm" 
+                                                            variant={isUnlocked ? 'secondary' : 'outline'} 
+                                                            onClick={() => handleToggleClassAccess(student.id, cId, student.unlockedClasses || [])}
+                                                            className={cn(
+                                                                "h-9 text-[11px] p-0 font-black transition-all",
+                                                                isUnlocked && "bg-green-100 border-green-500 text-green-700 hover:bg-green-200"
+                                                            )}
+                                                            title={slug.replace(/-/g, ' ')}
+                                                        >
+                                                            {i + 1}
+                                                        </Button>
+                                                    );
+                                                })}
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </ScrollArea>
+                    </div>
+                </PopoverContent>
+            </Popover>
+        </div>
+    );
+  };
+
   const visibleStudents = useMemo(() => (displayedStudents || []).filter(s => s.email !== 'ednacard87@gmail.com'), [displayedStudents]);
 
   return (
@@ -234,12 +322,12 @@ export default function AdminDashboardPage() {
             <Card className="shadow-soft rounded-lg border-2 border-brand-purple overflow-hidden">
                 <CardHeader className='bg-muted/30 border-b'>
                     <CardTitle>Panel de Administración</CardTitle>
-                    <CardDescription>Gestión de estudiantes y monitoreo de misiones en tiempo real.</CardDescription>
+                    <CardDescription>Gestión de estudiantes y autorización de misiones granulares.</CardDescription>
                 </CardHeader>
                 <CardContent className='p-0'>
                     {isLoading ? <div className="flex items-center justify-center p-12"><Loader2 className="h-10 w-10 animate-spin text-primary" /></div> : (
                         <Table>
-                            <TableHeader><TableRow className='bg-muted/50'><TableHead>Estudiante</TableHead><TableHead>Email</TableHead><TableHead>Estado</TableHead><TableHead>Programa</TableHead><TableHead className='min-w-[180px]'>Misión Actual</TableHead><TableHead>Cursos</TableHead><TableHead>Acciones</TableHead></TableRow></TableHeader>
+                            <TableHeader><TableRow className='bg-muted/50'><TableHead>Estudiante</TableHead><TableHead>Email</TableHead><TableHead>Estado</TableHead><TableHead>Programa</TableHead><TableHead className='min-w-[180px]'>Misión Actual</TableHead><TableHead className='min-w-[200px]'>Autorizaciones</TableHead><TableHead>Acciones</TableHead></TableRow></TableHeader>
                             <TableBody>
                                 {visibleStudents.map((student) => (
                                     <TableRow key={student.id} className='hover:bg-muted/10 transition-colors'>
@@ -254,12 +342,15 @@ export default function AdminDashboardPage() {
                                         <TableCell><Badge variant="outline" className="capitalize text-[10px] font-bold border-primary/30">{student.selectedCourse || 'Pendiente'}</Badge></TableCell>
                                         <TableCell>{getReadableProgress(student)}</TableCell>
                                         <TableCell>
-                                            <div className="flex flex-wrap gap-2 max-w-xs">
-                                                {(student.selectedCourse === 'espanol' ? espanolCourseIds : student.selectedCourse === 'kids' ? kidsCourseIds : inglesCourseIds).map(c => (
-                                                    <Button key={c} size="sm" variant={(student.unlockedCourses || []).includes(c) ? 'secondary' : 'outline'} onClick={() => handleToggleCourseAccess(student.id, c, student.unlockedCourses || [])} className="h-7 text-[10px] px-2 font-bold">
-                                                        {(student.unlockedCourses || []).includes(c) ? <Unlock className="mr-1 h-3 w-3 text-green-600" /> : <Lock className="mr-1 h-3 w-3 text-muted-foreground" />} {c.toUpperCase()}
-                                                    </Button>
-                                                ))}
+                                            <div className="flex flex-col gap-2">
+                                                <div className="flex flex-wrap gap-2 max-w-xs">
+                                                    {(student.selectedCourse === 'espanol' ? espanolCourseIds : student.selectedCourse === 'kids' ? kidsCourseIds : inglesCourseIds).map(c => (
+                                                        <Button key={c} size="sm" variant={(student.unlockedCourses || []).includes(c) ? 'secondary' : 'outline'} onClick={() => handleToggleCourseAccess(student.id, c, student.unlockedCourses || [])} className="h-7 text-[10px] px-2 font-bold">
+                                                            {(student.unlockedCourses || []).includes(c) ? <Unlock className="mr-1 h-3 w-3 text-green-600" /> : <Lock className="mr-1 h-3 w-3 text-muted-foreground" />} {c.toUpperCase()}
+                                                        </Button>
+                                                    ))}
+                                                </div>
+                                                {renderGranularAuthorizations(student)}
                                             </div>
                                         </TableCell>
                                         <TableCell>

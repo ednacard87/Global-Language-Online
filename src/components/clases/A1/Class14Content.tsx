@@ -93,6 +93,11 @@ const finalExPrompts = [
     { question: "¿NOSOTROS ESTAMOS ESTUDIANDO INGLES UNA VEZ A LA SEMANA?", trans: ["are we studying english once a week?"], pos: ["yes, we are"], neg: ["no, we are not", "no, we aren't"] },
     { question: "¿ÉL ESTA DIBUJANDO?", trans: ["is he drawing?"], pos: ["yes, he is"], neg: ["no, he is not", "no, he isn't"] },
     { question: "¿ELLOS ESTAN CANTANDO EN LA FIESTA?", trans: ["are they singing at the party?"], pos: ["yes, they are"], neg: ["no, they are not", "no, they aren't"] },
+    { question: "¿ESTÁS LLAMANDO A TU MAMÁ TODOS LOS DIAS?", trans: ["?"], pos: ["yes,  are"], neg: ["no,  are not", "no,  aren't"] },
+    { question: "¿ELLA ESTÁ LEYENDO UN LIBRO?", trans: ["is she reading a book?"], pos: ["yes, she is"], neg: ["no, she is not", "no, she isn't"] },
+    { question: "¿ELLOS ESTÁN VIAJANDO?", trans: ["are they traveling?"], pos: ["yes, they are"], neg: ["no, they are not", "no, they aren't"] },
+    { question: "¿EL ESTÁ VIENDO TELEVISION?", trans: ["is he watching tv?"], pos: ["yes, he is"], neg: ["no, he is not", "no, he isn't"] },
+    { question: "¿MARK ESTA YENDO A LONDRES O ROMA?", trans: ["is mark going to london or rome?"], pos: ["yes, he is"], neg: ["no, he is not", "no, he isn't"] },
 ];
 
 // --- HELPERS ---
@@ -417,7 +422,7 @@ export default function Class14Content({ overrideStudentId }: { overrideStudentI
                     </Card>
                 );
             case 'exercise1': return <ChoiceExercise prompts={ex1Prompts} onComplete={() => handleTopicComplete('exercise1')} title="EXERCISE: COMPARATIVOS Y SUPERLATIVOS" />;
-            case 'exercise2': return <SimpleTranslationExercise exerciseKey="c14_ex2_final" prompts={ex2Prompts} onComplete={() => handleTopicComplete('exercise2')} isAdmin={isAdmin} />;
+            case 'exercise2': return <SimpleTranslationExercise exerciseKey="c14_general" prompts={ex2Prompts} onComplete={() => handleTopicComplete('exercise2')} isAdmin={isAdmin} />;
             case 'dictation2': return <DictationGradingExercise title="DICTATION 2: AT WORK" description="Escribe las frases dictadas." prompts={Array(31).fill('')} onComplete={() => handleTopicComplete('dictation2')} studentDocRef={studentDocRef} isAdmin={isAdmin} storageKeyLines="dictation2Lines" storageKeyGrades="dictation2Grades" initialLines={studentProfile?.lessonProgress?.[progressStorageVersion]?.dictation2Lines} initialGrades={studentProfile?.lessonProgress?.[progressStorageVersion]?.dictation2Grades} />;
             case 'vocab_game': return <VocabularyMatchingGame data={materialsVocab.map(v => ({ spanish: v.es, english: [v.en] }))} onComplete={() => handleTopicComplete('vocab_game')} title="Misión: Encuentra las parejas" />;
             case 'exercise3': return <ChoiceExercise prompts={ex3Prompts} onComplete={() => handleTopicComplete('exercise3')} title="EXERCISE 3: COMPARATIVES & SUPERLATIVES" />;
