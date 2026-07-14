@@ -162,7 +162,7 @@ export default function AdminDashboardPage() {
         return (
             <div className="flex flex-col gap-2 p-2 bg-blue-50/50 dark:bg-blue-900/10 rounded-lg border border-blue-100 dark:border-blue-900/30">
                 <div className='flex items-center justify-between gap-2'>
-                    <span className="font-black text-[11px] truncate max-w-[120px] text-blue-700 dark:text-blue-300 uppercase tracking-tight">{name}</span>
+                    <span className="font-black text-[11px] text-blue-700 dark:text-blue-300 uppercase tracking-tight leading-tight block w-full">{name}</span>
                     <span className="text-xs font-black text-blue-600">{Math.round(value)}%</span>
                 </div>
                 <button 
