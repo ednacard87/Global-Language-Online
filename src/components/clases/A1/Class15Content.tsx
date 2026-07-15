@@ -152,6 +152,14 @@ const ex4TranslationPrompts = [
     { spanish: "YO JUEGO VIDEOJUEGOS TODOS LOS DIAS UNA HORA", answer: ["i play video games every day for an hour", "i play video games every day one hour"] },
 ];
 
+const ex6Prompts = [
+    { spanish: "ELLA SIEMPRE ME AYUDA CON MI TAREA", answer: ["she always helps me with my homework"] },
+    { spanish: "NOSOTROS CASI NUNCA SALIMOS LOS LUNES", answer: ["we hardly ever go out on mondays", "we almost never go out on mondays"] },
+    { spanish: "¿TU PADRE TRABAJA GENERALMENTE EN LA MAÑANA?", answer: ["does your father generally work in the morning?"] },
+    { spanish: "ELLOS A VECES BEBEN CERVEZA DESPUES DEL TRABAJO", answer: ["they sometimes drink beer after work"] },
+    { spanish: "MI MADRE NUNCA COCINA PIZZA", answer: ["my mother never cooks pizza"] },
+];
+
 const orderPrompts1 = [{ base: "SOMETIMES / I / COFFEE / DRINK", correct: "I SOMETIMES DRINK COFFEE" }, { base: "NEVER / SHE / LATE / IS", correct: "SHE IS NEVER LATE" }];
 const orderPrompts2 = [{ base: "USUALLY / WE / EARLY / ARRIVE", correct: "WE USUALLY ARRIVE EARLY" }, { base: "OFTEN / SHE / PLAYS / TENNIS", correct: "SHE OFTEN PLAYS TENNIS" }];
 const orderPrompts3 = [{ base: "WELL / SPEAKS / SHE / ENGLISH", correct: "SHE SPEAKS ENGLISH WELL" }, { base: "SLOWLY / WALKS / THE CAT / VERY", correct: "THE CAT WALKS VERY SLOWLY" }];
@@ -186,7 +194,7 @@ const RewriteAdverbExercise = ({ prompts, onComplete, title, vocabulary }: any) 
                         <CardTitle>{title}</CardTitle>
                         <div className="flex gap-2 justify-start flex-wrap pt-4">
                             {prompts.map((_: any, i: number) => (
-                                <div key={i} onClick={() => setCurrentIndex(i)} className={cn("h-8 w-8 rounded-full border-2 flex items-center justify-center text-xs font-bold cursor-pointer transition-all", currentIndex === i ? "border-primary ring-2 ring-primary" : "border-muted", status[i] === 'correct' ? "bg-green-500 text-white border-green-500" : "bg-card")}>{i + 1}</div>
+                                <div key={i} onClick={() => setCurrentIndex(i)} className={cn("h-8 w-8 rounded-full border-2 flex items-center justify-center text-xs font-bold cursor-pointer transition-all", currentIndex === i ? "border-primary ring-2 ring-primary" : "border-muted", status[i] === 'correct' ? "bg-green-500 text-white border-green-500" : "bg-card text-foreground")}>{i + 1}</div>
                             ))}
                         </div>
                     </div>
@@ -206,7 +214,10 @@ const RewriteAdverbExercise = ({ prompts, onComplete, title, vocabulary }: any) 
             </CardContent>
             <CardFooter className="justify-between border-t pt-6">
                 <Button variant="outline" onClick={() => setCurrentIndex(p => Math.max(0, p - 1))} disabled={currentIndex === 0}>Anterior</Button>
-                <Button onClick={() => currentIndex < prompts.length - 1 ? setCurrentIndex(i => i + 1) : onComplete()} disabled={status[currentIndex] !== 'correct'} className="font-bold">Siguiente</Button>
+                <div className="flex gap-2">
+                    <Button onClick={handleCheck} variant="secondary">Verificar</Button>
+                    <Button onClick={() => currentIndex < prompts.length - 1 ? setCurrentIndex(i => i + 1) : onComplete()} disabled={status[currentIndex] !== 'correct'} className="font-bold">Siguiente</Button>
+                </div>
             </CardFooter>
         </Card>
     );
@@ -401,46 +412,55 @@ export default function Class15Content({ overrideStudentId }: { overrideStudentI
                         <Card className="shadow-soft border-2 border-brand-purple bg-slate-100 dark:bg-slate-800/50 p-6">
                             <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase">GRAMMAR: ADVERBS</CardTitle></CardHeader>
                             <CardContent className="space-y-8 text-foreground font-bold">
-                                <div className="p-6 bg-white/30 dark:bg-background/20 rounded-2xl border border-primary/20 space-y-4">
-                                    <h4 className="text-primary font-black uppercase text-sm mb-2">USO:</h4>
-                                    <p className="text-lg">Se usan para definir la frecuencia con la que se hace una determinada actividad: normalmente se usan con el <span className="text-primary underline">presente simple</span> (que se usa para hábitos y costumbres).</p>
-                                    <p className="italic text-muted-foreground">Hay adverbios positivos y negativos.</p>
-                                </div>
-                                
-                                <div className="p-6 bg-white/30 dark:bg-background/20 rounded-2xl border border-primary/20 space-y-4">
-                                    <h4 className="text-xl font-black text-primary uppercase">1- VERBO TO BE</h4>
-                                    <div className="font-mono bg-muted p-4 rounded-xl border space-y-2 text-sm">
-                                        <p>(+) = pronoun + to be + freq- adv + complement.</p>
-                                        <p>(-) = pronoun + to be + not + freq- adv + complement.</p>
-                                        <p>(?) = to be + pronoun + freq- adv + complement?</p>
-                                    </div>
-                                    <div className="p-3 bg-destructive/10 border-l-4 border-destructive text-sm font-bold uppercase tracking-tight">NOTA: EL PRONOMBRE Y EL VERBO TO BE NUNCA SE SEPARAN.</div>
-                                    <div className="space-y-2 mt-4">
-                                        <p className="text-xs uppercase text-primary font-black">Translate:</p>
-                                        <ul className="grid gap-2 text-sm">
-                                            <li className="flex justify-between p-2 border rounded bg-background/50"><span>1. ELLA SIEMPRE ESTA FELIZ</span> <span className="text-primary font-mono font-bold italic">...</span></li>
-                                            <li className="flex justify-between p-2 border rounded bg-background/50"><span>2. TU NO ESTÁS FRECUENTEMENTE CON ELLA</span> <span className="text-primary font-mono font-bold italic">...</span></li>
-                                            <li className="flex justify-between p-2 border rounded bg-background/50"><span>3. ¿ÉL SIEMPRE ESTÁ ABURRIDO?</span> <span className="text-primary font-mono font-bold italic">...</span></li>
-                                            <li className="flex justify-between p-2 border rounded bg-background/50"><span>4. ¿ESTÁS GENERALMENTE PREOCUPADO POR ESA SITUACIÓN?</span> <span className="text-primary font-mono font-bold italic">...</span></li>
-                                        </ul>
-                                    </div>
-                                </div>
+                                <div className="p-4 bg-white/50 dark:bg-background/20 rounded-xl border border-primary/20">
+                                    <h4 className="font-black text-primary uppercase mb-2"> Adverbios de Frecuencia</h4>
+                                    <p className="font-bold">Van ANTES del verbo principal, pero DESPUÉS del verbo "To Be".</p>
+                                    <div className="mt-3 p-3 bg-muted rounded-lg font-mono text-sm space-y-1">
+                                        <p>I <span className="text-primary font-black">ALWAYS</span> study (Antes de study)</p>
+                                        <p>I am <span className="text-primary font-black">ALWAYS</span> happy (Después de am)</p>
+                                    </div> <br/>
+                                    <div className="p-6 bg-white/30 dark:bg-background/20 rounded-2xl border border-primary/20 space-y-4">
+                                        <h4 className="text-primary font-black uppercase text-sm mb-2">USO:</h4>
+                                        <p className="text-lg">Se usan para definir la frecuencia con la que se hace una determinada actividad: normalmente se usan con el <span className="text-primary underline">presente simple</span> (que se usa para hábitos y costumbres).</p>
+                                        <p className="italic text-muted-foreground">Hay adverbios positivos y negativos.</p>
+                                    </div> <br/>
+                                    
+                                    <div className="p-6 bg-white/30 dark:bg-background/20 rounded-2xl border border-primary/20 space-y-4">
+                                        <h4 className="text-xl font-black text-primary uppercase">1- VERBO TO BE</h4>
+                                        <div className="font-mono bg-muted p-4 rounded-xl border space-y-2 text-sm">
+                                            <p>(+) = pronoun + to be + freq- adv + complement.</p>
+                                            <p>(-) = pronoun + to be + not + freq- adv + complement.</p>
+                                            <p>(?) = to be + pronoun + freq- adv + complement?</p>
+                                        </div> <br/>
+                                        <div className="p-3 bg-destructive/10 border-l-4 border-destructive text-sm font-bold uppercase tracking-tight">NOTA: EL PRONOMBRE Y EL VERBO TO BE NUNCA SE SEPARAN.</div>
+                                        <div className="space-y-2 mt-4">
+                                            <p className="text-xs uppercase text-primary font-black">Translate:</p>
+                                            <ul className="grid gap-2 text-sm">
+                                                <li className="flex justify-between p-2 border rounded bg-background/50"><span>1. ELLA SIEMPRE ESTA FELIZ</span> <span className="text-primary font-mono font-bold italic">...</span></li>
+                                                <li className="flex justify-between p-2 border rounded bg-background/50"><span>2. TU NO ESTÁS FRECUENTEMENTE CON ELLA</span> <span className="text-primary font-mono font-bold italic">...</span></li>
+                                                <li className="flex justify-between p-2 border rounded bg-background/50"><span>3. ¿ÉL SIEMPRE ESTÁ ABURRIDO?</span> <span className="text-primary font-mono font-bold italic">...</span></li>
+                                                <li className="flex justify-between p-2 border rounded bg-background/50"><span>4. ¿ESTÁS GENERALMENTE PREOCUPADO POR ESA SITUACIÓN?</span> <span className="text-primary font-mono font-bold italic">...</span></li>
+                                            </ul>
+                                        </div>
+                                    </div> <br/>
 
-                                <div className="p-6 bg-white/30 dark:bg-background/20 rounded-2xl border border-primary/20 space-y-4">
-                                    <h4 className="text-xl font-black text-primary uppercase">2- CON OTROS VERBOS</h4>
-                                    <div className="font-mono bg-muted p-4 rounded-xl border space-y-2 text-sm">
-                                        <p>(+) = pronoun + freq- adv + verb + complement.</p>
-                                        <p>(-) = pronoun + do/does + not + freq- adv + verb + complement.</p>
-                                        <p>(?) = do/does + pronoun + freq- adv + verb + complement?</p>
-                                    </div>
-                                    <div className="space-y-2 mt-4">
-                                        <p className="text-xs uppercase text-primary font-black">EJEMPLOS:</p>
-                                        <ul className="grid gap-2 text-sm">
-                                            <li className="p-2 border rounded bg-background/50">1. Siempre vas a dormir tarde</li>
-                                            <li className="p-2 border rounded bg-background/50">2. Generalmente vas a dormir tarde?</li>
-                                            <li className="p-2 border rounded bg-background/50">3. Él a veces va al gimnasio en la mañana.</li>
-                                            <li className="p-2 border rounded bg-background/50">4. Ella casi siempre lava los platos.</li>
-                                        </ul>
+                                    <div className="p-6 bg-white/30 dark:bg-background/20 rounded-2xl border border-primary/20 space-y-4">
+                                        <h4 className="text-xl font-black text-primary uppercase">2- CON OTROS VERBOS</h4>
+                                        <div className="font-mono bg-muted p-4 rounded-xl border space-y-2 text-sm">
+                                            <p>(+) = pronoun + freq- adv + verb + complement.</p>
+                                            <p>(-) = pronoun + do/does + not + freq- adv + verb + complement.</p>
+                                            <p>(?) = do/does + pronoun + freq- adv + verb + complement?</p>
+                                        </div><br/>
+                                        <div className="space-y-2 mt-4">
+                                            <p className="text-xs uppercase text-primary font-black">EJEMPLOS:</p>
+                                            <ul className="grid gap-2 text-sm">
+                                                <li className="p-2 border rounded bg-background/50">1. Siempre vas a dormir tarde</li>
+                                                <li className="p-2 border rounded bg-background/50">2. Generalmente vas a dormir tarde?</li>
+                                                <li className="p-2 border rounded bg-background/50">3. Él a veces va al gimnasio en la mañana.</li>
+                                                <li className="p-2 border rounded bg-background/50">4. Ella casi siempre lava los platos.</li>
+                                            </ul>
+                                        </div>
+
                                     </div>
                                 </div>
                             </CardContent>
