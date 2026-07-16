@@ -92,8 +92,8 @@ export default function EngA1DynamicClassPage() {
             <main className="flex-1 p-4 md:p-8">
                 <div className="max-w-7xl mx-auto">
                     <div className="mb-8 text-left">
-                        <Link href="/ingles/a1/unit/1" className="hover:underline text-sm font-bold text-primary flex items-center gap-2">
-                            <ArrowLeft className="h-4 w-4" /> Volver al Curso A1
+                        <Link href="/ingles/a1/unit/3" className="hover:underline text-sm font-bold text-primary flex items-center gap-2">
+                            <ArrowLeft className="h-4 w-4" /> Volver a la unidad 3
                         </Link>
                         <h1 className="text-4xl font-bold text-white [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">
                             Clase {classId} (A1)
