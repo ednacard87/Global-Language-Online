@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, Fragment } from 'react';
+import Link from 'next/link';
 import { 
     Card, 
     CardContent, 
@@ -20,7 +21,6 @@ import {
     CheckCircle, 
     Loader2, 
     ArrowRight,
-    ArrowLeft,
     Check,
     X,
     Gamepad2,
@@ -37,15 +37,14 @@ import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
 import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
 import { doc } from 'firebase/firestore';
-import { VocabularyMatchingGame } from '@/components/dashboard/vocabulary-matching-game';
-import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { Label } from '@/components/ui/label';
+import { VocabularyMatchingGame } from '@/components/dashboard/vocabulary-matching-game';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 // --- CONFIGURACIÓN DE INGENIERÍA ---
-const progressStorageVersion = 'progress_a1_eng_u3_c15_v6000_syntax_fix';
+const progressStorageVersion = 'progress_a1_eng_u3_c15_v1010_total_indep';
 const mainProgressKey = 'progress_a1_eng_unit_3_class_15';
 
 const ICONS_CONFIG = {
@@ -91,8 +90,52 @@ const ex1RewritePrompts = [
     { base: "IT WORKS (FUNCIONA)", adverb: "HARDLY EVER", correct: "IT HARDLY EVER WORKS" },
     { base: "I DRINK BAILEYS", adverb: "OFTEN", correct: "I OFTEN DRINK BAILEYS" },
     { base: "DOES SHE WORK ON SATURDAYS?", adverb: "USUALLY", correct: "DOES SHE USUALLY WORK ON SATURDAYS?" },
-    { base: "THEY GO HIKING", adverb: "NEVER", correct: "THEY NEVER GO HIKING BECAUSE THEY DON'T LIKE NATURE" },
+    { base: "THEY GO HIKING", adverb: "NEVER", correct: "THEY NEVER GO HIKING" },
     { base: "SHE COOKS WHILE HER HUSBAND WASHES THE DISHES", adverb: "ALWAYS - USUALLY", correct: "SHE ALWAYS COOKS WHILE HER HUSBAND USUALLY WASHES THE DISHES" },
+];
+
+const ex2TriplePrompts = [
+    { spanish: "EL ESTA GENERALMENTE CANSADO PORQUE EL TRABAJA 13 HORAS DURANTE EL DIA", answers: { pos: ["he is generally tired because he works 13 hours during the day"], neg: ["he is not generally tired because he does not work 13 hours during the day" , "he isn't generally tired because he doesn't work 13 hours during the day"], int: ["is he generally tired?"] } },
+    { spanish: "ELLA SIEMPRE ESTA EN CASA LOS SABADOS EN LA MAÑANA PORQUE NO VA A LA OFICINA", answers: { pos: ["she is always at home on saturdays in the morning because she does not go to the office" , "she's always at home on saturdays in the morning because she doesn't go to the office"], neg: ["she is not always at home on saturdays in the morning because she goes to the office" , "she isn't always at home on saturdays in the morning because she goes to the office"], int: ["is she always at home on saturdays in the morning?"] } },
+    { spanish: "EL ESTA OCUPADO FRECUENTEMENTE", answers: { pos: ["he is frequently busy", "he's frequently busy"], neg: ["he is not frequently busy", "he isn't frequently busy"], int: ["is he frequently busy?"] } },
+    { spanish: "ÉL SIEMPRE ESTÁ TRISTE PORQUE ÉL ES DEPRESIVO", answers: { pos: ["he is always sad because he is depressive" , "he's always sad because he's depressive"], neg: ["he is not always sad because he is not depressive" , "he isn't always sad because he isn't depressive" , "he isn't always sad because he is happy" ], int: ["is he always sad?"] } },
+    { spanish: "ELLA ESTA A VECES PREOCUPADA POR SU MADRE", answers: { pos: ["she is sometimes worried about her mother" , "she's sometimes worried about her mother"], neg: ["she is not sometimes worried about her mother" , "she isn't sometimes worried about her mother"], int: ["is she sometimes worried about her mother?"] } },
+];
+
+const ex3TriplePrompts = [
+    { spanish: "RARAS VECES BEBO VINO TINTO PORQUE PREFIERO LA CERVEZA (HARDLY EVER)", answers: { pos: ["i drink red wine because i don't prefer beer" , "i drink red wine because i don't like beer"], neg: ["i hardly ever drink red wine because i prefer beer" , "i hardly ever drink red wine because i like beer"], int: ["do i hardly ever drink red wine?" , "do you hardly ever drink red wine?"] } },
+    { spanish: "¿SIEMPRE VAS A ESE SUPERMERCADO?", answers: { pos: ["i always go to that supermarket"], neg: ["i do not always go to that supermarket" , "i don't always go to that supermarket"], int: ["do you always go to that supermarket?"] } },
+    { spanish: "YO NO VOY A MENUDO ESE PARQUE PORQUE ES MUY SUCIO", answers: { pos: ["i often go to that park because it is very clean" , "i often go to that park because it's very clean"], neg: ["i do not often go to that park because it is very dirty" , "i don't often go to that park because it's very dirty"], int: ["do i often go to that park?" , "do you often go to that park?"] } },
+    { spanish: "EL VA GENERALMENTE A ESA IGLESIA", answers: { pos: ["he generally goes to that church"], neg: ["he does not generally go to that church" , "he doesn't generally go to that church"], int: ["does he generally go to that church?"] } },
+    { spanish: "¿SIEMPRE VAS AL MISMO RESTAURANTE?", answers: { pos: ["i always go to the same restaurant"], neg: ["i do not always go to the same restaurant" , "i don't always go to the same restaurant"], int: ["do you always go to the same restaurant?", "do i always go to the same restaurant?"] } },
+    { spanish: "¿ELLA SALE SIEMPRE LOS VIERNES? - SI", answers: { pos: ["she always goes out on fridays"], neg: ["she does not always go out on fridays" , "she doesn't always go out on fridays"], int: ["does she always go out on fridays? - yes, she does"] } },
+    { spanish: "TU NO VAS FRECUENTEMENTE A VISITAR A TU ABUELA", answers: { pos: ["you frequently go to visit your grandmother", "you often go to visit your grandma"], neg: ["you do not frequently go to visit your grandmother" , "you don't frequently go to visit your grandma"], int: ["do you frequently go to visit your grandmother?" , "do you frequently go to visit your grandma?"] } },
+    { spanish: "NOSOTROS JUGAMOS USUALMENTE JUEGOS DE MESA MIENTRAS ESCUCHAMOS MUSICA", answers: { pos: ["we usually play board games while we listen to music"], neg: ["we do not usually play board games while we listen to music", "we don't usually play board games while we listen to music"], int: ["do we usually play board games while we listen to music?" , "do we usually play board games?"] } },
+    { spanish: "TU CASI NUNCA COMES VERDURAS PORQUE NO TE GUSTAN", answers: { pos: ["you almost always eat vegetables because you like them"], neg: ["you hardly ever eat vegetables because you do not like them" , "you hardly ever eat vegetables because you don't like them"], int: ["do you hardly ever eat vegetables?"] } },
+    { spanish: "ELLA NUNCA BEBE AGUA PORQUE A ELLA NO LE GUSTA", answers: { pos: ["she always drinks water because she likes it"], neg: ["she never drinks water because she does not like it","she never drinks water because she doesn't like it"], int: ["does she never drink water?"] } },
+];
+
+const ex4TranslationPrompts = [
+    { spanish: "YO VOY A LA UNIVERSIDAD TODOS LOS DIAS", answer: ["i go to the university every day"] },
+    { spanish: "TÚ SIEMPRE JUEGAS SCRABBLE CON TUS AMIGOS LOS FINES DE SEMANA", answer: ["you always play scrabble with your friends on weekends"] },
+    { spanish: "ELLA TOCA LA GUITARRA DOS VECES POR SEMANA", answer: ["she plays the guitar twice a week"] },
+    { spanish: "NOSOTROS TRABAJAMOS EL SABADO", answer: ["we work on saturday"] },
+    { spanish: "ELLA CASI SIEMPRE VISITA A SU ABUELA LOS DOMINGOS", answer: ["she almost always visits her grandmother on sundays"] },
+    { spanish: "YO VOY A LA CASA DE MI ABUELA 3 VECES AL MES", answer: ["i go to my grandmother's house three times a month"] },
+    { spanish: "RARAS VECES CAMINO EN EL CENTRO LOS FINES DE SEMANA", answer: ["i rarely walk downtown on weekends"] },
+    { spanish: "YO JUEGO AL TENNIS LOS SABADOS", answer: ["i play tennis on saturdays"] },
+    { spanish: "YO NUNCA JUEGO VIDEO JUEGOS DURANTE LA SEMANA", answer: ["i never play video games during the week"] },
+    { spanish: "VICTOR JUEGA VIDEO JUEGOS TODOS LOS DIAS", answer: ["victor plays video games every day"] },
+    { spanish: "ÉL JUEGA BILLAR 2 VECES POR SEMANA", answer: ["he plays billiards twice a week"] },
+    { spanish: "EL NO ESTA SIEMPRE EN LA OFICINA", answer: ["he is not always in the office"] },
+    { spanish: "ELLOS JUEGAN FUTBOL LOS FINES DE SEMANA", answer: ["they play soccer on weekends"] },
+    { spanish: "RARAS VECES BEBO CAFÉ", answer: ["i rarely drink coffee"] },
+    { spanish: "NOSOTRAS CASI NUNCA TOMAMOS COCA- COLA", answer: ["we almost never drink coca-cola"] },
+    { spanish: "¿JUEGAS CARTAS A MENUDO?", answer: ["do you play cards often?"] },
+    { spanish: "¿ELLA SIEMPRE TRABAJA HASTA LAS 5?", answer: ["does she always work until 5?"] },
+    { spanish: "¿QUE TAN SEGUIDO VAS AL GIMNASIO?", answer: ["how often do you go to the gym?"] },
+    { spanish: "ELLA ESTUDIA INGLES 3 VECES POR SEMANA", answer: ["she studies english three times a week"] },
+    { spanish: "YO JUEGO VIDEOJUEGOS TODOS LOS DIAS UNA HORA", answer: ["i play video games every day for an hour"] },
 ];
 
 const ex5RewritePrompts = [
@@ -108,63 +151,92 @@ const ex5RewritePrompts = [
     { base: "I AM AT HOME IN THE MORNING", adverb: "NEVER", correct: "I AM NEVER AT HOME IN THE MORNING" },
 ];
 
-const ex2TriplePrompts = [
-    { spanish: "EL ESTA GENERALMENTE CANSADO PORQUE EL TRABAJA 13 HORAS DURANTE EL DIA", answers: { pos: ["he is generally tired because he works 13 hours during the day"], neg: ["he is not generally tired because he works 13 hours during the day"], int: ["is he generally tired because he works 13 hours during the day?"] } },
-    { spanish: "ELLA SIEMPRE ESTA EN CASA LOS SABADOS EN LA MAÑANA PORQUE NO VA A LA OFICINA", answers: { pos: ["she is always at home on saturdays in the morning because she does not go to the office"], neg: ["she is not always at home on saturdays in the morning because she does not go to the office"], int: ["is she always at home on saturdays in the morning because she does not go to the office?"] } },
-    { spanish: "EL ESTA OCUPADO FRECUENTEMENTE", answers: { pos: ["he is frequently busy", "he is often busy"], neg: ["he is not frequently busy", "he is not often busy"], int: ["is he frequently busy?", "is he often busy?"] } },
-    { spanish: "ÉL SIEMPRE ESTÁ TRISTE PORQUE ÉL ES DEPRESIVO", answers: { pos: ["he is always sad because he is depressive"], neg: ["he is not always sad because he is depressive"], int: ["is he always sad because he is depressive?"] } },
-    { spanish: "ELLA ESTA A VECES PREOCUPADA POR SU MADRE", answers: { pos: ["she is sometimes worried about her mother"], neg: ["she is not sometimes worried about her mother"], int: ["is she sometimes worried about her mother?"] } },
+const howOftenPrompts = [
+    { spanish: "¿QUE TAN SEGUIDO ESTUDIAS INGLES?: - YO ESTUDIO INGLES 3 VECES POR SEMANA", answer: ["how often do you study english? - i study english three times a week"] },
+    { spanish: "¿QUE TAN SEGUIDO COCINA ELLA? – ELLA COCINA SIEMPRE LOS SABADOS Y DOMINGOS", answer: ["how often does she cook? - she always cooks on saturdays and sundays"] },
+    { spanish: "¿QUE TAN SEGUIDO ELLA TOCA LA GUITARRA? – ELLA TOCA LA GUITARRA TODOS LOS DIAS", answer: ["how often does she play the guitar? - she plays the guitar every day"] },
+    { spanish: "¿QUE TAN SEGUIDO TOMAS CERVEZA? – YO TOMO CERVEZA UNA VEZ AL MES", answer: ["how often do you drink beer? - i drink beer once a month"] },
+    { spanish: "¿QUE TAN SEGUIDO COMES SUSHI? – YO COMO SUSHI 2 VECES AL MES", answer: ["how often do you eat sushi? - i eat sushi twice a month"] },
+    { spanish: "¿QUE TAN SEGUIDO VAS A LA IGLESIA? - YO VOY A LA IGLESIA LOS DOMINGOS", answer: ["how often do you go to church? - i go to church on sundays"] },
+    { spanish: "¿QUE TAN SEGUIDO LLUEVE EN ESA CIUDAD? – EN ESTA CIUDAD LLUEVE TODOS LOS DIAS", answer: ["how often does it rain in that city? - in this city it rains every day"] },
+    { spanish: "¿QUE TAN SEGUIDO ELLOS VIENEN A MEDELLIN? – ELLOS VIENEN A MEDELLIN UNA VEZ AL AÑO", answer: ["how often do they come to medellin? - they come to medellin once a year"] },
+    { spanish: "¿QUE TAN SEGUIDO TE MAQUILLAS? – YO ME MAQUILLO LOS SABADOS", answer: ["how often do you make up? - i make up on saturdays"] },
+    { spanish: "¿QUE TAN SEGUIDO LIMPIAS TU CASA? – YO LIMPIO MI CASA 3 VECES POR SEMANA", answer: ["how often do you clean your house? - i clean my house three times a week"] },
 ];
 
-const ex3TriplePrompts = [
-    { spanish: "RARAS VECES BEBO VINO TINTO PORQUE PREFIERO LA CERVEZA (HARDLY EVER)", answers: { pos: ["i hardly ever drink red wine because i prefer beer"], neg: ["i do not hardly ever drink red wine because i prefer beer"], int: ["do i hardly ever drink red wine because i prefer beer?"] } },
-    { spanish: "¿SIEMPRE VAS A ESE SUPERMERCADO?", answers: { pos: ["i always go to that supermarket"], neg: ["i do not always go to that supermarket"], int: ["do you always go to that supermarket?"] } },
-    { spanish: "YO NO VOY A MENUDO ESE PARQUE PORQUE ES MUY SUCIO", answers: { pos: ["i often go to that park because it is very dirty"], neg: ["i do not often go to that park because it is very dirty"], int: ["do i often go to that park because it is very dirty?"] } },
-    { spanish: "EL VA GENERALMENTE A ESA IGLESIA", answers: { pos: ["he generally goes to that church"], neg: ["he does not generally go to that church"], int: ["does he generally go to that church?"] } },
-    { spanish: "¿SIEMPRE VAS AL MISMO RESTAURANTE?", answers: { pos: ["i always go to the same restaurant"], neg: ["i do not always go to the same restaurant"], int: ["do you always go to the same restaurant?"] } },
-    { spanish: "¿ELLA SALE SIEMPRE LOS VIERNES? - SI", answers: { pos: ["she always goes out on fridays"], neg: ["she does not always go out on fridays"], int: ["does she always go out on fridays? - yes, she does"] } },
-    { spanish: "TU NO VAS MUY FRECUENTEMENTE A VISITAR A TU ABUELA", answers: { pos: ["you frequently go to visit your grandmother", "you often go to visit your grandma"], neg: ["you do not very frequently go to visit your grandmother"], int: ["do you very frequently go to visit your grandmother?"] } },
-    { spanish: "NOSOTROS JUGAMOS USUALMENTE JUEGOS DE MESA MIENTRAS ESCUCHAMOS MUSICA", answers: { pos: ["we usually play board games while we listen to music"], neg: ["we do not usually play board games while we listen to music"], int: ["do we usually play board games while we listen to music?"] } },
-    { spanish: "TU CASI NUNCA COMES VERDURAS PORQUE NO TE GUSTAN", answers: { pos: ["you almost always eat vegetables because you like them"], neg: ["you hardly ever eat vegetables because you do not like them"], int: ["do you hardly ever eat vegetables because you don't like them?"] } },
-    { spanish: "ELLA NUNCA BEBE AGUA PORQUE A ELLA NO LE GUSTA", answers: { pos: ["she never drinks water because she does not like it"], neg: ["she never drinks water because she does not like it"], int: ["does she never drink water because she does not like it?"] } },
+const orderPrompts1 = [
+    { base: "SOMETIMES / I / COFFEE / DRINK", correct: "I SOMETIMES DRINK COFFEE" }, 
+    { base: "NEVER / SHE / LATE / IS", correct: "SHE IS NEVER LATE" },
+    { base: "USUALLY / MY FATHER / TO WORK / BY BUS / GOES", correct: "MY FATHER USUALLY GOES TO WORK BY BUS" },
+    { base: "ALWAYS / THE BOYS / ON SATURDAY AFTERNOON / PLAY FOOTBALL", correct: "THE BOYS ALWAYS PLAY FOOTBALL ON SATURDAY AFTERNOON" },
+    { base: "NEVER- DRINKS / COFFEE / SHE / IN THE EVENINGS", correct: "SHE NEVER DRINKS COFFEE IN THE EVENINGS" },
+    { base: "READ BOOKS / I / SLOWLY / ALWAYS", correct: "I ALWAYS READ BOOKS SLOWLY" },
+    { base: "DOESN’T / IT / RAIN / IN THE SUMMER / OFTEN", correct: "IT DOESN’T RAIN IN THE SUMMER OFTEN" },
+    { base: "SHE / OFTEN / WRITE / DOESN’T / TO ME", correct: "SHE DOESN’T OFTEN WRITE TO ME" },
+    { base: "USUALLY / ARRIVES / THE BUS / LATE", correct: "THE BUS USUALLY ARRIVES LATE" },
+    { base: "OFTEN / GO TO BED / I / 11 / BEFORE", correct: "I OFTEN GO TO BED BEFORE 11" }
 ];
 
-const ex4TranslationPrompts = [
-    { spanish: "YO VOY A LA UNIVERSIDAD TODOS LOS DIAS", answer: ["i go to the university every day"] },
-    { spanish: "TÚ SIEMPRE JUEGAS SCRABBLE CON TUS AMIGOS LOS FINES DE SEMANA", answer: ["you always play scrabble with your friends on weekends", "you always play scrabble with your friends on the weekend"] },
-    { spanish: "ELLA TOCA LA GUITARRA DOS VECES POR SEMANA", answer: ["she plays the guitar twice a week"] },
-    { spanish: "NOSOTROS TRABAJAMOS EL SABADO", answer: ["we work on saturday"] },
-    { spanish: "ELLA CASI SIEMPRE VISITA A SU ABUELA LOS DOMINGOS", answer: ["she almost always visits her grandmother on sundays", "she almost always visits her grandma on sundays"] },
-    { spanish: "YO VOY A LA CASA DE MI ABUELA 3 VECES AL MES", answer: ["i go to my grandmother's house three times a month"] },
-    { spanish: "RARAS VECES CAMINO EN EL CENTRO LOS FINES DE SEMANA", answer: ["i rarely walk downtown on weekends", "i hardly ever walk downtown on weekends"] },
-    { spanish: "YO JUEGO AL TENNIS LOS SABADOS", answer: ["i play tennis on saturdays"] },
-    { spanish: "YO NUNCA JUEGO VIDEO JUEGOS DURANTE LA SEMANA, YO SOLO JUEGO LOS FINES DE SEMANA PORQUE NO TENGO TIEMPO", answer: ["i never play video games during the week, i only play on weekends because i don't have time"] },
-    { spanish: "VICTOR JUEGA VIDEO JUEGOS TODOS LOS DIAS, DESPUES DE HACER TAREAS EN LA NOCHE", answer: ["victor plays video games every day after doing homework at night"] },
-    { spanish: "ÉL JUEGA BILLAR 2 VECES POR SEMANA", answer: ["he plays billiards twice a week"] },
-    { spanish: "EL NO ESTA SIEMPRE EN LA OFICINA PORQUE EL TRABAJA EN CASA", answer: ["he is not always in the office because he works at home", "he isn't always in the office because he works at home"] },
-    { spanish: "ELLOS JUEGAN FUTBOL LOS FINES DE SEMANA", answer: ["they play soccer on weekends"] },
-    { spanish: "RARAS VECES BEBO CAFÉ", answer: ["i rarely drink coffee", "i hardly ever drink coffee"] },
-    { spanish: "NOSOTRAS CASI NUNCA TOMAMOS COCA- COLA, SOLO LA BEBEMOS UNA VEZ AL MES", answer: ["we almost never drink coca-cola, we only drink it once a month"] },
-    { spanish: "¿JUEGAS CARTAS A MENUDO? – SI, CON MIS AMIGOS LOS FINES DE SEMANA", answer: ["do you play cards often? - yes, with my friends on weekends"] },
-    { spanish: "¿ELLA SIEMPRE TRABAJA HASTA LAS 5?", answer: ["does she always work until 5?", "does she always work until five?"] },
-    { spanish: "¿QUE TAN SEGUIDO VAS AL GIMNASIO? - YO VOY AL GYM***", answer: ["how often do you go to the gym? - i go to the gym"] },
-    { spanish: "ELLA ESTUDIA INGLES 3 VECES POR SEMANA", answer: ["she studies english three times a week"] },
-    { spanish: "YO JUEGO VIDEOJUEGOS TODOS LOS DIAS UNA HORA", answer: ["i play video games every day for an hour", "i play video games every day one hour"] },
+const orderPrompts2 = [
+    { base: "USUALLY / WE / EARLY / ARRIVE", correct: "WE USUALLY ARRIVE EARLY" }, 
+    { base: "OFTEN / SHE / PLAYS / TENNIS", correct: "SHE OFTEN PLAYS TENNIS" },
+    { base: "DICTIONARY / OFTEN / USE / THE / THE / STUDENTS", correct: "THE STUDENTS OFTEN USE THE DICTIONARY" },
+    { base: "ME / PAUL / HELPS / SOMETIMES / MY / WITH / HOMEWORK", correct: "PAUL SOMETIMES HELPS ME WITH HOMEWORK" },
+    { base: "VISITS / JONATHAN / USUALLY / DENTIST / THE", correct: "JONATHAN USUALLY VISITS THE DENTIST" },
+    { base: "TRIES / POLICE / KEEP / THE / ORDER / ALWAYS / TO", correct: "THE POLICE ALWAYS TRY TO KEEP THE ORDER" },
+    { base: "SEE / USUALLY / JENNIFER / OUT / GOES / A / TO / CONCERT", correct: "JENNIFER USUALLY SEES A CONCERT" },
+    { base: "ANGRY / OUR / TEACHER / ENGLISH / USUALLY / IS", correct: "OUR TEACHER IS USUALLY ANGRY" },
+    { base: "CAR / I / DRINK / NEVER / IF / DRIVE / I / ALCOHOL / A", correct: "IF I DRIVE I NEVER DRINK ALCOHOL" },
+    { base: "T.V / EVER / HARDLY / I / IN / WATCH / EVENINGS / THE", correct: "I HARDLY EVER WATCH T.V IN THE EVENINGS" },
+    { base: "US / SOMETIMES / VISIT / THEY", correct: "THEY SOMETIMES VISIT US" },
+    { base: "I / GO / HARDLY / EVER / THE GYM / TO", correct: "I HARDLY EVER GO TO THE GYM" },
+    { base: "SHE / DOES / HELP / YOU / ALWAYS?", correct: "SHE DOESN’T ALWAYS HELP YOU" },
+    { base: "TO / MY / ON / GO / SUNDAYS / PARENTS / THE / CHURCH / FREQUENTLY", correct: "MY PARENTS FREQUENTLY GO TO CHURCH ON SUNDAYS" }
+];
+
+const orderPrompts3 = [
+    { base: "WELL / SPEAKS / SHE / ENGLISH", correct: "SHE SPEAKS ENGLISH WELL" }, 
+    { base: "SLOWLY / WALKS / THE CAT / VERY", correct: "THE CAT WALKS VERY SLOWLY" },
+    { base: "SHE / LATE / IS / ALWAYS", correct: "SHE IS ALWAYS LATE" },
+    { base: "HE / GO / OFTEN / TO / DOESN’T / THE CINEMA", correct: "HE DOESN’T OFTEN GO TO THE CINEMA" },
+    { base: "USUALLY / GET UP / DO / EARLY / AT THE WEEKEND / YOU?", correct: "DO YOU USUALLY GET UP EARLY AT THE WEEKEND?" },
+    { base: "WATCH TV / THEY / OFTEN / AT THE WEEKEND / DON’T", correct: "THEY DON’T OFTEN WATCH TV AT THE WEEKEND" },
+    { base: "I / EARLY / ALWAYS / TO SLEEP / GO", correct: "I ALWAYS GO TO BED EARLY" },
+    { base: "LATE / IS / VICTOR / OFTEN", correct: "VICTOR IS OFTEN LATE" },
+    { base: "NEVER / YOU / TO HER / LISTEN", correct: "YOU NEVER LISTEN TO HER" },
+    { base: "OFTEN / MY MOTHER / I / VISIT / DON’T", correct: "I DON’T OFTEN VISIT MY MOTHER" },
+    { base: "DRINK / HARDLY EVER / I / BEER", correct: "I HARDLY EVER DRINK BEER" },
+    { base: "TO / ALWAYS / BARCELONA / TWICE A MONTH / GO / I", correct: "I ALWAYS GO TO BARCELONA TWICE A MONTH" },
+    { base: "DRIVES / ALWAYS / TO WORK / HE / IN THE MORNING", correct: "HE ALWAYS DRIVES TO WORK IN THE MORNING" },
+    { base: "TO WORK / SOMETIMES / GO / I / AT THREE", correct: "I SOMETIMES GO TO WORK AT THREE" },
+    { base: "SICK / OFTEN / I / NOT / AM", correct: "I AM NOT OFTEN SICK" },
+    { base: "I / EAT / NEVER / MEAT", correct: "I NEVER EAT MEAT" }
 ];
 
 const ex6Prompts = [
     { spanish: "ELLA SIEMPRE ME AYUDA CON MI TAREA", answer: ["she always helps me with my homework"] },
-    { spanish: "NOSOTROS CASI NUNCA SALIMOS LOS LUNES", answer: ["we hardly ever go out on mondays", "we almost never go out on mondays"] },
+    { spanish: "NOSOTROS CASI NUNCA SALIMOS LOS LUNES", answer: ["we hardly ever go out on mondays"] },
     { spanish: "¿TU PADRE TRABAJA GENERALMENTE EN LA MAÑANA?", answer: ["does your father generally work in the morning?"] },
     { spanish: "ELLOS A VECES BEBEN CERVEZA DESPUES DEL TRABAJO", answer: ["they sometimes drink beer after work"] },
     { spanish: "MI MADRE NUNCA COCINA PIZZA", answer: ["my mother never cooks pizza"] },
+    { spanish: "ELLOS USUALMENTE JUEGAN CARTAS EN LA NOCHE", answer: ["they usually play cards at night"] },
+    { spanish: "ELLA SIEMPRE COMPRA HELADO", answer: ["she always buys ice cream"] },
+    { spanish: "EL TRABAJA LOS SABADOS?", answer: ["does he work on saturdays?"] },
+    { spanish: "ESTAS EN LA OFICINA GENERALMENTE?", answer: ["are you in the office generally?"] },
+    { spanish: "YO CASI NUNCA LA VEO", answer: ["i hardly ever see her"] },
+    { spanish: "ELLOS RARA VECES LLEGAN TARDE", answer: ["they rarely arrive late"] },
+    { spanish: "NOSOTROS A VECES SALIMOS DE VACACIONES", answer: ["we sometimes go on vacation"] },
+    { spanish: "ELLA SIEMPRE LLEGA TEMPRANO", answer: ["she always arrives early"] },
 ];
 
-const orderPrompts1 = [{ base: "SOMETIMES / I / COFFEE / DRINK", correct: "I SOMETIMES DRINK COFFEE" }, { base: "NEVER / SHE / LATE / IS", correct: "SHE IS NEVER LATE" }];
-const orderPrompts2 = [{ base: "USUALLY / WE / EARLY / ARRIVE", correct: "WE USUALLY ARRIVE EARLY" }, { base: "OFTEN / SHE / PLAYS / TENNIS", correct: "SHE OFTEN PLAYS TENNIS" }];
-const orderPrompts3 = [{ base: "WELL / SPEAKS / SHE / ENGLISH", correct: "SHE SPEAKS ENGLISH WELL" }, { base: "SLOWLY / WALKS / THE CAT / VERY", correct: "THE CAT WALKS VERY SLOWLY" }];
+const ex1Vocab = { "tarde": "late", "llegar": "arrive", "escuela": "school", "supermercado": "supermarket", "clima": "weather", "verano": "summer", "regar": "water", "jardín": "garden", "seco": "dry", "funciona": "works", "beber": "drink", "excursión": "hiking", "platos": "dishes", "esposo": "husband" };
+const genericVocab = { "siempre": "always", "nunca": "never", "a veces": "sometimes", "a menudo": "often", "usualmente": "usually", "cansado": "tired", "trabaja": "works", "oficina": "office", "triste": "sad", "preocupada": "worried", "hospital": "hospital", "cirugía": "surgery" };
+const ex4Vocab = { "universidad": "university", "guitarra": "guitar", "abuela": "grandmother", "mes": "month", "centro": "downtown", "fin de semana": "weekend", "billar": "billiards", "cartas": "cards" };
+const ex5Vocab = { "iglesia": "church", "regularmente": "regularly", "nadar": "swimming", "interrumpir": "interrupting", "normalmente": "normally", "cada mañana": "every morning" };
+const howOftenVocab = { "qué tan seguido": "how often", "una vez": "once", "dos veces": "twice", "veces": "times", "mes": "month", "año": "year", "maquillarse": "make up", "iglesia": "church" };
+const ex6Vocab = { "ayuda": "helps", "tarea": "homework", "salimos": "go out", "beben": "drink", "después del trabajo": "after work", "cocina": "cooks", "juegan": "play", "cartas": "cards", "noche": "night", "compra": "buys", "helado": "ice cream", "oficina": "office", "casi nunca": "hardly ever", "rara veces": "rarely", "vacaciones": "vacation", "siempre": "always", "temprano": "early" };
 
-// --- HELPERS ---
+// --- HELPER COMPONENTS ---
 
 const RewriteAdverbExercise = ({ prompts, onComplete, title, vocabulary }: any) => {
     const { toast } = useToast();
@@ -175,7 +247,11 @@ const RewriteAdverbExercise = ({ prompts, onComplete, title, vocabulary }: any) 
     useEffect(() => { setAnswer(''); }, [currentIndex]);
 
     const currentPrompt = prompts[currentIndex];
-    if (!currentPrompt) return <div className="p-8 text-center animate-pulse text-muted-foreground">Cargando misión...</div>;
+    if (!currentPrompt) return (
+        <Card className="flex items-center justify-center min-h-[300px]">
+            <Loader2 className="animate-spin" />
+        </Card>
+    );
 
     const handleCheck = () => {
         const userVal = answer.trim().toUpperCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' ');
@@ -194,14 +270,20 @@ const RewriteAdverbExercise = ({ prompts, onComplete, title, vocabulary }: any) 
                         <CardTitle>{title}</CardTitle>
                         <div className="flex gap-2 justify-start flex-wrap pt-4">
                             {prompts.map((_: any, i: number) => (
-                                <div key={i} onClick={() => setCurrentIndex(i)} className={cn("h-8 w-8 rounded-full border-2 flex items-center justify-center text-xs font-bold cursor-pointer transition-all", currentIndex === i ? "border-primary ring-2 ring-primary" : "border-muted", status[i] === 'correct' ? "bg-green-500 text-white border-green-500" : "bg-card text-foreground")}>{i + 1}</div>
+                                <div key={i} onClick={() => setCurrentIndex(i)} className={cn("h-8 w-8 rounded-full border-2 flex items-center justify-center text-xs font-bold cursor-pointer transition-all", currentIndex === i ? "border-primary ring-2 ring-primary" : "border-muted", status[i] === 'correct' ? "bg-green-500 text-white border-green-500" : status[i] === 'incorrect' ? "bg-red-500 text-white border-red-500" : "bg-card text-foreground")}>{i + 1}</div>
                             ))}
                         </div>
                     </div>
                     {vocabulary && (
                         <Popover>
-                            <PopoverTrigger asChild><Button variant="outline" size="sm" className="border-2 border-brand-blue animate-border-pulse shrink-0"><BookText className="mr-2 h-4 w-4" /> Vocabulary</Button></PopoverTrigger>
-                            <PopoverContent className="w-64"><ScrollArea className="h-48 pr-4"><div className="grid grid-cols-2 gap-2 text-sm text-foreground text-left">{Object.entries(vocabulary).map(([es, en]: any) => (<Fragment key={es}><span className="text-muted-foreground capitalize">{es}:</span><span className="font-semibold text-right">{en}</span></Fragment>))}</div></ScrollArea></PopoverContent>
+                            <PopoverTrigger asChild>
+                                <Button variant="outline" size="sm" className="border-2 border-brand-blue animate-border-pulse shrink-0"><BookText className="mr-2 h-4 w-4" /> Vocabulary</Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-64">
+                                <ScrollArea className="h-48 pr-4">
+                                    <div className="grid grid-cols-2 gap-2 text-sm text-foreground text-left">{Object.entries(vocabulary).map(([es, en]: any) => (<Fragment key={es}><span className="text-muted-foreground capitalize">{es}:</span><span className="font-semibold text-right">{en}</span></Fragment>))}</div>
+                                </ScrollArea>
+                            </PopoverContent>
                         </Popover>
                     )}
                 </div>
@@ -250,21 +332,29 @@ const TripleTranslationExercise = ({ title, prompts, onComplete, vocabulary }: a
 
     return (
         <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground">
-            <CardHeader className="flex flex-row items-center justify-between">
-                <div className="w-full text-left">
-                    <CardTitle>{title}</CardTitle>
-                    <div className="flex gap-2 justify-start flex-wrap pt-4">
-                        {prompts.map((_: any, i: number) => (
-                            <div key={i} onClick={() => setCurrentIndex(i)} className={cn("h-8 w-8 rounded-full border-2 flex items-center justify-center text-xs font-bold cursor-pointer transition-all", currentIndex === i ? "border-primary ring-2 ring-primary" : "border-muted", solved[i] ? "bg-green-500 text-white border-green-500" : "bg-card")}>{i + 1}</div>
-                        ))}
+            <CardHeader>
+                <div className="flex flex-row items-center justify-between">
+                    <div className="w-full text-left">
+                        <CardTitle>{title}</CardTitle>
+                        <div className="flex gap-2 justify-start flex-wrap pt-4">
+                            {prompts.map((_: any, i: number) => (
+                                <div key={i} onClick={() => setCurrentIndex(i)} className={cn("h-8 w-8 rounded-full border-2 flex items-center justify-center text-xs font-bold cursor-pointer transition-all", currentIndex === i ? "border-primary ring-2 ring-primary" : "border-muted", solved[i] ? "bg-green-500 text-white border-green-500" : "bg-card")}>{i + 1}</div>
+                            ))}
+                        </div>
                     </div>
+                    {vocabulary && (
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button variant="outline" size="sm" className="border-2 border-brand-blue animate-border-pulse shrink-0"><BookText className="mr-2 h-4 w-4" /> Vocabulary</Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-64">
+                                <ScrollArea className="h-48 pr-4">
+                                    <div className="grid grid-cols-2 gap-2 text-sm text-left">{Object.entries(vocabulary).map(([es, en]: any) => (<Fragment key={es}><span className="text-muted-foreground">{es}:</span><span className="font-bold text-right">{en}</span></Fragment>))}</div>
+                                </ScrollArea>
+                            </PopoverContent>
+                        </Popover>
+                    )}
                 </div>
-                {vocabulary && (
-                    <Popover>
-                        <PopoverTrigger asChild><Button variant="outline" size="sm" className="border-2 border-brand-blue animate-border-pulse shrink-0"><BookText className="mr-2 h-4 w-4" /> Vocabulary</Button></PopoverTrigger>
-                        <PopoverContent className="w-64"><ScrollArea className="h-48 pr-4"><div className="grid grid-cols-2 gap-2 text-sm text-left">{Object.entries(vocabulary).map(([es, en]: any) => (<Fragment key={es}><span className="text-muted-foreground">{es}:</span><span className="font-bold text-right">{en}</span></Fragment>))}</div></ScrollArea></PopoverContent>
-                    </Popover>
-                )}
             </CardHeader>
             <CardContent className="space-y-6">
                 <div className="bg-muted p-4 rounded-lg border text-center font-bold text-lg uppercase">{currentPrompt.spanish}</div>
@@ -285,6 +375,187 @@ const TripleTranslationExercise = ({ title, prompts, onComplete, vocabulary }: a
     );
 };
 
+const BallsExercise = ({ title, prompts, onComplete, vocabulary }: any) => {
+    const { toast } = useToast();
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [answer, setAnswer] = useState('');
+    const [status, setStatus] = useState<Record<number, 'correct' | 'incorrect' | 'unchecked'>>({});
+
+    useEffect(() => { setCurrentIndex(0); setAnswer(''); setStatus({}); }, [prompts]);
+    useEffect(() => { setAnswer(''); }, [currentIndex]);
+
+    const currentPrompt = prompts[currentIndex];
+    if (!currentPrompt) return null;
+
+    const handleCheck = () => {
+        const userVal = answer.trim().toLowerCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' ');
+        const corrects = currentPrompt.answer || currentPrompt.english;
+        const isCorrect = corrects.some((a: string) => a.toLowerCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' ') === userVal);
+        setStatus(prev => ({ ...prev, [currentIndex]: isCorrect ? 'correct' : 'incorrect' }));
+        if (isCorrect) toast({ title: "¡Buen trabajo!" });
+        else toast({ variant: 'destructive', title: "Sigue intentando" });
+    };
+
+    return (
+        <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground">
+            <CardHeader>
+                <div className="flex justify-between items-start">
+                    <div className="w-full text-left">
+                        <CardTitle>{title}</CardTitle>
+                        <div className="flex gap-2 justify-start flex-wrap pt-4">
+                            {prompts.map((_: any, i: number) => (
+                                <div key={i} onClick={() => setCurrentIndex(i)} className={cn("h-8 w-8 rounded-full border-2 flex items-center justify-center text-sm font-bold cursor-pointer transition-all", currentIndex === i ? "border-primary ring-2 ring-primary" : "border-muted", status[i] === 'correct' ? "bg-green-500 text-white border-green-500" : status[i] === 'incorrect' ? "bg-red-500 text-white border-red-500" : "bg-card text-foreground")}>{i + 1}</div>
+                            ))}
+                        </div>
+                    </div>
+                    {vocabulary && (
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button variant="outline" size="sm" className="border-2 border-brand-blue animate-border-pulse shrink-0"><BookText className="mr-2 h-4 w-4" /> Vocabulary</Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-64">
+                                <ScrollArea className="h-48 pr-4">
+                                    <div className="grid grid-cols-2 gap-2 text-sm text-foreground text-left">
+                                        {Object.entries(vocabulary).map(([es, en]: any) => (
+                                            <Fragment key={es}><span className="text-muted-foreground capitalize">{es}:</span><span className="font-semibold text-right">{en}</span></Fragment>
+                                        ))}
+                                    </div>
+                                </ScrollArea>
+                            </PopoverContent>
+                        </Popover>
+                    )}
+                </div>
+            </CardHeader>
+            <CardContent className="space-y-6">
+                <div className="bg-muted p-6 rounded-2xl border-2 border-dashed text-center font-bold text-xl uppercase tracking-tighter text-foreground">{currentPrompt.spanish}</div>
+                <Input value={answer} onChange={e => setAnswer(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleCheck()} className={cn("h-12 text-lg text-foreground", status[currentIndex] === 'correct' ? 'border-green-500 bg-green-50/5' : status[currentIndex] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} placeholder="Tu traducción..." autoComplete="off" />
+            </CardContent>
+            <CardFooter className="justify-between border-t pt-6">
+                <Button variant="outline" onClick={() => setCurrentIndex(p => Math.max(0, p - 1))} disabled={currentIndex === 0}>Anterior</Button>
+                <div className="flex gap-2">
+                    <Button onClick={handleCheck} variant="secondary">Verificar</Button>
+                    <Button onClick={() => currentIndex < prompts.length - 1 ? setCurrentIndex(i => i + 1) : onComplete()} disabled={status[currentIndex] !== 'correct'} className="text-white font-bold">{currentIndex === prompts.length - 1 ? 'Finalizar' : 'Siguiente'}</Button>
+                </div>
+            </CardFooter>
+        </Card>
+    );
+};
+
+const ManualGradingExercise = ({ 
+    title,
+    description,
+    onComplete, 
+    studentDocRef, 
+    initialData, 
+    initialGrades,
+    savePath, 
+    savePathGrades,
+    isAdmin,
+    lineCount = 4,
+    isSupervisionMode = false,
+}: any) => {
+    const [lines, setLines] = useState<string[]>(Array(lineCount).fill(''));
+    const [grades, setGrades] = useState<Record<number, 'correct' | 'incorrect' | null>>(initialGrades || {});
+    const initializedRef = useRef(false);
+
+    useEffect(() => {
+        if (!initializedRef.current && initialData && Array.isArray(initialData)) {
+            const newLines = [...Array(lineCount).fill('')];
+            initialData.forEach((val, i) => { if (i < lineCount) newLines[i] = val || ''; });
+            setLines(newLines);
+            if (initialData.length > 0) initializedRef.current = true;
+        }
+    }, [initialData, lineCount]);
+
+    const handleLineChange = (index: number, value: string) => {
+        if (isSupervisionMode) return;
+        const newLines = [...lines];
+        newLines[index] = value;
+        setLines(newLines);
+        if (studentDocRef) updateDocumentNonBlocking(studentDocRef, { [savePath]: newLines });
+    };
+
+    const handleToggleGrade = (index: number, type: 'correct' | 'incorrect') => {
+        if (!isAdmin) return;
+        const newGrades = { ...grades };
+        newGrades[index] = newGrades[index] === type ? null : type;
+        setGrades(newGrades);
+        if (studentDocRef) updateDocumentNonBlocking(studentDocRef, { [savePathGrades]: newGrades });
+    };
+
+    return (
+        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground">
+            <CardHeader>
+                <div className="flex items-center gap-3">
+                    <div className="p-2 bg-primary/20 rounded-lg text-primary">
+                        <Pencil className="h-6 w-6" />
+                    </div>
+                    <div>
+                        <CardTitle>{title}</CardTitle>
+                        <CardDescription className='font-bold text-foreground mt-1'>{description}</CardDescription>
+                    </div>
+                </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 gap-3">
+                    {lines.map((line, idx) => {
+                        const status = grades[idx];
+                        return (
+                            <div key={idx} className="flex items-center gap-3">
+                                <span className="font-bold w-8 text-right text-muted-foreground">
+                                    {idx + 1}.
+                                </span>
+                                <Input 
+                                    value={line} 
+                                    onChange={e => handleLineChange(idx, e.target.value)} 
+                                    className={cn(
+                                        "flex-1 text-lg h-10 transition-all",
+                                        status === 'correct' ? 'border-green-500 bg-green-50/5' : 
+                                        status === 'incorrect' ? 'border-red-500 bg-red-50/5' : ''
+                                    )} 
+                                    autoComplete="off" 
+                                    readOnly={isSupervisionMode}
+                                />
+                                <div className="flex gap-1 shrink-0">
+                                    <Button 
+                                        size="icon" 
+                                        variant="ghost" 
+                                        onClick={() => handleToggleGrade(idx, 'correct')} 
+                                        className={cn(
+                                            "h-8 w-8 rounded-full transition-colors", 
+                                            status === 'correct' ? "bg-green-500 text-white hover:bg-green-600" : "bg-muted text-muted-foreground opacity-50"
+                                        )} 
+                                        disabled={!isAdmin}
+                                    >
+                                        <Check className="h-4 w-4"/>
+                                    </Button>
+                                    <Button 
+                                        size="icon" 
+                                        variant="ghost" 
+                                        onClick={() => handleToggleGrade(idx, 'incorrect')} 
+                                        className={cn(
+                                            "h-8 w-8 rounded-full transition-colors", 
+                                            status === 'incorrect' ? "bg-red-500 text-white hover:bg-red-600" : "bg-muted text-muted-foreground opacity-50"
+                                        )} 
+                                        disabled={!isAdmin}
+                                    >
+                                        <X className="h-4 w-4"/>
+                                    </Button>
+                                </div>
+                            </div>
+                        )
+                    })}
+                </div>
+            </CardContent>
+            <CardFooter className="pt-6 border-t flex justify-center">
+                <Button onClick={onComplete} size="lg" className="px-16 font-bold h-14 text-xl">
+                    Avanzar <ArrowRight className="ml-2 h-6 w-6" />
+                </Button>
+            </CardFooter>
+        </Card>
+    );
+};
+
 // --- MAIN CLASS COMPONENT ---
 
 export default function Class15Content({ overrideStudentId }: { overrideStudentId?: string | null }) {
@@ -296,7 +567,7 @@ export default function Class15Content({ overrideStudentId }: { overrideStudentI
     const studentDocRef = useMemoFirebase(() => (currentUID ? doc(firestore, 'students', currentUID) : null), [firestore, currentUID]);
     const authUserRef = useMemoFirebase(() => (user ? doc(firestore, 'students', user.uid) : null), [firestore, user]);
     const { data: authUserProfile } = useDoc<{role?: string}>(authUserRef);
-    const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{role?: string, lessonProgress?: any, progress?: any}>(studentDocRef);
+    const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{role?: string, lessonProgress?: any, progress?: any, name?: string}>(studentDocRef);
 
     const isAdmin = useMemo(() => (user && (authUserProfile?.role === 'admin' || user.email === 'ednacard87@gmail.com')), [user, authUserProfile]);
 
@@ -337,6 +608,10 @@ export default function Class15Content({ overrideStudentId }: { overrideStudentI
         if (isAdmin && !overrideStudentId) p.forEach(t => (t as any).status = 'completed');
         let last = true;
         for(let i=0; i < p.length; i++) { if (last && (p[i] as any).status === 'locked') (p[i] as any).status = 'active'; last = (p[i] as any).status === 'completed'; }
+        
+        if (d.vocabAnswers) setVocabAnswers(d.vocabAnswers);
+        if (d.vocabValidation) setVocabValidation(d.vocabValidation);
+        
         setLearningPath(p);
         setSelectedTopic(d.lastSelectedTopic || p.find(it => it.status === 'active')?.key || p[0].key);
         setInitialLoadComplete(true); setIsInitialLoading(false);
@@ -349,12 +624,12 @@ export default function Class15Content({ overrideStudentId }: { overrideStudentI
     }, [learningPath]);
 
     useEffect(() => {
-        if (!initialLoadComplete || isInitialLoading || isAdmin || !studentDocRef || learningPath.length === 0 || overrideStudentId) return;
-        const s: any = { lastSelectedTopic: selectedTopic };
+        if (!initialLoadComplete || isInitialLoading || !studentDocRef || learningPath.length === 0 || overrideStudentId) return;
+        const s: any = { lastSelectedTopic: selectedTopic, vocabAnswers, vocabValidation };
         learningPath.forEach(t => s[t.key] = t.status);
         updateDocumentNonBlocking(studentDocRef, { [`lessonProgress.${progressStorageVersion}`]: s, [`progress.${mainProgressKey}`]: progressValue });
         if (progressValue >= 100) window.dispatchEvent(new CustomEvent('progressUpdated'));
-    }, [learningPath, isAdmin, progressValue, studentDocRef, initialLoadComplete, selectedTopic, isInitialLoading, overrideStudentId]);
+    }, [learningPath, isAdmin, progressValue, studentDocRef, initialLoadComplete, selectedTopic, isInitialLoading, overrideStudentId, vocabAnswers, vocabValidation]);
 
     useEffect(() => {
         if (!topicToComplete) return;
@@ -384,10 +659,10 @@ export default function Class15Content({ overrideStudentId }: { overrideStudentI
     const handleCheckVocab = () => {
         let ok = false;
         const nv = adverbsVocab.map((v, i) => {
-            const res = v.en.toUpperCase() === vocabAnswers[i].trim().toUpperCase();
+            const res = v.en.toUpperCase() === (vocabAnswers[i] || '').trim().toUpperCase();
             if (res) ok = true; return res ? 'correct' : 'incorrect';
         });
-        setVocabValidation(nv);
+        setVocabValidation(nv as any);
         if (ok) { setCanAdvanceVocab(true); toast({ title: "¡Buen trabajo!" }); }
         else toast({ variant: 'destructive', title: "Sigue intentando" });
     };
@@ -399,9 +674,9 @@ export default function Class15Content({ overrideStudentId }: { overrideStudentI
                 return (
                     <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left text-foreground">
                         <CardHeader><CardTitle>ADVERBS OF FREQUENCY</CardTitle><CardDescription>Estudia y memoriza estas expresiones de tiempo.</CardDescription></CardHeader>
-                        <CardContent><ScrollArea className="h-[500px] pr-4"><div className="grid grid-cols-2 gap-2">
-                            <div className="font-black text-primary border-b pb-2 uppercase tracking-widest text-xs">Español</div><div className="font-black text-primary border-b pb-2 uppercase tracking-widest text-xs">Inglés</div>
-                            {adverbsVocab.map((v, i) => (<Fragment key={i}><div className="p-2 border rounded bg-white/5 font-bold text-sm uppercase">{v.es}</div><Input value={vocabAnswers[i]} onChange={e => { const na = [...vocabAnswers]; na[i] = e.target.value; setVocabAnswers(na); setCanAdvanceVocab(false); }} className={cn("uppercase", vocabValidation[i] === 'correct' ? 'border-green-500 bg-green-50/10' : vocabValidation[i] === 'incorrect' ? 'border-red-500 bg-red-50/10' : '')} autoComplete="off" /></Fragment>))}
+                        <CardContent><ScrollArea className="h-[500px] pr-4"><div className="grid grid-cols-2 gap-2 text-foreground">
+                            <div className="font-black text-primary border-b pb-2 uppercase tracking-widest text-xs text-left">Español</div><div className="font-black text-primary border-b pb-2 uppercase tracking-widest text-sm text-left">Inglés</div>
+                            {adverbsVocab.map((v, i) => (<Fragment key={i}><div className="p-2 border rounded bg-white/5 font-bold text-sm uppercase">{v.es}</div><Input value={vocabAnswers[i] || ''} onChange={e => { if (overrideStudentId) return; const na = [...vocabAnswers]; na[i] = e.target.value; setVocabAnswers(na); const nv = [...vocabValidation]; nv[i] = 'unchecked'; setVocabValidation(nv); setCanAdvanceVocab(false); }} className={cn("uppercase", vocabValidation[i] === 'correct' ? 'border-green-500 bg-green-50/10' : vocabValidation[i] === 'incorrect' ? 'border-red-500 bg-red-50/10' : '')} autoComplete="off" readOnly={!!overrideStudentId}/></Fragment>))}
                         </div></ScrollArea></CardContent>
                         <CardFooter className="justify-center border-t pt-6 mt-4"><Button onClick={handleCheckVocab} variant="secondary">Verificar</Button><Button onClick={() => handleTopicComplete('vocabulary')} disabled={!canAdvanceVocab && !isAdmin} className='text-white font-bold ml-2'>Avanzar</Button></CardFooter>
                     </Card>
@@ -413,54 +688,38 @@ export default function Class15Content({ overrideStudentId }: { overrideStudentI
                             <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase">GRAMMAR: ADVERBS</CardTitle></CardHeader>
                             <CardContent className="space-y-8 text-foreground font-bold">
                                 <div className="p-4 bg-white/50 dark:bg-background/20 rounded-xl border border-primary/20">
-                                    <h4 className="font-black text-primary uppercase mb-2"> Adverbios de Frecuencia</h4>
-                                    <p className="font-bold">Van ANTES del verbo principal, pero DESPUÉS del verbo "To Be".</p>
-                                    <div className="mt-3 p-3 bg-muted rounded-lg font-mono text-sm space-y-1">
-                                        <p>I <span className="text-primary font-black">ALWAYS</span> study (Antes de study)</p>
-                                        <p>I am <span className="text-primary font-black">ALWAYS</span> happy (Después de am)</p>
-                                    </div> <br/>
-                                    <div className="p-6 bg-white/30 dark:bg-background/20 rounded-2xl border border-primary/20 space-y-4">
-                                        <h4 className="text-primary font-black uppercase text-sm mb-2">USO:</h4>
-                                        <p className="text-lg">Se usan para definir la frecuencia con la que se hace una determinada actividad: normalmente se usan con el <span className="text-primary underline">presente simple</span> (que se usa para hábitos y costumbres).</p>
-                                        <p className="italic text-muted-foreground">Hay adverbios positivos y negativos.</p>
-                                    </div> <br/>
-                                    
-                                    <div className="p-6 bg-white/30 dark:bg-background/20 rounded-2xl border border-primary/20 space-y-4">
-                                        <h4 className="text-xl font-black text-primary uppercase">1- VERBO TO BE</h4>
-                                        <div className="font-mono bg-muted p-4 rounded-xl border space-y-2 text-sm">
-                                            <p>(+) = pronoun + to be + freq- adv + complement.</p>
-                                            <p>(-) = pronoun + to be + not + freq- adv + complement.</p>
-                                            <p>(?) = to be + pronoun + freq- adv + complement?</p>
-                                        </div> <br/>
-                                        <div className="p-3 bg-destructive/10 border-l-4 border-destructive text-sm font-bold uppercase tracking-tight">NOTA: EL PRONOMBRE Y EL VERBO TO BE NUNCA SE SEPARAN.</div>
-                                        <div className="space-y-2 mt-4">
-                                            <p className="text-xs uppercase text-primary font-black">Translate:</p>
-                                            <ul className="grid gap-2 text-sm">
-                                                <li className="flex justify-between p-2 border rounded bg-background/50"><span>1. ELLA SIEMPRE ESTA FELIZ</span> <span className="text-primary font-mono font-bold italic">...</span></li>
-                                                <li className="flex justify-between p-2 border rounded bg-background/50"><span>2. TU NO ESTÁS FRECUENTEMENTE CON ELLA</span> <span className="text-primary font-mono font-bold italic">...</span></li>
-                                                <li className="flex justify-between p-2 border rounded bg-background/50"><span>3. ¿ÉL SIEMPRE ESTÁ ABURRIDO?</span> <span className="text-primary font-mono font-bold italic">...</span></li>
-                                                <li className="flex justify-between p-2 border rounded bg-background/50"><span>4. ¿ESTÁS GENERALMENTE PREOCUPADO POR ESA SITUACIÓN?</span> <span className="text-primary font-mono font-bold italic">...</span></li>
-                                            </ul>
-                                        </div>
-                                    </div> <br/>
-
-                                    <div className="p-6 bg-white/30 dark:bg-background/20 rounded-2xl border border-primary/20 space-y-4">
-                                        <h4 className="text-xl font-black text-primary uppercase">2- CON OTROS VERBOS</h4>
-                                        <div className="font-mono bg-muted p-4 rounded-xl border space-y-2 text-sm">
-                                            <p>(+) = pronoun + freq- adv + verb + complement.</p>
-                                            <p>(-) = pronoun + do/does + not + freq- adv + verb + complement.</p>
-                                            <p>(?) = do/does + pronoun + freq- adv + verb + complement?</p>
-                                        </div><br/>
-                                        <div className="space-y-2 mt-4">
-                                            <p className="text-xs uppercase text-primary font-black">EJEMPLOS:</p>
-                                            <ul className="grid gap-2 text-sm">
-                                                <li className="p-2 border rounded bg-background/50">1. Siempre vas a dormir tarde</li>
-                                                <li className="p-2 border rounded bg-background/50">2. Generalmente vas a dormir tarde?</li>
-                                                <li className="p-2 border rounded bg-background/50">3. Él a veces va al gimnasio en la mañana.</li>
-                                                <li className="p-2 border rounded bg-background/50">4. Ella casi siempre lava los platos.</li>
-                                            </ul>
-                                        </div>
-
+                                    <h4 className="font-black text-primary uppercase mb-2 text-sm">Uso:</h4>
+                                    <p className="text-lg leading-relaxed">Se usan para definir la frecuencia con la que se hace una determinada actividad: normalmente se usan con el presente simple (que se usa para habitos y costumbres). <br/>Hay adverbios positivos y negativos.</p>
+                                </div>
+                                <div className="p-4 bg-white/50 dark:bg-background/20 rounded-xl border border-primary/20">
+                                    <h4 className="text-xl font-black text-primary uppercase mb-4">1- VERBO TO BE</h4>
+                                    <div className="font-mono bg-muted p-4 rounded-xl border space-y-2 text-base">
+                                        <p>(+) = pronoun + to be + freq- adv + complement.</p>
+                                        <p>(-) = pronoun + to be + not + freq- adv + complement.</p>
+                                        <p>(?) = to be + pronoun + freq- adv + complement?</p>
+                                    </div>
+                                    <p className="p-3 bg-destructive/10 border-l-4 border-destructive text-sm font-bold uppercase mt-4">NOTA: EL PRONOMBRE Y EL VERBO TO BE NUNCA SE SEPARAN.</p>
+                                    <div className="mt-4 space-y-2">
+                                        <h5 className="font-bold border-b pb-1 text-primary">TRANSLATE:</h5>
+                                        <p className="text-sm italic">1. ELLA SIEMPRE ESTA FELIZ</p>
+                                        <p className="text-sm italic">2. TU NO ESTÁS FRECUENTEMENTE CON ELLA</p>
+                                        <p className="text-sm italic">3. ¿ÉL SIEMPRE ESTÁ ABURRIDO?</p>
+                                        <p className="text-sm italic">4. ¿ESTÁS GENERALMENTE PREOCUPADO POR ESA SITUACIÓN?</p>
+                                    </div>
+                                </div>
+                                <div className="p-4 bg-white/50 dark:bg-background/20 rounded-xl border border-primary/20">
+                                    <h4 className="text-xl font-black text-primary uppercase mb-4">2- OTROS VERBOS (PRESENT SIMPLE)</h4>
+                                    <div className="font-mono bg-muted p-4 rounded-xl border space-y-2 text-base">
+                                        <p>(+) = pronoun + freq- adv + verb + complement.</p>
+                                        <p>(-) = pronoun + do/does + not + freq- adv + verb + complement.</p>
+                                        <p>(?) = do/does + pronoun + freq- adv + verb + complement?</p>
+                                    </div>
+                                    <div className="mt-4 space-y-2">
+                                        <h5 className="font-bold border-b pb-1 text-primary">EJEMPLOS:</h5>
+                                        <p className="text-sm italic">1. Siempre vas a dormir tarde</p>
+                                        <p className="text-sm italic">2. Generalmente vas a dormir tarde?</p>
+                                        <p className="text-sm italic">3. Él a veces va al gimnasio en la mañana.</p>
+                                        <p className="text-sm italic">4. Ella casi siempre lava los platos.</p>
                                     </div>
                                 </div>
                             </CardContent>
@@ -470,52 +729,32 @@ export default function Class15Content({ overrideStudentId }: { overrideStudentI
                         </Card>
                     </div>
                 );
-            case 'exercise1': return <RewriteAdverbExercise title="Exercise 1: Position" prompts={ex1RewritePrompts} onComplete={() => handleTopicComplete('exercise1')} vocabulary={{"mesa": "table", "guitarra": "guitar", "compañeros": "coworkers", "tarea": "homework", "hablas": "speak / talk"}} />;
-            case 'exercise2': return <TripleTranslationExercise title="Exercise 2: To Be" prompts={ex2TriplePrompts} onComplete={() => handleTopicComplete('exercise2')} vocabulary={{"empresa": "company", "morir": "die", "cirugía": "surgery", "preocupada": "worried"}} />;
-            case 'exercise3': return <TripleTranslationExercise title="Exercise 3: Mixed" prompts={ex3TriplePrompts} onComplete={() => handleTopicComplete('exercise3')} vocabulary={{"vino tinto": "red wine", "iglesia": "church", "sucio": "dirty", "verduras": "vegetables"}} />;
+            case 'exercise1': return <RewriteAdverbExercise key="ex1" title="Exercise 1: Position" prompts={ex1RewritePrompts} onComplete={() => handleTopicComplete('exercise1')} vocabulary={ex1Vocab} />;
+            case 'exercise2': return <TripleTranslationExercise key="ex2" title="Exercise 2: To Be" prompts={ex2TriplePrompts} onComplete={() => handleTopicComplete('exercise2')} vocabulary={genericVocab} />;
+            case 'exercise3': return <TripleTranslationExercise key="ex3" title="Exercise 3: Mixed" prompts={ex3TriplePrompts} onComplete={() => handleTopicComplete('exercise3')} vocabulary={genericVocab} />;
             case 'vocab_game': return <VocabularyMatchingGame data={adverbsVocab.slice(0, 10).map(v => ({ spanish: v.es, english: [v.en] }))} onComplete={() => handleTopicComplete('vocab_game')} title="Memory Game" />;
-            case 'exercise4': return <SimpleTranslationExercise exerciseKey="c15_ex4_expanded" course="a1" prompts={ex4TranslationPrompts} onComplete={() => handleTopicComplete('exercise4')} vocabulary={{"finca": "farm", "dos veces": "twice", "tres veces": "three times", "casi siempre": "almost always"}} highlightVocabulary={true} />;
-            case 'exercise5': return <RewriteAdverbExercise title="Exercise 5: Correct Position" prompts={ex5RewritePrompts} onComplete={() => handleTopicComplete('exercise5')} vocabulary={{"iglesia": "church", "loza": "dishes", "interrumpir": "interrupt", "mañana": "morning"}} />;
-            case 'order1': return <RewriteAdverbExercise title="Correct Order 1" prompts={orderPrompts1.map(p => ({ base: p.base, correct: p.correct, adverb: '' }))} onComplete={() => handleTopicComplete('order1')} />;
-            case 'how_often': 
-                return (
-                    <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left">
-                        <CardHeader><CardTitle>How Often Challenge</CardTitle><CardDescription>Responde a las preguntas usando adverbios de frecuencia.</CardDescription></CardHeader>
-                        <CardContent className="space-y-6">
-                            <div className="p-4 bg-muted rounded-xl border-l-4 border-primary">
-                                <p className="font-bold">HOW OFTEN...? = ¿Qué tan seguido...?</p>
-                                <p className="text-sm italic">Example: How often do you go to the gym? - I go every day.</p>
-                            </div>
-                            <Separator />
-                            <div className="text-center py-10">
-                                <HelpCircle className="h-20 w-20 text-primary/20 mx-auto mb-4" />
-                                <h3 className="text-xl font-black uppercase">Práctica Oral con el Profesor</h3>
-                                <p className="text-muted-foreground mt-2">Responde estas preguntas en voz alta durante tu clase.</p>
-                            </div>
-                        </CardContent>
-                        <CardFooter className="justify-center border-t pt-6"><Button onClick={() => handleTopicComplete('how_often')} size="lg" className="px-12 font-bold">He practicado</Button></CardFooter>
-                    </Card>
-                );
+            case 'exercise4': return <BallsExercise key="ex4" title="Exercise 4: Habits & Routine" prompts={ex4TranslationPrompts} onComplete={() => handleTopicComplete('exercise4')} vocabulary={ex4Vocab} />;
+            case 'exercise5': return <RewriteAdverbExercise key="ex5" title="Exercise 5: Correct Position" prompts={ex5RewritePrompts} onComplete={() => handleTopicComplete('exercise5')} vocabulary={ex5Vocab} />;
+            case 'order1': return <RewriteAdverbExercise key="order1" title="Correct Order 1" prompts={orderPrompts1.map(p => ({ base: p.base, correct: p.correct, adverb: '' }))} onComplete={() => handleTopicComplete('order1')} />;
+            case 'how_often': return <BallsExercise key="how_often" title="HOW OFTEN CHALLENGE" prompts={howOftenPrompts} onComplete={() => handleTopicComplete('how_often')} vocabulary={howOftenVocab} />;
             case 'create1': 
-                return (
-                    <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground">
-                        <CardHeader><CardTitle>Create 1: Tu Rutina</CardTitle><CardDescription>Escribe 4 frases sobre tus hábitos usando adverbios de frecuencia.</CardDescription></CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="grid gap-4">
-                                {[1, 2, 3, 4].map(i => (
-                                    <div key={i} className="space-y-2">
-                                        <Label className="font-bold text-xs text-primary uppercase">Frase {i}</Label>
-                                        <Input placeholder="I always..." className="h-12 border-primary/20" />
-                                    </div>
-                                ))}
-                            </div>
-                        </CardContent>
-                        <CardFooter className="justify-center border-t pt-6"><Button onClick={() => handleTopicComplete('create1')} size="lg" className="px-16 font-bold h-12">Finalizar Escritura</Button></CardFooter>
-                    </Card>
-                );
-            case 'order2': return <RewriteAdverbExercise title="Correct Order 2" prompts={orderPrompts2.map(p => ({ base: p.base, correct: p.correct, adverb: '' }))} onComplete={() => handleTopicComplete('order2')} />;
-            case 'exercise6': return <SimpleTranslationExercise exerciseKey="c15_ex6" course="a1" prompts={ex6Prompts} onComplete={() => handleTopicComplete('exercise6')} />;
-            case 'order3': return <RewriteAdverbExercise title="Correct Order 3" prompts={orderPrompts3.map(p => ({ base: p.base, correct: p.correct, adverb: '' }))} onComplete={() => handleTopicComplete('order3')} />;
+                return <ManualGradingExercise 
+                    key="create1"
+                    title="CREATE 1" 
+                    description="Inventa 4 frases usando la estructura 'How often' y sus respuestas." 
+                    onComplete={() => handleTopicComplete('create1')} 
+                    studentDocRef={studentDocRef} 
+                    isAdmin={isAdmin} 
+                    initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.create1} 
+                    initialGrades={studentProfile?.lessonProgress?.[progressStorageVersion]?.create1Grades} 
+                    savePath={`lessonProgress.${progressStorageVersion}.create1`} 
+                    savePathGrades={`lessonProgress.${progressStorageVersion}.create1Grades`} 
+                    lineCount={4}
+                    isSupervisionMode={!!overrideStudentId}
+                />;
+            case 'order2': return <RewriteAdverbExercise key="order2" title="Correct Order 2" prompts={orderPrompts2.map(p => ({ base: p.base, correct: p.correct, adverb: '' }))} onComplete={() => handleTopicComplete('order2')} />;
+            case 'exercise6': return <BallsExercise key="ex6" title="Exercise 6" prompts={ex6Prompts} onComplete={() => handleTopicComplete('exercise6')} vocabulary={ex6Vocab} />;
+            case 'order3': return <RewriteAdverbExercise key="order3" title="Correct Order 3" prompts={orderPrompts3.map(p => ({ base: p.base, correct: p.correct, adverb: '' }))} onComplete={() => handleTopicComplete('order3')} />;
             default: return null;
         }
     };
@@ -523,7 +762,7 @@ export default function Class15Content({ overrideStudentId }: { overrideStudentI
     return (
         <div className="grid gap-8 md:grid-cols-12 text-foreground animate-in fade-in duration-500">
             <div className="md:col-span-9 md:order-1 order-2">{renderContent()}</div>
-            <div className="md:col-span-3 md:order-2 order-1 text-left text-foreground">
+            <div className="md:col-span-3 md:order-2 order-1 text-left">
                 <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
                     <CardHeader className="pb-4 border-b bg-muted/30">
                         <CardTitle className="text-lg font-black text-primary uppercase tracking-tighter flex items-center gap-2">
@@ -531,7 +770,7 @@ export default function Class15Content({ overrideStudentId }: { overrideStudentI
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="p-0">
-                        <div className="max-h-[60vh] overflow-y-auto px-6 py-6 text-foreground">
+                        <div className="max-h-[60vh] overflow-y-auto px-6 py-6 text-foreground text-left">
                             <nav><ul className="space-y-1">
                                 {learningPath.map(item => {
                                     const isLocked = item.status === 'locked' && !isAdmin;
