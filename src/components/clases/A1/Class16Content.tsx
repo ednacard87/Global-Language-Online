@@ -47,7 +47,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { VocabularyMatchingGame } from '@/components/dashboard/vocabulary-matching-game';
 
 // --- CONFIGURACIÓN DE INGENIERÍA ---
-const progressStorageVersion = 'progress_a1_eng_u3_c16_v4_final_stable';
+const progressStorageVersion = 'progress_a1_eng_u3_c16_v5_formatting_fix';
 const mainProgressKey = 'progress_a1_eng_unit_3_class_16';
 
 const ICONS_CONFIG = {
@@ -98,6 +98,7 @@ const ex1Questions = [
 
 const writingPrompts = [
     "SUSAN = ¿QUE HACE ELLA?",
+    "Respuesta (Translation)",
     "NOAH = ELLA ES ESTUDIANTE,",
     "SUSAN = ¿QUE ESTÁ ESTUDIANDO ELLA? -",
     "NOAH = ELLA ESTA ESTUDIANDO ____",
@@ -420,35 +421,53 @@ export default function Class16Content({ overrideStudentId }: { overrideStudentI
                             {[
                                 {
                                     title: "Ficha 1: El Concepto",
-                                    content: "PREPOSICIONES DE TIEMPO: la relación que hay entre dos palabras.Se utilizan para indicar cuándo sucedió algo. Las tres preposiciones más comunes (AT, ON, IN), pueden ser utilizadas como preposiciones de tiempo Y preposiciones de lugar."
+                                    content: `PREPOSICIONES DE TIEMPO: la relación que hay entre dos palabras. 
+
+Se utilizan para indicar cuándo sucedió algo. 
+Las tres preposiciones más comunes (AT, ON, IN), 
+pueden ser utilizadas como preposiciones de tiempo Y preposiciones de lugar.`            
                                 },
                                 {
                                     title: "Ficha 2: ''AT''",
-                                    content: "AT + HORA DEL DIA: meetings, classes, appointments (Ex: At 6:30). AT + FESTIVIDADES: At Christmas, At Easter, At Holidays. EXPRESIONES: At dawn, At noon, At night, At midnight, At the moment."
+                                    content: `AT + HORA DEL DIA: meetings, classes, appointments (Ex: At 6:30). 
+
+AT + FESTIVIDADES: At Christmas, At Easter, At Holidays. 
+
+EXPRESIONES: At dawn, At noon, At night, At midnight, At the moment.`
                                 },
                                 {
                                     title: "Ficha 3: ''ON''",
-                                    content: "ON + DAYS: On Monday, On Wednesday, On the weekend (American). ON + DAYS + PARTS: On Friday morning, On Sunday evening. ON + DATES: On Christmas Day, On Mother's Day, On vacation, On July 4th."
+                                    content: `ON + DAYS: On Monday, On Wednesday, On the weekend (American). 
+
+ON + DAYS + PARTS: On Friday morning, On Sunday evening. 
+
+ON + DATES: On Christmas Day, On New Year's Day, On Mother's Day, On vacation.`
                                 },
                                 {
                                     title: "Ficha 4: ''IN''",
-                                    content: "IN + PARTS OF DAY: In the morning, In the evening. IN + MONTHS/YEARS: In January, In 1966, In the 1960s. IN + SEASONS: In summer, In winter. IN + LONG PERIODS: In the 19th century, In the past, In the future."
+                                    content: `IN + PARTS OF DAY: In the morning, In the evening. 
+
+IN + MONTHS/YEARS: In January, In 1966, In the 1960s. 
+
+IN + SEASONS: In summer, In winter. 
+
+IN + LONG PERIODS: In the 19th century, In the past, In the future.`
                                 }
                             ].map((ficha, idx) => (
-                                <div key={idx} className="p-6 bg-white/60 dark:bg-background/20 rounded-[2rem] border shadow-sm space-y-4 font-bold">
-                                    <h3 className="text-xl font-black text-primary uppercase">{ficha.title}</h3>
-                                    <p className="text-sm leading-relaxed whitespace-pre-wrap">{ficha.content}</p>
+                                <div key={idx} className="p-8 bg-card/80 dark:bg-slate-800/80 backdrop-blur-md rounded-[2.5rem] border-2 border-primary/20 shadow-xl space-y-4 font-bold transition-all hover:scale-[1.02] hover:border-primary/40 group">
+                                    <h3 className="text-2xl font-black text-primary uppercase tracking-tight group-hover:text-brand-purple transition-colors">{ficha.title}</h3>
+                                    <p className="text-base leading-relaxed whitespace-pre-wrap text-foreground/90">{ficha.content}</p>
                                 </div>
                             ))}
                         </div>
                         
-                        <CardFooter className="justify-center pt-10"><Button onClick={() => handleTopicComplete('grammar_at_on_in')} size="lg" className="px-24 font-black h-14 text-xl shadow-xl uppercase">¡Listo!</Button></CardFooter>
+                        <CardFooter className="justify-center pt-10"><Button onClick={() => handleTopicComplete('grammar_at_on_in')} size="lg" className="px-24 font-black h-16 text-2xl shadow-2xl uppercase tracking-widest bg-primary hover:bg-primary/90 text-primary-foreground rounded-full">¡Entendido!</Button></CardFooter>
                     </div>
                 );
             case 'ex3': return <BallsExercise title="Exercise 3" onComplete={() => handleTopicComplete('ex3')} />;
             case 'ex4': return <BallsExercise title="Exercise 4" onComplete={() => handleTopicComplete('ex4')} />;
             case 'vocab_game': 
-                return <VocabularyMatchingGame data={prepositionsVocab.slice(0, 10).map(v => ({ spanish: v.es, english: [v.en] }))} onComplete={() => handleTopicComplete('vocab_game')} title="Memory: Prepositions" />;
+                return <VocabularyMatchingGame data={prepositionsVocab.map(v => ({ spanish: v.es, english: [v.en] }))} onComplete={() => handleTopicComplete('vocab_game')} title="Memory: Prepositions of Place" />;
             case 'ex5': return <BallsExercise title="Exercise 5" onComplete={() => handleTopicComplete('ex5')} />;
             case 'ex6': return <BallsExercise title="Exercise 6" onComplete={() => handleTopicComplete('ex6')} />;
             case 'ex7': return <BallsExercise title="Exercise 7: HOW+ADJETIVO" onComplete={() => handleTopicComplete('ex7')} />;
