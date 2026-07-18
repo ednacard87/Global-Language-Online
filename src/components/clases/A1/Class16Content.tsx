@@ -61,11 +61,11 @@ const ICONS_CONFIG = {
 
 const prepositionsVocab = [
     { es: "SOBRE", en: "ON" },
-    { es: "EN, ADENTRO DE", en: "IN" },
-    { es: "EN", en: "AT" },
+    { es: "ADENTRO DE", en: "INSIDE" },
+    { es: "EN", en: "IN" },
     { es: "AFUERA", en: "OUTSIDE" },
     { es: "ENCIMA DE", en: "ABOVE" },
-    { es: "DEBAJO DE", en: "BELOW / UNDER" },
+    { es: "DEBAJO DE", en: "UNDER" },
     { es: "AL LADO DE", en: "NEXT TO" },
     { es: "A LA IZQUIERDA", en: "ON THE LEFT" },
     { es: "A LA DERECHA", en: "ON THE RIGHT" },
