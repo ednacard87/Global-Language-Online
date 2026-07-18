@@ -420,7 +420,7 @@ export default function Class16Content({ overrideStudentId }: { overrideStudentI
                             {[
                                 {
                                     title: "Ficha 1: El Concepto",
-                                    content: "PREPOSICIONES DE TIEMPO: la relación que hay entre dos palabras." <br/> "Se utilizan para indicar cuándo sucedió algo. Las tres preposiciones más comunes (AT, ON, IN), pueden ser utilizadas como preposiciones de tiempo Y preposiciones de lugar."
+                                    content: "PREPOSICIONES DE TIEMPO: la relación que hay entre dos palabras.Se utilizan para indicar cuándo sucedió algo. Las tres preposiciones más comunes (AT, ON, IN), pueden ser utilizadas como preposiciones de tiempo Y preposiciones de lugar."
                                 },
                                 {
                                     title: "Ficha 2: ''AT''",
