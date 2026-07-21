@@ -6,7 +6,7 @@ import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { BookOpen, PenSquare, Lock, CheckCircle, Hand, GraduationCap, Type, Activity, MessageSquare, BrainCircuit, RefreshCw, Flame, Trophy } from 'lucide-react';
+import { BookOpen, PenSquare, Lock, CheckCircle, Hand, GraduationCap, Type, Activity, MessageSquare, BrainCircuit, RefreshCw, Flame, Trophy, Mic, Globe, MapPin } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
@@ -32,7 +32,7 @@ type Topic = {
   status: 'locked' | 'active' | 'completed';
 };
 
-const progressStorageKey = 'progress_espanol_intro_1_v4';
+const progressStorageKey = 'progress_espanol_intro_1_v6_bilingual'; // Updated version
 const mainProgressKey = 'progress_espanol_intro_1';
 
 const saludosData = [
@@ -44,7 +44,7 @@ const saludosData = [
     { spanish: '¿Cómo te va?', english: "How's it going?" },
     { spanish: '¿Qué tal?', english: "What's up?" },
     { spanish: 'Mucho gusto', english: 'Nice to meet you' },
-    { spanish: 'Encantado / Encantada', english: 'Delighted / Pleased to meet you' },
+    { spanish: 'Encantado / Encantada de conocerte', english: 'Delighted / Pleased to meet you' },
 ];
 
 const despedidasData = [
@@ -53,7 +53,9 @@ const despedidasData = [
     { spanish: 'Hasta luego', english: 'See you later' },
     { spanish: 'Hasta mañana', english: 'See you tomorrow' },
     { spanish: 'Hasta pronto', english: 'See you soon' },
-    { spanish: 'Nos vemos', english: 'See you' },
+    { spanish: 'Nos vemos...', english: 'See you...' },
+    { spanish: 'Nos vemos pronto', english: 'See you soon' },
+    { spanish: 'Nos vemos mañana', english: 'See you mañana' },
     { spanish: 'Cuídate', english: 'Take care' },
     { spanish: 'Buenas noches', english: 'Good night (farewell/sleep)' },
     { spanish: 'Que tengas un buen día', english: 'Have a nice day' },
@@ -70,6 +72,7 @@ const nounsPracticeData = [
     { english: 'bed', spanish: 'cama' },
     { english: 'dog', spanish: 'perro' },
     { english: 'house', spanish: 'casa' },
+    { english: 'cat', spanish: 'gato' },
 ];
 
 const adjectivesPracticeData = [
@@ -270,7 +273,10 @@ export default function EspanolIntro1Page() {
     }, [user, studentProfile]);
     
     const initialLearningPath = useMemo((): Topic[] => [
-        { key: 'saludos', name: 'Saludos (Greetings)', icon: Hand, status: 'active' },
+        { key: 'fonetica', name: 'Fonética Español', icon: Mic, status: 'active' },
+        { key: 'latinoamerica', name: 'Latinoamérica', icon: Globe, status: 'locked' },
+        { key: 'colombia', name: 'Colombia', icon: MapPin, status: 'locked' },
+        { key: 'saludos', name: 'Saludos (Greetings)', icon: Hand, status: 'locked' },
         { key: 'despedidas', name: 'Despedidas (Farewells)', icon: MessageSquare, status: 'locked' },
         { key: 'sustantivos', name: 'Sustantivos (Nouns)', icon: Type, status: 'locked' },
         { key: 'adjetivos', name: 'Adjetivos (Adjectives)', icon: GraduationCap, status: 'locked' },
@@ -298,7 +304,7 @@ export default function EspanolIntro1Page() {
         setLearningPath(newPath);
 
         const firstActive = newPath.find(p => p.status === 'active');
-        setSelectedTopic(firstActive?.key || 'saludos');
+        setSelectedTopic(firstActive?.key || 'fonetica');
 
     }, [isAdmin, initialLearningPath, studentProfile, isUserLoading, isProfileLoading]);
     
@@ -359,7 +365,7 @@ export default function EspanolIntro1Page() {
             return;
         }
         setSelectedTopic(key);
-        const autoFinish = ['saludos', 'despedidas'];
+        const autoFinish = ['fonetica', 'latinoamerica', 'colombia', 'saludos', 'despedidas'];
         if (autoFinish.includes(key)) {
             handleTopicComplete(key);
         }
@@ -497,6 +503,182 @@ export default function EspanolIntro1Page() {
 
     const renderContent = () => {
         switch(selectedTopic) {
+            case 'fonetica':
+                return (
+                    <Card className="shadow-soft border-2 border-brand-purple">
+                        <CardHeader>
+                            <CardTitle>Fonética del Español / Spanish Phonetics</CardTitle>
+                            <CardDescription>Aprende la pronunciación básica / Learn basic pronunciation.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                            <div className="bg-primary/5 p-4 rounded-lg border-l-4 border-primary">
+                                <h3 className="text-xl font-bold text-primary mb-2">Las 5 Vocales / The 5 Vowels</h3>
+                                <div className="grid grid-cols-5 gap-2 text-center">
+                                    {['A', 'E', 'I', 'O', 'U'].map(v => (
+                                        <div key={v} className="p-4 bg-muted rounded-lg text-3xl font-black text-primary">{v}</div>
+                                    ))}
+                                </div>
+                                <div className="mt-4 space-y-2 text-left">
+                                    <p className="text-muted-foreground">
+                                        A diferencia del inglés, las vocales en español tienen <strong>UN SOLO SONIDO</strong> cada una. Siempre suenan igual, no importa la palabra.
+                                    </p>
+                                    <p className="text-sm italic text-muted-foreground border-t pt-2">
+                                        Unlike English, vowels in Spanish have <strong>ONLY ONE SOUND</strong> each. They always sound the same, regardless of the word.
+                                    </p>
+                                </div>
+                            </div>
+                            <Separator />
+                            <div className="grid md:grid-cols-2 gap-6 text-left">
+                                <div className="space-y-4">
+                                    <h3 className="text-xl font-bold text-primary">Tips de Pronunciación</h3>
+                                    <ul className="list-disc pl-5 space-y-2">
+                                        <li><strong>Transparencia:</strong> Casi todas las palabras se pronuncian exactamente como se escriben.</li>
+                                        <li><strong>La H:</strong> Es muda. Nunca suena. (Ej: <em>Hola</em> se pronuncia /ola/).</li>
+                                        <li><strong>La LL y Y:</strong> En la mayoría de Latinoamérica, suenan parecido a la "Y" en inglés (<em>Yellow</em>).</li>
+                                        <li><strong>La R:</strong> Es más fuerte y vibrante que en inglés, especialmente al inicio de palabra.</li>
+                                    </ul>
+                                </div>
+                                <div className="space-y-4 bg-muted/30 p-4 rounded-xl border border-dashed">
+                                    <h3 className="text-xl font-bold text-primary">Pronunciation Tips</h3>
+                                    <ul className="list-disc pl-5 space-y-2 text-sm italic">
+                                        <li><strong>Transparency:</strong> Almost all words are pronounced exactly as they are written.</li>
+                                        <li><strong>The H:</strong> It is silent. It never makes a sound. (e.g., <em>Hola</em> is pronounced /ola/).</li>
+                                        <li><strong>LL and Y:</strong> In most of Latin America, they sound similar to the English "Y" (<em>Yellow</em>).</li>
+                                        <li><strong>The R:</strong> It is stronger and more vibrant than in English, especially at the beginning of a word.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </CardContent>
+                        <CardFooter>
+                            <Button onClick={() => handleTopicComplete('fonetica')}>Avanzar / Advance</Button>
+                        </CardFooter>
+                    </Card>
+                );
+            case 'latinoamerica':
+                const latamImg = PlaceHolderImages.find(p => p.id === 'latinoamerica-map');
+                return (
+                    <Card className="shadow-soft border-2 border-brand-purple">
+                        <CardHeader>
+                            <CardTitle>Latinoamérica / Latin America</CardTitle>
+                            <CardDescription>Un mundo de cultura y color / A world of culture and color.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                            {latamImg && (
+                                <div className="relative aspect-video w-full overflow-hidden rounded-xl border bg-white">
+                                    <Image 
+                                        src={latamImg.imageUrl} 
+                                        alt={latamImg.description} 
+                                        fill 
+                                        className="object-contain" 
+                                        data-ai-hint={latamImg.imageHint}
+                                    />
+                                </div>
+                            )}
+                            <div className="grid md:grid-cols-2 gap-6 text-lg leading-relaxed text-left">
+                                <div className="space-y-4">
+                                    <p>
+                                        Latinoamérica es una región vasta que abarca desde México hasta la Patagonia. Con más de 600 millones de personas, es el hogar de una increíble biodiversidad y una rica herencia cultural que mezcla raíces indígenas, europeas y africanas.
+                                    </p>
+                                    <p>
+                                        Aprender español te abre las puertas a 20 países con historias, paisajes y tradiciones únicas.
+                                    </p>
+                                </div>
+                                <div className="space-y-4 text-base italic text-muted-foreground bg-muted/20 p-4 rounded-xl border border-dashed">
+                                    <p>
+                                        Latin America is a vast region spanning from Mexico to Patagonia. With over 600 million people, it is home to incredible biodiversity and a rich cultural heritage that blends indigenous, European, and African roots.
+                                    </p>
+                                    <p>
+                                        Learning Spanish opens the doors to 20 countries with unique stories, landscapes, and traditions.
+                                    </p>
+                                </div>
+                            </div>
+                        </CardContent>
+                        <CardFooter>
+                            <Button onClick={() => handleTopicComplete('latinoamerica')}>Siguiente: Colombia / Next: Colombia</Button>
+                        </CardFooter>
+                    </Card>
+                );
+            case 'colombia':
+                const colImg = PlaceHolderImages.find(p => p.id === 'colombia-map');
+                return (
+                    <Card className="shadow-soft border-2 border-brand-purple">
+                        <CardHeader>
+                            <CardTitle>Colombia: El Corazón del Español / The Heart of Spanish</CardTitle>
+                            <CardDescription>Conoce el país de la amabilidad / Get to know the land of friendliness.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                            {colImg && (
+                                <div className="relative aspect-square w-full max-w-sm mx-auto overflow-hidden rounded-xl border bg-white">
+                                    <Image 
+                                        src={colImg.imageUrl} 
+                                        alt={colImg.description} 
+                                        fill 
+                                        className="object-contain" 
+                                        data-ai-hint={colImg.imageHint}
+                                    />
+                                </div>
+                            )}
+                            <Accordion type="single" collapsible className="w-full text-left">
+                                <AccordionItem value="acentos">
+                                    <AccordionTrigger className="text-xl font-bold">Acentos / Accents</AccordionTrigger>
+                                    <AccordionContent className="space-y-4 pt-2">
+                                        <div className="space-y-2">
+                                            <p className="font-semibold text-foreground">Colombia es famosa por tener uno de los españoles más claros del mundo, pero tiene mucha variedad regional:</p>
+                                            <ul className="list-disc pl-5 text-muted-foreground">
+                                                <li><strong>Paisa:</strong> De Medellín, muy rítmico y amable.</li>
+                                                <li><strong>Rolo:</strong> De Bogotá, neutro y formal.</li>
+                                                <li><strong>Costeño:</strong> De la costa caribe, rápido y alegre.</li>
+                                            </ul>
+                                        </div>
+                                        <div className="p-3 bg-muted rounded-lg border italic text-sm text-muted-foreground">
+                                            Colombia is famous for having one of the clearest Spanish accents in the world, but it has a lot of regional variety:
+                                            <ul className="list-disc pl-5 mt-1">
+                                                <li><strong>Paisa:</strong> From Medellín, very rhythmic and friendly.</li>
+                                                <li><strong>Rolo:</strong> From Bogotá, neutral and formal.</li>
+                                                <li><strong>Costeño:</strong> From the Caribbean coast, fast and cheerful.</li>
+                                            </ul>
+                                        </div>
+                                    </AccordionContent>
+                                </AccordionItem>
+                                <AccordionItem value="comida">
+                                    <AccordionTrigger className="text-xl font-bold">Comida / Food</AccordionTrigger>
+                                    <AccordionContent className="space-y-4 pt-2">
+                                        <div className="space-y-2">
+                                            <p className="font-semibold text-foreground">No te puedes ir sin probar:</p>
+                                            <ul className="list-disc pl-5 text-muted-foreground">
+                                                <li><strong>Bandeja Paisa:</strong> El plato más emblemático y abundante.</li>
+                                                <li><strong>Arepas:</strong> Pan de maíz circular que acompaña casi todo.</li>
+                                                <li><strong>Ajiaco:</strong> Una sopa de pollo y papas tradicional de Bogotá.</li>
+                                            </ul>
+                                        </div>
+                                        <div className="p-3 bg-muted rounded-lg border italic text-sm text-muted-foreground">
+                                            You can't leave without trying:
+                                            <ul className="list-disc pl-5 mt-1">
+                                                <li><strong>Bandeja Paisa:</strong> The most emblematic and abundant dish.</li>
+                                                <li><strong>Arepas:</strong> Circular corn bread that accompanies almost everything.</li>
+                                                <li><strong>Ajiaco:</strong> A traditional chicken and potato soup from Bogotá.</li>
+                                            </ul>
+                                        </div>
+                                    </AccordionContent>
+                                </AccordionItem>
+                                <AccordionItem value="cultura">
+                                    <AccordionTrigger className="text-xl font-bold">Cultura / Culture</AccordionTrigger>
+                                    <AccordionContent className="space-y-4 pt-2">
+                                        <p className="font-semibold text-foreground">
+                                            Es la tierra del Realismo Mágico de Gabriel García Márquez. La música es omnipresente: desde la Cumbia y el Vallenato tradicional hasta el Pop y Reggaetón internacional de figuras como Shakira, Juanes o J Balvin.
+                                        </p>
+                                        <div className="p-3 bg-muted rounded-lg border italic text-sm text-muted-foreground">
+                                            It is the land of Magical Realism by Gabriel García Márquez. Music is omnipresent: from traditional Cumbia and Vallenato to international Pop and Reggaeton from figures like Shakira, Juanes, or J Balvin.
+                                        </div>
+                                    </AccordionContent>
+                                </AccordionItem>
+                            </Accordion>
+                        </CardContent>
+                        <CardFooter>
+                            <Button onClick={() => handleTopicComplete('colombia')}>Comenzar con los Saludos / Start with Greetings</Button>
+                        </CardFooter>
+                    </Card>
+                );
             case 'saludos': return (
                 <Card>
                     <CardHeader>
@@ -553,10 +735,10 @@ export default function EspanolIntro1Page() {
                         <div className="bg-primary/5 p-4 rounded-lg border-l-4 border-primary">
                             <p className="text-lg">Un sustantivo es una <strong>persona, animal y cosa</strong> (a noun is a person, animal and things).</p>
                         </div>
-                        <div>
+                        <div className="text-left">
                             <h3 className="text-xl font-bold text-primary mb-2">1. Género</h3>
                             <p className="text-muted-foreground">A diferencia del inglés, cada sustantivo en español tiene un género: <strong>Masculino</strong> o <strong>Femenino</strong>.</p>
-                            <div className="grid sm:grid-cols-2 gap-4 mt-4">
+                            <div className="grid sm:grid-cols-2 gap-4 mt-4 text-left">
                                 <div className="p-4 bg-muted rounded-lg border-l-4 border-blue-500">
                                     <h4 className="font-bold">Masculino</h4>
                                     <p className="text-sm">Usualmente terminan en <strong>-o</strong></p>
@@ -570,7 +752,7 @@ export default function EspanolIntro1Page() {
                             </div>
                         </div>
                         <Separator />
-                        <div>
+                        <div className="text-left">
                             <h3 className="text-xl font-bold text-primary mb-2">2. Número</h3>
                             <p className="text-muted-foreground">Para hacer los sustantivos plurales, seguimos estas reglas simples:</p>
                             <ul className="list-disc pl-5 mt-2 space-y-2">
@@ -579,7 +761,7 @@ export default function EspanolIntro1Page() {
                             </ul>
                         </div>
                         <Separator />
-                        <div>
+                        <div className="text-left">
                             <h3 className="text-xl font-bold text-primary mb-2">3. Práctica de Vocabulario</h3>
                             <p className="text-muted-foreground mb-4">Traduce estos sustantivos comunes al español.</p>
                             <div className="grid grid-cols-2 gap-2 max-w-md mx-auto">
@@ -621,7 +803,7 @@ export default function EspanolIntro1Page() {
                         <CardDescription>Cómo describir cosas en español.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-6">
-                        <div>
+                        <div className="text-left">
                             <h3 className="text-xl font-bold text-primary mb-2">1. Concordancia</h3>
                             <p className="text-muted-foreground">Los adjetivos deben coincidir con el sustantivo que describen en <strong>género</strong> y <strong>número</strong>.</p>
                             <div className="mt-4 p-4 bg-muted rounded-lg font-mono text-base">
@@ -631,7 +813,7 @@ export default function EspanolIntro1Page() {
                             </div>
                         </div>
                         <Separator />
-                        <div>
+                        <div className="text-left">
                             <h3 className="text-xl font-bold text-primary mb-2">2. Posición</h3>
                             <p className="text-muted-foreground">En español, los adjetivos usualmente van <strong>después</strong> del sustantivo.</p>
                             <div className="mt-2 p-3 bg-muted rounded-lg border flex items-center justify-between">
@@ -644,7 +826,7 @@ export default function EspanolIntro1Page() {
                             </div>
                         </div>
                         <Separator />
-                        <div>
+                        <div className="text-left">
                             <h3 className="text-xl font-bold text-primary mb-2">3. Práctica de Vocabulario</h3>
                             <p className="text-muted-foreground mb-4">Traduce estos adjetivos comunes al español.</p>
                             <div className="grid grid-cols-2 gap-2 max-w-md mx-auto">
@@ -686,7 +868,7 @@ export default function EspanolIntro1Page() {
                         <CardDescription>El motor de la oración.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-6">
-                        <div>
+                        <div className="text-left">
                             <h3 className="text-xl font-bold text-primary mb-2">1. El Infinitivo</h3>
                             <p className="text-muted-foreground">Todos los verbos en español terminan en una de tres formas en su estado original:</p>
                             <div className="flex gap-4 mt-4">
@@ -697,7 +879,7 @@ export default function EspanolIntro1Page() {
                             <p className="text-sm mt-2 text-center text-muted-foreground italic">Ejemplos: Habl<strong>ar</strong>, Com<strong>er</strong>, Viv<strong>ir</strong></p>
                         </div>
                         <Separator />
-                        <div>
+                        <div className="text-left">
                             <h3 className="text-xl font-bold text-primary mb-2">2. El Misterio de "Ser" vs "Estar"</h3>
                             <p className="text-muted-foreground">En español tenemos dos formas para decir "to be":</p>
                             <div className="grid grid-cols-2 gap-4 mt-2">
@@ -710,7 +892,7 @@ export default function EspanolIntro1Page() {
                             </div>
                         </div>
                         <Separator />
-                        <div>
+                        <div className="text-left">
                             <h3 className="text-xl font-bold text-primary mb-2">3. Práctica de Vocabulario</h3>
                             <p className="text-muted-foreground mb-4">Traduce estos verbos comunes al español.</p>
                             <div className="grid grid-cols-2 gap-2 max-w-md mx-auto">
@@ -753,13 +935,13 @@ export default function EspanolIntro1Page() {
                         <CardDescription>Practica tu comprensión de lectura con este texto que resume lo aprendido.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-6">
-                        <div className="bg-muted p-6 rounded-lg border italic text-lg leading-relaxed shadow-inner">
+                        <div className="bg-muted p-6 rounded-lg border italic text-lg leading-relaxed shadow-inner text-left">
                             {lecturaData.content}
                         </div>
 
                         <Separator />
 
-                        <div className="space-y-8">
+                        <div className="space-y-8 text-left">
                             <div className="space-y-6">
                                 <h3 className="text-xl font-bold text-primary">Preguntas de Selección Múltiple</h3>
                                 {lecturaData.multipleChoice.map((q) => (
@@ -789,7 +971,7 @@ export default function EspanolIntro1Page() {
 
                             <Separator />
 
-                            <div className="space-y-6">
+                            <div className="space-y-6 text-left">
                                 <h3 className="text-xl font-bold text-primary">Preguntas de Escritura</h3>
                                 {lecturaData.openQuestions.map((q) => (
                                     <div key={q.id} className="space-y-2 p-4 border rounded-lg bg-card">
@@ -827,9 +1009,9 @@ export default function EspanolIntro1Page() {
             <DashboardHeader />
             <main className="flex-1 p-4 md:p-8">
                 <div className="max-w-7xl mx-auto">
-                    <div className="mb-8">
-                        <Link href="/espanol/intro" className="hover:underline text-sm text-muted-foreground">Volver a Aventura Intro</Link>
-                        <h1 className="text-4xl font-bold dark:text-primary">Intro 1 Español</h1>
+                    <div className="mb-8 text-left">
+                        <Link href="/espanol/intro" className="hover:underline text-sm text-white/80">Volver a Aventura Intro</Link>
+                        <h1 className="text-4xl font-bold text-white uppercase tracking-tighter">Intro 1 Español (1S)</h1>
                     </div>
                     <div className="grid gap-8 md:grid-cols-12">
                         <div className="md:col-span-4">
@@ -842,7 +1024,7 @@ export default function EspanolIntro1Page() {
                                                 const Icon = item.icon;
                                                 return (
                                                     <li key={item.key} onClick={() => handleTopicSelect(item.key)}
-                                                        className={cn('flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer',
+                                                        className={cn('flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer text-left',
                                                             item.status === 'locked' && !isAdmin ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted',
                                                             selectedTopic === item.key && 'bg-muted text-primary font-semibold'
                                                         )}
@@ -855,7 +1037,7 @@ export default function EspanolIntro1Page() {
                                             })}
                                         </ul>
                                     </nav>
-                                     <div className="mt-6 pt-6 border-t">
+                                     <div className="mt-6 pt-6 border-t text-left">
                                         <div className="flex justify-between items-center text-sm font-medium text-muted-foreground mb-2">
                                             <span>Progreso</span><span className="font-bold text-foreground">{progressValue}%</span>
                                         </div>

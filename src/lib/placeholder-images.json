@@ -120,5 +120,17 @@
       "imageUrl": "https://img.freepik.com/free-vector/hand-drawn-anime-style-boy-band_52683-111162.jpg?w=1380",
       "imageHint": "bear cartoon"
     }
+    {
+      "id": "latinoamerica-map",
+      "description": "Mapa de Latinoamérica",
+      "imageUrl": "https://img.magnific.com/vector-gratis/mapa-america-latina-nombres-paises_1199-386.jpg?semt=ais_hybrid&w=740&q=80",
+      "imageHint": "latin america"
+    },
+    {
+      "id": "colombia-map",
+      "description": "Mapa político de Colombia",
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Colombia%2C_administrative_divisions_-_es_-_colored_%28%2Bbox%29.svg/500px-Colombia%2C_administrative_divisions_-_es_-_colored_%28%2Bbox%29.svg.png",
+      "imageHint": "colombia map"
+    }
   ]
 }
