@@ -1,12 +1,13 @@
 'use client';
 
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, Suspense, Fragment } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { BookOpen, PenSquare, Lock, CheckCircle, Hand, GraduationCap, Type, Activity, MessageSquare, BrainCircuit, RefreshCw, Flame, Trophy, Mic, Globe, MapPin } from 'lucide-react';
+import { BookOpen, PenSquare, Lock, CheckCircle, Hand, GraduationCap, Type, Activity, MessageSquare, BrainCircuit, RefreshCw, Flame, Trophy, Mic, Globe, MapPin, ArrowLeft, ArrowRight, Star, Loader2, Pencil } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
@@ -18,7 +19,6 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import Image from 'next/image';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 // Helper function to normalize strings for comparison (removes accents)
 const normalizeString = (str: string) => {
@@ -32,7 +32,7 @@ type Topic = {
   status: 'locked' | 'active' | 'completed';
 };
 
-const progressStorageKey = 'progress_espanol_intro_1_v6_bilingual'; // Updated version
+const progressStorageVersion = 'progress_espanol_intro_1_v6_bilingual'; 
 const mainProgressKey = 'progress_espanol_intro_1';
 
 const saludosData = [
@@ -86,7 +86,7 @@ const adjectivesPracticeData = [
     { english: 'bored', spanish: 'aburrido' },
     { english: 'worried', spanish: 'preocupado' },
     { english: 'tired', spanish: 'cansado' },
-    { english: 'busy', spanish: 'ocupado' },
+    { english: 'busy', spanish: 'ocuapdo' },
     { english: 'tidy', spanish: 'ordenado' },
 ];
 
@@ -212,7 +212,7 @@ const VocabularyMatchingGame = ({ onComplete }: { onComplete: () => void }) => {
             <CardContent>
                 {isGameComplete ? (
                      <div className="text-center p-12 flex flex-col items-center">
-                        <Trophy className="h-20 w-20 text-yellow-400 mb-6" />
+                        <Trophy className="h-20 w-20 text-yellow-400 mb-6 animate-bounce" />
                         <h2 className="text-3xl font-bold">¡Felicidades!</h2>
                         <p className="text-lg text-muted-foreground mt-3">Has dominado el vocabulario básico de Intro 1.</p>
                      </div>
@@ -239,14 +239,18 @@ const VocabularyMatchingGame = ({ onComplete }: { onComplete: () => void }) => {
     );
 };
 
-export default function EspanolIntro1Page() {
+function Intro1SpanishContent() {
     const { toast } = useToast();
+    const searchParams = useSearchParams();
+    const { t } = useTranslation();
     const { user, isUserLoading } = useUser();
     const firestore = useFirestore();
 
+    const [isInitialLoading, setIsInitialLoading] = useState(true);
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
-    const [selectedTopic, setSelectedTopic] = useState('');
+    const [selectedTopic, setSelectedTopic] = useState<string>('');
     const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
+    const [initialLoadComplete, setInitialLoadComplete] = useState(false);
 
     const [nounAnswers, setNounAnswers] = useState<string[]>(Array(nounsPracticeData.length).fill(''));
     const [nounValidation, setNounValidation] = useState<('correct' | 'incorrect' | 'unchecked')[]>(Array(nounsPracticeData.length).fill('unchecked'));
@@ -260,17 +264,26 @@ export default function EspanolIntro1Page() {
     const [readingAnswers, setReadingAnswers] = useState<Record<string, string>>({});
     const [readingValidation, setReadingValidation] = useState<Record<string, 'correct' | 'incorrect' | 'unchecked'>>({});
 
+    const targetStudentId = searchParams.get('studentId');
+    const currentUID = targetStudentId || user?.uid;
+
     const studentDocRef = useMemoFirebase(
+        () => (currentUID ? doc(firestore, 'students', currentUID) : null),
+        [firestore, currentUID]
+    );
+
+    const authUserRef = useMemoFirebase(
         () => (user ? doc(firestore, 'students', user.uid) : null),
         [firestore, user]
     );
 
-    const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{ role?: string; lessonProgress?: any; progress?: any }>(studentDocRef);
+    const { data: authUserProfile } = useDoc<{ role?: string }>(authUserRef);
+    const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{ role?: string; lessonProgress?: any; progress?: any; name?: string }>(studentDocRef);
 
     const isAdmin = useMemo(() => {
         if (!user) return false;
-        return studentProfile?.role === 'admin' || user.email === 'ednacard87@gmail.com';
-    }, [user, studentProfile]);
+        return authUserProfile?.role === 'admin' || user.email === 'ednacard87@gmail.com';
+    }, [user, authUserProfile]);
     
     const initialLearningPath = useMemo((): Topic[] => [
         { key: 'fonetica', name: 'Fonética Español', icon: Mic, status: 'active' },
@@ -286,27 +299,33 @@ export default function EspanolIntro1Page() {
     ], []);
 
     useEffect(() => {
-        if (isUserLoading || isProfileLoading) return;
+        if (isProfileLoading || isUserLoading || !studentProfile || initialLoadComplete) return;
 
-        const newPath = initialLearningPath.map(item => ({...item}));
-        
-        if (isAdmin) {
-            newPath.forEach(item => item.status = 'completed');
-        } else if (studentProfile?.lessonProgress?.[progressStorageKey]) {
-            const savedStatuses = studentProfile.lessonProgress[progressStorageKey];
-            newPath.forEach(item => {
-                if (savedStatuses[item.key]) {
-                    item.status = savedStatuses[item.key];
-                }
+        let path = initialLearningPath.map(topic => ({...topic}));
+        let savedST = '';
+
+        if (isAdmin && !targetStudentId) {
+            path.forEach(item => item.status = 'completed');
+        } else if (studentProfile?.lessonProgress?.[progressStorageVersion]) {
+            const savedData = studentProfile.lessonProgress[progressStorageVersion];
+            path.forEach(item => {
+                if (savedData[item.key]) item.status = savedData[item.key];
             });
+            savedST = savedData.lastSelectedTopic || '';
         }
         
-        setLearningPath(newPath);
+        let lastDone = true;
+        for (let i = 0; i < path.length; i++) {
+            if (lastDone && path[i].status === 'locked') path[i].status = 'active';
+            lastDone = path[i].status === 'completed';
+        }
 
-        const firstActive = newPath.find(p => p.status === 'active');
-        setSelectedTopic(firstActive?.key || 'fonetica');
+        setLearningPath(path);
+        setSelectedTopic(savedST || path.find(p => p.status === 'active')?.key || path[0].key);
+        setInitialLoadComplete(true);
+        setTimeout(() => setIsInitialLoading(false), 200);
 
-    }, [isAdmin, initialLearningPath, studentProfile, isUserLoading, isProfileLoading]);
+    }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading, isUserLoading, initialLoadComplete, targetStudentId]);
     
     const progressValue = useMemo(() => {
         if (learningPath.length === 0) return 0;
@@ -315,41 +334,40 @@ export default function EspanolIntro1Page() {
     }, [learningPath]);
 
     useEffect(() => {
-        if (isProfileLoading || isUserLoading) return;
-        if (!isAdmin && studentDocRef && learningPath.length > 0) {
-            const statusesToSave: Record<string, string> = {};
-            learningPath.forEach(item => {
-                statusesToSave[item.key] = item.status;
-            });
-            updateDocumentNonBlocking(studentDocRef, { 
-                [`lessonProgress.${progressStorageKey}`]: statusesToSave,
-                [`progress.${mainProgressKey}`]: progressValue
-            });
-            window.dispatchEvent(new CustomEvent('progressUpdated'));
-        }
-    }, [learningPath, progressValue, isAdmin, studentDocRef, isProfileLoading, isUserLoading]);
+        if (!initialLoadComplete || isInitialLoading || isAdmin || !studentDocRef || learningPath.length === 0 || targetStudentId) return;
 
-    const handleTopicComplete = useCallback((key: string) => {
-        setTopicToComplete(key);
-    }, []);
+        const s: Record<string, any> = { lastSelectedTopic: selectedTopic };
+        learningPath.forEach(item => { s[item.key] = item.status; });
+
+        updateDocumentNonBlocking(studentDocRef, { 
+            [`lessonProgress.${progressStorageVersion}`]: s,
+            [`progress.${mainProgressKey}`]: progressValue
+        });
+        if (progressValue >= 100) window.dispatchEvent(new CustomEvent('progressUpdated'));
+    }, [learningPath, isAdmin, progressValue, studentDocRef, initialLoadComplete, selectedTopic, isInitialLoading, targetStudentId]);
+
+    const handleTopicComplete = (completedKey: string) => {
+        setTopicToComplete(completedKey);
+    };
 
     useEffect(() => {
         if (!topicToComplete) return;
 
         setLearningPath(currentPath => {
             const newPath = currentPath.map(item => ({...item}));
-            const currentIndex = newPath.findIndex(item => item.key === topicToComplete);
+            const currentIndex = newPath.findIndex((t) => t.key === topicToComplete);
             
-            if (currentIndex !== -1 && newPath[currentIndex].status !== 'completed') {
+            if (currentIndex !== -1) {
                 newPath[currentIndex].status = 'completed';
 
-                const nextIndex = currentIndex + 1;
-                if (nextIndex < newPath.length && newPath[nextIndex].status === 'locked') {
-                    newPath[nextIndex].status = 'active';
-                    setSelectedTopic(newPath[nextIndex].key);
-                     toast({ title: "¡Tema desbloqueado!", description: `Ahora puedes continuar con ${newPath[nextIndex].name}` });
-                } else if (newPath.every(item => item.status === 'completed')) {
-                    toast({ title: "¡Felicitaciones!", description: "¡Has completado el 100% de la aventura Intro 1E!" });
+                if (currentIndex + 1 < newPath.length) {
+                    if (newPath[currentIndex + 1].status === 'locked') {
+                        newPath[currentIndex + 1].status = 'active';
+                        setTimeout(() => toast({ title: "¡Tema desbloqueado!", description: `Siguiente misión: ${newPath[currentIndex + 1].name}` }), 0);
+                    }
+                    // Auto-advance
+                    const nextKey = newPath[currentIndex + 1].key;
+                    setTimeout(() => setSelectedTopic(nextKey), 0);
                 }
             }
             return newPath;
@@ -365,10 +383,6 @@ export default function EspanolIntro1Page() {
             return;
         }
         setSelectedTopic(key);
-        const autoFinish = ['fonetica', 'latinoamerica', 'colombia', 'saludos', 'despedidas'];
-        if (autoFinish.includes(key)) {
-            handleTopicComplete(key);
-        }
     };
     
     const handleNounInputChange = (index: number, value: string) => {
@@ -388,7 +402,6 @@ export default function EspanolIntro1Page() {
         const newValidation = nounsPracticeData.map((item, index) => {
             const userAnswer = normalizeString(nounAnswers[index]);
             const correctAnswer = normalizeString(item.spanish);
-            // Accept "mama" for mother too
             const isCorrect = userAnswer === correctAnswer || (item.english === 'mother' && userAnswer === 'mama');
             if (!isCorrect) allCorrect = false;
             return isCorrect ? 'correct' : 'incorrect';
@@ -451,7 +464,6 @@ export default function EspanolIntro1Page() {
             const correctAnswer = normalizeString(item.spanish);
             let isCorrect = userAnswer === correctAnswer;
 
-            // Flexibilización de respuestas compuestas
             if (item.english === 'To watch TV' && (userAnswer === 'ver la television' || userAnswer === 'ver tv' || userAnswer === 'ver tele')) isCorrect = true;
             if (item.english === 'To drink' && userAnswer === 'tomar') isCorrect = true;
             
@@ -476,14 +488,12 @@ export default function EspanolIntro1Page() {
         const newValidation: Record<string, 'correct' | 'incorrect' | 'unchecked'> = {};
         let allCorrect = true;
 
-        // Check Multiple Choice
         lecturaData.multipleChoice.forEach(q => {
             const isCorrect = readingAnswers[q.id] === q.answer;
             if(!isCorrect) allCorrect = false;
             newValidation[q.id] = isCorrect ? 'correct' : 'incorrect';
         });
 
-        // Check Open Questions
         lecturaData.openQuestions.forEach(q => {
             const userAnswer = normalizeString(readingAnswers[q.id] || '');
             const correctAnswer = normalizeString(q.answer);
@@ -494,14 +504,16 @@ export default function EspanolIntro1Page() {
 
         setReadingValidation(newValidation);
         if(allCorrect) {
-            toast({ title: '¡Felicitaciones!', description: 'Has respondido todas las preguntas correctamente y completado la lección.' });
+            toast({ title: '¡Felicitaciones!', description: 'Has respondido todas las preguntas correctamente.' });
             handleTopicComplete('lectura');
         } else {
-            toast({ variant: 'destructive', title: 'Algunas respuestas son incorrectas.', description: 'Revisa los campos en rojo.' });
+            toast({ variant: 'destructive', title: 'Algunas respuestas son incorrectas.' });
         }
     };
 
     const renderContent = () => {
+        if (isInitialLoading) return <div className="flex justify-center items-center h-96"><Loader2 className="animate-spin text-primary h-12 w-12" /></div>;
+
         switch(selectedTopic) {
             case 'fonetica':
                 return (
@@ -519,17 +531,13 @@ export default function EspanolIntro1Page() {
                                     ))}
                                 </div>
                                 <div className="mt-4 space-y-2 text-left">
-                                    <p className="text-muted-foreground">
-                                        A diferencia del inglés, las vocales en español tienen <strong>UN SOLO SONIDO</strong> cada una. Siempre suenan igual, no importa la palabra.
-                                    </p>
-                                    <p className="text-sm italic text-muted-foreground border-t pt-2">
-                                        Unlike English, vowels in Spanish have <strong>ONLY ONE SOUND</strong> each. They always sound the same, regardless of the word.
-                                    </p>
+                                    <p className="text-muted-foreground font-bold">A diferencia del inglés, las vocales en español tienen <strong>UN SOLO SONIDO</strong> cada una. Siempre suenan igual, no importa la palabra.</p>
+                                    <p className="text-sm italic text-muted-foreground border-t pt-2">Unlike English, vowels in Spanish have <strong>ONLY ONE SOUND</strong> each. They always sound the same, regardless of the word.</p>
                                 </div>
                             </div>
                             <Separator />
                             <div className="grid md:grid-cols-2 gap-6 text-left">
-                                <div className="space-y-4">
+                                <div className="space-y-4 font-medium text-foreground">
                                     <h3 className="text-xl font-bold text-primary">Tips de Pronunciación</h3>
                                     <ul className="list-disc pl-5 space-y-2">
                                         <li><strong>Transparencia:</strong> Casi todas las palabras se pronuncian exactamente como se escriben.</li>
@@ -540,7 +548,7 @@ export default function EspanolIntro1Page() {
                                 </div>
                                 <div className="space-y-4 bg-muted/30 p-4 rounded-xl border border-dashed">
                                     <h3 className="text-xl font-bold text-primary">Pronunciation Tips</h3>
-                                    <ul className="list-disc pl-5 space-y-2 text-sm italic">
+                                    <ul className="list-disc pl-5 space-y-2 text-sm italic text-muted-foreground">
                                         <li><strong>Transparency:</strong> Almost all words are pronounced exactly as they are written.</li>
                                         <li><strong>The H:</strong> It is silent. It never makes a sound. (e.g., <em>Hola</em> is pronounced /ola/).</li>
                                         <li><strong>LL and Y:</strong> In most of Latin America, they sound similar to the English "Y" (<em>Yellow</em>).</li>
@@ -550,12 +558,11 @@ export default function EspanolIntro1Page() {
                             </div>
                         </CardContent>
                         <CardFooter>
-                            <Button onClick={() => handleTopicComplete('fonetica')}>Avanzar / Advance</Button>
+                            <Button onClick={() => handleTopicComplete('fonetica')} className="font-bold">Avanzar / Advance</Button>
                         </CardFooter>
                     </Card>
                 );
             case 'latinoamerica':
-                const latamImg = PlaceHolderImages.find(p => p.id === 'latinoamerica-map');
                 return (
                     <Card className="shadow-soft border-2 border-brand-purple">
                         <CardHeader>
@@ -563,43 +570,26 @@ export default function EspanolIntro1Page() {
                             <CardDescription>Un mundo de cultura y color / A world of culture and color.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-6">
-                            {latamImg && (
-                                <div className="relative aspect-video w-full overflow-hidden rounded-xl border bg-white">
-                                    <Image 
-                                        src={latamImg.imageUrl} 
-                                        alt={latamImg.description} 
-                                        fill 
-                                        className="object-contain" 
-                                        data-ai-hint={latamImg.imageHint}
-                                    />
-                                </div>
-                            )}
+                            <div className="relative aspect-video w-full overflow-hidden rounded-xl border bg-white">
+                                <Image src="https://www.ecured.cu/images/6/6c/America_Latina.png" alt="Latam Map" fill className="object-contain" data-ai-hint="latam map" />
+                            </div>
                             <div className="grid md:grid-cols-2 gap-6 text-lg leading-relaxed text-left">
-                                <div className="space-y-4">
-                                    <p>
-                                        Latinoamérica es una región vasta que abarca desde México hasta la Patagonia. Con más de 600 millones de personas, es el hogar de una increíble biodiversidad y una rica herencia cultural que mezcla raíces indígenas, europeas y africanas.
-                                    </p>
-                                    <p>
-                                        Aprender español te abre las puertas a 20 países con historias, paisajes y tradiciones únicas.
-                                    </p>
+                                <div className="space-y-4 font-medium text-foreground">
+                                    <p>Latinoamérica es una región vasta que abarca desde México hasta la Patagonia. Con más de 600 millones de personas, es el hogar de una increíble biodiversidad y una rica herencia cultural que mezcla raíces indígenas, europeas y africanas.</p>
+                                    <p>Aprender español te abre las puertas a 20 países con historias, paisajes y tradiciones únicas.</p>
                                 </div>
                                 <div className="space-y-4 text-base italic text-muted-foreground bg-muted/20 p-4 rounded-xl border border-dashed">
-                                    <p>
-                                        Latin America is a vast region spanning from Mexico to Patagonia. With over 600 million people, it is home to incredible biodiversity and a rich cultural heritage that blends indigenous, European, and African roots.
-                                    </p>
-                                    <p>
-                                        Learning Spanish opens the doors to 20 countries with unique stories, landscapes, and traditions.
-                                    </p>
+                                    <p>Latin America is a vast region spanning from Mexico to Patagonia. With over 600 million people, it is home to incredible biodiversity and a rich cultural heritage that blends indigenous, European, and African roots.</p>
+                                    <p>Learning Spanish opens the doors to 20 countries with unique stories, landscapes, and traditions.</p>
                                 </div>
                             </div>
                         </CardContent>
                         <CardFooter>
-                            <Button onClick={() => handleTopicComplete('latinoamerica')}>Siguiente: Colombia / Next: Colombia</Button>
+                            <Button onClick={() => handleTopicComplete('latinoamerica')} className="font-bold">Siguiente: Colombia / Next: Colombia</Button>
                         </CardFooter>
                     </Card>
                 );
             case 'colombia':
-                const colImg = PlaceHolderImages.find(p => p.id === 'colombia-map');
                 return (
                     <Card className="shadow-soft border-2 border-brand-purple">
                         <CardHeader>
@@ -607,24 +597,16 @@ export default function EspanolIntro1Page() {
                             <CardDescription>Conoce el país de la amabilidad / Get to know the land of friendliness.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-6">
-                            {colImg && (
-                                <div className="relative aspect-square w-full max-w-sm mx-auto overflow-hidden rounded-xl border bg-white">
-                                    <Image 
-                                        src={colImg.imageUrl} 
-                                        alt={colImg.description} 
-                                        fill 
-                                        className="object-contain" 
-                                        data-ai-hint={colImg.imageHint}
-                                    />
-                                </div>
-                            )}
+                            <div className="relative aspect-square w-full max-w-sm mx-auto overflow-hidden rounded-xl border bg-white">
+                                <Image src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Colombia%2C_administrative_divisions_-_es_-_colored_%28%2Bbox%29.svg/500px-Colombia%2C_administrative_divisions_-_es_-_colored_%28%2Bbox%29.svg.png" alt="Colombia Map" fill className="object-contain" data-ai-hint="colombia map" />
+                            </div>
                             <Accordion type="single" collapsible className="w-full text-left">
                                 <AccordionItem value="acentos">
                                     <AccordionTrigger className="text-xl font-bold">Acentos / Accents</AccordionTrigger>
                                     <AccordionContent className="space-y-4 pt-2">
                                         <div className="space-y-2">
                                             <p className="font-semibold text-foreground">Colombia es famosa por tener uno de los españoles más claros del mundo, pero tiene mucha variedad regional:</p>
-                                            <ul className="list-disc pl-5 text-muted-foreground">
+                                            <ul className="list-disc pl-5 text-muted-foreground font-medium">
                                                 <li><strong>Paisa:</strong> De Medellín, muy rítmico y amable.</li>
                                                 <li><strong>Rolo:</strong> De Bogotá, neutro y formal.</li>
                                                 <li><strong>Costeño:</strong> De la costa caribe, rápido y alegre.</li>
@@ -645,7 +627,7 @@ export default function EspanolIntro1Page() {
                                     <AccordionContent className="space-y-4 pt-2">
                                         <div className="space-y-2">
                                             <p className="font-semibold text-foreground">No te puedes ir sin probar:</p>
-                                            <ul className="list-disc pl-5 text-muted-foreground">
+                                            <ul className="list-disc pl-5 text-muted-foreground font-medium">
                                                 <li><strong>Bandeja Paisa:</strong> El plato más emblemático y abundante.</li>
                                                 <li><strong>Arepas:</strong> Pan de maíz circular que acompaña casi todo.</li>
                                                 <li><strong>Ajiaco:</strong> Una sopa de pollo y papas tradicional de Bogotá.</li>
@@ -664,64 +646,54 @@ export default function EspanolIntro1Page() {
                                 <AccordionItem value="cultura">
                                     <AccordionTrigger className="text-xl font-bold">Cultura / Culture</AccordionTrigger>
                                     <AccordionContent className="space-y-4 pt-2">
-                                        <p className="font-semibold text-foreground">
-                                            Es la tierra del Realismo Mágico de Gabriel García Márquez. La música es omnipresente: desde la Cumbia y el Vallenato tradicional hasta el Pop y Reggaetón internacional de figuras como Shakira, Juanes o J Balvin.
-                                        </p>
-                                        <div className="p-3 bg-muted rounded-lg border italic text-sm text-muted-foreground">
-                                            It is the land of Magical Realism by Gabriel García Márquez. Music is omnipresent: from traditional Cumbia and Vallenato to international Pop and Reggaeton from figures like Shakira, Juanes, or J Balvin.
-                                        </div>
+                                        <p className="font-semibold text-foreground">Es la tierra del Realismo Mágico de Gabriel García Márquez. La música es omnipresente: desde la Cumbia y el Vallenato tradicional hasta el Pop y Reggaetón internacional de figuras como Shakira, Juanes o J Balvin.</p>
+                                        <div className="p-3 bg-muted rounded-lg border italic text-sm text-muted-foreground">It is the land of Magical Realism by Gabriel García Márquez. Music is omnipresent: from traditional Cumbia and Vallenato to international Pop and Reggaeton from figures like Shakira, Juanes, or J Balvin.</div>
                                     </AccordionContent>
                                 </AccordionItem>
                             </Accordion>
                         </CardContent>
                         <CardFooter>
-                            <Button onClick={() => handleTopicComplete('colombia')}>Comenzar con los Saludos / Start with Greetings</Button>
+                            <Button onClick={() => handleTopicComplete('colombia')} className="font-bold">Comenzar con los saludos / Start with Greetings</Button>
                         </CardFooter>
                     </Card>
                 );
             case 'saludos': return (
                 <Card>
-                    <CardHeader>
-                        <CardTitle>Saludos (Greetings)</CardTitle>
-                        <CardDescription>Frases esenciales para iniciar una conversación en español.</CardDescription>
-                    </CardHeader>
+                    <CardHeader><CardTitle>Saludos (Greetings)</CardTitle></CardHeader>
                     <CardContent>
                         <div className="grid grid-cols-2 gap-4 text-lg">
-                            <div className="font-bold p-3 bg-muted rounded-lg text-center">Español</div>
-                            <div className="font-bold p-3 bg-muted rounded-lg text-center">Inglés</div>
+                            <div className="font-bold p-3 bg-muted rounded-lg text-center text-foreground">Español</div>
+                            <div className="font-bold p-3 bg-muted rounded-lg text-center text-foreground">Inglés</div>
                             {saludosData.map(item => (
-                                <React.Fragment key={item.spanish}>
-                                    <div className="p-3 border rounded-lg font-medium text-center">{item.spanish}</div>
+                                <Fragment key={item.spanish}>
+                                    <div className="p-3 border rounded-lg font-medium text-center text-foreground">{item.spanish}</div>
                                     <div className="p-3 border rounded-lg text-muted-foreground text-center">{item.english}</div>
-                                </React.Fragment>
+                                </Fragment>
                             ))}
                         </div>
                     </CardContent>
                     <CardFooter>
-                        <Button onClick={() => handleTopicComplete('saludos')}>Continuar a Despedidas</Button>
+                        <Button onClick={() => handleTopicComplete('saludos')} className="font-bold">Continuar a Despedidas</Button>
                     </CardFooter>
                 </Card>
             );
             case 'despedidas': return (
                 <Card>
-                    <CardHeader>
-                        <CardTitle>Despedidas (Farewells)</CardTitle>
-                        <CardDescription>Frases esenciales para terminar una conversación en español.</CardDescription>
-                    </CardHeader>
+                    <CardHeader><CardTitle>Despedidas (Farewells)</CardTitle></CardHeader>
                     <CardContent>
                         <div className="grid grid-cols-2 gap-4 text-lg">
-                            <div className="font-bold p-3 bg-muted rounded-lg text-center">Español</div>
-                            <div className="font-bold p-3 bg-muted rounded-lg text-center">Inglés</div>
+                            <div className="font-bold p-3 bg-muted rounded-lg text-center text-foreground">Español</div>
+                            <div className="font-bold p-3 bg-muted rounded-lg text-center text-foreground">Inglés</div>
                             {despedidasData.map(item => (
-                                <React.Fragment key={item.spanish}>
-                                    <div className="p-3 border rounded-lg font-medium text-center">{item.spanish}</div>
+                                <Fragment key={item.spanish}>
+                                    <div className="p-3 border rounded-lg font-medium text-center text-foreground">{item.spanish}</div>
                                     <div className="p-3 border rounded-lg text-muted-foreground text-center">{item.english}</div>
-                                </React.Fragment>
+                                </Fragment>
                             ))}
                         </div>
                     </CardContent>
                     <CardFooter>
-                        <Button onClick={() => handleTopicComplete('despedidas')}>Continuar</Button>
+                        <Button onClick={() => handleTopicComplete('despedidas')} className="font-bold">Continuar</Button>
                     </CardFooter>
                 </Card>
             );
@@ -729,70 +701,60 @@ export default function EspanolIntro1Page() {
                 <Card>
                     <CardHeader>
                         <CardTitle>Sustantivos (Nouns)</CardTitle>
-                        <CardDescription>Entendiendo el género y número en español.</CardDescription>
+                        <CardDescription>Entendiendo el género y número en español. <br /><span className="italic text-xs">Understanding gender and number in Spanish.</span></CardDescription>
                     </CardHeader>
-                    <CardContent className="space-y-6">
+                    <CardContent className="space-y-6 text-left">
                         <div className="bg-primary/5 p-4 rounded-lg border-l-4 border-primary">
-                            <p className="text-lg">Un sustantivo es una <strong>persona, animal y cosa</strong> (a noun is a person, animal and things).</p>
+                            <p className="text-lg font-bold text-foreground">Un sustantivo es una <strong>persona, animal y cosa</strong>.</p>
+                            <p className="text-sm italic text-muted-foreground">A noun is a <strong>person, animal and thing</strong>.</p>
                         </div>
-                        <div className="text-left">
-                            <h3 className="text-xl font-bold text-primary mb-2">1. Género</h3>
-                            <p className="text-muted-foreground">A diferencia del inglés, cada sustantivo en español tiene un género: <strong>Masculino</strong> o <strong>Femenino</strong>.</p>
-                            <div className="grid sm:grid-cols-2 gap-4 mt-4 text-left">
+                        <div>
+                            <h3 className="text-xl font-bold text-primary mb-2">1. Género (Gender)</h3>
+                            <p className="text-muted-foreground font-bold">A diferencia del inglés, cada sustantivo en español tiene un género: <strong>Masculino</strong> o <strong>Femenino</strong>.</p>
+                            <p className="text-sm italic text-muted-foreground mb-4">Unlike English, every noun in Spanish has a gender: <strong>Masculine</strong> or <strong>Feminine</strong>.</p>
+                            <div className="grid sm:grid-cols-2 gap-4 mt-4">
                                 <div className="p-4 bg-muted rounded-lg border-l-4 border-blue-500">
-                                    <h4 className="font-bold">Masculino</h4>
-                                    <p className="text-sm">Usualmente terminan en <strong>-o</strong></p>
-                                    <p className="font-mono mt-1 italic">Ejemplo: El libr<strong>o</strong></p>
+                                    <h4 className="font-bold text-foreground">Masculino (Masculine)</h4>
+                                    <p className="text-sm font-medium">Usualmente terminan en <strong>-o</strong></p>
+                                    <p className="text-xs italic text-muted-foreground">Usually end in <strong>-o</strong></p>
+                                    <p className="font-mono mt-2 italic">Ejemplo: El libr<strong>o</strong></p>
                                 </div>
                                 <div className="p-4 bg-muted rounded-lg border-l-4 border-pink-500">
-                                    <h4 className="font-bold">Femenino</h4>
-                                    <p className="text-sm">Usualmente terminan en <strong>-a</strong></p>
-                                    <p className="font-mono mt-1 italic">Ejemplo: La mes<strong>a</strong></p>
+                                    <h4 className="font-bold text-foreground">Femenino (Feminine)</h4>
+                                    <p className="text-sm font-medium">Usualmente terminan en <strong>-a</strong></p>
+                                    <p className="text-xs italic text-muted-foreground">Usually end in <strong>-a</strong></p>
+                                    <p className="font-mono mt-2 italic">Ejemplo: La mes<strong>a</strong></p>
                                 </div>
                             </div>
                         </div>
                         <Separator />
-                        <div className="text-left">
-                            <h3 className="text-xl font-bold text-primary mb-2">2. Número</h3>
-                            <p className="text-muted-foreground">Para hacer los sustantivos plurales, seguimos estas reglas simples:</p>
-                            <ul className="list-disc pl-5 mt-2 space-y-2">
-                                <li>Si termina en vocal, añade <strong>-s</strong>: <span className="italic">Libro {"=>"} Libros</span></li>
-                                <li>Si termina en consonante, añade <strong>-es</strong>: <span className="italic">Papel {"=>"} Papeles</span></li>
+                        <div>
+                            <h3 className="text-xl font-bold text-primary mb-2">2. Número (Number)</h3>
+                            <p className="text-muted-foreground font-bold">Para hacer los sustantivos plurales, seguimos estas reglas simples:</p>
+                            <p className="text-sm italic text-muted-foreground mb-2">To make nouns plural, we follow these simple rules:</p>
+                            <ul className="list-disc pl-5 mt-2 space-y-2 font-medium">
+                                <li>Si termina en vocal, añade <strong>-s</strong>: <span className="italic">Libro {"=>"} Libros</span><br /><span className="text-xs italic text-muted-foreground">If it ends in a vowel, add <strong>-s</strong>.</span></li>
+                                <li>Si termina en consonante, añade <strong>-es</strong>: <span className="italic">Papel {"=>"} Papeles</span><br /><span className="text-xs italic text-muted-foreground">If it ends in a consonant, add <strong>-es</strong>.</span></li>
                             </ul>
                         </div>
                         <Separator />
-                        <div className="text-left">
-                            <h3 className="text-xl font-bold text-primary mb-2">3. Práctica de Vocabulario</h3>
-                            <p className="text-muted-foreground mb-4">Traduce estos sustantivos comunes al español.</p>
-                            <div className="grid grid-cols-2 gap-2 max-w-md mx-auto">
+                        <div className="max-w-md mx-auto">
+                            <h3 className="text-xl font-bold text-primary mb-4">Practice</h3>
+                            <div className="grid grid-cols-2 gap-2">
                                 <div className="font-bold bg-muted p-2 rounded text-center">Inglés</div>
                                 <div className="font-bold bg-muted p-2 rounded text-center">Español</div>
                                 {nounsPracticeData.map((item, index) => (
-                                    <React.Fragment key={item.english}>
-                                        <div className="p-2 border rounded flex items-center justify-center font-medium capitalize">{item.english}</div>
-                                        <div className="relative">
-                                            <Input 
-                                                value={nounAnswers[index] || ''}
-                                                onChange={(e) => handleNounInputChange(index, e.target.value)}
-                                                className={cn(
-                                                    "h-10",
-                                                    nounValidation[index] === 'correct' && "border-green-500",
-                                                    nounValidation[index] === 'incorrect' && "border-destructive"
-                                                )}
-                                                placeholder="..."
-                                                autoComplete="off"
-                                            />
-                                        </div>
-                                    </React.Fragment>
+                                    <Fragment key={item.english}>
+                                        <div className="p-2 border rounded flex items-center justify-center font-medium capitalize text-foreground">{item.english}</div>
+                                        <Input value={nounAnswers[index] || ''} onChange={(e) => handleNounInputChange(index, e.target.value)} className={cn("h-10", nounValidation[index] === 'correct' && "border-green-500", nounValidation[index] === 'incorrect' && "border-destructive")} placeholder="..." autoComplete="off" />
+                                    </Fragment>
                                 ))}
                             </div>
-                            <div className="mt-4 flex justify-center">
-                                <Button variant="secondary" onClick={handleCheckNouns}>Verificar Traducciones</Button>
-                            </div>
+                            <Button variant="secondary" onClick={handleCheckNouns} className="mt-4 w-full font-bold">Verificar / Check</Button>
                         </div>
                     </CardContent>
                     <CardFooter>
-                         <Button onClick={() => handleTopicComplete('sustantivos')}>Continuar</Button>
+                         <Button onClick={() => handleTopicComplete('sustantivos')} className="font-bold">Continuar</Button>
                     </CardFooter>
                 </Card>
             );
@@ -800,64 +762,53 @@ export default function EspanolIntro1Page() {
                 <Card>
                     <CardHeader>
                         <CardTitle>Adjetivos (Adjectives)</CardTitle>
-                        <CardDescription>Cómo describir cosas en español.</CardDescription>
+                        <CardDescription>Cómo describir cosas en español. <br /><span className="italic text-xs">How to describe things in Spanish.</span></CardDescription>
                     </CardHeader>
-                    <CardContent className="space-y-6">
-                        <div className="text-left">
-                            <h3 className="text-xl font-bold text-primary mb-2">1. Concordancia</h3>
-                            <p className="text-muted-foreground">Los adjetivos deben coincidir con el sustantivo que describen en <strong>género</strong> y <strong>número</strong>.</p>
-                            <div className="mt-4 p-4 bg-muted rounded-lg font-mono text-base">
+                    <CardContent className="space-y-6 text-left">
+                        <div>
+                            <h3 className="text-xl font-bold text-primary mb-2">1. Concordancia (Agreement)</h3>
+                            <p className="text-muted-foreground font-bold">Los adjetivos deben coincidir con el sustantivo que describen en <strong>género</strong> y <strong>número</strong>.</p>
+                            <p className="text-sm italic text-muted-foreground">Adjectives must match the noun they describe in <strong>gender</strong> and <strong>number</strong>.</p>
+                            <div className="mt-4 p-4 bg-muted rounded-lg font-mono text-base text-foreground">
                                 <p>Libro roj<strong>o</strong></p>
                                 <p>Mesa roj<strong>a</strong></p>
                                 <p>Libros roj<strong>os</strong></p>
                             </div>
                         </div>
                         <Separator />
-                        <div className="text-left">
-                            <h3 className="text-xl font-bold text-primary mb-2">2. Posición</h3>
-                            <p className="text-muted-foreground">En español, los adjetivos usualmente van <strong>después</strong> del sustantivo.</p>
-                            <div className="mt-2 p-3 bg-muted rounded-lg border flex items-center justify-between">
-                                <span className="text-sm font-semibold">Español: Sustantivo + Adjetivo</span>
-                                <span className="text-xs text-muted-foreground italic">"Carro azul"</span>
-                            </div>
-                            <div className="mt-2 p-3 bg-muted rounded-lg border flex items-center justify-between">
-                                <span className="text-sm font-semibold">Inglés: Adjetivo + Sustantivo</span>
-                                <span className="text-xs text-muted-foreground italic">"Blue car"</span>
+                        <div>
+                            <h3 className="text-xl font-bold text-primary mb-2">2. Posición (Position)</h3>
+                            <p className="text-muted-foreground font-bold">En español, los adjetivos usualmente van <strong>después</strong> del sustantivo.</p>
+                            <p className="text-sm italic text-muted-foreground">In Spanish, adjectives usually come <strong>after</strong> the noun.</p>
+                            <div className="mt-4 space-y-2">
+                                <div className="p-3 bg-muted rounded-lg border flex items-center justify-between text-foreground">
+                                    <span className="text-sm font-semibold">Español: Sustantivo + Adjetivo</span>
+                                    <span className="text-xs text-muted-foreground italic">"Carro azul"</span>
+                                </div>
+                                <div className="p-3 bg-muted rounded-lg border flex items-center justify-between text-foreground">
+                                    <span className="text-sm font-semibold">Inglés: Adjetivo + Sustantivo</span>
+                                    <span className="text-xs text-muted-foreground italic">"Blue car"</span>
+                                </div>
                             </div>
                         </div>
                         <Separator />
-                        <div className="text-left">
-                            <h3 className="text-xl font-bold text-primary mb-2">3. Práctica de Vocabulario</h3>
-                            <p className="text-muted-foreground mb-4">Traduce estos adjetivos comunes al español.</p>
-                            <div className="grid grid-cols-2 gap-2 max-w-md mx-auto">
+                        <div className="max-w-md mx-auto">
+                            <h3 className="text-xl font-bold text-primary mb-4">Practice</h3>
+                            <div className="grid grid-cols-2 gap-2">
                                 <div className="font-bold bg-muted p-2 rounded text-center">Inglés</div>
                                 <div className="font-bold bg-muted p-2 rounded text-center">Español</div>
                                 {adjectivesPracticeData.map((item, index) => (
-                                    <React.Fragment key={item.english}>
-                                        <div className="p-2 border rounded flex items-center justify-center font-medium capitalize">{item.english}</div>
-                                        <div className="relative">
-                                            <Input 
-                                                value={adjAnswers[index] || ''}
-                                                onChange={(e) => handleAdjInputChange(index, e.target.value)}
-                                                className={cn(
-                                                    "h-10",
-                                                    adjValidation[index] === 'correct' && "border-green-500",
-                                                    adjValidation[index] === 'incorrect' && "border-destructive"
-                                                )}
-                                                placeholder="..."
-                                                autoComplete="off"
-                                            />
-                                        </div>
-                                    </React.Fragment>
+                                    <Fragment key={item.english}>
+                                        <div className="p-2 border rounded flex items-center justify-center font-medium capitalize text-foreground">{item.english}</div>
+                                        <Input value={adjAnswers[index] || ''} onChange={(e) => handleAdjInputChange(index, e.target.value)} className={cn("h-10", adjValidation[index] === 'correct' && "border-green-500", adjValidation[index] === 'incorrect' && "border-destructive")} placeholder="..." autoComplete="off" />
+                                    </Fragment>
                                 ))}
                             </div>
-                            <div className="mt-4 flex justify-center">
-                                <Button variant="secondary" onClick={handleCheckAdjectives}>Verificar Traducciones</Button>
-                            </div>
+                            <Button variant="secondary" onClick={handleCheckAdjectives} className="mt-4 w-full font-bold">Verificar / Check</Button>
                         </div>
                     </CardContent>
                     <CardFooter>
-                         <Button onClick={() => handleTopicComplete('adjetivos')}>Continuar</Button>
+                         <Button onClick={() => handleTopicComplete('adjetivos')} className="font-bold">Continuar</Button>
                     </CardFooter>
                 </Card>
             );
@@ -865,65 +816,54 @@ export default function EspanolIntro1Page() {
                 <Card>
                     <CardHeader>
                         <CardTitle>Verbos (Verbs)</CardTitle>
-                        <CardDescription>El motor de la oración.</CardDescription>
+                        <CardDescription>El motor de la oración. <br /><span className="italic text-xs">The engine of the sentence.</span></CardDescription>
                     </CardHeader>
-                    <CardContent className="space-y-6">
-                        <div className="text-left">
-                            <h3 className="text-xl font-bold text-primary mb-2">1. El Infinitivo</h3>
-                            <p className="text-muted-foreground">Todos los verbos en español terminan en una de tres formas en su estado original:</p>
+                    <CardContent className="space-y-6 text-left">
+                        <div>
+                            <h3 className="text-xl font-bold text-primary mb-2">1. El Infinitivo (The Infinitive)</h3>
+                            <p className="text-muted-foreground font-bold">Todos los verbos en español terminan en una de tres formas en su estado original:</p>
+                            <p className="text-sm italic text-muted-foreground mb-4">All verbs in Spanish end in one of three ways in their original state:</p>
                             <div className="flex gap-4 mt-4">
-                                <div className="flex-1 p-3 bg-primary/10 rounded text-center font-bold">-AR</div>
-                                <div className="flex-1 p-3 bg-primary/10 rounded text-center font-bold">-ER</div>
-                                <div className="flex-1 p-3 bg-primary/10 rounded text-center font-bold">-IR</div>
+                                <div className="flex-1 p-3 bg-primary/10 rounded text-center font-bold text-primary">-AR</div>
+                                <div className="flex-1 p-3 bg-primary/10 rounded text-center font-bold text-primary">-ER</div>
+                                <div className="flex-1 p-3 bg-primary/10 rounded text-center font-bold text-primary">-IR</div>
                             </div>
                             <p className="text-sm mt-2 text-center text-muted-foreground italic">Ejemplos: Habl<strong>ar</strong>, Com<strong>er</strong>, Viv<strong>ir</strong></p>
                         </div>
                         <Separator />
-                        <div className="text-left">
-                            <h3 className="text-xl font-bold text-primary mb-2">2. El Misterio de "Ser" vs "Estar"</h3>
-                            <p className="text-muted-foreground">En español tenemos dos formas para decir "to be":</p>
+                        <div>
+                            <h3 className="text-xl font-bold text-primary mb-2">2. El Misterio de "Ser" vs "Estar" (Ser vs. Estar)</h3>
+                            <p className="text-muted-foreground font-bold">En español tenemos dos formas para decir "to be":</p>
+                            <p className="text-sm italic text-muted-foreground mb-2">In Spanish we have two ways to say "to be":</p>
                             <div className="grid grid-cols-2 gap-4 mt-2">
-                                <div className="p-3 bg-muted rounded border-l-4 border-primary">
-                                    <strong>SER:</strong> Cosas permanentes (rasgos, identidad).
+                                <div className="p-3 bg-muted rounded border-l-4 border-primary text-foreground">
+                                    <strong className="text-primary uppercase">SER:</strong> Cosas permanentes (rasgos, identidad).
+                                    <br /><span className="text-xs italic text-muted-foreground">Permanent things (traits, identity).</span>
                                 </div>
-                                <div className="p-3 bg-muted rounded border-l-4 border-secondary">
-                                    <strong>ESTAR:</strong> Cosas temporales (sentimientos, ubicación).
+                                <div className="p-3 bg-muted rounded border-l-4 border-secondary text-foreground">
+                                    <strong className="text-secondary-foreground uppercase">ESTAR:</strong> Cosas temporales (sentimientos, ubicación).
+                                    <br /><span className="text-xs italic text-muted-foreground">Temporary things (feelings, location).</span>
                                 </div>
                             </div>
                         </div>
                         <Separator />
-                        <div className="text-left">
-                            <h3 className="text-xl font-bold text-primary mb-2">3. Práctica de Vocabulario</h3>
-                            <p className="text-muted-foreground mb-4">Traduce estos verbos comunes al español.</p>
-                            <div className="grid grid-cols-2 gap-2 max-w-md mx-auto">
+                        <div className="max-w-md mx-auto">
+                            <h3 className="text-xl font-bold text-primary mb-4">Practice</h3>
+                            <div className="grid grid-cols-2 gap-2">
                                 <div className="font-bold bg-muted p-2 rounded text-center">Inglés</div>
                                 <div className="font-bold bg-muted p-2 rounded text-center">Español</div>
                                 {verbsPracticeData.map((item, index) => (
-                                    <React.Fragment key={item.english}>
-                                        <div className="p-2 border rounded flex items-center justify-center font-medium capitalize">{item.english}</div>
-                                        <div className="relative">
-                                            <Input 
-                                                value={verbAnswers[index] || ''}
-                                                onChange={(e) => handleVerbInputChange(index, e.target.value)}
-                                                className={cn(
-                                                    "h-10",
-                                                    verbValidation[index] === 'correct' && "border-green-500",
-                                                    verbValidation[index] === 'incorrect' && "border-destructive"
-                                                )}
-                                                placeholder="..."
-                                                autoComplete="off"
-                                            />
-                                        </div>
-                                    </React.Fragment>
+                                    <Fragment key={item.english}>
+                                        <div className="p-2 border rounded flex items-center justify-center font-medium capitalize text-foreground">{item.english}</div>
+                                        <Input value={verbAnswers[index] || ''} onChange={(e) => handleVerbInputChange(index, e.target.value)} className={cn("h-10", verbValidation[index] === 'correct' && "border-green-500", verbValidation[index] === 'incorrect' && "border-destructive")} placeholder="..." autoComplete="off" />
+                                    </Fragment>
                                 ))}
                             </div>
-                            <div className="mt-4 flex justify-center">
-                                <Button variant="secondary" onClick={handleCheckVerbs}>Verificar Traducciones</Button>
-                            </div>
+                            <Button variant="secondary" onClick={handleCheckVerbs} className="mt-4 w-full font-bold">Verificar / Check</Button>
                         </div>
                     </CardContent>
                     <CardFooter>
-                         <Button onClick={() => handleTopicComplete('verbos')}>Continuar</Button>
+                         <Button onClick={() => handleTopicComplete('verbos')} className="font-bold">Continuar</Button>
                     </CardFooter>
                 </Card>
             );
@@ -935,72 +875,47 @@ export default function EspanolIntro1Page() {
                         <CardDescription>Practica tu comprensión de lectura con este texto que resume lo aprendido.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-6">
-                        <div className="bg-muted p-6 rounded-lg border italic text-lg leading-relaxed shadow-inner text-left">
+                        <div className="bg-muted p-6 rounded-lg border italic text-lg leading-relaxed shadow-inner text-left text-foreground">
                             {lecturaData.content}
                         </div>
-
                         <Separator />
-
                         <div className="space-y-8 text-left">
                             <div className="space-y-6">
                                 <h3 className="text-xl font-bold text-primary">Preguntas de Selección Múltiple</h3>
                                 {lecturaData.multipleChoice.map((q) => (
                                     <div key={q.id} className="space-y-3 p-4 border rounded-lg bg-card">
-                                        <Label className="text-lg font-semibold">{q.question}</Label>
-                                        <RadioGroup 
-                                            value={readingAnswers[q.id] || ''} 
-                                            onValueChange={(val) => handleReadingAnswerChange(q.id, val)}
-                                            className="grid grid-cols-1 sm:grid-cols-3 gap-4"
-                                        >
+                                        <Label className="text-lg font-semibold text-foreground">{q.question}</Label>
+                                        <RadioGroup value={readingAnswers[q.id] || ''} onValueChange={(val) => handleReadingAnswerChange(q.id, val)} className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                             {q.options.map((option) => (
                                                 <div key={option} className="flex items-center space-x-2">
                                                     <RadioGroupItem value={option} id={`${q.id}-${option}`} />
-                                                    <Label htmlFor={`${q.id}-${option}`} className="font-medium">{option}</Label>
+                                                    <Label htmlFor={`${q.id}-${option}`} className="font-medium text-foreground">{option}</Label>
                                                 </div>
                                             ))}
                                         </RadioGroup>
-                                        {readingValidation[q.id] === 'incorrect' && (
-                                            <p className="text-xs text-destructive font-bold">Respuesta incorrecta. Inténtalo de nuevo.</p>
-                                        )}
-                                        {readingValidation[q.id] === 'correct' && (
-                                            <p className="text-xs text-green-500 font-bold">¡Correcto!</p>
-                                        )}
+                                        {readingValidation[q.id] === 'incorrect' && <p className="text-xs text-destructive font-bold">Respuesta incorrecta. Inténtalo de nuevo.</p>}
+                                        {readingValidation[q.id] === 'correct' && <p className="text-xs text-green-500 font-bold">¡Correcto!</p>}
                                     </div>
                                 ))}
                             </div>
-
                             <Separator />
-
                             <div className="space-y-6 text-left">
                                 <h3 className="text-xl font-bold text-primary">Preguntas de Escritura</h3>
                                 {lecturaData.openQuestions.map((q) => (
                                     <div key={q.id} className="space-y-2 p-4 border rounded-lg bg-card">
-                                        <Label htmlFor={q.id} className="text-lg font-semibold">{q.question}</Label>
-                                        <Input 
-                                            id={q.id} 
-                                            value={readingAnswers[q.id] || ''}
-                                            onChange={e => handleReadingAnswerChange(q.id, e.target.value)}
-                                            className={cn(
-                                                'mt-1 text-lg h-12', 
-                                                readingValidation[q.id] === 'correct' && 'border-green-500 bg-green-50/5', 
-                                                readingValidation[q.id] === 'incorrect' && 'border-destructive bg-destructive/5'
-                                            )}
-                                            placeholder="Escribe tu respuesta aquí..."
-                                            autoComplete="off"
-                                        />
+                                        <Label htmlFor={q.id} className="text-lg font-semibold text-foreground">{q.question}</Label>
+                                        <Input id={q.id} value={readingAnswers[q.id] || ''} onChange={e => handleReadingAnswerChange(q.id, e.target.value)} className={cn('mt-1 text-lg h-12', readingValidation[q.id] === 'correct' && 'border-green-500 bg-green-50/5', readingValidation[q.id] === 'incorrect' && 'border-destructive bg-destructive/5')} placeholder="Escribe tu respuesta aquí..." autoComplete="off" />
                                     </div>
                                 ))}
                             </div>
                         </div>
                     </CardContent>
                     <CardFooter className="flex justify-center pt-6 border-t">
-                        <Button onClick={handleCheckReading} size="lg" className="w-full sm:w-auto px-12">
-                            Verificar Respuestas
-                        </Button>
+                        <Button onClick={handleCheckReading} size="lg" className="w-full sm:w-auto px-12 font-bold">Verificar Respuestas</Button>
                     </CardFooter>
                  </Card>
             );
-            default: return <p>Selecciona un tema para empezar.</p>;
+            default: return <p className='text-foreground'>Selecciona un tema para empezar.</p>;
         }
     };
 
@@ -1010,8 +925,10 @@ export default function EspanolIntro1Page() {
             <main className="flex-1 p-4 md:p-8">
                 <div className="max-w-7xl mx-auto">
                     <div className="mb-8 text-left">
-                        <Link href="/espanol/intro" className="hover:underline text-sm text-white/80">Volver a Aventura Intro</Link>
-                        <h1 className="text-4xl font-bold text-white uppercase tracking-tighter">Intro 1 Español (1S)</h1>
+                        <Link href="/espanol/intro" className="hover:underline text-sm text-muted-foreground flex items-center gap-2 mb-2">
+                            <ArrowLeft className="h-4 w-4" /> Volver a Aventura Intro
+                        </Link>
+                        <h1 className="text-4xl font-bold dark:text-primary uppercase tracking-tighter">Intro 1 Español (1S)</h1>
                     </div>
                     <div className="grid gap-8 md:grid-cols-12">
                         <div className="md:col-span-4">
@@ -1022,16 +939,18 @@ export default function EspanolIntro1Page() {
                                         <ul className="space-y-1">
                                             {learningPath.map(item => {
                                                 const Icon = item.icon;
+                                                const isLocked = item.status === 'locked' && !isAdmin;
+                                                const isSelected = selectedTopic === item.key;
                                                 return (
                                                     <li key={item.key} onClick={() => handleTopicSelect(item.key)}
-                                                        className={cn('flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer text-left',
-                                                            item.status === 'locked' && !isAdmin ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted',
-                                                            selectedTopic === item.key && 'bg-muted text-primary font-semibold'
+                                                        className={cn('flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer text-left text-foreground',
+                                                            isLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted',
+                                                            isSelected && 'bg-muted text-primary font-semibold'
                                                         )}
                                                     >
                                                         {item.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500"/> : <Icon className="h-5 w-5" />}
                                                         <span>{item.name}</span>
-                                                        {item.status === 'locked' && !isAdmin && <Lock className="h-4 w-4 text-yellow-500 ml-auto" />}
+                                                        {isLocked && <Lock className="h-4 w-4 text-yellow-500 ml-auto" />}
                                                     </li>
                                                 )
                                             })}
@@ -1053,5 +972,13 @@ export default function EspanolIntro1Page() {
                 </div>
             </main>
         </div>
+    );
+}
+
+export default function Intro1SpanishPage() {
+    return (
+        <Suspense fallback={<div className="flex h-screen w-full items-center justify-center bg-background"><Loader2 className="animate-spin h-12 w-12 text-primary" /></div>}>
+            <Intro1SpanishContent />
+        </Suspense>
     );
 }
