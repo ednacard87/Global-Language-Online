@@ -63,6 +63,57 @@ const quizQuestions = [
         options: ["Son las diez y cuarto", "Son las diez y media", "Son las diez en punto"],
         correctAnswer: "Son las diez y media"
     },
+    // Nuevas preguntas para Intro 2E
+    {
+        question: "¿Cómo se dice 'Good morning' en español?",
+        options: ["Buenas tardes", "Hola", "Buenos días"],
+        correctAnswer: "Buenos días"
+    },
+    {
+        question: "¿Cómo se escribe el número '500' en letras?",
+        options: ["Cinco cien", "Quiniéntos", "Quinientos"],
+        correctAnswer: "Quinientos"
+    },
+    {
+        question: "Si alguien es de 'France', su nacionalidad en español es...",
+        options: ["Francia", "Francés", "Franchute"],
+        correctAnswer: "Francés"
+    },
+    {
+        question: "Si son las '5:15', en español decimos...",
+        options: ["Son las cinco y cuarto", "Son las cinco y media", "Son las seis menos cuarto"],
+        correctAnswer: "Son las cinco y cuarto"
+    },
+    {
+        question: "¿Cómo se dice 'See you soon' en español?",
+        options: ["Hasta luego", "Hasta pronto", "Adiós"],
+        correctAnswer: "Hasta pronto"
+    },
+    {
+        question: "¿Cuál es el idioma que se habla en 'China'?",
+        options: ["Coreano", "Japonés", "Chino"],
+        correctAnswer: "Chino"
+    },
+    {
+        question: "¿Cómo se dice el número '1.000' en español?",
+        options: ["Mil", "Millón", "Diez cien"],
+        correctAnswer: "Mil"
+    },
+    {
+        question: "La nacionalidad de alguien de 'Canada' en español es...",
+        options: ["Canadiense", "Canadá", "Canadién"],
+        correctAnswer: "Canadiense"
+    },
+    {
+        question: "Para decir las '12:00 PM', en español usamos...",
+        options: ["Es medianoche", "Es mediodía", "Son las doce en punto"],
+        correctAnswer: "Es mediodía"
+    },
+    {
+        question: "'Good night' se traduce al español como...",
+        options: ["Buenas tardes", "Hola", "Buenas noches"],
+        correctAnswer: "Buenas noches"
+    },
 ];
 
 export default function EspanolQuiz2Page() {
