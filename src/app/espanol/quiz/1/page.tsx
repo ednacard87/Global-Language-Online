@@ -63,6 +63,57 @@ const quizQuestions = [
         options: ["Azul", "Verde", "Rojo"],
         correctAnswer: "Rojo"
     },
+    // New questions for Intro 1E
+    {
+        question: "How many sounds does each vowel have in Spanish?",
+        options: ["One", "Two", "Varies"],
+        correctAnswer: "One"
+    },
+    {
+        question: "In Spanish, the letter 'H' is always...",
+        options: ["Strong", "Silent", "Soft"],
+        correctAnswer: "Silent"
+    },
+    {
+        question: "Which of these is a typical Colombian dish?",
+        options: ["Tacos", "Bandeja Paisa", "Paella"],
+        correctAnswer: "Bandeja Paisa"
+    },
+    {
+        question: "In Latin America, 'LL' and 'Y' sound similar to which English letter?",
+        options: ["Z", "Y", "R"],
+        correctAnswer: "Y"
+    },
+    {
+        question: "The 'Paisa' accent is typical of which Colombian city?",
+        options: ["Bogotá", "Cartagena", "Medellín"],
+        correctAnswer: "Medellín"
+    },
+    {
+        question: "Which ending is typical for masculine nouns?",
+        options: ["-a", "-o", "-ción"],
+        correctAnswer: "-o"
+    },
+    {
+        question: "How do you say 'Blue car' in Spanish?",
+        options: ["Azul carro", "Carro azul", "Carro de azul"],
+        correctAnswer: "Carro azul"
+    },
+    {
+        question: "What is the infinitive ending of the verb 'Comer'?",
+        options: ["-ar", "-er", "-ir"],
+        correctAnswer: "-er"
+    },
+    {
+        question: "Which verb is used for permanent traits like identity?",
+        options: ["Ser", "Estar", "Tener"],
+        correctAnswer: "Ser"
+    },
+    {
+        question: "Which verb is used for temporary states like location or feelings?",
+        options: ["Ser", "Estar", "Hacer"],
+        correctAnswer: "Estar"
+    },
 ];
 
 export default function EspanolQuiz1Page() {
