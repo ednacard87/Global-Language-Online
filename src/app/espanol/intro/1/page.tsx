@@ -73,6 +73,10 @@ const nounsPracticeData = [
     { english: 'dog', spanish: 'perro' },
     { english: 'house', spanish: 'casa' },
     { english: 'cat', spanish: 'gato' },
+    { english: 'friend', spanish: 'amigo' },
+    { english: 'boyfriend', spanish: 'novio' },
+    { english: 'girlfriend', spanish: 'novia' },
+    { english: 'university', spanish: 'universidad' },
 ];
 
 const adjectivesPracticeData = [
@@ -86,7 +90,7 @@ const adjectivesPracticeData = [
     { english: 'bored', spanish: 'aburrido' },
     { english: 'worried', spanish: 'preocupado' },
     { english: 'tired', spanish: 'cansado' },
-    { english: 'busy', spanish: 'ocuapdo' },
+    { english: 'busy', spanish: 'ocupado' },
     { english: 'tidy', spanish: 'ordenado' },
 ];
 
@@ -120,6 +124,11 @@ const memoryPairs = [
     { english: 'to work', spanish: 'trabajar' },
     { english: 'to drink', spanish: 'beber' },
     { english: 'to sleep', spanish: 'dormir' },
+    { english: 'cat', spanish: 'gato' },
+    { english: 'friend', spanish: 'amigo' },
+    { english: 'boyfriend', spanish: 'novio' },
+    { english: 'girlfriend', spanish: 'novia' },
+    { english: 'university', spanish: 'universidad' },
 ];
 
 const lecturaData = {
@@ -571,7 +580,7 @@ function Intro1SpanishContent() {
                         </CardHeader>
                         <CardContent className="space-y-6">
                             <div className="relative aspect-video w-full overflow-hidden rounded-xl border bg-white">
-                                <Image src="https://www.ecured.cu/images/6/6c/America_Latina.png" alt="Latam Map" fill className="object-contain" data-ai-hint="latam map" />
+                                <Image src="https://img.magnific.com/vector-gratis/mapa-america-latina-nombres-paises_1199-386.jpg?semt=ais_hybrid&w=740&q=80" alt="Latam Map" fill className="object-contain" data-ai-hint="latam map" />
                             </div>
                             <div className="grid md:grid-cols-2 gap-6 text-lg leading-relaxed text-left">
                                 <div className="space-y-4 font-medium text-foreground">
@@ -598,7 +607,7 @@ function Intro1SpanishContent() {
                         </CardHeader>
                         <CardContent className="space-y-6">
                             <div className="relative aspect-square w-full max-w-sm mx-auto overflow-hidden rounded-xl border bg-white">
-                                <Image src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Colombia%2C_administrative_divisions_-_es_-_colored_%28%2Bbox%29.svg/500px-Colombia%2C_administrative_divisions_-_es_-_colored_%28%2Bbox%29.svg.png" alt="Colombia Map" fill className="object-contain" data-ai-hint="colombia map" />
+                                <Image src="https://i.pinimg.com/474x/e2/23/72/e22372e5ec66b63e0548f9d566ccc9e3.jpg" alt="Colombia Map" fill className="object-contain" data-ai-hint="colombia map" />
                             </div>
                             <Accordion type="single" collapsible className="w-full text-left">
                                 <AccordionItem value="acentos">
@@ -610,6 +619,7 @@ function Intro1SpanishContent() {
                                                 <li><strong>Paisa:</strong> De Medellín, muy rítmico y amable.</li>
                                                 <li><strong>Rolo:</strong> De Bogotá, neutro y formal.</li>
                                                 <li><strong>Costeño:</strong> De la costa caribe, rápido y alegre.</li>
+                                                <li><strong>Patuso:</strong> Del sur de Colombia Pasto - similar a ecuatoriano.</li>
                                             </ul>
                                         </div>
                                         <div className="p-3 bg-muted rounded-lg border italic text-sm text-muted-foreground">
