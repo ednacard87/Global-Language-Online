@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { 
     BookOpen, 
     PenSquare, 
@@ -19,7 +20,8 @@ import {
     Clock,
     Search,
     User,
-    Split
+    Split,
+    ArrowLeft
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -28,9 +30,10 @@ import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocki
 import { doc } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
+import { DashboardHeader } from '@/components/dashboard/header';
 
 // --- CONFIGURACIÓN DE INGENIERÍA ---
-const progressStorageVersion = 'progress_a2_eng_u1_c1_v3_theme_fix';
+const progressStorageVersion = 'progress_a2_eng_u1_c1_v10_bg_final';
 const mainProgressKey = 'progress_a2_eng_unit_1_class_1';
 
 interface Topic {
@@ -50,8 +53,17 @@ export default function Class1Content({ overrideStudentId }: { overrideStudentId
     const { toast } = useToast();
     const { user, isUserLoading } = useUser();
     const firestore = useFirestore();
+    const searchParams = useSearchParams();
 
-    const currentUID = overrideStudentId || user?.uid;
+    // Captura de ID para supervisión
+    const targetStudentId = overrideStudentId || searchParams.get('studentId');
+    const currentUID = targetStudentId || user?.uid;
+
+    const [isInitialLoading, setIsInitialLoading] = useState(true);
+    const [learningPath, setLearningPath] = useState<Topic[]>([]);
+    const [selectedTopic, setSelectedTopic] = useState<string>('');
+    const hasInitialized = useRef(false);
+
     const studentDocRef = useMemoFirebase(() => (currentUID ? doc(firestore, 'students', currentUID) : null), [firestore, currentUID]);
     const authUserRef = useMemoFirebase(() => (user ? doc(firestore, 'students', user.uid) : null), [firestore, user]);
     
@@ -60,12 +72,6 @@ export default function Class1Content({ overrideStudentId }: { overrideStudentId
 
     const isAdmin = useMemo(() => (user && (authUserProfile?.role === 'admin' || user.email === 'ednacard87@gmail.com')), [user, authUserProfile]);
 
-    const [isInitialLoading, setIsInitialLoading] = useState(true);
-    const [learningPath, setLearningPath] = useState<Topic[]>([]);
-    const [selectedTopic, setSelectedTopic] = useState<string>('');
-    const hasInitialized = useRef(false);
-
-    // Definición de la ruta de aprendizaje
     const initialPathData = useMemo(() => [
         { key: 'vocabulary_body', name: '1. Vocabulary (Body)', icon: Activity },
         { key: 'grammar_prepositions', name: '2. Grammar (AT-ON-IN)', icon: Clock },
@@ -79,7 +85,7 @@ export default function Class1Content({ overrideStudentId }: { overrideStudentId
         { key: 'complete_activity', name: '10. Complete', icon: Pencil },
         { key: 'exercise_5', name: '11. Exercise 5', icon: PenSquare },
         { key: 'find_mistake_2', name: '12. Find the Mistake 2', icon: Search },
-        { key: 'reading_section', name: '13. Lectura', icon: BookText },
+        { key: 'reading_section', name: '13. Reading', icon: BookText },
         { key: 'differences_section', name: '14. Differences', icon: Split },
         { key: 'final_exercise', name: '15. Last Exercise', icon: Trophy },
     ], []);
@@ -100,7 +106,7 @@ export default function Class1Content({ overrideStudentId }: { overrideStudentId
         
         let savedTopic = '';
 
-        if (isAdmin && !overrideStudentId) {
+        if (isAdmin && !targetStudentId) {
             path.forEach(t => t.status = 'completed');
         } else if (studentProfile?.lessonProgress?.[progressStorageVersion]) {
             const data = studentProfile.lessonProgress[progressStorageVersion];
@@ -108,7 +114,7 @@ export default function Class1Content({ overrideStudentId }: { overrideStudentId
             savedTopic = data.lastSelectedTopic || '';
         }
 
-        if (!isAdmin || overrideStudentId) {
+        if (!isAdmin || targetStudentId) {
             let lastDone = true;
             for (let i = 0; i < path.length; i++) {
                 if (lastDone && path[i].status === 'locked') path[i].status = 'active';
@@ -119,7 +125,7 @@ export default function Class1Content({ overrideStudentId }: { overrideStudentId
         setLearningPath(path);
         setSelectedTopic(savedTopic || path.find(p => p.status === 'active')?.key || path[0].key);
         hasInitialized.current = true;
-    }, [isInitialLoading, studentProfile, isAdmin, initialPathData, overrideStudentId]);
+    }, [isInitialLoading, studentProfile, isAdmin, initialPathData, targetStudentId]);
 
     const progressValue = useMemo(() => {
         if (learningPath.length === 0) return 0;
@@ -128,7 +134,7 @@ export default function Class1Content({ overrideStudentId }: { overrideStudentId
     }, [learningPath]);
 
     useEffect(() => {
-        if (isInitialLoading || isAdmin || !studentDocRef || overrideStudentId || !hasInitialized.current) return;
+        if (isInitialLoading || isAdmin || !studentDocRef || targetStudentId || !hasInitialized.current) return;
         
         const s: Record<string, any> = { lastSelectedTopic: selectedTopic };
         learningPath.forEach(item => { s[item.key] = item.status; });
@@ -139,7 +145,7 @@ export default function Class1Content({ overrideStudentId }: { overrideStudentId
         });
         
         if (progressValue >= 100) window.dispatchEvent(new CustomEvent('progressUpdated'));
-    }, [learningPath, progressValue, selectedTopic, isAdmin, studentDocRef, isInitialLoading, overrideStudentId]);
+    }, [learningPath, progressValue, selectedTopic, isAdmin, studentDocRef, isInitialLoading, targetStudentId]);
 
     const handleTopicComplete = useCallback((completedKey: string) => {
         setLearningPath(current => {
@@ -203,66 +209,95 @@ export default function Class1Content({ overrideStudentId }: { overrideStudentId
 
     if (isInitialLoading) {
         return (
-            <div className="flex flex-col items-center justify-center min-h-[400px]">
+            <div className="flex flex-col items-center justify-center h-screen bg-background">
                 <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
-                <p className="text-white font-bold tracking-widest animate-pulse uppercase">Sincronizando Misión A2...</p>
+                <p className="text-muted-foreground font-bold tracking-widest animate-pulse uppercase">Sincronizando Misión A2...</p>
             </div>
         );
     }
 
     return (
-        <div className="grid gap-8 md:grid-cols-12 text-foreground animate-in fade-in duration-500">
-            {/* Main Content */}
-            <div className="md:col-span-9 md:order-1 order-2">
-                {renderContent()}
-            </div>
-
-            {/* Sidebar Navigation */}
-            <div className="md:col-span-3 md:order-2 order-1 text-left">
-                <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
-                    <CardHeader className="pb-4 border-b bg-muted/30">
-                        <CardTitle className="text-lg font-black text-primary uppercase tracking-tighter flex items-center gap-2">
-                            <Trophy className="h-5 w-5 text-primary" /> Misión A2
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-4">
-                        <nav>
-                            <ul className="space-y-1">
-                                {learningPath.map((item) => {
-                                    const isLocked = item.status === 'locked' && !isAdmin;
-                                    const Icon = ICONS_CONFIG[item.status] || BookOpen;
-                                    return (
-                                        <li key={item.key} onClick={() => handleTopicSelect(item.key)}
-                                            className={cn(
-                                                'flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer text-foreground',
-                                                isLocked ? 'text-muted-foreground/30 cursor-not-allowed' : 'hover:bg-muted',
-                                                selectedTopic === item.key && 'bg-muted text-primary font-black border-l-4 border-primary shadow-sm'
-                                            )}
-                                        >
-                                            <div className="flex items-center gap-3">
-                                                {item.status === 'completed' ? (
-                                                    <CheckCircle className="h-5 w-5 text-green-500" />
-                                                ) : (
-                                                    <Icon className={cn("h-5 w-5", isLocked ? "text-yellow-500/50" : "text-primary")} />
-                                                )}
-                                                <span className="truncate max-w-[150px] text-[10px] uppercase font-bold text-foreground">{item.name}</span>
-                                            </div>
-                                            {isLocked && <Lock className="h-3 w-3 text-yellow-500/30" />}
-                                        </li>
-                                    );
-                                })}
-                            </ul>
-                        </nav>
-                        <div className="mt-6 pt-6 border-t">
-                            <div className="flex justify-between items-center text-xs mb-2 font-black uppercase tracking-widest text-muted-foreground">
-                                <span>Avance Clase</span>
-                                <span className="text-primary">{progressValue}%</span>
+        <div className="flex w-full flex-col min-h-screen ingles-dashboard-bg">
+            <DashboardHeader />
+            <main className="flex-1 p-4 md:p-8">
+                <div className="max-w-7xl mx-auto">
+                    {/* OJO ADMIN: Banner de Supervisión */}
+                    {targetStudentId && isAdmin && (
+                        <div className="mb-6 bg-yellow-500/20 border-2 border-yellow-500 p-4 rounded-xl flex items-center justify-between shadow-lg backdrop-blur-md">
+                            <div className="flex items-center gap-3 text-yellow-700 dark:text-yellow-400">
+                                <Star className="h-6 w-6 fill-current animate-pulse" />
+                                <p className="font-black uppercase tracking-tighter text-sm">Modo Supervisión Activo: {studentProfile?.name || targetStudentId}</p>
                             </div>
-                            <Progress value={progressValue} className="h-2 rounded-full" />
+                            <Button variant="outline" size="sm" asChild className="border-yellow-600 text-yellow-700 hover:bg-yellow-500/10 transition-colors">
+                                <Link href="/admin">Cerrar Supervisión</Link>
+                            </Button>
                         </div>
-                    </CardContent>
-                </Card>
-            </div>
+                    )}
+                    
+                    <div className="mb-8 text-left text-white">
+                        <Link href="/ingles/a2" className="hover:underline text-sm font-bold text-white/80 flex items-center gap-2 mb-2">
+                            <ArrowLeft className="h-4 w-4" /> Volver al Curso A2
+                        </Link>
+                        <h1 className="text-4xl font-black [text-shadow:2px_2px_4px_rgba(0,0,0,0.5)] uppercase tracking-tight">
+                            Unit 1: Class 1 (A2) 🇬🇧
+                        </h1>
+                    </div>
+
+                    <div className="grid gap-8 md:grid-cols-12">
+                        {/* Contenido Principal */}
+                        <div className="md:col-span-9 md:order-1 order-2">
+                            {renderContent()}
+                        </div>
+
+                        {/* Barra Lateral de Navegación */}
+                        <div className="md:col-span-3 md:order-2 order-1 text-left">
+                            <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
+                                <CardHeader className="pb-4 border-b bg-muted/30">
+                                    <CardTitle className="text-lg font-black text-primary uppercase tracking-tighter flex items-center gap-2">
+                                        <Trophy className="h-5 w-5 text-primary" /> Misión A2
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent className="p-4">
+                                    <nav>
+                                        <ul className="space-y-1">
+                                            {learningPath.map((item) => {
+                                                const isLocked = item.status === 'locked' && !isAdmin;
+                                                const Icon = ICONS_CONFIG[item.status] || BookOpen;
+                                                return (
+                                                    <li key={item.key} onClick={() => handleTopicSelect(item.key)}
+                                                        className={cn(
+                                                            'flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer text-foreground',
+                                                            isLocked ? 'text-muted-foreground/30 cursor-not-allowed' : 'hover:bg-muted',
+                                                            selectedTopic === item.key && 'bg-muted text-primary font-black border-l-4 border-primary shadow-sm'
+                                                        )}
+                                                    >
+                                                        <div className="flex items-center gap-3">
+                                                            {item.status === 'completed' ? (
+                                                                <CheckCircle className="h-5 w-5 text-green-500" />
+                                                            ) : (
+                                                                <Icon className={cn("h-5 w-5", isLocked ? "text-yellow-500/50" : "text-primary")} />
+                                                            )}
+                                                            <span className="truncate max-w-[150px] text-[10px] uppercase font-bold">{item.name}</span>
+                                                        </div>
+                                                        {isLocked && <Lock className="h-3 w-3 text-yellow-500/30" />}
+                                                    </li>
+                                                );
+                                            })}
+                                        </ul>
+                                    </nav>
+                                    <div className="mt-6 pt-6 border-t">
+                                        <div className="flex justify-between items-center text-xs mb-2 font-black uppercase tracking-widest text-muted-foreground">
+                                            <span>Avance Clase</span>
+                                            <span className="text-primary">{progressValue}%</span>
+                                        </div>
+                                        <Progress value={progressValue} className="h-2 rounded-full" />
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </div>
+                    </div>
+                </div>
+            </main>
         </div>
     );
 }
