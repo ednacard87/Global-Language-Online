@@ -196,7 +196,7 @@ const answerKeys = {
         { affirmative: [], negative: [], interrogative: ["are you from spain?"], shortAffirmative: ["yes, i am"], shortNegative: ["no, i am not", "no, i'm not"] },
         { affirmative: [], negative: [], interrogative: ["is he an engineer?"], shortAffirmative: ["yes, he is"], shortNegative: ["no, he is not", "no, he isn't"] },
         { affirmative: [], negative: [], interrogative: ["are you hungry?"], shortAffirmative: ["yes, i am"], shortNegative: ["no, i am not", "no, i'm not"] },
-        { affirmative: [], negative: [], interrogative: ["are they coworkers?"], shortAffirmative: ["yes, they are"], shortNegative: ["no, they are not", "no, they aren't"] },
+        { affirmative: [], negative: [], interrogative: ["are they coworkers?" , "are they workmates?"], shortAffirmative: ["yes, they are"], shortNegative: ["no, they are not", "no, they aren't"] },
         { affirmative: [], negative: [], interrogative: ["is he joseph?"], shortAffirmative: ["yes, he is"], shortNegative: ["no, he is not", "no, he isn't"] },
         { affirmative: [], negative: [], interrogative: ["are we on time?"], shortAffirmative: ["yes, we are"], shortNegative: ["no, we are not", "no, we aren't"] },
         { affirmative: [], negative: [], interrogative: ["are you mathew?"], shortAffirmative: ["yes, i am"], shortNegative: ["no, i am not", "no, i'm not"] },
