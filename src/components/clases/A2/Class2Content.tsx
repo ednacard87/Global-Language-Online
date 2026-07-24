@@ -1,49 +1,206 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import { 
+    BookOpen, 
+    PenSquare, 
+    Lock, 
+    GraduationCap, 
+    CheckCircle, 
+    Loader2, 
+    ArrowRight,
+    Gamepad2,
+    Trophy,
+    BookText,
+    Info,
+} from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
-import { 
-    Loader2, 
-    ArrowLeft, 
-    Clock,
-    Lock
-} from 'lucide-react';
-import { useTranslation } from '@/context/language-context';
-import { useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
+import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
 import { doc } from 'firebase/firestore';
+import { useToast } from '@/hooks/use-toast';
+import { Button } from '@/components/ui/button';
 
-/**
- * COMPONENTE DE CLASE 2 (A2) - MÓDULO INDEPENDIENTE
- * -----------------------------------------------
- * Este componente es una plantilla blindada para lecciones en desarrollo.
- */
+// --- CONFIGURACIÓN DE INGENIERÍA ---
+const progressStorageVersion = 'progress_a2_eng_u1_c2_v2_clean';
+const mainProgressKey = 'progress_a2_eng_unit_1_class_2';
 
-export default function Class2Content() {
-    const { t } = useTranslation();
+interface Topic {
+  key: string;
+  name: string;
+  icon: React.ElementType;
+  status: 'completed' | 'active' | 'locked';
+}
+
+const ICONS_CONFIG = {
+    locked: Lock,
+    active: BookOpen,
+    completed: CheckCircle,
+};
+
+export default function Class2Content({ overrideStudentId }: { overrideStudentId?: string | null }) {
+    const { toast } = useToast();
     const { user, isUserLoading } = useUser();
     const firestore = useFirestore();
 
+    const currentUID = overrideStudentId || user?.uid;
+    const studentDocRef = useMemoFirebase(() => (currentUID ? doc(firestore, 'students', currentUID) : null), [firestore, currentUID]);
+    const authUserRef = useMemoFirebase(() => (user ? doc(firestore, 'students', user.uid) : null), [firestore, user]);
+    
+    const { data: authUserProfile } = useDoc<{role?: string}>(authUserRef);
+    const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{role?: string, lessonProgress?: any, progress?: any, name?: string}>(studentDocRef);
+
+    const isAdmin = useMemo(() => (user && (authUserProfile?.role === 'admin' || user.email === 'ednacard87@gmail.com')), [user, authUserProfile]);
+
     const [isInitialLoading, setIsInitialLoading] = useState(true);
+    const [learningPath, setLearningPath] = useState<Topic[]>([]);
+    const [selectedTopic, setSelectedTopic] = useState<string>('');
+    const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
+    const hasInitialized = useRef(false);
 
-    const studentDocRef = useMemoFirebase(
-      () => (user ? doc(firestore, 'students', user.uid) : null),
-      [firestore, user]
-    );
-    const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{role?: string}>(studentDocRef);
+    // Definición de la ruta de 16 pasos solicitada
+    const initialPathData = useMemo(() => [
+        { key: 'vocabulary_basic', name: '1. Vocabulary (Verbos Basicos)', icon: BookOpen },
+        { key: 'grammar_1', name: '2. Grammar 1', icon: GraduationCap },
+        { key: 'exercise_1', name: '3. Exercise 1', icon: PenSquare },
+        { key: 'grammar_2_quantifiers', name: '4. Grammar 2 (Quantifiers)', icon: GraduationCap },
+        { key: 'exercise_2', name: '5. Exercise 2', icon: PenSquare },
+        { key: 'exercise_3', name: '6. Exercise 3', icon: PenSquare },
+        { key: 'grammar_3_base', name: '7. Grammar 3', icon: GraduationCap },
+        { key: 'exercise_4', name: '8. Exercise 4', icon: PenSquare },
+        { key: 'vocabulary_game', name: '9. Vocabulary (Game)', icon: Gamepad2 },
+        { key: 'grammar_3_some_any', name: '10. Grammar 3 (Some & Any)', icon: GraduationCap },
+        { key: 'ex_some_any', name: '11. Exercise with some & any', icon: PenSquare },
+        { key: 'grammar_4', name: '12. Grammar 4', icon: GraduationCap },
+        { key: 'exercise_5', name: '13. Exercise 5', icon: PenSquare },
+        { key: 'exercise_6', name: '14. Exercise 6', icon: PenSquare },
+        { key: 'lectura', name: '15. Lectura', icon: BookText },
+        { key: 'final_exercise', name: '16. Final Exercise', icon: Trophy },
+    ], []);
 
-    // BLINDAJE LIGHT: Control de flujo de carga inicial
+    // ASYNC FLOW 1: Inicialización de estados
     useEffect(() => {
-        if (!isUserLoading && !isProfileLoading) {
-            const timer = setTimeout(() => {
-                setIsInitialLoading(false);
-            }, 600);
-            return () => clearTimeout(timer);
+        if (isProfileLoading || isUserLoading || !studentProfile || hasInitialized.current) return;
+
+        let path = initialPathData.map((topic, index) => ({ 
+            ...topic, 
+            status: index === 0 ? 'active' : 'locked' as 'completed' | 'active' | 'locked'
+        }));
+        
+        let savedTopic = '';
+
+        if (isAdmin && !overrideStudentId) {
+            path.forEach(t => t.status = 'completed');
+        } else if (studentProfile?.lessonProgress?.[progressStorageVersion]) {
+            const data = studentProfile.lessonProgress[progressStorageVersion];
+            path.forEach(t => { if (data[t.key]) t.status = data[t.key]; });
+            savedTopic = data.lastSelectedTopic || '';
         }
-    }, [isUserLoading, isProfileLoading]);
+
+        // Lógica de desbloqueo secuencial
+        if (!isAdmin || overrideStudentId) {
+            let lastDone = true;
+            for (let i = 0; i < path.length; i++) {
+                if (lastDone && path[i].status === 'locked') path[i].status = 'active';
+                lastDone = path[i].status === 'completed';
+            }
+        }
+
+        setLearningPath(path);
+        setSelectedTopic(savedTopic || path.find(p => p.status === 'active')?.key || path[0].key);
+        hasInitialized.current = true;
+        setTimeout(() => setIsInitialLoading(false), 600);
+    }, [isAdmin, initialPathData, studentProfile, isProfileLoading, isUserLoading, overrideStudentId]);
+
+    const progressValue = useMemo(() => {
+        if (learningPath.length === 0) return 0;
+        const completedCount = learningPath.filter(t => t.status === 'completed').length;
+        return Math.round((completedCount / learningPath.length) * 100);
+    }, [learningPath]);
+
+    // ASYNC FLOW 2: Guardado de progreso
+    useEffect(() => {
+        if (!hasInitialized.current || isInitialLoading || isAdmin || !studentDocRef || overrideStudentId) return;
+        
+        const s: Record<string, any> = { lastSelectedTopic: selectedTopic };
+        learningPath.forEach(item => { s[item.key] = item.status; });
+        
+        updateDocumentNonBlocking(studentDocRef, { 
+            [`lessonProgress.${progressStorageVersion}`]: s, 
+            [`progress.${mainProgressKey}`]: progressValue 
+        });
+        
+        if (progressValue >= 100) window.dispatchEvent(new CustomEvent('progressUpdated'));
+    }, [learningPath, progressValue, selectedTopic, isAdmin, studentDocRef, isInitialLoading, overrideStudentId]);
+
+    // ASYNC FLOW 3: Desbloqueos automáticos
+    useEffect(() => {
+        if (!topicToComplete) return;
+
+        setLearningPath(current => {
+            const newPath = current.map(t => ({ ...t }));
+            const idx = newPath.findIndex(t => t.key === topicToComplete);
+            if (idx !== -1 && newPath[idx].status !== 'completed') {
+                newPath[idx].status = 'completed';
+                if (idx + 1 < newPath.length && newPath[idx + 1].status === 'locked') {
+                    newPath[idx + 1].status = 'active';
+                    setSelectedTopic(newPath[idx + 1].key);
+                    setTimeout(() => toast({ title: "¡Misión desbloqueada!", description: "Continúa hacia el siguiente nivel." }), 0);
+                }
+            }
+            return newPath;
+        });
+        setTopicToComplete(null);
+    }, [topicToComplete, toast]);
+
+    const handleTopicSelect = (key: string) => {
+        const topic = learningPath.find(t => t.key === key);
+        if (!isAdmin && topic?.status === 'locked') {
+            toast({ variant: "destructive", title: "Contenido Bloqueado", description: "Completa el paso anterior primero." });
+            return;
+        }
+        setSelectedTopic(key);
+    };
+
+    const handleTopicComplete = (key: string) => {
+        setTopicToComplete(key);
+    };
+
+    const renderContent = () => {
+        const topic = learningPath.find(t => t.key === selectedTopic);
+        if (!topic) return null;
+
+        return (
+            <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground text-left overflow-hidden">
+                <CardHeader className='bg-primary/5 border-b'>
+                    <div className='flex items-center gap-3'>
+                        <div className='p-2 bg-primary/20 rounded-lg text-primary'>
+                            <topic.icon className='h-6 w-6' />
+                        </div>
+                        <div>
+                            <CardTitle className="text-primary uppercase tracking-tighter">{topic.name}</CardTitle>
+                            <CardDescription className='font-bold text-foreground'>Sección de aprendizaje en desarrollo para la Clase 2 (A2).</CardDescription>
+                        </div>
+                    </div>
+                </CardHeader>
+                <CardContent className="py-12 flex flex-col items-center justify-center min-h-[400px] text-center space-y-6">
+                    <div className='p-10 bg-muted/30 rounded-full animate-pulse'>
+                        <topic.icon className='h-24 w-24 text-primary/30' />
+                    </div>
+                    <div className='space-y-2'>
+                        <h3 className='text-4xl font-black uppercase tracking-tighter text-primary'>PROXIMAMENTE</h3>
+                        <p className='text-muted-foreground text-xl'>El contenido para "{topic.name}" se está cargando en el búnker de datos A2.</p>
+                    </div>
+                </CardContent>
+                <CardFooter className="justify-center border-t p-6 bg-muted/10">
+                    <Button onClick={() => handleTopicComplete(selectedTopic)} size="lg" className="px-20 font-black h-14 text-xl shadow-xl uppercase transition-all active:scale-95">
+                        Completar Paso <ArrowRight className="ml-2 h-6 w-6" />
+                    </Button>
+                </CardFooter>
+            </Card>
+        );
+    };
 
     if (isInitialLoading) {
         return (
@@ -55,65 +212,54 @@ export default function Class2Content() {
     }
 
     return (
-        <div className="grid gap-8 md:grid-cols-12 animate-in fade-in duration-700">
-            {/* Main Content Area: Mensaje en Desarrollo */}
-            <div className="md:col-span-9 md:order-1 order-2 flex flex-col justify-center min-h-[500px]">
-                <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/90 backdrop-blur-sm overflow-hidden py-10">
-                    <CardHeader className="text-center pt-10">
-                        <div className="flex justify-center mb-6">
-                            <div className="p-5 bg-primary/10 rounded-full animate-bounce">
-                                <Clock className="h-16 w-16 text-primary" />
-                            </div>
-                        </div>
-                        <CardTitle className="text-4xl font-black uppercase tracking-tighter text-primary">
-                            ¡Clase 2 (A2) en desarrollo!
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="text-center space-y-8 pb-10">
-                        <p className="text-xl text-muted-foreground leading-relaxed px-6">
-                            Estamos preparando el contenido de esta lección para tu aventura de nivel intermedio.
-                            <br />
-                            ¡Estará disponible muy pronto en tu radar!
-                        </p>
-                        <div className="flex justify-center">
-                            <Button asChild variant="default" size="lg" className="rounded-full px-10 font-bold h-14 shadow-lg bg-primary hover:bg-primary/90 text-primary-foreground transition-all active:scale-95">
-                                <Link href="/ingles/a2">
-                                    <ArrowLeft className="mr-2 h-5 w-5" /> Volver al curso A2
-                                </Link>
-                            </Button>
-                        </div>
-                    </CardContent>
-                    <CardFooter className="justify-center border-t pt-4 bg-muted/20">
-                        <p className="text-xs text-muted-foreground uppercase font-bold tracking-widest">Global English Online - Contenedor A2 Blindado</p>
-                    </CardFooter>
-                </Card>
+        <div className="grid gap-8 md:grid-cols-12 text-foreground animate-in fade-in duration-500">
+            {/* Área de Contenido */}
+            <div className="md:col-span-9 md:order-1 order-2">
+                {renderContent()}
             </div>
 
-            {/* Side Navigation Placeholder (Locked) */}
+            {/* Sidebar de Navegación */}
             <div className="md:col-span-3 md:order-2 order-1 text-left">
                 <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
-                    <CardHeader>
-                        <CardTitle className="text-lg">Misión Próximamente</CardTitle>
+                    <CardHeader className="pb-4 border-b bg-muted/30">
+                        <CardTitle className="text-lg font-black text-primary uppercase flex items-center gap-2">
+                            <Trophy className="h-5 w-5 text-primary" /> Misión 2A
+                        </CardTitle>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="p-4">
                         <nav>
                             <ul className="space-y-1">
-                                <li className="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg text-muted-foreground/50 cursor-not-allowed">
-                                    <Lock className="h-5 w-5 text-yellow-500" />
-                                    <span>Contenido bloqueado</span>
-                                </li>
-                                <li className="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg text-muted-foreground/50 cursor-not-allowed">
-                                    <Lock className="h-5 w-5 text-yellow-500" />
-                                    <span>Práctica bloqueada</span>
-                                </li>
+                                {learningPath.map((item) => {
+                                    const isLocked = item.status === 'locked' && !isAdmin;
+                                    const Icon = ICONS_CONFIG[item.status] || BookOpen;
+                                    return (
+                                        <li key={item.key} onClick={() => handleTopicSelect(item.key)}
+                                            className={cn(
+                                                'flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer text-foreground',
+                                                isLocked ? 'text-muted-foreground/30 cursor-not-allowed' : 'hover:bg-muted',
+                                                selectedTopic === item.key && 'bg-muted text-primary font-black border-l-4 border-primary shadow-sm'
+                                            )}
+                                        >
+                                            <div className="flex items-center gap-3">
+                                                {item.status === 'completed' ? (
+                                                    <CheckCircle className="h-5 w-5 text-green-500" />
+                                                ) : (
+                                                    <Icon className={cn("h-5 w-5", isLocked ? "text-yellow-500/50" : "text-primary")} />
+                                                )}
+                                                <span className="truncate max-w-[150px] text-[10px] uppercase font-bold">{item.name}</span>
+                                            </div>
+                                            {isLocked && <Lock className="h-3 w-3 text-yellow-500/30" />}
+                                        </li>
+                                    );
+                                })}
                             </ul>
                         </nav>
                         <div className="mt-6 pt-6 border-t">
-                            <div className="flex justify-between items-center text-xs mb-2 text-muted-foreground">
-                                <span>Progreso</span>
-                                <span className="font-bold text-foreground">0%</span>
+                            <div className="flex justify-between items-center text-xs mb-2 font-black uppercase text-muted-foreground">
+                                <span>Avance Clase</span>
+                                <span className="text-primary">{progressValue}%</span>
                             </div>
-                            <Progress value={0} className="h-1.5" />
+                            <Progress value={progressValue} className="h-2 rounded-full" />
                         </div>
                     </CardContent>
                 </Card>
