@@ -37,7 +37,7 @@ import { Separator } from '@/components/ui/separator';
 import { VocabularyMatchingGame } from '@/components/dashboard/vocabulary-matching-game';
 
 // --- CONFIGURACIÓN DE INGENIERÍA ---
-const progressStorageVersion = 'progress_a2_eng_u1_c3_v1000_final_validation';
+const progressStorageVersion = 'progress_a2_eng_u1_c3_v1005_interactive_bank';
 const mainProgressKey = 'progress_a2_eng_unit_1_class_3';
 
 const ICONS_CONFIG = {
@@ -62,7 +62,7 @@ const ropaVocab = [
 ];
 
 const capeTownStory = {
-    words: "ACTIVITIES/ CULTURES/ COUNTRIES/ PUBS/ TIME/ AWARENESS/ TOURISTS/ FUN/ SYSTEMS/ POLICEMEN / RESTAURANTS/ ATTENTION/ PEACE/ THINGS/ BEACHES/ PEOPLE/ CRIME/ RESOURCES/ CAMERAS/ FOCUS",
+    words: ["ACTIVITIES", "CULTURES", "COUNTRIES", "PUBS", "TIME", "AWARENESS", "TOURISTS", "FUN", "SYSTEMS", "POLICEMEN", "RESTAURANTS", "ATTENTION", "PEACE", "THINGS", "BEACHES", "PEOPLE", "CRIME", "RESOURCES", "CAMERAS", "FOCUS"],
     parts: [
         { text: "CAPE TOWN IS HOME TOO MANY DIFFERENT - ", answer: "PEOPLE" },
         { text: " A FEW LOCAL CULTURES AND A LOT OF FOREIGN NATIONAL CULTURES. IMMIGRANTS FROM SEVERAL AFRICAN AND EUROPEAN - ", answer: "COUNTRIES" },
@@ -102,14 +102,6 @@ const ex2Prompts = [
     { spanish: "ESTE ES EL COMPUTADOR MAS CARO", answer: ["this is the most expensive computer", "this is the most expensive laptop"] },
 ];
 
-const lastExData = [
-    { text: "1. LONDON IS ", answer: "IN", after: " EUROPE." },
-    { text: "2. SHE LIVES ", answer: "ON", after: " THE SECOND FLOOR " },
-    { text: "   IN AN NEW BUILDING ", answer: "AT", after: " THE END OF THIS STREET." }, // This was tricky, I'll split it slightly differently for the UI
-    { text: "3. HE WAITS FOR ME ", answer: "AT", after: " THE BUS STOP." },
-];
-
-// Simplified mapping for the complex sentence in Last Exercise
 const lastExBlanks = [
     { phrase: "1. LONDON IS ", correct: "IN", after: " EUROPE." },
     { phrase: "2. SHE LIVES ", correct: "ON", after: " THE SECOND FLOOR " },
@@ -139,8 +131,8 @@ const BallsExercise = ({ title, prompts, onComplete, vocabulary }: any) => {
     return (
         <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground">
             <CardHeader>
-                <div className="flex justify-between items-start">
-                    <div className="text-left">
+                <div className="flex justify-between items-start text-left">
+                    <div className="w-full">
                         <CardTitle>{title}</CardTitle>
                         <div className="flex gap-2 justify-start flex-wrap pt-4">
                             {prompts.map((_: any, i: number) => (
@@ -174,62 +166,48 @@ const BallsExercise = ({ title, prompts, onComplete, vocabulary }: any) => {
 const ManualGradingExercise = ({ title, description, onComplete, studentDocRef, isAdmin, storageKeyLines, storageKeyGrades, initialLines, initialGrades, lineCount = 22, isSupervisionMode = false }: any) => {
     const [lines, setLines] = useState<string[]>(Array(lineCount).fill(''));
     const [grades, setGrades] = useState<Record<number, 'correct' | 'incorrect' | null>>(initialGrades || {});
-    const lastStudentDataRef = useRef<string[]>([]);
 
     useEffect(() => {
         if (initialLines && Array.isArray(initialLines)) {
             const newLines = [...Array(lineCount).fill('')];
             initialLines.forEach((val: string, i: number) => { if (i < lineCount) newLines[i] = val || ''; });
-            if (isAdmin) setLines(newLines);
-            else {
-                setLines(curr => {
-                    const hasLocalChange = curr.some((l, idx) => l !== lastStudentDataRef.current[idx]);
-                    return hasLocalChange ? curr : newLines;
-                });
-            }
-            lastStudentDataRef.current = newLines;
+            setLines(newLines);
         }
-    }, [initialLines, lineCount, isAdmin]);
+    }, [initialLines, lineCount]);
 
-    useEffect(() => {
-        if (initialGrades) setGrades(initialGrades);
-    }, [initialGrades]);
+    useEffect(() => { if (initialGrades) setGrades(initialGrades); }, [initialGrades]);
 
     const handleLineChange = (idx: number, val: string) => {
         if (isSupervisionMode) return;
-        const nl = [...lines]; nl[idx] = val; 
-        setLines(nl); lastStudentDataRef.current = nl;
+        const nl = [...lines]; nl[idx] = val; setLines(nl);
         if (studentDocRef) updateDocumentNonBlocking(studentDocRef, { [`lessonProgress.${progressStorageVersion}.${storageKeyLines}`]: nl });
     };
 
     const handleToggleGrade = (idx: number, type: 'correct' | 'incorrect') => {
         if (!isAdmin) return;
-        const ng = { ...grades }; ng[idx] = ng[idx] === type ? null : type; 
-        setGrades(ng);
+        const ng = { ...grades }; ng[idx] = ng[idx] === type ? null : type; setGrades(ng);
         if (studentDocRef) updateDocumentNonBlocking(studentDocRef, { [`lessonProgress.${progressStorageVersion}.${storageKeyGrades}`]: ng });
     };
 
     return (
         <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground">
-            <CardHeader className='bg-primary/5 border-b'><CardTitle className='uppercase tracking-tighter'>{title}</CardTitle><CardDescription className='font-bold text-foreground'>{description}</CardDescription></CardHeader>
+            <CardHeader className='bg-primary/5 border-b'><CardTitle className='uppercase tracking-tighter text-left'>{title}</CardTitle><CardDescription className='font-bold text-foreground text-left'>{description}</CardDescription></CardHeader>
             <CardContent className="p-6 text-left">
                 <ScrollArea className="h-[500px] pr-4">
                     <div className="space-y-4">
-                        {lines.map((line, i) => (
-                            <div key={i} className="flex items-center gap-3">
-                                <span className="font-bold w-10 text-right text-muted-foreground">{i === 0 && title.includes('DICTATION') ? 'TITLE' : i + 1}.</span>
-                                <Input 
-                                    value={line} 
-                                    onChange={e => handleLineChange(i, e.target.value)} 
-                                    className={cn("flex-1 h-10 transition-all font-medium", grades[i] === 'correct' ? 'border-green-500 bg-green-500/10' : grades[i] === 'incorrect' ? 'border-red-500 bg-red-500/10' : '')} 
-                                    readOnly={isSupervisionMode} 
-                                />
-                                <div className="flex gap-1 shrink-0">
-                                    <Button size="icon" variant="ghost" onClick={() => handleToggleGrade(i, 'correct')} className={cn("h-8 w-8 rounded-full", grades[i] === 'correct' ? "bg-green-500 text-white" : "bg-muted opacity-50")} disabled={!isAdmin}><Check className="h-4 w-4"/></Button>
-                                    <Button size="icon" variant="ghost" onClick={() => handleToggleGrade(i, 'incorrect')} className={cn("h-8 w-8 rounded-full", grades[i] === 'incorrect' ? "bg-red-500 text-white" : "bg-muted opacity-50")} disabled={!isAdmin}><X className="h-4 w-4"/></Button>
+                        {lines.map((line, i) => {
+                            const isTitle = i === 0 && title.includes('DICTATION');
+                            return (
+                                <div key={i} className="flex items-center gap-3">
+                                    <span className="font-bold w-12 text-right text-muted-foreground">{isTitle ? 'TITLE' : i}.</span>
+                                    <Input value={line} onChange={e => handleLineChange(i, e.target.value)} className={cn("flex-1 h-10 transition-all font-medium", grades[i] === 'correct' ? 'border-green-500 bg-green-500/10' : grades[i] === 'incorrect' ? 'border-red-500 bg-red-500/10' : '')} readOnly={isSupervisionMode} />
+                                    <div className="flex gap-1 shrink-0">
+                                        <Button size="icon" variant="ghost" onClick={() => handleToggleGrade(i, 'correct')} className={cn("h-8 w-8 rounded-full", grades[i] === 'correct' ? "bg-green-500 text-white" : "bg-muted opacity-50")} disabled={!isAdmin}><Check className="h-4 w-4"/></Button>
+                                        <Button size="icon" variant="ghost" onClick={() => handleToggleGrade(i, 'incorrect')} className={cn("h-8 w-8 rounded-full", grades[i] === 'incorrect' ? "bg-red-500 text-white" : "bg-muted opacity-50")} disabled={!isAdmin}><X className="h-4 w-4"/></Button>
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 </ScrollArea>
             </CardContent>
@@ -266,8 +244,6 @@ export default function Class3Content({ overrideStudentId }: { overrideStudentId
     const [storyAnswers, setStoryAnswers] = useState<Record<number, string>>({});
     const [storyVal, setStoryVal] = useState<Record<number, 'correct' | 'incorrect' | 'unchecked'>>({});
     const [create2Text, setCreate2Text] = useState('');
-
-    // Last Exercise State
     const [lastExUserAnswers, setLastExUserAnswers] = useState<string[]>(Array(lastExBlanks.length).fill(''));
     const [lastExValStatus, setLastExValStatus] = useState<('correct' | 'incorrect' | 'unchecked')[]>(Array(lastExBlanks.length).fill('unchecked'));
 
@@ -283,6 +259,17 @@ export default function Class3Content({ overrideStudentId }: { overrideStudentId
         { key: 'vocab_game', name: '9. Vocabulary (Game)', icon: Gamepad2, status: 'locked' },
         { key: 'last_exercise', name: '10. Last Exercise', icon: Trophy, status: 'locked' },
     ], []);
+
+    const correctWordsInBank = useMemo(() => {
+        const correctSet = new Set<string>();
+        Object.entries(storyVal).forEach(([idx, status]) => {
+            if (status === 'correct') {
+                const word = capeTownStory.parts[parseInt(idx)].answer;
+                if (word) correctSet.add(word.toUpperCase());
+            }
+        });
+        return correctSet;
+    }, [storyVal]);
 
     const handleTopicComplete = useCallback((completedKey: string) => { setTopicToComplete(completedKey); }, []);
 
@@ -303,6 +290,7 @@ export default function Class3Content({ overrideStudentId }: { overrideStudentId
         
         if (d.questionsAns) setQuestionsAns(d.questionsAns);
         if (d.storyAnswers) setStoryAnswers(d.storyAnswers);
+        if (d.storyVal) setStoryVal(d.storyVal);
         if (d.create2Text) setCreate2Text(d.create2Text);
         if (d.lastExUserAnswers) setLastExUserAnswers(d.lastExUserAnswers);
         
@@ -323,13 +311,14 @@ export default function Class3Content({ overrideStudentId }: { overrideStudentId
             lastSelectedTopic: selectedTopic, 
             questionsAns, 
             storyAnswers, 
+            storyVal,
             create2Text,
             lastExUserAnswers
         };
         learningPath.forEach(t => s[t.key] = t.status);
         updateDocumentNonBlocking(studentDocRef, { [`lessonProgress.${progressStorageVersion}`]: s, [`progress.${mainProgressKey}`]: progressValue });
         if (progressValue >= 100) window.dispatchEvent(new CustomEvent('progressUpdated'));
-    }, [learningPath, progressValue, studentDocRef, initialLoadComplete, selectedTopic, isInitialLoading, questionsAns, storyAnswers, create2Text, lastExUserAnswers, overrideStudentId]);
+    }, [learningPath, progressValue, studentDocRef, initialLoadComplete, selectedTopic, isInitialLoading, questionsAns, storyAnswers, storyVal, create2Text, lastExUserAnswers, overrideStudentId]);
 
     useEffect(() => {
         if (!topicToComplete) return;
@@ -356,7 +345,7 @@ export default function Class3Content({ overrideStudentId }: { overrideStudentId
                         <CardContent><div className="grid grid-cols-2 gap-4 text-lg">
                             {ropaVocab.map((v, i) => (<Fragment key={i}><div className="p-3 border rounded-lg font-bold bg-white/5">{v.es}</div><Input value={vocabAnswers[i]} onChange={e => { const na = [...vocabAnswers]; na[i] = e.target.value; setVocabAnswers(na); const nv = [...vocabValidation]; nv[i] = 'unchecked'; setVocabValidation(nv); }} className={cn("uppercase", vocabValidation[i] === 'correct' ? 'border-green-500 bg-green-50/10' : vocabValidation[i] === 'incorrect' ? 'border-red-500 bg-red-50/10' : '')} readOnly={isAdmin && !!overrideStudentId} /></Fragment>))}
                         </div></CardContent>
-                        <CardFooter className="flex justify-between border-t pt-6 mt-4"><Button onClick={() => { let ok = true; const nv = ropaVocab.map((v, i) => { const res = v.en === vocabAnswers[i].trim().toUpperCase(); if (!res) ok = false; return ok ? 'correct' : 'incorrect'; }); setVocabValidation(nv); if (allOk(nv)) toast({ title: "¡Perfecto!" }); }} variant="secondary">Verificar</Button><Button onClick={() => handleTopicComplete('vocabulary_ropa')} disabled={!vocabValidation.every(v => v === 'correct') && !isAdmin} className='text-white font-bold'>Avanzar</Button></CardFooter>
+                        <CardFooter className="flex justify-between border-t pt-6 mt-4"><Button onClick={() => { let all = true; const nv = ropaVocab.map((v, i) => { const res = v.en === vocabAnswers[i].trim().toUpperCase(); if (!res) all = false; return okStatus(res); }); setVocabValidation(nv); if (nv.every(v => v === 'correct')) toast({ title: "¡Perfecto!" }); }} variant="secondary">Verificar</Button><Button onClick={() => handleTopicComplete('vocabulary_ropa')} disabled={!vocabValidation.every(v => v === 'correct') && !isAdmin} className='text-white font-bold'>Avanzar</Button></CardFooter>
                     </Card>
                 );
             case 'dictation_1':
@@ -378,13 +367,26 @@ export default function Class3Content({ overrideStudentId }: { overrideStudentId
                     </Card>
                 );
             case 'create_1':
-                return <ManualGradingExercise title="HOW HEALTHY ARE YOU?" description="WRITE 5 SENTENCES ABOUT YOUR OWN EATING AND EXERCISE HABITS. DON’T FORGET TO USE QUANTIFIERS: TOO MUCH, TOO MANY, NOT ENOUGH, A LOT OF." onComplete={() => handleTopicComplete('create_1')} studentDocRef={studentDocRef} isAdmin={isAdmin} storageKeyLines="create1Lines" storageKeyGrades="create1Grades" initialLines={studentProfile?.lessonProgress?.[progressStorageVersion]?.create1Lines} initialGrades={studentProfile?.lessonProgress?.[progressStorageVersion]?.create1Grades} lineCount={5} isSupervisionMode={!!overrideStudentId} />;
+                return <ManualGradingExercise title="HOW HEALTHY ARE YOU?" description="WRITE 5 SENTENCES ABOUT YOUR OWN EATING AND EXERCISE HABITS. DON’T FORGET TO USE QUANTIFIERS: TOO MUCH, TOO MANY, NOT ENOUGH, A LOT OF." onComplete={() => handleTopicComplete('create_1')} studentDocRef={studentDocRef} isAdmin={isAdmin} storageKeyLines="create1Lines" storageKeyGrades="create1Grades" initialLines={studentProfile?.lessonProgress?.[progressStorageVersion]?.create1Lines} initialGrades={studentProfile?.lessonProgress?.[progressStorageVersion]?.create1Grades} lineCount={6} isSupervisionMode={!!overrideStudentId} />;
             case 'read_complete':
                 return (
                     <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left">
                         <CardHeader className='bg-primary/5 border-b'>
                             <CardTitle>READ AND COMPLETE: CAPE TOWN</CardTitle>
-                            <CardDescription className='font-bold text-foreground mt-2'>Usa estas palabras: {capeTownStory.words}</CardDescription>
+                            <CardDescription className='font-bold text-foreground mt-2'>Completa los espacios con las palabras del banco.</CardDescription>
+                            <div className="mt-4 flex flex-wrap gap-2 p-4 bg-muted/50 rounded-xl border border-dashed border-primary/30">
+                                {capeTownStory.words.map((w, idx) => {
+                                    const isCorrect = correctWordsInBank.has(w.toUpperCase());
+                                    return (
+                                        <span key={idx} className={cn(
+                                            "px-2 py-1 text-xs font-black rounded-md border transition-all",
+                                            isCorrect ? "bg-green-500/10 text-green-600 line-through border-green-500/30" : "bg-primary/10 text-primary border-primary/20"
+                                        )}>
+                                            {w}
+                                        </span>
+                                    )
+                                })}
+                            </div>
                         </CardHeader>
                         <CardContent className="p-6 text-lg leading-relaxed font-medium">
                             <p className='whitespace-pre-wrap'>
@@ -395,7 +397,7 @@ export default function Class3Content({ overrideStudentId }: { overrideStudentId
                                             <Input 
                                                 value={storyAnswers[i] || ''} 
                                                 onChange={e => { if (overrideStudentId) return; setStoryAnswers({...storyAnswers, [i]: e.target.value}); setStoryVal({...storyVal, [i]: 'unchecked'}); }} 
-                                                className={cn("inline-block w-32 h-8 text-center uppercase font-bold transition-all mx-1", storyVal[i] === 'correct' ? 'border-green-500 bg-green-50/10' : storyVal[i] === 'incorrect' ? 'border-red-500 bg-red-50/10' : '')} 
+                                                className={cn("inline-block w-32 h-8 text-center uppercase font-bold transition-all mx-1", storyVal[i] === 'correct' ? "border-green-500 bg-green-50/10" : storyVal[i] === 'incorrect' ? "border-red-500 bg-red-50/10" : "border-primary/40")} 
                                                 autoComplete="off"
                                                 readOnly={!!overrideStudentId}
                                             />
@@ -486,13 +488,13 @@ export default function Class3Content({ overrideStudentId }: { overrideStudentId
         }
     };
 
-    const allOk = (valArray: string[]) => valArray.every(v => v === 'correct');
+    const okStatus = (res: boolean) => res ? 'correct' : 'incorrect';
 
     return (
         <div className="grid gap-8 md:grid-cols-12 text-foreground animate-in fade-in duration-500">
              {isAdmin && overrideStudentId && (
                 <div className="col-span-12 mb-6 bg-yellow-500/20 border-2 border-yellow-500 p-4 rounded-xl flex items-center justify-between shadow-lg backdrop-blur-md">
-                    <div className="flex items-center gap-3 text-yellow-700 dark:text-yellow-400"><Star className="h-6 w-6 fill-current animate-pulse" /><p className="font-black uppercase tracking-tighter text-sm">Modo Supervisión Activo: {studentProfile?.name || currentUID}</p></div>
+                    <div className="flex items-center gap-3 text-yellow-700 dark:text-yellow-400"><Star className="h-6 w-6 fill-current animate-pulse" /><p className="font-black uppercase tracking-tighter text-sm">Modo Supervisión: {studentProfile?.name || currentUID}</p></div>
                     <Button variant="outline" size="sm" asChild className="border-yellow-600 text-yellow-700 hover:bg-yellow-500/10"><Link href="/admin">Cerrar</Link></Button>
                 </div>
             )}
@@ -500,7 +502,7 @@ export default function Class3Content({ overrideStudentId }: { overrideStudentId
             <div className="md:col-span-3 md:order-2 order-1 text-left">
                 <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
                     <CardHeader className="pb-4 border-b bg-muted/30">
-                        <CardTitle className="text-lg font-black text-primary uppercase tracking-tighter flex items-center gap-2"><Trophy className="h-5 w-5 text-primary" /> Misión A2</CardTitle>
+                        <CardTitle className="text-lg font-black text-primary uppercase flex items-center gap-2"><Trophy className="h-5 w-5 text-primary" /> Misión A2</CardTitle>
                     </CardHeader>
                     <CardContent className="p-4">
                         <nav><ul className="space-y-1">
