@@ -13,8 +13,8 @@ import {
     ArrowRight,
     Gamepad2,
     Trophy,
-    Pencil,
     BookText,
+    Pencil,
     Star,
     Activity,
     Clock,
@@ -29,8 +29,10 @@ import {
     MapPin,
     HeartPulse,
     Book,
-    Scale
+    Scale,
+    BookText as BookTextIcon
 } from 'lucide-react';
+import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
@@ -38,7 +40,6 @@ import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocki
 import { doc } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
-import { DashboardHeader } from '@/components/dashboard/header';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -50,7 +51,7 @@ import { VocabularyMatchingGame } from '@/components/dashboard/vocabulary-matchi
 import { SentenceCompletionExercise, type CompletionPrompt } from '@/components/kids/exercises/sentence-completion-exercise';
 
 // --- CONFIGURACIÓN DE INGENIERÍA ---
-const progressStorageVersion = 'progress_a2_eng_u1_c1_v17_fix_refs';
+const progressStorageVersion = 'progress_a2_eng_u1_c1_v18_debounce';
 const mainProgressKey = 'progress_a2_eng_unit_1_class_1';
 
 const ICONS_CONFIG = {
@@ -90,22 +91,47 @@ const ex1Prompts: CompletionPrompt[] = [
     { parts: ["THEY ARE ", " THE AIRPORT."], answers: ["AT"] },
     { parts: ["ARE YOU ", " THE TRAIN STATION?"], answers: ["AT"] },
     { parts: ["STARS ARE ", " THE SKY."], answers: ["IN"] },
+    { parts: ["THE KEYS ARE ", "THE TABLE"], answers: ["ON"] },
+    { parts: ["SHE IS ", "THE GARDEN"], answers: ["IN"] },
+    { parts: ["I HAVE A TATTOO ", "MY LEG"], answers: ["ON"] },
+    { parts: ["THERE'S A COIN ", "THE FLOOR "], answers: ["ON"] },
+    { parts: ["THE BOX IS ", "MY POCKET "], answers: ["IN"] },
+    { parts: ["I'M ", "MY ROOM "], answers: ["IN"] },
+    { parts: ["HE IS WAITING ", "THE DOOR "], answers: ["AT"] },
+    { parts: ["WHERE'S HE? - HE'S ", "THE BED "], answers: ["ON"] },
+    { parts: ["MY HOUSE IS ", "THE LEFT TO THE SUPERMARKET "], answers: ["ON"] },
+    { parts: ["WE ARE ", "THE UNIVERSITY "], answers: ["AT"] },
+    { parts: ["THEY ARE ", "THE FARM "], answers: ["ON"] },
+    { parts: ["WE ARE ", "WORK "], answers: ["AT"] },
+    { parts: ["THEY LIVE ", "BARCELONA "], answers: ["IN"] },
+    { parts: ["I'M ", "THE PLANE, I CAN'T TALK "], answers: ["IN"] },
+    { parts: ["HE'S ", "THE OFFICE "], answers: ["AT"] },
 ];
 
 const ex2Prompts = [
-    { spanish: "ELLA ES DELGADA Y TIENE EL PELO LARGO", answer: ["she is thin and she has long hair", "she is thin and has long hair"] },
-    { spanish: "ÉL TIENE GAFAS Y UN BIGOTE", answer: ["he has glasses and a mustache"] },
-    { spanish: "ELLA ES ANCIANA Y CANOSA", answer: ["she is old and gray-haired", "she is old and grey-haired"] },
+    { spanish: "ELLA ES DELGADA Y TIENE EL PELO LARGO", answer: ["she is thin and she has long hair", "she's thin and she has long hair" , "she is thin and has long hair" , "she's thin and has long hair"] },
+    { spanish: "ÉL TIENE GAFAS Y UN BIGOTE", answer: ["he has glasses and a mustache" , "he has glasses and he has a mustache"] },
+    { spanish: "ELLA ES ANCIANA Y CANOSA", answer: ["she is old and gray hair", "she's old and grey hair" , "she's old and she has gray hair"] },
     { spanish: "ELLOS SON MUY ALTOS Y RUBIOS", answer: ["they are very tall and blond", "they're very tall and blond"] },
     { spanish: "ÉL ES GORDO, BAJO Y MUY DIVERTIDO", answer: ["he is fat, short and very funny", "he's fat, short and very funny"] },
+    { spanish: "ELLAS TIENEN PELO LARGO, SON DE MEDIANA EDAD Y MUY SERIAS", answer: [" they have long hair, are of medium age and very serious" , " they have long hair, they're of medium age and very serious"] },
+    { spanish: "ÉL NO ES CALVO, TIENE EL PELO LARGO", answer: ["he is not bald, he has long hair" , "he's not bald, he has long hair"] },
+    { spanish: "¿ELLA ES RUBIA CON PELO CORTO? ", answer: ["is she blonde with short hair?"] },
+    { spanish: "ÉL ES CALVO, TIENE GAFAS Y ES MUY TRABAJADOR", answer: ["he is bald, has glasses and he is very hardworking" , "he's bald, he has glasses and he's very hardworking"] },
+    { spanish: "ELLA TIENE EL PELO CASTAÑO Y CORTO", answer: ["she has brown and short hair"] },
 ];
 
 const error1Prompts = [
-    { incorrect: "HE HAVE 20 YEARS OLD", translationHint: "He is 20 years old", correctAnswers: ["he is 20 years old", "he is twenty years old"] },
+    { incorrect: "HE HAVE 20 YEARS OLD", translationHint: "He is 20 years old", correctAnswers: ["he's 20 years old", "he's twenty years old"] },
     { incorrect: "THEY IS TALLS", translationHint: "They are tall", correctAnswers: ["they are tall", "they're tall"] },
     { incorrect: "SHE IS STRAIG THAIR", translationHint: "She has straight hair", correctAnswers: ["she has straight hair"] },
-    { incorrect: "SHE ARE 13 OLD YEARS", translationHint: "She is 13 years old", correctAnswers: ["she is 13 years old", "she is thirteen years old"] },
+    { incorrect: "SHE ARE 13 OLD YEARS", translationHint: "She is 13 years old", correctAnswers: ["she's 13 years old", "she's thirteen years old"] },
     { incorrect: "MY PARENT HAVE 50-YEAR-OLD", translationHint: "My parents are 50 years old", correctAnswers: ["my parents are 50 years old", "my parents are fifty years old"] },
+    { incorrect: "SHE HAS HAIR BLOND", translationHint: "She has blonde hair", correctAnswers: ["she has blonde hair"] },
+    { incorrect: "HE ARE INTELINGENT", translationHint: "he is intelligent", correctAnswers: ["he is intelligent", "he's intelligent"] },
+    { incorrect: "SHE USE GLASS", translationHint: "She wears glasses", correctAnswers: ["she wears glasses", "she's wearing glasses"] },
+    { incorrect: "SHE HAVE HAIR SHORT", translationHint: "She has short hair", correctAnswers: ["she has short hair"] },
+    { incorrect: "THEY ARE HAIR SHORT", translationHint: "They have short hair", correctAnswers: ["they have short hair"] },
 ];
 
 const ex3Prompts: CompletionPrompt[] = [
@@ -114,14 +140,23 @@ const ex3Prompts: CompletionPrompt[] = [
     { parts: ["I STUDY LAW (DERECHO) ", " THE MADRID UNIVERSITY."], answers: ["AT"] },
     { parts: ["MY DOG PLAYS WITH A LITTLE BALL ", " THE SQUARE (PLAZA)."], answers: ["IN"] },
     { parts: ["IN JAPAN PEOPLE DRIVE ", " THE LEFT, THE SAME AS IN ENGLAND."], answers: ["ON"] },
+    { parts: ["THE PRESIDENT OF THAT FOOTBALL CLUB IS NOW  ", "PRISON "], answers: ["IN"] },
+    { parts: ["WHEN I WAS YOUNG I LIVED ", " PARIS WITH MY PARENTS."], answers: ["IN"] },
+    { parts: ["HE MUST BE TIRED; HE HAS FALLEN ASLEEP", " THE SOFA"], answers: ["ON"] },
+    { parts: ["I PUT MY GLASSES ", "YOUR BAG."], answers: ["IN"] },
+    { parts: ["YOU CAN SEE MY GRAND PARENTS ", "THIS PHOTOGRAPH, WHEN THEY GOT MARRIED. "], answers: ["ON"] },
+    { parts: ["I LEFT MY CAR ", "THE END OF THAT STREET. "], answers: ["AT"] },
+    { parts: ["SHE WAS ", "HOME YESTERDAY. "], answers: ["AT"] },
 ];
 
 const ex4Prompts = [
     { spanish: "¿ES NEW YORK MÁS GRANDE QUE NUESTRA CIUDAD?", answer: ["is new york bigger than our city?"] },
-    { spanish: "ESTA PELÍCULA NO ES TAN INTERESANTE COMO LA OTRA (THE OTHER)", answer: ["this movie is not as interesting as the other one", "this film isn't as interesting as the other one"] },
-    { spanish: "ELLOS ESTÁN EN EL AEROPUERTO CONMIGO", answer: ["they are at the airport with me", "they're at the airport with me"] },
+    { spanish: "ESTA PELÍCULA NO ES TAN INTERESANTE AS LA OTRA (THE OTHER)", answer: ["this movie is not as interesting as the other one", "this film isn't as interesting as the other one"] },
+    { spanish: "ELLOS ESTÁN EL EL AEROPUERTO CONMIGO", answer: ["they are at the airport with me", "they're at the airport with me"] },
     { spanish: "¿A DONDE VAS CON ELLOS?", answer: ["where are you going with them?", "where do you go with them?"] },
     { spanish: "ESTA ES LA CIUDAD MÁS CALIENTE DE COLOMBIA", answer: ["this is the hottest city in colombia"] },
+    { spanish: "¿ERES MÁS VIEJO QUE ÉL? ", answer: ["are you older than him?"] },
+    { spanish: "MARCO ES EL MÁS INTELIGENTE DEL GRUPO", answer: ["marco is the smartest in the group", "marco is the most intelligent in the group"] },
 ];
 
 const completePrompts: CompletionPrompt[] = [
@@ -130,14 +165,28 @@ const completePrompts: CompletionPrompt[] = [
     { parts: ["SHE PUT THE BOOKS ", " THE TABLE."], answers: ["ON"] },
     { parts: ["I LIVE IN MADISON AVENUE ", " NEW YORK CITY."], answers: ["IN"] },
     { parts: ["MANY PEOPLE WORK ", " THAT BUILDING."], answers: ["IN"] },
+    { parts: ["HE WAITS FOR ME ", "THE BUS STOP. "], answers: ["AT"] },
+    { parts: ["I MET JOHN ", "MY FRIEND’S PARTY. (BOTH) "], answers: ["AT"] },
+    { parts: ["ARE YOU  ", "HOME? "], answers: ["AT"] },
+    { parts: ["HOW MANY STUDENTS ARE ", "YOUR CLASS? "], answers: ["IN"] },
+    { parts: ["DON’T STAND ", "THE DOOR! COME IN AND SIT  " , "THE CHAIR."], answers: ["AT" , "ON"] },
+    { parts: ["SHE LIVES ", "THE THIRD FLOOR " , "AN OLD BUILDING" , "THE END OF THAT STREET."], answers: ["ON" , "IN" , "AT"] },
+    { parts: ["THE AIR IS FRESHER ", "THE TOP OF THE MOUNTAINS. "], answers: ["AT"] },
+    { parts: ["I AM SITTING ", "THE GRASS. "], answers: ["ON"] },
+    { parts: ["I LIKE READING WHEN I AM  ", "THE TRAIN.  "], answers: ["ON"] },
 ];
 
 const ex5Prompts = [
-    { spanish: "ELLA ES MUY ALTA Y ES PELIROJA", answer: ["she is very tall and she is a redhead", "she's very tall and she is red-haired"] },
-    { spanish: "ELLAS TIENEN EL PELO RUBIO, SON BAJAS Y DELGADAS", answer: ["they have blond hair, they are short and thin"] },
-    { spanish: "MI TÍO ES CALVO, BAJO Y TIENE SOBREPESO", answer: ["my uncle is bald, short and he is overweight", "my uncle is bald, short and has overweight"] },
+    { spanish: "ELLA ES MUY ALTA Y ES PELIROJA", answer: ["she is very tall and she is a redhead", "she's very tall and she's red haired"] },
+    { spanish: "ELLAS TIENEN EL PELO RUBIO, SON BAJAS Y DELGADAS", answer: ["they have blond hair, they are short and thin" , "they have blond hair, they're short and thin"] },
+    { spanish: "MI TÍO ES CALVO, BAJO Y TIENE SOBREPESO", answer: ["my uncle is bald, short and he is overweight", "my uncle is bald, short and he has overweight"] },
     { spanish: "ELLOS SON ALTOS, RUBIOS Y TIENEN GAFAS", answer: ["they are tall, blond and they have glasses"] },
-    { spanish: "ELLA ES BAJA, con pelo castaño y es muy divertida", answer: ["she is short with brown hair and she is very funny"] },
+    { spanish: "ELLA ES BAJA, con pelo castaño y es muy divertida", answer: ["she is short with brown hair and she is very funny" , "she's short with brown hair and she's very funny"] },
+    { spanish: "ELLOS SON ALTOS Y MUY DELGADOS", answer: ["they are tall and very thin" , "they're tall and very thin"] },
+    { spanish: "ÉL TIENE OJOS AZULES, EL PELO NEGRO Y CORTO", answer: ["he has blue eyes, black hair and a short hair" , "he has blue eyes, black and short hair"] },
+    { spanish: "ELLA TIENE GAFAS Y ES CRESPA", answer: ["she has glasses and she is curly" , "she has glasses and she's curly"] },
+    { spanish: "ELLOS TIENEN LOS OJOS VERDES", answer: ["they have green eyes"] },
+    { spanish: "ÉL ES CANOSO Y MUY ALTO", answer: ["he is gray hair and very tall" , "he's gray hair and very tall"] },
 ];
 
 const error2Prompts = [
@@ -146,10 +195,35 @@ const error2Prompts = [
     { incorrect: "THEY IS 33 OLD", translationHint: "They are 33 years old", correctAnswers: ["they are 33 years old", "they're 33 years old"] },
     { incorrect: "HE HAVES GLASS AND A BEER", translationHint: "He has glasses and a beer", correctAnswers: ["he has glasses and a beer"] },
     { incorrect: "SHE IS HAIR LONG WITH EYES BLUE", translationHint: "She has long hair with blue eyes", correctAnswers: ["she has long hair with blue eyes"] },
+    { incorrect: "THEY HAS HAIR SHORT AND HAS BROWN EYE", translationHint: "they have short hair and brown eyes", correctAnswers: ["they have short hair and brown eyes"] },
+    { incorrect: "WE HAVE 30  OLD YEAR", translationHint: "we are 30 years old", correctAnswers: ["we are 30 years old"] },
+    { incorrect: "THEY ARN’T TALL AND HAIR BLACK", translationHint: "they aren't tall and they have black hair", correctAnswers: ["they aren't tall and they have black hair"] },
+    { incorrect: "SHE IS BLOND, INTELIGENT AND HAIR RED", translationHint: "she is blond, intelligent and she has red hair", correctAnswers: ["she is blond, intelligent and she has red hair" , "she's blond, intelligent and she has red hair"] },
+    { incorrect: "THEY HAVE BALD AND ARE ON OUR THIRTIES: ", translationHint: "they are bald and they are in their thirties", correctAnswers: ["they are bald and they are in their thirties" , "they're bald and they're in their thirties"] },
+    { incorrect: "SHE DON’T IS GLASSES BECAUSE SHE CAN TO SEE VERY GOOD", translationHint: "she doesn't wear glasses because she can see very well", correctAnswers: ["she doesn't wear glasses because she can see very well"] },
+    { incorrect: "HE DOESN’T BLOND BECAUSE HE'RE BALT", translationHint: "he isn't blond because he's bald", correctAnswers: ["he isn't blond because he's bald"] },
+    { incorrect: "THEY USE A JAQUET IN SUMER BECAUSE THEY FEELS COLD", translationHint: "they wear a jacket in summer because they feel cold", correctAnswers: ["they wear a jacket in summer because they feel cold"] },
+    { incorrect: "HE HAS  35 YEAS OLD AND HE STILL LIVE WITH HER PARENTS", translationHint: "he is 35 years old and he still lives with his parents", correctAnswers: ["he is 35 years old and he still lives with his parents" , "he's 35 years old and he still lives with his parents"] },
+    { incorrect: "I DO'NT LIKE YOUR SHOES SO YOU CAN TO BUY ANOTHER IT AND YOU USE THEIR IN THE PARTY THIS WEKEND", translationHint: "I don't like your shoes so you can buy another pair and you can use them at the party this weekend", correctAnswers: ["I don't like your shoes so you can buy another pair and you can use them at the party this weekend"] },
+    { incorrect: "SHE HAVE TALL, PRETTTY AND SHE HAVE GLASS", translationHint: "she is tall, pretty and she has glasses", correctAnswers: ["she is tall, pretty and she has glasses" , "she's tall, pretty and she has glasses"] },
+    { incorrect: "PETER AND JANE DOESN’T WERE BOOTS IN THE MOUNTAIN, THEY USE TENIS", translationHint: "peter and jane don't wear boots in the mountains, they wear tennis shoes", correctAnswers: ["peter and jane don't wear boots in the mountains, they wear tennis shoes"] },
+    { incorrect: "JON HAS IN HER SIXTIES AND HE IS GRAY HAI, I LIKE HER STYLE", translationHint: "jon is in his sixties and he is gray hair, i like his style", correctAnswers: ["jon is in his sixties and he is gray hair, i like his style"] },
+    { incorrect: "WE LIKE GO THE BEACH ON SUMMER BECAUSE IS SUNNY", translationHint: "we like to go to the beach in summer because it is sunny", correctAnswers: ["we like to go to the beach in summer because it is sunny" , "we like to go to the beach in summer because it's sunny"] },
+    { incorrect: "HE HAVE GOOD MOSTACHO AND BAERD", translationHint: "he has a good mustache and beard", correctAnswers: ["he has a good mustache and beard"] },
 ];
 
 const lastExPrompts = [
-    { spanish: "Kevin hablará en la conferencia", answer: ["kevin will speak at the conference"] }
+    { spanish: "Kevin hablará en la conferencia", answer: ["kevin will speak at the conference"] } ,
+    { spanish: "yo hablo varios idiomas : español, ingles y frances", answer: ["i speak several languages: spanish, english and french"] } , 
+    { spanish: "yo quiero contarte acerca de un empleo", answer: ["i want to tell you about a job"] } ,
+    { spanish: "nosotros hablamos acerca del fin de semana", answer: ["we talk about the weekend"] } ,
+    { spanish: "Sara me dijo que ella no come carne", answer: ["sara told me that she doesn't eat meat"] } ,
+    { spanish: "Danis dice que ella lo ama", answer: ["danis says that she loves him"] } ,
+    { spanish: "yo veo el gato en la ventana", answer: ["i see the cat in the window"] },
+    { spanish: "cuando tu bailes no mires abajo", answer: ["when you dance don't look down"] },
+    { spanish: "mirame", answer: ["look at me"] },
+    { spanish: "nosotros vemos una pelicula en cine", answer: ["we watch a movie at the cinema"] },
+    { spanish: "el miró la cuenta antes de pagar", answer: ["he looked at the bill before paying"] }
 ];
 
 const readingContent = {
@@ -198,8 +272,8 @@ const BallsExercise = ({ title, prompts, onComplete, vocabulary }: any) => {
     return (
         <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground">
             <CardHeader>
-                <div className="flex justify-between items-start">
-                    <div className="w-full text-left">
+                <div className="flex justify-between items-start text-left">
+                    <div className="w-full">
                         <CardTitle>{title}</CardTitle>
                         <CardDescription className='font-bold text-foreground mt-1'>Traduce la frase correctamente.</CardDescription>
                         <div className="flex gap-2 justify-start flex-wrap pt-4">
@@ -212,7 +286,7 @@ const BallsExercise = ({ title, prompts, onComplete, vocabulary }: any) => {
                         <Popover>
                             <PopoverTrigger asChild>
                                 <Button variant="outline" size="sm" className="border-2 border-brand-blue animate-border-pulse shrink-0">
-                                    <BookText className="mr-2 h-4 w-4" />
+                                    <BookTextIcon className="mr-2 h-4 w-4" />
                                     Vocabulary
                                 </Button>
                             </PopoverTrigger>
@@ -222,10 +296,10 @@ const BallsExercise = ({ title, prompts, onComplete, vocabulary }: any) => {
                                     <ScrollArea className="h-48 pr-4">
                                         <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
                                             {Object.entries(vocabulary).map(([es, en]: any) => (
-                                                <React.Fragment key={es}>
+                                                <Fragment key={es}>
                                                     <span className="text-muted-foreground capitalize">{es}:</span>
                                                     <span className="font-semibold text-right">{en}</span>
-                                                </React.Fragment>
+                                                </Fragment>
                                             ))}
                                         </div>
                                     </ScrollArea>
@@ -310,6 +384,7 @@ export default function Class1Content({ overrideStudentId }: { overrideStudentId
     const currentUID = targetStudentId || user?.uid;
 
     const [isInitialLoading, setIsInitialLoading] = useState(true);
+    const [initialLoadComplete, setInitialLoadComplete] = useState(false);
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
     const [selectedTopic, setSelectedTopic] = useState<string>('');
     const hasInitialized = useRef(false);
@@ -358,6 +433,7 @@ export default function Class1Content({ overrideStudentId }: { overrideStudentId
             for (let i = 0; i < p.length; i++) { if (last && p[i].status === 'locked') p[i].status = 'active'; last = p[i].status === 'completed'; }
         }
         setLearningPath(p); setSelectedTopic(d.lastSelectedTopic || p.find(it => it.status === 'active')?.key || p[0].key);
+        setInitialLoadComplete(true);
         hasInitialized.current = true;
     }, [isInitialLoading, studentProfile, isAdmin, initialPathData, targetStudentId]);
 
@@ -367,13 +443,28 @@ export default function Class1Content({ overrideStudentId }: { overrideStudentId
         return Math.round((comp / learningPath.length) * 100);
     }, [learningPath]);
 
+    // ASYNC FLOW: Persistencia con Debounce y Comparación Profunda
     useEffect(() => {
-        if (isInitialLoading || isAdmin || !studentDocRef || targetStudentId || !hasInitialized.current) return;
-        const s: any = { lastSelectedTopic: selectedTopic };
-        learningPath.forEach(t => s[t.key] = t.status);
-        updateDocumentNonBlocking(studentDocRef, { [`lessonProgress.${progressStorageVersion}`]: s, [`progress.${mainProgressKey}`]: progressValue });
-        if (progressValue >= 100) window.dispatchEvent(new CustomEvent('progressUpdated'));
-    }, [learningPath, progressValue, selectedTopic, isAdmin, studentDocRef, isInitialLoading, targetStudentId]);
+        if (!initialLoadComplete || isInitialLoading || isAdmin || !studentDocRef || targetStudentId || !hasInitialized.current || !user) return;
+        
+        const saveTimer = setTimeout(() => {
+            const s: any = { lastSelectedTopic: selectedTopic, vocabAnswers, readAns };
+            learningPath.forEach(t => s[t.key] = t.status);
+            
+            const currentSavedData = studentProfile?.lessonProgress?.[progressStorageVersion];
+            const currentOverallProgress = studentProfile?.progress?.[mainProgressKey];
+            
+            // Solo escribir si hay un cambio real
+            if (JSON.stringify(s) !== JSON.stringify(currentSavedData) || progressValue !== currentOverallProgress) {
+                updateDocumentNonBlocking(studentDocRef, { 
+                    [`lessonProgress.${progressStorageVersion}`]: s, 
+                    [`progress.${mainProgressKey}`]: progressValue 
+                });
+            }
+        }, 1500);
+
+        return () => clearTimeout(saveTimer);
+    }, [learningPath, progressValue, selectedTopic, isAdmin, studentDocRef, isInitialLoading, targetStudentId, initialLoadComplete, vocabAnswers, readAns, user, studentProfile]);
 
     const handleTopicComplete = useCallback((completedKey: string) => {
         setLearningPath(curr => {
@@ -447,7 +538,7 @@ export default function Class1Content({ overrideStudentId }: { overrideStudentId
                                     {bodyPartsVocab.map((v, i) => (
                                         <Fragment key={i}>
                                             <div className="p-3 border rounded bg-white/5 font-bold flex items-center text-sm">{v.es}</div>
-                                            <Input value={vocabAnswers[i] || ''} onChange={e => { const na = [...vocabAnswers]; na[i] = e.target.value; setVocabAnswers(na); const nv = [...vocabValidation]; nv[i] = 'unchecked'; setVocabValidation(nv); }} className={cn("h-12 uppercase font-mono", vocabValidation[i] === 'correct' ? 'border-green-500 bg-green-50/10' : vocabValidation[i] === 'incorrect' ? 'border-red-500 bg-red-50/10' : '')} autoComplete="off" readOnly={isAdmin && !!targetStudentId} />
+                                            <Input value={vocabAnswers[i] || ''} onChange={e => { const na = [...vocabAnswers]; na[i] = e.target.value; setVocabAnswers(na); const nv = [...vocabValidation]; nv[i] = 'unchecked'; setVocabValidation(nv); }} className={cn("h-12 uppercase font-mono", vocabValidation[i] === 'correct' ? 'border-green-500 bg-green-50/10' : vocabValidation[i] === 'incorrect' ? 'border-red-50/10' : '')} autoComplete="off" readOnly={isAdmin && !!targetStudentId} />
                                         </Fragment>
                                     ))}
                                 </div>
@@ -466,13 +557,14 @@ export default function Class1Content({ overrideStudentId }: { overrideStudentId
                             <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase">GRAMMAR: AT - ON - IN</CardTitle></CardHeader>
                             <CardContent className="space-y-8 font-bold">
                                 <div className="grid md:grid-cols-3 gap-4">
-                                    {[
-                                        { title: "AT (Point)", items: ["At home", "At the airport", "At the bus stop", "At work"] },
-                                        { title: "ON (Surface)", items: ["On the table", "On the wall", "On the floor", "On the map"] },
-                                        { title: "IN (Enclosed)", items: ["In the city", "In the water", "In a box", "In the sky"] }
+                                {[
+                                        { title: "AT (Point)" , description: <Fragment><div>Lugares comunes - Lugares especificos -At + Saxon Genitive </div> <br /></Fragment>,  items: ["At home", "At the airport", "At the bus stop", "At work" , "At Laura's" , "At the : top + bottom + front + back + end + door + window"] },
+                                        { title: "ON (Surface)", description: <Fragment><div>Superficies planas - Medios de transporte - partes del cuerpo - Direcciones</div> <br /></Fragment>, items: ["On the table", "On the wall", "On the floor", "On the map" , "on my leg" , "on the left/ right" ,  "on a : train + plane + bus + ship + bicycle + horse "] },
+                                        { title: "IN (Enclosed)", description: <Fragment><div>Espacios cerrados - paises - ciudades - habitaciones - cuerpos de agua - clima - </div> <br /></Fragment>, items: [ "In England" , "In New York" , "In the city", "In the water", "In a box", "In the sky" , "in summer"] }
                                     ].map((ficha, idx) => (
                                         <div key={idx} className="p-5 bg-card/80 rounded-2xl border-2 border-primary/20 shadow-lg">
                                             <h3 className="text-xl font-black text-primary uppercase mb-3">{ficha.title}</h3>
+                                            {ficha.description && <div className="text-muted-foreground">{ficha.description}</div>}
                                             <ul className="space-y-1 text-sm list-disc pl-4">{ficha.items.map(it => <li key={it}>{it}</li>)}</ul>
                                         </div>
                                     ))}
@@ -492,12 +584,17 @@ export default function Class1Content({ overrideStudentId }: { overrideStudentId
                                 <div className="p-6 bg-white/40 rounded-2xl border-2 border-dashed border-primary/20">
                                     <h4 className="text-lg text-primary uppercase mb-2">1. Usamos "TO BE" (Am, Is, Are)</h4>
                                     <p className="mb-2">Para rasgos generales como altura, peso, edad o personalidad.</p>
-                                    <p className="font-mono bg-muted p-2 rounded">Example: He is tall / She is thin.</p>
+                                    <p className="font-mono bg-muted p-2 rounded">Example: He is tall / She is thin / she's on her thirties</p>
                                 </div>
                                 <div className="p-6 bg-white/40 rounded-2xl border-2 border-dashed border-primary/20">
                                     <h4 className="text-lg text-primary uppercase mb-2">2. Usamos "TO HAVE" (Have, Has)</h4>
                                     <p className="mb-2">Para partes específicas: color de ojos, tipo de pelo, barba, gafas.</p>
-                                    <p className="font-mono bg-muted p-2 rounded">Example: I have blue eyes / He has glasses.</p>
+                                    <p className="font-mono bg-muted p-2 rounded">Example: I have blue eyes / He has glasses / he has a mustache/ beard / sideburns(patillas)</p>
+                                </div>
+                                <div className="p-6 bg-white/40 rounded-2xl border-2 border-dashed border-primary/20">
+                                    <h4 className="text-lg text-primary uppercase mb-2">3. Usamos "TO WEAR"</h4>
+                                    <p className="mb-2">Para uso de ropa y accesorios.</p>
+                                    <p className="font-mono bg-muted p-2 rounded">Example: I wear face mask / she wears glasses</p>
                                 </div>
                             </CardContent>
                             <CardFooter className="justify-center pt-6 border-t"><Button onClick={() => handleTopicComplete('grammar_description')} size="lg" className="px-12 font-bold h-12 uppercase">¡Listo!</Button></CardFooter>
@@ -604,18 +701,27 @@ export default function Class1Content({ overrideStudentId }: { overrideStudentId
                                     <CardTitle className="text-lg font-black text-primary uppercase flex items-center gap-2"><Trophy className="h-5 w-5 text-primary" /> Misión A2</CardTitle>
                                 </CardHeader>
                                 <CardContent className="p-4">
-                                    <nav><ul className="space-y-1">
-                                        {learningPath.map((item) => {
-                                            const isLocked = item.status === 'locked' && !isAdmin;
-                                            const Icon = ICONS_CONFIG[item.status as keyof typeof ICONS_CONFIG] || BookOpen;
-                                            return (
-                                                <li key={item.key} onClick={() => handleTopicSelect(item.key)} className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer text-foreground', isLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === item.key && 'bg-muted text-primary font-black border-l-4 border-primary shadow-sm')}>
-                                                    <div className="flex items-center gap-3">{item.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500" /> : <Icon className={cn("h-5 w-5", isLocked ? "text-yellow-500/50" : "text-primary")} />}<span className="truncate max-w-[150px] text-[10px] uppercase font-bold">{item.name}</span></div>
-                                                    {isLocked && <Lock className="h-3 w-3 text-yellow-500/30" />}
-                                                </li>
-                                            );
-                                        })}
-                                    </ul></nav>
+                                    <nav>
+                                        <ul className="space-y-1">
+                                            {learningPath.map((item) => {
+                                                const isLocked = item.status === 'locked' && !isAdmin;
+                                                const Icon = ICONS_CONFIG[item.status as keyof typeof ICONS_CONFIG] || BookOpen;
+                                                return (
+                                                    <li key={item.key} onClick={() => handleTopicSelect(item.key)} className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer text-foreground', isLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === item.key && 'bg-muted text-primary font-black border-l-4 border-primary shadow-sm')}>
+                                                        <div className="flex items-center gap-3">
+                                                            {item.status === 'completed' ? (
+                                                                <CheckCircle className="h-5 w-5 text-green-500" />
+                                                            ) : (
+                                                                <Icon className={cn("h-5 w-5", isLocked ? "text-yellow-500/50" : "text-primary")} />
+                                                            )}
+                                                            <span className="truncate max-w-[150px] text-[10px] uppercase font-bold">{item.name}</span>
+                                                        </div>
+                                                        {isLocked && <Lock className="h-3 w-3 text-yellow-500/30" />}
+                                                    </li>
+                                                );
+                                            })}
+                                        </ul>
+                                    </nav>
                                     <div className="mt-6 pt-6 border-t"><div className="flex justify-between items-center text-xs mb-2 font-black uppercase text-muted-foreground"><span>Avance</span><span className="text-primary">{progressValue}%</span></div><Progress value={progressValue} className="h-2 rounded-full" /></div>
                                 </CardContent>
                             </Card>
