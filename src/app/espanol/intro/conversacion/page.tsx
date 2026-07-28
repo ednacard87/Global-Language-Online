@@ -32,7 +32,7 @@ const personalPresentationData = [
     { id: 11, question: "¿CUÁL ES TU CORREO ELECTRÓNICO?", answer: "MI CORREO ES: _________________", extra: "¿CÓMO SE DELETREA TU CORREO? -> MI CORREO ES: (Deletreo...)" },
     { id: 12, question: "¿TIENES HERMANOS O HERMANAS?", answer: "SÍ, TENGO: _______" },
     { id: 13, question: "¿CUÁNTOS AÑOS TIENES?", answer: "TENGO ____ AÑOS" },
-    { id: 14, question: "¿CUÁNDO ES TU CUMPLEAÑOS?", answer: "MI CUMPLEAÑOS ES EL: Mes + Día" },
+    { id: 14, question: "¿CUÁNDO ES TU CUMPLEAÑOS?", answer: "MI CUMPLEAÑOS ES EL: Día + Mes" },
     { id: 15, question: "¿CUÁL ES TU NÚMERO DE TELÉFONO?", answer: "MI NÚMERO ES: _________________" },
     { id: 16, question: "¿QUÉ TE GUSTA HACER?", answer: "ME GUSTA ______________" },
     { id: 17, question: "¿CUÁL ES TU MÚSICA FAVORITA?", answer: "MI MÚSICA FAVORITA ES __________" },
@@ -129,8 +129,8 @@ export default function ConversacionEspanolPage() {
                                     <Separator className="my-6" />
                                     <div className="p-3 bg-brand-lilac/30 rounded-lg border border-brand-purple/20">
                                         <h4 className="text-xs font-bold text-primary uppercase tracking-widest mb-1">Expresión</h4>
-                                        <p className="text-xs text-muted-foreground italic mb-1">espérame / espérate / dame un momento =</p>
-                                        <p className="text-lg font-bold text-primary tracking-tighter uppercase">UN MOMENTO</p>
+                                        <p className="text-xs text-muted-foreground italic mb-1">Hold on / wait a minute =</p>
+                                        <p className="text-lg font-bold text-primary tracking-tighter uppercase">DAME UN MOMENTO POR FAVOR</p>
                                     </div>
                                 </CardContent>
                             </Card>
