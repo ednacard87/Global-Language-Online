@@ -41,7 +41,8 @@ export const espanolIntroPathData: PathItem[] = [
     { type: 'practice', icon: Puzzle, label: 'espanolIntroCourse.quiz1', href: '/espanol/quiz/1', storageKey: 'progress_es_quiz_1' },
     { type: 'class', icon: BookOpen, label: 'espanolIntroCourse.intro2', href: '/espanol/intro/2', storageKey: 'progress_espanol_intro_2' },
     { type: 'practice', icon: Puzzle, label: 'espanolIntroCourse.quiz2', href: '/espanol/quiz/2', storageKey: 'progress_es_quiz_2' },
-    { type: 'practice', icon: Puzzle, label: 'espanolIntroCourse.finalTest', href: '#', storageKey: 'progress_espanol_quiz_final' },
+    { type: 'practice', icon: Mic, label: 'Conversacion', href: '/espanol/intro/conversacion', storageKey: 'conversacionProgress' },
+    { type: 'practice', icon: Puzzle, label: 'espanolIntroCourse.finalTest', href: '/espanol/quiz/final', storageKey: 'progress_espanol_quiz_final' },
     { type: 'end', icon: Flag, label: 'dashboard.finish' }
 ];
 

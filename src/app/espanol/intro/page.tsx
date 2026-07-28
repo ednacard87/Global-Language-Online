@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo } from "react";
@@ -109,7 +108,7 @@ export default function EspanolIntroPage() {
                 &larr; Volver a Español
             </Link>
         </div>
-        <div className="w-full max-w-3xl">
+        <div className="w-full max-w-4xl">
             <MazeGame 
                 pathItems={pathItems} 
                 title={t('espanolIntroCourse.mazeTitle')} 
