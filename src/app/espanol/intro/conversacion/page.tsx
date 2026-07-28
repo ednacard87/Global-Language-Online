@@ -32,7 +32,7 @@ const personalPresentationData = [
     { id: 11, question: "¿CUÁL ES TU CORREO ELECTRÓNICO?", answer: "MI CORREO ES: _________________", extra: "¿CÓMO SE DELETREA TU CORREO? -> MI CORREO ES: (Deletreo...)" },
     { id: 12, question: "¿TIENES HERMANOS O HERMANAS?", answer: "SÍ, TENGO: _______" },
     { id: 13, question: "¿CUÁNTOS AÑOS TIENES?", answer: "TENGO ____ AÑOS" },
-    { id: 14, question: "¿CUÁNDO ES TU CUMPLEAÑOS?", answer: "MI CUMPLEAÑOS ES EL: Día + Mes" },
+    { id: 14, question: "¿CUÁNDO ES TU CUMPLEAÑOS?", answer: "MI CUMPLEAÑOS ES EL: Día de Mes" },
     { id: 15, question: "¿CUÁL ES TU NÚMERO DE TELÉFONO?", answer: "MI NÚMERO ES: _________________" },
     { id: 16, question: "¿QUÉ TE GUSTA HACER?", answer: "ME GUSTA ______________" },
     { id: 17, question: "¿CUÁL ES TU MÚSICA FAVORITA?", answer: "MI MÚSICA FAVORITA ES __________" },
