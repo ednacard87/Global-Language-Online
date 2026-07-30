@@ -1,17 +1,8 @@
 'use client';
 
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
-import { 
-    Card, 
-    CardContent, 
-    CardHeader, 
-    CardTitle, 
-    CardDescription, 
-    CardFooter 
-} from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
-import { cn } from '@/lib/utils';
+import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { 
     BookOpen, 
     PenSquare, 
@@ -22,22 +13,25 @@ import {
     ArrowRight,
     Gamepad2,
     Trophy,
-    Pencil,
     BookText,
-    Star,
+    Mic,
+    HelpCircle,
+    Pencil,
     Activity,
-    Info,
-    History,
-    Zap,
-    MessageSquare,
-    CheckCircle2
+    Star,
+    ArrowLeft
 } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import { DashboardHeader } from '@/components/dashboard/header';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+import { cn } from '@/lib/utils';
 import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
 import { doc } from 'firebase/firestore';
+import { useToast } from '@/hooks/use-toast';
+import { Button } from '@/components/ui/button';
 
 // --- CONFIGURACIÓN DE INGENIERÍA ---
-const progressStorageVersion = 'progress_a2_eng_u2_c6_v1_skeleton';
+const progressStorageVersion = 'progress_a2_eng_u2_c6_v1_base';
 const mainProgressKey = 'progress_a2_eng_unit_2_class_6';
 
 interface Topic {
@@ -47,7 +41,7 @@ interface Topic {
   status: 'completed' | 'active' | 'locked';
 }
 
-const ICONS_MAP = {
+const ICONS_CONFIG = {
     locked: Lock,
     active: BookOpen,
     completed: CheckCircle,
@@ -57,8 +51,21 @@ export default function Class6Content({ overrideStudentId }: { overrideStudentId
     const { toast } = useToast();
     const { user, isUserLoading } = useUser();
     const firestore = useFirestore();
+    const searchParams = useSearchParams();
 
-    const currentUID = overrideStudentId || user?.uid;
+    // Capturamos el studentId para modo supervisión
+    const targetStudentId = overrideStudentId || searchParams.get('studentId');
+    const currentUID = targetStudentId || user?.uid;
+
+    const [isInitialLoading, setIsInitialLoading] = useState(true);
+    const [learningPath, setLearningPath] = useState<Topic[]>([]);
+    const [selectedTopic, setSelectedTopic] = useState<string>('');
+    const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
+    const [initialLoadComplete, setInitialLoadComplete] = useState(false);
+    
+    const hasInitialized = useRef(false);
+    const lastSerializedRef = useRef<string>('');
+
     const studentDocRef = useMemoFirebase(() => (currentUID ? doc(firestore, 'students', currentUID) : null), [firestore, currentUID]);
     const authUserRef = useMemoFirebase(() => (user ? doc(firestore, 'students', user.uid) : null), [firestore, user]);
     
@@ -67,41 +74,34 @@ export default function Class6Content({ overrideStudentId }: { overrideStudentId
 
     const isAdmin = useMemo(() => (user && (authUserProfile?.role === 'admin' || user.email === 'ednacard87@gmail.com')), [user, authUserProfile]);
 
-    const [learningPath, setLearningPath] = useState<Topic[]>([]);
-    const [selectedTopic, setSelectedTopic] = useState<string>('');
-    const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
-    const [isInitialLoading, setIsInitialLoading] = useState(true);
-    const [initialLoadComplete, setInitialLoadComplete] = useState(false);
-    const hasInitialized = useRef(false);
-
-    // Definición de la ruta de aprendizaje solicitada
+    // Definición de la ruta de aprendizaje de 16 pasos
     const initialPathData = useMemo((): Topic[] => [
         { key: 'vocabulary_irregular', name: '1. Vocabulary (Verbos irregulares)', icon: BookOpen, status: 'active' },
         { key: 'grammar_did', name: '2. Grammar DID', icon: GraduationCap, status: 'locked' },
-        { key: 'past_simple_ed', name: '3. Past Simple = ED', icon: History, status: 'locked' },
+        { key: 'grammar_past_ed', name: '3. Past Simple = ED', icon: Activity, status: 'locked' },
         { key: 'exercise_1', name: '4. Exercise 1', icon: PenSquare, status: 'locked' },
-        { key: 'exercise_plus', name: '5. Exercise (+)', icon: Zap, status: 'locked' },
-        { key: 'exercise_minus', name: '6. Exercise (-)', icon: Zap, status: 'locked' },
-        { key: 'exercise_question', name: '7. Exercise (?)', icon: Zap, status: 'locked' },
+        { key: 'exercise_pos', name: '5. Exercise (+)', icon: PenSquare, status: 'locked' },
+        { key: 'exercise_neg', name: '6. Exercise (-)', icon: PenSquare, status: 'locked' },
+        { key: 'exercise_int', name: '7. Exercise (?)', icon: PenSquare, status: 'locked' },
         { key: 'create_1', name: '8. Create 1', icon: Pencil, status: 'locked' },
         { key: 'vocab_game', name: '9. Vocabulary (Game)', icon: Gamepad2, status: 'locked' },
         { key: 'create_2', name: '10. Create 2', icon: Pencil, status: 'locked' },
         { key: 'exercise_2', name: '11. Exercise 2', icon: PenSquare, status: 'locked' },
         { key: 'exercise_3', name: '12. Exercise 3', icon: PenSquare, status: 'locked' },
-        { key: 'complete_verbs', name: '13. Complete Verbs', icon: ListChecks, status: 'locked' },
+        { key: 'complete_verbs', name: '13. Complete Verbs', icon: Pencil, status: 'locked' },
         { key: 'reading', name: '14. Reading', icon: BookText, status: 'locked' },
         { key: 'exercise_4', name: '15. Exercise 4', icon: PenSquare, status: 'locked' },
         { key: 'final_exercise', name: '16. Final Exercise', icon: Trophy, status: 'locked' },
     ], []);
 
-    // ASYNC FLOW 1: Inicialización de la Ruta y carga de Firestore
+    // ASYNC FLOW 1: Carga inicial de Firestore y reconstrucción de estados
     useEffect(() => {
         if (isProfileLoading || isUserLoading || !studentProfile || hasInitialized.current) return;
 
         let path = initialPathData.map((topic, i) => ({ ...topic, status: i === 0 ? 'active' : 'locked' as any }));
         let savedST = '';
 
-        if (isAdmin && !overrideStudentId) {
+        if (isAdmin && !targetStudentId) {
             path.forEach(item => { item.status = 'completed'; });
         } else if (studentProfile?.lessonProgress?.[progressStorageVersion]) {
             const savedData = studentProfile.lessonProgress[progressStorageVersion];
@@ -109,19 +109,23 @@ export default function Class6Content({ overrideStudentId }: { overrideStudentId
             savedST = savedData.lastSelectedTopic || '';
         }
 
-        // Reparación de ruta lógica
-        let lastDone = true;
-        for (let i = 0; i < path.length; i++) {
-            if (lastDone && path[i].status === 'locked') path[i].status = 'active';
-            lastDone = path[i].status === 'completed';
+        // Reparación de ruta lógica secuencial
+        if (!isAdmin || targetStudentId) {
+            let lastDone = true;
+            for (let i = 0; i < path.length; i++) {
+                if (lastDone && path[i].status === 'locked') path[i].status = 'active';
+                lastDone = path[i].status === 'completed';
+            }
         }
 
         setLearningPath(path);
         setSelectedTopic(savedST || path.find(p => p.status === 'active')?.key || path[0].key);
         setInitialLoadComplete(true);
         hasInitialized.current = true;
-        setTimeout(() => setIsInitialLoading(false), 800);
-    }, [isAdmin, initialPathData, studentProfile, isProfileLoading, isUserLoading, overrideStudentId]);
+        
+        const timer = setTimeout(() => setIsInitialLoading(false), 800);
+        return () => clearTimeout(timer);
+    }, [isAdmin, initialPathData, studentProfile, isProfileLoading, isUserLoading, targetStudentId]);
 
     const progressValue = useMemo(() => {
         if (learningPath.length === 0) return 0;
@@ -129,27 +133,33 @@ export default function Class6Content({ overrideStudentId }: { overrideStudentId
         return Math.round((completedCount / learningPath.length) * 100);
     }, [learningPath]);
 
-    // ASYNC FLOW 2: Guardado automático de progreso (Debounced)
+    // ASYNC FLOW 2: Guardado automático de progreso (Debounced & Loop-Safe)
     useEffect(() => {
-        if (!initialLoadComplete || isInitialLoading || isAdmin || !studentDocRef || learningPath.length === 0 || overrideStudentId) return;
+        if (!initialLoadComplete || isInitialLoading || isAdmin || !studentDocRef || learningPath.length === 0 || targetStudentId) return;
         
+        const currentSerialized = JSON.stringify({ 
+            lastSelectedTopic: selectedTopic, 
+            p: learningPath.map(t => t.status) 
+        });
+
+        if (currentSerialized === lastSerializedRef.current) return;
+
         const saveTimer = setTimeout(() => {
             const s: any = { lastSelectedTopic: selectedTopic };
             learningPath.forEach(item => { s[item.key] = item.status; });
             
-            const currentSavedData = studentProfile?.lessonProgress?.[progressStorageVersion];
-            if (JSON.stringify(s) !== JSON.stringify(currentSavedData)) {
-                updateDocumentNonBlocking(studentDocRef, { 
-                    [`lessonProgress.${progressStorageVersion}`]: s, 
-                    [`progress.${mainProgressKey}`]: progressValue 
-                });
-            }
-        }, 1500);
+            lastSerializedRef.current = currentSerialized;
+            
+            updateDocumentNonBlocking(studentDocRef, { 
+                [`lessonProgress.${progressStorageVersion}`]: s, 
+                [`progress.${mainProgressKey}`]: progressValue 
+            });
+        }, 2000);
 
         return () => clearTimeout(saveTimer);
-    }, [learningPath, progressValue, selectedTopic, isAdmin, studentDocRef, isInitialLoading, initialLoadComplete, overrideStudentId, studentProfile]);
+    }, [learningPath, progressValue, selectedTopic, isAdmin, studentDocRef, isInitialLoading, initialLoadComplete, targetStudentId]);
 
-    // ASYNC FLOW 3: Manejo de notificaciones y desbloqueos
+    // ASYNC FLOW 3: Manejo de desbloqueos (Toaster safe)
     useEffect(() => {
         if (!topicToComplete) return;
         
@@ -188,6 +198,10 @@ export default function Class6Content({ overrideStudentId }: { overrideStudentId
         setSelectedTopic(topicKey);
     };
 
+    const handleTopicComplete = (completedKey: string) => {
+        setTopicToComplete(completedKey);
+    };
+
     const renderContent = () => {
         const topic = learningPath.find(t => t.key === selectedTopic);
         if (!topic) return null;
@@ -215,7 +229,7 @@ export default function Class6Content({ overrideStudentId }: { overrideStudentId
                     </div>
                 </CardContent>
                 <CardFooter className="justify-center border-t p-6 bg-muted/10">
-                    <Button onClick={() => handleTopicComplete(selectedTopic)} size="lg" className="px-20 font-black h-14 text-xl shadow-xl uppercase transition-all active:scale-95">
+                    <Button onClick={() => handleTopicComplete(selectedTopic)} size="lg" className="px-20 font-black h-14 text-xl shadow-xl uppercase">
                         Completar Paso <ArrowRight className="ml-2 h-6 w-6" />
                     </Button>
                 </CardFooter>
@@ -223,17 +237,21 @@ export default function Class6Content({ overrideStudentId }: { overrideStudentId
         );
     };
 
-    if (isInitialLoading) {
-        return (
-            <div className="flex flex-col items-center justify-center min-h-[400px]">
-                <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
-                <p className="text-white font-bold tracking-widest animate-pulse uppercase">Sincronizando Misión B1...</p>
-            </div>
-        );
-    }
-
     return (
         <div className="grid gap-8 md:grid-cols-12 text-foreground animate-in fade-in duration-500">
+            {/* OJO ADMIN: Modo Supervisión */}
+            {isAdmin && targetStudentId && (
+                <div className="col-span-12 mb-6 bg-yellow-500/20 border-2 border-yellow-500 p-4 rounded-xl flex items-center justify-between shadow-lg backdrop-blur-md">
+                    <div className="flex items-center gap-3 text-yellow-700 dark:text-yellow-400">
+                        <Star className="h-6 w-6 fill-current animate-pulse" />
+                        <p className="font-black uppercase tracking-tighter text-sm">Modo Supervisión: {studentProfile?.name || targetStudentId}</p>
+                    </div>
+                    <Button variant="outline" size="sm" asChild className="border-yellow-600 text-yellow-700 hover:bg-yellow-500/10 transition-colors">
+                        <Link href="/admin">Cerrar</Link>
+                    </Button>
+                </div>
+            )}
+            
             <div className="md:col-span-9 md:order-1 order-2">
                 {renderContent()}
             </div>
@@ -249,7 +267,7 @@ export default function Class6Content({ overrideStudentId }: { overrideStudentId
                             <ul className="space-y-1">
                                 {learningPath.map((item) => {
                                     const isLocked = item.status === 'locked' && !isAdmin;
-                                    const Icon = ICONS_MAP[item.status] || BookOpen;
+                                    const Icon = ICONS_CONFIG[item.status] || BookOpen;
                                     return (
                                         <li key={item.key} onClick={() => handleTopicSelect(item.key)}
                                             className={cn(
@@ -284,28 +302,4 @@ export default function Class6Content({ overrideStudentId }: { overrideStudentId
             </div>
         </div>
     );
-}
-
-// Icono auxiliar faltante en lucide-react para la lista
-function ListChecks(props: any) {
-    return (
-        <svg
-            {...props}
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-        >
-            <path d="m3 17 2 2 4-4" />
-            <path d="m3 7 2 2 4-4" />
-            <path d="M13 6h8" />
-            <path d="M13 12h8" />
-            <path d="M13 18h8" />
-        </svg>
-    )
 }

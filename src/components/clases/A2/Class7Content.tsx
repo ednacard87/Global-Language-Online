@@ -2,17 +2,7 @@
 
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import Link from 'next/link';
-import { 
-    Card, 
-    CardContent, 
-    CardHeader, 
-    CardTitle, 
-    CardDescription, 
-    CardFooter 
-} from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
-import { cn } from '@/lib/utils';
+import { useSearchParams } from 'next/navigation';
 import { 
     BookOpen, 
     PenSquare, 
@@ -26,19 +16,22 @@ import {
     BookText,
     Mic,
     HelpCircle,
-    Home,
-    History,
-    MessageSquare,
+    Pencil,
+    Activity,
     Star,
-    Handshake,
-    CheckCircle2
+    Home,
+    ArrowLeft
 } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+import { cn } from '@/lib/utils';
 import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
 import { doc } from 'firebase/firestore';
+import { useToast } from '@/hooks/use-toast';
+import { Button } from '@/components/ui/button';
 
 // --- CONFIGURACIÓN DE INGENIERÍA ---
-const progressStorageVersion = 'progress_a2_eng_u2_c7_v1_skeleton';
+const progressStorageVersion = 'progress_a2_eng_u2_c7_v1_base';
 const mainProgressKey = 'progress_a2_eng_unit_2_class_7';
 
 interface Topic {
@@ -58,8 +51,21 @@ export default function Class7Content({ overrideStudentId }: { overrideStudentId
     const { toast } = useToast();
     const { user, isUserLoading } = useUser();
     const firestore = useFirestore();
+    const searchParams = useSearchParams();
 
-    const currentUID = overrideStudentId || user?.uid;
+    // Capturamos el studentId para modo supervisión
+    const targetStudentId = overrideStudentId || searchParams.get('studentId');
+    const currentUID = targetStudentId || user?.uid;
+
+    const [isInitialLoading, setIsInitialLoading] = useState(true);
+    const [learningPath, setLearningPath] = useState<Topic[]>([]);
+    const [selectedTopic, setSelectedTopic] = useState<string>('');
+    const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
+    const [initialLoadComplete, setInitialLoadComplete] = useState(false);
+    
+    const hasInitialized = useRef(false);
+    const lastSerializedRef = useRef<string>('');
+
     const studentDocRef = useMemoFirebase(() => (currentUID ? doc(firestore, 'students', currentUID) : null), [firestore, currentUID]);
     const authUserRef = useMemoFirebase(() => (user ? doc(firestore, 'students', user.uid) : null), [firestore, user]);
     
@@ -67,13 +73,6 @@ export default function Class7Content({ overrideStudentId }: { overrideStudentId
     const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{role?: string, lessonProgress?: any, progress?: any, name?: string}>(studentDocRef);
 
     const isAdmin = useMemo(() => (user && (authUserProfile?.role === 'admin' || user.email === 'ednacard87@gmail.com')), [user, authUserProfile]);
-
-    const [learningPath, setLearningPath] = useState<Topic[]>([]);
-    const [selectedTopic, setSelectedTopic] = useState<string>('');
-    const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
-    const [isInitialLoading, setIsInitialLoading] = useState(true);
-    const [initialLoadComplete, setInitialLoadComplete] = useState(false);
-    const hasInitialized = useRef(false);
 
     // Definición de la ruta de aprendizaje de 13 pasos
     const initialPathData = useMemo((): Topic[] => [
@@ -88,18 +87,18 @@ export default function Class7Content({ overrideStudentId }: { overrideStudentId
         { key: 'questions_dict1', name: '9. Questions Dict1.', icon: HelpCircle, status: 'locked' },
         { key: 'exercise_5', name: '10. Exercise 5', icon: PenSquare, status: 'locked' },
         { key: 'exercise_6', name: '11. Exercise 6', icon: PenSquare, status: 'locked' },
-        { key: 'borrow_lend', name: '12. Borrow and Lend', icon: Handshake, status: 'locked' },
+        { key: 'borrow_lend', name: '12. Borrow and Lend', icon: Activity, status: 'locked' },
         { key: 'reading', name: '13. Reading', icon: BookText, status: 'locked' },
     ], []);
 
-    // ASYNC FLOW 1: Inicialización de la Ruta y carga de Firestore
+    // ASYNC FLOW 1: Carga inicial de Firestore y reconstrucción de estados
     useEffect(() => {
         if (isProfileLoading || isUserLoading || !studentProfile || hasInitialized.current) return;
 
         let path = initialPathData.map((topic, i) => ({ ...topic, status: i === 0 ? 'active' : 'locked' as any }));
         let savedST = '';
 
-        if (isAdmin && !overrideStudentId) {
+        if (isAdmin && !targetStudentId) {
             path.forEach(item => { item.status = 'completed'; });
         } else if (studentProfile?.lessonProgress?.[progressStorageVersion]) {
             const savedData = studentProfile.lessonProgress[progressStorageVersion];
@@ -107,19 +106,22 @@ export default function Class7Content({ overrideStudentId }: { overrideStudentId
             savedST = savedData.lastSelectedTopic || '';
         }
 
-        // Reparación de ruta lógica
-        let lastDone = true;
-        for (let i = 0; i < path.length; i++) {
-            if (lastDone && path[i].status === 'locked') path[i].status = 'active';
-            lastDone = path[i].status === 'completed';
+        if (!isAdmin || targetStudentId) {
+            let lastDone = true;
+            for (let i = 0; i < path.length; i++) {
+                if (lastDone && path[i].status === 'locked') path[i].status = 'active';
+                lastDone = path[i].status === 'completed';
+            }
         }
 
         setLearningPath(path);
         setSelectedTopic(savedST || path.find(p => p.status === 'active')?.key || path[0].key);
         setInitialLoadComplete(true);
         hasInitialized.current = true;
-        setTimeout(() => setIsInitialLoading(false), 800);
-    }, [isAdmin, initialPathData, studentProfile, isProfileLoading, isUserLoading, overrideStudentId]);
+        
+        const timer = setTimeout(() => setIsInitialLoading(false), 800);
+        return () => clearTimeout(timer);
+    }, [isAdmin, initialPathData, studentProfile, isProfileLoading, isUserLoading, targetStudentId]);
 
     const progressValue = useMemo(() => {
         if (learningPath.length === 0) return 0;
@@ -127,27 +129,33 @@ export default function Class7Content({ overrideStudentId }: { overrideStudentId
         return Math.round((completedCount / learningPath.length) * 100);
     }, [learningPath]);
 
-    // ASYNC FLOW 2: Guardado automático de progreso (Debounced)
+    // ASYNC FLOW 2: Guardado automático de progreso (Debounced & Loop-Safe)
     useEffect(() => {
-        if (!initialLoadComplete || isInitialLoading || isAdmin || !studentDocRef || learningPath.length === 0 || overrideStudentId) return;
+        if (!initialLoadComplete || isInitialLoading || isAdmin || !studentDocRef || learningPath.length === 0 || targetStudentId) return;
         
+        const currentSerialized = JSON.stringify({ 
+            lastSelectedTopic: selectedTopic, 
+            p: learningPath.map(t => t.status) 
+        });
+
+        if (currentSerialized === lastSerializedRef.current) return;
+
         const saveTimer = setTimeout(() => {
             const s: any = { lastSelectedTopic: selectedTopic };
             learningPath.forEach(item => { s[item.key] = item.status; });
             
-            const currentSavedData = studentProfile?.lessonProgress?.[progressStorageVersion];
-            if (JSON.stringify(s) !== JSON.stringify(currentSavedData)) {
-                updateDocumentNonBlocking(studentDocRef, { 
-                    [`lessonProgress.${progressStorageVersion}`]: s, 
-                    [`progress.${mainProgressKey}`]: progressValue 
-                });
-            }
-        }, 1500);
+            lastSerializedRef.current = currentSerialized;
+            
+            updateDocumentNonBlocking(studentDocRef, { 
+                [`lessonProgress.${progressStorageVersion}`]: s, 
+                [`progress.${mainProgressKey}`]: progressValue 
+            });
+        }, 2000);
 
         return () => clearTimeout(saveTimer);
-    }, [learningPath, progressValue, selectedTopic, isAdmin, studentDocRef, isInitialLoading, initialLoadComplete, overrideStudentId, studentProfile]);
+    }, [learningPath, progressValue, selectedTopic, isAdmin, studentDocRef, isInitialLoading, initialLoadComplete, targetStudentId]);
 
-    // ASYNC FLOW 3: Manejo de notificaciones y desbloqueos
+    // ASYNC FLOW 3: Manejo de desbloqueos (Toaster safe)
     useEffect(() => {
         if (!topicToComplete) return;
         
@@ -217,7 +225,7 @@ export default function Class7Content({ overrideStudentId }: { overrideStudentId
                     </div>
                 </CardContent>
                 <CardFooter className="justify-center border-t p-6 bg-muted/10">
-                    <Button onClick={() => handleTopicComplete(selectedTopic)} size="lg" className="px-20 font-black h-14 text-xl shadow-xl uppercase transition-all active:scale-95">
+                    <Button onClick={() => handleTopicComplete(selectedTopic)} size="lg" className="px-20 font-black h-14 text-xl shadow-xl uppercase">
                         Completar Paso <ArrowRight className="ml-2 h-6 w-6" />
                     </Button>
                 </CardFooter>
@@ -236,6 +244,18 @@ export default function Class7Content({ overrideStudentId }: { overrideStudentId
 
     return (
         <div className="grid gap-8 md:grid-cols-12 text-foreground animate-in fade-in duration-500">
+            {isAdmin && targetStudentId && (
+                <div className="col-span-12 mb-6 bg-yellow-500/20 border-2 border-yellow-500 p-4 rounded-xl flex items-center justify-between shadow-lg backdrop-blur-md">
+                    <div className="flex items-center gap-3 text-yellow-700 dark:text-yellow-400">
+                        <Star className="h-6 w-6 fill-current animate-pulse" />
+                        <p className="font-black uppercase tracking-tighter text-sm">Modo Supervisión: {studentProfile?.name || targetStudentId}</p>
+                    </div>
+                    <Button variant="outline" size="sm" asChild className="border-yellow-600 text-yellow-700 hover:bg-yellow-500/10 transition-colors">
+                        <Link href="/admin">Cerrar</Link>
+                    </Button>
+                </div>
+            )}
+            
             <div className="md:col-span-9 md:order-1 order-2">
                 {renderContent()}
             </div>

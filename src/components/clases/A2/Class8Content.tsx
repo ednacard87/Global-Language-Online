@@ -55,7 +55,7 @@ export default function Class8Content({ overrideStudentId }: { overrideStudentId
     const { user, isUserLoading } = useUser();
     const firestore = useFirestore();
 
-    // Capturamos el studentId para modo supervisión (Ojo Admin)
+    // Capturamos el studentId para modo supervisión
     const currentUID = overrideStudentId || user?.uid;
     const studentDocRef = useMemoFirebase(() => (currentUID ? doc(firestore, 'students', currentUID) : null), [firestore, currentUID]);
     const authUserRef = useMemoFirebase(() => (user ? doc(firestore, 'students', user.uid) : null), [firestore, user]);
@@ -70,7 +70,9 @@ export default function Class8Content({ overrideStudentId }: { overrideStudentId
     const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
     const [isInitialLoading, setIsInitialLoading] = useState(true);
     const [initialLoadComplete, setInitialLoadComplete] = useState(false);
+    
     const hasInitialized = useRef(false);
+    const lastSerializedRef = useRef<string>('');
 
     // Definición de la ruta de aprendizaje de 11 pasos
     const initialPathData = useMemo((): Topic[] => [
@@ -95,7 +97,6 @@ export default function Class8Content({ overrideStudentId }: { overrideStudentId
         let savedST = '';
 
         if (isAdmin && !overrideStudentId) {
-            // Los admins ven todo desbloqueado para navegar
             path.forEach(item => { item.status = 'completed'; });
         } else if (studentProfile?.lessonProgress?.[progressStorageVersion]) {
             const savedData = studentProfile.lessonProgress[progressStorageVersion];
@@ -103,11 +104,12 @@ export default function Class8Content({ overrideStudentId }: { overrideStudentId
             savedST = savedData.lastSelectedTopic || '';
         }
 
-        // Reparación de ruta lógica secuencial
-        let lastDone = true;
-        for (let i = 0; i < path.length; i++) {
-            if (lastDone && path[i].status === 'locked') path[i].status = 'active';
-            lastDone = path[i].status === 'completed';
+        if (!isAdmin || targetStudentId) {
+            let lastDone = true;
+            for (let i = 0; i < path.length; i++) {
+                if (lastDone && path[i].status === 'locked') path[i].status = 'active';
+                lastDone = path[i].status === 'completed';
+            }
         }
 
         setLearningPath(path);
@@ -125,25 +127,31 @@ export default function Class8Content({ overrideStudentId }: { overrideStudentId
         return Math.round((completedCount / learningPath.length) * 100);
     }, [learningPath]);
 
-    // ASYNC FLOW 2: Guardado automático de progreso (Debounced)
+    // ASYNC FLOW 2: Guardado automático de progreso (Debounced & Loop-Safe)
     useEffect(() => {
         if (!initialLoadComplete || isInitialLoading || isAdmin || !studentDocRef || learningPath.length === 0 || overrideStudentId) return;
         
+        const currentSerialized = JSON.stringify({ 
+            lastSelectedTopic: selectedTopic, 
+            p: learningPath.map(t => t.status) 
+        });
+
+        if (currentSerialized === lastSerializedRef.current) return;
+
         const saveTimer = setTimeout(() => {
             const s: any = { lastSelectedTopic: selectedTopic };
             learningPath.forEach(item => { s[item.key] = item.status; });
             
-            const currentSavedData = studentProfile?.lessonProgress?.[progressStorageVersion];
-            if (JSON.stringify(s) !== JSON.stringify(currentSavedData)) {
-                updateDocumentNonBlocking(studentDocRef, { 
-                    [`lessonProgress.${progressStorageVersion}`]: s, 
-                    [`progress.${mainProgressKey}`]: progressValue 
-                });
-            }
-        }, 1500);
+            lastSerializedRef.current = currentSerialized;
+            
+            updateDocumentNonBlocking(studentDocRef, { 
+                [`lessonProgress.${progressStorageVersion}`]: s, 
+                [`progress.${mainProgressKey}`]: progressValue 
+            });
+        }, 2000);
 
         return () => clearTimeout(saveTimer);
-    }, [learningPath, progressValue, selectedTopic, isAdmin, studentDocRef, isInitialLoading, initialLoadComplete, overrideStudentId, studentProfile]);
+    }, [learningPath, progressValue, selectedTopic, isAdmin, studentDocRef, isInitialLoading, initialLoadComplete, overrideStudentId]);
 
     // ASYNC FLOW 3: Manejo de notificaciones y desbloqueos seguros
     useEffect(() => {
@@ -195,7 +203,7 @@ export default function Class8Content({ overrideStudentId }: { overrideStudentId
         return (
             <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground text-left overflow-hidden">
                 <CardHeader className='bg-primary/5 border-b'>
-                    <div className='flex items-center gap-3'>
+                    <div className='flex items-center gap-3 text-left'>
                         <div className='p-2 bg-primary/20 rounded-lg text-primary'>
                             <topic.icon className='h-6 w-6' />
                         </div>
