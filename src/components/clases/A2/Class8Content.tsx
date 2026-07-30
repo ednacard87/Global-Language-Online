@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { 
     Card, 
     CardContent, 
@@ -54,9 +55,21 @@ export default function Class8Content({ overrideStudentId }: { overrideStudentId
     const { toast } = useToast();
     const { user, isUserLoading } = useUser();
     const firestore = useFirestore();
+    const searchParams = useSearchParams();
 
     // Capturamos el studentId para modo supervisión
-    const currentUID = overrideStudentId || user?.uid;
+    const targetStudentId = overrideStudentId || searchParams.get('studentId');
+    const currentUID = targetStudentId || user?.uid;
+
+    const [isInitialLoading, setIsInitialLoading] = useState(true);
+    const [learningPath, setLearningPath] = useState<Topic[]>([]);
+    const [selectedTopic, setSelectedTopic] = useState<string>('');
+    const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
+    const [initialLoadComplete, setInitialLoadComplete] = useState(false);
+    
+    const hasInitialized = useRef(false);
+    const lastSerializedRef = useRef<string>('');
+
     const studentDocRef = useMemoFirebase(() => (currentUID ? doc(firestore, 'students', currentUID) : null), [firestore, currentUID]);
     const authUserRef = useMemoFirebase(() => (user ? doc(firestore, 'students', user.uid) : null), [firestore, user]);
     
@@ -64,15 +77,6 @@ export default function Class8Content({ overrideStudentId }: { overrideStudentId
     const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{role?: string, lessonProgress?: any, progress?: any, name?: string}>(studentDocRef);
 
     const isAdmin = useMemo(() => (user && (authUserProfile?.role === 'admin' || user.email === 'ednacard87@gmail.com')), [user, authUserProfile]);
-
-    const [learningPath, setLearningPath] = useState<Topic[]>([]);
-    const [selectedTopic, setSelectedTopic] = useState<string>('');
-    const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
-    const [isInitialLoading, setIsInitialLoading] = useState(true);
-    const [initialLoadComplete, setInitialLoadComplete] = useState(false);
-    
-    const hasInitialized = useRef(false);
-    const lastSerializedRef = useRef<string>('');
 
     // Definición de la ruta de aprendizaje de 11 pasos
     const initialPathData = useMemo((): Topic[] => [
@@ -96,7 +100,7 @@ export default function Class8Content({ overrideStudentId }: { overrideStudentId
         let path = initialPathData.map((topic, i) => ({ ...topic, status: i === 0 ? 'active' : 'locked' as any }));
         let savedST = '';
 
-        if (isAdmin && !overrideStudentId) {
+        if (isAdmin && !targetStudentId) {
             path.forEach(item => { item.status = 'completed'; });
         } else if (studentProfile?.lessonProgress?.[progressStorageVersion]) {
             const savedData = studentProfile.lessonProgress[progressStorageVersion];
@@ -119,7 +123,7 @@ export default function Class8Content({ overrideStudentId }: { overrideStudentId
         
         const timer = setTimeout(() => setIsInitialLoading(false), 800);
         return () => clearTimeout(timer);
-    }, [isAdmin, initialPathData, studentProfile, isProfileLoading, isUserLoading, overrideStudentId]);
+    }, [isAdmin, initialPathData, studentProfile, isProfileLoading, isUserLoading, targetStudentId]);
 
     const progressValue = useMemo(() => {
         if (learningPath.length === 0) return 0;
@@ -129,7 +133,7 @@ export default function Class8Content({ overrideStudentId }: { overrideStudentId
 
     // ASYNC FLOW 2: Guardado automático de progreso (Debounced & Loop-Safe)
     useEffect(() => {
-        if (!initialLoadComplete || isInitialLoading || isAdmin || !studentDocRef || learningPath.length === 0 || overrideStudentId) return;
+        if (!initialLoadComplete || isInitialLoading || isAdmin || !studentDocRef || learningPath.length === 0 || targetStudentId) return;
         
         const currentSerialized = JSON.stringify({ 
             lastSelectedTopic: selectedTopic, 
@@ -151,7 +155,7 @@ export default function Class8Content({ overrideStudentId }: { overrideStudentId
         }, 2000);
 
         return () => clearTimeout(saveTimer);
-    }, [learningPath, progressValue, selectedTopic, isAdmin, studentDocRef, isInitialLoading, initialLoadComplete, overrideStudentId]);
+    }, [learningPath, progressValue, selectedTopic, isAdmin, studentDocRef, isInitialLoading, initialLoadComplete, targetStudentId]);
 
     // ASYNC FLOW 3: Manejo de notificaciones y desbloqueos seguros
     useEffect(() => {
@@ -257,7 +261,7 @@ export default function Class8Content({ overrideStudentId }: { overrideStudentId
                             <ul className="space-y-1">
                                 {learningPath.map((item) => {
                                     const isLocked = item.status === 'locked' && !isAdmin;
-                                    const Icon = ICONS_CONFIG[item.status] || BookOpen;
+                                    const Icon = ICONS_CONFIG[item.status as keyof typeof ICONS_CONFIG] || BookOpen;
                                     return (
                                         <li key={item.key} onClick={() => handleTopicSelect(item.key)}
                                             className={cn(
