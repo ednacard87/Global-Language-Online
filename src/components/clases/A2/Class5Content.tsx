@@ -23,7 +23,6 @@ import {
     ArrowLeft,
     Check,
     X,
-    Book as BookIcon,
     HelpCircle
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -41,7 +40,7 @@ import { Separator } from '@/components/ui/separator';
 import { VocabularyMatchingGame } from '@/components/dashboard/vocabulary-matching-game';
 
 // --- CONFIGURACIÓN DE INGENIERÍA ---
-const progressStorageVersion = 'progress_a2_eng_u1_c5_v106_fixed_refs';
+const progressStorageVersion = 'progress_a2_eng_u1_c5_v107_debounce';
 const mainProgressKey = 'progress_a2_eng_unit_1_class_5';
 
 interface Topic {
@@ -272,7 +271,7 @@ export default function Class5Content({ overrideStudentId }: { overrideStudentId
     }, []);
 
     const initialPathData = useMemo(() => [
-        { key: 'vocabulary_verbs_city', name: '1. Vocabulary (Verbs & City)', icon: MapPin },
+        { key: 'vocabulary_verbs_city', name: '1. Vocabulary (Verbos & City)', icon: MapPin },
         { key: 'grammar_connectors', name: '2. Grammar (Connectors)', icon: LinkIcon },
         { key: 'exercise_1', name: '3. Exercise 1', icon: PenSquare },
         { key: 'exercise_2', name: '4. Exercise 2', icon: PenSquare },
@@ -303,8 +302,7 @@ export default function Class5Content({ overrideStudentId }: { overrideStudentId
             let last = true;
             for (let i = 0; i < p.length; i++) { if (last && p[i].status === 'locked') p[i].status = 'active'; last = p[i].status === 'completed'; }
         }
-        setLearningPath(p); 
-        setSelectedTopic(d.lastSelectedTopic || p.find(it => it.status === 'active')?.key || p[0].key);
+        setLearningPath(p); setSelectedTopic(d.lastSelectedTopic || p.find(it => it.status === 'active')?.key || p[0].key);
         setInitialLoadComplete(true);
         hasInitialized.current = true;
     }, [isInitialLoading, studentProfile, isAdmin, initialPathData, targetStudentId]);
@@ -315,13 +313,25 @@ export default function Class5Content({ overrideStudentId }: { overrideStudentId
         return Math.round((comp / learningPath.length) * 100);
     }, [learningPath]);
 
+    // ASYNC FLOW: Persistencia con Debounce y Comparación Profunda
     useEffect(() => {
-        if (!initialLoadComplete || isInitialLoading || isAdmin || !studentDocRef || targetStudentId || !hasInitialized.current) return;
-        const s: any = { lastSelectedTopic: selectedTopic, vocabAnswers, readAns };
-        learningPath.forEach(t => s[t.key] = t.status);
-        updateDocumentNonBlocking(studentDocRef, { [`lessonProgress.${progressStorageVersion}`]: s, [`progress.${mainProgressKey}`]: progressValue });
-        if (progressValue >= 100) window.dispatchEvent(new CustomEvent('progressUpdated'));
-    }, [learningPath, progressValue, selectedTopic, isAdmin, studentDocRef, isInitialLoading, vocabAnswers, readAns, targetStudentId, initialLoadComplete]);
+        if (!initialLoadComplete || isInitialLoading || isAdmin || !studentDocRef || targetStudentId || !hasInitialized.current || !user) return;
+        
+        const saveTimer = setTimeout(() => {
+            const s: any = { lastSelectedTopic: selectedTopic, vocabAnswers, readAns };
+            learningPath.forEach(t => s[t.key] = t.status);
+            
+            const currentSavedData = studentProfile?.lessonProgress?.[progressStorageVersion];
+            const currentOverallProgress = studentProfile?.progress?.[mainProgressKey];
+            
+            // Solo escribir si hay un cambio real
+            if (JSON.stringify(s) !== JSON.stringify(currentSavedData) || progressValue !== currentOverallProgress) {
+                updateDocumentNonBlocking(studentDocRef, { [`lessonProgress.${progressStorageVersion}`]: s, [`progress.${mainProgressKey}`]: progressValue });
+            }
+        }, 1500);
+
+        return () => clearTimeout(saveTimer);
+    }, [learningPath, progressValue, selectedTopic, isAdmin, studentDocRef, isInitialLoading, targetStudentId, initialLoadComplete, vocabAnswers, readAns, user, studentProfile]);
 
     useEffect(() => {
         if (!topicToComplete) return;
@@ -391,7 +401,7 @@ export default function Class5Content({ overrideStudentId }: { overrideStudentId
                                     {cityVerbsVocab.map((v, i) => (
                                         <Fragment key={i}>
                                             <div className="p-3 border rounded bg-white/5 font-bold flex items-center text-sm">{v.es}</div>
-                                            <Input value={vocabAnswers[i] || ''} onChange={e => { if (targetStudentId) return; const na = [...vocabAnswers]; na[i] = e.target.value; setVocabAnswers(na); const nv = [...vocabValidation]; nv[i] = 'unchecked'; setVocabValidation(nv); }} className={cn("h-12 uppercase font-mono", vocabValidation[i] === 'correct' ? 'border-green-500 bg-green-50/10' : vocabValidation[i] === 'incorrect' ? 'border-red-500 bg-red-50/10' : '')} autoComplete="off" readOnly={isAdmin && !!targetStudentId} />
+                                            <Input value={vocabAnswers[i] || ''} onChange={e => { if (targetStudentId) return; const na = [...vocabAnswers]; na[i] = e.target.value; setVocabAnswers(na); const nv = [...vocabValidation]; nv[i] = 'unchecked'; setVocabValidation(nv); }} className={cn("h-12 uppercase font-mono", vocabValidation[i] === 'correct' ? 'border-green-500 bg-green-50/10' : vocabValidation[i] === 'incorrect' ? 'border-red-50/10' : '')} autoComplete="off" readOnly={isAdmin && !!targetStudentId} />
                                         </Fragment>
                                     ))}
                                 </div>
