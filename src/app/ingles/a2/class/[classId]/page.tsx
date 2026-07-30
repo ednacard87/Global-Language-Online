@@ -72,25 +72,25 @@ function A2ClassPageContent() {
 
     const renderClassContent = () => {
         switch (classId) {
-            case '2': return <Class2Content />;
-            case '3': return <Class3Content />;
-            case '4': return <Class4Content />;
-            case '5': return <Class5Content />;
-            case '6': return <Class6Content />;
-            case '7': return <Class7Content />;
-            case '8': return <Class8Content />;
-            case '9': return <Class9Content />;
-            case '10': return <Class10Content />;
-            case '11': return <Class11Content />;
-            case '12': return <Class12Content />;
-            case '13': return <Class13Content />;
-            case '14': return <Class14Content />;
-            case '15': return <Class15Content />;
-            case '16': return <Class16Content />;
-            case '17': return <Class17Content />;
-            case '18': return <Class18Content />;
-            case '19': return <Class19Content />;
-            case '20': return <Class20Content />;
+            case '2': return <Class2Content overrideStudentId={targetStudentId} />;
+            case '3': return <Class3Content overrideStudentId={targetStudentId} />;
+            case '4': return <Class4Content overrideStudentId={targetStudentId} />;
+            case '5': return <Class5Content overrideStudentId={targetStudentId} />;
+            case '6': return <Class6Content overrideStudentId={targetStudentId} />;
+            case '7': return <Class7Content overrideStudentId={targetStudentId} />;
+            case '8': return <Class8Content overrideStudentId={targetStudentId} />;
+            case '9': return <Class9Content overrideStudentId={targetStudentId} />;
+            case '10': return <Class10Content overrideStudentId={targetStudentId} />;
+            case '11': return <Class11Content overrideStudentId={targetStudentId} />;
+            case '12': return <Class12Content overrideStudentId={targetStudentId} />;
+            case '13': return <Class13Content overrideStudentId={targetStudentId} />;
+            case '14': return <Class14Content overrideStudentId={targetStudentId} />;
+            case '15': return <Class15Content overrideStudentId={targetStudentId} />;
+            case '16': return <Class16Content overrideStudentId={targetStudentId} />;
+            case '17': return <Class17Content overrideStudentId={targetStudentId} />;
+            case '18': return <Class18Content overrideStudentId={targetStudentId} />;
+            case '19': return <Class19Content overrideStudentId={targetStudentId} />;
+            case '20': return <Class20Content overrideStudentId={targetStudentId} />;
             default:
                 return (
                     <div className="max-w-7xl mx-auto text-white text-center py-20">
