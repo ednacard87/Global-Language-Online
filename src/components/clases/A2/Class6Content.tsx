@@ -43,7 +43,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { VocabularyMatchingGame } from '@/components/dashboard/vocabulary-matching-game';
 
 // --- CONFIGURACIÓN DE INGENIERÍA ---
-const progressStorageVersion = 'progress_a2_eng_u2_c6_v107_fix_ref';
+const progressStorageVersion = 'progress_a2_eng_u2_c6_v108_final_logic';
 const mainProgressKey = 'progress_a2_eng_unit_2_class_6';
 
 const ICONS_CONFIG = {
@@ -84,7 +84,7 @@ const irregularVerbsData = [
     { es: "VER", present: "SEE", past: "SAW", participle: "SEEN" },
     { es: "ENVIAR", present: "SEND", past: "SENT", participle: "SENT" },
     { es: "CANTAR", present: "SING", past: "SANG", participle: "SUNG" },
-    { id: 30, es: "DORMIR", present: "SLEEP", past: "SLEPT", participle: "SLEPT" },
+    { es: "DORMIR", present: "SLEEP", past: "SLEPT", participle: "SLEPT" },
     { es: "TOMAR-AGARRAR", present: "TAKE", past: "TOOK", participle: "TAKEN" },
     { es: "PENSAR", present: "THINK", past: "THOUGHT", participle: "THOUGHT" },
     { es: "ENSEÑAR", present: "TEACH", past: "TAUGHT", participle: "TAUGHT" },
@@ -117,6 +117,7 @@ const intExercises = [
 ];
 
 const fillGapsPrompts = [
+    { sentence: "LAST NIGHT WE WALKED (WALK) TO THE CINEMA.", answer: "WALKED" },
     { sentence: "SAM _______________ (STOP) THE CAR TO TAKE A PICTURE.", answer: "STOPPED" },
     { sentence: "I ________________ (STUDY) FOR THE EXAM FOR THREE HOURS.", answer: "STUDIED" },
 ];
@@ -144,6 +145,72 @@ const genericVocab = {
 };
 
 // --- HELPER COMPONENTS ---
+
+const ManualGradingExercise = ({ title, description, prompts, onComplete, studentDocRef, isAdmin, storageKeyLines, storageKeyGrades, initialLines, initialGrades, lineCount = 6, isLarge = false }: any) => {
+    const [lines, setLines] = useState<string[]>(Array(lineCount).fill(''));
+    const [grades, setGrades] = useState<Record<number, 'correct' | 'incorrect' | null>>(initialGrades || {});
+
+    useEffect(() => {
+        if (initialLines && Array.isArray(initialLines)) {
+            const newLines = [...Array(lineCount).fill('')];
+            initialLines.forEach((val: string, i: number) => { if (i < lineCount) newLines[i] = val || ''; });
+            setLines(newLines);
+        }
+    }, [initialLines, lineCount]);
+
+    useEffect(() => { if (initialGrades) setGrades(initialGrades); }, [initialGrades]);
+
+    const handleLineChange = (idx: number, val: string) => {
+        if (isAdmin) return;
+        const nl = [...lines]; nl[idx] = val; setLines(nl);
+        if (studentDocRef) updateDocumentNonBlocking(studentDocRef, { [`lessonProgress.${progressStorageVersion}.${storageKeyLines}`]: nl });
+    };
+
+    const handleToggleGrade = (idx: number, type: 'correct' | 'incorrect') => {
+        if (!isAdmin) return;
+        const newGrades = { ...grades };
+        newGrades[idx] = newGrades[idx] === type ? null : type;
+        setGrades(newGrades);
+        if (studentDocRef) updateDocumentNonBlocking(studentDocRef, { [`lessonProgress.${progressStorageVersion}.${storageKeyGrades}`]: newGrades });
+    };
+
+    return (
+        <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground">
+            <CardHeader className='bg-primary/5 border-b text-left'>
+                <CardTitle className="uppercase tracking-tighter">{title}</CardTitle>
+                <CardDescription className='font-bold text-foreground'>{description}</CardDescription>
+            </CardHeader>
+            <CardContent className="p-6 text-left">
+                <ScrollArea className={cn(isLarge ? "h-[300px]" : "h-[500px]", "pr-4")}>
+                    <div className="space-y-4">
+                        {prompts.map((pText: string, i: number) => (
+                            <div key={i} className="space-y-2 p-3 bg-muted/20 rounded-xl border border-border/50">
+                                <p className="text-xs font-black text-primary uppercase">{i + 1}. {pText}</p>
+                                <div className="flex items-center gap-3">
+                                    {isLarge ? (
+                                        <textarea
+                                            value={lines[i] || ''}
+                                            onChange={e => handleLineChange(i, e.target.value)}
+                                            className={cn("flex-1 min-h-[150px] p-3 rounded-lg border bg-background text-lg transition-all font-medium", grades[i] === 'correct' ? 'border-green-500 bg-green-500/10' : grades[i] === 'incorrect' ? 'border-red-500 bg-red-500/10' : '')}
+                                            placeholder="Escribe tu respuesta aquí..."
+                                        />
+                                    ) : (
+                                        <Input value={lines[i] || ''} onChange={e => handleLineChange(i, e.target.value)} className={cn("flex-1 h-10 transition-all font-medium", grades[i] === 'correct' ? 'border-green-500 bg-green-500/10' : grades[i] === 'incorrect' ? 'border-red-500 bg-red-500/10' : '')} placeholder="Tu respuesta..." />
+                                    )}
+                                    <div className="flex flex-col gap-1 shrink-0">
+                                        <Button size="icon" variant="ghost" onClick={() => handleToggleGrade(i, 'correct')} className={cn("h-8 w-8 rounded-full", grades[i] === 'correct' ? "bg-green-500 text-white" : "bg-muted opacity-50")} disabled={!isAdmin}><Check className="h-4 w-4"/></Button>
+                                        <Button size="icon" variant="ghost" onClick={() => handleToggleGrade(i, 'incorrect')} className={cn("h-8 w-8 rounded-full", grades[i] === 'incorrect' ? "bg-red-500 text-white" : "bg-muted opacity-50")} disabled={!isAdmin}><X className="h-4 w-4"/></Button>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </ScrollArea>
+            </CardContent>
+            <CardFooter className="justify-center border-t pt-6"><Button onClick={onComplete} size="lg" className="px-16 font-bold h-14 uppercase">Avanzar <ArrowRight className="ml-2 h-6 w-6" /></Button></CardFooter>
+        </Card>
+    );
+};
 
 const BallsExerciseTranslation = ({ title, prompts, onComplete, vocabulary, type = 'triple' }: any) => {
     const { toast } = useToast();
@@ -217,62 +284,6 @@ const BallsExerciseTranslation = ({ title, prompts, onComplete, vocabulary, type
     );
 };
 
-const ManualGradingExercise = ({ title, description, prompts, onComplete, studentDocRef, isAdmin, storageKeyLines, storageKeyGrades, initialLines, initialGrades, lineCount = 6, isLarge = false }: any) => {
-    const [lines, setLines] = useState<string[]>(Array(lineCount).fill(''));
-    const [grades, setGrades] = useState<Record<number, 'correct' | 'incorrect' | null>>(initialGrades || {});
-
-    useEffect(() => {
-        if (initialLines && Array.isArray(initialLines)) {
-            const newLines = [...Array(lineCount).fill('')];
-            initialLines.forEach((val: string, i: number) => { if (i < lineCount) newLines[i] = val || ''; });
-            setLines(newLines);
-        }
-    }, [initialLines, lineCount]);
-
-    useEffect(() => { if (initialGrades) setGrades(initialGrades); }, [initialGrades]);
-
-    const handleLineChange = (idx: number, val: string) => {
-        if (isAdmin) return;
-        const nl = [...lines]; nl[idx] = val; setLines(nl);
-        if (studentDocRef) updateDocumentNonBlocking(studentDocRef, { [`lessonProgress.${progressStorageVersion}.${storageKeyLines}`]: nl });
-    };
-
-    const handleToggleGrade = (idx: number, type: 'correct' | 'incorrect') => {
-        if (!isAdmin) return;
-        const newGrades = { ...grades }; newGrades[idx] = newGrades[idx] === type ? null : type; setGrades(newGrades);
-        if (studentDocRef) updateDocumentNonBlocking(studentDocRef, { [`lessonProgress.${progressStorageVersion}.${storageKeyGrades}`]: newGrades });
-    };
-
-    return (
-        <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left">
-            <CardHeader className='bg-primary/5 border-b'><CardTitle className="uppercase tracking-tighter">{title}</CardTitle><CardDescription className='font-bold text-foreground'>{description}</CardDescription></CardHeader>
-            <CardContent className="p-6">
-                <div className="space-y-4">
-                    {prompts.map((pText: string, i: number) => (
-                        <div key={i} className="space-y-2 text-foreground">
-                            <div className="flex justify-between items-center text-foreground">
-                                <Label className="text-xs font-black text-primary uppercase">{i + 1}. {pText}</Label>
-                                {isAdmin && (
-                                    <div className="flex gap-1 text-foreground">
-                                        <Button size="icon" variant="ghost" onClick={() => handleToggleGrade(i, 'correct')} className={cn("h-6 w-6 rounded-full", grades[i] === 'correct' ? "bg-green-500 text-white" : "bg-muted")}><Check className="h-3 w-3"/></Button>
-                                        <Button size="icon" variant="ghost" onClick={() => handleToggleGrade(i, 'incorrect')} className={cn("h-6 w-6 rounded-full", grades[i] === 'incorrect' ? "bg-red-500 text-white" : "bg-muted")}><X className="h-3 w-3"/></Button>
-                                    </div>
-                                )}
-                            </div>
-                            {isLarge ? (
-                                <textarea value={lines[i]} onChange={e => handleLineChange(i, e.target.value)} className={cn("w-full min-h-[150px] p-3 rounded-lg border text-lg bg-background text-foreground", grades[i] === 'correct' ? 'border-green-500 bg-green-50/10' : grades[i] === 'incorrect' ? 'border-red-500 bg-red-50/10' : '')} readOnly={isAdmin} />
-                            ) : (
-                                <Input value={lines[i]} onChange={e => handleLineChange(i, e.target.value)} className={cn("h-10 text-lg bg-background text-foreground", grades[i] === 'correct' ? 'border-green-500 bg-green-50/10' : grades[i] === 'incorrect' ? 'border-red-500 bg-red-50/10' : '')} readOnly={isAdmin} />
-                            )}
-                        </div>
-                    ))}
-                </div>
-            </CardContent>
-            <CardFooter className="justify-center border-t pt-6"><Button onClick={onComplete} size="lg" className="px-16 font-bold h-12 uppercase">Avanzar</Button></CardFooter>
-        </Card>
-    );
-};
-
 // --- MAIN CLASS COMPONENT ---
 
 export default function Class6Content({ overrideStudentId }: { overrideStudentId?: string | null }) {
@@ -328,6 +339,15 @@ export default function Class6Content({ overrideStudentId }: { overrideStudentId
         { key: 'exercise_3', name: '15. Exercise 3', icon: PenSquare, status: 'locked' },
         { key: 'final_exercise', name: '16. Final Exercise', icon: Trophy, status: 'locked' },
     ], []);
+
+    const handleTopicSelect = (topicKey: string) => {
+        const topic = learningPath.find(t => t.key === topicKey);
+        if (!isAdmin && topic?.status === 'locked') { 
+            toast({ variant: "destructive", title: "Contenido Bloqueado" }); 
+            return; 
+        }
+        setSelectedTopic(topicKey);
+    };
 
     useEffect(() => {
         if (isProfileLoading || isUserLoading || !studentProfile || hasInitialized.current) return;
@@ -387,50 +407,8 @@ export default function Class6Content({ overrideStudentId }: { overrideStudentId
         setTopicToComplete(null);
     }, [topicToComplete, toast]);
 
-    const handleTopicSelect = (topicKey: string) => {
-        const topic = learningPath.find(t => t.key === topicKey);
-        if (!isAdmin && topic?.status === 'locked') { 
-            toast({ variant: "destructive", title: "Contenido Bloqueado" }); 
-            return; 
-        }
-        setSelectedTopic(topicKey);
-    };
-
     const handleTopicComplete = (completedKey: string) => {
         setTopicToComplete(completedKey);
-    };
-
-    const handleVocabGridCheck = () => {
-        let allOk = true;
-        const nv: any = {};
-        irregularVerbsData.forEach((v, i) => {
-            const u = vocabGridAnswers[i] || {};
-            const pOk = u.pres?.trim().toUpperCase() === v.present;
-            const paOk = u.past?.trim().toUpperCase() === v.past;
-            const prOk = u.part?.trim().toUpperCase() === v.participle;
-            nv[i] = { pres: pOk ? 'correct' : 'incorrect', past: paOk ? 'correct' : 'incorrect', part: prOk ? 'correct' : 'incorrect' };
-            if (!pOk || !paOk || !prOk) allOk = false;
-        });
-        setVocabGridValidation(nv);
-        if (allOk) toast({ title: "¡Excelente!", description: "Has dominado el vocabulario." });
-        else toast({ variant: 'destructive', title: "Revisa la tabla" });
-    };
-
-    const handleCompleteVerbsCheck = () => {
-        let allOk = true;
-        const nv: any = {};
-        const slice = irregularVerbsData.slice(10, 20);
-        slice.forEach((v, i) => {
-            const u = completeVerbsAnswers[i] || {};
-            const pOk = u.pres?.trim().toUpperCase() === v.present;
-            const paOk = u.past?.trim().toUpperCase() === v.past;
-            const prOk = u.part?.trim().toUpperCase() === v.participle;
-            nv[i] = { pres: pOk ? 'correct' : 'incorrect', past: paOk ? 'correct' : 'incorrect', part: prOk ? 'correct' : 'incorrect' };
-            if (!pOk || !paOk || !prOk) allOk = false;
-        });
-        setCompleteVerbsValidation(nv);
-        if (allOk) { toast({ title: "¡Tabla completada!" }); handleTopicComplete('complete_verbs'); }
-        else toast({ variant: 'destructive', title: "Aún hay errores en la tabla." });
     };
 
     const isVocabGridComplete = useMemo(() => {
@@ -442,9 +420,18 @@ export default function Class6Content({ overrideStudentId }: { overrideStudentId
         );
     }, [vocabGridValidation]);
 
+    const completeVerbsSlice = irregularVerbsData.slice(10, 20);
+    const isCompleteVerbsTableCorrect = useMemo(() => {
+        if (completeVerbsSlice.length === 0) return false;
+        return completeVerbsSlice.every((_, i) => 
+            completeVerbsValidation[i]?.pres === 'correct' && 
+            completeVerbsValidation[i]?.past === 'correct' && 
+            completeVerbsValidation[i]?.part === 'correct'
+        );
+    }, [completeVerbsValidation, completeVerbsSlice.length]);
+
     const renderContent = () => {
-        const topic = learningPath.find(t => t.key === selectedTopic);
-        if (!topic) return null;
+        if (isInitialLoading) return <div className="flex justify-center items-center h-64"><Loader2 className="animate-spin text-primary" /></div>;
 
         switch (selectedTopic) {
             case 'vocabulary_irregular':
@@ -467,18 +454,29 @@ export default function Class6Content({ overrideStudentId }: { overrideStudentId
                             </Table>
                         </ScrollArea></CardContent>
                         <CardFooter className="justify-between border-t pt-6">
-                            <Button onClick={handleVocabGridCheck} variant="secondary">Verificar</Button>
+                            <Button onClick={() => {
+                                let allOk = true; const nv: any = {};
+                                irregularVerbsData.forEach((v, i) => {
+                                    const u = vocabGridAnswers[i] || {};
+                                    const pOk = u.pres?.trim().toUpperCase() === v.present;
+                                    const paOk = u.past?.trim().toUpperCase() === v.past;
+                                    const prOk = u.part?.trim().toUpperCase() === v.participle;
+                                    nv[i] = { pres: pOk ? 'correct' : 'incorrect', past: paOk ? 'correct' : 'incorrect', part: prOk ? 'correct' : 'incorrect' };
+                                    if (!pOk || !paOk || !prOk) allOk = false;
+                                });
+                                setVocabGridValidation(nv);
+                            }} variant="secondary">Verificar</Button>
                             <Button onClick={() => handleTopicComplete('vocabulary_irregular')} disabled={!isVocabGridComplete && !isAdmin} className='text-white font-bold px-10'>Continuar <ArrowRight className="ml-2 h-4 w-4" /></Button>
                         </CardFooter>
                     </Card>
                 );
             case 'grammar_did':
                 return (
-                    <Card className="shadow-soft border-2 border-brand-purple bg-slate-100/50 dark:bg-slate-800/30 backdrop-blur-sm p-6 text-left">
+                    <Card className="shadow-soft border-2 border-brand-purple bg-slate-100/50 dark:bg-slate-800/30 backdrop-blur-sm p-6 text-left text-foreground">
                         <CardHeader><CardTitle className="text-3xl font-black text-primary uppercase">GRAMMAR: DID</CardTitle></CardHeader>
                         <CardContent className="space-y-6 font-bold text-foreground">
                             <div className="p-6 bg-white/40 dark:bg-black/20 rounded-2xl border-2 border-dashed border-primary/20">
-                                <p className="mb-4">Usamos <span className="text-primary">DID</span> como auxiliar para hablar de acciones terminadas en el pasado. Es el pasado del auxiliar DO/DOES.</p>
+                                <p className="mb-4">Usamos <span className="text-primary">DID</span> como auxiliar para hablar de acciones terminadas en el pasado.</p>
                                 <div className="grid gap-3 font-mono text-base bg-muted/50 p-4 rounded-xl">
                                     <p><span className="text-green-500">(+)</span> Pronoun + Verb(Past) + Complement</p>
                                     <p><span className="text-red-500">(-)</span> Pronoun + DID NOT (DIDN'T) + Verb(Present) + Complement</p>
@@ -505,12 +503,12 @@ export default function Class6Content({ overrideStudentId }: { overrideStudentId
                                 <div className="p-6 bg-white/40 rounded-2xl border-2 border-dashed border-primary/20">
                                     <h4 className="text-xl text-primary uppercase mb-3">Regular Verbs</h4>
                                     <p className="mb-4">Siguen una regla fija: simplemente añadimos <span className="underline">ED</span> al final.</p>
-                                    <p className="font-mono text-sm bg-muted p-2 rounded">Walk &rarr; Walked<br/>Study &rarr; Studied<br/>Play &rarr; Played</p>
+                                    <p className="font-mono text-sm bg-muted p-2 rounded text-foreground">Walk &rarr; Walked<br/>Study &rarr; Studied<br/>Play &rarr; Played</p>
                                 </div>
                                 <div className="p-6 bg-white/40 rounded-2xl border-2 border-dashed border-brand-purple/20">
                                     <h4 className="text-xl text-brand-purple uppercase mb-3">Irregular Verbs</h4>
                                     <p className="mb-4">No tienen regla. Cambian completamente de forma o se quedan igual.</p>
-                                    <p className="font-mono text-sm bg-muted p-2 rounded">Go &rarr; Went<br/>Eat &rarr; Ate<br/>Write &rarr; Wrote</p>
+                                    <p className="font-mono text-sm bg-muted p-2 rounded text-foreground">Go &rarr; Went<br/>Eat &rarr; Ate<br/>Write &rarr; Wrote</p>
                                 </div>
                             </div>
                         </CardContent>
@@ -565,7 +563,6 @@ export default function Class6Content({ overrideStudentId }: { overrideStudentId
                 );
             case 'exercise_2': return <BallsExerciseTranslation title="Exercise 2: 4 Forms" prompts={ex2TriplePrompts} onComplete={() => handleTopicComplete('exercise_2')} vocabulary={genericVocab} type="quad" />;
             case 'complete_verbs': 
-                const slice = irregularVerbsData.slice(10, 20);
                 return (
                     <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left">
                         <CardHeader><CardTitle>COMPLETE VERBS TABLE</CardTitle><CardDescription>Completa el Presente, Pasado y Participio de estos 10 verbos.</CardDescription></CardHeader>
@@ -573,7 +570,7 @@ export default function Class6Content({ overrideStudentId }: { overrideStudentId
                             <Table>
                                 <TableHeader className="bg-muted/50"><TableRow><TableHead>Spanish</TableHead><TableHead>Present</TableHead><TableHead>Past</TableHead><TableHead>Participle</TableHead></TableRow></TableHeader>
                                 <TableBody>
-                                    {slice.map((v, i) => (
+                                    {completeVerbsSlice.map((v, i) => (
                                         <TableRow key={i}>
                                             <TableCell className="text-foreground font-bold">{v.es}</TableCell>
                                             <TableCell><Input value={completeVerbsAnswers[i]?.pres || ''} onChange={e => { setCompleteVerbsAnswers({...completeVerbsAnswers, [i]: {...(completeVerbsAnswers[i] || {}), pres: e.target.value}}); setCompleteVerbsValidation({...completeVerbsValidation, [i]: {...(completeVerbsValidation[i] || {}), pres: 'unchecked'}}); }} className={cn("h-8 text-xs uppercase", completeVerbsValidation[i]?.pres === 'correct' ? 'border-green-500 bg-green-50/10' : completeVerbsValidation[i]?.pres === 'incorrect' ? 'border-red-500 bg-red-50/10' : '')} /></TableCell>
@@ -584,7 +581,21 @@ export default function Class6Content({ overrideStudentId }: { overrideStudentId
                                 </TableBody>
                             </Table>
                         </ScrollArea></CardContent>
-                        <CardFooter className="justify-center border-t pt-6"><Button onClick={handleCompleteVerbsCheck} size="lg" className="px-16 font-bold">Verificar Tabla</Button></CardFooter>
+                        <CardFooter className="justify-between border-t pt-6">
+                            <Button onClick={() => {
+                                let allOk = true; const nv: any = {};
+                                completeVerbsSlice.forEach((v, i) => {
+                                    const u = completeVerbsAnswers[i] || {};
+                                    const pOk = u.pres?.trim().toUpperCase() === v.present;
+                                    const paOk = u.past?.trim().toUpperCase() === v.past;
+                                    const prOk = u.part?.trim().toUpperCase() === v.participle;
+                                    nv[i] = { pres: pOk ? 'correct' : 'incorrect', past: paOk ? 'correct' : 'incorrect', part: prOk ? 'correct' : 'incorrect' };
+                                    if (!pOk || !paOk || !prOk) allOk = false;
+                                });
+                                setCompleteVerbsValidation(nv);
+                            }} variant="secondary">Verificar Tabla</Button>
+                            <Button onClick={() => handleTopicComplete('complete_verbs')} disabled={!isCompleteVerbsTableCorrect && !isAdmin} className='text-white font-bold px-10'>Avanzar <ArrowRight className="ml-2 h-4 w-4" /></Button>
+                        </CardFooter>
                     </Card>
                 );
             case 'reading':
