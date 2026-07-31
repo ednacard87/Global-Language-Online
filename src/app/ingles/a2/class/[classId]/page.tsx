@@ -63,15 +63,11 @@ function A2ClassPageContent() {
         return null;
     }
 
-    // Si es la Clase 1, renderizamos el componente completo (que ya incluye el fondo y header)
-    if (classId === '1') {
-        return <Class1Content overrideStudentId={targetStudentId} />;
-    }
-
     const isAdmin = profile?.role === 'admin' || user.email === 'ednacard87@gmail.com';
 
     const renderClassContent = () => {
         switch (classId) {
+            case '1': return <Class1Content overrideStudentId={targetStudentId} />;
             case '2': return <Class2Content overrideStudentId={targetStudentId} />;
             case '3': return <Class3Content overrideStudentId={targetStudentId} />;
             case '4': return <Class4Content overrideStudentId={targetStudentId} />;
@@ -115,7 +111,7 @@ function A2ClassPageContent() {
                                 <Star className="h-6 w-6 fill-current animate-pulse" />
                                 <p className="font-black uppercase tracking-tighter text-sm">Modo Supervisión: {targetStudentId}</p>
                             </div>
-                            <Button variant="outline" size="sm" onClick={() => router.push('/admin')} className="border-yellow-600 text-yellow-700 hover:bg-yellow-500/10">
+                            <Button variant="outline" size="sm" onClick={() => router.push('/admin')} className="border-yellow-600 text-yellow-700 hover:bg-yellow-500/10 transition-colors">
                                 Volver al Panel
                             </Button>
                         </div>
