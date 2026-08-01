@@ -37,6 +37,14 @@ import {
     ListChecks,
     Activity
 } from 'lucide-react';
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table";
 import { useToast } from '@/hooks/use-toast';
 import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
 import { doc } from 'firebase/firestore';
@@ -45,27 +53,13 @@ import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Separator } from '@/components/ui/separator';
-import { 
-    Table, 
-    TableBody, 
-    TableCell, 
-    TableHead, 
-    TableHeader, 
-    TableRow 
-} from "@/components/ui/table";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { VocabularyMatchingGame } from '@/components/dashboard/vocabulary-matching-game';
 import { SentenceCompletionExercise, type CompletionPrompt } from '@/components/kids/exercises/sentence-completion-exercise';
 
 // --- CONFIGURACIÓN DE INGENIERÍA ---
-const progressStorageVersion = 'progress_a2_eng_u2_c7_v15_validation_fix';
+const progressStorageVersion = 'progress_a2_eng_u2_c7_v19_import_fix';
 const mainProgressKey = 'progress_a2_eng_unit_2_class_7';
-
-interface Topic {
-  key: string;
-  name: string;
-  icon: React.ElementType;
-  status: 'completed' | 'active' | 'locked';
-}
 
 const ICONS_CONFIG = {
     locked: Lock,
@@ -91,7 +85,7 @@ const ex1Prompts = [
             neg: ["i was not at home on saturday when he called me", "i wasn't at home on saturday when he called me"],
             int: ["was i at home on saturday when he called me?", "were you at home on saturday when he called you?"],
             saPos: ["yes, i was", "yes, you were"],
-            saNeg: ["no, i was not", "no, i wasn't", "no, you were not", "no, you weren't"]
+            saNeg: ["no, i was not", "no, i'm not", "no, you were not", "no, you weren't"]
         }
     },
     { 
@@ -162,15 +156,15 @@ const ManualGradingExercise = ({ title, description, onComplete, studentDocRef, 
 
     const handleToggleGrade = (idx: number, type: 'correct' | 'incorrect') => {
         if (!isAdmin) return;
-        const newGrades = { ...grades };
-        newGrades[idx] = newGrades[idx] === type ? null : type;
+        const newGrades = { ...grades }; 
+        newGrades[idx] = newGrades[idx] === type ? null : type; 
         setGrades(newGrades);
         if (studentDocRef) updateDocumentNonBlocking(studentDocRef, { [`lessonProgress.${progressStorageVersion}.${storageKeyGrades}`]: newGrades });
     };
 
     return (
         <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground">
-            <CardHeader className='bg-primary/5 border-b'><CardTitle className="uppercase tracking-tighter">{title}</CardTitle><CardDescription className='font-bold text-foreground'>{description}</CardDescription></CardHeader>
+            <CardHeader className='bg-primary/5 border-b'><CardTitle className="uppercase tracking-tighter">{title}</CardTitle><CardDescription className='font-bold text-foreground text-left'>{description}</CardDescription></CardHeader>
             <CardContent className="p-6">
                 <ScrollArea className="h-[600px] pr-4">
                     <div className="space-y-4">
@@ -181,7 +175,7 @@ const ManualGradingExercise = ({ title, description, onComplete, studentDocRef, 
                                 )}
                                 <div className="flex items-center gap-3">
                                     <span className="font-bold w-10 text-right text-muted-foreground">{i === 0 ? 'T' : i}.</span>
-                                    <Input value={line} onChange={e => handleLineChange(i, e.target.value)} className={cn("flex-1 h-10 transition-all font-medium text-foreground", grades[i] === 'correct' ? 'border-green-500 bg-green-500/10 shadow-[0_0_10px_rgba(34,197,94,0.2)]' : grades[i] === 'incorrect' ? 'border-red-500 bg-red-500/10 shadow-[0_0_10px_rgba(239,68,68,0.2)]' : '')} readOnly={isSupervisionMode} />
+                                    <Input value={line} onChange={e => handleLineChange(i, e.target.value)} className={cn("flex-1 h-10 transition-all font-medium text-foreground", grades[i] === 'correct' ? 'border-green-500 bg-green-500/10 shadow-[0_0_10px_rgba(34,197,94,0.2)]' : grades[i] === 'incorrect' ? 'border-red-500 bg-red-50/10 shadow-[0_0_10px_rgba(239,68,68,0.2)]' : '')} readOnly={isSupervisionMode} />
                                     <div className="flex gap-1 shrink-0">
                                         <Button size="icon" variant="ghost" onClick={() => handleToggleGrade(i, 'correct')} className={cn("h-8 w-8 rounded-full transition-colors", grades[i] === 'correct' ? "bg-green-500 text-white" : "bg-muted opacity-50")} disabled={!isAdmin}><Check className="h-4 w-4"/></Button>
                                         <Button size="icon" variant="ghost" onClick={() => handleToggleGrade(i, 'incorrect')} className={cn("h-8 w-8 rounded-full transition-colors", grades[i] === 'incorrect' ? "bg-red-500 text-white" : "bg-muted opacity-50")} disabled={!isAdmin}><X className="h-4 w-4"/></Button>
@@ -243,8 +237,10 @@ const TripleTranslationExercise = ({ title, prompts, onComplete, vocabulary }: a
                                 </Button>
                             </PopoverTrigger>
                             <PopoverContent className="w-64">
-                                <ScrollArea className="h-48 pr-4">
-                                    <div className="grid grid-cols-2 gap-2 text-sm text-left">{Object.entries(vocabulary).map(([es, en]: any) => (<Fragment key={es}><span className="text-muted-foreground capitalize">{es}:</span><span className="font-semibold text-right">{en}</span></Fragment>))}</div>
+                                <ScrollArea className="h-48 pr-4 text-left">
+                                    <div className="grid grid-cols-2 gap-2 text-sm">
+                                        {Object.entries(vocabulary).map(([es, en]: any) => (<Fragment key={es}><span className="text-muted-foreground capitalize">{es}:</span><span className="font-semibold text-right">{en}</span></Fragment>))}
+                                    </div>
                                 </ScrollArea>
                             </PopoverContent>
                         </Popover>
@@ -299,8 +295,8 @@ const ShortAnswersExerciseInternal = ({ title, prompts, onComplete, vocabulary }
     return (
         <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground">
             <CardHeader>
-                <div className="flex justify-between items-start">
-                    <div className="w-full text-left">
+                <div className="flex justify-between items-start text-left">
+                    <div className="w-full">
                         <CardTitle className="uppercase tracking-tight">{title}</CardTitle>
                         <div className="flex gap-2 justify-start flex-wrap pt-4">
                             {prompts.map((_: any, i: number) => (
@@ -368,7 +364,7 @@ const BallsExercise = ({ title, prompts, onComplete, vocabulary }: any) => {
                         <CardDescription className='font-bold text-foreground mt-1'>Traduce la frase correctamente.</CardDescription>
                         <div className="flex gap-2 justify-start flex-wrap pt-4">
                             {prompts.map((_: any, i: number) => (
-                                <div key={i} onClick={() => setCurrentIndex(i)} className={cn("h-8 w-8 rounded-full border-2 flex items-center justify-center text-sm font-bold cursor-pointer transition-all", currentIndex === i ? "border-primary ring-2 ring-primary" : "border-muted", status[i] === 'correct' ? "bg-green-500 text-white border-green-500" : status[i] === 'incorrect' ? "bg-red-500 text-white border-red-500" : "bg-card text-foreground")}>{i + 1}</div>
+                                <div key={i} onClick={() => setCurrentIndex(i)} className={cn("h-8 w-8 rounded-full border-2 flex items-center justify-center text-sm font-bold cursor-pointer transition-all", currentIndex === i ? "border-primary ring-2 ring-primary" : "border-muted", status[i] === 'correct' ? "bg-green-500 text-white border-green-500" : status[i] === 'incorrect' ? "bg-red-500 text-white border-red-500" : "bg-card")}>{i + 1}</div>
                             ))}
                         </div>
                     </div>
@@ -419,7 +415,7 @@ export default function Class7Content({ overrideStudentId }: { overrideStudentId
     const currentUID = targetStudentId || user?.uid;
 
     const [isInitialLoading, setIsInitialLoading] = useState(true);
-    const [learningPath, setLearningPath] = useState<Topic[]>([]);
+    const [learningPath, setLearningPath] = useState<any[]>([]);
     const [selectedTopic, setSelectedTopic] = useState<string>('');
     const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
     const [initialLoadComplete, setInitialLoadComplete] = useState(false);
@@ -471,7 +467,7 @@ export default function Class7Content({ overrideStudentId }: { overrideStudentId
             let last = true;
             for (let i = 0; i < path.length; i++) { if (last && path[i].status === 'locked') path[i].status = 'active'; last = path[i].status === 'completed'; }
         }
-        setLearningPath(path as any); setSelectedTopic(d.lastSelectedTopic || path.find(it => it.status === 'active')?.key || path[0].key);
+        setLearningPath(path); setSelectedTopic(d.lastSelectedTopic || path.find(it => it.status === 'active')?.key || path[0].key);
         if (d.vocabAnswers) setVocabAnswers(d.vocabAnswers);
         if (d.qDictAns) setQDictAns(d.qDictAns);
         setInitialLoadComplete(true);
@@ -555,7 +551,7 @@ export default function Class7Content({ overrideStudentId }: { overrideStudentId
                     <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left">
                         <CardHeader><CardTitle className="uppercase tracking-tight">VOCABULARY: THE HOUSE</CardTitle></CardHeader>
                         <CardContent>
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-2 gap-4 text-foreground">
                                 <div className="font-black text-primary border-b pb-2 uppercase text-xs">Español</div><div className="font-black text-primary border-b pb-2 uppercase text-xs">Inglés</div>
                                 {houseVocab.map((v, i) => (
                                     <Fragment key={i}>
@@ -588,7 +584,7 @@ export default function Class7Content({ overrideStudentId }: { overrideStudentId
                         <CardContent className="space-y-8 px-0 font-bold">
                             <div className="p-6 bg-white/60 dark:bg-background/20 rounded-[2rem] border shadow-sm">
                                 <h3 className="text-xl font-black text-primary uppercase mb-4">WAS // WERE</h3>
-                                <p className="mb-4">El verbo "To be" en pasado significa "era/estaba" o "fui/estuve". No usa auxiliares como DID.</p>
+                                <p className="mb-4 text-foreground">El verbo "To be" en pasado significa "era/estaba" o "fui/estuve". No usa auxiliares como DID.</p>
                                 <Table>
                                     <TableBody>
                                         <TableRow><TableCell className='font-black text-primary'>I - HE - SHE - IT</TableCell><TableCell className='font-bold text-lg'>WAS</TableCell><TableCell className='text-muted-foreground italic text-xs'>(Yo era/estaba...)</TableCell></TableRow>
@@ -618,14 +614,14 @@ export default function Class7Content({ overrideStudentId }: { overrideStudentId
                 return (
                     <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left">
                         <CardHeader><CardTitle className="uppercase">Questions Dictation 1</CardTitle></CardHeader>
-                        <CardContent className="space-y-6">
+                        <CardContent className="space-y-6 text-foreground">
                             {["WHICH PERSON LEARNED A LOT ON VACATION?", "WHO HAD A VACATION THAT WAS FULL OF ADVENTURE?", "WHO HAD A VERY RELAXING VACATION?", "WHICH VACATION SOUNDS THE MOST INTERESTING TO YOU?"].map((q, i) => (
                                 <div key={i} className="space-y-2"><Label className="font-bold text-primary">{i + 1}. {q}</Label><Input value={qDictAns[i] || ''} onChange={e => { if (overrideStudentId) return; const na = [...qDictAns]; na[i] = e.target.value; setQDictAns(na); }} readOnly={!!overrideStudentId} autoComplete="off" /></div>
                             ))}
                             <Separator />
                             <div className='p-4 bg-muted rounded-xl space-y-4'>
                                 <p className='font-bold text-xs uppercase'>READ THE POSTCARDS. THEN WRITE THE NUMBER OF THE POSTCARD WHERE EACH SENTENCE COULD GO:</p>
-                                {[ "I LOST FIVE POUNDS AND FEEL TERRIFIC!", "THIS WAS KIND OF DANGEROUS BUT WE GOT THERE SAFELY!", "IT’S A TINY ISLAND ABOUT 2300 MILES WEST OF SANTIAGO, CHILE." ].map((s, i) => (
+                                {[ "I LOST FIVE POUNDS AND FEEL TERRIFIC!", "THIS WAS KIND OF DANGEROUS BUT WE GOT THERE SAFELY!", "IT’S A TINY ISLAND ABOUT 2300 MILES WEST OF SANTISantiago, CHILE." ].map((s, i) => (
                                     <div key={i} className='flex items-center gap-4'><Input className='w-12 h-8 text-center font-bold text-foreground' maxLength={1} placeholder='#'/><span className='text-sm italic'>{s}</span></div>
                                 ))}
                             </div>
@@ -661,7 +657,7 @@ export default function Class7Content({ overrideStudentId }: { overrideStudentId
                                 <div><h4 className='text-xl text-brand-purple uppercase'>LEND</h4><p className='text-lg'>"LEND" MEANS TO GIVE SOMETHING TO ANOTHER PERSON EXPECTING TO GET IT BACK.</p></div>
                             </div>
                         </CardContent>
-                        <CardFooter className="justify-center pt-6 border-t"><Button onClick={() => handleTopicComplete('borrow_lend')} size="lg" className="px-24 font-black h-14 uppercase shadow-xl">Entendido</Button></CardFooter>
+                        <CardFooter className="justify-center border-t pt-6"><Button onClick={() => handleTopicComplete('borrow_lend')} size="lg" className="px-24 font-black h-14 uppercase shadow-xl">Entendido</Button></CardFooter>
                     </Card>
                 );
             case 'reading':
@@ -680,7 +676,7 @@ export default function Class7Content({ overrideStudentId }: { overrideStudentId
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 text-foreground text-left">
                         <CardHeader><CardTitle>{readingData.title}</CardTitle></CardHeader>
                         <CardContent className="p-6 space-y-6">
-                            <div className="p-6 bg-muted rounded-2xl border italic text-lg leading-relaxed shadow-inner">{readingData.text}</div>
+                            <div className="p-6 bg-muted rounded-2xl border italic text-lg leading-relaxed shadow-inner">{readingData.content}</div>
                             <Separator /><div className="space-y-4">{readingData.questions.map(q => (
                                 <div key={q.id} className="space-y-2"><Label className='font-bold'>{q.q}</Label>
                                 <Input value={readAns[q.id] || ''} onChange={e => { if (overrideStudentId) return; setReadAns({...readAns, [q.id]: e.target.value}); setReadVal({...readVal, [q.id]: 'unchecked'}); }} readOnly={!!overrideStudentId} className={cn('mt-1 text-lg h-12 text-foreground', readVal[q.id] === 'correct' ? 'border-green-500 bg-green-50/10' : readVal[q.id] === 'incorrect' ? 'border-destructive bg-destructive/5' : '')} autoComplete="off" /></div>
