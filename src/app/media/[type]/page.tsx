@@ -22,7 +22,7 @@ const mediaContent = {
   news: { 
     title: "News Update", 
     description: "Watch the latest news in English to stay informed and improve your vocabulary.",
-    url: "https://www.youtube.com/watch?v=MC6SS_D3psM",
+    url: "https://www.youtube.com/embed/MC6SS_D3psM",
     icon: Newspaper,
     progressKey: 'progress_quick_news'
   },
@@ -36,7 +36,7 @@ const mediaContent = {
   music: { 
     title: "Music Experience", 
     description: "Music is a great way to learn rhythm and common expressions.",
-    url: "https://www.youtube.com/watch?v=kvi7rZtrQ9I",
+    url: "https://www.youtube.com/embed/XtxYy_CekB8",
     icon: Music,
     progressKey: 'progress_quick_music'
   },
@@ -50,7 +50,7 @@ const mediaContent = {
   movie: { 
     title: "Movie Time", 
     description: "Watch this movie segment to improve your immersion and listening comprehension.",
-    url: "https://www.youtube.com/watch?v=rmj9QKlHzfY",
+    url: "https://www.youtube.com/embed/4Y41-5hTrNI",
     icon: Tv,
     progressKey: 'progress_quick_movie'
   },
@@ -183,7 +183,7 @@ export default function MediaViewerPage() {
                                 Una vez que hayas terminado, haz clic en el botón para marcar como completado y volver.
                             </p>
                             <Button onClick={handleComplete} disabled={isCompleting} className="w-full sm:w-auto">
-                                {isCompleting ? "Guardando..." : "Marcar como Completado"}
+                                {isCompleting ? <Loader2 className="animate-spin" /> : "Marcar como Completado"}
                                 <CheckCircle className="ml-2 h-4 w-4" />
                             </Button>
                         </CardFooter>
