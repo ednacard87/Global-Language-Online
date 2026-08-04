@@ -498,19 +498,22 @@ function ReflexivosPasadoContent() {
                                     </div>
                                     <Separator />
                                     <div className="mt-6 space-y-4">
-                                        <h4 className="text-primary font-black uppercase text-sm">1. Verbos Regulares:</h4>
-                                        <p>Mantienen su raíz y usan las terminaciones estándar del pasado (-ar: é, aste, ó, amos, aron | -er/ir: í, iste, ió...).</p>
+                                        <h3 className="text-primary font-black uppercase text-sm">1. Verbos Regulares:</h3>
+                                        <p>Mantienen su raíz y usan las terminaciones estándar del pasado.</p>
                                         <p>Verbos Terminan en AR =  ( é, aste, ó, amos, aron).</p>
                                         <p>Verbos Terminan en ER/IR = (í, iste, ió, imos, ieron).</p>
-                                        <div className="p-3 bg-muted rounded-md italic">Ej: Yo me bañé / Nosotros nos lavamos.</div>
+                                        <div className="p-3 bg-muted rounded-md italic">Ej: Yo me bañé anoche.</div>
                                     </div>
                                     <div className="mt-4 space-y-4">
-                                        <h4 className="text-brand-purple font-black uppercase text-sm">2. Verbos Irregulares:</h4>
+                                        <h3 className="text-brand-purple font-black uppercase text-sm">2. Verbos Irregulares:</h3>
                                          <p>Tienen cambios en la raíz.</p>
-                                         <p>(ej: dormirse {'->'} se durmió) o cambios ortográficos.</p>
-                                         <p> (ej: caerse {'->'} se cayó en 3ª persona // Ellos se cayeron).</p>
-                                         <p> (ej: Irse {'->'} fui, fuiste, fue, fuimos, fueron).</p>
-                                        <div className="p-3 bg-muted rounded-md italic">Ej: Ella se durmió / El se cayó.</div>
+                                         <p>  dormirse {'->'} dormi, dormiste, durmio, dormimos, durmieron</p>
+                                         <p>  caerse {'->'} cai, caiste, cayó, caímos, cayeron.</p>
+                                         <p>  irse {'->'} fui, fuiste, fue, fuimos, fueron.</p>
+                                         <p>  ponerse {'->'} puse, pusiste, puso, pusimos, pusieron.</p>
+                                         <p>  sentirse {'->'} senti, sentiste, sintió, sentimos, sintieron.</p>
+                                         <p>  vestirse {'->'} vesti, vestiste, vistió, vestimos, vistieron.</p>
+                                        <div className="p-3 bg-muted rounded-md italic">Ej: Ella se durmió a las 11 de la noche.</div>
                                     </div>
                                 </div>
                             </CardContent>
