@@ -49,7 +49,7 @@ const classCounts: Record<string, number> = { a1: 16, a2: 20, b1: 20, b2: 20 };
 // Mapeo de slugs para cursos no numéricos
 const courseSlugs: Record<string, string[]> = {
   'es-a1': ['articulos-y-genero', 'posesivos-y-tener', 'ser', 'estar', 'ser-y-estar', 'preposiciones-de-lugar', 'ubicacion', 'preguntas', 'comida-y-restaurante', 'presente-simple-regulares', 'comparativos-y-superlativos', 'demostrativos', 'verbos-de-preferencia', 'presente-continuo', 'presente-simple-irregulares'],
-  'es-a2': ['reflexivos-regulares', 'reflexivos-irregulares', 'reflexivos-mix', 'pasado-regulares', 'pasado-irregulares', 'reflexivos-pasado', 'imperfecto', 'pasado-vs-imperfecto', 'preterito-perfecto'],
+  'es-a2': ['reflexivos-regulares', 'reflexivos-irregulares', 'reflexivos-mix', 'pasado-regulares', 'pasado-irregulares', 'reflexivos-pasado', 'imperfecto', 'pasado-vs-imperfecto', 'pasado-continuo', 'obligacion', 'perifrases-verbales', 'comparativos-avanzados', 'imperativo-afirmativo', 'preterito-perfecto', 'pronombres-1'],
   'es-b1': ['pronombres', 'doble-pronombre', 'por-para', 'futuro', 'imperativo', 'presente-subjuntivo'],
   'kids-a1': ['to-be', 'present-simple', 'can', 'genitivo-sajon', 'wh-questions', 'posesivos', 'verbos-preferencia', 'demostrativos', 'one-ones', 'present-continuous', 'pronombres-objeto', 'comparativos-y-superlativos', 'adverbios-de-frecuencia'],
   'kids-a2': ['at-on-in-1', 'at-on-in-2', 'pasado-simple', 'pasado-continuo', 'contables-y-no-contables', 'presente-perfecto', 'used-to'],

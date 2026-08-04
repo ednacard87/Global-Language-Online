@@ -527,7 +527,13 @@ export const getA2EspanolPath = (t: (key: string) => string): PathItem[] => [
     { type: 'class', icon: BookOpen, label: 'reflexivos pasado', href: '/espanol/a2/reflexivos-pasado', storageKey: 'progress_a2_es_reflexivos_pasado' },
     { type: 'class', icon: BookOpen, label: 'imperfecto', href: '/espanol/a2/imperfecto', storageKey: 'progress_a2_es_imperfecto' },
     { type: 'class', icon: BookOpen, label: 'Pasado simple vs imperfecto', href: '/espanol/a2/pasado-vs-imperfecto', storageKey: 'progress_a2_es_pasado_vs_imperfecto' },
-    { type: 'class', icon: BookOpen, label: 'preterito perfecto', href: '/espanol/a2/preterito-perfecto', storageKey: 'progress_a2_es_preterito_perfecto' },
+    { type: 'class', icon: BookOpen, label: 'Pasado continuo', href: '/espanol/a2/pasado-continuo', storageKey: 'progress_a2_es_pasado_continuo' },
+    { type: 'class', icon: BookOpen, label: 'Obligación', href: '/espanol/a2/obligacion', storageKey: 'progress_a2_es_obligacion' },
+    { type: 'class', icon: BookOpen, label: 'Perifrases verbales', href: '/espanol/a2/perifrases-verbales', storageKey: 'progress_a2_es_perifrases_verbales' },
+    { type: 'class', icon: BookOpen, label: 'Comparativos Avanzados', href: '/espanol/a2/comparativos-avanzados', storageKey: 'progress_a2_es_comparativos_avanzados' },
+    { type: 'class', icon: BookOpen, label: 'Imperativo Afirmativo', href: '/espanol/a2/imperativo-afirmativo', storageKey: 'progress_a2_es_imperativo_afirmativo' },
+    { type: 'class', icon: BookOpen, label: 'Preterito perfecto', href: '/espanol/a2/preterito-perfecto', storageKey: 'progress_a2_es_preterito_perfecto' },
+    { type: 'class', icon: BookOpen, label: 'Pronombres 1 O.D / O.I', href: '/espanol/a2/pronombres-1', storageKey: 'progress_a2_es_pronombres_1' },
     { type: 'end', icon: Flag, label: 'dashboard.finish' },
 ];
 
@@ -721,7 +727,13 @@ export const getA2SpanishClasses = () => [
     { id: 'es-a2-reflexivos-pasado', name: 'reflexivos pasado' },
     { id: 'es-a2-imperfecto', name: 'imperfecto' },
     { id: 'es-a2-pasado-vs-imperfecto', name: 'Pasado simple vs imperfecto' },
+    { id: 'es-a2-pasado-continuo', name: 'Pasado continuo' },
+    { id: 'es-a2-obligacion', name: 'Obligación' },
+    { id: 'es-a2-perifrases-verbales', name: 'Perifrases verbales' },
+    { id: 'es-a2-comparativos-avanzados', name: 'Comparativos Avanzados' },
+    { id: 'es-a2-imperativo-afirmativo', name: 'Imperativo Afirmativo' },
     { id: 'es-a2-preterito-perfecto', name: 'preterito perfecto' },
+    { id: 'es-a2-pronombres-1', name: 'Pronombres 1 O.D / O.I' },
 ];
 
 export const getB1SpanishClasses = () => [
