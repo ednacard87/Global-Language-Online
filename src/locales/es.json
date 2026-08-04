@@ -100,12 +100,18 @@
   },
   "b1Espanol": {
     "title": "Curso B1 - Español",
-    "pronombres": "Pronombres",
+    "pronombres2": "Pronombres 2",
+    "pronombres3": "Pronombres 3",
     "doblePronombre": "Doble Pronombre",
     "porPara": "Por/Para",
     "futuro": "Futuro",
-    "imperativo": "Imperativo",
+    "imperativo2": "Imperativo 2",
+    "conectores": "Conectores",
+    "condicionalSimple": "Condicional Simple",
     "presenteSubjuntivo": "Presente Subjuntivo",
+    "subjuntivo2": "Subjuntivo 2",
+    "subjuntivo3": "Subjuntivo 3",
+    "vozPasiva": "Voz Pasiva Básica",
     "final": "Final"
   },
   "achievements": {

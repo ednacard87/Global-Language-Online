@@ -539,12 +539,18 @@ export const getA2EspanolPath = (t: (key: string) => string): PathItem[] => [
 
 export const getB1EspanolPath = (): PathItem[] => [
     { type: 'start', icon: Footprints, label: 'dashboard.start' },
-    { type: 'class', icon: BookOpen, label: 'b1Espanol.pronombres', href: '/espanol/b1/pronombres', storageKey: 'progress_b1_es_1' },
-    { type: 'class', icon: BookOpen, label: 'b1Espanol.doblePronombre', href: '/espanol/b1/doble-pronombre', storageKey: 'progress_b1_es_2' },
-    { type: 'class', icon: BookOpen, label: 'b1Espanol.porPara', href: '/espanol/b1/por-para', storageKey: 'progress_b1_es_3' },
-    { type: 'class', icon: BookOpen, label: 'b1Espanol.futuro', href: '/espanol/b1/futuro', storageKey: 'progress_b1_es_4' },
-    { type: 'class', icon: BookOpen, label: 'b1Espanol.imperativo', href: '/espanol/b1/imperativo', storageKey: 'progress_b1_es_imperativo' },
-    { type: 'class', icon: BookOpen, label: 'b1Espanol.presenteSubjuntivo', href: '/espanol/b1/presente-subjuntivo', storageKey: 'progress_b1_es_presente_subjuntivo' },
+    { type: 'class', icon: BookOpen, label: 'b1Espanol.pronombres2', href: '/espanol/b1/pronombres-2', storageKey: 'progress_b1_es_2' },
+    { type: 'class', icon: BookOpen, label: 'b1Espanol.pronombres3', href: '/espanol/b1/pronombres-3', storageKey: 'progress_b1_es_3' },
+    { type: 'class', icon: BookOpen, label: 'b1Espanol.doblePronombre', href: '/espanol/b1/doble-pronombre', storageKey: 'progress_b1_es_4' },
+    { type: 'class', icon: BookOpen, label: 'b1Espanol.porPara', href: '/espanol/b1/por-para', storageKey: 'progress_b1_es_5' },
+    { type: 'class', icon: BookOpen, label: 'b1Espanol.futuro', href: '/espanol/b1/futuro', storageKey: 'progress_b1_es_6' },
+    { type: 'class', icon: BookOpen, label: 'b1Espanol.imperativo2', href: '/espanol/b1/imperativo-2', storageKey: 'progress_b1_es_7' },
+    { type: 'class', icon: BookOpen, label: 'b1Espanol.conectores', href: '/espanol/b1/conectores', storageKey: 'progress_b1_es_8' },
+    { type: 'class', icon: BookOpen, label: 'b1Espanol.condicionalSimple', href: '/espanol/b1/condicional-simple', storageKey: 'progress_b1_es_9' },
+    { type: 'class', icon: BookOpen, label: 'b1Espanol.presenteSubjuntivo', href: '/espanol/b1/presente-subjuntivo', storageKey: 'progress_b1_es_10' },
+    { type: 'class', icon: BookOpen, label: 'b1Espanol.subjuntivo2', href: '/espanol/b1/subjuntivo-2', storageKey: 'progress_b1_es_11' },
+    { type: 'class', icon: BookOpen, label: 'b1Espanol.subjuntivo3', href: '/espanol/b1/subjuntivo-3', storageKey: 'progress_b1_es_12' },
+    { type: 'class', icon: BookOpen, label: 'b1Espanol.vozPasiva', href: '/espanol/b1/voz-pasiva', storageKey: 'progress_b1_es_13' },
     { type: 'end', icon: Flag, label: 'dashboard.finish' }
 ];
 
@@ -737,10 +743,16 @@ export const getA2SpanishClasses = () => [
 ];
 
 export const getB1SpanishClasses = () => [
-    { id: 'es-b1-pronombres', name: 'Pronombres' },
+    { id: 'es-b1-pronombres-2', name: 'Pronombres 2' },
+    { id: 'es-b1-pronombres-3', name: 'Pronombres 3' },
     { id: 'es-b1-doble-pronombre', name: 'Doble Pronombre' },
     { id: 'es-b1-por-para', name: 'Por/Para' },
     { id: 'es-b1-futuro', name: 'Futuro' },
-    { id: 'es-b1-imperativo', name: 'Imperativo' },
+    { id: 'es-b1-imperativo-2', name: 'Imperativo 2' },
+    { id: 'es-b1-conectores', name: 'Conectores' },
+    { id: 'es-b1-condicional-simple', name: 'Condicional Simple' },
     { id: 'es-b1-presente-subjuntivo', name: 'Presente Subjuntivo' },
+    { id: 'es-b1-subjuntivo-2', name: 'Subjuntivo 2' },
+    { id: 'es-b1-subjuntivo-3', name: 'Subjuntivo 3' },
+    { id: 'es-b1-voz-pasiva', name: 'Voz Pasiva Básica' },
 ];

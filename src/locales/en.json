@@ -100,12 +100,18 @@
   },
   "b1Espanol": {
     "title": "B1 Course - Spanish",
-    "pronombres": "Pronouns",
+    "pronombres2": "Pronouns 2",
+    "pronombres3": "Pronouns 3",
     "doblePronombre": "Double Pronoun",
     "porPara": "Por/Para",
     "futuro": "Future",
-    "imperativo": "Imperative",
+    "imperativo2": "Imperative 2",
+    "conectores": "Connectors",
+    "condicionalSimple": "Simple Conditional",
     "presenteSubjuntivo": "Present Subjunctive",
+    "subjuntivo2": "Subjunctive 2",
+    "subjuntivo3": "Subjunctive 3",
+    "vozPasiva": "Basic Passive Voice",
     "final": "End"
   },
   "achievements": {
