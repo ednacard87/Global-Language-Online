@@ -499,13 +499,18 @@ function ReflexivosPasadoContent() {
                                     <Separator />
                                     <div className="mt-6 space-y-4">
                                         <h4 className="text-primary font-black uppercase text-sm">1. Verbos Regulares:</h4>
-                                        <p>Mantienen su raíz y usan las terminaciones estándar del pasado (-ar: é, aste, ó... | -er/ir: í, iste, ió...).</p>
+                                        <p>Mantienen su raíz y usan las terminaciones estándar del pasado (-ar: é, aste, ó, amos, aron | -er/ir: í, iste, ió...).</p>
+                                        <p>Verbos Terminan en AR =  ( é, aste, ó, amos, aron).</p>
+                                        <p>Verbos Terminan en ER/IR = (í, iste, ió, imos, ieron).</p>
                                         <div className="p-3 bg-muted rounded-md italic">Ej: Yo me bañé / Nosotros nos lavamos.</div>
                                     </div>
                                     <div className="mt-4 space-y-4">
                                         <h4 className="text-brand-purple font-black uppercase text-sm">2. Verbos Irregulares:</h4>
-                                        <p>Tienen cambios en la raíz (ej: dormirse {'->'} se durmió) o cambios ortográficos (ej: caerse {'->'} se cayó en 3ª persona).</p>
-                                        <div className="p-3 bg-muted rounded-md italic">Ej: Ella se durmió / Ellos se cayeron.</div>
+                                         <p>Tienen cambios en la raíz.</p>
+                                         <p>(ej: dormirse {'->'} se durmió) o cambios ortográficos.</p>
+                                         <p> (ej: caerse {'->'} se cayó en 3ª persona // Ellos se cayeron).</p>
+                                         <p> (ej: Irse {'->'} fui, fuiste, fue, fuimos, fueron).</p>
+                                        <div className="p-3 bg-muted rounded-md italic">Ej: Ella se durmió / El se cayó.</div>
                                     </div>
                                 </div>
                             </CardContent>
