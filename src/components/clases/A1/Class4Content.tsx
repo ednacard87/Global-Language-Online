@@ -102,10 +102,10 @@ const practiceVocab: Record<string, Record<string, string>> = {
     'how-adjective': { "alto": "tall", "picante": "spicy", "pequeño": "small", "grande": "big", "sopa": "soup" , "apartamento" : "apartment" },
     'how-often': { "gimnasio": "gym", "estudiar" : "to study" , "comer": "to eat" , "hablar con": "to talk to" },
     'Whose': { "Portatil": "laptop", "sombrilla": "umbrella", "llaves": "keys" },
-    'Where': {"libros": "books", "comprar": "to buy", "carne": "meat"},
+    'Where': {"libros": "books", "comprar": "to buy", "carne": "meat" , "verduras" : "vegetables"},
     'Which': { "moto": "motorcycle", "helado": "ice cream", "necesitar": "to need", "comprar": "to buy" },
     'When': { "cumpleaños": "birthday", "fiesta": "party", "clase": "class" , "viaje" : "trip" , "Europa" :  "Europe" },
-    'Why': { "porque": "because", "finca" : "farm" , "padres" : "parents" , "triste": "sad", "visitar" : "to visit" , "viaje": "trip", "durante" : "during" , "lejos": "far away" , "naturaleza" : "nature"}
+    'Why': { "porque": "because", "finca" : "farm" , "padres" : "parents" , "triste": "sad", "visitar" : "to visit" , "viaje": "trip", "durante" : "during" , "lejos": "far away" , "naturaleza" : "nature" , "allá" : "there"}
 };
 
 interface Topic {
@@ -489,9 +489,25 @@ export default function Class4Content() {
                                         <p className="text-muted-foreground mb-3 font-medium">Se añade un apóstrofo y una "s" ('s) al final del nombre del poseedor.</p>
                                         <div className="font-mono text-base space-y-2">
                                             <p className="font-black text-primary">Estructura: POSEEDOR + 'S + POSESIÓN</p>
+                                            <p className="font-black text-primary">             OWNER + 'S + NOUN</p>
                                             <div className="pt-2">
-                                                <p>el carro de mi papá &rarr; <span className="font-bold text-primary">my dad's car</span></p>
+                                                <p>el carro de Nicol &rarr; <span className="font-bold text-primary">Nicol's car</span></p>
                                                 <p>la casa de Maria &rarr; <span className="font-bold text-primary">Maria's house</span></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-4">
+                                    <h3 className="text-xl font-black text-primary uppercase tracking-tight">Doble Posesivo(Poseedor Singular)</h3>
+                                    <div className="bg-slate-100 dark:bg-slate-800/50 p-6 rounded-[2rem] border border-border/50">
+                                        <p className="text-muted-foreground mb-3 font-medium">Tiene Adjetivo posesivo y Genitivo Sajon.</p>
+                                        <div className="font-mono text-base space-y-2">
+                                            <p className="font-black text-primary">Estructura: ADJ. POSESIVO + POSEEDOR + 'S + POSESIÓN</p>
+                                            <p className="font-black text-primary">            POSSESSIVE ADJ + OWNER  + 'S + NOUN</p>
+                                            <div className="pt-2">
+                                                <p>la casa de mi mamá &rarr; <span className="font-bold text-primary">my mother's house</span></p>
+                                                <p>el carro de mi papá &rarr; <span className="font-bold text-primary">my father's car</span></p>
                                             </div>
                                         </div>
                                     </div>
@@ -503,6 +519,7 @@ export default function Class4Content() {
                                         <p className="text-muted-foreground mb-3 font-medium">Solo se añade un apóstrofo (') al final del nombre.</p>
                                         <div className="font-mono text-base space-y-2">
                                             <p className="font-black text-primary">Estructura: POSEEDOR + ' + POSESIÓN</p>
+                                            <p className="font-black text-primary">             OWNERS  + ' + NOUN</p>
                                             <div className="pt-2">
                                                 <p>la casa de mis padres &rarr; <span className="font-bold text-primary">my parents' house</span></p>
                                                 <p>el colegio de las niñas &rarr; <span className="font-bold text-primary">the girls' school</span></p>
@@ -531,7 +548,7 @@ export default function Class4Content() {
             case 'genitivo': 
                 return <GenitiveCaseExercise 
                             onComplete={() => handleTopicComplete('genitivo')} 
-                            vocabulary={{ "juguetes": "toys", "comoda": "comfortable", "hijo": "son", "zapatos": "shoes", "limpio": "clean", "pequeño": "small", "audifonos": "headphones", "sucio": "dirty" }}
+                            vocabulary={{ "juguetes": "toys", "comoda": "comfortable", "hijo": "son", "zapatos": "shoes", "limpio": "clean", "pequeño": "small", "audifonos": "headphones", "sucio": "dirty" , "computador" : "computer" , "viaje" : "trip" , "pantalones cortos" : "shorts" , "apartamento" : "apartment" , "rápido" : "fast" , "finca" : "farm" }}
                         />;
             
                         case 'wh-questions':
@@ -550,7 +567,7 @@ export default function Class4Content() {
                                                     <div>
                                                         <h4 className="font-bold text-foreground mb-2 underline decoration-primary decoration-2 underline-offset-4">Estructura Básica</h4>
                                                         <p className="font-mono text-base font-black text-primary">WH + To be + Pronoun + complement?</p>
-                                                        <p className="text-sm mt-1 italic text-muted-foreground">Ej: What is your name?</p>
+                                                        <p className="text-sm mt-1 italic text-muted-foreground">Ej: Where is she?</p>
                                                     </div>
             
                                                     <Separator className="opacity-50" />
@@ -558,7 +575,7 @@ export default function Class4Content() {
                                                     <div>
                                                         <h4 className="font-bold text-foreground mb-2 underline decoration-primary decoration-2 underline-offset-4">Con Posesivos (Tipo 1)</h4>
                                                         <p className="font-mono text-base font-black text-primary">WH + To be + Pronoun + possessive + noun + complement?</p>
-                                                        <p className="text-sm mt-1 italic text-muted-foreground">Ej: Where is his car?</p>
+                                                        <p className="text-sm mt-1 italic text-muted-foreground">Ej: Who is his mother?</p>
                                                     </div>
             
                                                     <Separator className="opacity-50" />
@@ -566,7 +583,7 @@ export default function Class4Content() {
                                                     <div>
                                                         <h4 className="font-bold text-foreground mb-2 underline decoration-primary decoration-2 underline-offset-4">Con Posesivos (Tipo 2)</h4>
                                                         <p className="font-mono text-base font-black text-primary">WH + To be + possessive + noun + complement?</p>
-                                                        <p className="text-sm mt-1 italic text-muted-foreground">Ej: What is her sister's job?</p>
+                                                        <p className="text-sm mt-1 italic text-muted-foreground">Ej: What is your house?</p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -653,7 +670,7 @@ export default function Class4Content() {
             case 'ejercicio-wh':
                 return <WhQuestionsMainExercise 
                             onComplete={() => handleTopicComplete('ejercicio-wh')} 
-                            vocabulary={{ "padres": "parents", "hamburguesa": "hamburger", "vecinos": "neighbors", "viaje": "trip", "alto": "tall", "ciencia ficción": "science fiction", "calle": "street", "frias": "cold", "compañeros": "coworkers" }}
+                            vocabulary={{ "padres": "parents", "hamburguesa": "hamburger", "vecinos": "neighbors", "viaje": "trip", "alto": "tall", "ciencia ficción": "science fiction", "calle": "street", "frias": "cold", "compañeros": "coworkers" , "cantante" : "singer" , "jefe" : "boss" , "camiseta" : "shirt" , "enojado" : "angry" , "hija" : "daughter" }}
                         />;
 
             default:

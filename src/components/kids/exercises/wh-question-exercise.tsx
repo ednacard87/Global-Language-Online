@@ -94,7 +94,7 @@ const whExercisesData = {
         title: "WHERE? ¿DONDE?",
         prompts: [
             { spanish: '¿DONDE ESTA WILLIAM?', english: ["where is william?"] },
-            { spanish: '¿A DONDE VAS?', english: ["where are you going?"] },
+            { spanish: '¿A DONDE VAS?', english: ["where do you go?"] },
             { spanish: '¿DONDE ESTÁN LOS LIBROS?', english: ["where are the books?"] },
             { spanish: '¿DONDE COMPRAS LAS VERDURAS?', english: ["where do you buy the vegetables?"] },
             { spanish: '¿DONDE COMPRA ELLA LA CARNE?', english: ["where does she buy the meat?"] }
@@ -123,11 +123,11 @@ const whExercisesData = {
     'Why': {
         title: "Why? = Por qué? (se usa para preguntas) | Because... = Porque (se usa para respuestas)",
         prompts: [
-            { spanish: '¿POR QUÉ VAS ALLÁ? – PORQUE YO VOY A LA FINCA DE MIS PADRES.', english: ["why do you go there? because i go to my parents' farm."] },
-            { spanish: '¿POR QUÉ ESTAS TRISTE? ------- PORQUE NO PUEDO VISITAR A MI ABUELA.', english: ["why are you sad? because i can't visit my grandmother."] },
-            { spanish: '¿POR QUÉ ELLA ESTA FELIZ? – PORQUE ELLA TIENE UN VIAJE A BARCELONA.', english: ["why is she happy? because she has a trip to barcelona."] },
-            { spanish: '¿POR QUÉ ESTUDIAS EN NOCHE? – PORQUE YO NO TENGO TIEMPO DURANTE EL DIA.', english: ["why do you study at night? because i don't have time during the day."] },
-            { spanish: '¿POR QUE VIVES LEJOS? – POR QUE A MI ME GUSTA VIVIR EN LA NATURALEZA.', english: ["why do you live far away? because i like to live in the nature."] }
+            { spanish: '¿POR QUÉ VAS ALLÁ?  PORQUE YO VOY A LA FINCA DE MIS PADRES.', english: ["why do you go there? because i go to my parents' farm."] },
+            { spanish: '¿POR QUÉ ESTAS TRISTE? PORQUE NO PUEDO VISITAR A MI ABUELA.', english: ["why are you sad? because i can't visit my grandmother."] },
+            { spanish: '¿POR QUÉ ELLA ESTA FELIZ?  PORQUE ELLA TIENE UN VIAJE A BARCELONA.', english: ["why is she happy? because she has a trip to barcelona."] },
+            { spanish: '¿POR QUÉ ESTUDIAS EN NOCHE?  PORQUE YO NO TENGO TIEMPO DURANTE EL DIA.', english: ["why do you study at night? because i don't have time during the day."] },
+            { spanish: '¿POR QUE VIVES LEJOS?  POR QUE A MI ME GUSTA VIVIR EN LA NATURALEZA.', english: ["why do you live far away? because i like to live in the nature."] }
         ]
     },
     'default': {

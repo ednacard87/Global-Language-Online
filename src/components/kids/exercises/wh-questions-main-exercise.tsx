@@ -10,26 +10,26 @@ import { ArrowLeft, ArrowRight, Trophy, BookText } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 const exercisePrompts = [
-    { spanish: "¿DÓNDE ESTÁN TUS PADRES? ELLOS ESTAN EN SU CASA", english: ["where are your parents? they are at home"] },
-    { spanish: "¿QUÉ QUIERES COMER? QUIERO COMER UNA HAMBURGUESA CON PAPAS FRITAS", english: ["what do you want to eat? i want to eat a hamburger with fries"] },
+    { spanish: "¿QUÉ TIPO DE CAMISETA TE GUSTA? - NO ME GUSTAN LAS CAMISETAS", english: ["what kind of t-shirt do you like? - i don't like t-shirts" , "what kind of t-shirt do you like? - i do not like t-shirts, i like shirts"] },
+    { spanish: "¿CUÁNDO ESTUDIAS INGLES? YO ESTUDIO INGLES TODOS LOS DIAS", english: ["when do you study english? i study english every day"] },
+    { spanish: "¿DÓNDE ESTÁN TUS PADRES? ELLOS ESTAN EN SU CASA", english: ["where are your parents? they are in their house"] },
+    { spanish: "¿QUÉ QUIERES COMER? QUIERO COMER UNA HAMBURGUESA CON PAPAS FRITAS", english: ["what do you want to eat? i want to eat a hamburger with fries" , "what do you want to eat? i want to eat a hamburger with french fries"] },
     { spanish: "¿QUIÉNES SON ELLOS? ELLOS SON MIS VECINOS", english: ["who are they? they are my neighbors"] },
     { spanish: "¿CUÁNDO VA ELLA A ITALIA? ELLA TIENE SU VIAJE EL LUNES", english: ["when does she go to italy? she has her trip on monday"] },
     { spanish: "¿QUE TAN ALTO ES EL? EL ES MUY ALTO", english: ["how tall is he? he is very tall"] },
     { spanish: "¿QUÉ TIPO DE PELÍCULAS TE GUSTA? ME GUSTAN LAS PELICULAS DE CIENCIA FICCIÓN", english: ["what kind of movies do you like? i like science fiction movies"] },
-    { spanish: "¿CUÁL CARRO TE GUSTA? (ENTRE ESTOS 4)- ME GUSTA EL GRIS", english: ["which car do you like? i like the gray one"] },
+    { spanish: "¿CUÁL CARRO TE GUSTA? (ENTRE ESTOS 4) ME GUSTA EL GRIS", english: ["which car do you like? i like the gray one"] },
     { spanish: "¿CUANTOS AÑOS TIENES? YO TENGO 25 AÑOS", english: ["how old are you? i am 25 years old"] },
     { spanish: "¿DÓNDE TRABAJAS? TRABAJO EN LA CASA", english: ["where do you work? i work at home"] },
     { spanish: "¿QUIÉN ES TU CANTANTE FAVORITO? MI CANTANTE FAVORITO ES SHAKIRA", english: ["who is your favorite singer? my favorite singer is shakira"] },
     { spanish: "¿QUIÉN ES ESE HOMBRE? EL ES EL JEFE DE THOMAS", english: ["who is that man? he is thomas' boss", "who is that man? he is thomas's boss"] },
-    { spanish: "¿QUÉ TIPO DE CAMISETA TE GUSTA? NO ME GUSTAN LAS CAMISETAS, ME GUSTAN LAS CAMISAS", english: ["what kind of t-shirt do you like? i don't like t-shirts, i like shirts", "what kind of t-shirt do you like? i do not like t-shirts, i like shirts"] },
-    { spanish: "¿DE DONDE ERES? – YO SOY DE ITALIA", english: ["where are you from? i am from italy"] },
+    { spanish: "¿DE DONDE ERES? YO SOY DE ITALIA", english: ["where are you from? i am from italy"] },
     { spanish: "¿POR QUÉ EL ESTA ENOJADO? PORQUE ÉL TRABAJA ESTE FINDE", english: ["why is he angry? because he works this weekend"] },
     { spanish: "¿QUÉ BEBES? BEBO AGUA PORQUE NO PUEDO TOMAR GASEOSA", english: ["what do you drink? i drink water because i can't drink soda", "what do you drink? i drink water because i cannot drink soda"] },
-    { spanish: "¿CUANTOS AÑOS TIENE SU HIJA? – (De él) ELLA TIENE 6 AÑOS", english: ["how old is his daughter? she is 6 years old"] },
-    { spanish: "¿CUÁNDO ESTUDIAS INGLES? YO ESTUDIO INGLES LOS LUNES, MIERCOLES Y VIERNES", english: ["when do you study english? i study english on mondays, wednesdays and fridays"] },
-    { spanish: "¿QUE TAN GRANDE ES CHARLY? - EL ES MUY PEQUEÑO", english: ["how big is charly? he is very small"] },
-    { spanish: "¿CUÁNDO ESTAS EN LA CASA? – YO ESTOY EN CASA EL VIERNES", english: ["when are you at home? i am at home on friday"] },
-    { spanish: "¿QUIEN ES TU HERMANO? – MI HERMANO ES CAMILO", english: ["who is your brother? my brother is camilo"] },
+    { spanish: "¿CUANTOS AÑOS TIENE SU HIJA? (De él) ELLA TIENE 6 AÑOS", english: ["how old is his daughter? she is 6 years old"] },
+    { spanish: "¿QUE TAN GRANDE ES CHARLY? EL ES MUY PEQUEÑO", english: ["how big is charly? he is very small"] },
+    { spanish: "¿CUÁNDO ESTAS EN LA CASA? YO ESTOY EN CASA EL VIERNES", english: ["when are you at home? i am at home on friday"] },
+    { spanish: "¿QUIEN ES TU HERMANO? MI HERMANO ES CAMILO", english: ["who is your brother? my brother is camilo"] },
 ];
 
 
