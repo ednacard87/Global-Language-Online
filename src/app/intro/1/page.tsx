@@ -871,6 +871,7 @@ export default function Intro1Page() {
                             'un- una': 'a / an',
                             'abogado': 'lawyer',
                             'enfermo': 'sick',
+                            'estudiante' : 'student',
                             'enfermero': 'nurse'
                         };
                         return <TranslationExercise 
@@ -884,6 +885,7 @@ export default function Intro1Page() {
                         const vocab = {
                             'amigo': 'friend',
                             'hijo': 'son',
+                            'padre' : 'father' ,
                             'perro': 'dog'
                         };
                         return <TranslationExercise 
@@ -898,6 +900,11 @@ export default function Intro1Page() {
                             'enfermera': 'nurse',
                             'abuelos': 'grandparents',
                             'pensionado': 'retired',
+                            'un-una' : 'a / an' ,
+                            'el-la-los-las' : 'the' ,
+                            'pequeño' : 'small' ,
+                            'cama' : 'bed' ,
+                            'sobre' : 'on' ,
                             'juguete': 'toy'
                         };
                         return <TranslationExercise 
