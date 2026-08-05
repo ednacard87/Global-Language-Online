@@ -10,7 +10,7 @@ import { ArrowLeft, ArrowRight, Trophy, BookText } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 const exercisePrompts = [
-    { spanish: "¿QUIEN ES TU JEFE? MI JEFE ES ESA MUJER, SU NOMBRE ES KATHERINE", english: ["who is your boss? my boss is that woman"] },
+    { spanish: "¿QUIEN ES TU JEFE? MI JEFE ES ESA MUJER", english: ["who is your boss? my boss is that woman"] },
     { spanish: "¿CUÁNDO VIAJAS A BARCELONA? YO VIAJO EL PROXIMO MES", english: ["when do you travel to barcelona? i travel next month"] },
     { spanish: "¿QUIENES SON LOS GUNS AND ROSES? ELLOS SON UNA BANDA DE ROCK", english: ["who are guns and roses? they are a rock band"] },
     { spanish: "¿POR QUÉ ESTAS CANSADO? PORQUE YO TRABAJO Y ESTUDIO", english: ["why are you tired? because i work and study"] },
