@@ -10,19 +10,19 @@ import { ArrowLeft, ArrowRight, Trophy, BookText } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 const exercisePrompts = [
-    { spanish: "¿CUÁNDO VIAJAS A BARCELONA? – YO VIAJO EL PROXIMO MES", english: ["when do you travel to barcelona? i travel next month"] },
-    { spanish: "¿QUIENES SON LOS GUNS AND ROSES? – ELLOS SON UNA BANDA DE ROCK", english: ["who are guns and roses? they are a rock band"] },
-    { spanish: "¿POR QUÉ ESTAS CANSADO? – PORQUE YO TRABAJO Y ESTUDIO", english: ["why are you tired? because i work and study"] },
-    { spanish: "¿DONDE TRABAJAN ELLOS? – ELLOS TRABAJAN EN INGLATERRA", english: ["where do they work? they work in england"] },
-    { spanish: "¿QUIEN ES BRIAN ADAMS? – EL ES UN CANTANTE CANADIENSE", english: ["who is brian adams? he is a canadian singer"] },
-    { spanish: "¿DONDE VIVE ELLA? – ELLA VIVE EN ITALIA", english: ["where does she live? she lives in italy"] },
-    { spanish: "¿QUE HACEN ELLOS? – ELLOS TRABAJAN JUNTOS", english: ["what do they do? they work together"] },
+    { spanish: "¿QUIEN ES TU JEFE? MI JEFE ES ESA MUJER, SU NOMBRE ES KATHERINE", english: ["who is your boss? my boss is that woman"] },
+    { spanish: "¿CUÁNDO VIAJAS A BARCELONA? YO VIAJO EL PROXIMO MES", english: ["when do you travel to barcelona? i travel next month"] },
+    { spanish: "¿QUIENES SON LOS GUNS AND ROSES? ELLOS SON UNA BANDA DE ROCK", english: ["who are guns and roses? they are a rock band"] },
+    { spanish: "¿POR QUÉ ESTAS CANSADO? PORQUE YO TRABAJO Y ESTUDIO", english: ["why are you tired? because i work and study"] },
+    { spanish: "¿DONDE TRABAJAN ELLOS? ELLOS TRABAJAN EN INGLATERRA", english: ["where do they work? they work in england"] },
+    { spanish: "¿QUIEN ES BRIAN ADAMS? EL ES UN CANTANTE CANADIENSE", english: ["who is brian adams? he is a canadian singer"] },
+    { spanish: "¿DONDE VIVE ELLA? ELLA VIVE EN ITALIA", english: ["where does she live? she lives in italy"] },
+    { spanish: "¿QUE HACEN ELLOS? ELLOS TRABAJAN JUNTOS", english: ["what do they do? they work together"] },
     { spanish: "¿QUIERES UN HELADO? ¿CUAL HELADO TE GUSTA? (ENTRE ESTOS SABORES) YO QUIERO EL HELADO DE VAINILLA", english: ["do you want an ice cream? which ice cream do you like? i want the vanilla ice cream"] },
-    { spanish: "¿QUIEN ES TU JEFE? – MI JEFE ES ESA MUJER, SU NOMBRE ES KATHERINE", english: ["who is your boss? my boss is that woman, her name is katherine"] },
-    { spanish: "¿PORQUE ÉL VIAJA A MIAMI? – PORQUE EL TIENE UN FAMILIAR ALLÁ", english: ["why does he travel to miami? because he has a relative there"] },
-    { spanish: "¿QUE TAN GRANDE ES CHARLY? - EL ES MUY PEQUEÑO", english: ["how big is charly? he is very small"]},
-    { spanish: "¿CUÁNDO ESTAS EN LA CASA? – YO ESTOY EN CASA EL VIERNES", english: ["when are you at home? i am at home on friday"]},
-    { spanish: "¿QUIEN ES TU HERMANO? – MI HERMANO ES CAMILO", english: ["who is your brother? my brother is camilo"]},
+    { spanish: "¿PORQUE ÉL VIAJA A MIAMI? PORQUE EL TIENE UN FAMILIAR ALLÁ", english: ["why does he travel to miami? because he has a relative there"] },
+    { spanish: "¿QUE TAN GRANDE ES CHARLY? EL ES MUY PEQUEÑO", english: ["how big is charly? he is very small"]},
+    { spanish: "¿CUÁNDO ESTAS EN LA CASA? YO ESTOY EN CASA EL VIERNES", english: ["when are you at home? i am at home on friday"]},
+    { spanish: "¿QUIEN ES TU HERMANO? MI HERMANO ES CAMILO", english: ["who is your brother? my brother is camilo"]},
 ];
 
 

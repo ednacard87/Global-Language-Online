@@ -655,7 +655,7 @@ export default function Class4Content() {
             case 'ejercicio-gs':
                 return <GenitiveSaxonGsExercise 
                             onComplete={() => handleTopicComplete('ejercicio-gs')} 
-                            vocabulary={{ "bicicletas": "bicycles", "tia": "aunt", "hijos": "sons", "gemelos": "twins", "pajaros": "birds", "comida": "food", "llaves": "keys", "nevera": "fridge" }}
+                            vocabulary={{ "bicicletas": "bicycles", "tia": "aunt", "hijos": "sons", "gemelos": "twins", "pajaros": "birds", "comida": "food", "llaves": "keys", "nevera": "fridge" , "primos" : "cousins" , "sombrilla" : "umbrella" , "feo" : "ugly" }}
                         />;
             
             case 'ejercicio2-wh':
@@ -664,7 +664,7 @@ export default function Class4Content() {
             case 'ejercicio3-wh':
                 return <WhQuestionsMainExercise3 
                             onComplete={() => handleTopicComplete('ejercicio3-wh')} 
-                            vocabulary={{ "próximo": "next", "banda": "band", "cantante": "singer", "jefe": "boss", "familiar": "relative", "fin de semana": "weekend" }}
+                            vocabulary={{ "próximo": "next", "banda": "band", "cantante": "singer", "jefe": "boss", "familiar": "relative", "fin de semana" : "weekend", "cansado" : "tired" , "cantante" : "singer" , "viajar" : "to travel" , "grande" : "big" , "pequeño" : "small" }}
                         />;
             
             case 'ejercicio-wh':
