@@ -90,7 +90,7 @@ const ex2Prompts = [
 ];
 
 const ex3Prompts = [
-    { en: "Yesterday it rained, so I stayed home.", es: ["ayer llovió, así que me quedé en casa"] },
+    { en: "Yesterday it rained, so I stayed home.", es: ["ayer llovió, así que me quedé en casa", "ayer llovió, entonces yo me quedé en casa" , "ayer llovio, entonces me quede en la casa"] },
     { en: "When I was a child, I liked to run.", es: ["cuando era niño, me gustaba correr"] },
     { en: "She arrived while I was working.", es: ["ella llegó mientras yo trabajaba"] },
     { en: "He was 20 when he started his business.", es: ["él tenía 20 años cuando montó su negocio", "tenía veinte cuando empezó su negocio"] },
@@ -450,7 +450,7 @@ function PasadoVsImperfectoContent() {
                                 </ul>
                             </div>
                             <div className="p-4 bg-primary/10 rounded-xl border-l-4 border-primary italic">
-                                Tip: Si puedes decir "used to", usualmente es Imperfecto. Si fue un "clic" en el calendario, es Simple.
+                                Tip: Si puedes decir "used to", usualmente es Imperfecto. Si es un evento puntual o con fecha, es Pasado Simple.
                             </div>
                         </CardContent>
                         <CardFooter className="justify-center pt-6 border-t"><Button onClick={() => handleTopicComplete('grammar')} size="lg" className="px-24 font-black h-14 text-xl shadow-xl uppercase">Entendido</Button></CardFooter>
