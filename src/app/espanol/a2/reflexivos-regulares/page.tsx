@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo, useCallback, Suspense } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { 
@@ -18,13 +18,14 @@ import {
     Loader2,
     Check,
     X,
-    HelpCircle,
-    Info,
-    Search,
-    Pencil
+    Pencil,
+    Shirt,
+    Activity,
+    MessageSquare,
+    CheckCircle2,
+    ListChecks
 } from 'lucide-react';
 import { DashboardHeader } from '@/components/dashboard/header';
-import { Footer } from '@/components/footer';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
@@ -41,8 +42,14 @@ import { VocabularyMatchingGame } from '@/components/dashboard/vocabulary-matchi
 import { Textarea } from '@/components/ui/textarea';
 
 // --- CONFIGURACIÓN DE INGENIERÍA ---
-const progressStorageVersion = 'progress_es_a2_reflex_reg_v4_final_extended';
+const progressStorageVersion = 'progress_es_a2_reflex_reg_v17_input_fixed';
 const mainProgressKey = 'progress_a2_es_reflexivos_regulares';
+
+const ICONS_CONFIG = {
+    locked: Lock,
+    active: BookOpen,
+    completed: CheckCircle,
+};
 
 // --- DATA ---
 
@@ -79,34 +86,34 @@ const conjugarVerbsList = [
 
 const ex1Prompts = [
     { en: "I shower in the morning.", es: ["yo me ducho en la mañana", "me ducho en la mañana"] },
-    { en: "You wash your hands.", es: ["tú te lavas las manos", "te lavas las manos"] },
-    { en: "He shaves every day.", es: ["él se afeita todos los días", "se afeita todos los días"] },
-    { en: "We get up at 7:00.", es: ["nosotros nos levantamos a las siete", "nos levantamos a las siete"] },
-    { en: "They comb their hair.", es: ["ellos se peinan", "ellas se peinan", "se peinan"] },
+    { en: "You wash your hands.", es: ["tú te lavas las manos", "tu te lavas las manos"] },
+    { en: "He shaves every day.", es: ["él se afeita todos los días", "el se afeita todos los dias"] },
+    { en: "We get up at 7", es: ["nosotros nos levantamos a las siete", "nosotros nos levantamos a las 7"] },
+    { en: "They comb their hair.", es: ["ellos se peinan su cabello", "ellas se peinan su cabello", "ellos se peinan su pelo"] },
     { en: "She puts on makeup for the party.", es: ["ella se maquilla para la fiesta", "se maquilla para la fiesta"] },
-    { en: "I dry myself with a towel.", es: ["yo me seco con una toalla", "me seco con una toalla"] },
+    { en: "I dry myself with a towel.", es: ["yo me seco con una toalla"] },
 ];
 
 const ex2Prompts = [
-    { en: "We prepare for the exam.", es: ["nosotros nos preparamos para el examen", "nos preparamos para el examen"] },
-    { en: "You (formal) stay at home.", es: ["usted se queda en casa", "se queda en casa"] },
-    { en: "The children get tired fast.", es: ["los niños se cansan rápido", "los hijos se cansan rápido"] },
-    { en: "I take off my jacket.", es: ["yo me quito mi chaqueta", "yo me quito la chaqueta", "me quito la chaqueta"] },
-    { en: "She brushes her teeth.", es: ["ella se cepilla los dientes", "se cepilla los dientes"] },
+    { en: "We prepare for the exam.", es: ["nosotros nos preparamos para el examen"] },
+    { en: "You (formal) stay at home.", es: ["usted se queda en casa", "usted se queda en la casa"] },
+    { en: "The children get tired fast.", es: ["los niños se cansan rápido", "los niños se cansan rapido"] },
+    { en: "I take off my jacket.", es: ["yo me quito mi chaqueta"] },
+    { en: "She brushes her teeth.", es: ["ella se cepilla los dientes", "ella se cepilla sus dientes"] },
     { en: "We relax on Sundays.", es: ["nosotros nos relajamos los domingos", "nos relajamos los domingos"] },
-    { en: "They train at the gym.", es: ["ellos se entrenan en el gimnasio", "se entrenan en el gimnasio"] },
+    { en: "They train at the gym.", es: ["ellos se entrenan en el gimnasio"] },
     { en: "You (plural) calm down.", es: ["ustedes se calman"] },
 ];
 
 const ex3Prompts = [
     { en: "I name myself Juan.", es: ["yo me llamo juan", "me llamo juan"] },
-    { en: "He gets bored in class.", es: ["él se aburre en clase", "se aburre en clase"] },
-    { en: "We help each other with homework.", es: ["nosotros nos ayudamos con la tarea", "nos ayudamos con la tarea"] },
+    { en: "He gets bored in class.", es: ["él se aburre en clase", "el se aburre en clase"] },
+    { en: "We help each other with the homework.", es: ["nosotros nos ayudamos con la tarea"] },
     { en: "They fasten their seatbelts.", es: ["ellos se abrochan los cinturones", "se abrochan los cinturones"] },
     { en: "I stretch before running.", es: ["yo me estiro antes de correr", "me estiro antes de correr"] },
-    { en: "She bathes (herself).", es: ["ella se baña", "se baña"] },
+    { en: "She bathes (herself).", es: ["ella se baña"] },
     { en: "We fix ourselves up for the wedding.", es: ["nosotros nos arreglamos para la boda", "nos arreglamos para la boda"] },
-    { en: "You (informal) allow yourself a break.", es: ["tú te permites un descanso", "te permites un descanso"] },
+    { en: "You (informal) allow yourself a break.", es: ["tú te permites un descanso", "tu te permites un descanso"] },
     { en: "The cat licks itself (washes itself).", es: ["el gato se lava"] },
 ];
 
@@ -114,11 +121,11 @@ const readingData = {
     title: "Mi Rutina de la Mañana",
     content: "Hola, soy Mateo. Todos los días, yo me levanto a las seis de la mañana. Primero, me estiro un poco en la cama. Luego, me ducho con agua fría para despertar. Después de la ducha, me seco bien y me afeito. Mi esposa, Elena, se levanta más tarde. Ella se lava la cara y se maquilla rápidamente. Nosotros desayunamos juntos y luego nos preparamos para ir al trabajo. En la oficina, yo me canso un poco por la tarde, pero me relajo cuando llego a casa.",
     questions: [
-        { q: "¿A qué hora se levanta Mateo?", a: ["a las seis", "a las 6", "a las seis de la mañana"] },
-        { q: "¿Qué hace Mateo primero en la cama?", a: ["se estira", "se estira un poco"] },
-        { q: "¿Con qué tipo de agua se ducha?", a: ["agua fría", "con agua fría"] },
-        { q: "¿Qué hace Elena después de lavarse la cara?", a: ["se maquilla"] },
-        { q: "¿Cuándo se relaja Mateo?", a: ["cuando llega a casa", "en la casa"] },
+        { id: 'q1', question: "¿A qué hora se levanta Mateo?", a: ["a las seis", "a las 6", "a las seis de la mañana"] },
+        { id: 'q2', question: "¿Qué hace Mateo primero en la cama?", a: ["se estira", "se estira un poco"] },
+        { id: 'q3', question: "¿Con qué tipo de agua se ducha?", a: ["agua fría", "con agua fría"] },
+        { id: 'q4', question: "¿Qué hace Elena después de lavarse la cara?", a: ["se maquilla"] },
+        { id: 'q5', question: "¿Cuándo se relaja Mateo?", a: ["cuando llega a casa", "en la casa"] },
     ]
 };
 
@@ -168,11 +175,6 @@ const translationVocabHelp = {
     "To go to work": "para ir al trabajo"
 };
 
-const globalVocabMap: Record<string, string> = reflexiveVocab.reduce((acc, curr) => {
-    acc[curr.es.toLowerCase()] = curr.en.toLowerCase();
-    return acc;
-}, {} as Record<string, string>);
-
 // --- HELPER COMPONENTS ---
 
 const BallsExercise = ({ title, prompts, onComplete, vocabulary }: any) => {
@@ -209,25 +211,27 @@ const BallsExercise = ({ title, prompts, onComplete, vocabulary }: any) => {
                             ))}
                         </div>
                     </div>
-                    <Popover>
-                        <PopoverTrigger asChild>
-                            <Button variant="outline" size="sm" className="border-2 border-brand-blue animate-border-pulse">
-                                <BookText className="mr-2 h-4 w-4" /> Vocabulario
-                            </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-64">
-                            <ScrollArea className="h-48 pr-4">
-                                <div className="space-y-2 text-foreground">
-                                    {reflexiveVocab.map((v, i) => (
-                                        <div key={i} className="flex justify-between text-xs border-b pb-1">
-                                            <span className="text-muted-foreground text-left">{v.en}:</span>
-                                            <span className="font-bold text-right">{v.es}</span>
-                                        </div>
-                                    ))}
-                                </div>
-                            </ScrollArea>
-                        </PopoverContent>
-                    </Popover>
+                    {vocabulary && (
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button variant="outline" size="sm" className="border-2 border-brand-blue animate-border-pulse">
+                                    <BookText className="mr-2 h-4 w-4" /> Vocabulario
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-64">
+                                <ScrollArea className="h-48 pr-4">
+                                    <div className="space-y-2 text-foreground">
+                                        {Object.entries(vocabulary).map(([en, es]: any, i) => (
+                                            <div key={i} className="flex justify-between text-xs border-b border-muted pb-1">
+                                                <span className="text-muted-foreground text-left">{en}:</span>
+                                                <span className="font-bold text-right">{es}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </ScrollArea>
+                            </PopoverContent>
+                        </Popover>
+                    )}
                 </div>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -247,7 +251,7 @@ const BallsExercise = ({ title, prompts, onComplete, vocabulary }: any) => {
     );
 };
 
-// --- MAIN PAGE COMPONENT ---
+// --- MAIN CONTENT ---
 
 function ReflexivosRegularesContent() {
     const { toast } = useToast();
@@ -263,6 +267,7 @@ function ReflexivosRegularesContent() {
     const [selectedTopic, setSelectedTopic] = useState<string>('');
     const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
     const [initialLoadComplete, setInitialLoadComplete] = useState(false);
+    const lastSavedRef = useRef<string>('');
 
     // Misión 1 Vocab
     const [vocabAnswers, setVocabAnswers] = useState<string[]>(Array(reflexiveVocab.length).fill(''));
@@ -274,12 +279,12 @@ function ReflexivosRegularesContent() {
     const [conjAnswers, setConjAnswers] = useState<Record<number, string[]>>({});
     const [conjValidation, setConjValidation] = useState<Record<number, any[]>>({});
 
-    // Misión 7 Lectura
+    // Misión 8 Lectura
     const [readingAns, setReadingAns] = useState<string[]>(Array(readingData.questions.length).fill(''));
     const [readingVal, setReadingVal] = useState<any[]>(Array(readingData.questions.length).fill('unchecked'));
 
-    // Misión 9 Final Ex
-    const [finalAns, setFinalAns] = useState<string[]>(Array(finalExPrompts.length).fill(''));
+    // Misión 9 Final Ex (COMPLETAR)
+    const [finalAns, setFinalAns] = useState<string[]>([]);
     const [finalVal, setFinalVal] = useState<any[]>(Array(finalExPrompts.length).fill('unchecked'));
 
     // Misión 10 Traducir Texto
@@ -301,7 +306,7 @@ function ReflexivosRegularesContent() {
         { key: 'ejercicio3', name: '6. Ejercicio 3', icon: PenSquare, status: 'locked' },
         { key: 'vocab_game', name: '7. Vocabulario (Juego)', icon: Gamepad2, status: 'locked' },
         { key: 'lectura', name: '8. Lectura', icon: BookText, status: 'locked' },
-        { key: 'final_ex', name: '9. Ejercicio Final', icon: Trophy, status: 'locked' },
+        { key: 'final_ex', name: '9. COMPLETAR', icon: Trophy, status: 'locked' },
         { key: 'traducir_texto', name: '10. Traducir Texto', icon: BookText, status: 'locked' },
     ], []);
 
@@ -309,10 +314,19 @@ function ReflexivosRegularesContent() {
         setTopicToComplete(completedKey);
     }, []);
 
+    const handleTopicSelect = (topicKey: string) => {
+        const topic = learningPath.find(t => t.key === topicKey);
+        if (!isAdmin && topic?.status === 'locked') { 
+            toast({ variant: "destructive", title: "Contenido Bloqueado" }); 
+            return; 
+        }
+        setSelectedTopic(topicKey);
+    };
+
     useEffect(() => {
         if (isProfileLoading || isUserLoading || !studentProfile || initialLoadComplete) return;
 
-        let path = initialLearningPath.map(topic => ({ ...topic }));
+        let path = initialLearningPath.map((topic, i) => ({ ...topic, status: i === 0 ? 'active' : 'locked' as any }));
         let savedSelectedTopic = '';
 
         if (isAdmin && !targetStudentId) {
@@ -323,19 +337,29 @@ function ReflexivosRegularesContent() {
                 if (savedData[item.key]) (item as any).status = savedData[item.key];
             });
             savedSelectedTopic = savedData.lastSelectedTopic || '';
+            if (savedData.vocabAnswers) setVocabAnswers(savedData.vocabAnswers);
+            if (savedData.finalAns) setFinalAns(savedData.finalAns);
+            if (savedData.translationText) setTranslationText(savedData.translationText);
+            if (savedData.readingAns) setReadingAns(savedData.readingAns);
         }
 
-        let lastDone = true;
-        for (let i = 0; i < path.length; i++) {
-            if (lastDone && (path[i] as any).status === 'locked') (path[i] as any).status = 'active';
-            lastDone = (path[i] as any).status === 'completed';
+        if (finalAns.length === 0) {
+            setFinalAns(Array(finalExPrompts.length).fill(''));
+        }
+
+        if (!isAdmin || targetStudentId) {
+            let lastDone = true;
+            for (let i = 0; i < path.length; i++) {
+                if (lastDone && path[i].status === 'locked') path[i].status = 'active';
+                lastDone = path[i].status === 'completed';
+            }
         }
 
         setLearningPath(path);
         setSelectedTopic(savedSelectedTopic || path.find(p => p.status === 'active')?.key || path[0].key);
         setInitialLoadComplete(true);
         setTimeout(() => setIsInitialLoading(false), 800);
-    }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading, isUserLoading, initialLoadComplete, targetStudentId]);
+    }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading, isUserLoading, initialLoadComplete, targetStudentId, finalAns.length]);
 
     const progressValue = useMemo(() => {
         if (learningPath.length === 0) return 0;
@@ -345,15 +369,38 @@ function ReflexivosRegularesContent() {
 
     useEffect(() => {
         if (!initialLoadComplete || isInitialLoading || isAdmin || !studentDocRef || learningPath.length === 0 || targetStudentId) return;
-        const statusesToSave: Record<string, any> = { lastSelectedTopic: selectedTopic };
-        learningPath.forEach(item => { statusesToSave[item.key] = item.status; });
-
-        updateDocumentNonBlocking(studentDocRef, {
-            [`lessonProgress.${progressStorageVersion}`]: statusesToSave,
-            [`progress.${mainProgressKey}`]: progressValue
+        
+        const currentDataSerialized = JSON.stringify({
+            selectedTopic,
+            vocabAnswers,
+            finalAns,
+            translationText,
+            readingAns,
+            path: learningPath.map(t => t.status)
         });
-        if (progressValue >= 100) window.dispatchEvent(new CustomEvent('progressUpdated'));
-    }, [learningPath, isAdmin, progressValue, studentDocRef, initialLoadComplete, selectedTopic, isInitialLoading, targetStudentId]);
+
+        if (currentDataSerialized === lastSavedRef.current) return;
+
+        const saveTimer = setTimeout(() => {
+            const statusesToSave: Record<string, any> = { 
+                lastSelectedTopic: selectedTopic,
+                vocabAnswers,
+                finalAns,
+                translationText,
+                readingAns
+            };
+            learningPath.forEach(item => { statusesToSave[item.key] = item.status; });
+
+            updateDocumentNonBlocking(studentDocRef, {
+                [`lessonProgress.${progressStorageVersion}`]: statusesToSave,
+                [`progress.${mainProgressKey}`]: progressValue
+            });
+            lastSavedRef.current = currentDataSerialized;
+            if (progressValue >= 100) window.dispatchEvent(new CustomEvent('progressUpdated'));
+        }, 2000);
+
+        return () => clearTimeout(saveTimer);
+    }, [learningPath, isAdmin, progressValue, studentDocRef, initialLoadComplete, selectedTopic, isInitialLoading, targetStudentId, vocabAnswers, finalAns, translationText, readingAns]);
 
     useEffect(() => {
         if (!topicToComplete) return;
@@ -370,7 +417,7 @@ function ReflexivosRegularesContent() {
                     nextToSelect = newPath[idx + 1].key;
                 }
             }
-            if (wasUnlocked) setTimeout(() => toast({ title: "¡Siguiente tema desbloqueado!" }), 0);
+            if (wasUnlocked) setTimeout(() => toast({ title: "¡Siguiente misión desbloqueada!" }), 0);
             if (nextToSelect) {
                 const finalNext = nextToSelect;
                 setTimeout(() => setSelectedTopic(finalNext), 0);
@@ -379,16 +426,6 @@ function ReflexivosRegularesContent() {
         });
         setTopicToComplete(null);
     }, [topicToComplete, toast]);
-
-    const handleTopicSelect = (topicKey: string) => {
-        const topic = learningPath.find(t => t.key === topicKey);
-        if (!isAdmin && topic?.status === 'locked') {
-            toast({ variant: "destructive", title: "Contenido Bloqueado" });
-            return;
-        }
-        setSelectedTopic(topicKey);
-        if (['gramatica'].includes(topicKey)) handleTopicComplete(topicKey);
-    };
 
     const handleCheckVocab = () => {
         let allOk = true;
@@ -464,22 +501,13 @@ function ReflexivosRegularesContent() {
         }
     };
 
-    const handleFinishClass = () => {
-        if (translationText.length < 20 && !isAdmin) {
-            toast({ variant: "destructive", title: "Traducción incompleta", description: "Por favor, traduce el texto completo para terminar." });
-            return;
-        }
-        toast({ title: "¡Clase finalizada!", description: "Has completado la clase de Reflexivos Regulares." });
-        handleTopicComplete('traducir_texto');
-    };
-
     const renderContent = () => {
         if (isInitialLoading) return <div className="flex flex-col items-center justify-center min-h-[400px]"><Loader2 className="h-12 w-12 animate-spin text-primary mb-4" /></div>;
 
         switch (selectedTopic) {
             case 'vocabulario':
                 return (
-                    <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground">
+                    <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground text-left">
                         <CardHeader className='bg-primary/5 border-b'>
                             <CardTitle className="text-primary uppercase">Vocabulario: Verbos Reflexivos Regulares</CardTitle>
                             <CardDescription className='font-bold text-foreground'>Escribe el significado en español para cada verbo.</CardDescription>
@@ -490,12 +518,13 @@ function ReflexivosRegularesContent() {
                                 <div className="font-black text-primary border-b pb-2 uppercase tracking-widest text-xs text-left">Español</div>
                                 {reflexiveVocab.map((v, i) => (
                                     <React.Fragment key={i}>
-                                        <div className="flex items-center font-bold text-left py-1">{v.en}</div>
+                                        <div className="flex items-center font-bold text-left py-1 uppercase">{v.en}</div>
                                         <Input 
                                             value={vocabAnswers[i] || ''} 
-                                            onChange={e => { const na = [...vocabAnswers]; na[i] = e.target.value; setVocabAnswers(na); setVocabValidation(vv => { const nv = [...vv]; nv[i] = 'unchecked'; return nv as any; }); }} 
+                                            onChange={e => { if (targetStudentId && isAdmin) return; const na = [...vocabAnswers]; na[i] = e.target.value; setVocabAnswers(na); const nv = [...vocabValidation]; nv[i] = 'unchecked'; setVocabValidation(nv as any); }} 
                                             className={cn("h-10 uppercase font-mono border-2", vocabValidation[i] === 'correct' ? 'border-green-500' : vocabValidation[i] === 'incorrect' ? 'border-red-500' : '')} 
                                             autoComplete="off"
+                                            readOnly={targetStudentId && isAdmin}
                                         />
                                     </React.Fragment>
                                 ))}
@@ -514,7 +543,7 @@ function ReflexivosRegularesContent() {
                         <CardContent className="space-y-6">
                             <div className="p-4 bg-white/50 dark:bg-background/20 rounded-2xl border">
                                 <p className="text-lg font-bold">Un verbo es reflexivo cuando la acción recae sobre el mismo sujeto que la realiza.</p>
-                                <p className="mt-2">En el infinitivo, estos verbos terminan en <span className="font-black text-primary">"SE"</span> (Ej: Lavar<span className="underline">se</span>, Duchar<span className="underline">se</span>).</p>
+                                <p className="mt-2 text-muted-foreground">En el infinitivo, estos verbos terminan en <span className="font-black text-primary">"SE"</span> (Ej: Lavar<span className="underline">se</span>, Duchar<span className="underline">se</span>).</p>
                             </div>
                             <Separator />
                             <div className="space-y-4">
@@ -565,8 +594,9 @@ function ReflexivosRegularesContent() {
                                         <Input 
                                             value={conjAnswers[conjVerbsIdx]?.[i] || ''} 
                                             onChange={e => {
+                                                if (targetStudentId && isAdmin) return;
                                                 const nv = { ...conjAnswers };
-                                                const currentArr = nv[conjVerbsIdx] || Array(5).fill('');
+                                                const currentArr = [...(nv[conjVerbsIdx] || Array(5).fill(''))];
                                                 currentArr[i] = e.target.value;
                                                 nv[conjVerbsIdx] = currentArr;
                                                 setConjAnswers(nv);
@@ -575,6 +605,7 @@ function ReflexivosRegularesContent() {
                                             className={cn("h-11 font-mono lowercase border-2", conjValidation[conjVerbsIdx]?.[i] === 'correct' ? 'border-green-500 bg-green-50/5' : conjValidation[conjVerbsIdx]?.[i] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')}
                                             autoComplete='off'
                                             placeholder="me ..."
+                                            readOnly={targetStudentId && isAdmin}
                                         />
                                     </div>
                                 ))}
@@ -583,11 +614,11 @@ function ReflexivosRegularesContent() {
                         <CardFooter className="justify-center border-t p-6 bg-muted/20"><Button onClick={handleConjCheck} size="lg" className="px-24 font-black h-14 text-xl shadow-xl bg-primary hover:bg-primary/90 text-primary-foreground">Verificar Verbo <ArrowRight className='ml-2'/></Button></CardFooter>
                     </Card>
                 );
-            case 'ejercicio1': return <BallsExercise title="Ejercicio 1" prompts={ex1Prompts} onComplete={() => handleTopicComplete('ejercicio1')} />;
-            case 'ejercicio2': return <BallsExercise title="Ejercicio 2" prompts={ex2Prompts} onComplete={() => handleTopicComplete('ejercicio2')} />;
-            case 'ejercicio3': return <BallsExercise title="Ejercicio 3" prompts={ex3Prompts} onComplete={() => handleTopicComplete('ejercicio3')} />;
+            case 'ejercicio1': return <BallsExercise key="ex1" title="Ejercicio 1" prompts={ex1Prompts} onComplete={() => handleTopicComplete('ejercicio1')} />;
+            case 'ejercicio2': return <BallsExercise key="ex2" title="Ejercicio 2" prompts={ex2Prompts} onComplete={() => handleTopicComplete('ejercicio2')} />;
+            case 'ejercicio3': return <BallsExercise key="ex3" title="Ejercicio 3" prompts={ex3Prompts} onComplete={() => handleTopicComplete('ejercicio3')} />;
             case 'vocab_game':
-                return <VocabularyMatchingGame data={reflexiveVocab.map(v => ({ spanish: v.es, english: [v.en] }))} onComplete={() => handleTopicComplete('vocab_game')} title="Misión: Parejas Reflexivas" />;
+                return <VocabularyMatchingGame data={reflexiveVocab.slice(0, 10).map(v => ({ spanish: v.es, english: [v.en] }))} onComplete={() => handleTopicComplete('vocab_game')} title="Misión: Parejas Reflexivas" />;
             case 'lectura':
                 return (
                     <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left">
@@ -598,8 +629,14 @@ function ReflexivosRegularesContent() {
                             <div className="space-y-4 text-foreground">
                                 {readingData.questions.map((q, i) => (
                                     <div key={i} className="space-y-2">
-                                        <Label className="font-bold">{q.q}</Label>
-                                        <Input value={readingAns[i] || ''} onChange={e => { const na = [...readingAns]; na[i] = e.target.value; const nv = [...readingVal]; nv[i] = 'unchecked'; setReadingVal(nv as any); }} className={cn("h-10 text-foreground", readingVal[i] === 'correct' ? 'border-green-500 bg-green-50/5' : readingVal[i] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} autoComplete="off" />
+                                        <Label className="font-bold">{q.question}</Label>
+                                        <Input 
+                                            value={readingAns[i] || ''} 
+                                            onChange={e => { if (targetStudentId && isAdmin) return; const na = [...readingAns]; na[i] = e.target.value; const nv = [...readingVal]; nv[i] = 'unchecked'; setReadingVal(nv as any); }} 
+                                            className={cn("h-10 text-foreground", readingVal[i] === 'correct' ? 'border-green-500 bg-green-50/5' : readingVal[i] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} 
+                                            autoComplete="off" 
+                                            readOnly={targetStudentId && isAdmin}
+                                        />
                                     </div>
                                 ))}
                             </div>
@@ -610,26 +647,35 @@ function ReflexivosRegularesContent() {
             case 'final_ex':
                 return (
                     <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left">
-                        <CardHeader><CardTitle className='text-foreground'>Ejercicio Final: Conjugación Adecuada</CardTitle></CardHeader>
+                        <CardHeader><CardTitle className='text-foreground'>COMPLETAR: Conjugación Adecuada</CardTitle></CardHeader>
                         <CardContent className="space-y-4">
-                            <ScrollArea className="h-[400px] pr-4">
+                            <ScrollArea className="h-[450px] pr-4">
                                 <div className="space-y-4 text-foreground">
                                     {finalExPrompts.map((q, i) => (
                                         <div key={i} className="flex flex-col gap-2 p-3 bg-muted/20 rounded-xl border">
                                             <p className="font-medium text-lg">{q.sentence}</p>
                                             <Input 
                                                 value={finalAns[i] || ''} 
-                                                onChange={e => { const na = [...finalAns]; na[i] = e.target.value; const nv = [...finalVal]; nv[i] = 'unchecked'; setFinalVal(nv as any); }} 
+                                                onChange={e => { 
+                                                    if (targetStudentId && isAdmin) return; 
+                                                    const na = [...finalAns]; 
+                                                    na[i] = e.target.value; 
+                                                    setFinalAns(na); 
+                                                    const nv = [...finalVal]; 
+                                                    nv[i] = 'unchecked'; 
+                                                    setFinalVal(nv as any); 
+                                                }} 
                                                 className={cn("h-10 max-w-[200px] text-foreground", finalVal[i] === 'correct' ? 'border-green-500 bg-green-50/5' : finalVal[i] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} 
                                                 placeholder="Conjugación..."
                                                 autoComplete="off"
+                                                readOnly={targetStudentId && isAdmin}
                                             />
                                         </div>
                                     ))}
                                 </div>
                             </ScrollArea>
                         </CardContent>
-                        <CardFooter className="justify-center border-t pt-6"><Button onClick={handleCheckFinal} size="lg" className="px-20 font-black h-14 text-xl text-white">Siguiente Paso</Button></CardFooter>
+                        <CardFooter className="justify-center border-t pt-6"><Button onClick={handleCheckFinal} size="lg" className="px-20 font-black h-14 text-xl text-white">Verificar Todo</Button></CardFooter>
                     </Card>
                 );
             case 'traducir_texto':
@@ -672,15 +718,16 @@ function ReflexivosRegularesContent() {
                                 <Label className='font-black text-primary uppercase text-sm'>Tu Traducción:</Label>
                                 <Textarea 
                                     value={translationText}
-                                    onChange={(e) => setTranslationText(e.target.value)}
+                                    onChange={(e) => { if (targetStudentId && isAdmin) return; setTranslationText(e.target.value); }}
                                     placeholder="Escribe el texto en español aquí..."
-                                    className="min-h-[200px] text-lg leading-relaxed"
+                                    className="min-h-[200px] text-lg leading-relaxed text-foreground"
+                                    readOnly={targetStudentId && isAdmin}
                                 />
                             </div>
                         </CardContent>
                         <CardFooter className="justify-center border-t pt-6 bg-muted/20">
-                            <Button onClick={handleFinishClass} size="lg" className="px-24 font-black h-16 text-2xl shadow-xl bg-primary hover:bg-primary/90 text-primary-foreground uppercase tracking-tighter">
-                                Terminar <Trophy className='ml-3 h-8 w-8' />
+                            <Button onClick={() => handleTopicComplete('traducir_texto')} size="lg" className="px-24 font-black h-16 text-2xl shadow-xl bg-primary hover:bg-primary/90 text-primary-foreground uppercase tracking-tighter">
+                                Terminar Clase <Trophy className='ml-3 h-8 w-8' />
                             </Button>
                         </CardFooter>
                     </Card>
@@ -689,22 +736,34 @@ function ReflexivosRegularesContent() {
         }
     };
 
+    const handleTopicSelectInternal = (topicKey: string) => {
+        const topic = learningPath.find(t => t.key === topicKey);
+        if (!isAdmin && topic?.status === 'locked') { 
+            toast({ variant: "destructive", title: "Contenido Bloqueado" }); 
+            return; 
+        }
+        setSelectedTopic(topicKey);
+    };
+
     return (
         <div className="flex w-full flex-col min-h-screen espanol-dashboard-bg text-foreground">
             <DashboardHeader />
             <main className="flex-1 p-4 md:p-8">
                 <div className="max-w-7xl mx-auto">
+                    {/* OJO ADMIN: Modo Supervisión */}
                     {targetStudentId && isAdmin && (
-                        <div className="mb-6 bg-yellow-500/20 border-2 border-yellow-500 p-4 rounded-xl flex items-center justify-between">
+                        <div className="mb-6 bg-yellow-500/20 border-2 border-yellow-500 p-4 rounded-xl flex items-center justify-between shadow-lg backdrop-blur-md">
                             <div className="flex items-center gap-3 text-yellow-700 dark:text-yellow-400">
-                                <Star className="h-6 w-6 fill-current" />
-                                <p className="font-bold uppercase tracking-tight text-sm">Modo Supervisión: {studentProfile?.name || targetStudentId}</p>
+                                <Star className="h-6 w-6 fill-current animate-pulse" />
+                                <p className="font-black uppercase tracking-tighter text-sm">Modo Supervisión: {studentProfile?.name || targetStudentId}</p>
                             </div>
-                            <Button variant="outline" size="sm" asChild className="border-yellow-600 text-yellow-700"><Link href="/admin">Cerrar</Link></Button>
+                            <Button variant="outline" size="sm" asChild className="border-yellow-600 text-yellow-700 hover:bg-yellow-500/10 transition-colors">
+                                <Link href="/admin">Cerrar</Link>
+                            </Button>
                         </div>
                     )}
                     <div className="mb-8 text-left text-white">
-                        <Link href="/espanol/a2" className="hover:underline text-sm font-bold flex items-center gap-2 mb-2"><ArrowLeft className="h-4 w-4" /> Volver al Curso A2</Link>
+                        <Link href="/espanol/a2" className="hover:underline text-sm font-bold flex items-center gap-2 mb-2 text-white/80"><ArrowLeft className="h-4 w-4" /> Volver al Curso A2</Link>
                         <h1 className="text-4xl font-black [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)] uppercase tracking-tight">Reflexivos Regulares 🇪🇸</h1>
                     </div>
                     <div className="grid gap-8 md:grid-cols-12 text-foreground">
@@ -717,12 +776,12 @@ function ReflexivosRegularesContent() {
                                         {learningPath.map(item => {
                                             const isLocked = item.status === 'locked' && !isAdmin;
                                             const isSelected = selectedTopic === item.key;
-                                            const Icon = item.icon;
+                                            const Icon = ICONS_CONFIG[item.status as keyof typeof ICONS_CONFIG] || BookOpen;
                                             return (
-                                                <li key={item.key} onClick={() => handleTopicSelect(item.key)} className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer text-foreground', isLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', isSelected && 'bg-muted text-primary font-black border-l-4 border-primary')}>
-                                                    <div className="flex items-center gap-3">
+                                                <li key={item.key} onClick={() => handleTopicSelectInternal(item.key)} className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer text-foreground', isLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', isSelected && 'bg-muted text-primary font-black border-l-4 border-primary')}>
+                                                    <div className="flex items-center gap-3 text-foreground">
                                                         {item.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500" /> : <Icon className={cn("h-5 w-5", isLocked ? "text-yellow-500" : "text-primary")} />}
-                                                        <span className="truncate">{item.name}</span>
+                                                        <span className="truncate text-xs uppercase font-bold text-foreground">{item.name}</span>
                                                     </div>
                                                     {isLocked && <Lock className="h-4 w-4 text-yellow-500/50" />}
                                                 </li>
@@ -744,5 +803,9 @@ function ReflexivosRegularesContent() {
 }
 
 export default function ReflexivosRegularesPage() {
-    return (<Suspense fallback={<div className="flex h-screen w-full items-center justify-center"><Loader2 className="animate-spin h-10 w-10 text-primary" /></div>}><ReflexivosRegularesContent /></Suspense>);
+    return (
+        <Suspense fallback={<div className="flex h-screen w-full items-center justify-center bg-background"><Loader2 className="animate-spin h-10 w-10 text-primary" /></div>}>
+            <ReflexivosRegularesContent />
+        </Suspense>
+    );
 }
