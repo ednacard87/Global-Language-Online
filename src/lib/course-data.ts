@@ -713,7 +713,7 @@ export const getA1SpanishClasses = () => [
     { id: 'es-a1-estar', name: 'Estar' },
     { id: 'es-a1-ser-y-estar', name: 'Ser y Estar' },
     { id: 'es-a1-preposiciones-de-lugar', name: 'Preposiciones de lugar' },
-    { id: 'es-a1-ubicacion', name: 'ubicacion' },
+    { id: 'es-a1-ubicacion', name: 'Ubicacion' },
     { id: 'es-a1-preguntas', name: 'Preguntas' },
     { id: 'es-a1-comida-y-restaurante', name: 'Comida y restaurante' },
     { id: 'es-a1-presente-simple-regulares', name: 'Presente simple Regulares' },
@@ -725,21 +725,21 @@ export const getA1SpanishClasses = () => [
 ];
 
 export const getA2SpanishClasses = () => [
-    { id: 'es-a2-reflexivos-regulares', name: 'reflexivos regulares' },
-    { id: 'es-a2-reflexivos-irregulares', name: 'reflexivos irregulares' },
-    { id: 'es-a2-reflexivos-mix', name: 'reflexivos mixtos' },
-    { id: 'es-a2-pasado-regulares', name: 'pasado regulares' },
-    { id: 'es-a2-pasado-irregulares', name: 'pasado irregulares' },
-    { id: 'es-a2-reflexivos-pasado', name: 'reflexivos pasado' },
-    { id: 'es-a2-imperfecto', name: 'imperfecto' },
-    { id: 'es-a2-pasado-vs-imperfecto', name: 'Pasado simple vs imperfecto' },
+    { id: 'es-a2-reflexivos-regulares', name: 'Reflexivos Regulares' },
+    { id: 'es-a2-reflexivos-irregulares', name: 'Reflexivos Irregulares' },
+    { id: 'es-a2-reflexivos-mix', name: 'Reflexivos Mixtos' },
+    { id: 'es-a2-pasado-regulares', name: 'Pasado Regulares' },
+    { id: 'es-a2-pasado-irregulares', name: 'Pasado Irregulares' },
+    { id: 'es-a2-reflexivos-pasado', name: 'Reflexivos Pasado' },
+    { id: 'es-a2-imperfecto', name: 'Imperfecto' },
+    { id: 'es-a2-pasado-vs-imperfecto', name: 'Pasado simple vs Imperfecto' },
     { id: 'es-a2-pasado-continuo', name: 'Pasado continuo' },
     { id: 'es-a2-obligacion', name: 'Obligación' },
-    { id: 'es-a2-perifrases-verbales', name: 'Perifrases verbales' },
+    { id: 'es-a2-perifrases-verbales', name: 'Perifrases Verbales' },
     { id: 'es-a2-comparativos-avanzados', name: 'Comparativos Avanzados' },
     { id: 'es-a2-imperativo-afirmativo', name: 'Imperativo Afirmativo' },
-    { id: 'es-a2-preterito-perfecto', name: 'preterito perfecto' },
-    { id: 'es-a2-pronombres-1', name: 'Pronombres 1 O.D / O.I' },
+    { id: 'es-a2-preterito-perfecto', name: 'Preterito Perfecto' },
+    { id: 'es-a2-pronombres-1', name: 'Pronombres 1: O.D / O.I' },
 ];
 
 export const getB1SpanishClasses = () => [
