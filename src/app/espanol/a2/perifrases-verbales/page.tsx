@@ -439,7 +439,7 @@ function PerifrasesVerbalesContent() {
                             <div className="p-6 bg-white/60 dark:bg-background/20 rounded-[2rem] border shadow-sm space-y-4">
                                 <h3 className="text-xl font-black text-primary uppercase mb-2">Estructura Básica</h3>
                                 <p className='text-lg'>Las perífrasis son combinaciones de dos o más verbos que funcionan como una sola idea verbal.</p>
-                                <div className='bg-primary/10 p-4 rounded-xl border-2 border-primary text-center font-mono text-xl'>Auxiliar + Enlace + Principal</div>
+                                <div className='bg-primary/10 p-4 rounded-xl border-2 border-primary text-center font-mono text-xl'>Verbo auxiliar + elemento de enlace + Verbo principal</div>
                             </div>
                             <div className="grid md:grid-cols-2 gap-4 text-black dark:text-white">
                                 {[
