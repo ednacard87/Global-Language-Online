@@ -43,9 +43,10 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Separator } from '@/components/ui/separator';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { VocabularyMatchingGame } from '@/components/dashboard/vocabulary-matching-game';
+import { Textarea } from '@/components/ui/textarea';
 
 // --- CONFIGURACIÓN DE INGENIERÍA ---
-const progressStorageVersion = 'progress_es_a2_comp_avanzados_v11_stable';
+const progressStorageVersion = 'progress_es_a2_comp_avanzados_v28_stable';
 const mainProgressKey = 'progress_a2_es_comparativos_avanzados';
 
 const ICONS_CONFIG = {
@@ -67,41 +68,41 @@ const shoppingVocab = [
 ];
 
 const conjugationVerbs = [
-    { v: "HABLAR", type: "ar", forms: ["hablaba", "hablabas", "hablaba", "hablábamos", "hablaban"] },
-    { v: "COMER", type: "er", forms: ["comía", "comías", "comía", "comíamos", "comían"] },
-    { v: "VIVIR", type: "ir", forms: ["vivía", "vivías", "vivía", "vivíamos", "vivían"] },
-    { v: "TENER", type: "er", forms: ["tenía", "tenías", "tenía", "teníamos", "tenían"] },
-    { v: "HACER", type: "er", forms: ["hacía", "hacías", "hacía", "hacíamos", "hacían"] },
-    { v: "QUERER", type: "er", forms: ["quería", "querías", "quería", "queríamos", "querían"] },
-    { v: "PODER", type: "er", forms: ["podía", "podías", "podía", "podíamos", "podían"] },
-    { v: "SABER", type: "er", forms: ["sabía", "sabías", "sabía", "sabíamos", "sabían"] },
-    { v: "PONER", type: "er", forms: ["ponía", "ponías", "ponía", "poníamos", "ponían"] },
-    { v: "SALIR", type: "ir", forms: ["salía", "salías", "salía", "salíamos", "salían"] },
-    { v: "VENIR", type: "ir", forms: ["venía", "venías", "venía", "veníamos", "venían"] },
-    { v: "DECIR", type: "ir", forms: ["decía", "decías", "decía", "decíamos", "decían"] },
-    { v: "DAR", type: "ar", forms: ["daba", "dabas", "daba", "dábamos", "daban"] },
-    { v: "VER", type: "irreg", forms: ["veía", "veías", "veía", "veíamos", "veían"] },
-    { v: "IR", type: "irreg", forms: ["iba", "ibas", "iba", "íbamos", "iban"] },
-    { v: "SER", type: "irreg", forms: ["era", "eras", "era", "éramos", "eran"] },
-    { v: "ESTUDIAR", type: "ar", forms: ["estudiaba", "estudiabas", "estudiaba", "estudiábamos", "estudiaban"] },
-    { v: "TRABAJAR", type: "ar", forms: ["trabajaba", "trabajabas", "trabajaba", "trabajábamos", "trabajaban"] },
-    { v: "COMPRAR", type: "ar", forms: ["compraba", "comprabas", "compraba", "comprábamos", "compraban"] },
-    { v: "LLEGAR", type: "ar", forms: ["llegaba", "llegabas", "llegaba", "llegábamos", "llegaban"] },
-    { v: "ESPERAR", type: "ar", forms: ["esperaba", "esperabas", "esperaba", "esperábamos", "esperaban"] },
-    { v: "PAGAR", type: "ar", forms: ["pagaba", "pagabas", "pagaba", "pagábamos", "pagaban"] },
-    { v: "AYUDAR", type: "ar", forms: ["ayudaba", "ayudabas", "ayudaba", "ayudábamos", "ayudaban"] },
-    { v: "BUSCAR", type: "ar", forms: ["buscaba", "buscabas", "buscaba", "buscábamos", "buscaban"] },
-    { v: "ELEGIR", type: "ir", forms: ["elegía", "elegías", "elegía", "elegíamos", "elegían"] },
-    { v: "VENDER", type: "er", forms: ["vendía", "vendías", "vendía", "vendíamos", "vendían"] },
-    { v: "RECIBIR", type: "ir", forms: ["recibía", "recibías", "recibía", "recibíamos", "recibían"] },
-    { v: "PENSAR", type: "ar", forms: ["pensaba", "pensabas", "pensaba", "pensábamos", "pensaban"] },
-    { v: "CREER", type: "er", forms: ["creía", "creías", "creía", "creíamos", "creían"] },
-    { v: "MOSTRAR", type: "ar", forms: ["mostraba", "mostrabas", "mostraba", "mostrábamos", "mostraban"] },
+    { v: "SPEAK (HABLAR)", forms: ["hablaba", "hablabas", "hablaba", "hablábamos", "hablaban"] },
+    { v: "EAT (COMER)", forms: ["comía", "comías", "comía", "comíamos", "comían"] },
+    { v: "LIVE (VIVIR)", forms: ["vivía", "vivías", "vivía", "vivíamos", "vivían"] },
+    { v: "WORK (TRABAJAR)", forms: ["trabajaba", "trabajabas", "trabajaba", "trabajábamos", "trabajaban"] },
+    { v: "STUDY (ESTUDIAR)", forms: ["estudiaba", "estudiabas", "estudiaba", "estudiábamos", "estudiaban"] },
+    { v: "RUN (CORRER)", forms: ["corría", "corrías", "corría", "corríamos", "corrían"] },
+    { v: "WRITE (ESCRIBIR)", forms: ["escribía", "escribías", "escribía", "escribíamos", "escribían"] },
+    { v: "SLEEP (DORMIR)", forms: ["dormía", "dormías", "dormía", "dormíamos", "dormían"] },
+    { v: "READ (LEER)", forms: ["leía", "leías", "leía", "leíamos", "leían"] },
+    { v: "DO (HACER)", forms: ["hacía", "hacías", "hacía", "hacíamos", "hacían"] },
+    { v: "SAY (DECIR)", forms: ["decía", "decías", "decía", "decíamos", "decían"] },
+    { v: "GO (IR)", forms: ["iba", "ibas", "iba", "íbamos", "iban"] },
+    { v: "SEE (VER)", forms: ["veía", "veías", "veía", "veíamos", "veían"] },
+    { v: "HEAR (OIR)", forms: ["oía", "oías", "oía", "oíamos", "oían"] },
+    { v: "COME (VENIR)", forms: ["venía", "venías", "venía", "veníamos", "venían"] },
+    { v: "THINK (PENSAR)", forms: ["pensaba", "pensabas", "pensaba", "pensábamos", "pensaban"] },
+    { v: "PLAY (JUGAR)", forms: ["jugaba", "jugabas", "jugaba", "jugábamos", "jugaban"] },
+    { v: "COOK (COCINAR)", forms: ["cocinaba", "cocinabas", "cocinaba", "cocinábamos", "cocinaban"] },
+    { v: "SING (CANTAR)", forms: ["cantaba", "cantabas", "cantaba", "cantábamos", "cantaban"] },
+    { v: "DANCE (BAILAR)", forms: ["bailaba", "bailabas", "bailaba", "bailábamos", "bailaban"] },
+    { v: "DRINK (BEBER)", forms: ["bebía", "bebías", "bebía", "bebíamos", "bebían"] },
+    { v: "LEARN (APRENDER)", forms: ["aprendía", "aprendías", "aprendía", "aprendíamos", "aprendían"] },
+    { v: "OPEN (ABRIR)", forms: ["abría", "abrías", "abría", "abríamos", "abrían"] },
+    { v: "CLOSE (CERRAR)", forms: ["cerraba", "cerrabas", "cerraba", "cerrábamos", "cerraban"] },
+    { v: "BRING (TRAER)", forms: ["traía", "traías", "traía", "traíamos", "traían"] },
+    { v: "FEEL (SENTIR)", forms: ["sentía", "sentías", "sentía", "sentíamos", "sentían"] },
+    { v: "SERVE (SERVIR)", forms: ["servía", "servías", "servía", "servíamos", "servían"] },
+    { v: "FOLLOW (SEGUIR)", forms: ["seguía", "seguías", "seguía", "seguíamos", "seguían"] },
+    { v: "BUILD (CONSTRUIR)", forms: ["construía", "construías", "construía", "construíamos", "construían"] },
+    { v: "DRIVE (CONDUCIR)", forms: ["conducía", "conducías", "conducía", "conducíamos", "conducían"] },
 ];
 
 const ex1Prompts = [
     { en: "THIS CAR IS BETTER THAN MINE", answer: ["este carro es mejor que el mío", "este coche es mejor que el mío"] },
-    { en: "THE NEW CELLPHONE IS MORE EXPENSIVE", answer: ["el celular nuevo es más caro"] },
+    { en: "THE NEW CELLPHONE IS MORE EXPENSIVE", answer: ["el celular nuevo es más caro", "el teléfono nuevo es más caro"] },
     { en: "SHE IS TALLER THAN HER SISTER", answer: ["ella es más alta que su hermana"] },
     { en: "THIS SHIRT IS WORSE THAN THE OTHER ONE", answer: ["esta camisa es peor que la otra"] },
     { en: "HE IS OLDER THAN ME", answer: ["él es mayor que yo"] },
@@ -147,78 +148,78 @@ const ex3Prompts = [
     { en: "THIS IS BETTER THAN NOTHING", answer: ["esto es mejor que nada"] },
 ];
 
+const readingData = {
+    title: "Misión de Lectura: Comparando Tiendas",
+    content: "Ayer fui al supermercado nuevo. Es mucho más grande que el supermercado de mi barrio. Los precios son mejores, pero hay demasiada gente. Mi esposa piensa que la calidad de las frutas es tan buena como la de la feria, pero para mí es peor. Yo prefiero comprar en tiendas más pequeñas porque son más tranquilas. Sin embargo, en el supermercado grande la oferta de celulares es mayor y la tecnología es más moderna.",
+    questions: [
+        { question: "¿Cómo es el supermercado nuevo comparado con el del barrio?", a: ["más grande", "mucho más grande"] },
+        { question: "¿Qué piensa la esposa sobre la calidad de las frutas?", a: ["tan buena como la de la feria", "tan buena"] },
+        { question: "¿Por qué el narrador prefiere las tiendas pequeñas?", a: ["porque son más tranquilas", "más tranquilas"] },
+        { question: "¿Dónde es mayor la oferta de celulares?", a: ["en el supermercado grande", "el supermercado grande"] },
+    ]
+};
+
 const ex4Options = [
+    { text: "ESTE CELULAR ES _______ QUE EL TUYO.", options: ["MEJOR", "MÁS BUENO", "BIEN"], answer: "MEJOR" },
+    { text: "MI HERMANA ES _______ QUE YO.", options: ["MAYOR", "MÁS VIEJA", "MÁS GRANDE"], answer: "MAYOR" },
+    { text: "EL SERVICIO ES _______ QUE ANTES.", options: ["PEOR", "MÁS MALO", "MALO"], answer: "PEOR" },
+    { text: "ESTA MARCA ES _______ CARA COMO LA OTRA.", options: ["TAN", "COMO", "MÁS"], answer: "TAN" },
+    { text: "EL PRECIO ES _______ BAJO EN ESTA TIENDA.", options: ["MÁS", "TAN", "MUY"], answer: "MÁS" },
+    { text: "LA CALIDAD ES _______ IMPORTANTE QUE EL PRECIO.", options: ["MÁS", "TAN", "COMO"], answer: "MÁS" },
+    { text: "SU CASA ES _______ GRANDE COMO LA MÍA.", options: ["TAN", "COMO", "MÁS"], answer: "TAN" },
+    { text: "ESTE VESTIDO ES _______ QUE LA FALDA.", options: ["PEOR", "MÁS LARGO", "LARGO"], answer: "MÁS LARGO" },
+    { text: "MI HIJO ES _______ QUE TU HIJA.", options: ["MENOR", "MÁS PEQUEÑO", "PEQUEÑO"], answer: "MENOR" },
+    { text: "EL CLIMA ESTÁ _______ QUE AYER.", options: ["MEJOR", "BIEN", "MÁS BIEN"], answer: "MEJOR" },
     { text: "ESTA TIENDA ES _______ QUE LA OTRA.", options: ["MEJOR", "MÁS BUENA", "BIEN"], answer: "MEJOR" },
     { text: "MI HERMANO ES _______ QUE YO.", options: ["MAYOR", "MÁS VIEJO", "MÁS GRANDE"], answer: "MAYOR" },
     { text: "EL CLIMA ESTÁ _______ QUE AYER.", options: ["PEOR", "MÁS MALO", "MALO"], answer: "PEOR" },
     { text: "EL CELULAR ES _______ CARO COMO LA TABLET.", options: ["TAN", "COMO", "MÁS"], answer: "TAN" },
     { text: "ESTA FALDA ES _______ QUE EL VESTIDO.", options: ["MENOR", "PEOR", "MÁS CORTA"], answer: "MÁS CORTA" },
     { text: "EL PRECIO ES _______ BAJO DE LO QUE PENSÉ.", options: ["MÁS", "TAN", "MUY"], answer: "MÁS" },
-    { text: "SU CASA ES _______ GRANDE COMO LA MÍA.", options: ["TAN", "COMO", "MÁS"], answer: "TAN" },
-    { text: "ESTE LIBRO ES _______ QUE EL TUYO.", options: ["PEOR", "MÁS MALO", "MALO"], answer: "PEOR" },
-    { text: "EL SERVICIO ES _______ QUE ANTES.", options: ["MEJOR", "MÁS BIEN", "BUENO"], answer: "MEJOR" },
-    { text: "LA CALIDAD ES _______ IMPORTANTE QUE EL PRECIO.", options: ["MÁS", "TAN", "COMO"], answer: "MÁS" },
-    { text: "ELLA ES _______ JOVEN QUE ÉL.", options: ["MENOR", "MÁS PEQUEÑA", "PEQUEÑA"], answer: "MENOR" },
     { text: "EL RESTAURANTE ES _______ CARO COMO EL HOTEL.", options: ["TAN", "COMO", "MÁS"], answer: "TAN" },
-    { text: "MI HIJO ES _______ QUE TU HIJA.", options: ["MAYOR", "MÁS GRANDE", "VIEJO"], answer: "MAYOR" },
-    { text: "EL EXAMEN FUE _______ QUE EL ANTERIOR.", options: ["PEOR", "MÁS DIFÍCIL", "MALO"], answer: "PEOR" },
     { text: "LA FRUTA ES _______ SALUDABLE QUE EL DULCE.", options: ["MÁS", "TAN", "COMO"], answer: "MÁS" },
-    { text: "EL AGUA ES _______ NECESARIA COMO EL AIRE.", options: ["TAN", "MÁS", "COMO"], answer: "TAN" },
     { text: "ESTE CARRITO ES _______ QUE EL OTRO.", options: ["MEJOR", "MÁS BIEN", "BUENO"], answer: "MEJOR" },
-    { text: "EL PASILLO 5 ES _______ LARGO QUE EL 3.", options: ["MÁS", "TAN", "COMO"], answer: "MÁS" },
-    { text: "LA MARCA X ES _______ QUE LA MARCA Y.", options: ["PEOR", "MÁS MALA", "MALO"], answer: "PEOR" },
     { text: "LA BATERÍA DURA _______ QUE ANTES.", options: ["MÁS", "TAN", "COMO"], answer: "MÁS" },
 ];
 
 const completarPrompts = [
-    { s: "1. Yo (hablar) _______ con mi mamá cada noche.", a: "hablaba" },
-    { s: "2. Tú (comer) _______ muchas frutas de niño.", a: "comías" },
-    { s: "3. Él (vivir) _______ en un apartamento pequeño.", a: "vivía" },
-    { s: "4. Nosotros (ser) _______ muy buenos amigos.", a: "éramos" },
-    { s: "5. Ellos (ir) _______ al parque todos los domingos.", a: "iban" },
-    { s: "6. Ella (ver) _______ mucha televisión de joven.", a: "veía" },
-    { s: "7. Yo (tener) _______ un perro llamado Toby.", a: "tenía" },
-    { s: "8. Tú (hacer) _______ la tarea por la tarde.", a: "hacías" },
-    { s: "9. Él (querer) _______ ser astronauta.", a: "quería" },
-    { s: "10. Nosotros (podre) _______ jugar hasta tarde.", a: "podíamos" },
-    { s: "11. Yo (saber) _______ la verdad siempre.", a: "sabía" },
-    { s: "12. Ellos (poner) _______ la mesa antes de cenar.", a: "ponían" },
-    { s: "13. Ella (salir) _______ con sus amigas al cine.", a: "salía" },
-    { s: "14. Nosotros (venir) _______ a este lugar a menudo.", a: "veníamos" },
-    { s: "15. Tú (decir) _______ mentiras a veces.", a: "decías" },
-    { s: "16. Yo (dar) _______ regalos en navidad.", a: "daba" },
-    { s: "17. Ellos (trabajar) _______ en una oficina grande.", a: "trabajaban" },
-    { s: "18. Ella (estudiar) _______ francés en la escuela.", a: "estudiaba" },
-    { s: "19. Nosotros (llegar) _______ siempre temprano.", a: "llegábamos" },
-    { s: "20. Tú (esperar) _______ el bus cada mañana.", a: "esperabas" },
-    { s: "21. Yo (correr) _______ en el estadio.", a: "corría" },
-    { s: "22. Él (beber) _______ jugo de naranja.", a: "bebía" },
-    { s: "23. Ellos (escribir) _______ cartas de amor.", a: "escribían" },
-    { s: "24. Nosotros (abrir) _______ la ventana en verano.", a: "abríamos" },
-    { s: "25. Tú (cerrar) _______ la puerta con llave.", a: "cerrabas" },
-    { s: "26. Yo (volver) _______ a casa cansado.", a: "volvía" },
-    { s: "27. Ella (pedir) _______ helado de vainilla.", a: "pedía" },
-    { s: "28. Nosotros (dormir) _______ mucho los domingos.", a: "dormíamos" },
-    { s: "29. Ellos (pensar) _______ en el futuro.", a: "pensaban" },
-    { s: "30. Tú (jugar) _______ con tus juguetes.", a: "jugabas" },
+    { s: "1. Yo (comprar) _______ ropa todos los meses.", a: "compraba" },
+    { s: "2. Tú (tener) _______ un celular viejo.", a: "tenías" },
+    { s: "3. Él (vivir) _______ cerca del supermercado.", a: "vivía" },
+    { s: "4. Nosotros (ser) _______ clientes frecuentes.", a: "éramos" },
+    { s: "5. Ellos (ir) _______ de compras los sábados.", a: "iban" },
+    { s: "6. Ella (ver) _______ los precios antes de comprar.", a: "veía" },
+    { s: "7. Yo (querer) _______ esa marca de zapatos.", a: "quería" },
+    { s: "8. Tú (hacer) _______ la lista del mercado.", a: "hacías" },
+    { s: "9. Él (pagar) _______ siempre en efectivo.", a: "pagaba" },
+    { s: "10. Nosotros (poder) _______ comprar más barato.", a: "podíamos" },
+    { s: "11. Yo (saber) _______ dónde estaban las ofertas.", a: "sabía" },
+    { s: "12. Ellos (poner) _______ todo en el carrito.", a: "ponían" },
+    { s: "13. Ella (salir) _______ temprano para el centro comercial.", a: "salía" },
+    { s: "14. Nosotros (venir) _______ a esta tienda a menudo.", a: "veníamos" },
+    { s: "15. Tú (decir) _______ que la calidad era mejor.", a: "decías" },
+    { s: "16. Yo (dar) _______ propina al cajero.", a: "daba" },
+    { s: "17. Ellos (trabajar) _______ en el pasillo 5.", a: "trabajaban" },
+    { s: "18. Ella (estudiar) _______ diseño de modas.", a: "estudiaba" },
+    { s: "19. Nosotros (llegar) _______ antes de cerrar.", a: "llegábamos" },
+    { s: "20. Tú (esperar) _______ el descuento.", a: "esperabas" },
+    { s: "21. Yo (correr) _______ para alcanzar la oferta.", a: "corría" },
+    { s: "22. Él (beber) _______ jugo en el pasillo.", a: "bebía" },
+    { s: "23. Ellos (escribir) _______ los precios en un cuaderno.", a: "escribían" },
+    { s: "24. Nosotros (abrir) _______ la tienda a las 8.", a: "abríamos" },
+    { s: "25. Tú (cerrar) _______ el trato.", a: "cerrabas" },
+    { s: "26. Yo (volver) _______ a casa con muchas bolsas.", a: "volvía" },
+    { s: "27. Ella (pedir) _______ rebaja.", a: "pedía" },
+    { s: "28. Nosotros (dormir) _______ después de comprar.", a: "dormíamos" },
+    { s: "29. Ellos (pensar) _______ en el gasto.", a: "pensaban" },
+    { s: "30. Tú (jugar) _______ con los carritos.", a: "jugabas" },
 ];
-
-const readingData = {
-    title: "Dos Supermercados Diferentes",
-    content: "Mi madre prefiere el supermercado 'El Sol' porque es mejor que 'La Luna'. En 'El Sol', los pasillos son más anchos y la calidad de la fruta es mejor. Sin embargo, 'La Luna' es más barato y tiene más ofertas. Los cajeros de 'El Sol' son más amables, pero las colas son tan largas como en 'La Luna'. Al final, ella siempre elige 'El Sol' porque el estilo de la tienda es más moderno.",
-    questions: [
-        { id: 'q1', question: "¿Cuál supermercado es mejor para la madre?", a: ["el sol", "supermercado el sol"] },
-        { id: 'q2', question: "¿Cómo son los pasillos en 'El Sol'?", a: ["más anchos"] },
-        { id: 'q3', question: "¿Cuál supermercado tiene mejores ofertas?", a: ["la luna", "supermercado la luna"] },
-        { id: 'q4', question: "¿Cómo son las colas en ambos lugares?", a: ["tan largas", "igual de largas"] }
-    ]
-};
 
 const finalExPrompts = [
     { en: "THIS IS NOT BETTER", answer: ["esto no es mejor"] },
     { en: "SHE IS NOT TALLER THAN HIM", answer: ["ella no es más alta que él"] },
     { en: "THE CELLPHONE IS NOT AS EXPENSIVE AS THE LAPTOP", answer: ["el celular no es tan caro como el portátil", "el celular no es tan caro como la computadora"] },
-    { en: "WE ARE NOT OLDER THAN THEM", answer: ["nosotros no somos mayores que ellos"] },
+    { en: "WE ARE NOT OLDER THAN THEM", answer: ["nosotros no somos mayores que ellos", "nosotras no somos mayores que ellas"] },
     { en: "THE PRICES ARE NOT BETTER TODAY", answer: ["los precios no son mejores hoy"] },
     { en: "IT IS NOT AS FAR AS YOU THINK", answer: ["no está tan lejos como piensas"] },
     { en: "THE QUALITY IS NOT AS GOOD AS THE STYLE", answer: ["la calidad no es tan buena como el estilo"] },
@@ -242,6 +243,12 @@ const BallsExercise = ({ title, prompts, onComplete, vocabulary }: any) => {
     const [answer, setAnswer] = useState('');
     const [status, setStatus] = useState<Record<number, 'correct' | 'incorrect' | 'unchecked'>>({});
 
+    useEffect(() => { 
+        setCurrentIndex(0);
+        setAnswer('');
+        setStatus({});
+    }, [prompts]);
+
     useEffect(() => { setAnswer(''); }, [currentIndex]);
 
     const handleCheck = () => {
@@ -258,7 +265,7 @@ const BallsExercise = ({ title, prompts, onComplete, vocabulary }: any) => {
             <CardHeader>
                 <div className="flex justify-between items-start text-left">
                     <div className="w-full">
-                        <CardTitle className="text-foreground dark:text-primary">{title}</CardTitle>
+                        <CardTitle className="text-foreground dark:text-primary uppercase tracking-tight">{title}</CardTitle>
                         <CardDescription className='font-bold text-foreground mt-1'>Traduce la frase al español correctamente.</CardDescription>
                         <div className="flex gap-2 justify-start flex-wrap pt-4">
                             {prompts.map((_: any, i: number) => (
@@ -270,7 +277,8 @@ const BallsExercise = ({ title, prompts, onComplete, vocabulary }: any) => {
                         <Popover>
                             <PopoverTrigger asChild>
                                 <Button variant="outline" size="sm" className="border-2 border-brand-blue animate-border-pulse shrink-0">
-                                    <BookText className="mr-2 h-4 w-4" /> Vocabulary
+                                    <BookText className="mr-2 h-4 w-4" />
+                                    Vocabulary
                                 </Button>
                             </PopoverTrigger>
                             <PopoverContent className="w-64">
@@ -301,6 +309,79 @@ const BallsExercise = ({ title, prompts, onComplete, vocabulary }: any) => {
     );
 };
 
+const ChoiceExercise = ({ prompts, onComplete, title }: any) => {
+    const { toast } = useToast();
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [status, setStatus] = useState<Record<number, 'correct' | 'incorrect' | 'unchecked'>>({});
+
+    const handleSelect = (option: string) => {
+        const isCorrect = option.toUpperCase() === prompts[currentIndex].answer.toUpperCase();
+        setStatus(prev => ({ ...prev, [currentIndex]: isCorrect ? 'correct' : 'incorrect' }));
+        if (isCorrect) toast({ title: "¡Correcto!" });
+        else toast({ variant: 'destructive', title: "Sigue intentando" });
+    };
+
+    const handleNext = () => {
+        if (currentIndex < prompts.length - 1) {
+            setCurrentIndex(prev => prev + 1);
+        } else {
+            onComplete();
+        }
+    };
+
+    return (
+        <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground">
+            <CardHeader>
+                <div>
+                    <CardTitle>{title}</CardTitle>
+                    <CardDescription className='font-bold text-foreground mt-1'>Elige la opción correcta.</CardDescription>
+                    <div className="flex gap-2 justify-start flex-wrap pt-4">
+                        {prompts.map((_: any, i: number) => (
+                            <div key={i} onClick={() => setCurrentIndex(i)} className={cn("h-8 w-8 rounded-full border-2 flex items-center justify-center text-xs font-bold cursor-pointer transition-all", currentIndex === i ? "border-primary ring-2 ring-primary" : "border-muted", status[i] === 'correct' ? "bg-green-500 text-white border-green-500" : status[i] === 'incorrect' ? "bg-red-500 text-white border-red-500" : "bg-card text-foreground")}>
+                                {i + 1}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </CardHeader>
+            <CardContent className="space-y-8 py-10">
+                <div className="text-2xl font-bold text-center leading-relaxed">
+                    {prompts[currentIndex].text.split('_______').map((part: string, i: number) => (
+                        <React.Fragment key={i}>
+                            {part}
+                            {i < prompts[currentIndex].text.split('_______').length - 1 && (
+                                <span className="text-primary border-b-2 border-dashed border-primary px-4 mx-2">
+                                    {status[currentIndex] === 'correct' ? prompts[currentIndex].answer : '...'}
+                                </span>
+                            )}
+                        </React.Fragment>
+                    ))}
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl mx-auto">
+                    {prompts[currentIndex].options.map((opt: string) => (
+                        <Button 
+                            key={opt} 
+                            onClick={() => handleSelect(opt)} 
+                            variant="outline" 
+                            className={cn(
+                                "h-16 text-xl font-black uppercase",
+                                status[currentIndex] === 'correct' && opt === prompts[currentIndex].answer && "border-green-500 bg-green-50 text-green-700 shadow-md scale-105",
+                                status[currentIndex] === 'incorrect' && opt !== prompts[currentIndex].answer && "border-red-500 bg-red-50 text-red-700"
+                            )}
+                        >
+                            {opt}
+                        </Button>
+                    ))}
+                </div>
+            </CardContent>
+            <CardFooter className="justify-between border-t pt-6">
+                <Button variant="outline" onClick={() => setCurrentIndex(p => Math.max(0, p - 1))} disabled={currentIndex === 0}>Anterior</Button>
+                <Button onClick={handleNext} disabled={status[currentIndex] !== 'correct'} className="px-12 font-bold h-12">Siguiente</Button>
+            </CardFooter>
+        </Card>
+    );
+};
+
 // --- MAIN CLASS COMPONENT ---
 
 function ComparativosAvanzadosContentInternal({ overrideStudentId }: { overrideStudentId?: string | null }) {
@@ -326,11 +407,8 @@ function ComparativosAvanzadosContentInternal({ overrideStudentId }: { overrideS
     const [canAdvanceVocab, setCanAdvanceVocab] = useState(false);
 
     const [conjIdx, setConjIdx] = useState(0);
-    const [conjAns, setConjAns] = useState<string[]>(Array(5).fill(''));
-    const [conjVal, setConjVal] = useState<any[]>(Array(5).fill('unchecked'));
-
-    const [optIdx, setOptIdx] = useState(0);
-    const [optSolved, setOptSolved] = useState<Record<number, boolean>>({});
+    const [conjAnswers, setConjAnswers] = useState<string[]>(Array(5).fill(''));
+    const [conjValidation, setConjValidation] = useState<any[]>(Array(5).fill('unchecked'));
 
     const [compAns, setCompAns] = useState<string[]>(Array(completarPrompts.length).fill(''));
     const [compVal, setCompVal] = useState<any[]>(Array(completarPrompts.length).fill('unchecked'));
@@ -383,13 +461,6 @@ function ComparativosAvanzadosContentInternal({ overrideStudentId }: { overrideS
         return Math.round((comp / learningPath.length) * 100);
     }, [learningPath]);
 
-    useEffect(() => {
-        if (!initialLoadComplete || isInitialLoading || isAdmin || !studentDocRef || learningPath.length === 0 || targetStudentId) return;
-        const s: any = { lastSelectedTopic: selectedTopic, vocabAnswers, compAns, transText };
-        learningPath.forEach(t => s[t.key] = t.status);
-        updateDocumentNonBlocking(studentDocRef, { [`lessonProgress.${progressStorageVersion}`]: s, [`progress.${mainProgressKey}`]: progressValue });
-    }, [learningPath, progressValue, selectedTopic, isAdmin, studentDocRef, isInitialLoading, initialLoadComplete, targetStudentId, vocabAnswers, compAns, transText]);
-
     const handleTopicComplete = useCallback((completedKey: string) => { setTopicToComplete(completedKey); }, []);
 
     const handleTopicSelect = (topicKey: string) => {
@@ -401,6 +472,13 @@ function ComparativosAvanzadosContentInternal({ overrideStudentId }: { overrideS
         setSelectedTopic(topicKey);
         if (['grammar'].includes(topicKey)) handleTopicComplete(topicKey);
     };
+
+    useEffect(() => {
+        if (!initialLoadComplete || isInitialLoading || isAdmin || !studentDocRef || learningPath.length === 0 || targetStudentId) return;
+        const s: any = { lastSelectedTopic: selectedTopic, vocabAnswers, compAns, transText };
+        learningPath.forEach(t => s[t.key] = t.status);
+        updateDocumentNonBlocking(studentDocRef, { [`lessonProgress.${progressStorageVersion}`]: s, [`progress.${mainProgressKey}`]: progressValue });
+    }, [learningPath, progressValue, selectedTopic, isAdmin, studentDocRef, isInitialLoading, initialLoadComplete, targetStudentId, vocabAnswers, compAns, transText]);
 
     useEffect(() => {
         if (!topicToComplete) return;
@@ -427,6 +505,28 @@ function ComparativosAvanzadosContentInternal({ overrideStudentId }: { overrideS
         setVocabValidation(nv);
         if (allOk) { setCanAdvanceVocab(true); toast({ title: "¡Excelente!", description: "Has desbloqueado la gramática." }); }
         else toast({ variant: 'destructive', title: "Revisa tus respuestas" });
+    };
+
+    const handleConjCheck = () => {
+        const verb = conjugationVerbs[conjIdx];
+        const nv = conjAnswers.map((a, i) => a.trim().toLowerCase() === verb.forms[i] ? 'correct' : 'incorrect');
+        setConjValidation(nv);
+        if (nv.every(st => st === 'correct')) { 
+            toast({ title: "¡Perfecto!" }); 
+            if (conjIdx < conjugationVerbs.length - 1) { 
+                setTimeout(() => { setConjIdx(p => p+1); setConjAnswers(Array(5).fill('')); setConjValidation(Array(5).fill('unchecked')); }, 800); 
+            } else handleTopicComplete('conjugation'); 
+        }
+        else toast({ variant: 'destructive', title: "Revisa la conjugación" });
+    };
+
+    const handleCheckReading = () => {
+        let allOk = true; const nv: any = {};
+        readingData.questions.forEach((q, i) => { 
+            const ok = q.a.some(a => (readAns[i] || '').trim().toLowerCase().includes(a.toLowerCase())); 
+            nv[i] = ok ? 'correct' : 'incorrect'; if (!ok) allOk = false; 
+        });
+        setReadVal(nv); if (allOk) { toast({ title: "¡Lectura superada!" }); handleTopicComplete('reading'); } else toast({ variant: 'destructive', title: "Revisa las respuestas" });
     };
 
     const renderContent = () => {
@@ -484,22 +584,17 @@ function ComparativosAvanzadosContentInternal({ overrideStudentId }: { overrideS
                             <div className="p-8 bg-gradient-to-br from-primary/5 to-brand-purple/5 rounded-[2.5rem] border-2 border-dashed border-primary/20 text-center text-foreground"><h3 className="text-5xl font-black text-primary uppercase tracking-tighter">{v.v}</h3></div>
                             <div className='grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-xl text-foreground'>
                                 {["YO", "TÚ", "ÉL/ELLA", "NOSOTROS", "ELLOS"].map((p, i) => (
-                                    <div key={i} className='space-y-1'><Label className='text-[10px] font-black uppercase text-muted-foreground'>{p}</Label><Input value={conjAns[i]} onChange={e => { if (targetStudentId) return; const na = [...conjAns]; na[i] = e.target.value; setConjAns(na); const nv = [...conjVal]; nv[i] = 'unchecked'; setConjVal(nv); }} className={cn("h-10 text-lg uppercase transition-all text-foreground", conjVal[i] === 'correct' ? 'border-green-500 bg-green-50/10' : conjVal[i] === 'incorrect' ? 'border-red-500 bg-red-50/10' : '')} autoComplete="off" readOnly={!!targetStudentId} /></div>
+                                    <div key={i} className='space-y-1'><Label className='text-[10px] font-black uppercase text-muted-foreground'>{p}</Label><Input value={conjAnswers[i]} onChange={e => { if (targetStudentId) return; const na = [...conjAnswers]; na[i] = e.target.value; setConjAnswers(na); const nv = [...conjValidation]; nv[i] = 'unchecked'; setConjValidation(nv); }} className={cn("h-10 text-lg uppercase transition-all text-foreground", conjValidation[i] === 'correct' ? 'border-green-500 bg-green-50/10' : conjValidation[i] === 'incorrect' ? 'border-red-500 bg-red-50/10' : '')} autoComplete="off" readOnly={!!targetStudentId} /></div>
                                 ))}
                             </div>
                         </CardContent>
-                        <CardFooter className="justify-center border-t p-8 bg-muted/5"><Button onClick={() => {
-                            const nv = conjAns.map((a, i) => a.trim().toLowerCase() === v.forms[i] ? 'correct' : 'incorrect');
-                            setConjVal(nv);
-                            if (nv.every(st => st === 'correct')) { toast({ title: "¡Perfecto!" }); if (conjIdx < conjugationVerbs.length - 1) { setTimeout(() => { setConjIdx(p => p+1); setConjAns(Array(5).fill('')); setConjVal(Array(5).fill('unchecked')); }, 800); } else handleTopicComplete('conjugation'); }
-                            else toast({ variant: 'destructive', title: "Revisa la conjugación" });
-                        }} size="lg" className="px-20 font-black h-14 text-xl shadow-xl uppercase">Verificar Verbo</Button></CardFooter>
+                        <CardFooter className="justify-center border-t p-8 bg-muted/5"><Button onClick={handleConjCheck} size="lg" className="px-20 font-black h-14 text-xl shadow-xl uppercase">Verificar Verbo</Button></CardFooter>
                     </Card>
                 );
-            case 'exercise_1': return <BallsExercise title="Ejercicio 1" prompts={ex1Prompts} onComplete={() => handleTopicComplete('exercise_1')} vocabulary={genericVocab} />;
-            case 'exercise_2': return <BallsExercise title="Ejercicio 2" prompts={ex2Prompts} onComplete={() => handleTopicComplete('exercise_2')} vocabulary={genericVocab} />;
-            case 'exercise_3': return <BallsExercise title="Ejercicio 3" prompts={ex3Prompts} onComplete={() => handleTopicComplete('exercise_3')} vocabulary={genericVocab} />;
+            case 'exercise_1': return <BallsExercise key="ex1" title="Ejercicio 1" prompts={ex1Prompts} onComplete={() => handleTopicComplete('exercise_1')} vocabulary={genericVocab} />;
+            case 'exercise_2': return <BallsExercise key="ex2" title="Ejercicio 2" prompts={ex2Prompts} onComplete={() => handleTopicComplete('exercise_2')} vocabulary={genericVocab} />;
             case 'vocab_game': return <VocabularyMatchingGame data={shoppingVocab.map(v => ({ spanish: v.es, english: [v.en] }))} onComplete={() => handleTopicComplete('vocab_game')} title="Memory Game: Shopping" />;
+            case 'exercise_3': return <BallsExercise key="ex3" title="Ejercicio 3" prompts={ex3Prompts} onComplete={() => handleTopicComplete('exercise_3')} vocabulary={genericVocab} />;
             case 'reading':
                 return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 text-foreground text-left">
@@ -510,30 +605,10 @@ function ComparativosAvanzadosContentInternal({ overrideStudentId }: { overrideS
                                 <div key={i} className="space-y-2"><Label className='font-bold text-foreground'>{i+1}. {q.question}</Label><Input value={readAns[i] || ''} onChange={e => { if (targetStudentId) return; setReadAns({...readAns, [i]: e.target.value}); setReadVal({...readVal, [i]: 'unchecked'}); }} className={cn('mt-1 text-lg h-12 text-foreground', readVal[i] === 'correct' ? 'border-green-500 bg-green-50/10' : readVal[i] === 'incorrect' ? 'border-red-500 bg-red-50/10' : '')} autoComplete="off" readOnly={!!targetStudentId} /></div>
                             ))}</div>
                         </CardContent>
-                        <CardFooter className="justify-center border-t pt-6"><Button onClick={() => {
-                            let allOk = true; const nv: any = {};
-                            readingData.questions.forEach((q, i) => { const ok = q.a.some(a => (readAns[i] || '').trim().toLowerCase().includes(a.toLowerCase())); nv[i] = ok ? 'correct' : 'incorrect'; if (!ok) allOk = false; });
-                            setReadVal(nv); if (allOk) { toast({ title: "¡Lectura superada!" }); handleTopicComplete('reading'); } else toast({ variant: 'destructive', title: "Revisa las respuestas" });
-                        }} size="lg" className="px-12 font-bold" disabled={!!targetStudentId}>Verificar Lectura</Button></CardFooter>
+                        <CardFooter className="justify-center border-t pt-6"><Button onClick={handleCheckReading} size="lg" className="px-16 font-bold" disabled={!!targetStudentId}>Verificar Lectura</Button></CardFooter>
                     </Card>
                 );
-            case 'exercise_4':
-                return (
-                    <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground">
-                        <CardHeader><CardTitle className='text-primary uppercase tracking-tighter'>Ejercicio 4: Opción Múltiple</CardTitle><div className="flex gap-2 pt-4 flex-wrap">{ex4Options.map((_, i) => (<div key={i} onClick={() => setOptIdx(i)} className={cn("h-8 w-8 rounded-full border-2 flex items-center justify-center text-xs font-bold cursor-pointer transition-all", optIdx === i ? "border-primary ring-2 ring-primary" : "border-muted", optSolved[i] ? "bg-green-500 text-white border-green-500" : "bg-card")}>{i + 1}</div>))}</div></CardHeader>
-                        <CardContent className="space-y-8 py-10">
-                            <div className="text-3xl font-black text-center text-foreground leading-relaxed">
-                                {ex4Options[optIdx].text.split('_______').map((part: string, i: number) => (<Fragment key={i}>{part}{i < 1 && <span className={cn("border-b-4 border-dashed px-4 mx-2", optSolved[optIdx] ? "text-primary border-primary" : "text-muted-foreground")}>{optSolved[optIdx] ? ex4Options[optIdx].answer : '...'}</span>}</Fragment>))}
-                            </div>
-                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl mx-auto">
-                                {ex4Options[optIdx].options.map((opt: string) => (
-                                    <Button key={opt} onClick={() => { if (opt.toUpperCase() === ex4Options[optIdx].answer.toUpperCase()) { setOptSolved({...optSolved, [optIdx]: true}); toast({ title: "¡Correcto!" }); } else toast({ variant: 'destructive', title: "Incorrecto" }); }} variant="outline" className={cn("h-16 text-xl font-black uppercase transition-all", optSolved[optIdx] && opt.toUpperCase() === ex4Options[optIdx].answer.toUpperCase() && "border-green-500 bg-green-50 text-green-700 shadow-lg scale-105")}>{opt}</Button>
-                                ))}
-                            </div>
-                        </CardContent>
-                        <CardFooter className="justify-between border-t pt-6"><Button variant="outline" onClick={() => setOptIdx(p => Math.max(0, p - 1))} disabled={optIdx === 0}>Anterior</Button><Button onClick={() => { if (optIdx < ex4Options.length - 1) setOptIdx(p => p + 1); else handleTopicComplete('exercise_4'); }} disabled={!optSolved[optIdx]} className="px-12 font-black h-12 shadow-xl">Siguiente</Button></CardFooter>
-                    </Card>
-                );
+            case 'exercise_4': return <ChoiceExercise key="ex4" prompts={ex4Options} onComplete={() => handleTopicComplete('exercise_4')} title="Ejercicio 4: Opciones" />;
             case 'completar':
                 return (
                     <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left">
@@ -542,7 +617,7 @@ function ComparativosAvanzadosContentInternal({ overrideStudentId }: { overrideS
                             {completarPrompts.map((q, i) => (
                                 <div key={i} className="flex flex-col gap-2 p-4 bg-muted/10 rounded-2xl border shadow-sm">
                                     <p className="font-bold text-lg text-foreground">{q.s}</p>
-                                    <Input value={compAns[i]} onChange={e => { if (targetStudentId) return; const na = [...compAns]; na[i] = e.target.value; setCompAns(na); const nv = [...compVal]; nv[i] = 'unchecked'; setCompVal(nv); }} className={cn("h-10 max-w-sm text-lg font-mono uppercase text-foreground", compVal[i] === 'correct' ? 'border-green-500 bg-green-50/10' : compVal[i] === 'incorrect' ? 'border-red-500 bg-red-50/10' : '')} placeholder="Respuesta..." autoComplete="off" readOnly={!!targetStudentId} />
+                                    <Input value={compAns[i] || ''} onChange={e => { if (targetStudentId) return; const na = [...compAns]; na[i] = e.target.value; setCompAns(na); const nv = [...compVal]; nv[i] = 'unchecked'; setCompVal(nv); }} className={cn("h-10 max-w-sm text-lg font-mono uppercase text-foreground", compVal[i] === 'correct' ? 'border-green-500 bg-green-50/10' : compVal[i] === 'incorrect' ? 'border-red-500 bg-red-50/10' : '')} placeholder="Respuesta..." autoComplete="off" readOnly={!!targetStudentId} />
                                 </div>
                             ))}
                         </div></ScrollArea></CardContent>
@@ -573,7 +648,7 @@ function ComparativosAvanzadosContentInternal({ overrideStudentId }: { overrideS
                         <CardFooter className="justify-center border-t pt-6 bg-muted/20"><Button onClick={() => handleTopicComplete('translate_text')} size="lg" className="px-24 font-black h-16 text-2xl shadow-xl bg-primary hover:bg-primary/90 text-primary-foreground uppercase tracking-tighter">Continuar <ArrowRight className='ml-3 h-8 w-8' /></Button></CardFooter>
                     </Card>
                 );
-            case 'final': return <BallsExercise title="Reto Final: Traducción Negativa" prompts={finalExPrompts} onComplete={() => handleTopicComplete('final')} vocabulary={{"portátil": "laptop", "computadora": "computer", "precio": "price"}} />;
+            case 'final': return <BallsExercise key="final" title="Reto Final: Traducción Negativa" prompts={finalExPrompts} onComplete={() => handleTopicComplete('final')} vocabulary={{"portátil": "laptop", "computadora": "computer", "precio": "price"}} />;
             default: return null;
         }
     };
@@ -594,7 +669,11 @@ function ComparativosAvanzadosContentInternal({ overrideStudentId }: { overrideS
                         <h1 className="text-4xl font-black [text-shadow:2px_2px_4px_rgba(0,0,0,0.5)] uppercase tracking-tight flex items-center gap-3"><Scale className='h-10 w-10 text-primary' /> Comparativos Avanzados 🇪🇸</h1>
                     </div>
                     <div className="grid gap-8 md:grid-cols-12 text-foreground">
-                        <div className="md:col-span-9 md:order-1 order-2">{renderContent()}</div>
+                        <div className="md:col-span-9 md:order-1 order-2">
+                            <Suspense fallback={<div className="flex items-center justify-center p-20"><Loader2 className="animate-spin h-10 w-10" /></div>}>
+                                {renderContent()}
+                            </Suspense>
+                        </div>
                         <div className="md:col-span-3 md:order-2 order-1 text-left">
                             <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
                                 <CardHeader className="pb-4 border-b bg-muted/30 text-left"><CardTitle className="text-lg font-black text-primary uppercase tracking-tighter flex items-center gap-2"><Trophy className="h-5 w-5 text-primary" /> Misión 12A</CardTitle></CardHeader>
@@ -624,5 +703,9 @@ function ComparativosAvanzadosContentInternal({ overrideStudentId }: { overrideS
 }
 
 export default function ComparativosAvanzadosPage() {
-    return (<Suspense fallback={<div className="flex h-screen w-full items-center justify-center bg-background"><Loader2 className="animate-spin h-12 w-12 text-primary" /></div>}><ComparativosAvanzadosContentInternal /></Suspense>);
+    return (
+        <Suspense fallback={<div className="flex h-screen w-full items-center justify-center bg-background"><Loader2 className="animate-spin h-12 w-12 text-primary" /></div>}>
+            <ComparativosAvanzadosContentInternal />
+        </Suspense>
+    );
 }
