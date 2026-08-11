@@ -401,15 +401,15 @@ export default function Class1Content() {
                             <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase tracking-tight">1. – ESTRUCTURA VERBO TO BE</CardTitle></CardHeader>
                             <CardContent className="space-y-4 text-slate-900 dark:text-slate-100 font-bold">
                                 <div className="p-6 bg-white/20 dark:bg-background/20 rounded-2xl border font-mono text-lg space-y-2">
-                                    <p><span className="text-green-500 font-black mr-2">(+)</span> pronoun + to be + complement</p>
-                                    <p><span className="text-red-500 font-black mr-2">(-)</span> pronoun + to be + not + complement</p>
-                                    <p><span className="text-blue-500 font-black mr-2">(?)</span> to be + pronoun + complement?</p>
+                                    <p><span className="text-green-500 font-black mr-2">(+)</span> Pronoun + to be + complement</p>
+                                    <p><span className="text-red-500 font-black mr-2">(-)</span> Pronoun + to be + not + complement</p>
+                                    <p><span className="text-blue-500 font-black mr-2">(?)</span> to be + Pronoun + complement?</p>
                                 </div>
                                 <Separator />
                                 <div className="space-y-2">
                                     <p className="text-sm uppercase tracking-widest text-muted-foreground">Short Answers:</p>
-                                    <p className="font-mono"><span className="text-green-600">(+A)</span> Yes, pronoun + to be</p>
-                                    <p className="font-mono"><span className="text-red-600">(-A)</span> No, pronoun + to be + not</p>
+                                    <p className="font-mono"><span className="text-green-600">(+A)</span> Yes, Pronoun + to be</p>
+                                    <p className="font-mono"><span className="text-red-600">(-A)</span> No, Pronoun + to be + not</p>
                                 </div>
                             </CardContent>
                         </Card>
@@ -417,8 +417,10 @@ export default function Class1Content() {
                             <CardHeader><CardTitle className="text-xl font-bold">Ejemplo: "Ellos son estudiantes"</CardTitle></CardHeader>
                             <CardContent className="font-mono text-base space-y-1 text-slate-800 dark:text-slate-200">
                                 <p className="text-green-600 font-bold">(+) they are students</p>
-                                <p className="text-red-600 font-bold">(-) they are not students</p>
-                                <p className="text-blue-600 font-bold">(?) are they students?</p>
+                                <p className="text-red-300 font-bold">(-) they are not students</p>
+                                <p className="text-blue-300 font-bold">(?) are they students?</p>
+                                <p className="text-green-600 font-bold">(+A) yes, they are</p>
+                                <p className="text-red-600 font-bold">(-A) no, they are not</p>
                             </CardContent>
                             <CardFooter className="justify-center border-t pt-4">
                                 <Button onClick={() => handleTopicComplete('tobe-1')} size="lg" className='text-white font-bold'>Avanzar al Ejercicio</Button>
@@ -426,7 +428,7 @@ export default function Class1Content() {
                         </Card>
                     </div>
                 );
-            case 'exercises1': return <TranslationExercise exerciseKey="exercises1" onComplete={() => handleTopicComplete('exercises1')} vocabulary={{'un- una': 'a / an', 'abogado': 'lawyer', 'enfermo': 'sick', 'enfermero': 'nurse'}} highlightVocabulary={true} title="Exercise 1" />;
+            case 'exercises1': return <TranslationExercise exerciseKey="exercises1" onComplete={() => handleTopicComplete('exercises1')} vocabulary={{'un- una': 'a / an', 'profesional': 'professional', 'hermanas': 'sisters', 'hermanos': 'brothers' , 'doctor' : 'doctor' , 'en casa' : 'at home' , 'universidad' : 'university'}} highlightVocabulary={true} title="Exercise 1" />;
             case 'possessives':
                 return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left p-6">
@@ -459,9 +461,11 @@ export default function Class1Content() {
                             <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase tracking-tight">2. – VERBO TO BE + POSSESSIVES</CardTitle></CardHeader>
                             <CardContent className="space-y-4 text-slate-900 dark:text-slate-100 font-bold">
                                 <div className="p-6 bg-white/20 dark:bg-background/20 rounded-2xl border font-mono text-base space-y-2">
-                                    <p><span className="text-green-500 font-black mr-2">(+)</span> subject + to be + possessive + noun + comp.</p>
-                                    <p><span className="text-red-500 font-black mr-2">(-)</span> subject + to be + not + possessive + noun + comp.</p>
-                                    <p><span className="text-blue-500 font-black mr-2">(?)</span> to be + subject + possessive + noun + comp.?</p>
+                                    <p><span className="text-green-500 font-black mr-2">(+)</span> Pronoun + to be + possessive + noun + comp.</p>
+                                    <p><span className="text-red-500 font-black mr-2">(-)</span> Pronoun + to be + not + possessive + noun + comp.</p>
+                                    <p><span className="text-blue-500 font-black mr-2">(?)</span> To be + pronoun + possessive + noun + comp.?</p>
+                                    <p><span className="text-green-500 font-black mr-2">(+A)</span> Yes, Pronoun + To be </p>
+                                    <p><span className="text-red-500 font-black mr-2">(-A)</span> No, Pronoun + to be + not</p>
                                 </div>
                                 <Separator />
                                 <div className="space-y-2">
@@ -469,6 +473,8 @@ export default function Class1Content() {
                                     <p className="font-mono text-primary">(+) they are my friends</p>
                                     <p className="font-mono text-muted-foreground">(-) they are not my friends</p>
                                     <p className="font-mono text-blue-500">(?) are they my friends?</p>
+                                    <p className="font-mono text-primary">(+A) yes, they are</p>
+                                    <p className="font-mono text-red-500">(-A) no, they are not</p>
                                 </div>
                             </CardContent>
                             <CardFooter className="justify-center border-t pt-4">
@@ -477,7 +483,7 @@ export default function Class1Content() {
                         </Card>
                     </div>
                 );
-            case 'exercises2': return <TranslationExercise exerciseKey="exercises2" onComplete={() => handleTopicComplete('exercises2')} vocabulary={{'amigo': 'friend', 'hijo': 'son', 'perro': 'dog'}} highlightVocabulary={true} title="Exercise 2" />;
+            case 'exercises2': return <TranslationExercise exerciseKey="exercises2" onComplete={() => handleTopicComplete('exercises2')} vocabulary={{'mamá': 'mother', 'primo': 'cousin', 'perro': 'dog' , 'gato': 'cat'}} highlightVocabulary={true} title="Exercise 2" />;
             case 'tobe-3':
                 return (
                     <div className="space-y-6 text-left">
@@ -485,9 +491,11 @@ export default function Class1Content() {
                             <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase tracking-tight">3. – POSSESSIVES + TO BE</CardTitle></CardHeader>
                             <CardContent className="space-y-4 text-slate-900 dark:text-slate-100 font-bold">
                                 <div className="p-6 bg-white/20 dark:bg-background/20 rounded-2xl border font-mono text-base space-y-2">
-                                    <p><span className="text-green-500 font-black mr-2">(+)</span> possessive + noun + to be + complement</p>
-                                    <p><span className="text-red-500 font-black mr-2">(-)</span> possessive + noun + to be + not + complement</p>
-                                    <p><span className="text-blue-500 font-black mr-2">(?)</span> to be + possessive + noun + complement?</p>
+                                    <p><span className="text-green-500 font-black mr-2">(+)</span> Possessive + noun + to be + complement</p>
+                                    <p><span className="text-red-500 font-black mr-2">(-)</span> Possessive + noun + to be + not + complement</p>
+                                    <p><span className="text-blue-500 font-black mr-2">(?)</span> To be + possessive + noun + complement?</p>
+                                    <p><span className="text-green-500 font-black mr-2">(+A)</span> Yes, Pronoun + To be </p>
+                                    <p><span className="text-red-500 font-black mr-2">(-A)</span> No, Pronoun + to be + not</p>
                                 </div>
                                 <Separator />
                                 <div className="space-y-2">
@@ -495,6 +503,8 @@ export default function Class1Content() {
                                     <p className="font-mono text-primary">(+) my mother is a nurse</p>
                                     <p className="font-mono text-muted-foreground">(-) my mother is not a nurse</p>
                                     <p className="font-mono text-blue-500">(?) is my mother a nurse?</p>
+                                    <p className="font-mono text-primary">(+)yes, she is</p>
+                                    <p className="font-mono text-red-500">(-)no, she is not</p>
                                 </div>
                             </CardContent>
                             <CardFooter className="justify-center border-t pt-4">
@@ -503,13 +513,13 @@ export default function Class1Content() {
                         </Card>
                     </div>
                 );
-            case 'exercises3': return <TranslationExercise exerciseKey="exercises3" onComplete={() => handleTopicComplete('exercises3')} vocabulary={{'enfermera': 'nurse', 'abuelos': 'grandparents', 'pensionado': 'retired', 'juguete': 'toy'}} highlightVocabulary={true} title="Exercise 3" />;
+            case 'exercises3': return <TranslationExercise exerciseKey="exercises3" onComplete={() => handleTopicComplete('exercises3')} vocabulary={{'abogada': 'lawyer', 'iglesia': 'church', 'grande': 'big', 'juguete': 'toy' , 'silla' : 'chair'}} highlightVocabulary={true} title="Exercise 3" />;
             case 'ex-mixto-1': return <SimpleTranslationExercise course="a1" exerciseKey="mixed1" onComplete={() => handleTopicComplete('ex-mixto-1')} title="Exercise 1" vocabulary={{'estudiante': 'student', 'amigos': 'friends', 'padres': 'parents', 'hermana': 'sister', 'abogados': 'lawyers', 'Inglaterra': 'England'}} highlightVocabulary={true} />;
             case 'ex-mixto-2': return <TranslationExercise exerciseKey="qna2" formType="qna" onComplete={() => handleTopicComplete('ex-mixto-2')} title="Exercise 2" vocabulary={{'compañeros de trabajo': 'coworkers','ocupado': 'busy','libre' : 'free','hambriento': 'hungry','cansado': 'tired', 'amiga': 'friend', 'estudiantes': 'students', 'feliz': 'happy', 'curiosos': 'curious', 'novia': 'girlfriend', 'ocupada': 'busy', 'libres': 'free', 'España': 'Spain', 'ingeniero': 'engineer', 'hambriento': 'hungry', 'compañeros': 'coworkers', 'a tiempo': 'on time'}} highlightVocabulary={true} />;
             case 'ex-mixto-3': return <SimpleTranslationExercise course="a1" exerciseKey="mixed3" onComplete={() => handleTopicComplete('ex-mixto-3')} title="Exercise 3" vocabulary={{'estudiantes': 'students', 'apodos': 'nicknames', 'mamá': 'mom/mother', 'padres': 'parents', 'viejos': 'old', 'prima': 'cousin', 'abuela': 'grandma', 'hermanas': 'sisters', 'cansado': 'tired', 'aburridos': 'bored', 'profesores': 'teachers', 'enojados': 'angry', 'alta': 'tall', 'preocupados': 'worried'}} highlightVocabulary={true} />;
-            case 'ex-mixto-4': return <SimpleTranslationExercise course="a1" exerciseKey="mixed4" onComplete={() => handleTopicComplete('ex-mixto-4')} title="Exercise 4" vocabulary={{'baloncesto': 'basketball', 'profesor': 'teacher', 'ingeniero': 'engineer', 'australiano': 'Australian', 'universidad': 'university', 'mesa': 'table', 'silla': 'chair', 'hobbies': 'hobbies', 'interesado': 'interested', 'estadio': 'stadium', 'primos': 'cousins', 'amiga': 'friend'}} highlightVocabulary={true} />;
+            case 'ex-mixto-4': return <SimpleTranslationExercise course="a1" exerciseKey="mixed4" onComplete={() => handleTopicComplete('ex-mixto-4')} title="Exercise 4" vocabulary={{'americano' : 'american', 'sobre' : 'on', 'tenis' : 'tennis', 'pelicula' : 'movie', 'romantico' : 'romantic' , 'españa' : 'Spain' , 'casa' : 'house' , 'cual' : 'what' , 'baloncesto': 'basketball', 'profesor': 'teacher', 'ingeniero': 'engineer', 'australiano': 'Australian', 'universidad': 'university', 'mesa': 'table', 'silla': 'chair', 'hobbies': 'hobbies', 'interesado': 'interested', 'estadio': 'stadium', 'primos': 'cousins', 'amiga': 'friend'}} highlightVocabulary={true} />;
             case 'ex-mixto-5': return <ShortAnswerExercise onComplete={() => handleTopicComplete('ex-mixto-5')} />;
-            case 'ex-mixto-6': return <SimpleTranslationExercise course="a1" exerciseKey="mixed6" onComplete={() => handleTopicComplete('ex-mixto-6')} title="Exercise 6" vocabulary={{'profesora': 'teacher', 'trabajo': 'work', 'hijos': 'sons', 'padrastro': 'stepfather', 'primo': 'cousin', 'estante': 'shelf', 'escritorio': 'desk', 'iglesia': 'church', 'supermercado': 'supermarket'}} highlightVocabulary={true} />;
+            case 'ex-mixto-6': return <SimpleTranslationExercise course="a1" exerciseKey="mixed6" onComplete={() => handleTopicComplete('ex-mixto-6')} title="Exercise 6" vocabulary={{'hermanos' : 'siblings' ,'profesora': 'teacher', 'trabajo': 'work', 'hijos': 'sons', 'padrastro': 'stepfather', 'primo': 'cousin', 'estante': 'shelf', 'escritorio': 'desk', 'iglesia': 'church', 'supermercado': 'supermarket'}} highlightVocabulary={true} />;
             default: return null;
         }
     };

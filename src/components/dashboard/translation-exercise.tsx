@@ -73,54 +73,54 @@ const exercises = {
 
 const answerKeys = {
     exercises1: [
-        { // "Ellos son amigos"
-            affirmative: ["they are friends", "they're friends"],
-            negative: ["they are not friends", "they aren't friends", "they're not friends"],
-            interrogative: ["are they friends?"],
+        { // "Ellas son hermanas"
+            affirmative: ["they are sisters", "they're sisters"],
+            negative: ["they are not sisters", "they aren't sisters", "they're not sisters"],
+            interrogative: ["are they sisters?"],
             shortAffirmative: ["yes, they are"],
             shortNegative: ["no, they are not", "no, they aren't"],
         },
-        { // "Tú eres un estudiante"
-            affirmative: ["you are a student", "you're a student"],
-            negative: ["you are not a student", "you aren't a student", "you're not a student"],
-            interrogative: ["are you a student?"],
+        { // "Tú eres un profesional"
+            affirmative: ["you are a professional", "you're a professional"],
+            negative: ["you are not a professional", "you aren't a professional", "you're not a professional"],
+            interrogative: ["are you a professional?"],
             shortAffirmative: ["yes, i am"],
             shortNegative: ["no, i am not", "no, i'm not"],
         },
-        { // "Ella es abogada"
-            affirmative: ["she is a lawyer", "she's a lawyer"],
-            negative: ["she is not a lawyer", "she isn't a lawyer", "she's not a lawyer"],
-            interrogative: ["is she a lawyer?"],
+        { // "Ella es doctora"
+            affirmative: ["she is a doctor", "she's a doctor"],
+            negative: ["she is not a doctor", "she isn't a doctor", "she's not a doctor"],
+            interrogative: ["is she a doctor?"],
             shortAffirmative: ["yes, she is"],
             shortNegative: ["no, she is not", "no, she isn't"],
         },
-        { // "Nosotros somos amigos"
-            affirmative: ["we are friends", "we're friends"],
-            negative: ["we are not friends", "we aren't friends", "we're not friends"],
-            interrogative: ["are we friends?"],
+        { // "Nosotros estamos en casa"
+            affirmative: ["we are at home", "we're at home"],
+            negative: ["we are not at home", "we aren't at home", "we're not at home"],
+            interrogative: ["are we at home?"],
             shortAffirmative: ["yes, we are"],
             shortNegative: ["no, we are not", "no, we aren't"],
         },
-        { // "Ellos son enfermeros"
-            affirmative: ["they are nurses", "they're nurses"],
-            negative: ["they are not nurses", "they aren't nurses", "they're not nurses"],
-            interrogative: ["are they nurses?"],
+        { // "Ellos son hermanos"
+            affirmative: ["they are brothers", "they're brothers"],
+            negative: ["they are not brothers", "they aren't brothers", "they're not brothers"],
+            interrogative: ["are they brothers?"],
             shortAffirmative: ["yes, they are"],
             shortNegative: ["no, they are not", "no, they aren't"],
         },
-        { // "Ellos estan enfermos"
-            affirmative: ["they are sick", "they're sick"],
-            negative: ["they are not sick", "they aren't sick", "they're not sick"],
-            interrogative: ["are they sick?"],
+        { // "Ellos estan en la universidad"
+            affirmative: ["they are at the university", "they're at the university"],
+            negative: ["they are not at the university", "they aren't at the university", "they're not at the university"],
+            interrogative: ["are they at the university?"],
             shortAffirmative: ["yes, they are"],
             shortNegative: ["no, they are not", "no, they aren't"],
         }
     ],
     exercises2: [
-        { // "ella es mi hermana"
-            affirmative: ["she is my sister", "she's my sister"],
-            negative: ["she is not my sister", "she isn't my sister", "she's not my sister"],
-            interrogative: ["is she my sister?"],
+        { // "ella es mi mamá"
+            affirmative: ["she is my mother", "she's my mother"],
+            negative: ["she is not my mother", "she isn't my mother", "she's not my mother"],
+            interrogative: ["is she my mother?"],
             shortAffirmative: ["yes, she is"],
             shortNegative: ["no, she is not", "no, she isn't"],
         },
@@ -131,54 +131,54 @@ const answerKeys = {
             shortAffirmative: ["yes, he is"],
             shortNegative: ["no, he is not", "no, he isn't"],
         },
-        { // "ellos son sus amigos (de ella)"
-            affirmative: ["they are her friends", "they're her friends"],
-            negative: ["they are not her friends", "they aren't her friends", "they're not her friends"],
-            interrogative: ["are they her friends?"],
+        { // "ellos son sus primos (de ella)"
+            affirmative: ["they are her cousins", "they're her cousins"],
+            negative: ["they are not her cousins", "they aren't her cousins", "they're not her cousins"],
+            interrogative: ["are they her cousins?"],
             shortAffirmative: ["yes, they are"],
             shortNegative: ["no, they are not", "no, they aren't"],
         },
-        { // "él es su hijo (de ellos)"
-            affirmative: ["he is their son", "he's their son"],
-            negative: ["he is not their son", "he isn't their son", "he's not their son"],
-            interrogative: ["is he their son?"],
+        { // "él es su perro (de ellos)"
+            affirmative: ["he is their dog", "he's their dog"],
+            negative: ["he is not their dog", "he isn't their dog", "he's not their dog"],
+            interrogative: ["is he their dog?"],
             shortAffirmative: ["yes, he is"],
             shortNegative: ["no, he is not", "no, he isn't"],
         },
-        { // "Tommy es tu perro"
-            affirmative: ["Tommy is your dog", "Tommy's your dog"],
-            negative: ["Tommy is not your dog", "Tommy isn't your dog", "Tommy's not your dog"],
-            interrogative: ["is Tommy your dog?"],
+        { // "Tommy es tu gato"
+            affirmative: ["Tommy is your cat", "Tommy's your cat"],
+            negative: ["Tommy is not your cat", "Tommy isn't your cat", "Tommy's not your cat"],
+            interrogative: ["is Tommy your cat?"],
             shortAffirmative: ["yes, he is" ,"yes, it is"],
             shortNegative: ["no, he is not", "no, he isn't" , "no, it is not" , "no, it isn't"],
         }
     ],
     exercises3: [
-        { // "su hermana es una enfermera (de ellos)" -> "Their sister is a nurse"
-            affirmative: ["their sister is a nurse", "their sister's a nurse"],
-            negative: ["their sister is not a nurse", "their sister isn't a nurse", "their sister's not a nurse"],
-            interrogative: ["is their sister a nurse?"],
+        { // "su hermana es una abogada (de ellos)" -> "Their sister is a lawyer"
+            affirmative: ["their sister is a lawyer", "their sister's a lawyer"],
+            negative: ["their sister is not a lawyer", "their sister isn't a lawyer", "their sister's not a lawyer"],
+            interrogative: ["is their sister a lawyer?"],
             shortAffirmative: ["yes, she is"],
             shortNegative: ["no, she is not", "no, she isn't"],
         },
-        { // "mis abuelos son pensionados" -> "My grandparents are retired"
-            affirmative: ["my grandparents are retired", "my grandparents're retired"],
-            negative: ["my grandparents are not retired", "my grandparents aren't retired", "my grandparents're not retired"],
-            interrogative: ["are my grandparents retired?"],
+        { // "mis abuelos están en la iglesia" -> "My grandparents are at the church"
+            affirmative: ["my grandparents are at the church"],
+            negative: ["my grandparents are not at the church", "my grandparents aren't at the church"],
+            interrogative: ["are my grandparents at the church?"],
             shortAffirmative: ["yes, they are"],
             shortNegative: ["no, they are not", "no, they aren't"],
         },
-        { // "sus perros son pequeños (de ella)" -> "Her dogs are small"
-            affirmative: ["her dogs are small", "her dogs're small"],
-            negative: ["her dogs are not small", "her dogs aren't small", "her dogs're not small"],
-            interrogative: ["are her dogs small?"],
+        { // "sus perros son grandes (de ella)" -> "Her dogs are big"
+            affirmative: ["her dogs are big"],
+            negative: ["her dogs are not big", "her dogs aren't big"],
+            interrogative: ["are her dogs big?"],
             shortAffirmative: ["yes, they are"],
             shortNegative: ["no, they are not", "no, they aren't"],
         },
-        { // "sus juguetes están sobre la cama (del gato)" -> "Its toys are on the bed"
-            affirmative: ["its toys are on the bed", "its toys're on the bed"],
-            negative: ["its toys are not on the bed", "its toys aren't on the bed", "its toys're not on the bed"],
-            interrogative: ["are its toys on the bed?"],
+        { // "sus juguetes están sobre la silla (del gato)" -> "Its toys are on the chair"
+            affirmative: ["its toys are on the chair"],
+            negative: ["its toys are not on the chair", "its toys aren't on the chair"],
+            interrogative: ["are its toys on the chair?"],
             shortAffirmative: ["yes, they are"],
             shortNegative: ["no, they are not", "no, they aren't"],
         }

@@ -52,7 +52,7 @@ const exercises = {
         title: 'a1class1.exercise',
         prompts: [
             { spanish: 'ELLOS SON MIS ESTUDIANTES', english: ['they are my students', "they're my students"] },
-            { spanish: '¿ELLOS SON SUS APODOS? (de ella)', english: ['are they her nicknames?'] },
+            { spanish: '¿ELLOS SON SUS PADRES? (de ella)', english: ['are they her parents?'] },
             { spanish: '¿ELLA ES SU MAMÁ? – (DE EL)', english: ['is she his mother?', 'is she his mom?'] },
             { spanish: 'ELLOS SON NUESTROS PADRES', english: ['they are our parents', "they're our parents"] },
             { spanish: '¿ELLOS SON VIEJOS (OLD)?', english: ['are they old?'] },
@@ -112,8 +112,8 @@ const exercises = {
             { spanish: '¿ERES DE COLOMBIA? - SI', english: ["are you from colombia? - yes, i am"] },
             { spanish: '¿ÉL ES TU PAPÁ? –NO, EL ES MI PADRASTRO', english: ["is he your dad? - no, he is my stepfather", "is he your father? - no, he is my stepfather"] },
             { spanish: '¿TU PRIMO ESTÁ EN CALI? – NO, EL EL ESTÁ EN MIAMI', english: ["is your cousin in cali? - no, he is in miami"] },
-            { spanish: '¿TUS LIBROS ESTAN SOBRE EL ESTANTE? – NO, ESTAN SOBRE EL ESCRITORIO', english: ["are your books on the shelf? - no, they are on the desk"] },
-            { spanish: '¿TU MAMA ESTA EN LA CASA? NO, ELLA ESTA EN LA IGLESIA', english: [
+            { spanish: '¿TUS LIBROS ESTAN SOBRE EL ESTANTE? – NO, ESTAN SOBRE EL ESCRITORIO', english: ["are your books on the shelf? - no, they are on the desk" , "are your books on the shelf? - no, the books are on the desk"] },
+            { spanish: '¿TU MAMA ESTA EN LA CASA? - NO, ELLA ESTA EN LA IGLESIA', english: [
                 "is your mother at home? - no, she is in the church", 
                 "is your mother at home? - no, she's in the church", 
                 "is your mom at home? - no, she's in the church", 
@@ -125,7 +125,7 @@ const exercises = {
                 "are your brothers at university? - no, they are not", 
                 "are your brothers at university? no, they aren't",
             ] },
-            { spanish: '¿TU HERMANA ESTÁ EN EL PARQUE? – NO, ELLA ESTÁ EN EL SUPERMERCADO', english: ["is your sister at the park? - no, she is at the supermarket." , "is your sister at the park? - no, she's at the supermarket."] },
+            { spanish: '¿TU HERMANA ESTÁ EN EL PARQUE? – NO, ELLA ESTÁ EN EL SUPERMERCADO', english: ["is your sister at the park? - no, she is in the supermarket." , "is your sister at the park? - no, she's in the supermarket."] },
         ]
     },
 
@@ -364,10 +364,10 @@ const exercises = {
     c8_ex1: {
         title: 'a1class1.exercise',
         prompts: [
-            { spanish: '¿ELLOS VAN A LA ESCUELA?', english: ["do they go to school?"] },
+            { spanish: '¿ELLOS VAN A LA ESCUELA?', english: ["do they go to the school?"] },
             { spanish: '¿ESTAS ENOJADO (ANGRY)?', english: ["are you angry?"] },
             { spanish: 'ELLA NO ESTUDIA ALEMAN (GERMAN)- POR EL CONTRARIO, ELLA ESTUDIA INGLES', english: ["she does not study german - on the contrary, she studies english", "she doesn't study german - on the contrary, she studies english"] },
-            { spanish: 'A ELLA LE GUSTA LA CARNE (MEAT)- POR OTRO LADO, SU ESPOSO ES VEGETARIANO', english: ["she likes meat - on the other hand, her husband is a vegetarian", "she likes meat - on the other hand, her husband is vegetarian"] },
+            { spanish: 'A ELLA LE GUSTA LA CARNE (MEAT)- POR OTRO LADO, SU ESPOSO ES VEGETARIANO', english: ["she likes meat - on the other hand, her husband is vegetarian"] },
             { spanish: '¿ELLA ES TU HERMANA?', english: ["is she your sister?"] },
             { spanish: '¿A DONDE VA TU HERMANO?', english: ["where does your brother go?"] },
             { spanish: 'ESTAS (THESE) NO SON MIS GAFAS', english: ["these are not my glasses", "these aren't my glasses"] },
@@ -375,11 +375,11 @@ const exercises = {
             { spanish: '¿QUE HACE TU HERMANO? EL JUEGA TENIS', english: ["what does your brother do? he plays tennis"] },
             { spanish: '¿CUÁNDO VA SUSAN AL CINE? ELLA VA AL CINE LOS MIERCOLES', english: ["when does susan go to the cinema? she goes to the cinema on wednesdays"] },
             { spanish: '¿QUIEN ES EL? EL ES EL HERMANO DE SARA', english: ["who is he? he is sara's brother", "who is he? he's sara's brother"] },
-            { spanish: '¿A DONDE VAS? A JUGAR FUTBOL? – YO VOY AL ESTADIO', english: ["where do you go to play football? i go to the stadium", "where do you go to play soccer? i go to the stadium"] },
-            { spanish: '¿DE QUIEN ES ESTE CELULAR? – ESTE ES EL CELULAR DE THOMAS', english: ["whose umbrella is this? this is thomas's cellphone", "whose phone is this? this is thomas's phone"] },
-            { spanish: '¿A ELLOS LES GUSTA EL PESCADO? –SI', english: ["do they like fish? yes, they do"] },
+            { spanish: '¿A DONDE VAS A JUGAR FUTBOL? YO VOY AL ESTADIO', english: ["where do you go to play football? i go to the stadium", "where do you go to play soccer? i go to the stadium"] },
+            { spanish: '¿DE QUIEN ES ESTE CELULAR? ESTE ES EL CELULAR DE THOMAS', english: ["whose cellphone is this? this is thomas' cellphone", "whose phone is this? this is thomas' phone"] },
+            { spanish: '¿A ELLOS LES GUSTA EL PESCADO? SI', english: ["do they like fish? yes, they do"] },
             { spanish: 'POR QUE EL ESTA TRISTE? EL ESTA TRISTE PORQUE NO TIENE INTERNET', english: ["why is he sad? he is sad because he does not have internet", "why is he sad? he's sad because he doesn't have internet"] },
-            { spanish: 'QUE TIPO DE COMPUTADOR TE GUSTA? – ME GUSTAN LOS COMPUTADORES HP', english: ["what kind of computer do you like? i like hp computers"] },
+            { spanish: 'QUE TIPO DE COMPUTADOR TE GUSTA? ME GUSTAN LOS COMPUTADORES HP', english: ["what kind of computer do you like? i like hp computers"] },
             { spanish: '¿ESTOS SON TUYOS O MIOS? - ESOS SON MIOS', english: ["are these yours or mine? those are mine"] },
             { spanish: 'ESA ES LA CASA DE MICHAEL', english: ["that is michael's house", "that's michael's house"] },
         ]
@@ -389,9 +389,9 @@ const exercises = {
         prompts: [
             { spanish: 'ESTE NO ES MIO, ES TUYO', english: ["this is not mine, it is yours", "this isn't mine, it's yours", "this is not mine, it's yours", "this isn't mine, it is yours"] },
             { spanish: '¿TE GUSTA SU CASA? - (DE ELLOS)', english: ["do you like their house?"] },
-            { spanish: 'ESTE CELULAR ES DE ELLA', english: ["this cellphone is hers", "this cellphone's hers", "this phone is hers", "this phone's hers"] },
+            { spanish: 'ESTE CELULAR ES DE ELLA', english: ["this cellphone is hers", "this phone is hers"] },
             { spanish: 'ME GUSTA EL COLOR DE SU CASA- (DE ELLA)', english: ["i like the color of her house"] },
-            { spanish: 'ESTE ES NUESTRO GATO', english: ["this is our cat", "this's our cat"] },
+            { spanish: 'ESTE ES NUESTRO GATO', english: ["this is our cat"] },
             { spanish: 'ESOS CUADROS SON TUYOS', english: ["those paintings are yours", "those pictures are yours"] },
             { spanish: '¿ESTE ES SUYO? - (DE EL)', english: ["is this his?"] },
             { spanish: '¿ESTOS SON SUS ZAPATOS? -(DE ELLA)', english: ["are these her shoes?"] },
@@ -405,13 +405,13 @@ const exercises = {
             { spanish: '¿ELLOS CORREN MUY VELOZ (FAST)?', english: ["do they run very fast?"] },
             { spanish: 'NOSOTROS NO VAMOS A BOGOTÁ', english: ["we do not go to bogota", "we don't go to bogota"] },
             { spanish: '¿ELLA ESTÁ TRISTE? NO, ELLA ESTA FELIZ', english: ["is she sad? no, she is happy", "is she sad? no, she's happy"] },
-            { spanish: 'A ELLA LE GUSTAN LOS GATOS', english: ["she likes cats", "she does like cats"] },
+            { spanish: 'A ELLA LE GUSTAN LOS GATOS', english: ["she likes cats"] },
             { spanish: 'ELLA JUEGA BALONCESTO LOS SÁBADOS', english: ["she plays basketball on saturdays"] },
             { spanish: '¿A DÓNDE VIAJA ÉL? ÉL VIAJA A BARCELONA', english: ["where does he travel? he travels to barcelona"] },
-            { spanish: 'ELLOS NO SOMOS NUESTROS TÍOS (UNCLES)', english: ["they are not our uncles", "they aren't our uncles"] },
-            { spanish: '¿ELLA BEBE AGUA? –NO, ELLA BEBE VODKA', english: ["does she drink water? no, she drinks vodka"] },
-            { spanish: 'NO ME GUSTA EL COMPORTAMIENTO', english: ["i do not like your behavior", "i don't like your behavior"] },
-            { spanish: 'ELLA VA CON ÉL A LA IGLESIA', english: ["she goes with him to the church", "she goes to the church with him"] },
+            { spanish: 'ELLOS NO SON NUESTROS TÍOS (UNCLES)', english: ["they are not our uncles", "they aren't our uncles"] },
+            { spanish: '¿ELLA BEBE AGUA? NO, ELLA BEBE VODKA', english: ["does she drink water? no, she drinks vodka"] },
+            { spanish: 'NO ME GUSTA TU COMPORTAMIENTO', english: ["i do not like your behavior", "i don't like your behavior"] },
+            { spanish: 'ELLA VA CON ÉL A LA IGLESIA', english: ["she goes with him to the church"] },
         ]
     },
     c8_ex4: {
