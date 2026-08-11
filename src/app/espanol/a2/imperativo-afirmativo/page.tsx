@@ -156,11 +156,31 @@ const readingData = {
 };
 
 const ex4Options = [
-    { text: "Tú _______ (comer) toda la comida.", options: ["COME", "COMA", "COMES"], answer: "COME" },
-    { text: "Usted _______ (limpiar) la mesa.", options: ["LIMPIE", "LIMPIA", "LIMPIAS"], answer: "LIMPIE" },
-    { text: "Nosotros _______ (mezclar) los ingredientes.", options: ["MEZCLEMOS", "MEZCLAMOS", "MEZCLAN"], answer: "MEZCLEMOS" },
-    { text: "Ustedes _______ (abrir) sus libros.", options: ["ABRAN", "ABREN", "ABRIMOS"], answer: "ABRAN" },
-    { text: "Tú _______ (hacer) la tarea ahora.", options: ["HAZ", "HAGA", "HACES"], answer: "HAZ" },
+    { text: "(Tú) _______ (comer) toda la comida.", options: ["COME", "COMA", "COMES"], answer: "COME" },
+    { text: "(Usted) _______ (limpiar) la mesa.", options: ["LIMPIE", "LIMPIA", "LIMPIAS"], answer: "LIMPIE" },
+    { text: "(Nosotros) _______ (mezclar) los ingredientes.", options: ["MEZCLEMOS", "MEZCLAMOS", "MEZCLAN"], answer: "MEZCLEMOS" },
+    { text: "(Ustedes) _______ (abrir) sus libros.", options: ["ABRAN", "ABREN", "ABRIMOS"], answer: "ABRAN" },
+    { text: "(Tú) _______ (hacer) la tarea ahora.", options: ["HAZ", "HAGA", "HACES"], answer: "HAZ" },
+    { text: "(Usted) _______ (escribir) la carta.", options: ["ESCRIBA", "ESCRIBE", "ESCRIBES"], answer: "ESCRIBA" },
+    { text: "(Tú)_______ (cortar) la papá", options: ["CORTE", "CORTAN", "CORTA"], answer: "CORTA" },
+    { text: "(Usted)_______ (cerrar) la ventana", options: ["cierra", "cierres", "cierre"], answer: "cierre" },
+    { text: "(Nosotros)______ (leer) la receta", options: ["lean", "leamos", "leen"], answer: "leamos" },
+    { text: "(Tú)_______(beber) el remedio", options: ["beba", "bebes", "beben"], answer: "beba" },
+    { text: "(usted)_______ (bailar) la macarena", options: ["bailas", "bailes", "baile"], answer: "baile" },
+    { text: "(ustedes)______ (mezclar) los ingredientes", options: ["mezclan", "mezclan", "mezclan"], answer: "mezclan" },
+    { text: "(nosotros)_______(llamar) el chef", options: ["llama", "llamamos", "llaman"], answer: "llamamos" },
+    { text: "(tú)_______(cortar) la cebolla", options: ["corta", "cortas", "corta"], answer: "corta" },
+    { text: "(usted)_______(limpiar) la sala", options: ["limpie", "limpia", "limpian"], answer: "limpie" },
+    { text: "(nosotros)_______(beber) el agua", options: ["bebamos", "bebamoss", "beben"], answer: "bebamos" },
+    { text: "(ustedes)_______(escribir) la carta", options: ["escriban", "escriben", "escribimos"], answer: "escriban" },
+    { text: "(tú)_______(leer) el libro", options: ["lee", "lees", "leen"], answer: "lee" },
+    { text: "(usted)_______(preparar) la comida", options: ["prepare", "prepara", "preparan"], answer: "prepare" },
+    { text: "(nosotros)_______(cocinar) el arroz", options: ["cocinemos", "cocinamos", "cocinan"], answer: "cocinemos" },
+    { text: "(ustedes)_______(cerrar) la ventana", options: ["cierran", "cierras", "cierra"], answer: "cierran" },
+    { text: "(Tú)_____ (vivir) feliz", options: ["vive", "vives", "viven"], answer: "vive" },
+    { text: "(Usted)_____ (comer) la manzana", options: ["coma", "comes", "comen"], answer: "coma" },
+    { text: "(Nosotros)_____ (correr) en el parque", options: ["corramos", "corremos", "corren"], answer: "corramos" },
+    { text: "(Ustedes)_____ (bailar) la salsa", options: ["bailean", "bailan", "bailas"], answer: "bailan" },
 ];
 
 const completarPrompts = [
