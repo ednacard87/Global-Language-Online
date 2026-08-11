@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, Suspense, Fragment, useRef } from 'react';
@@ -42,7 +43,7 @@ import { VocabularyMatchingGame } from '@/components/dashboard/vocabulary-matchi
 import { Textarea } from '@/components/ui/textarea';
 
 // --- CONFIGURACIÓN DE INGENIERÍA ---
-const progressStorageVersion = 'progress_es_a2_imp_af_v10_stable';
+const progressStorageVersion = 'progress_es_a2_imp_af_v15_full_fixed';
 const mainProgressKey = 'progress_a2_es_imperativo_afirmativo';
 
 const ICONS_CONFIG = {
@@ -162,25 +163,25 @@ const ex4Options = [
     { text: "(Ustedes) _______ (abrir) sus libros.", options: ["ABRAN", "ABREN", "ABRIMOS"], answer: "ABRAN" },
     { text: "(Tú) _______ (hacer) la tarea ahora.", options: ["HAZ", "HAGA", "HACES"], answer: "HAZ" },
     { text: "(Usted) _______ (escribir) la carta.", options: ["ESCRIBA", "ESCRIBE", "ESCRIBES"], answer: "ESCRIBA" },
-    { text: "(Tú)_______ (cortar) la papá", options: ["CORTE", "CORTAN", "CORTA"], answer: "CORTA" },
-    { text: "(Usted)_______ (cerrar) la ventana", options: ["cierra", "cierres", "cierre"], answer: "cierre" },
-    { text: "(Nosotros)______ (leer) la receta", options: ["lean", "leamos", "leen"], answer: "leamos" },
-    { text: "(Tú)_______(beber) el remedio", options: ["beba", "bebes", "beben"], answer: "beba" },
-    { text: "(usted)_______ (bailar) la macarena", options: ["bailas", "bailes", "baile"], answer: "baile" },
-    { text: "(ustedes)______ (mezclar) los ingredientes", options: ["mezclan", "mezclan", "mezclan"], answer: "mezclan" },
-    { text: "(nosotros)_______(llamar) el chef", options: ["llama", "llamamos", "llaman"], answer: "llamamos" },
-    { text: "(tú)_______(cortar) la cebolla", options: ["corta", "cortas", "corta"], answer: "corta" },
-    { text: "(usted)_______(limpiar) la sala", options: ["limpie", "limpia", "limpian"], answer: "limpie" },
-    { text: "(nosotros)_______(beber) el agua", options: ["bebamos", "bebamoss", "beben"], answer: "bebamos" },
-    { text: "(ustedes)_______(escribir) la carta", options: ["escriban", "escriben", "escribimos"], answer: "escriban" },
-    { text: "(tú)_______(leer) el libro", options: ["lee", "lees", "leen"], answer: "lee" },
-    { text: "(usted)_______(preparar) la comida", options: ["prepare", "prepara", "preparan"], answer: "prepare" },
-    { text: "(nosotros)_______(cocinar) el arroz", options: ["cocinemos", "cocinamos", "cocinan"], answer: "cocinemos" },
-    { text: "(ustedes)_______(cerrar) la ventana", options: ["cierran", "cierras", "cierra"], answer: "cierran" },
-    { text: "(Tú)_____ (vivir) feliz", options: ["vive", "vives", "viven"], answer: "vive" },
-    { text: "(Usted)_____ (comer) la manzana", options: ["coma", "comes", "comen"], answer: "coma" },
-    { text: "(Nosotros)_____ (correr) en el parque", options: ["corramos", "corremos", "corren"], answer: "corramos" },
-    { text: "(Ustedes)_____ (bailar) la salsa", options: ["bailean", "bailan", "bailas"], answer: "bailan" },
+    { text: "(Tú) _______ (cortar) la papá.", options: ["CORTE", "CORTAN", "CORTA"], answer: "CORTA" },
+    { text: "(Usted) _______ (cerrar) la ventana.", options: ["CIERRA", "CIERRES", "CIERRE"], answer: "CIERRE" },
+    { text: "(Nosotros) _______ (leer) la receta.", options: ["LEAN", "LEAMOS", "LEEN"], answer: "LEAMOS" },
+    { text: "(Tú) _______ (beber) el remedio.", options: ["BEBE", "BEBA", "BEBEN"], answer: "BEBE" },
+    { text: "(Usted) _______ (bailar) la macarena.", options: ["BAILAS", "BAILES", "BAILE"], answer: "BAILE" },
+    { text: "(Ustedes) _______ (mezclar) los ingredientes.", options: ["MEZCLEN", "MEZCLEMOS", "MEZCLAN"], answer: "MEZCLEN" },
+    { text: "(Nosotros) _______ (llamar) el chef.", options: ["LLAMA", "LLAMEMOS", "LLAMAN"], answer: "LLAMEMOS" },
+    { text: "(Tú) _______ (cortar) la cebolla.", options: ["CORTA", "CORTAS", "CORTE"], answer: "CORTA" },
+    { text: "(Usted) _______ (limpiar) la sala.", options: ["LIMPIE", "LIMPIA", "LIMPIAN"], answer: "LIMPIE" },
+    { text: "(Nosotros) _______ (beber) el agua.", options: ["BEBAMOS", "BEBAMOSS", "BEBEN"], answer: "BEBAMOS" },
+    { text: "(Ustedes) _______ (escribir) la carta.", options: ["ESCRIBAN", "ESCRIBEN", "ESCRIBIMOS"], answer: "ESCRIBAN" },
+    { text: "(Tú) _______ (leer) el libro.", options: ["LEE", "LEES", "LEEN"], answer: "LEE" },
+    { text: "(Usted) _______ (preparar) la comida.", options: ["PREPARE", "PREPARA", "PREPARAN"], answer: "PREPARE" },
+    { text: "(Nosotros) _______ (cocinar) el arroz.", options: ["COCINEMOS", "COCINAMOS", "COCINAN"], answer: "COCINEMOS" },
+    { text: "(Ustedes) _______ (cerrar) la ventana.", options: ["CIERREN", "CIERRAS", "CIERRE"], answer: "CIERREN" },
+    { text: "(Tú) _______ (vivir) feliz.", options: ["VIVE", "VIVES", "VIVEN"], answer: "VIVE" },
+    { text: "(Usted) _______ (comer) la manzana.", options: ["COMA", "COMES", "COMEN"], answer: "COMA" },
+    { text: "(Nosotros) _______ (correr) en el parque.", options: ["CORRAMOS", "CORRAMOSS", "CORREN"], answer: "CORRAMOS" },
+    { text: "(Ustedes) _______ (bailar) la salsa.", options: ["BAILAN", "BAILEAN", "BAILAS"], answer: "BAILAN" },
 ];
 
 const completarPrompts = [
@@ -189,31 +190,31 @@ const completarPrompts = [
     { s: "3. (Tú - cortar) _______ la cebolla.", a: "corta" },
     { s: "4. (Ustedes - limpiar) _______ la cocina.", a: "limpien" },
     { s: "5. (Nosotros - lavar) _______ los platos.", a: "lavemos" },
-    { s: "6. (Tú - cortar) ________ las fresas", a: "corta" },
-    { s: "7. (Usted - preparar) _______ la comida", a: "prepare" },
-    { s: "8. (Nosotros - beber) _______ el agua", a: "bebamos" },
-    { s: "9. (Ustedes - escribir) _______ la carta", a: "escriban" },
-    { s: "10. (Tú - leer) _______ el libro", a: "lee" },
-    { s: "11. (Usted - limpiar) _______ la sala", a: "limpie" },
-    { s: "12. (Nosotros - cantar) _______ la canción", a: "cantemos" },
-    { s: "13. (Tú - escribir) _______ el articulo", a: "escribes" },
-    { s: "14. (Ustedes - beber) _______ el vino", a: "beban" },
-    { s: "15. (Nosotros - jugar) _______ al fútbol", a: "juegamos" },
-    { s: "16. (Tú - limpiar) _______ la habitación", a: "limpia" },
-    { s: "17. (Usted - cocinar) _______ la cena", a: "cocine" },
-    { s: "18. (Nosotros - escribir) _______ la carta", a: "escribamos" },
-    { s: "19. (Ustedes - beber) _______ el café", a: "beban" },
-    { s: "20. (Tú - leer) _______ el periódico", a: "lee" },
-    { s: "21. (Usted - escribir) _______ el libro", a: "escriba" },
-    { s: "22. (Nosotros - cantar) _______ la canción", a: "cantemos" },
-    { s: "23. (Tú - limpiar) _______ la cocina", a: "limpia" },
-    { s: "24. (Usted - cocinar) _______ las papas", a: "cocine" },
-    { s: "25. (Nosotros - escribir) _______ el informe", a: "escribamos" },
-    { s: "26. (Tú - leer) _______ las instrucciones", a: "lee" },
-    { s: "27. (Usted - limpiar) _______ la sala", a: "limpie" },
-    { s: "28. (Nosotros - beber) _______ el agua", a: "bebamos" },
-    { s: "29. (Ustedes - escribir) _______ el libro", a: "escriban" },
-    { s: "30. (Tú - leer) _______ todos los dias", a: "lee" },
+    { s: "6. (Tú - cortar) ________ las fresas.", a: "corta" },
+    { s: "7. (Usted - preparar) _______ la comida.", a: "prepare" },
+    { s: "8. (Nosotros - beber) _______ el agua.", a: "bebamos" },
+    { s: "9. (Ustedes - escribir) _______ la carta.", a: "escriban" },
+    { s: "10. (Tú - leer) _______ el libro.", a: "lee" },
+    { s: "11. (Usted - limpiar) _______ la sala.", a: "limpie" },
+    { s: "12. (Nosotros - cantar) _______ la canción.", a: "cantemos" },
+    { s: "13. (Tú - escribir) _______ el artículo.", a: "escribe" },
+    { s: "14. (Ustedes - beber) _______ el vino.", a: "beban" },
+    { s: "15. (Nosotros - jugar) _______ al fútbol.", a: "juguemos" },
+    { s: "16. (Tú - limpiar) _______ la habitación.", a: "limpia" },
+    { s: "17. (Usted - cocinar) _______ la cena.", a: "cocine" },
+    { s: "18. (Nosotros - escribir) _______ la carta.", a: "escribamos" },
+    { s: "19. (Ustedes - beber) _______ el café.", a: "beban" },
+    { s: "20. (Tú - leer) _______ el periódico.", a: "lee" },
+    { s: "21. (Usted - escribir) _______ el libro.", a: "escriba" },
+    { s: "22. (Nosotros - cantar) _______ la canción.", a: "cantemos" },
+    { s: "23. (Tú - limpiar) _______ la cocina.", a: "limpia" },
+    { s: "24. (Usted - cocinar) _______ las papas.", a: "cocine" },
+    { s: "25. (Nosotros - escribir) _______ el informe.", a: "escribamos" },
+    { s: "26. (Tú - leer) _______ las instrucciones.", a: "lee" },
+    { s: "27. (Usted - limpiar) _______ la sala.", a: "limpie" },
+    { s: "28. (Nosotros - beber) _______ el agua.", a: "bebamos" },
+    { s: "29. (Ustedes - escribir) _______ la carta.", a: "escriban" },
+    { s: "30. (Tú - leer) _______ todos los días.", a: "lee" },
 ];
 
 const negativePrompts = [
@@ -294,6 +295,62 @@ const BallsExercise = ({ title, prompts, onComplete, vocabulary }: any) => {
     );
 };
 
+const ChoiceExercise = ({ prompts, onComplete, title, description }: any) => {
+    const { toast } = useToast();
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [status, setStatus] = useState<Record<number, 'correct' | 'incorrect' | 'unchecked'>>({});
+
+    const handleSelect = (option: string) => {
+        const isCorrect = option.toUpperCase() === prompts[currentIndex].answer.toUpperCase();
+        setStatus(prev => ({ ...prev, [currentIndex]: isCorrect ? 'correct' : 'incorrect' }));
+        if (isCorrect) toast({ title: "¡Correcto!" });
+        else toast({ variant: 'destructive', title: "Sigue intentando" });
+    };
+
+    const handleNext = () => {
+        if (currentIndex < prompts.length - 1) {
+            setCurrentIndex(prev => prev + 1);
+        } else {
+            onComplete();
+        }
+    };
+
+    return (
+        <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground">
+            <CardHeader>
+                <div>
+                    <CardTitle className="uppercase text-primary font-black">{title}</CardTitle>
+                    <CardDescription className='font-bold text-foreground mt-1'>{description || "Elige la opción correcta."}</CardDescription>
+                    <div className="flex gap-2 justify-start flex-wrap pt-4">
+                        {prompts.map((_: any, i: number) => (
+                            <div key={i} onClick={() => setCurrentIndex(i)} className={cn("h-8 w-8 rounded-full border-2 flex items-center justify-center text-xs font-bold cursor-pointer transition-all", currentIndex === i ? "border-primary ring-2 ring-primary" : "border-muted", status[i] === 'correct' ? "bg-green-500 text-white border-green-500" : status[i] === 'incorrect' ? "bg-red-500 text-white border-red-500" : "bg-card")}>{i + 1}</div>
+                        ))}
+                    </div>
+                </div>
+            </CardHeader>
+            <CardContent className="space-y-8 py-10">
+                <div className="text-3xl font-black text-center leading-relaxed">
+                    {prompts[currentIndex].text.split('_______').map((part: string, i: number) => (
+                        <Fragment key={i}>
+                            {part}
+                            {i < 1 && <span className={cn("border-b-4 border-dashed px-4 mx-2", status[currentIndex] === 'correct' ? "text-primary border-primary" : "text-muted-foreground")}>{status[currentIndex] === 'correct' ? prompts[currentIndex].answer : '...'}</span>}
+                        </Fragment>
+                    ))}
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl mx-auto">
+                    {prompts[currentIndex].options.map((opt: string) => (
+                        <Button key={opt} onClick={() => handleSelect(opt)} variant="outline" className={cn("h-16 text-xl font-black uppercase transition-all", status[currentIndex] === 'correct' && opt.toUpperCase() === prompts[currentIndex].answer.toUpperCase() && "border-green-500 bg-green-50 text-green-700 shadow-lg scale-105")}>{opt}</Button>
+                    ))}
+                </div>
+            </CardContent>
+            <CardFooter className="justify-between border-t pt-6">
+                <Button variant="outline" onClick={() => setCurrentIndex(p => Math.max(0, p - 1))} disabled={currentIndex === 0}>Anterior</Button>
+                <Button onClick={handleNext} disabled={status[currentIndex] !== 'correct'} className="px-12 font-black h-12 shadow-xl">Siguiente</Button>
+            </CardFooter>
+        </Card>
+    );
+};
+
 // --- MAIN CLASS COMPONENT ---
 
 function ImperativoAfirmativoContent() {
@@ -318,8 +375,6 @@ function ImperativoAfirmativoContent() {
     const [conjIdx, setConjIdx] = useState(0);
     const [conjAnswers, setConjAnswers] = useState<string[]>(Array(4).fill(''));
     const [conjValidation, setConjValidation] = useState<any[]>(Array(4).fill('unchecked'));
-    const [optIdx, setOptIdx] = useState(0);
-    const [optSolved, setOptSolved] = useState<Record<number, boolean>>({});
     const [compAns, setCompAns] = useState<string[]>(Array(completarPrompts.length).fill(''));
     const [compVal, setCompVal] = useState<any[]>(Array(completarPrompts.length).fill('unchecked'));
     const [readAns, setReadAns] = useState<Record<string, string>>({});
@@ -421,7 +476,7 @@ function ImperativoAfirmativoContent() {
                     <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left">
                         <CardHeader><CardTitle>Vocabulary: Kitchen & Instructions</CardTitle></CardHeader>
                         <CardContent><ScrollArea className="h-[500px] pr-4 text-foreground"><div className="grid grid-cols-2 gap-4">
-                            <div className="font-black text-primary border-b pb-2 uppercase text-xs">English</div><div className="font-black text-primary border-b pb-2 uppercase text-xs">Español</div>
+                            <div className="font-black text-primary border-b pb-2 uppercase text-xs">Inglés</div><div className="font-black text-primary border-b pb-2 uppercase text-xs">Español</div>
                             {instructionsVocab.map((v, i) => (
                                 <Fragment key={i}>
                                     <div className="p-2 border rounded bg-white/5 font-bold flex items-center text-sm">{v.en}</div>
@@ -440,7 +495,6 @@ function ImperativoAfirmativoContent() {
                             <div className="p-6 bg-white/60 dark:bg-background/20 rounded-[2rem] border shadow-sm">
                                 <h3 className="text-xl font-black text-primary uppercase mb-4">¿Para qué sirve?</h3>
                                 <p className="text-lg">El modo imperativo se usa para dar órdenes, consejos, instrucciones o hacer peticiones directas.</p>
-                                <p className="text-lg">The imperative mood is used to give orders, advice, or instructions, or to make direct requests.</p>
                             </div>
                             <div className="grid md:grid-cols-2 gap-6">
                                 <div className="p-6 bg-white/40 dark:bg-slate-800/40 rounded-3xl border border-primary/20 shadow-lg text-foreground">
@@ -495,31 +549,12 @@ function ImperativoAfirmativoContent() {
                         </CardContent>
                         <CardFooter className="justify-center border-t pt-6"><Button onClick={() => {
                             let ok = true; const nv: any = {};
-                            readingData.questions.forEach((q, i) => { const res = q.a.some(a => (readAns[q.id] || '').trim().toLowerCase().includes(a.toLowerCase())); nv[q.id] = res ? 'correct' : 'incorrect'; if (!res) ok = false; });
+                            readingData.questions.forEach((q) => { const res = q.a.some(a => (readAns[q.id] || '').trim().toLowerCase().includes(a.toLowerCase())); nv[q.id] = res ? 'correct' : 'incorrect'; if (!res) ok = false; });
                             setReadVal(nv); if (ok) { toast({ title: "¡Lectura superada!" }); handleTopicComplete('reading'); } else toast({ variant: 'destructive', title: "Revisa tus respuestas" });
                         }} size="lg" className="px-12 font-bold" disabled={!!targetStudentId}>Verificar Lectura</Button></CardFooter>
                     </Card>
                 );
-            case 'ex4':
-                return (
-                    <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground">
-                        <CardHeader><CardTitle>Ejercicio 4: Opción Múltiple</CardTitle><div className="flex gap-2 pt-4 flex-wrap">{ex4Options.map((_, i) => (<div key={i} onClick={() => setOptIdx(i)} className={cn("h-8 w-8 rounded-full border-2 flex items-center justify-center text-xs font-bold cursor-pointer transition-all", optIdx === i ? "border-primary ring-2 ring-primary" : "border-muted", optSolved[i] ? "bg-green-500 text-white border-green-500" : "bg-card")}>{i + 1}</div>))}</div></CardHeader>
-                        <CardContent className="space-y-8 py-10">
-                            <div className="text-3xl font-black text-center leading-relaxed text-foreground">
-                                {ex4Options[optIdx].text.split('_______').map((part, i) => (<Fragment key={i}>{part}{i < 1 && <span className={cn("border-b-4 border-dashed px-4 mx-2", optSolved[optIdx] ? "text-primary border-primary" : "text-muted-foreground")}>{optSolved[optIdx] ? ex4Options[optIdx].answer : '...'}</span>}</Fragment>))}
-                            </div>
-                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl mx-auto">
-                                {ex4Options[optIdx].options.map(opt => (
-                                    <Button key={opt} onClick={() => { if (opt.toUpperCase() === ex4Options[optIdx].answer.toUpperCase()) { setOptSolved({...optSolved, [optIdx]: true}); toast({ title: "¡Correcto!" }); } else toast({ variant: 'destructive', title: "Incorrecto" }); }} variant="outline" className={cn("h-16 text-xl font-black uppercase transition-all", optSolved[optIdx] && opt.toUpperCase() === ex4Options[optIdx].answer.toUpperCase() && "border-green-500 bg-green-50 text-green-700 shadow-lg scale-105")}>{opt}</Button>
-                                ))}
-                            </div>
-                        </CardContent>
-                        <CardFooter className="justify-between border-t pt-6">
-                            <Button variant="outline" onClick={() => setOptIdx(p => Math.max(0, p - 1))} disabled={optIdx === 0}>Anterior</Button>
-                            <Button onClick={() => { if (optIdx < ex4Options.length - 1) setOptIdx(p => p + 1); else handleTopicComplete('ex4'); }} disabled={!optSolved[optIdx]} className="px-12 font-black h-12 shadow-xl">Siguiente</Button>
-                        </CardFooter>
-                    </Card>
-                );
+            case 'ex4': return <ChoiceExercise key="ex4" title="Ejercicio 4: Opción Múltiple" prompts={ex4Options} onComplete={() => handleTopicComplete('ex4')} />;
             case 'completar':
                 return (
                     <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left">
