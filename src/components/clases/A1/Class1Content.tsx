@@ -419,8 +419,8 @@ export default function Class1Content() {
                                 <p className="text-green-600 font-bold">(+) they are students</p>
                                 <p className="text-red-300 font-bold">(-) they are not students</p>
                                 <p className="text-blue-300 font-bold">(?) are they students?</p>
-                                <p className="text-green-600 font-bold">(+A) yes, they are</p>
-                                <p className="text-red-600 font-bold">(-A) no, they are not</p>
+                                <p className="text-green-600 font-bold">(+A) Yes, they are</p>
+                                <p className="text-red-600 font-bold">(-A) No, they are not</p>
                             </CardContent>
                             <CardFooter className="justify-center border-t pt-4">
                                 <Button onClick={() => handleTopicComplete('tobe-1')} size="lg" className='text-white font-bold'>Avanzar al Ejercicio</Button>
@@ -473,8 +473,8 @@ export default function Class1Content() {
                                     <p className="font-mono text-primary">(+) they are my friends</p>
                                     <p className="font-mono text-muted-foreground">(-) they are not my friends</p>
                                     <p className="font-mono text-blue-500">(?) are they my friends?</p>
-                                    <p className="font-mono text-primary">(+A) yes, they are</p>
-                                    <p className="font-mono text-red-500">(-A) no, they are not</p>
+                                    <p className="font-mono text-primary">(+A) Yes, they are</p>
+                                    <p className="font-mono text-red-500">(-A) No, they are not</p>
                                 </div>
                             </CardContent>
                             <CardFooter className="justify-center border-t pt-4">
@@ -503,8 +503,8 @@ export default function Class1Content() {
                                     <p className="font-mono text-primary">(+) my mother is a nurse</p>
                                     <p className="font-mono text-muted-foreground">(-) my mother is not a nurse</p>
                                     <p className="font-mono text-blue-500">(?) is my mother a nurse?</p>
-                                    <p className="font-mono text-primary">(+)yes, she is</p>
-                                    <p className="font-mono text-red-500">(-)no, she is not</p>
+                                    <p className="font-mono text-primary">(+) Yes, she is</p>
+                                    <p className="font-mono text-red-500">(-) No, she is not</p>
                                 </div>
                             </CardContent>
                             <CardFooter className="justify-center border-t pt-4">
