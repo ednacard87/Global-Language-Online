@@ -428,7 +428,7 @@ export default function Class1Content() {
                         </Card>
                     </div>
                 );
-            case 'exercises1': return <TranslationExercise exerciseKey="exercises1" onComplete={() => handleTopicComplete('exercises1')} vocabulary={{'un- una': 'a / an', 'profesional': 'professional', 'hermanas': 'sisters', 'hermanos': 'brothers' , 'doctor' : 'doctor' , 'en casa' : 'at home' , 'universidad' : 'university'}} highlightVocabulary={true} title="Exercise 1" />;
+            case 'exercise1': return <TranslationExercise exerciseKey="exercise1" onComplete={() => handleTopicComplete('exercise1')} vocabulary={{'un- una': 'a / an', 'profesional': 'professional', 'hermanas': 'sisters', 'hermanos': 'brothers' , 'doctor' : 'doctor' , 'en casa' : 'at home' , 'universidad' : 'university'}} highlightVocabulary={true} title="Exercise 1" />;
             case 'possessives':
                 return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left p-6">
