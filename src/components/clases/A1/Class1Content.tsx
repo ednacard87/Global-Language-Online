@@ -143,13 +143,13 @@ export default function Class1Content() {
         { key: 'tobe', name: 'Grammar: To Be', icon: GraduationCap, status: 'locked' },
         { key: 'memory-tobe', name: 'Memory: To Be', icon: BrainCircuit, status: 'locked' },
         { key: 'tobe-1', name: 'To be 1', icon: GraduationCap, status: 'locked' },
-        { key: 'exercise1', name: 'Exercise 1', icon: PenSquare, status: 'locked' },
+        { key: 'exercises1', name: 'Exercise 1', icon: PenSquare, status: 'locked' },
         { key: 'possessives', name: 'Grammar: Possessives', icon: GraduationCap, status: 'locked' },
         { key: 'memory-possessives', name: 'Memory: Possessives', icon: BrainCircuit, status: 'locked' },
         { key: 'tobe-2', name: 'To be 2', icon: GraduationCap, status: 'locked' },
-        { key: 'exercise2', name: 'Exercise 2', icon: PenSquare, status: 'locked' },
+        { key: 'exercises2', name: 'Exercise 2', icon: PenSquare, status: 'locked' },
         { key: 'tobe-3', name: 'To be 3', icon: GraduationCap, status: 'locked' },
-        { key: 'exercise3', name: 'Exercise 3', icon: PenSquare, status: 'locked' },
+        { key: 'exercises3', name: 'Exercise 3', icon: PenSquare, status: 'locked' },
         {
             key: 'mixed',
             name: 'Mixed Challenges',
@@ -428,7 +428,7 @@ export default function Class1Content() {
                         </Card>
                     </div>
                 );
-            case 'exercise1': return <TranslationExercise exerciseKey="exercise1" onComplete={() => handleTopicComplete('exercise1')} vocabulary={{'un- una': 'a / an', 'profesional': 'professional', 'hermanas': 'sisters', 'hermanos': 'brothers' , 'doctor' : 'doctor' , 'en casa' : 'at home' , 'universidad' : 'university'}} highlightVocabulary={true} title="Exercise 1" />;
+            case 'exercises1': return <TranslationExercise exerciseKey="exercises1" onComplete={() => handleTopicComplete('exercise1')} vocabulary={{'un- una': 'a / an', 'profesional': 'professional', 'hermanas': 'sisters', 'hermanos': 'brothers' , 'doctor' : 'doctor' , 'en casa' : 'at home' , 'universidad' : 'university'}} highlightVocabulary={true} title="Exercise 1" />;
             case 'possessives':
                 return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left p-6">
@@ -483,7 +483,7 @@ export default function Class1Content() {
                         </Card>
                     </div>
                 );
-            case 'exercise2': return <TranslationExercise exerciseKey="exercise2" onComplete={() => handleTopicComplete('exercises2')} vocabulary={{'mamá': 'mother', 'primo': 'cousin', 'perro': 'dog' , 'gato': 'cat'}} highlightVocabulary={true} title="Exercise 2" />;
+            case 'exercises2': return <TranslationExercise exerciseKey="exercises2" onComplete={() => handleTopicComplete('exercises2')} vocabulary={{'mamá': 'mother', 'primo': 'cousin', 'perro': 'dog' , 'gato': 'cat'}} highlightVocabulary={true} title="Exercise 2" />;
             case 'tobe-3':
                 return (
                     <div className="space-y-6 text-left">
@@ -513,7 +513,7 @@ export default function Class1Content() {
                         </Card>
                     </div>
                 );
-            case 'exercise3': return <TranslationExercise exerciseKey="exercise3" onComplete={() => handleTopicComplete('exercise3')} vocabulary={{'abogada': 'lawyer', 'iglesia': 'church', 'grande': 'big', 'juguete': 'toy' , 'silla' : 'chair'}} highlightVocabulary={true} title="Exercise 3" />;
+            case 'exercises3': return <TranslationExercise exerciseKey="exercises3" onComplete={() => handleTopicComplete('exercise3')} vocabulary={{'abogada': 'lawyer', 'iglesia': 'church', 'grande': 'big', 'juguete': 'toy' , 'silla' : 'chair'}} highlightVocabulary={true} title="Exercise 3" />;
             case 'ex-mixto-1': return <SimpleTranslationExercise course="a1" exerciseKey="mixed1" onComplete={() => handleTopicComplete('ex-mixto-1')} title="Exercise 1" vocabulary={{'estudiante': 'student', 'amigos': 'friends', 'padres': 'parents', 'hermana': 'sister', 'abogados': 'lawyers', 'Inglaterra': 'England'}} highlightVocabulary={true} />;
             case 'ex-mixto-2': return <TranslationExercise exerciseKey="qna2" formType="qna" onComplete={() => handleTopicComplete('ex-mixto-2')} title="Exercise 2" vocabulary={{'compañeros de trabajo': 'coworkers','ocupado': 'busy','libre' : 'free','hambriento': 'hungry','cansado': 'tired', 'amiga': 'friend', 'estudiantes': 'students', 'feliz': 'happy', 'curiosos': 'curious', 'novia': 'girlfriend', 'ocupada': 'busy', 'libres': 'free', 'España': 'Spain', 'ingeniero': 'engineer', 'hambriento': 'hungry', 'compañeros': 'coworkers', 'a tiempo': 'on time'}} highlightVocabulary={true} />;
             case 'ex-mixto-3': return <SimpleTranslationExercise course="a1" exerciseKey="mixed3" onComplete={() => handleTopicComplete('ex-mixto-3')} title="Exercise 3" vocabulary={{'estudiantes': 'students', 'apodos': 'nicknames', 'mamá': 'mom/mother', 'padres': 'parents', 'viejos': 'old', 'prima': 'cousin', 'abuela': 'grandma', 'hermanas': 'sisters', 'cansado': 'tired', 'aburridos': 'bored', 'profesores': 'teachers', 'enojados': 'angry', 'alta': 'tall', 'preocupados': 'worried'}} highlightVocabulary={true} />;
