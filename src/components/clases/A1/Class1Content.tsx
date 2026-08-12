@@ -1,7 +1,5 @@
 'use client';
 
-// Importaciones de React, componentes UI y utilidades necesarias para la clase.
-// Este componente muestra lecciones, ejercicios y una ruta de aprendizaje interactiva.
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -21,8 +19,6 @@ import { SimpleTranslationExercise } from '@/components/dashboard/simple-transla
 import { ShortAnswerExercise } from '@/components/dashboard/short-answer-exercise';
 import { Separator } from '@/components/ui/separator';
 
-// Datos estáticos usados en la lección.
-// Contienen vocabulario, conjugaciones y pronombres para mostrar en la pantalla.
 const vocabularyData = {
     weekdays: [
         { spanish: 'Lunes', english: 'Monday' },
@@ -89,7 +85,6 @@ const possessivesData = [
     { english: 'Their', spanish: 'Su / Sus (de ellos/as)' },
 ];
 
-// Tipos de datos para la ruta de aprendizaje y estado de cada tema.
 interface Topic {
     key: string;
     name: string;
@@ -105,17 +100,14 @@ const ICONS = {
 };
 
 export default function Class1Content() {
-    // Hooks de contexto y utilidades globales
-    const { t } = useTranslation(); // Traducción de texto según idioma
-    const { toast } = useToast(); // Mensajes emergentes
-    const { user, isUserLoading } = useUser(); // Usuario actual y estado de carga
-    const firestore = useFirestore(); // Instancia de Firestore
+    const { t } = useTranslation();
+    const { toast } = useToast();
+    const { user, isUserLoading } = useUser();
+    const firestore = useFirestore();
 
-    // Claves para guardar progreso del alumno en Firestore
     const progressStorageKey = 'progress_a1_eng_u1_c1_v200_blindado';
     const mainProgressKey = 'progress_a1_eng_unit_1_class_1';
 
-    // Estados locales: ruta de aprendizaje, tema seleccionado, respuestas y validación
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
     const [selectedTopic, setSelectedTopic] = useState<string>('vocabulary');
     const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
@@ -124,20 +116,17 @@ export default function Class1Content() {
     const [isInitialLoading, setIsInitialLoading] = useState(true);
     const [canAdvanceVocab, setCanAdvanceVocab] = useState(false);
 
-    // Referencia a Firestore para el documento del estudiante
     const studentDocRef = useMemoFirebase(
         () => (user ? doc(firestore, 'students', user.uid) : null),
         [firestore, user]
     );
     const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{role?: string, lessonProgress?: any, progress?: any}>(studentDocRef);
 
-    // Determina si el usuario es administrador para desbloquear todo el contenido
     const isAdmin = useMemo(() => {
         if (!user) return false;
         return studentProfile?.role === 'admin' || user.email === 'ednacard87@gmail.com';
     }, [user, studentProfile]);
 
-    // Definición inicial de la ruta de aprendizaje con temas y subtemas
     const initialLearningPath = useMemo((): Topic[] => [
         { key: 'vocabulary', name: t('a1class1.vocabulary'), icon: BookOpen, status: 'active' },
         { key: 'tobe', name: 'Grammar: To Be', icon: GraduationCap, status: 'locked' },
@@ -166,12 +155,10 @@ export default function Class1Content() {
         }
     ], [t]);
 
-    // Marca un tema como completado para que el efecto correspondiente procese el desbloqueo
     const handleTopicComplete = useCallback((completedKey: string) => {
         setTopicToComplete(completedKey);
     }, []);
 
-    // Carga inicial: configura la ruta de aprendizaje, selecciona el primer tema activo y prepara el estado de vocabulario
     useEffect(() => {
         if (isProfileLoading || isUserLoading || !studentProfile) return;
 
@@ -235,7 +222,6 @@ export default function Class1Content() {
         setIsInitialLoading(false);
     }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading, isUserLoading]);
 
-    // Calcula el porcentaje de progreso según los temas completados de la ruta de aprendizaje.
     const progressValue = useMemo(() => {
         if (learningPath.length === 0) return 0;
         let total = 0; let done = 0;
@@ -246,7 +232,6 @@ export default function Class1Content() {
         return total > 0 ? Math.round((done / total) * 100) : 0;
     }, [learningPath]);
 
-    // Guarda automáticamente el progreso del estudiante en Firestore sin bloquear la UI.
     useEffect(() => {
         if (isInitialLoading || isAdmin || !studentDocRef || learningPath.length === 0) return;
         const data: Record<string, any> = { lastSelectedTopic: selectedTopic };
@@ -306,7 +291,6 @@ export default function Class1Content() {
         setTopicToComplete(null);
     }, [topicToComplete, toast]);
 
-    // Selecciona un tema. Si está bloqueado para usuarios normales, muestra un aviso.
     const handleTopicSelect = (topicKey: string) => {
         const mainT = learningPath.find(t => t.key === topicKey || t.subItems?.some(st => st.key === topicKey));
         const subT = mainT?.subItems?.find(st => st.key === topicKey);
@@ -323,7 +307,6 @@ export default function Class1Content() {
     };
 
     const handleVocabCheck = () => {
-        // Comprueba si las respuestas de vocabulario son correctas y actualiza el estado de validación
         let atLeastOneCorrect = false;
         const nv: any = {};
         for (const cat in vocabularyData) {
@@ -338,7 +321,6 @@ export default function Class1Content() {
         else toast({ variant: 'destructive', title: 'Sigue intentando' });
     };
 
-    // Renderiza el contenido principal según el tema seleccionado en la ruta de aprendizaje
     const renderContent = () => {
         if (isInitialLoading) return <div className="flex justify-center items-center min-h-[400px]"><Loader2 className="animate-spin h-12 w-12 text-primary" /></div>;
         switch (selectedTopic) {
@@ -428,7 +410,7 @@ export default function Class1Content() {
                         </Card>
                     </div>
                 );
-            case 'exercises1': return <TranslationExercise exerciseKey="exercises1" onComplete={() => handleTopicComplete('exercise1')} vocabulary={{'un- una': 'a / an', 'profesional': 'professional', 'hermanas': 'sisters', 'hermanos': 'brothers' , 'doctor' : 'doctor' , 'en casa' : 'at home' , 'universidad' : 'university'}} highlightVocabulary={true} title="Exercise 1" />;
+            case 'exercises1': return <TranslationExercise exerciseKey="class1_ex1" onComplete={() => handleTopicComplete('exercises1')} vocabulary={{'el profesor': 'the teacher', 'madre': 'mother', 'estudiantes': 'students', 'inteligentes': 'intelligent' , 'oficina' : 'office' , 'profesional' : 'professional'}} highlightVocabulary={true} title="Exercise 1" />;
             case 'possessives':
                 return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left p-6">
@@ -483,7 +465,7 @@ export default function Class1Content() {
                         </Card>
                     </div>
                 );
-            case 'exercises2': return <TranslationExercise exerciseKey="exercises2" onComplete={() => handleTopicComplete('exercises2')} vocabulary={{'mamá': 'mother', 'primo': 'cousin', 'perro': 'dog' , 'gato': 'cat'}} highlightVocabulary={true} title="Exercise 2" />;
+            case 'exercises2': return <TranslationExercise exerciseKey="class1_ex2" onComplete={() => handleTopicComplete('exercises2')} vocabulary={{'hermano': 'brother', 'amigo': 'friend', 'hija': 'daughter', 'bonita': 'pretty' , 'carro' : 'car'}} highlightVocabulary={true} title="Exercise 2" />;
             case 'tobe-3':
                 return (
                     <div className="space-y-6 text-left">
@@ -513,7 +495,7 @@ export default function Class1Content() {
                         </Card>
                     </div>
                 );
-            case 'exercises3': return <TranslationExercise exerciseKey="exercises3" onComplete={() => handleTopicComplete('exercise3')} vocabulary={{'abogada': 'lawyer', 'iglesia': 'church', 'grande': 'big', 'juguete': 'toy' , 'silla' : 'chair'}} highlightVocabulary={true} title="Exercise 3" />;
+            case 'exercises3': return <TranslationExercise exerciseKey="class1_ex3" onComplete={() => handleTopicComplete('exercises3')} vocabulary={{'doctora': 'doctor', 'famosa': 'famous', 'abuelo': 'grandfather', 'pensionado': 'retired' , 'gato' : 'cat' , 'independiente' : 'independent'}} highlightVocabulary={true} title="Exercise 3" />;
             case 'ex-mixto-1': return <SimpleTranslationExercise course="a1" exerciseKey="mixed1" onComplete={() => handleTopicComplete('ex-mixto-1')} title="Exercise 1" vocabulary={{'estudiante': 'student', 'amigos': 'friends', 'padres': 'parents', 'hermana': 'sister', 'abogados': 'lawyers', 'Inglaterra': 'England'}} highlightVocabulary={true} />;
             case 'ex-mixto-2': return <TranslationExercise exerciseKey="qna2" formType="qna" onComplete={() => handleTopicComplete('ex-mixto-2')} title="Exercise 2" vocabulary={{'compañeros de trabajo': 'coworkers','ocupado': 'busy','libre' : 'free','hambriento': 'hungry','cansado': 'tired', 'amiga': 'friend', 'estudiantes': 'students', 'feliz': 'happy', 'curiosos': 'curious', 'novia': 'girlfriend', 'ocupada': 'busy', 'libres': 'free', 'España': 'Spain', 'ingeniero': 'engineer', 'hambriento': 'hungry', 'compañeros': 'coworkers', 'a tiempo': 'on time'}} highlightVocabulary={true} />;
             case 'ex-mixto-3': return <SimpleTranslationExercise course="a1" exerciseKey="mixed3" onComplete={() => handleTopicComplete('ex-mixto-3')} title="Exercise 3" vocabulary={{'estudiantes': 'students', 'apodos': 'nicknames', 'mamá': 'mom/mother', 'padres': 'parents', 'viejos': 'old', 'prima': 'cousin', 'abuela': 'grandma', 'hermanas': 'sisters', 'cansado': 'tired', 'aburridos': 'bored', 'profesores': 'teachers', 'enojados': 'angry', 'alta': 'tall', 'preocupados': 'worried'}} highlightVocabulary={true} />;
@@ -549,7 +531,7 @@ export default function Class1Content() {
                                                     const subL = sub.status === 'locked' && !isAdmin;
                                                     const SubI = ICONS[sub.status] || PenSquare;
                                                     return (
-                                                        <li key={sub.key} onClick={() => handleTopicSelect(sub.key)} className={cn('flex items-center gap-3 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors cursor-pointer text-foreground', subL ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === sub.key && 'bg-muted text-primary font-bold')}>
+                                                        <li key={sub.key} onClick={() => handleTopicSelect(sub.key)} className={cn('flex items-center justify-between gap-3 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors cursor-pointer text-foreground', subL ? 'text-muted-foreground/30 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === sub.key && 'bg-muted text-primary font-bold')}>
                                                             <SubI className={cn("h-4 w-4", sub.status === 'completed' && 'text-green-500')} /><span>{sub.name}</span>
                                                         </li>
                                                     )
