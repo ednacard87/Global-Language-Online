@@ -9,23 +9,22 @@ import {
     Lock, 
     GraduationCap, 
     CheckCircle, 
-    Loader2, 
-    ArrowRight,
-    Gamepad2,
+    Gamepad2, 
+    BookText, 
     Trophy,
-    BookText,
+    ArrowLeft,
+    ArrowRight,
+    Star,
+    Loader2,
+    MessageSquare,
     Pencil,
     Activity,
-    Star,
-    ArrowLeft,
-    MessageSquare,
-    ListChecks,
     Check,
     X,
-    Gift,
-    ShoppingCart,
-    Split,
     Info,
+    ListChecks,
+    Zap,
+    ShoppingCart,
     Repeat
 } from 'lucide-react';
 import { DashboardHeader } from '@/components/dashboard/header';
@@ -38,15 +37,15 @@ import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Separator } from '@/components/ui/separator';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { VocabularyMatchingGame } from '@/components/dashboard/vocabulary-matching-game';
 import { Textarea } from '@/components/ui/textarea';
 
 // --- CONFIGURACIÓN DE INGENIERÍA ---
-const progressStorageVersion = 'progress_es_a2_pron_1_v10_full_content';
+const progressStorageVersion = 'progress_es_a2_pron_1_v13_fixed_vocab';
 const mainProgressKey = 'progress_a2_es_pronombres_1';
 
 const ICONS_CONFIG: Record<string, React.ElementType> = {
@@ -79,52 +78,42 @@ const conjVerbs = [
     { v: "RECIBIR", imp: ["recibía", "recibías", "recibía", "recibíamos", "recibían"], pre: ["recibí", "recibiste", "recibió", "recibimos", "recibieron"] },
     { v: "PEDIR", imp: ["pedía", "pedías", "pedía", "pedíamos", "pedían"], pre: ["pedí", "pediste", "pidió", "pedimos", "pidieron"] },
     { v: "PAGAR", imp: ["pagaba", "pagabas", "pagaba", "pagábamos", "pagaban"], pre: ["pagué", "pagaste", "pagó", "pagamos", "pagaron"] },
-    { v: "BUSCAR", imp: ["buscaba", "buscabas", "buscaba", "buscábamos", "buscaban"], pre: ["busqué", "buscaste", "buscó", "buscamos", "buscaron"] },
+    { v: "BUSCAR", imp: ["bocaba", "buscabas", "buscaba", "buscábamos", "buscaban"], pre: ["busqué", "buscaste", "buscó", "buscamos", "buscaron"] },
     { v: "ENTREGAR", imp: ["entregaba", "entregabas", "entregaba", "entregábamos", "entregaban"], pre: ["entregué", "entregaste", "entregó", "entregamos", "entregaron"] },
     { v: "AHORRAR", imp: ["ahorraba", "ahorrabas", "ahorraba", "ahorrábamos", "ahorraban"], pre: ["ahorré", "ahorraste", "ahorro", "ahorramos", "ahorraron"] },
     { v: "GASTAR", imp: ["gastaba", "gastabas", "gastaba", "gastábamos", "gastaban"], pre: ["gasté", "gastaste", "gastó", "gastamos", "gastaron"] },
     { v: "MOSTRAR", imp: ["mostraba", "mostrabas", "mostraba", "mostrábamos", "mostraban"], pre: ["mostré", "mostraste", "mostró", "mostramos", "mostraron"] },
-    { v: "ELEGIR", imp: ["elegía", "elegías", "elegía", "elegíamos", "elegían"], pre: ["elegí", "elegiste", "eligió", "elegimos", "eligieron"] },
-    { v: "OFRECER", imp: ["ofrecía", "ofrecías", "ofrecía", "ofrecíamos", "ofrecían"], pre: ["ofrecí", "ofreciste", "ofreció", "ofrecimos", "ofrecieron"] },
+    { v: "ELEGIR", imp: ["elegía", "elegías", "elegía", "elegíamos", "elegían"], pre: ["elegí", "elegiste", "eligió", "elegimos", "elegieron"] },
+    { v: "OFRECER", imp: ["ofrecía", "ofrecías", "ofrecía", "ofrecíamos", "ofrecían"], pre: ["ofrecí", "ofreciste", "ofreció", "ofrecimos", "ofreció"] },
     { v: "PROMETER", imp: ["prometía", "prometías", "prometía", "prometíamos", "prometían"], pre: ["prometí", "prometiste", "prometió", "prometimos", "prometieron"] },
-    { v: "ENCARGAR", imp: ["encargaba", "encargabas", "encargaba", "encargábamos", "encargaban"], pre: ["encargué", "encargaste", "encargó", "encargamos", "encargaron"] },
+    { v: "ENCARGAR", imp: ["encargaba", "encargabas", "encargaba", "encargábamos", "encargaban"], pre: ["encargué", "entregaste", "encargó", "encargamos", "encargaron"] },
     { v: "DEVOLVER", imp: ["devolvía", "devolvías", "devolvía", "devolvíamos", "devolvían"], pre: ["devolví", "devolviste", "devolvió", "devolvimos", "devolvieron"] },
-    { v: "CONOCER", imp: ["conocía", "conocías", "conocía", "conocíamos", "conocían"], pre: ["conocí", "conociste", "conoció", "conocimos", "conocieron"] },
-    { v: "MIRAR", imp: ["miraba", "mirabas", "miraba", "mirábamos", "miraban"], pre: ["miré", "miraste", "miró", "miramos", "miraron"] },
-    { v: "ESCRIBIR", imp: ["escribía", "escribías", "escribía", "escribíamos", "escribían"], pre: ["escribí", "escribiste", "escribió", "escribimos", "escribieron"] },
-    { v: "LEER", imp: ["leía", "leías", "leía", "leíamos", "leían"], pre: ["leí", "leíste", "leyó", "leímos", "leyeron"] },
-    { v: "PENSAR", imp: ["pensaba", "pensabas", "pensaba", "pensábamos", "pensaban"], pre: ["pensé", "pensaste", "pensó", "pensamos", "pensaron"] },
-    { v: "CREER", imp: ["creía", "creías", "creía", "creíamos", "creían"], pre: ["creí", "creíste", "creyó", "creímos", "creyeron"] },
-    { v: "SABER", imp: ["sabía", "sabías", "sabía", "sabíamos", "sabían"], pre: ["supe", "supiste", "supo", "supimos", "supieron"] },
-    { v: "QUERER", imp: ["quería", "querías", "quería", "queríamos", "querían"], pre: ["quise", "quisiste", "quiso", "quisimos", "quisieron"] },
-    { v: "PODER", imp: ["podía", "podías", "podía", "podíamos", "podían"], pre: ["pude", "pudiste", "pudo", "pudimos", "pudieron"] },
-    { v: "TENER", imp: ["tenía", "tenías", "tenía", "teníamos", "tenían"], pre: ["tuve", "tuviste", "tuvo", "tuvimos", "tuvieron"] },
 ];
 
 const ex1Prompts = [
     { en: "I buy it (the gift).", es: ["lo compro", "yo lo compro"] },
-    { en: "You wrap them (the gifts).", es: ["los envuelves", "tú los envuelves"] },
+    { en: "You wrap them (the gifts).", es: ["tu los envuelves", "tú los envuelves"] },
     { en: "She sells it (the house).", es: ["la vende", "ella la vende"] },
     { en: "We send it (the letter).", es: ["la enviamos", "nosotros la enviamos"] },
     { en: "They show them (the photos).", es: ["las muestran", "ellos las muestran"] },
     { en: "I pay it (the bill).", es: ["la pago", "yo la pago"] },
-    { en: "You choose them (the shoes).", es: ["los eliges", "tú los eliges"] },
+    { en: "You choose them (the shoes).", es: ["tu los eliges", "tú los eliges"] },
     { en: "He asks for it (the favor).", es: ["lo pide", "él lo pide"] },
     { en: "We find it (the key).", es: ["la encontramos", "nosotros la encontramos"] },
     { en: "They save it (the money).", es: ["lo ahorran", "ellos lo ahorran"] },
     { en: "I return it (the book).", es: ["lo devuelvo", "yo lo devuelvo"] },
-    { en: "She delivers it (the pizza).", es: ["la entrega", "ella la entrega"] },
+    { en: "She delivers it (the pizza).", es: ["ella la entrega"] },
 ];
 
 const ex2Prompts = [
     { en: "I give him a gift.", es: ["le doy un regalo", "yo le doy un regalo"] },
-    { en: "You lend her your car.", es: ["le prestas tu carro", "tú le prestas tu carro"] },
-    { en: "She sends us an email.", es: ["nos envía un correo", "ella nos envía un correo"] },
-    { en: "We tell them the truth.", es: ["les decimos la verdad", "nosotros les decimos la verdad"] },
-    { en: "They bring me a coffee.", es: ["me traen un café", "ellos me traen un café"] },
+    { en: "You lend her your car.", es: ["tu le prestas tu carro", "tú le prestas tu carro"] },
+    { en: "She sends us an email.", es: ["ella nos envia un correo", "ella nos envía un correo"] },
+    { en: "We tell them the truth.", es: ["nosotros les decimos la verdad"] },
+    { en: "They bring me a coffee.", es: ["ellos me traen un cafe", "ellos me traen un café"] },
     { en: "I offer you a deal.", es: ["te ofrezco un trato", "yo te ofrezco un trato"] },
-    { en: "You show him the store.", es: ["le muestras la tienda", "tú le muestras la tienda"] },
-    { en: "He delivers us the package.", es: ["nos entrega el paquete", "él nos entrega el paquete"] },
+    { en: "You show him the store.", es: ["tu le muestras la tienda", "tú le muestras la tienda"] },
+    { en: "He delivers us the package.", es: ["el nos entrega el paquete", "él nos entrega el paquete"] },
     { en: "We promise her a prize.", es: ["le prometemos un premio", "nosotros le prometemos un premio"] },
     { en: "They ask me for money.", es: ["me piden dinero", "ellos me piden dinero"] },
     { en: "I wrap you the gift.", es: ["te envuelvo el regalo", "yo te envuelvo el regalo"] },
@@ -133,20 +122,20 @@ const ex2Prompts = [
 
 const ex3Prompts = [
     { en: "I am going to buy it.", es: ["voy a comprarlo", "lo voy a comprar"] },
-    { en: "She wants to see me.", es: ["quiere verme", "me quiere ver"] },
-    { en: "We need to wrap them.", es: ["necesitamos envolverlos", "los necesitamos envolver"] },
-    { en: "They have to pay us.", es: ["tienen que pagarnos", "nos tienen que pagar"] },
-    { en: "I am showing him the map.", es: ["estoy mostrándole el mapa", "le estoy mostrando el mapa"] },
-    { en: "You are sending her a message.", es: ["estás enviándole un mensaje", "le estás enviando un mensaje"] },
-    { en: "He can find it.", es: ["puede encontrarlo", "lo puede encontrar"] },
-    { en: "We should help them.", es: ["debemos ayudarlos", "los debemos ayudar"] },
-    { en: "They are choosing it.", es: ["están eligiéndolo", "lo están eligiendo"] },
-    { en: "I want to offer you a discount.", es: ["quiero ofrecerte un descuento", "te quiero ofrecer un descuento"] },
-    { en: "She is bringing me the bill.", es: ["está trayéndome la cuenta", "me está trayendo la cuenta"] },
-    { en: "We are selling it now.", es: ["estamos vendiéndolo ahora", "lo estamos vendiendo ahora"] },
-    { en: "They can hear us.", es: ["pueden oírnos", "nos pueden oír"] },
-    { en: "I am looking for them.", es: ["estoy buscándolos", "los estoy buscando"] },
-    { en: "You must deliver it.", es: ["debes entregarlo", "lo debes entregar"] },
+    { en: "She wants to see me.", es: ["ella quiere verme", "ella me quiere ver"] },
+    { en: "We need to wrap them.", es: ["nosotros necesitamos envolverlos", "los necesitamos envolver"] },
+    { en: "They have to pay us.", es: ["ellos tienen que pagarnos", "ellos nos tienen que pagar"] },
+    { en: "I am showing him the map.", es: ["yo estoy mostrandole el mapa", "yo le estoy mostrando el mapa"] },
+    { en: "You are sending her a message.", es: ["tu estas enviandole un mensaje", "tú estás enviándole un mensaje"] },
+    { en: "He can find it.", es: ["el puede encontrarlo", "el lo puede encontrar"] },
+    { en: "We should help them.", es: ["nosotros debemos ayudarlos", "nosotros los debemos ayudar"] },
+    { en: "They are choosing it.", es: ["ellos estan eligiendolo", "ellos lo estan eligiendo"] },
+    { en: "I want to offer you a discount.", es: ["yo quiero ofrecerte un descuento", "yo te quiero ofrecer un descuento"] },
+    { en: "She is bringing me the bill.", es: ["ella esta trayendome la cuenta", "ella me esta trayendo la cuenta"] },
+    { en: "We are selling it now.", es: ["nosotros estamos vendiendolo ahora", "nosotroslo estamos vendiendo ahora"] },
+    { en: "They can hear us.", es: ["ellos pueden oirnos", "ellos nos pueden oír"] },
+    { en: "I am looking for them.", es: ["yo estoy buscandolos", "yo los estoy buscando"] },
+    { en: "You must deliver it.", es: ["tu debes entregarlo", "tu lo debes entregar"] },
 ];
 
 const readingData = {
@@ -174,47 +163,47 @@ const ex4Options = [
     { text: "Ellos _______ (mostrar) los cuadros.", options: ["LAS MOSTRARON", "LOS MOSTRARON", "LES MOSTRARON"], answer: "LOS MOSTRARON" },
     { text: "Tú _______ (prestar) dinero a ella.", options: ["LA PRESTASTE", "LE PRESTASTE", "LO PRESTASTE"], answer: "LE PRESTASTE" },
     { text: "Yo _______ (encontrar) mi cartera.", options: ["LA ENCONTRÉ", "LO ENCONTRÉ", "LE ENCONTRÉ"], answer: "LA ENCONTRÉ" },
-    { text: "Él _______ (conocer) a mis padres.", options: ["LOS CONOCIÓ", "LAS CONOCIÓ", "LES CONOCIÓ"], answer: "LOS CONOCIÓ" },
+    { text: "ÉL _______ (conocer) a mis padres.", options: ["LOS CONOCIÓ", "LAS CONOCIÓ", "LES CONOCIÓ"], answer: "LOS CONOCIÓ" },
     { text: "Nosotros _______ (elegir) este hotel.", options: ["LO ELEGIMOS", "LA ELEGIMOS", "LE ELEGIMOS"], answer: "LO ELEGIMOS" },
     { text: "Ustedes _______ (prometer) el viaje.", options: ["LO PROMETIERON", "LA PROMETIERON", "LE PROMETIERON"], answer: "LO PROMETIERON" },
     { text: "Yo _______ (enviar) el paquete a ellos.", options: ["LO ENVIÉ", "LES ENVIÉ", "LA ENVIÉ"], answer: "LES ENVIÉ" },
-    { text: "Ella _______ (ahorrar) el dinero.", options: ["LA AHORRÓ", "LO AHORRÓ", "LE AHORRÓ"], answer: "LO AHORRÓ" },
+    { text: "Ella _______ (ahorrar) el dinero.", options: ["LA AHORRÓ", "LO AHORRÓ", "LE AHORRÓ"], answer: "LA AHORRÓ" },
     { text: "Tú _______ (pagar) la cuenta.", options: ["LO PAGASTE", "LA PAGASTE", "LE PAGASTE"], answer: "LA PAGASTE" },
     { text: "Nosotros _______ (ofrecer) ayuda.", options: ["LA OFRECIMOS", "LE OFRECIMOS", "LO OFRECIMOS"], answer: "LA OFRECIMOS" },
     { text: "Ellos _______ (mirar) la televisión.", options: ["LA MIRARON", "LO MIRARON", "LE MIRARON"], answer: "LA MIRARON" },
 ];
 
 const completarPrompts = [
-    { s: "1. Yo (vender) _______ mi carro.", a: "lo vendí" },
+    { s: "1. Yo (vender) _______ mi carro ayer.", a: "lo vendi" },
     { s: "2. Tú (enviar) _______ un regalo a ella.", a: "le enviaste" },
-    { s: "3. Ella (buscar) _______ sus llaves.", a: "las buscó" },
+    { s: "3. Ella (buscar) _______ sus llaves.", a: "las busco" },
     { s: "4. Nosotros (comprar) _______ las entradas.", a: "las compramos" },
-    { s: "5. Ellos (traer) _______ el café para mí.", a: "me trajeron" },
-    { s: "6. Él (mostrar) _______ las fotos a nosotros.", a: "nos mostró" },
-    { s: "7. Yo (pedir) _______ un favor a ti.", a: "te pedí" },
-    { s: "8. Tú (devolver) _______ el libro a la biblioteca.", a: "lo devolviste" },
-    { s: "9. Ella (invitar) _______ a mis amigos.", a: "los invitó" },
+    { s: "5. Ellos (traer) _______ el café para mí esta mañana.", a: "me trajeron" },
+    { s: "6. Él (mostrar) _______ las fotos a nosotros antier.", a: "nos mostro" },
+    { s: "7. Yo (pedir) _______ un favor a ti el viernes.", a: "te pedi" },
+    { s: "8. Tú (devolver) _______ el libro a la biblioteca esta mañana.", a: "lo devolviste" },
+    { s: "9. Ella (invitar) _______ a mis amigos a la fiesta.", a: "los invito" },
     { s: "10. Nosotros (ayudar) _______ a los ancianos.", a: "los ayudamos" },
-    { s: "11. Yo (conocer) _______ a tu hermana.", a: "la conocí" },
-    { s: "12. Ellos (pagar) _______ la deuda.", a: "la pagaron" },
-    { s: "13. Tú (encontrar) _______ tu perro.", a: "lo encontraste" },
-    { s: "14. Ella (envolver) _______ el regalo.", a: "lo envolvió" },
-    { s: "15. Nosotros (traer) _______ la comida para ellos.", a: "les trajimos" },
-    { s: "16. Él (dar) _______ un consejo a su amigo.", a: "le dio" },
-    { s: "17. Yo (ver) _______ a ustedes en el cine.", a: "los vi" },
-    { s: "18. Tú (escuchar) _______ la canción.", a: "la escuchaste" },
-    { s: "19. Ella (escribir) _______ una carta a mí.", a: "me escribió" },
+    { s: "11. Yo (conocer) _______ a tu hermana el finde pasado.", a: "la conoci" },
+    { s: "12. Ellos (pagar) _______ la deuda anoche.", a: "la pagaron" },
+    { s: "13. Tú (encontrar) _______ tu perro ayer.", a: "lo encontraste" },
+    { s: "14. Ella (envolver) _______ el regalo antier.", a: "lo envolvio" },
+    { s: "15. Nosotros (traer) _______ la comida para ellos el domingo.", a: "les trajimos" },
+    { s: "16. Él (dar) _______ un consejo a su amigo el mes pasado.", a: "le dio" },
+    { s: "17. Yo (ver) _______ a ustedes en el cine el sabado en la noche.", a: "los vi" },
+    { s: "18. Tú (escuchar) _______ la canción en el carro.", a: "la escuchaste" },
+    { s: "19. Ella (escribir) _______ una carta a mí hace 2 meses.", a: "me escribio" },
     { s: "20. Nosotros (limpiar) _______ la cocina.", a: "la limpiamos" },
-    { s: "21. Ellos (vender) _______ su apartamento.", a: "lo vendieron" },
-    { s: "22. Yo (comprar) _______ flores para ella.", a: "le compré" },
+    { s: "21. Ellos (vender) _______ su apartamento hace 5 meses.", a: "lo vendieron" },
+    { s: "22. Yo (comprar) _______ flores para ella.", a: "le compre" },
     { s: "23. Tú (enviar) _______ el mensaje.", a: "lo enviaste" },
-    { s: "24. Ella (buscar) _______ a su novio.", a: "lo buscó" },
+    { s: "24. Ella (buscar) _______ a su novio en la fiesta del sabado.", a: "lo buscó" },
     { s: "25. Nosotros (ahorrar) _______ el sueldo.", a: "lo ahorramos" },
-    { s: "26. Él (gastar) _______ sus ahorros.", a: "los gastó" },
-    { s: "27. Yo (pedir) _______ permiso a mis padres.", a: "les pedí" },
-    { s: "28. Tú (devolver) _______ la maleta.", a: "la devolviste" },
-    { s: "29. Ellos (encontrar) _______ el camino.", a: "lo encontraron" },
-    { s: "30. Ella (mostrar) _______ su vestido.", a: "lo mostró" },
+    { s: "26. Él (gastar) _______ sus ahorros en zapatos.", a: "los gasto" },
+    { s: "27. Yo (pedir) _______ permiso a mis padres anoche.", a: "les pedí" },
+    { s: "28. Tú (devolver) _______ la maleta en el aeropuerto.", a: "la devolviste" },
+    { s: "29. Ellos (encontrar) _______ el camino tarde.", a: "lo encontraron" },
+    { s: "30. Ella (mostrar) _______ su vestido a su amiga ayer.", a: "lo mostro" },
 ];
 
 const finalNegativePrompts = [
@@ -243,7 +232,16 @@ const BallsExercise = ({ title, prompts, onComplete, vocabulary, isAdmin, isSupe
     const [answer, setAnswer] = useState('');
     const [status, setStatus] = useState<Record<number, 'correct' | 'incorrect' | 'unchecked'>>({});
 
-    useEffect(() => { setAnswer(''); }, [currentIndex]);
+    // CRITICAL FIX: Reset answer when changing question index
+    useEffect(() => {
+        setAnswer('');
+    }, [currentIndex]);
+
+    useEffect(() => {
+        setCurrentIndex(0);
+        setAnswer('');
+        setStatus({});
+    }, [prompts]);
 
     const handleCheck = () => {
         if (isSupervisionMode) return;
@@ -259,6 +257,14 @@ const BallsExercise = ({ title, prompts, onComplete, vocabulary, isAdmin, isSupe
             toast({ variant: 'destructive', title: "Sigue intentando" });
         }
     };
+
+    if (!prompts || prompts.length === 0 || !prompts[currentIndex]) {
+        return (
+            <div className="flex justify-center items-center h-64">
+                <Loader2 className="animate-spin text-primary h-12 w-12" />
+            </div>
+        );
+    }
 
     return (
         <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground">
@@ -281,11 +287,23 @@ const BallsExercise = ({ title, prompts, onComplete, vocabulary, isAdmin, isSupe
                                 </Button>
                             </PopoverTrigger>
                             <PopoverContent className="w-64">
-                                <ScrollArea className="h-48 pr-4 text-left">
+                                <ScrollArea className="h-48 pr-4 text-left text-foreground">
                                     <div className="grid grid-cols-2 gap-2 text-sm">
-                                        {Object.entries(vocabulary).map(([es, en]: any) => (
-                                            <Fragment key={es}><span className="text-muted-foreground capitalize">{es}:</span><span className="font-semibold text-right">{en}</span></Fragment>
-                                        ))}
+                                        {Array.isArray(vocabulary) ? (
+                                            vocabulary.map((v: any, i: number) => (
+                                                <Fragment key={i}>
+                                                    <span className="text-muted-foreground capitalize">{v.en}:</span>
+                                                    <span className="font-semibold text-right text-primary">{(v.es || '').toUpperCase()}</span>
+                                                </Fragment>
+                                            ))
+                                        ) : (
+                                            Object.entries(vocabulary).map(([en, es]: any) => (
+                                                <Fragment key={en}>
+                                                    <span className="text-muted-foreground capitalize">{en}:</span>
+                                                    <span className="font-semibold text-right text-primary">{(es || '').toUpperCase()}</span>
+                                                </Fragment>
+                                            ))
+                                        )}
                                     </div>
                                 </ScrollArea>
                             </PopoverContent>
@@ -294,7 +312,9 @@ const BallsExercise = ({ title, prompts, onComplete, vocabulary, isAdmin, isSupe
                 </div>
             </CardHeader>
             <CardContent className="space-y-6">
-                <div className="bg-muted p-6 rounded-2xl border-2 border-dashed text-center font-bold text-xl uppercase tracking-tighter text-foreground">{prompts[currentIndex].en}</div>
+                <div className="bg-muted p-6 rounded-2xl border-2 border-dashed text-center font-bold text-xl uppercase tracking-tighter text-foreground">
+                    {prompts[currentIndex]?.en}
+                </div>
                 <Input value={answer} onChange={e => setAnswer(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleCheck()} className={cn("h-12 text-lg text-foreground", status[currentIndex] === 'correct' ? 'border-green-500 bg-green-50/5' : status[currentIndex] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} placeholder="Escribe en español..." autoComplete="off" readOnly={isSupervisionMode} />
             </CardContent>
             <CardFooter className="justify-between border-t pt-6">
@@ -356,7 +376,7 @@ const ChoiceExercise = ({ prompts, onComplete, title, isSupervisionMode }: any) 
     );
 };
 
-// --- MAIN CLASS COMPONENT ---
+// --- MAIN PAGE ---
 
 function Pronombres1ContentInternal() {
     const { toast } = useToast();
@@ -374,7 +394,6 @@ function Pronombres1ContentInternal() {
     const [initialLoadComplete, setInitialLoadComplete] = useState(false);
     
     const hasInitialized = useRef(false);
-    const lastSerializedRef = useRef<string>('');
 
     // Form states
     const [vocabAnswers, setVocabAnswers] = useState<string[]>(Array(shoppingVocab.length).fill(''));
@@ -419,8 +438,8 @@ function Pronombres1ContentInternal() {
         if (isAdmin && !targetStudentId) path.forEach(t => t.status = 'completed');
         else {
             path.forEach(t => { if (d[t.key]) t.status = d[t.key]; });
-            let last = true;
-            for (let i = 0; i < path.length; i++) { if (last && path[i].status === 'locked') path[i].status = 'active'; last = path[i].status === 'completed'; }
+            let lastDone = true;
+            for (let i = 0; i < path.length; i++) { if (lastDone && path[i].status === 'locked') path[i].status = 'active'; lastDone = path[i].status === 'completed'; }
         }
         setLearningPath(path); setSelectedTopic(d.lastSelectedTopic || path.find(p => p.status === 'active')?.key || path[0].key);
         if (d.vocabAnswers) setVocabAnswers(d.vocabAnswers);
@@ -431,8 +450,8 @@ function Pronombres1ContentInternal() {
 
     const progressValue = useMemo(() => {
         if (learningPath.length === 0) return 0;
-        const comp = learningPath.filter(t => t.status === 'completed').length;
-        return Math.round((comp / learningPath.length) * 100);
+        const completedCount = learningPath.filter(t => t.status === 'completed').length;
+        return Math.round((completedCount / learningPath.length) * 100);
     }, [learningPath]);
 
     useEffect(() => {
@@ -448,15 +467,16 @@ function Pronombres1ContentInternal() {
     useEffect(() => {
         if (!topicToComplete) return;
         setLearningPath(current => {
-            let next: string | null = null; const np = current.map(t => ({ ...t }));
+            const np = current.map(t => ({ ...t }));
             const i = np.findIndex(t => t.key === topicToComplete);
             if (i !== -1 && np[i].status !== 'completed') {
                 np[i].status = 'completed';
                 if (i + 1 < np.length && np[i + 1].status === 'locked') {
-                    np[i + 1].status = 'active'; next = np[i + 1].key;
+                    np[i + 1].status = 'active';
+                    setSelectedTopic(np[i + 1].key);
+                    setTimeout(() => toast({ title: "¡Misión desbloqueada!" }), 0);
                 }
             }
-            if (next) { const n = next; setTimeout(() => { toast({ title: "¡Misión desbloqueada!" }); setSelectedTopic(n); }, 0); }
             return np;
         });
         setTopicToComplete(null);
@@ -473,7 +493,7 @@ function Pronombres1ContentInternal() {
         setTopicToComplete(completedKey);
     };
 
-    const handleCheckVocab = () => {
+    const handleVocabCheck = () => {
         let okCount = 0;
         const nv = shoppingVocab.map((item, idx) => {
             const isCorrect = item.es.toLowerCase() === (vocabAnswers[idx] || '').trim().toLowerCase();
@@ -517,6 +537,7 @@ function Pronombres1ContentInternal() {
 
     const renderContent = () => {
         if (isInitialLoading) return <div className="flex justify-center items-center h-64"><Loader2 className="animate-spin text-primary" /></div>;
+
         switch (selectedTopic) {
             case 'vocabulary':
                 return (
@@ -524,9 +545,11 @@ function Pronombres1ContentInternal() {
                         <CardHeader className='bg-primary/5 border-b'><CardTitle className="text-primary uppercase tracking-tighter">Vocabulario: Regalos y Compras (20)</CardTitle><CardDescription className='font-bold text-foreground'>Escribe el infinitivo en español para cada verbo.</CardDescription></CardHeader>
                         <CardContent className="pt-6"><ScrollArea className="h-[450px] pr-4"><div className="grid grid-cols-2 gap-4">
                             <div className="font-black text-primary border-b pb-2 uppercase tracking-widest text-xs">English</div><div className="font-black text-primary border-b pb-2 uppercase tracking-widest text-xs">Español</div>
-                            {shoppingVocab.map((v, i) => (<Fragment key={i}><div className="flex items-center font-bold py-1 text-sm">{v.en}</div><Input value={vocabAnswers[i]} onChange={e => { const na = [...vocabAnswers]; na[i] = e.target.value; setVocabAnswers(na); const nv = [...vocabValidation]; nv[i] = 'unchecked'; setVocabValidation(nv); setCanAdvanceVocab(false); }} className={cn("h-10 uppercase", vocabValidation[i] === 'correct' ? 'border-green-500' : vocabValidation[i] === 'incorrect' ? 'border-red-500' : '')} autoComplete="off" readOnly={isAdmin && !!targetStudentId} /></Fragment>))}
+                            {shoppingVocab.map((v, i) => (
+                                <Fragment key={i}><div className="flex items-center font-bold py-1 text-sm">{v.en}</div><Input value={vocabAnswers[i]} onChange={e => { const na = [...vocabAnswers]; na[i] = e.target.value; setVocabAnswers(na); const nv = [...vocabValidation]; nv[i] = 'unchecked'; setVocabValidation(nv); setCanAdvanceVocab(false); }} className={cn("h-10 uppercase", vocabValidation[i] === 'correct' ? 'border-green-500' : vocabValidation[i] === 'incorrect' ? 'border-red-500' : '')} autoComplete="off" readOnly={isAdmin && !!targetStudentId} /></Fragment>
+                            ))}
                         </div></ScrollArea></CardContent>
-                        <CardFooter className="flex justify-between border-t pt-6 bg-muted/20"><Button onClick={handleCheckVocab} variant="secondary">Verificar</Button><Button onClick={() => handleTopicCompleteInternal('vocabulary')} disabled={!canAdvanceVocab && !isAdmin} className='text-white font-bold'>Avanzar <ArrowRight className='ml-2'/></Button></CardFooter>
+                        <CardFooter className="flex justify-between border-t pt-6 bg-muted/20"><Button onClick={handleVocabCheck} variant="secondary">Verificar</Button><Button onClick={() => handleTopicCompleteInternal('vocabulary')} disabled={!canAdvanceVocab && !isAdmin} className='text-white font-bold'>Avanzar <ArrowRight className='ml-2'/></Button></CardFooter>
                     </Card>
                 );
             case 'grammar':
@@ -534,25 +557,25 @@ function Pronombres1ContentInternal() {
                     <Card className="shadow-soft border-2 border-brand-purple bg-slate-100 dark:bg-slate-800/50 p-8 text-left text-foreground overflow-hidden">
                         <CardHeader className='px-0 pb-6 border-b mb-6'><CardTitle className="text-3xl font-black text-primary uppercase">GRAMMAR: PRONOMBRES O.D / O.I</CardTitle></CardHeader>
                         <CardContent className="space-y-8 px-0 font-bold">
-                            <div className="p-6 bg-white/60 dark:bg-background/20 rounded-[2rem] border shadow-sm space-y-4">
+                            <div className="p-6 bg-white/60 dark:bg-background/20 rounded-[2rem] border shadow-sm space-y-4 text-black dark:text-white">
                                 <h3 className="text-xl font-black text-primary uppercase mb-2">1. Objeto Directo (O.D)</h3>
                                 <p>Sustituyen al objeto que recibe directamente la acción (¿Qué?).</p>
-                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-primary">
                                     <div className='p-2 border rounded bg-primary/10 text-center'>LO (Sing. Masc)</div>
                                     <div className='p-2 border rounded bg-primary/10 text-center'>LA (Sing. Fem)</div>
                                     <div className='p-2 border rounded bg-primary/10 text-center'>LOS (Plur. Masc)</div>
                                     <div className='p-2 border rounded bg-primary/10 text-center'>LAS (Plur. Fem)</div>
                                 </div>
                             </div>
-                            <div className="p-6 bg-white/60 dark:bg-background/20 rounded-[2rem] border shadow-sm space-y-4">
+                            <div className="p-6 bg-white/60 dark:bg-background/20 rounded-[2rem] border shadow-sm space-y-4 text-black dark:text-white">
                                 <h3 className="text-xl font-black text-brand-purple uppercase mb-2">2. Objeto Indirecto (O.I)</h3>
                                 <p>Indican a quién o para quién se realiza la acción (¿A quién?).</p>
-                                <div className="grid grid-cols-2 gap-2">
+                                <div className="grid grid-cols-2 gap-2 text-primary">
                                     <div className='p-2 border rounded bg-brand-purple/10 text-center'>LE (A él/ella/usted)</div>
                                     <div className='p-2 border rounded bg-brand-purple/10 text-center'>LES (A ellos/ustedes)</div>
                                 </div>
                             </div>
-                            <div className="p-6 bg-yellow-100 dark:bg-yellow-900/20 rounded-[2rem] border-2 border-dashed border-yellow-500/50 text-foreground">
+                            <div className="p-6 bg-yellow-100 dark:bg-yellow-900/20 rounded-[2rem] border-2 border-dashed border-yellow-500/50 text-foreground text-black dark:text-white">
                                 <h3 className="text-xl font-black text-yellow-800 dark:text-yellow-200 uppercase mb-2 flex items-center gap-2"><Info /> Posición del Pronombre</h3>
                                 <p>1. Antes del verbo conjugado: "Yo <strong>lo</strong> compro".</p>
                                 <p>2. Después y pegado al infinitivo o gerundio: "Quiero comprar<strong>lo</strong>" / "Estoy comprándo<strong>lo</strong>".</p>
@@ -566,7 +589,7 @@ function Pronombres1ContentInternal() {
                 const pronouns = ["YO", "TÚ", "ÉL", "NOSOTROS", "ELLOS"];
                 return (
                     <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left">
-                        <CardHeader className='bg-primary/5 border-b'><CardTitle className='text-primary uppercase tracking-tighter'>Misión: Doble Pasado ({conjIdx+1}/30)</CardTitle><CardDescription>Conjuga el verbo en Imperfecto y Pasado Simple.</CardDescription></CardHeader>
+                        <CardHeader className='bg-primary/5 border-b'><CardTitle className='text-primary uppercase tracking-tighter'>Misión: Doble Pasado ({conjIdx+1}/20)</CardTitle><CardDescription>Conjuga el verbo en Imperfecto y Pasado Simple.</CardDescription></CardHeader>
                         <CardContent className="space-y-8 pt-8">
                             <div className="p-6 bg-muted rounded-2xl border-2 border-dashed text-center"><h3 className="text-4xl font-black text-primary uppercase">{v.v}</h3></div>
                             <div className='grid md:grid-cols-2 gap-8'>
@@ -587,15 +610,15 @@ function Pronombres1ContentInternal() {
                         <CardFooter className="justify-center border-t p-8 bg-muted/5"><Button onClick={handleCheckConj} size="lg" className="px-20 font-black h-14 text-xl shadow-xl uppercase">Verificar Verbo</Button></CardFooter>
                     </Card>
                 );
-            case 'ex1': return <BallsExercise key="ex1" title="Ejercicio 1" prompts={ex1Prompts} onComplete={() => handleTopicCompleteInternal('ex1')} isAdmin={isAdmin} isSupervisionMode={!!targetStudentId} />;
-            case 'ex2': return <BallsExercise key="ex2" title="Ejercicio 2" prompts={ex2Prompts} onComplete={() => handleTopicCompleteInternal('ex2')} isAdmin={isAdmin} isSupervisionMode={!!targetStudentId} />;
+            case 'ex1': return <BallsExercise title="Ejercicio 1" prompts={ex1Prompts} onComplete={() => handleTopicCompleteInternal('ex1')} isAdmin={isAdmin} isSupervisionMode={!!targetStudentId} vocabulary={[{en: "gift", es: "regalo"}, {en: "wrap", es: "envolver"}, {en: "bill", es: "cuenta"}, {en: "deliver", es: "entregar"}]} />;
+            case 'ex2': return <BallsExercise title="Ejercicio 2" prompts={ex2Prompts} onComplete={() => handleTopicCompleteInternal('ex2')} isAdmin={isAdmin} isSupervisionMode={!!targetStudentId} vocabulary={[{en: "lend", es: "prestar"}, {en: "truth", es: "verdad"}, {en: "deal", es: "trato"}, {en: "prize", es: "premio"}]} />;
             case 'vocab_game': return <VocabularyMatchingGame data={shoppingVocab.slice(0, 10).map(v => ({ spanish: v.es, english: [v.en] }))} onComplete={() => handleTopicCompleteInternal('vocab_game')} title="Shopping & Gifts Memory" />;
-            case 'ex3': return <BallsExercise key="ex3" title="Ejercicio 3" prompts={ex3Prompts} onComplete={() => handleTopicCompleteInternal('ex3')} isAdmin={isAdmin} isSupervisionMode={!!targetStudentId} />;
+            case 'ex3': return <BallsExercise title="Ejercicio 3" prompts={ex3Prompts} onComplete={() => handleTopicCompleteInternal('ex3')} isAdmin={isAdmin} isSupervisionMode={!!targetStudentId} vocabulary={[{en: "wrap", es: "envolver"}, {en: "discount", es: "descuento"}, {en: "deliver", es: "entregar"}]} />;
             case 'reading':
                 return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 text-foreground text-left">
                         <CardHeader><CardTitle className='text-primary font-black uppercase'>{readingData.title}</CardTitle></CardHeader>
-                        <CardContent className="space-y-6">
+                        <CardContent className="p-6 space-y-6">
                             <div className="p-6 bg-muted rounded-2xl border italic text-lg leading-relaxed shadow-inner">{readingData.content}</div>
                             <Separator /><div className="space-y-4">{readingData.questions.map((q, i) => (
                                 <div key={i} className="space-y-2"><Label className='font-bold'>{i+1}. {q.q}</Label>
@@ -624,15 +647,15 @@ function Pronombres1ContentInternal() {
             case 'translate_text':
                 return (
                     <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground text-left">
-                        <CardHeader><div className="flex justify-between items-start"><div><CardTitle className='text-primary uppercase'>Traducción de Texto: Shopping Day</CardTitle></div><Popover><PopoverTrigger asChild><Button variant="outline" size="sm" className="border-2 border-brand-blue animate-border-pulse"><BookText className="mr-2 h-4 w-4" /> Vocabulario</Button></PopoverTrigger><PopoverContent className="w-64"><ScrollArea className="h-48 pr-4"><div className="grid grid-cols-2 gap-2 text-sm">{Object.entries({"jewelry": "joyería", "bought": "compró", "earrings": "aretas", "it": "lo/la", "them": "los/las", "for me": "para mí"}).map(([en, es], i) => (<Fragment key={i}><span className="text-muted-foreground">{en}:</span><span className="font-bold text-primary">{es}</span></Fragment>))}</div></ScrollArea></PopoverContent></Popover></div></CardHeader>
+                        <CardHeader><div className="flex justify-between items-start"><div><CardTitle className='text-primary uppercase'>Traducción de Texto: Shopping Day</CardTitle></div><Popover><PopoverTrigger asChild><Button variant="outline" size="sm" className="border-2 border-brand-blue animate-border-pulse"><BookText className="mr-2 h-4 w-4" /> Vocabulario</Button></PopoverTrigger><PopoverContent className="w-64"><ScrollArea className="h-48 pr-4 text-foreground"><div className="grid grid-cols-2 gap-2 text-sm">{Object.entries({"jewelry": "joyería", "bought": "compró", "earrings": "aretas", "it": "lo/la", "them": "los/las", "for me": "para mí"}).map(([en, es], i) => (<Fragment key={i}><span className="text-muted-foreground capitalize">{en}:</span><span className="font-bold text-right text-primary">{es.toUpperCase()}</span></Fragment>))}</div></ScrollArea></PopoverContent></Popover></div></CardHeader>
                         <CardContent className="space-y-6 pt-6">
-                            <div className="p-6 bg-muted/50 rounded-2xl border italic text-lg leading-relaxed shadow-sm">"Yesterday, I went to the store because I wanted to buy a gift for my sister. I found a beautiful dress and I bought it. I also saw some earrings and I chose them for me. I paid the bill and the clerk wrapped the gifts for us. I delivered her gift last night and she loved it."</div>
+                            <div className="p-6 bg-muted/50 rounded-2xl border italic text-lg leading-relaxed shadow-sm text-black dark:text-white">"Yesterday, I went to the store because I wanted to buy a gift for my sister. I found a beautiful dress and I bought it. I also saw some earrings and I chose them for me. I paid the bill and the clerk wrapped the gifts for us. I delivered her gift last night and she loved it."</div>
                             <Separator /><div className="space-y-2"><Label className='font-black text-primary uppercase text-sm'>Tu Traducción:</Label><Textarea value={transText} onChange={(e) => { if (!targetStudentId) setTransText(e.target.value); }} placeholder="Escribe el texto en español aquí..." className="min-h-[250px] text-lg leading-relaxed" readOnly={!!targetStudentId} /></div>
                         </CardContent>
                         <CardFooter className="justify-center border-t pt-6 bg-muted/20"><Button onClick={() => handleTopicCompleteInternal('translate_text')} size="lg" className="px-24 font-black h-16 text-2xl shadow-xl bg-primary hover:bg-primary/90 text-primary-foreground uppercase tracking-tighter">Continuar <ArrowRight className='ml-3 h-8 w-8' /></Button></CardFooter>
                     </Card>
                 );
-            case 'final': return <BallsExercise key="final" title="Reto Final: Traducción Negativa" prompts={finalNegativePrompts} onComplete={() => handleTopicCompleteInternal('final')} isAdmin={isAdmin} isSupervisionMode={!!targetStudentId} />;
+            case 'final': return <BallsExercise title="Reto Final: Traducción Negativa" prompts={finalNegativePrompts} onComplete={() => handleTopicCompleteInternal('final')} isAdmin={isAdmin} isSupervisionMode={!!targetStudentId} vocabulary={[{en: "save", es: "ahorrar"}, {en: "wrap", es: "envolver"}]} />;
             default: return null;
         }
     };
@@ -732,3 +755,4 @@ export default function Pronombres1Page() {
         </Suspense>
     );
 }
+
