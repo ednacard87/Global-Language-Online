@@ -12,6 +12,7 @@ import {
     CardFooter 
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
 import { 
     BookOpen, 
@@ -38,28 +39,27 @@ import {
 import { DashboardHeader } from '@/components/dashboard/header';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
-import { Progress } from '@/components/ui/progress';
 import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { SimpleTranslationExercise } from '@/components/dashboard/simple-translation-exercise';
 import { VocabularyMatchingGame } from '@/components/dashboard/vocabulary-matching-game';
 import { SentenceCompletionExercise, type CompletionPrompt } from '@/components/kids/exercises/sentence-completion-exercise';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { CreativeWritingExercise } from '@/components/dashboard/creative-writing-exercise';
-import { ScrollArea } from '@/components/ui/scroll-area';
 
 // --- CONFIGURACIÓN DE INGENIERÍA ---
-const progressStorageVersion = 'progress_a1_eng_u2_c8_v28_layout_fix';
+const progressStorageVersion = 'progress_a1_eng_u2_c8_v40_final_stable';
 const mainProgressKey = 'progress_a1_eng_unit_2_class_8';
 
-type Topic = {
+interface Topic {
   key: string;
   name: string;
   icon: React.ElementType;
   status: 'completed' | 'active' | 'locked';
-};
+}
 
 const ICONS_CONFIG = {
     locked: Lock,
@@ -68,23 +68,37 @@ const ICONS_CONFIG = {
 };
 
 // --- DATA ---
+
 const vocabularyData = [
-    { spanish: 'ESTE/A', english: ['THIS'] },
-    { spanish: 'ESTOS/AS', english: ['THESE'] },
-    { spanish: 'ESE/A', english: ['THAT'] },
-    { spanish: 'ESOS/AS', english: ['THOSE'] },
-    { spanish: 'PERO', english: ['BUT'] },
-    { spanish: 'MIENTRAS', english: ['WHILE'] },
-    { spanish: 'ENTONCES', english: ['SO'] },
-    { spanish: 'LUEGO', english: ['THEN'] },
-    { spanish: 'ALREDEDOR', english: ['AROUND'] },
-    { spanish: 'MEDIA NOCHE', english: ['MIDNIGHT'] },
-    { spanish: 'MEDIO DIA', english: ['MIDDAY', 'NOON'] },
-    { spanish: 'DESDE', english: ['FROM'] },
-    { spanish: 'TAMBIÉN', english: ['ALSO', 'TOO'] },
-    { spanish: 'ACERCA DE', english: ['ABOUT'] },
-    { spanish: 'CADA', english: ['EVERY', 'EACH'] },
-    { spanish: 'CASI', english: ['ALMOST'] },
+    { spanish: 'ESTE/A', english: 'THIS' },
+    { spanish: 'ESTOS/AS', english: 'THESE' },
+    { spanish: 'ESE/A', english: 'THAT' },
+    { spanish: 'ESOS/AS', english: 'THOSE' },
+    { spanish: 'PERO', english: 'BUT' },
+    { spanish: 'MIENTRAS', english: 'WHILE' },
+    { spanish: 'ENTONCES', english: 'SO' },
+    { spanish: 'LUEGO', english: 'THEN' },
+    { spanish: 'ALREDEDOR', english: 'AROUND' },
+    { spanish: 'MEDIA NOCHE', english: 'MIDNIGHT' },
+    { spanish: 'MEDIO DIA', english: 'NOON' },
+    { spanish: 'DESDE', english: 'FROM' },
+    { spanish: 'TAMBIÉN', english: 'ALSO' },
+    { spanish: 'ACERCA DE', english: 'ABOUT' },
+    { spanish: 'CADA', english: 'EVERY' },
+    { spanish: 'CASI', english: 'ALMOST' },
+];
+
+const ex1Prompts = [
+    { spanish: "¿ELLOS VAN A LA ESCUELA?", answer: ["do they go to school?"] },
+    { spanish: "¿ESTAS ENOJADO (ANGRY)?", answer: ["are you angry?"] },
+    { spanish: "ELLA NO ESTUDIA ALEMAN (GERMAN)- POR EL CONTRARIO, ELLA ESTUDIA INGLES", answer: ["she does not study german - on the contrary, she studies english", "she doesn't study german - on the contrary, she studies english"] },
+    { spanish: "A ELLA LE GUSTA LA CARNE (MEAT)- POR OTRO LADO, SU ESPOSO ES VEGETARIANO", answer: ["she likes meat - on the other hand, her husband is a vegetarian", "she likes meat - on the other hand, her husband is vegetarian"] },
+    { spanish: "¿ELLA ES TU HERMANA?", answer: ["is she your sister?"] },
+    { spanish: "¿A DONDE VA TU HERMANO?", answer: ["where does your brother go?"] },
+    { spanish: "ESTAS (THESE) NO SON MIS GAFAS", answer: ["these are not my glasses", "these aren't my glasses"] },
+    { spanish: "¿DONDE ESTAN TUS PADRES? ESTAN EN CASA", answer: ["where are your parents? they are at home", "where are your parents? they're at home"] },
+    { spanish: "¿QUE HACE TU HERMANO? EL JUEGA TENIS", answer: ["what does your brother do? he plays tennis"] },
+    { spanish: "¿CUÁNDO VA SUSAN AL CINE? ELLA VA AL CINE LOS MIERCOLES", answer: ["when does susan go to the cinema? she goes to the cinema on wednesdays"] },
 ];
 
 const exercise5Data: CompletionPrompt[] = [
@@ -147,20 +161,20 @@ const RealTimeGradingExercise = ({ title, description, prompts, onComplete, stud
 
     const handleToggleGrade = (idx: number, type: 'correct' | 'incorrect') => {
         if (!isAdmin) return;
-        const ng = { ...grades }; 
-        ng[idx] = ng[idx] === type ? null : type; 
-        setGrades(ng);
-        if (studentDocRef) updateDocumentNonBlocking(studentDocRef, { [`lessonProgress.${progressStorageVersion}.${storageKeyGrades}`]: ng });
+        const newGrades = { ...grades }; 
+        newGrades[idx] = newGrades[idx] === type ? null : type; 
+        setGrades(newGrades);
+        if (studentDocRef) updateDocumentNonBlocking(studentDocRef, { [`lessonProgress.${progressStorageVersion}.${storageKeyGrades}`]: newGrades });
     };
 
     return (
         <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground">
             <CardHeader className='bg-primary/5 border-b'>
-                <div className='flex items-center gap-3'>
+                <div className='flex items-center gap-3 text-left'>
                     <div className='p-2 bg-primary/20 rounded-lg text-primary'>
                         {title.includes('DICTATION') ? <Mic className='h-6 w-6'/> : <Pencil className='h-6 w-6'/>}
                     </div>
-                    <div className='text-left'>
+                    <div>
                         <CardTitle>{title}</CardTitle>
                         <CardDescription className='font-bold text-foreground mt-1'>{description}</CardDescription>
                     </div>
@@ -180,7 +194,7 @@ const RealTimeGradingExercise = ({ title, description, prompts, onComplete, stud
                                         value={lines[i] || ''} 
                                         onChange={e => handleLineChange(i, e.target.value)} 
                                         className={cn(
-                                            "flex-1 h-10 transition-all font-medium",
+                                            "flex-1 h-10 transition-all font-medium text-foreground",
                                             grades[i] === 'correct' ? 'border-green-500 bg-green-500/10 shadow-[0_0_10px_rgba(34,197,94,0.2)]' : 
                                             grades[i] === 'incorrect' ? 'border-red-500 bg-red-50/10 shadow-[0_0_10px_rgba(239,68,68,0.2)]' : ''
                                         )} 
@@ -214,9 +228,12 @@ const BallsExercise = ({ title, prompts, onComplete, vocabulary }: any) => {
     useEffect(() => { setCurrentIndex(0); setAnswer(''); setStatus({}); }, [prompts]);
     useEffect(() => { setAnswer(''); }, [currentIndex]);
 
+    const currentPrompt = prompts[currentIndex];
+    if (!currentPrompt) return null;
+
     const handleCheck = () => {
         const userVal = answer.trim().toLowerCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' ');
-        const corrects = prompts[currentIndex].answer || prompts[currentIndex].english;
+        const corrects = currentPrompt.answer || currentPrompt.english;
         const isCorrect = corrects.some((a: string) => a.toLowerCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' ') === userVal);
         setStatus(prev => ({ ...prev, [currentIndex]: isCorrect ? 'correct' : 'incorrect' }));
         if (isCorrect) toast({ title: "¡Buen trabajo!" });
@@ -239,13 +256,19 @@ const BallsExercise = ({ title, prompts, onComplete, vocabulary }: any) => {
                     {vocabulary && (
                         <Popover>
                             <PopoverTrigger asChild>
-                                <Button variant="outline" size="sm" className="border-2 border-brand-blue animate-border-pulse shrink-0"><BookText className="mr-2 h-4 w-4" /> Vocabulary</Button>
+                                <Button variant="outline" size="sm" className="border-2 border-brand-blue animate-border-pulse shrink-0">
+                                    <BookText className="mr-2 h-4 w-4" />
+                                    Vocabulary
+                                </Button>
                             </PopoverTrigger>
                             <PopoverContent className="w-64">
                                 <ScrollArea className="h-48 pr-4 text-left">
                                     <div className="grid grid-cols-2 gap-2 text-sm">
                                         {Object.entries(vocabulary).map(([es, en]: any) => (
-                                            <Fragment key={es}><span className="text-muted-foreground capitalize">{es}:</span><span className="font-semibold text-right">{en}</span></Fragment>
+                                            <Fragment key={es}>
+                                                <span className="text-muted-foreground capitalize">{es}:</span>
+                                                <span className="font-semibold text-right">{en}</span>
+                                            </Fragment>
                                         ))}
                                     </div>
                                 </ScrollArea>
@@ -255,7 +278,7 @@ const BallsExercise = ({ title, prompts, onComplete, vocabulary }: any) => {
                 </div>
             </CardHeader>
             <CardContent className="space-y-6">
-                <div className="bg-muted p-6 rounded-2xl border-2 border-dashed text-center font-bold text-xl uppercase tracking-tighter text-foreground">{prompts[currentIndex].spanish}</div>
+                <div className="bg-muted p-6 rounded-2xl border-2 border-dashed text-center font-bold text-xl uppercase tracking-tighter text-foreground">{currentPrompt.spanish}</div>
                 <Input value={answer} onChange={e => setAnswer(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleCheck()} className={cn("h-12 text-lg text-foreground", status[currentIndex] === 'correct' ? 'border-green-500 bg-green-50/5' : status[currentIndex] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} placeholder="Tu traducción..." autoComplete="off" />
             </CardContent>
             <CardFooter className="justify-between border-t pt-6">
@@ -277,6 +300,7 @@ export default function Class8Content({ overrideStudentId }: { overrideStudentId
     const firestore = useFirestore();
     const searchParams = useSearchParams();
 
+    // Priorización del ID para supervisión
     const targetStudentId = overrideStudentId || searchParams.get('studentId');
     const currentUID = targetStudentId || user?.uid;
 
@@ -285,7 +309,11 @@ export default function Class8Content({ overrideStudentId }: { overrideStudentId
     const [selectedTopic, setSelectedTopic] = useState<string>('');
     const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
     const [initialLoadComplete, setInitialLoadComplete] = useState(false);
-    const hasInitialized = useRef(false);
+
+    // Estados de Vocabulario
+    const [vocabAnswers, setVocabAnswers] = useState<string[]>(Array(vocabularyData.length).fill(''));
+    const [vocabValidation, setVocabValidation] = useState<any[]>(Array(vocabularyData.length).fill('unchecked'));
+    const [canAdvanceVocab, setCanAdvanceVocab] = useState(false);
 
     const studentDocRef = useMemoFirebase(() => (currentUID ? doc(firestore, 'students', currentUID) : null), [firestore, currentUID]);
     const authUserRef = useMemoFirebase(() => (user ? doc(firestore, 'students', user.uid) : null), [firestore, user]);
@@ -308,12 +336,24 @@ export default function Class8Content({ overrideStudentId }: { overrideStudentId
         { key: 'writing2', name: '11. Writing 2', icon: Pencil, status: 'locked' },
     ], []);
 
+    const handleTopicComplete = useCallback((completedKey: string) => {
+        setTopicToComplete(completedKey);
+    }, []);
+
+    const handleTopicSelect = (topicKey: string) => {
+        const t = learningPath.find(it => it.key === topicKey);
+        if (!isAdmin && t?.status === 'locked') { toast({ variant: "destructive", title: "Contenido Bloqueado" }); return; }
+        setSelectedTopic(topicKey);
+    };
+
+    // Notificar actividad al entrar
     useEffect(() => {
-        if (!isUserLoading && !isProfileLoading && studentDocRef && !isAdmin) {
+        if (!isUserLoading && !isProfileLoading && studentDocRef && !isAdmin && !targetStudentId) {
             updateDocumentNonBlocking(studentDocRef, { lastActiveClass: 'Class 8 (A1)' });
         }
-    }, [isUserLoading, isProfileLoading, studentDocRef, isAdmin]);
+    }, [isUserLoading, isProfileLoading, studentDocRef, isAdmin, targetStudentId]);
 
+    // ASYNC FLOW 1: Inicialización
     useEffect(() => {
         if (isProfileLoading || isUserLoading || !studentProfile || initialLoadComplete) return;
         let path = initialLearningPath.map(topic => ({ ...topic }));
@@ -325,11 +365,14 @@ export default function Class8Content({ overrideStudentId }: { overrideStudentId
             let last = true;
             for(let i=0; i < path.length; i++) { if (last && path[i].status === 'locked') path[i].status = 'active'; last = path[i].status === 'completed'; }
         }
+
+        if (d.vocabAnswers) setVocabAnswers(d.vocabAnswers);
+        if (d.vocabValidation) setVocabValidation(d.vocabValidation);
+
         setLearningPath(path);
         setSelectedTopic(d.lastSelectedTopic || path.find(p => p.status === 'active')?.key || path[0].key);
         setInitialLoadComplete(true);
         setTimeout(() => setIsInitialLoading(false), 800);
-        hasInitialized.current = true;
     }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading, isUserLoading, initialLoadComplete, targetStudentId]);
 
     const progressValue = useMemo(() => {
@@ -338,17 +381,19 @@ export default function Class8Content({ overrideStudentId }: { overrideStudentId
         return Math.round((comp / learningPath.length) * 100);
     }, [learningPath]);
 
+    // ASYNC FLOW 2: Persistencia
     useEffect(() => {
         if (!initialLoadComplete || isInitialLoading || isAdmin || !studentDocRef || targetStudentId || !user) return;
         const saveTimer = setTimeout(() => {
-            const s: any = { lastSelectedTopic: selectedTopic };
+            const s: any = { lastSelectedTopic: selectedTopic, vocabAnswers, vocabValidation };
             learningPath.forEach(t => s[t.key] = t.status);
             updateDocumentNonBlocking(studentDocRef, { [`lessonProgress.${progressStorageVersion}`]: s, [`progress.${mainProgressKey}`]: progressValue });
             if (progressValue >= 100) window.dispatchEvent(new CustomEvent('progressUpdated'));
         }, 1500);
         return () => clearTimeout(saveTimer);
-    }, [learningPath, isAdmin, progressValue, studentDocRef, initialLoadComplete, selectedTopic, isInitialLoading, targetStudentId, user]);
+    }, [learningPath, isAdmin, progressValue, studentDocRef, initialLoadComplete, selectedTopic, isInitialLoading, targetStudentId, user, vocabAnswers, vocabValidation]);
 
+    // ASYNC FLOW 3: Desbloqueos
     useEffect(() => {
         if (!topicToComplete) return;
         setLearningPath(curr => {
@@ -366,17 +411,27 @@ export default function Class8Content({ overrideStudentId }: { overrideStudentId
         setTopicToComplete(null);
     }, [topicToComplete, toast]);
 
-    const handleTopicSelect = (topicKey: string) => {
-        const t = learningPath.find(it => it.key === topicKey);
-        if (!isAdmin && t?.status === 'locked') { toast({ variant: "destructive", title: "Contenido Bloqueado" }); return; }
-        setSelectedTopic(topicKey);
+    const handleCheckVocab = () => {
+        let allOk = true;
+        const nv = vocabularyData.map((v, i) => {
+            const ok = v.english.toUpperCase() === (vocabAnswers[i] || '').trim().toUpperCase();
+            if (!ok) allOk = false;
+            return ok ? 'correct' : 'incorrect';
+        });
+        setVocabValidation(nv);
+        if (allOk) {
+            setCanAdvanceVocab(true);
+            toast({ title: "¡Perfecto!", description: "Has dominado todo el vocabulario básico." });
+        } else {
+            setCanAdvanceVocab(false);
+            toast({ variant: 'destructive', title: "Revisa tus respuestas", description: "Algunas palabras no son correctas." });
+        }
     };
 
     const renderContent = () => {
         if (isInitialLoading) return <div className="flex justify-center items-center h-64"><Loader2 className="animate-spin text-primary" /></div>;
         switch (selectedTopic) {
             case 'vocabulary':
-                const vocabSaved = studentProfile?.lessonProgress?.[progressStorageVersion]?.vocabAnswers || Array(vocabularyData.length).fill('');
                 return (
                     <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left">
                         <CardHeader><CardTitle>Vocabulary: Basic Words (16)</CardTitle></CardHeader>
@@ -389,13 +444,21 @@ export default function Class8Content({ overrideStudentId }: { overrideStudentId
                                         <Fragment key={i}>
                                             <div className="p-2 border rounded bg-white/5 font-bold flex items-center text-sm">{v.spanish}</div>
                                             <Input 
-                                                defaultValue={vocabSaved[i] || ''} 
-                                                onBlur={e => {
+                                                value={vocabAnswers[i] || ''} 
+                                                onChange={e => {
                                                     if (targetStudentId) return;
-                                                    const na = [...vocabSaved]; na[i] = e.target.value.toUpperCase();
-                                                    updateDocumentNonBlocking(studentDocRef!, { [`lessonProgress.${progressStorageVersion}.vocabAnswers`]: na });
+                                                    const na = [...vocabAnswers]; na[i] = e.target.value.toUpperCase();
+                                                    setVocabAnswers(na);
+                                                    const nv = [...vocabValidation]; nv[i] = 'unchecked';
+                                                    setVocabValidation(nv);
+                                                    setCanAdvanceVocab(false);
                                                 }}
-                                                className="uppercase"
+                                                className={cn(
+                                                    "uppercase transition-all text-foreground",
+                                                    vocabValidation[i] === 'correct' ? 'border-green-500 bg-green-50/10' : 
+                                                    vocabValidation[i] === 'incorrect' ? 'border-red-500 bg-red-50/10' : ''
+                                                )}
+                                                autoComplete="off"
                                                 readOnly={!!targetStudentId}
                                             />
                                         </Fragment>
@@ -403,67 +466,31 @@ export default function Class8Content({ overrideStudentId }: { overrideStudentId
                                 </div>
                             </ScrollArea>
                         </CardContent>
-                        <CardFooter className="justify-center border-t pt-6 mt-4">
-                            <Button onClick={() => handleTopicComplete('vocabulary')} className='text-white font-bold uppercase'>Siguiente</Button>
+                        <CardFooter className="justify-between border-t pt-6">
+                            <Button onClick={handleCheckVocab} variant="secondary" disabled={!!targetStudentId}>Verificar</Button>
+                            <Button onClick={() => handleTopicComplete('vocabulary')} disabled={!canAdvanceVocab && !isAdmin} className='text-white font-bold'>Avanzar <ArrowRight className="ml-2 h-4 w-4"/></Button>
                         </CardFooter>
                     </Card>
                 );
             case 'dictation1': 
-                return <RealTimeGradingExercise 
-                    title="DICTATION 1" 
-                    description="Escribe los 23 renglones. El primero es el Título." 
-                    prompts={Array(23).fill('')} 
-                    onComplete={() => handleTopicComplete('dictation1')} 
-                    studentDocRef={studentDocRef} 
-                    isAdmin={isAdmin} 
-                    storageKeyLines="dict1Lines" 
-                    storageKeyGrades="dict1Grades" 
-                    initialLines={studentProfile?.lessonProgress?.[progressStorageVersion]?.dict1Lines} 
-                    initialGrades={studentProfile?.lessonProgress?.[progressStorageVersion]?.dict1Grades} 
-                    isSupervisionMode={!!targetStudentId} 
-                />;
-            case 'ex1': return <SimpleTranslationExercise exerciseKey="c8_ex1" course="a1" onComplete={() => handleTopicComplete('ex1')} vocabulary={ex1Vocab} highlightVocabulary={true} />;
+                return <RealTimeGradingExercise title="DICTATION 1" description="Escucha a tu profesor y escribe las 23 líneas de dictado." prompts={Array(23).fill('')} onComplete={() => handleTopicComplete('dictation1')} studentDocRef={studentDocRef} isAdmin={isAdmin} storageKeyLines="dict1Lines" storageKeyGrades="dict1Grades" initialLines={studentProfile?.lessonProgress?.[progressStorageVersion]?.dict1Lines} initialGrades={studentProfile?.lessonProgress?.[progressStorageVersion]?.dict1Grades} isSupervisionMode={!!targetStudentId} />;
+            case 'ex1': return <BallsExercise key="ex1" title="Exercise 1" prompts={ex1Prompts} onComplete={() => handleTopicComplete('ex1')} vocabulary={ex1Vocab} />;
             case 'dictation2': 
-                return <RealTimeGradingExercise 
-                    title="DICTATION 2" 
-                    description="Escribe los 22 renglones. El primero es el Título." 
-                    prompts={Array(22).fill('')} 
-                    onComplete={() => handleTopicComplete('dictation2')} 
-                    studentDocRef={studentDocRef} 
-                    isAdmin={isAdmin} 
-                    storageKeyLines="dict2Lines" 
-                    storageKeyGrades="dict2Grades" 
-                    initialLines={studentProfile?.lessonProgress?.[progressStorageVersion]?.dict2Lines} 
-                    initialGrades={studentProfile?.lessonProgress?.[progressStorageVersion]?.dict2Grades} 
-                    isSupervisionMode={!!targetStudentId} 
-                />;
+                return <RealTimeGradingExercise title="DICTATION 2" description="Escucha a tu profesor y escribe las 22 líneas de dictado." prompts={Array(22).fill('')} onComplete={() => handleTopicComplete('dictation2')} studentDocRef={studentDocRef} isAdmin={isAdmin} storageKeyLines="dict2Lines" storageKeyGrades="dict2Grades" initialLines={studentProfile?.lessonProgress?.[progressStorageVersion]?.dict2Lines} initialGrades={studentProfile?.lessonProgress?.[progressStorageVersion]?.dict2Grades} isSupervisionMode={!!targetStudentId} />;
             case 'ex2': return <SimpleTranslationExercise exerciseKey="c8_ex2" course="a1" onComplete={() => handleTopicComplete('ex2')} vocabulary={{ "mío": "mine", "tuyo": "yours", "suyo/a": "his/hers", "nuestro": "ours" }} highlightVocabulary={true} />;
             case 'ex3': return <SimpleTranslationExercise exerciseKey="c8_ex3" course="a1" onComplete={() => handleTopicComplete('ex3')} vocabulary={{ "nadar": "swim", "veloz": "fast", "comportamiento": "behavior" }} highlightVocabulary={true} />;
-            case 'vocab_game': return <VocabularyMatchingGame data={vocabularyData.map(v => ({ spanish: v.spanish, english: v.english }))} onComplete={() => handleTopicComplete('vocab_game')} title="Memory: Basic Words" />;
+            case 'vocab_game': return <VocabularyMatchingGame data={vocabularyData.map(v => ({ spanish: v.spanish, english: [v.english] }))} onComplete={() => handleTopicComplete('vocab_game')} title="Memory: Basic Words" />;
             case 'ex4': return <SimpleTranslationExercise exerciseKey="c8_ex4" course="a1" onComplete={() => handleTopicComplete('ex4')} vocabulary={{ "vaso": "glass", "chaqueta": "jacket", "cumpleaños": "birthday" }} highlightVocabulary={true} />;
             case 'ex5': return <SentenceCompletionExercise title="Exercise 5" description="Completa con THE o deja vacío si no es necesario." data={exercise5Data} onComplete={() => handleTopicComplete('ex5')} />;
             case 'writing1': return <CreativeWritingExercise title="Writing 1" description="About your school." prompts={[{ id: 'w1', question: 'Describe your school experience using possessives and adjectives.' }]} onComplete={() => handleTopicComplete('writing1')} studentDocRef={studentDocRef} initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.create1 || {}} savePath={`lessonProgress.${progressStorageVersion}.create1`} />;
             case 'writing2': 
-                return <RealTimeGradingExercise 
-                    title="Writing 2" 
-                    description="Crea 6 frases usando los temas aprendidos hoy." 
-                    prompts={Array(6).fill('')} 
-                    onComplete={() => handleTopicComplete('writing2')} 
-                    studentDocRef={studentDocRef} 
-                    isAdmin={isAdmin} 
-                    storageKeyLines="writing2Lines" 
-                    storageKeyGrades="writing2Grades" 
-                    initialLines={studentProfile?.lessonProgress?.[progressStorageVersion]?.writing2Lines} 
-                    initialGrades={studentProfile?.lessonProgress?.[progressStorageVersion]?.writing2Grades} 
-                    isSupervisionMode={!!targetStudentId} 
-                    scrollHeight="h-[320px]"
-                />;
+                return <RealTimeGradingExercise title="Writing 2" description="Crea 6 frases usando los temas aprendidos hoy." prompts={Array(6).fill('')} onComplete={() => handleTopicComplete('writing2')} studentDocRef={studentDocRef} isAdmin={isAdmin} storageKeyLines="writing2Lines" storageKeyGrades="writing2Grades" initialLines={studentProfile?.lessonProgress?.[progressStorageVersion]?.writing2Lines} initialGrades={studentProfile?.lessonProgress?.[progressStorageVersion]?.writing2Grades} isSupervisionMode={!!targetStudentId} scrollHeight="h-[320px]" />;
             default: return null;
         }
     };
 
     return (
-        <div className="flex w-full flex-col min-h-screen ingles-dashboard-bg">
+        <div className="flex w-full flex-col min-h-screen ingles-dashboard-bg text-foreground">
             <DashboardHeader />
             <main className="flex-1 p-4 md:p-8">
                 <div className="max-w-7xl mx-auto">
@@ -483,10 +510,12 @@ export default function Class8Content({ overrideStudentId }: { overrideStudentId
                         <Link href="/ingles/a1/unit/2" className="hover:underline text-sm font-bold text-white/80 flex items-center gap-2 mb-2">
                             <ArrowLeft className="h-4 w-4" /> Volver a la Unidad 2
                         </Link>
-                        <h1 className="text-4xl font-black [text-shadow:2px_2px_4px_rgba(0,0,0,0.5)] uppercase tracking-tight">Class 8 (A1) 🇬🇧</h1>
+                        <h1 className="text-4xl font-black [text-shadow:2px_2px_4px_rgba(0,0,0,0.5)] uppercase tracking-tight flex items-center gap-3">
+                            <Activity className='h-10 w-10 text-primary' /> Class 8 (A1) 🇬🇧
+                        </h1>
                     </div>
 
-                    <div className="grid gap-8 md:grid-cols-12 text-foreground">
+                    <div className="grid gap-8 md:grid-cols-12">
                         <div className="md:col-span-9 md:order-1 order-2">{renderContent()}</div>
                         <div className="md:col-span-3 md:order-2 order-1 text-left">
                             <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
