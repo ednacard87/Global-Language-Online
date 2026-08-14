@@ -19,6 +19,7 @@ import {
     ArrowLeft,
     MessageSquare,
     ListChecks,
+    Activity,
     Sparkles
 } from 'lucide-react';
 import { DashboardHeader } from '@/components/dashboard/header';
@@ -31,8 +32,8 @@ import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 
 // --- CONFIGURACIÓN DE INGENIERÍA ---
-const progressStorageVersion = 'progress_es_b1_pres_subj_v1_secure_skeleton';
-const mainProgressKey = 'progress_b1_es_presente_subjuntivo';
+const progressStorageVersion = 'progress_es_b1_subj_2_v1_secure_skeleton';
+const mainProgressKey = 'progress_b1_es_subjuntivo_2';
 
 interface Topic {
   key: string;
@@ -41,13 +42,13 @@ interface Topic {
   status: 'completed' | 'active' | 'locked';
 }
 
-const ICONS_CONFIG = {
+const ICONS_CONFIG: Record<string, React.ElementType> = {
     locked: Lock,
     active: BookOpen,
     completed: CheckCircle,
 };
 
-function PresenteSubjuntivoContentInternal() {
+function Subjuntivo2ContentInternal() {
     const { toast } = useToast();
     const { user, isUserLoading } = useUser();
     const firestore = useFirestore();
@@ -98,7 +99,7 @@ function PresenteSubjuntivoContentInternal() {
         let savedST = '';
 
         if (isAdmin && !targetStudentId) {
-            // Navegación libre para administradores
+            // Los admins ven todo desbloqueado para navegar
             path.forEach(item => { item.status = 'completed'; });
         } else if (studentProfile?.lessonProgress?.[progressStorageVersion]) {
             const savedData = studentProfile.lessonProgress[progressStorageVersion];
@@ -106,7 +107,7 @@ function PresenteSubjuntivoContentInternal() {
             savedST = savedData.lastSelectedTopic || '';
         }
 
-        // Reparación de ruta secuencial para alumnos
+        // Reparación de ruta secuencial para estudiantes
         if (!isAdmin || targetStudentId) {
             let lastDone = true;
             for (let i = 0; i < path.length; i++) {
@@ -211,7 +212,7 @@ function PresenteSubjuntivoContentInternal() {
                         </div>
                         <div>
                             <CardTitle className="text-primary uppercase tracking-tighter">{topic.name}</CardTitle>
-                            <CardDescription className='font-bold text-foreground'>Sección de aprendizaje para la Clase: Presente Subjuntivo.</CardDescription>
+                            <CardDescription className='font-bold text-foreground'>Sección de aprendizaje para la Clase: Subjuntivo 2.</CardDescription>
                         </div>
                     </div>
                 </CardHeader>
@@ -265,7 +266,7 @@ function PresenteSubjuntivoContentInternal() {
                             <ArrowLeft className="h-4 w-4" /> Volver al Curso B1
                         </Link>
                         <h1 className="text-4xl font-black [text-shadow:2px_2px_4px_rgba(0,0,0,0.5)] uppercase tracking-tight flex items-center gap-3">
-                           <Sparkles className='h-10 w-10 text-primary' /> Presente Subjuntivo 🇪🇸 (B1)
+                           <Sparkles className='h-10 w-10 text-primary' /> Subjuntivo 2 🇪🇸 (B1)
                         </h1>
                     </div>
 
@@ -305,7 +306,7 @@ function PresenteSubjuntivoContentInternal() {
                                                             ) : (
                                                                 <Icon className={cn("h-5 w-5", isLocked ? "text-yellow-500/50" : "text-primary")} />
                                                             )}
-                                                            <span className="truncate max-w-[150px] text-[10px] uppercase font-bold">{item.name}</span>
+                                                            <span className="truncate max-w-[150px] text-[10px] uppercase font-bold text-foreground">{item.name}</span>
                                                         </div>
                                                         {isLocked && <Lock className="h-3 w-3 text-yellow-500/30" />}
                                                     </li>
@@ -330,14 +331,14 @@ function PresenteSubjuntivoContentInternal() {
     );
 }
 
-export default function PresenteSubjuntivoB1Page() {
+export default function Subjuntivo2B1Page() {
     return (
         <Suspense fallback={
             <div className="flex h-screen w-full items-center justify-center bg-background">
                 <Loader2 className="animate-spin h-12 w-12 text-primary" />
             </div>
         }>
-            <PresenteSubjuntivoContentInternal />
+            <Subjuntivo2ContentInternal />
         </Suspense>
     );
 }

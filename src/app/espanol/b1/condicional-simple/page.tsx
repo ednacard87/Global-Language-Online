@@ -17,9 +17,11 @@ import {
     Pencil,
     Star,
     ArrowLeft,
+    CheckCircle2,
     MessageSquare,
     ListChecks,
-    Sparkles
+    Activity,
+    Zap
 } from 'lucide-react';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -31,8 +33,8 @@ import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 
 // --- CONFIGURACIÓN DE INGENIERÍA ---
-const progressStorageVersion = 'progress_es_b1_pres_subj_v1_secure_skeleton';
-const mainProgressKey = 'progress_b1_es_presente_subjuntivo';
+const progressStorageVersion = 'progress_es_b1_cond_simple_v1_secure_skeleton';
+const mainProgressKey = 'progress_b1_es_condicional_simple';
 
 interface Topic {
   key: string;
@@ -47,7 +49,7 @@ const ICONS_CONFIG = {
     completed: CheckCircle,
 };
 
-function PresenteSubjuntivoContentInternal() {
+function CondicionalSimpleContentInternal() {
     const { toast } = useToast();
     const { user, isUserLoading } = useUser();
     const firestore = useFirestore();
@@ -106,7 +108,7 @@ function PresenteSubjuntivoContentInternal() {
             savedST = savedData.lastSelectedTopic || '';
         }
 
-        // Reparación de ruta secuencial para alumnos
+        // Reparación de ruta secuencial para estudiantes
         if (!isAdmin || targetStudentId) {
             let lastDone = true;
             for (let i = 0; i < path.length; i++) {
@@ -211,7 +213,7 @@ function PresenteSubjuntivoContentInternal() {
                         </div>
                         <div>
                             <CardTitle className="text-primary uppercase tracking-tighter">{topic.name}</CardTitle>
-                            <CardDescription className='font-bold text-foreground'>Sección de aprendizaje para la Clase: Presente Subjuntivo.</CardDescription>
+                            <CardDescription className='font-bold text-foreground'>Sección de aprendizaje para la Clase: Condicional Simple.</CardDescription>
                         </div>
                     </div>
                 </CardHeader>
@@ -265,7 +267,7 @@ function PresenteSubjuntivoContentInternal() {
                             <ArrowLeft className="h-4 w-4" /> Volver al Curso B1
                         </Link>
                         <h1 className="text-4xl font-black [text-shadow:2px_2px_4px_rgba(0,0,0,0.5)] uppercase tracking-tight flex items-center gap-3">
-                           <Sparkles className='h-10 w-10 text-primary' /> Presente Subjuntivo 🇪🇸 (B1)
+                           <Zap className='h-10 w-10 text-primary' /> Condicional Simple 🇪🇸 (B1)
                         </h1>
                     </div>
 
@@ -330,14 +332,14 @@ function PresenteSubjuntivoContentInternal() {
     );
 }
 
-export default function PresenteSubjuntivoB1Page() {
+export default function CondicionalSimplePage() {
     return (
         <Suspense fallback={
             <div className="flex h-screen w-full items-center justify-center bg-background">
                 <Loader2 className="animate-spin h-12 w-12 text-primary" />
             </div>
         }>
-            <PresenteSubjuntivoContentInternal />
+            <CondicionalSimpleContentInternal />
         </Suspense>
     );
 }
