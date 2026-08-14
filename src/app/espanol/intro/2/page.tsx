@@ -1,8 +1,9 @@
 
 'use client';
 
-import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import React, { useState, useMemo, useEffect, useCallback, Fragment } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import {
   BookOpen,
   PenSquare,
@@ -17,10 +18,11 @@ import {
   RefreshCw,
   Flame,
   Loader2,
-  Hash,
   ArrowRight,
   ArrowLeft,
   X,
+  BookText,
+  Star,
 } from 'lucide-react';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -35,8 +37,34 @@ import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
 
-// Data
+// --- CONSTANTS & DATA ---
+
+const ICONS = {
+  locked: Lock,
+  active: BookOpen,
+  completed: CheckCircle,
+};
+
+const progressStorageVersion = "es_intro2_v50_expanded_fixed";
+const mainProgressKey = "progress_espanol_intro_2";
+
+const intro2EPath = [
+    { key: 'memory_game', name: 'Juego Saludos', icon: BrainCircuit },
+    { key: 'numeros', name: 'Números (Teoría)', icon: BookOpen },
+    { key: 'ejercicio_numeros', name: 'Ejercicios Números', icon: PenSquare },
+    { key: 'time', name: 'La Hora (Teoría)', icon: Clock },
+    { key: 'time_exercises', name: 'Ejercicios Hora', icon: PenSquare },
+    { key: 'countries', name: 'Países y Nacionalidades', icon: Globe },
+    { key: 'reading', name: 'Lectura', icon: BookText },
+    { key: 'ser_y_estar', name: 'Ser y Estar', icon: GraduationCap },
+    { key: 'mixed_exercises', name: 'Ejercicios Mixtos', icon: Trophy },
+];
+
 const greetingsAndFarewellsData = [
     { spanish: 'Hola', english: 'Hello' },
     { spanish: 'Buenos días', english: 'Good morning' },
@@ -44,6 +72,54 @@ const greetingsAndFarewellsData = [
     { spanish: 'Buenas noches', english: 'Good night' },
     { spanish: 'Adiós', english: 'Goodbye' },
     { spanish: 'Hasta luego', english: 'See you later' },
+];
+
+const numerosData = [
+    { num: '1', word: 'Uno' }, { num: '2', word: 'Dos' }, { num: '3', word: 'Tres' },
+    { num: '4', word: 'Cuatro' }, { num: '5', word: 'Cinco' }, { num: '6', word: 'Seis' },
+    { num: '7', word: 'Siete' }, { num: '8', word: 'Ocho' }, { num: '9', word: 'Nueve' },
+    { num: '10', word: 'Diez' },
+    { num: '11', word: 'Once' }, { num: '12', word: 'Doce' }, { num: '13', word: 'Trece' },
+    { num: '14', word: 'Catorce' }, { num: '15', word: 'Quince' }, { num: '16', word: 'Dieciséis' },
+    { num: '17', word: 'Diecisiete' }, { num: '18', word: 'Dieciocho' }, { num: '19', word: 'Diecinueve' },
+    { num: '20', word: 'Veinte' }, { num: '30', word: 'Treinta' },
+    { num: '40', word: 'Cuarenta' }, { num: '50', word: 'Cincuenta' }, { num: '60', word: 'Sesenta' },
+    { num: '70', word: 'Setenta' }, { num: '80', word: 'Ochenta' }, { num: '90', word: 'Noventa' },
+    { num: '100', word: 'Cien' },
+    { num: '200', word: 'Doscientos' }, { num: '300', word: 'Trescientos' }, { num: '400', word: 'Cuatrocientos' },
+    { num: '500', word: 'Quinientos' }, { num: '700', word: 'Setecientos' }, { num: '900', word: 'Novecientos' },
+    { num: '1000', word: 'Mil' }, { num: "1'000.000", word: 'Un Millón' }
+];
+
+const numbersExercisesData = [
+    { num: '1', word: 'Uno' }, { num: '12', word: 'Doce' }, { num: '15', word: 'Quince' }, { num: '20', word: 'Veinte' }, { num: '50', word: 'Cincuenta' },
+    { num: '100', word: 'Cien' }, { num: '500', word: 'Quinientos' }, { num: '900', word: 'Novecientos' }, { num: '1000', word: 'Mil' }, { num: "1'000.000", word: 'Un millón' },
+    { num: '5', word: 'Cinco' }, { num: '8', word: 'Ocho' }, { num: '11', word: 'Once' }, { num: '13', word: 'Trece' }, { num: '14', word: 'Catorce' },
+    { num: '16', word: 'Dieciséis' }, { num: '17', word: 'Diecisiete' }, { num: '18', word: 'Dieciocho' }, { num: '19', word: 'Diecinueve' }, { num: '25', word: 'Veinticinco' },
+    { num: '30', word: 'Treinta' }, { num: '40', word: 'Cuarenta' }, { num: '60', word: 'Sesenta' }, { num: '70', word: 'Setenta' }, { num: '80', word: 'Ochenta' },
+];
+
+const timeExercisesData = [
+    { time: '2:00', word: 'Son las dos en punto' },
+    { time: '2:30', word: 'Son las dos y media' },
+    { time: '5:15', word: 'Son las cinco y cuarto' },
+    { time: '10:45', word: 'falta un cuarto para las once' },
+    { time: '8:00', word: 'Son las ocho en punto' },
+    { time: '12:00', word: 'Es mediodía' },
+    { time: '6:45', word: 'falta un cuarto para las siete' },
+    { time: '3:15', word: 'Son las tres y cuarto' },
+    { time: '1:30', word: 'Es la una y media' },
+    { time: '9:00', word: 'Son las nueve en punto' },
+    { time: '10:30', word: 'Son las diez y media' },
+    { time: '12:15', word: 'Son las doce y cuarto' },
+    { time: '4:00', word: 'Son las cuatro en punto' },
+    { time: '6:20', word: 'Son las seis y veinte' },
+    { time: '9:50', word: 'falta diez para las diez' },
+    { time: '11:30', word: 'Son las once y media' },
+    { time: '1:00', word: 'Es la una en punto' },
+    { time: '7:40', word: 'faltan veinte para las ocho' },
+    { time: '8:15', word: 'Son las ocho y cuarto' },
+    { time: '12:00 AM', word: 'Es medianoche' },
 ];
 
 const countriesExerciseData = [
@@ -66,11 +142,25 @@ const readingData = {
         { id: 'q1', question: '¿A qué hora se levanta Carlos?', answer: 'a las siete' },
         { id: 'q2', question: '¿Qué bebe por la mañana?', answer: 'café' },
         { id: 'q3', question: '¿Qué hace por la tarde?', answer: 'caminar en el parque' },
-    ]
+    ],
+    vocabulary: {
+        "rutina": "routine",
+        "me llamo": "my name is",
+        "cada mañana": "every morning",
+        "me levanto": "I get up",
+        "noticias": "news",
+        "oficina": "office",
+        "tarde": "afternoon",
+        "caminar": "walk",
+        "noche": "night / evening",
+        "ceno": "I have dinner",
+        "vemos": "we watch",
+        "dormir": "to sleep"
+    }
 };
 
 const mixedExercisesData = [
-    { english: 'Hello, how are you?', spanish: ['hola, ¿cómo estás?', 'hola, como estas', 'hola ¿cómo estás?', 'hola como estas'] },
+    { english: 'Hello, how are you?', spanish: ['hola, ¿cómo estás?', 'hola, como estas', 'hola ¿cómo estás?', 'hola, como estas?'] },
     { english: 'She is my mother', spanish: ['ella es mi madre', 'ella es mi mamá', 'ella es mi mama'] },
     { english: 'The book is blue', spanish: ['el libro es azul'] },
     { english: 'Today is Wednesday', spanish: ['hoy es miércoles', 'hoy es miercoles'] },
@@ -80,52 +170,19 @@ const mixedExercisesData = [
     { english: 'Nice to meet you', spanish: ['mucho gusto', 'encantado', 'encantada', 'un placer'] },
     { english: 'We are in Mexico', spanish: ['nosotros estamos en méxico', 'nosotros estamos en mexico', 'estamos en méxico', 'estamos en mexico'] },
     { english: 'Goodbye, take care', spanish: ['adiós, cuídate', 'adios, cuidate', 'chao, cuídate', 'chao, cuidate'] },
+    { english: 'Good morning, how is it going?', spanish: ['buenos dias, como estas?', 'buenos dias, ¿como estas?'] },
+    { english: 'I am from Germany', spanish: ['yo soy de alemania', 'soy de alemania'] },
+    { english: 'It is nine o\'clock', spanish: ['son las nueve en punto'] },
+    { english: 'They are tired', spanish: ['ellos están cansados', 'ellos estan cansados'] },
+    { english: 'This is my house', spanish: ['esta es mi casa', 'esta es mi casa'] },
+    { english: 'We are happy in Colombia', spanish: ['nosotros estamos felices en colombia', 'estamos felices en colombia'] },
+    { english: 'Are you from Italy?', spanish: ['¿eres de italia?', 'tu eres de italia?'] },
+    { english: 'She is twenty years old', spanish: ['ella tiene veinte años', 'ella tiene 20 años'] },
+    { english: 'It is noon', spanish: ['es mediodía', 'es mediodia'] },
+    { english: 'Nice to meet you, goodbye', spanish: ['mucho gusto, adiós', 'mucho gusto, adios'] },
 ];
 
-const numerosData = [
-    { num: '1', word: 'Uno' }, { num: '2', word: 'Dos' }, { num: '3', word: 'Tres' },
-    { num: '4', word: 'Cuatro' }, { num: '5', word: 'Cinco' }, { num: '6', word: 'Seis' },
-    { num: '7', word: 'Siete' }, { num: '8', word: 'Ocho' }, { num: '9', word: 'Nueve' },
-    { num: '10', word: 'Diez' },
-    { num: '11', word: 'Once' }, { num: '12', word: 'Doce' }, { num: '13', word: 'Trece' },
-    { num: '14', word: 'Catorce' }, { num: '15', word: 'Quince' }, { num: '16', word: 'Dieciséis' },
-    { num: '17', word: 'Diecisiete' }, { num: '18', word: 'Dieciocho' }, { num: '19', word: 'Diecinueve' },
-    { num: '20', word: 'Veinte' }, { num: '30', word: 'Treinta' },
-    { num: '40', word: 'Cuarenta' }, { num: '50', word: 'Cincuenta' }, { num: '60', word: 'Sesenta' },
-    { num: '70', word: 'Setenta' }, { num: '80', word: 'Ochenta' }, { num: '90', word: 'Noventa' },
-    { num: '100', word: 'Cien' },
-    { num: '200', word: 'Doscientos' }, { num: '300', word: 'Trescientos' }, { num: '400', word: 'Cuatrocientos' },
-    { num: '500', word: 'Quinientos' }, { num: '700', word: 'Setecientos' }, { num: '900', word: 'Novecientos' },
-    { num: '1000', word: 'Mil' }, { num: "1'000.000", word: 'Un Millón' }
-];
-
-const numbersExercisesData = [
-    { num: '1', word: 'Uno' },
-    { num: '12', word: 'Doce' },
-    { num: '15', word: 'Quince' },
-    { num: '20', word: 'Veinte' },
-    { num: '50', word: 'Cincuenta' },
-    { num: '100', word: 'Cien' },
-    { num: '500', word: 'Quinientos' },
-    { num: '900', word: 'Novecientos' },
-    { num: '1000', word: 'Mil' },
-    { num: "1'000.000", word: 'Un millón' },
-];
-
-const timeExercisesData = [
-    { time: '2:00', word: 'Son las dos en punto' },
-    { time: '2:30', word: 'Son las dos y media' },
-    { time: '5:15', word: 'Son las cinco y cuarto' },
-    { time: '10:45', word: 'Son las once menos cuarto' },
-    { time: '8:00', word: 'Son las ocho en punto' },
-    { time: '12:00', word: 'Es mediodía' },
-    { time: '6:45', word: 'Son las siete menos cuarto' },
-    { time: '3:15', word: 'Son las tres y cuarto' },
-    { time: '1:30', word: 'Es la una y media' },
-    { time: '9:00', word: 'Son las nueve en punto' },
-];
-
-// Components inside the page file
+// --- SUB-COMPONENTS ---
 
 const MemoryGame = ({ data, onComplete }: { data: { spanish: string; english: string; }[], onComplete: () => void }) => {
     const [cards, setCards] = useState<any[]>([]);
@@ -135,9 +192,7 @@ const MemoryGame = ({ data, onComplete }: { data: { spanish: string; english: st
     const [streak, setStreak] = useState(0);
     const [isClient, setIsClient] = useState(false);
 
-    useEffect(() => {
-        setIsClient(true);
-    }, []);
+    useEffect(() => { setIsClient(true); }, []);
 
     const initializeGame = useCallback(() => {
         const gameCards = data.flatMap((pair, index) => [
@@ -152,18 +207,13 @@ const MemoryGame = ({ data, onComplete }: { data: { spanish: string; english: st
         setStreak(0);
     }, [data]);
 
-    useEffect(() => {
-        if (isClient) {
-            initializeGame();
-        }
-    }, [isClient, initializeGame]);
+    useEffect(() => { if (isClient) initializeGame(); }, [isClient, initializeGame]);
     
     useEffect(() => {
         if (flippedIndices.length === 2) {
             setIsChecking(true);
             const [firstIndex, secondIndex] = flippedIndices;
             const isMatch = cards[firstIndex].pairId === cards[secondIndex].pairId;
-
             if (isMatch) {
                 setMatchedPairIds(prev => [...prev, cards[firstIndex].pairId]);
                 setStreak(prev => prev + 1);
@@ -171,33 +221,23 @@ const MemoryGame = ({ data, onComplete }: { data: { spanish: string; english: st
                 setIsChecking(false);
             } else {
                 setStreak(0);
-                setTimeout(() => {
-                    setFlippedIndices([]);
-                    setIsChecking(false);
-                }, 800);
+                setTimeout(() => { setFlippedIndices([]); setIsChecking(false); }, 800);
             }
         }
     }, [flippedIndices, cards]);
 
     const isGameComplete = matchedPairIds.length === data.length && data.length > 0;
-
-    useEffect(() => {
-        if (isGameComplete) {
-            onComplete();
-        }
-    }, [isGameComplete, onComplete]);
+    useEffect(() => { if (isGameComplete) onComplete(); }, [isGameComplete, onComplete]);
 
     const handleCardClick = (index: number) => {
-        if (isChecking || flippedIndices.length >= 2 || flippedIndices.includes(index) || matchedPairIds.includes(cards[index].pairId)) {
-            return;
-        }
+        if (isChecking || flippedIndices.length >= 2 || flippedIndices.includes(index) || matchedPairIds.includes(cards[index].pairId)) return;
         setFlippedIndices(prev => [...prev, index]);
     };
 
     if (!isClient) return null;
 
     return (
-        <Card className="shadow-soft border-2 border-brand-purple">
+        <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground">
             <CardHeader>
                 <CardTitle>Juego de Memoria: Saludos y Despedidas</CardTitle>
                 <div className="flex justify-between items-center pt-2">
@@ -214,12 +254,10 @@ const MemoryGame = ({ data, onComplete }: { data: { spanish: string; english: st
                             const isFlipped = flippedIndices.includes(index);
                             const isMatched = matchedPairIds.includes(card.pairId);
                             return (
-                                <Card key={card.id} onClick={() => handleCardClick(index)}
-                                    className={cn("flex items-center justify-center aspect-square cursor-pointer transition-all", isFlipped || isMatched ? "bg-card border-primary" : "bg-secondary", isMatched && "border-green-500")}>
-                                    <CardContent className="p-1 text-center">
-                                        {isFlipped || isMatched ? <span className="text-[10px] sm:text-xs font-bold leading-tight">{card.text}</span> : <BrainCircuit className="h-5 w-5 text-primary/50" />}
-                                    </CardContent>
-                                </Card>
+                                <div key={card.id} onClick={() => handleCardClick(index)}
+                                    className={cn("flex items-center justify-center aspect-square cursor-pointer transition-all border-2 rounded-xl text-center p-1", isFlipped || isMatched ? "bg-card border-primary" : "bg-secondary hover:bg-muted", isMatched && "border-green-500")}>
+                                    {isFlipped || isMatched ? <span className="text-[10px] sm:text-xs font-bold leading-tight uppercase">{card.text}</span> : <BrainCircuit className="h-5 w-5 text-primary/50" />}
+                                </div>
                             )
                         })}
                     </div>
@@ -229,120 +267,65 @@ const MemoryGame = ({ data, onComplete }: { data: { spanish: string; english: st
     );
 };
 
-type ValidationStatus = 'correct' | 'incorrect' | 'unchecked';
-
-const CountriesExercise = ({ onComplete }: { onComplete: () => void }) => {
-    const { toast } = useToast();
-    type CountryAnswerFields = { spanish: string; nationality: string; language: string; };
-    type UserAnswers = Record<number, CountryAnswerFields>;
-    type ValidationState = Record<number, Record<keyof CountryAnswerFields, ValidationStatus>>;
-
-    const [userAnswers, setUserAnswers] = useState<UserAnswers>({});
-    const [validationStatus, setValidationStatus] = useState<ValidationState>({});
-
-    const handleInputChange = (index: number, field: keyof CountryAnswerFields, value: string) => {
-        setUserAnswers(prev => ({ 
-            ...prev, 
-            [index]: { ...(prev[index] || { spanish: '', nationality: '', language: '' }), [field]: value } 
-        }));
-        setValidationStatus(prev => {
-            const newStatus = { ...prev };
-            if (!newStatus[index]) {
-                newStatus[index] = { spanish: 'unchecked', nationality: 'unchecked', language: 'unchecked' };
-            }
-            newStatus[index][field] = 'unchecked';
-            return newStatus;
-        });
-    };
-
-    const handleCheckAnswers = () => {
-        let allCorrect = true;
-        const newValidationStatus: ValidationState = {};
-        
-        countriesExerciseData.forEach((correctData, index) => {
-            const userAnswer = userAnswers[index] || { spanish: '', nationality: '', language: '' };
-            
-            const isSpanishCorrect = userAnswer.spanish.trim().toLowerCase() === correctData.spanish.toLowerCase();
-            const isNationalityCorrect = userAnswer.nationality.trim().toLowerCase() === correctData.nationality.toLowerCase();
-            const isLanguageCorrect = userAnswer.language.trim().toLowerCase() === correctData.language.toLowerCase();
-            
-            newValidationStatus[index] = {
-                spanish: isSpanishCorrect ? 'correct' : 'incorrect',
-                nationality: isNationalityCorrect ? 'correct' : 'incorrect',
-                language: isLanguageCorrect ? 'correct' : 'incorrect'
-            };
-
-            if (!isSpanishCorrect || !isNationalityCorrect || !isLanguageCorrect) allCorrect = false;
-        });
-
-        setValidationStatus(newValidationStatus);
-
-        if (allCorrect) {
-            toast({ title: "¡Excelente!", description: "Has completado la tabla de países correctamente." });
-            onComplete();
-        } else {
-            toast({ variant: 'destructive', title: "Algunas respuestas son incorrectas", description: "Revisa los campos en rojo." });
-        }
-    };
-    
-    const getInputClass = (status?: ValidationStatus) => {
-        if (status === 'correct') return 'border-green-500 bg-green-50 dark:bg-green-900/10';
-        if (status === 'incorrect') return 'border-destructive bg-destructive/5';
-        return '';
-    };
-
+const TimeContent = ({ onComplete }: { onComplete: () => void }) => {
     return (
-        <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 text-foreground text-left">
             <CardHeader>
-                <CardTitle>Países y Nacionalidades</CardTitle>
-                <CardDescription>Completa la tabla traduciendo los términos al español.</CardDescription>
+                <CardTitle>La Hora en Español</CardTitle>
+                <CardDescription>Aprende a decir la hora de forma sencilla.</CardDescription>
             </CardHeader>
-            <CardContent className="overflow-x-auto">
-                <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead className="w-[150px]">Country (Inglés)</TableHead>
-                        <TableHead>País (Español)</TableHead>
-                        <TableHead>Nacionalidad</TableHead>
-                        <TableHead>Idioma</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {countriesExerciseData.map((data, index) => (
-                            <TableRow key={index}>
-                                <TableCell className="font-bold">{data.english}</TableCell>
-                                <TableCell>
-                                    <Input 
-                                        value={userAnswers[index]?.spanish || ''} 
-                                        onChange={(e) => handleInputChange(index, 'spanish', e.target.value)} 
-                                        className={cn("h-8 text-xs", getInputClass(validationStatus[index]?.spanish))} 
-                                        placeholder="País..."
-                                    />
-                                </TableCell>
-                                <TableCell>
-                                    <Input 
-                                        value={userAnswers[index]?.nationality || ''} 
-                                        onChange={(e) => handleInputChange(index, 'nationality', e.target.value)} 
-                                        className={cn("h-8 text-xs", getInputClass(validationStatus[index]?.nationality))} 
-                                        placeholder="Nacionalidad..."
-                                    />
-                                </TableCell>
-                                <TableCell>
-                                    <Input 
-                                        value={userAnswers[index]?.language || ''} 
-                                        onChange={(e) => handleInputChange(index, 'language', e.target.value)} 
-                                        className={cn("h-8 text-xs", getInputClass(validationStatus[index]?.language))} 
-                                        placeholder="Idioma..."
-                                    />
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
+            <CardContent className="space-y-8">
+                <div className="space-y-4 text-left">
+                    <h3 className="text-2xl font-bold text-primary flex items-center gap-2"><Clock className="h-6 w-6" /> ¿Cómo funciona?</h3>
+                    <p className="text-lg">Para decir la hora en español, usamos el verbo <strong>ser</strong>. Usamos "Es la" para la una y "Son las" para las demás horas.</p>
+                    <div className="p-4 bg-muted rounded-lg font-mono text-lg border-l-4 border-primary">
+                        <p>Ejemplo 1:00 {"=>"} Es la una en punto.</p>
+                        <p>Ejemplo 2:00 {"=>"} Son las dos en punto.</p>
+                    </div>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-6 text-left">
+                    <div className="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-2xl border-2 border-blue-200">
+                        <h4 className="text-xl font-bold text-blue-600 mb-2">Minutos del 1 al 30</h4>
+                        <p className="text-sm mb-4 text-muted-foreground font-medium">Usamos la conjunción <strong>"y"</strong> seguida de los minutos.</p>
+                        <div className="space-y-2 font-mono text-sm">
+                            <p>2:10 {"=>"} Son las dos <strong>y</strong> diez</p>
+                            <p>5:20 {"=>"} Son las cinco <strong>y</strong> veinte</p>
+                        </div>
+                    </div>
+                    <div className="bg-orange-50 dark:bg-orange-900/20 p-6 rounded-2xl border-2 border-orange-200">
+                        <h4 className="text-xl font-bold text-orange-600 mb-2">Minutos del 31 al 59</h4>
+                        <p className="text-sm mb-4 text-muted-foreground font-medium">Usamos <strong>"menos"</strong> restando los minutos a la hora siguiente.</p>
+                        <div className="space-y-2 font-mono text-sm">
+                            <p>2:50 {"=>"} faltan diez <strong>para las</strong> tres</p>
+                            <p>8:40 {"=>"} faltan veinte <strong>para las</strong> nueve</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="space-y-4 text-left">
+                    <h4 className="text-xl font-bold uppercase">Expresiones Comunes:</h4>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        <div className="p-3 bg-secondary rounded-xl text-center">
+                            <p className="font-bold text-primary">En punto</p>
+                            <p className="text-xs text-muted-foreground">Hora exacta (:00)</p>
+                        </div>
+                        <div className="p-3 bg-secondary rounded-xl text-center">
+                            <p className="font-bold text-primary">Y cuarto</p>
+                            <p className="text-xs text-muted-foreground">15 minutos (:15)</p>
+                        </div>
+                        <div className="p-3 bg-secondary rounded-xl text-center">
+                            <p className="font-bold text-primary">Y media</p>
+                            <p className="text-xs text-muted-foreground">30 minutos (:30)</p>
+                        </div>
+                        <div className="p-3 bg-secondary rounded-xl text-center">
+                            <p className="font-bold text-primary">Menos cuarto</p>
+                            <p className="text-xs text-muted-foreground">Faltan 15 (:45)</p>
+                        </div>
+                    </div>
+                </div>
             </CardContent>
-            <CardFooter className="justify-end">
-                <Button onClick={handleCheckAnswers}>Verificar</Button>
-            </CardFooter>
+            <CardFooter><Button onClick={onComplete} className="w-full sm:w-auto h-12 px-12 font-bold">Avanzar <ArrowRight className="ml-2 h-4 w-4" /></Button></CardFooter>
         </Card>
     );
 };
@@ -351,112 +334,21 @@ const NumbersExercise = ({ onComplete }: { onComplete: () => void }) => {
     const { toast } = useToast();
     const [currentIndex, setCurrentIndex] = useState(0);
     const [userAnswers, setUserAnswers] = useState<Record<number, string>>({});
-    const [validationStatus, setValidationStatus] = useState<Record<number, ValidationStatus>>({});
-    const [showCompletionMessage, setShowCompletionMessage] = useState(false);
-
+    const [validationStatus, setValidationStatus] = useState<Record<number, 'correct' | 'incorrect' | 'unchecked'>>({});
     const currentPrompt = numbersExercisesData[currentIndex];
-    const totalPrompts = numbersExercisesData.length;
-
-    const handleInputChange = (value: string) => {
-        setUserAnswers(prev => ({ ...prev, [currentIndex]: value }));
-        setValidationStatus(prev => ({ ...prev, [currentIndex]: 'unchecked' }));
-    };
 
     const handleCheck = () => {
         const userAnswer = (userAnswers[currentIndex] || '').trim().toLowerCase().replace(/[.]/g, '');
-        const correctAnswer = currentPrompt.word.toLowerCase().replace(/[.]/g, '');
-        
-        const isCorrect = userAnswer === correctAnswer;
-        const newStatus = isCorrect ? 'correct' : 'incorrect';
-        
-        setValidationStatus(prev => ({ ...prev, [currentIndex]: newStatus }));
-
-        if (isCorrect) {
-            toast({ title: '¡Correcto!', description: 'Puedes pasar al siguiente.' });
-        } else {
-            toast({ variant: 'destructive', title: 'Incorrecto', description: 'Inténtalo de nuevo.' });
-        }
+        const isCorrect = currentPrompt.word.toLowerCase().replace(/[.]/g, '') === userAnswer;
+        setValidationStatus(prev => ({ ...prev, [currentIndex]: isCorrect ? 'correct' : 'incorrect' }));
+        if (isCorrect) toast({ title: '¡Correcto!' }); else toast({ variant: 'destructive', title: 'Incorrecto' });
     };
     
-    const handleNext = () => {
-        if (currentIndex < totalPrompts - 1) {
-            setCurrentIndex(prev => prev + 1);
-        } else {
-            const allCorrect = Object.values(validationStatus).filter(s => s === 'correct').length === totalPrompts;
-            if (allCorrect) {
-                setShowCompletionMessage(true);
-                onComplete();
-            } else {
-                toast({ variant: 'destructive', title: 'Revisa tus respuestas', description: 'Debes completar todos los ejercicios correctamente.' });
-            }
-        }
-    };
-
-    if (showCompletionMessage) {
-        return (
-            <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-                <CardContent className="p-6 text-center flex flex-col items-center justify-center min-h-[300px]">
-                    <Trophy className="h-16 w-16 text-yellow-400 mb-4" />
-                    <h2 className="text-3xl font-bold">¡Ejercicio Completado!</h2>
-                </CardContent>
-            </Card>
-        );
-    }
-
     return (
-        <Card className="shadow-soft border-2 border-brand-purple">
-            <CardHeader>
-                <CardTitle>Ejercicio Números</CardTitle>
-                <div className="flex items-center justify-start flex-wrap gap-2 pt-4">
-                    {numbersExercisesData.map((_, index) => (
-                        <button
-                            key={index}
-                            onClick={() => setCurrentIndex(index)}
-                            className={cn(
-                                "h-8 w-8 rounded-full flex items-center justify-center font-bold border-2 transition-all",
-                                currentIndex === index ? "border-primary ring-2 ring-primary" : "border-muted-foreground/50",
-                                validationStatus[index] === 'correct' && 'bg-green-500/20 border-green-500 text-green-700',
-                                validationStatus[index] === 'incorrect' && 'bg-red-500/20 border-destructive text-destructive',
-                            )}
-                        >
-                            {index + 1}
-                        </button>
-                    ))}
-                </div>
-            </CardHeader>
-            <CardContent className="space-y-6">
-                <div className="text-center py-8 bg-muted rounded-lg border">
-                    <p className="text-sm text-muted-foreground mb-1">Escribe la traducción de:</p>
-                    <p className="text-4xl font-bold">{currentPrompt.num}</p>
-                </div>
-                <div className="space-y-2">
-                    <Label htmlFor="answer">Números en español:</Label>
-                    <Input 
-                        id="answer"
-                        value={userAnswers[currentIndex] || ''} 
-                        onChange={e => handleInputChange(e.target.value)}
-                        className={cn(
-                            "text-lg h-12",
-                            validationStatus[currentIndex] === 'correct' && 'border-green-500 focus-visible:ring-green-500',
-                            validationStatus[currentIndex] === 'incorrect' && 'border-destructive focus-visible:ring-destructive'
-                        )}
-                        placeholder="Escribe aquí..."
-                        autoComplete="off"
-                    />
-                </div>
-            </CardContent>
-            <CardFooter className="justify-between">
-                <Button variant="outline" onClick={() => setCurrentIndex(prev => Math.max(0, prev - 1))} disabled={currentIndex === 0}>
-                    <ArrowLeft className="mr-2 h-4 w-4" /> Anterior
-                </Button>
-                <div className="flex gap-2">
-                    <Button onClick={handleCheck}>Verificar</Button>
-                    <Button onClick={handleNext} disabled={validationStatus[currentIndex] !== 'correct'}>
-                        {currentIndex === totalPrompts - 1 ? 'Finalizar' : 'Siguiente'}
-                        <ArrowRight className="ml-2 h-4 w-4" />
-                    </Button>
-                </div>
-            </CardFooter>
+        <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left">
+            <CardHeader><CardTitle>Ejercicio Números</CardTitle><div className="flex items-center justify-start flex-wrap gap-2 pt-4">{numbersExercisesData.map((_, i) => (<button key={i} onClick={() => setCurrentIndex(i)} className={cn("h-8 w-8 rounded-full flex items-center justify-center font-bold border-2 transition-all", currentIndex === i ? "border-primary ring-2 ring-primary" : "border-muted", validationStatus[i] === 'correct' ? "bg-green-500 text-white" : validationStatus[i] === 'incorrect' ? "bg-red-500 text-white" : "bg-card")}>{i + 1}</button>))}</div></CardHeader>
+            <CardContent className="space-y-6"><div className="text-center py-8 bg-muted rounded-lg border font-black text-5xl text-primary tracking-tighter">{currentPrompt.num}</div><Input value={userAnswers[currentIndex] || ''} onChange={e => { setUserAnswers({...userAnswers, [currentIndex]: e.target.value}); setValidationStatus({...validationStatus, [currentIndex]: 'unchecked'}); }} onKeyDown={e => e.key === 'Enter' && handleCheck()} placeholder="Escribe el número en letras..." className={cn("text-lg h-12 uppercase", validationStatus[currentIndex] === 'correct' ? 'border-green-500' : validationStatus[currentIndex] === 'incorrect' ? 'border-destructive' : '')} autoComplete="off" /></CardContent>
+            <CardFooter className="justify-between"><Button variant="outline" onClick={() => setCurrentIndex(p => Math.max(0, p - 1))} disabled={currentIndex === 0}>Anterior</Button><div className="flex gap-2"><Button onClick={handleCheck}>Verificar</Button><Button onClick={() => currentIndex < numbersExercisesData.length - 1 ? setCurrentIndex(p => p + 1) : onComplete()} disabled={validationStatus[currentIndex] !== 'correct'}>Siguiente</Button></div></CardFooter>
         </Card>
     );
 };
@@ -465,156 +357,83 @@ const TimeExercise = ({ onComplete }: { onComplete: () => void }) => {
     const { toast } = useToast();
     const [currentIndex, setCurrentIndex] = useState(0);
     const [userAnswers, setUserAnswers] = useState<Record<number, string>>({});
-    const [validationStatus, setValidationStatus] = useState<Record<number, ValidationStatus>>({});
-    const [showCompletionMessage, setShowCompletionMessage] = useState(false);
-
+    const [validationStatus, setValidationStatus] = useState<Record<number, 'correct' | 'incorrect' | 'unchecked'>>({});
     const currentPrompt = timeExercisesData[currentIndex];
-    const totalPrompts = timeExercisesData.length;
-
-    const handleInputChange = (value: string) => {
-        setUserAnswers(prev => ({ ...prev, [currentIndex]: value }));
-        setValidationStatus(prev => ({ ...prev, [currentIndex]: 'unchecked' }));
-    };
 
     const handleCheck = () => {
-        const userAnswer = (userAnswers[currentIndex] || '').trim().toLowerCase().replace(/[.]/g, '');
-        const correctAnswer = currentPrompt.word.toLowerCase().replace(/[.]/g, '');
-        
-        const isCorrect = userAnswer === correctAnswer;
-        const newStatus = isCorrect ? 'correct' : 'incorrect';
-        
-        setValidationStatus(prev => ({ ...prev, [currentIndex]: newStatus }));
-
-        if (isCorrect) {
-            toast({ title: '¡Correcto!', description: 'Puedes pasar al siguiente.' });
-        } else {
-            toast({ variant: 'destructive', title: 'Incorrecto', description: 'Inténtalo de nuevo.' });
-        }
+        const userAnswer = (userAnswers[currentIndex] || '').trim().toLowerCase().replace(/[.?,]/g, '');
+        const isCorrect = userAnswer === currentPrompt.word.toLowerCase().replace(/[.?,]/g, '');
+        setValidationStatus(prev => ({ ...prev, [currentIndex]: isCorrect ? 'correct' : 'incorrect' }));
+        if (isCorrect) toast({ title: '¡Correcto!' }); else toast({ variant: 'destructive', title: 'Incorrecto' });
     };
     
-    const handleNext = () => {
-        if (currentIndex < totalPrompts - 1) {
-            setCurrentIndex(prev => prev + 1);
-        } else {
-            const allCorrect = Object.values(validationStatus).filter(s => s === 'correct').length === totalPrompts;
-            if (allCorrect) {
-                setShowCompletionMessage(true);
-                onComplete();
-            } else {
-                toast({ variant: 'destructive', title: 'Revisa tus respuestas', description: 'Debes completar todos los ejercicios correctamente.' });
-            }
-        }
+    return (
+        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 text-foreground text-left">
+            <CardHeader><CardTitle>Ejercicios Hora</CardTitle><div className="flex flex-wrap gap-2 pt-4">{timeExercisesData.map((_, i) => (<button key={i} onClick={() => setCurrentIndex(i)} className={cn("h-8 w-8 rounded-full border-2 font-bold transition-all", currentIndex === i ? "border-primary ring-2 ring-primary" : "border-muted", validationStatus[i] === 'correct' ? "bg-green-500 text-white" : validationStatus[i] === 'incorrect' ? "bg-red-500 text-white" : "bg-card")}>{i + 1}</button>))}</div></CardHeader>
+            <CardContent className="space-y-6"><div className="text-center py-8 bg-muted rounded-lg border font-black text-5xl text-primary tracking-tighter">{currentPrompt.time}</div><Input value={userAnswers[currentIndex] || ''} onChange={e => { setUserAnswers({...userAnswers, [currentIndex]: e.target.value}); setValidationStatus({...validationStatus, [currentIndex]: 'unchecked'}); }} onKeyDown={e => e.key === 'Enter' && handleCheck()} placeholder="Escribe la hora..." className={cn("h-12 text-lg uppercase", validationStatus[currentIndex] === 'correct' ? 'border-green-500' : validationStatus[currentIndex] === 'incorrect' ? 'border-destructive' : '')} autoComplete="off" /></CardContent>
+            <CardFooter className="justify-between"><Button variant="outline" onClick={() => setCurrentIndex(p => Math.max(0, p - 1))} disabled={currentIndex === 0}>Anterior</Button><div className="flex gap-2"><Button onClick={handleCheck}>Verificar</Button><Button onClick={() => currentIndex < timeExercisesData.length - 1 ? setCurrentIndex(p => p + 1) : onComplete()} disabled={validationStatus[currentIndex] !== 'correct'}>Siguiente</Button></div></CardFooter>
+        </Card>
+    );
+};
+
+const CountriesExercise = ({ onComplete }: { onComplete: () => void }) => {
+    const { toast } = useToast();
+    const [userAnswers, setUserAnswers] = useState<Record<number, any>>({});
+    const [validation, setValidation] = useState<Record<number, any>>({});
+
+    const handleCheck = () => {
+        let allOk = true; const nv: any = {};
+        countriesExerciseData.forEach((data, i) => {
+            const user = userAnswers[i] || { spanish: '', nationality: '', language: '' };
+            const sOk = user.spanish?.trim().toLowerCase() === data.spanish.toLowerCase();
+            const nOk = user.nationality?.trim().toLowerCase() === data.nationality.toLowerCase();
+            const lOk = user.language?.trim().toLowerCase() === data.language.toLowerCase();
+            nv[i] = { spanish: sOk ? 'correct' : 'incorrect', nationality: nOk ? 'correct' : 'incorrect', language: lOk ? 'correct' : 'incorrect' };
+            if (!sOk || !nOk || !lOk) allOk = false;
+        });
+        setValidation(nv);
+        if (allOk) { toast({ title: "¡Excelente!" }); onComplete(); }
+        else toast({ variant: 'destructive', title: "Revisa los campos en rojo" });
     };
 
-    if (showCompletionMessage) {
-        return (
-            <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-                <CardContent className="p-6 text-center flex flex-col items-center justify-center min-h-[300px]">
-                    <Trophy className="h-16 w-16 text-yellow-400 mb-4" />
-                    <h2 className="text-3xl font-bold">¡Ejercicio Completado!</h2>
-                </CardContent>
-            </Card>
-        );
-    }
-
     return (
-        <Card className="shadow-soft border-2 border-brand-purple">
-            <CardHeader>
-                <CardTitle>Ejercicios Hora</CardTitle>
-                <div className="flex items-center justify-start flex-wrap gap-2 pt-4">
-                    {timeExercisesData.map((_, index) => (
-                        <button
-                            key={index}
-                            onClick={() => setCurrentIndex(index)}
-                            className={cn(
-                                "h-8 w-8 rounded-full flex items-center justify-center font-bold border-2 transition-all",
-                                currentIndex === index ? "border-primary ring-2 ring-primary" : "border-muted-foreground/50",
-                                validationStatus[index] === 'correct' && 'bg-green-500/20 border-green-500 text-green-700',
-                                validationStatus[index] === 'incorrect' && 'bg-red-500/20 border-destructive text-destructive',
-                            )}
-                        >
-                            {index + 1}
-                        </button>
-                    ))}
-                </div>
-            </CardHeader>
-            <CardContent className="space-y-6">
-                <div className="text-center py-8 bg-muted rounded-lg border">
-                    <p className="text-sm text-muted-foreground mb-1">Escribe la traducción de:</p>
-                    <p className="text-4xl font-bold">{currentPrompt.time}</p>
-                </div>
-                <div className="space-y-2">
-                    <Label htmlFor="answer">Hora en Español:</Label>
-                    <Input 
-                        id="answer"
-                        value={userAnswers[currentIndex] || ''} 
-                        onChange={e => handleInputChange(e.target.value)}
-                        className={cn(
-                            "text-lg h-12",
-                            validationStatus[currentIndex] === 'correct' && 'border-green-500 focus-visible:ring-green-500',
-                            validationStatus[currentIndex] === 'incorrect' && 'border-destructive focus-visible:ring-destructive'
-                        )}
-                        placeholder="Escribe aquí..."
-                        autoComplete="off"
-                    />
-                </div>
-            </CardContent>
-            <CardFooter className="justify-between">
-                <Button variant="outline" onClick={() => setCurrentIndex(prev => Math.max(0, prev - 1))} disabled={currentIndex === 0}>
-                    <ArrowLeft className="mr-2 h-4 w-4" /> Anterior
-                </Button>
-                <div className="flex gap-2">
-                    <Button onClick={handleCheck}>Verificar</Button>
-                    <Button onClick={handleNext} disabled={validationStatus[currentIndex] !== 'correct'}>
-                        {currentIndex === totalPrompts - 1 ? 'Finalizar' : 'Siguiente'}
-                        <ArrowRight className="ml-2 h-4 w-4" />
-                    </Button>
-                </div>
-            </CardFooter>
+        <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left">
+            <CardHeader><CardTitle>Países y Nacionalidades</CardTitle><CardDescription>Completa la tabla traduciendo los términos al español.</CardDescription></CardHeader>
+            <CardContent className="overflow-x-auto"><Table>
+                <TableHeader><TableRow className="bg-muted/50"><TableHead className="font-bold">Country (Inglés)</TableHead><TableHead className="font-bold">País (Español)</TableHead><TableHead className="font-bold">Nacionalidad</TableHead><TableHead className="font-bold">Idioma</TableHead></TableRow></TableHeader>
+                <TableBody>{countriesExerciseData.map((data, i) => (<TableRow key={i}>
+                    <TableCell className="font-bold text-sm">{data.english}</TableCell>
+                    <TableCell><Input value={userAnswers[i]?.spanish || ''} onChange={e => setUserAnswers({...userAnswers, [i]: {...(userAnswers[i] || {}), spanish: e.target.value}})} className={cn("h-8 text-xs uppercase", validation[i]?.spanish === 'correct' ? 'border-green-500 bg-green-50/10' : validation[i]?.spanish === 'incorrect' ? 'border-red-500 bg-red-50/10' : '')} autoComplete="off" /></TableCell>
+                    <TableCell><Input value={userAnswers[i]?.nationality || ''} onChange={e => setUserAnswers({...userAnswers, [i]: {...(userAnswers[i] || {}), nationality: e.target.value}})} className={cn("h-8 text-xs uppercase", validation[i]?.nationality === 'correct' ? 'border-green-500 bg-green-50/10' : validation[i]?.nationality === 'incorrect' ? 'border-red-500 bg-red-50/10' : '')} autoComplete="off" /></TableCell>
+                    <TableCell><Input value={userAnswers[i]?.language || ''} onChange={e => setUserAnswers({...userAnswers, [i]: {...(userAnswers[i] || {}), language: e.target.value}})} className={cn("h-8 text-xs uppercase", validation[i]?.language === 'correct' ? 'border-green-500 bg-green-50/10' : validation[i]?.language === 'incorrect' ? 'border-red-500 bg-red-50/10' : '')} autoComplete="off" /></TableCell>
+                </TableRow>))}</TableBody>
+            </Table></CardContent>
+            <CardFooter className="justify-center border-t pt-6"><Button onClick={handleCheck} size="lg" className="px-16 font-bold h-12 uppercase tracking-tighter">Verificar Misión</Button></CardFooter>
         </Card>
     );
 };
 
 const ReadingExercise = ({ onComplete }: { onComplete: () => void }) => {
     const [userAnswers, setUserAnswers] = useState<Record<string, string>>({});
-    const [validationStatus, setValidationStatus] = useState<Record<string, ValidationStatus>>({});
+    const [validation, setValidation] = useState<Record<string, any>>({});
     const { toast } = useToast();
 
-    const handleInputChange = (id: string, value: string) => setUserAnswers(prev => ({ ...prev, [id]: value }));
-
-    const handleCheckReading = () => {
-        const newValidation: Record<string, ValidationStatus> = {};
-        let allCorrect = true;
+    const handleCheck = () => {
+        const nv: any = {}; let allOk = true;
         readingData.questions.forEach(q => {
-            const isCorrect = (userAnswers[q.id] || '').trim().toLowerCase() === q.answer.toLowerCase();
-            if (!isCorrect) allCorrect = false;
-            newValidation[q.id] = isCorrect ? 'correct' : 'incorrect';
+            const ok = (userAnswers[q.id] || '').trim().toLowerCase().includes(q.answer.toLowerCase());
+            nv[q.id] = ok ? 'correct' : 'incorrect'; if (!ok) allOk = false;
         });
-        setValidationStatus(newValidation);
-        if (allCorrect) {
-            toast({ title: '¡Muy bien!', description: 'Has respondido todo correctamente.' });
-            onComplete();
-        } else {
-            toast({ variant: 'destructive', title: 'Algunas respuestas son incorrectas.' });
-        }
+        setValidation(nv); if (allOk) onComplete(); else toast({ variant: 'destructive', title: 'Revisa tus respuestas' });
     };
     
     return (
-        <Card>
-            <CardHeader><CardTitle>Lectura: {readingData.title}</CardTitle></CardHeader>
-            <CardContent className="space-y-4">
-                <p className="text-lg leading-relaxed bg-muted p-4 rounded-md">{readingData.content}</p>
-                <div className="space-y-4 border-t pt-4">
-                {readingData.questions.map(q => (
-                    <div key={q.id}>
-                        <Label htmlFor={q.id} className="text-base">{q.question}</Label>
-                        <Input id={q.id} value={userAnswers[q.id] || ''} onChange={e => handleInputChange(q.id, e.target.value)}
-                            className={cn('mt-1', validationStatus[q.id] === 'correct' && 'border-green-500', validationStatus[q.id] === 'incorrect' && 'border-destructive')} />
-                    </div>
-                ))}
-                </div>
-            </CardContent>
-            <CardFooter><Button onClick={handleCheckReading}>Verificar Lectura</Button></CardFooter>
+        <Card className="bg-card text-foreground border-2 border-brand-purple">
+            <CardHeader><div className="flex justify-between items-start"><CardTitle className="text-foreground font-black text-2xl uppercase text-left">Lectura: {readingData.title}</CardTitle><Popover><PopoverTrigger asChild><Button variant="outline" size="sm" className="border-2 border-brand-blue animate-border-pulse shrink-0"><BookText className="mr-2 h-4 w-4" /> Vocabulario</Button></PopoverTrigger><PopoverContent className="w-64"><ScrollArea className="h-48 pr-4"><div className="space-y-2 text-sm text-left text-foreground"><h4 className="font-bold border-b pb-1 text-primary uppercase">Ayuda de Misión</h4>{Object.entries(readingData.vocabulary).map(([es, en]) => (
+                <div key={es} className="flex justify-between border-b border-muted pb-1"><span className="font-bold uppercase text-[10px]">{es}:</span><span className="text-muted-foreground italic text-[10px]">{en}</span></div>
+            ))}</div></ScrollArea></PopoverContent></Popover></div></CardHeader>
+            <CardContent className="space-y-6"><p className="text-lg leading-relaxed bg-muted/30 p-6 rounded-2xl border italic text-left text-foreground shadow-inner">{readingData.content}</p><div className="space-y-4 border-t pt-4 text-left">{readingData.questions.map(q => (<div key={q.id} className='space-y-1'><Label className="text-sm font-black uppercase text-primary">{q.question}</Label><Input value={userAnswers[q.id] || ''} onChange={e => setUserAnswers({...userAnswers, [q.id]: e.target.value})} className={cn('h-10 uppercase', validation[q.id] === 'correct' ? 'border-green-500 bg-green-50/10' : validation[q.id] === 'incorrect' ? 'border-destructive bg-red-50/10' : '')} autoComplete="off" /></div>))}</div></CardContent>
+            <CardFooter><Button onClick={handleCheck} className='w-full font-bold h-12 uppercase'>Verificar Lectura</Button></CardFooter>
         </Card>
     );
 };
@@ -623,190 +442,90 @@ const MixedExercise = ({ onComplete }: { onComplete: () => void }) => {
     const { toast } = useToast();
     const [currentIndex, setCurrentIndex] = useState(0);
     const [userAnswers, setUserAnswers] = useState<Record<number, string>>({});
-    const [validationStatus, setValidationStatus] = useState<Record<number, ValidationStatus>>({});
-    const [showCompletionMessage, setShowCompletionMessage] = useState(false);
-
+    const [validation, setValidation] = useState<Record<number, any>>({});
     const currentPrompt = mixedExercisesData[currentIndex];
-    const totalPrompts = mixedExercisesData.length;
-    
-    const handleInputChange = (value: string) => {
-        setUserAnswers(prev => ({ ...prev, [currentIndex]: value }));
-        setValidationStatus(prev => ({ ...prev, [currentIndex]: 'unchecked' }));
-    };
 
     const handleCheck = () => {
-        const userAnswer = (userAnswers[currentIndex] || '').trim().toLowerCase().replace(/[.?,¿!¡]/g, '');
-        const isCorrect = currentPrompt.spanish.some(correct => correct.toLowerCase().replace(/[.?,¿!¡]/g, '') === userAnswer);
-        
-        const newStatus = isCorrect ? 'correct' : 'incorrect';
-        setValidationStatus(prev => ({ ...prev, [currentIndex]: newStatus }));
-
-        if (isCorrect) {
-            toast({ title: '¡Excelente!', description: 'La traducción es correcta.' });
-        } else {
-            toast({ variant: 'destructive', title: 'Inténtalo de nuevo', description: 'La traducción no coincide con las respuestas esperadas.' });
-        }
+        const userVal = (userAnswers[currentIndex] || '').trim().toLowerCase().replace(/[.?,¿!¡]/g, '');
+        const isOk = currentPrompt.spanish.some(correct => correct.toLowerCase().replace(/[.?,¿!¡]/g, '') === userVal);
+        setValidation({...validation, [currentIndex]: isOk ? 'correct' : 'incorrect'});
+        if (isOk) toast({ title: '¡Excelente!' }); else toast({ variant: 'destructive', title: 'Inténtalo de nuevo' });
     };
-
-    const handleNext = () => {
-        if (currentIndex < totalPrompts - 1) {
-            setCurrentIndex(prev => prev + 1);
-        } else {
-            const allCorrect = Object.values(validationStatus).filter(s => s === 'correct').length === totalPrompts;
-            if (allCorrect) {
-                setShowCompletionMessage(true);
-                onComplete();
-            } else {
-                toast({ variant: 'destructive', title: 'Revisa tus respuestas', description: 'Debes completar todos los retos correctamente.' });
-            }
-        }
-    };
-
-    if (showCompletionMessage) {
-        return (
-            <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-                <CardContent className="p-6 text-center flex flex-col items-center justify-center min-h-[300px]">
-                    <Trophy className="h-16 w-16 text-yellow-400 mb-4" />
-                    <h2 className="text-3xl font-bold">¡Reto Mixto Superado!</h2>
-                    <p className="text-muted-foreground mt-2">Has dominado los temas de Intro 1E y 2E.</p>
-                </CardContent>
-            </Card>
-        );
-    }
 
     return (
-        <Card className="shadow-soft border-2 border-brand-purple">
-            <CardHeader>
-                <CardTitle>Ejercicios Mixtos (1E & 2E)</CardTitle>
-                <div className="flex items-center justify-start flex-wrap gap-2 pt-4">
-                    {mixedExercisesData.map((_, index) => (
-                        <button
-                            key={index}
-                            onClick={() => setCurrentIndex(index)}
-                            className={cn(
-                                "h-8 w-8 rounded-full flex items-center justify-center font-bold border-2 transition-all",
-                                currentIndex === index ? "border-primary ring-2 ring-primary" : "border-muted-foreground/50",
-                                validationStatus[index] === 'correct' && 'bg-green-500/20 border-green-500 text-green-700',
-                                validationStatus[index] === 'incorrect' && 'bg-red-500/20 border-destructive text-destructive',
-                            )}
-                        >
-                            {index + 1}
-                        </button>
-                    ))}
-                </div>
-            </CardHeader>
-            <CardContent className="space-y-6">
-                <div className="text-center py-8 bg-muted rounded-lg border">
-                    <p className="text-sm text-muted-foreground mb-1">Traduce esta frase al español:</p>
-                    <p className="text-2xl font-bold">"{currentPrompt.english}"</p>
-                </div>
-                <div className="space-y-2">
-                    <Label htmlFor="answer">Tu traducción al español:</Label>
-                    <Input 
-                        id="answer"
-                        value={userAnswers[currentIndex] || ''} 
-                        onChange={e => handleInputChange(e.target.value)}
-                        onKeyDown={e => e.key === 'Enter' && handleCheck()}
-                        className={cn(
-                            "text-lg h-12",
-                            validationStatus[currentIndex] === 'correct' && 'border-green-500 focus-visible:ring-green-500',
-                            validationStatus[currentIndex] === 'incorrect' && 'border-destructive focus-visible:ring-destructive'
-                        )}
-                        placeholder="Escribe tu traducción..."
-                        autoComplete="off"
-                    />
-                </div>
-            </CardContent>
-            <CardFooter className="justify-between">
-                <Button variant="outline" onClick={() => setCurrentIndex(prev => Math.max(0, prev - 1))} disabled={currentIndex === 0}>
-                    <ArrowLeft className="mr-2 h-4 w-4" /> Anterior
-                </Button>
-                <div className="flex gap-2">
-                    <Button onClick={handleCheck}>Verificar</Button>
-                    <Button onClick={handleNext} disabled={validationStatus[currentIndex] !== 'correct'}>
-                        {currentIndex === totalPrompts - 1 ? 'Finalizar' : 'Siguiente'}
-                        <ArrowRight className="ml-2 h-4 w-4" />
-                    </Button>
-                </div>
-            </CardFooter>
+        <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left">
+            <CardHeader><CardTitle>Retos Mixtos</CardTitle><div className="flex flex-wrap gap-2 pt-4">{mixedExercisesData.map((_, i) => (<button key={i} onClick={() => setCurrentIndex(i)} className={cn("h-8 w-8 rounded-full border-2 font-bold transition-all", currentIndex === i ? "border-primary ring-2 ring-primary" : "border-muted", validation[i] === 'correct' ? "bg-green-500 text-white border-green-500" : validation[i] === 'incorrect' ? "bg-red-500 text-white border-red-500" : "bg-card")}>{i + 1}</button>))}</div></CardHeader>
+            <CardContent className="space-y-6"><div className="text-center py-8 bg-muted rounded-lg border font-bold text-2xl uppercase tracking-tighter">"{currentPrompt.english}"</div><Input value={userAnswers[currentIndex] || ''} onChange={e => { setUserAnswers({...userAnswers, [currentIndex]: e.target.value}); setValidation({...validation, [currentIndex]: 'unchecked'}); }} onKeyDown={e => e.key === 'Enter' && handleCheck()} placeholder="Tu traducción..." className={cn("h-12 text-lg uppercase", validation[currentIndex] === 'correct' ? 'border-green-500' : validation[currentIndex] === 'incorrect' ? 'border-destructive' : '')} autoComplete="off" /></CardContent>
+            <CardFooter className="justify-between"><Button variant="outline" onClick={() => setCurrentIndex(p => Math.max(0, p - 1))} disabled={currentIndex === 0}>Anterior</Button><div className="flex gap-2"><Button onClick={handleCheck}>Verificar</Button><Button onClick={() => currentIndex < mixedExercisesData.length - 1 ? setCurrentIndex(p => p + 1) : onComplete()} disabled={validation[currentIndex] !== 'correct'}>Siguiente</Button></div></CardFooter>
         </Card>
     );
 };
 
-type Topic = {
-  key: string;
-  name: string;
-  icon: React.ElementType;
-  status: 'locked' | 'active' | 'completed';
-};
-
-const progressStorageKey = 'progress_espanol_intro_2_v2';
-const mainProgressKey = 'progress_espanol_intro_2';
+// --- MAIN PAGE ---
 
 export default function EspanolIntro2Page() {
+    const { t } = useTranslation();
     const { toast } = useToast();
     const { user, isUserLoading } = useUser();
     const firestore = useFirestore();
 
-    const [learningPath, setLearningPath] = useState<Topic[]>([]);
+    const [learningPath, setLearningPath] = useState<any[]>([]);
     const [selectedTopic, setSelectedTopic] = useState('memory_game');
     const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
+    const [initialLoadComplete, setInitialLoadComplete] = useState(false);
     const [isClient, setIsClient] = useState(false);
+    const [isInitialLoading, setIsInitialLoading] = useState(true);
 
-    useEffect(() => {
-        setIsClient(true);
-    }, []);
+    useEffect(() => { setIsClient(true); }, []);
 
     const studentDocRef = useMemoFirebase(() => (user ? doc(firestore, 'students', user.uid) : null), [firestore, user]);
     const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{ role?: string; lessonProgress?: any; progress?: any }>(studentDocRef);
 
     const isAdmin = useMemo(() => (user && (studentProfile?.role === 'admin' || user.email === 'ednacard87@gmail.com')), [user, studentProfile]);
     
-    const initialLearningPath = useMemo((): Topic[] => [
-        { key: 'memory_game', name: 'Juego de Memoria', icon: BrainCircuit, status: 'active' },
-        { key: 'numeros', name: 'Números', icon: Hash, status: 'locked' },
-        { key: 'ejercicio_numeros', name: 'Ejercicio Numeros', icon: PenSquare, status: 'locked' },
-        { key: 'time', name: 'La Hora', icon: Clock, status: 'locked' },
-        { key: 'time_exercises', name: 'Ejercicios Hora', icon: PenSquare, status: 'locked' },
-        { key: 'countries', name: 'Países y Nacionalidades', icon: Globe, status: 'locked' },
-        { key: 'reading', name: 'Lectura y Comprensión', icon: BookOpen, status: 'locked' },
-        { key: 'mixed_exercises', name: 'Ejercicios Mixtos', icon: PenSquare, status: 'locked' },
-    ], []);
-
     useEffect(() => {
-        if (!isClient || isUserLoading || isProfileLoading) return;
-        const newPath = initialLearningPath.map(item => ({...item}));
+        if (!isClient || isUserLoading || isProfileLoading || initialLoadComplete) return;
+        
+        let path = intro2EPath.map((item, index) => ({
+            ...item,
+            status: index === 0 ? 'active' : 'locked' as any,
+        }));
         
         if (isAdmin) {
-            newPath.forEach(item => item.status = 'completed');
-        } else if (studentProfile?.lessonProgress?.[progressStorageKey]) {
-            const savedStatuses = studentProfile.lessonProgress[progressStorageKey];
-            newPath.forEach(item => { if (savedStatuses[item.key]) item.status = savedStatuses[item.key]; });
+            path.forEach(item => item.status = 'completed');
+        } else if (studentProfile?.lessonProgress?.[progressStorageVersion]) {
+            const savedStatuses = studentProfile.lessonProgress[progressStorageVersion];
+            path.forEach(item => { if (savedStatuses[item.key]) item.status = savedStatuses[item.key]; });
+            let lastDone = true;
+            for(let i=0; i < path.length; i++) {
+                if (lastDone && path[i].status === 'locked') path[i].status = 'active';
+                lastDone = path[i].status === 'completed';
+            }
         }
         
-        setLearningPath(newPath);
-        const firstActive = newPath.find(p => p.status === 'active');
+        setLearningPath(path);
+        const firstActive = path.find(p => p.status === 'active');
         setSelectedTopic(firstActive?.key || 'memory_game');
-    }, [isAdmin, initialLearningPath, studentProfile, isUserLoading, isProfileLoading, isClient]);
+        setInitialLoadComplete(true);
+        setTimeout(() => setIsInitialLoading(false), 200);
+    }, [isAdmin, studentProfile, isUserLoading, isProfileLoading, initialLoadComplete, isClient]);
 
-    const progress = useMemo(() => {
+    const progressValue = useMemo(() => {
         if (learningPath.length === 0) return 0;
         const completedCount = learningPath.filter(t => t.status === 'completed').length;
         return Math.round((completedCount / learningPath.length) * 100);
     }, [learningPath]);
 
     useEffect(() => {
-        if (isProfileLoading || isUserLoading) return;
-        if (!isAdmin && studentDocRef && learningPath.length > 0) {
-            const statusesToSave: Record<string, string> = {};
-            learningPath.forEach(item => { statusesToSave[item.key] = item.status; });
-            updateDocumentNonBlocking(studentDocRef, { 
-                [`lessonProgress.${progressStorageKey}`]: statusesToSave,
-                [`progress.${mainProgressKey}`]: progress
-            });
-            window.dispatchEvent(new CustomEvent('progressUpdated'));
-        }
-    }, [learningPath, progress, isAdmin, studentDocRef, isProfileLoading, isUserLoading]);
+        if (!initialLoadComplete || isInitialLoading || isAdmin || !studentDocRef) return;
+        const statusesToSave: Record<string, string> = { lastSelectedTopic: selectedTopic };
+        learningPath.forEach(item => { statusesToSave[item.key] = item.status; });
+        updateDocumentNonBlocking(studentDocRef, { 
+            [`lessonProgress.${progressStorageVersion}`]: statusesToSave,
+            [`progress.${mainProgressKey}`]: progressValue
+        });
+        window.dispatchEvent(new CustomEvent('progressUpdated'));
+    }, [learningPath, progressValue, isAdmin, studentDocRef, isInitialLoading, initialLoadComplete, selectedTopic]);
 
     useEffect(() => {
         if (!topicToComplete) return;
@@ -820,9 +539,7 @@ export default function EspanolIntro2Page() {
                 if (nextIndex < newPath.length && newPath[nextIndex].status === 'locked') {
                     newPath[nextIndex].status = 'active';
                     setSelectedTopic(newPath[nextIndex].key);
-                     toast({ title: "¡Tema desbloqueado!", description: `Ahora puedes continuar con ${newPath[nextIndex].name}` });
-                } else if (newPath.every(item => item.status === 'completed')) {
-                    toast({ title: "¡Felicidades!", description: "Has completado todos los temas de esta lección." });
+                     toast({ title: "¡Misión Desbloqueada!", description: `Has avanzado a ${newPath[nextIndex].name}` });
                 }
             }
             return newPath;
@@ -837,11 +554,11 @@ export default function EspanolIntro2Page() {
     const handleTopicSelect = (key: string) => {
         const topic = learningPath.find(t => t.key === key);
         if (topic?.status === 'locked' && !isAdmin) {
-            toast({ variant: 'destructive', title: 'Tema Bloqueado' });
+            toast({ variant: 'destructive', title: '¡Bloqueado!', description: 'Completa el paso anterior.' });
             return;
         }
         setSelectedTopic(key);
-        if (['time', 'numeros'].includes(key)) {
+        if (['time', 'numeros', 'ser_y_estar'].includes(key)) {
             handleTopicComplete(key);
         }
     };
@@ -851,107 +568,126 @@ export default function EspanolIntro2Page() {
             case 'memory_game': return <MemoryGame data={greetingsAndFarewellsData} onComplete={() => handleTopicComplete('memory_game')} />;
             case 'numeros':
                 return (
-                    <Card className="shadow-soft border-2 border-brand-purple">
-                        <CardHeader>
-                            <CardTitle>Números</CardTitle>
-                            <CardDescription>Repasa los números básicos.</CardDescription>
-                        </CardHeader>
+                    <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left">
+                        <CardHeader><CardTitle className='font-black uppercase text-primary'>Los Números en Español</CardTitle><CardDescription className='font-bold text-foreground'>Estudia la pronunciación y escritura básica.</CardDescription></CardHeader>
                         <CardContent>
-                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                                 {numerosData.map((item) => (
-                                    <div key={item.num} className="p-4 bg-muted rounded-xl text-center border-2 border-transparent hover:border-primary transition-colors">
-                                        <p className="text-3xl font-bold text-primary">{item.num}</p>
-                                        <p className="text-sm font-medium text-muted-foreground uppercase">{item.word}</p>
+                                    <div key={item.num} className="p-4 bg-muted rounded-2xl text-center border-2 border-transparent hover:border-primary transition-all shadow-sm">
+                                        <p className="text-4xl font-black text-primary tracking-tighter">{item.num}</p>
+                                        <p className="text-xs font-black text-muted-foreground uppercase">{item.word}</p>
                                     </div>
                                 ))}
                             </div>
                         </CardContent>
-                        <CardFooter>
-                            <Button onClick={() => handleTopicComplete('numeros')}>He terminado de repasar</Button>
-                        </CardFooter>
+                        <CardFooter className='justify-center border-t pt-6'><Button onClick={() => handleTopicComplete('numeros')} size="lg" className='px-12'>¡Misión Repasada!</Button></CardFooter>
                     </Card>
                 );
-            case 'ejercicio_numeros':
-                return <NumbersExercise onComplete={() => handleTopicComplete('ejercicio_numeros')} />;
-            case 'time': return (
-                <Card>
-                    <CardHeader><CardTitle>La Hora</CardTitle></CardHeader>
-                    <CardContent>
-                        <h3 className="text-xl font-semibold mb-4">¿Qué hora es? - What time is it?</h3>
-                        <div className="space-y-4 text-lg">
-                            <p><span className="font-bold">2:00</span> - Son las dos en punto. (It's two o'clock.)</p>
-                            <p><span className="font-bold">2:05</span> - Son las dos y cinco. (It's five past two.)</p>
-                            <p><span className="font-bold">2:15</span> - Son las dos y cuarto. (It's a quarter past two.)</p>
-                            <p><span className="font-bold">2:30</span> - Son las dos y media. (It's half past two.)</p>
-                            <p><span className="font-bold">2:45</span> - Son las tres menos cuarto. (It's a quarter to three.)</p>
-                            <p><span className="font-bold">2:50</span> - Son las tres menos diez. (It's ten to three.)</p>
-                        </div>
-                        <Separator className="my-6" />
-                        <h3 className="text-xl font-semibold mb-4">Otras formas</h3>
-                        <div className="space-y-4 text-lg">
-                            <p><span className="font-bold">AM</span> - de la mañana (e.g., 8:00 AM - las ocho de la mañana)</p>
-                            <p><span className="font-bold">PM</span> - de la tarde / de la noche (e.g., 3:00 PM - las tres de la tarde; 9:00 PM - las nueve de la noche)</p>
-                            <p><span className="font-bold">Mediodía</span> - Noon (12:00 PM)</p>
-                            <p><span className="font-bold">Medianoche</span> - Midnight (12:00 AM)</p>
-                        </div>
-                    </CardContent>
-                    <CardFooter>
-                        <Button onClick={() => handleTopicComplete('time')}>He terminado de estudiar la hora</Button>
-                    </CardFooter>
-                </Card>
-            );
-            case 'time_exercises':
-                return <TimeExercise onComplete={() => handleTopicComplete('time_exercises')} />;
+            case 'ejercicio_numeros': return <NumbersExercise onComplete={() => handleTopicComplete('ejercicio_numeros')} />;
+            case 'time': return <TimeContent onComplete={() => handleTopicComplete('time')} />;
+            case 'time_exercises': return <TimeExercise onComplete={() => handleTopicComplete('time_exercises')} />;
             case 'countries': return <CountriesExercise onComplete={() => handleTopicComplete('countries')} />;
             case 'reading': return <ReadingExercise onComplete={() => handleTopicComplete('reading')} />;
+            case 'ser_y_estar':
+                return (
+                    <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left">
+                        <CardHeader>
+                            <CardTitle className="text-3xl font-black text-primary uppercase">SER Y ESTAR</CardTitle>
+                            <CardDescription className="text-lg font-bold text-foreground">Dos formas esenciales de decir "To Be" en español.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-8">
+                            <div className="grid md:grid-cols-2 gap-6 text-foreground">
+                                <div className="p-6 bg-primary/5 rounded-[2rem] border-2 border-primary/20 shadow-sm">
+                                    <h3 className="text-2xl font-black text-primary uppercase mb-4 border-b pb-2">VERBO SER</h3>
+                                    <p className="text-xs text-muted-foreground mb-4 italic font-bold">Identidad, origen y rasgos permanentes.</p>
+                                    <Table>
+                                        <TableBody>
+                                            <TableRow><TableCell className="font-bold">Yo</TableCell><TableCell className="font-black text-primary">SOY</TableCell></TableRow>
+                                            <TableRow><TableCell className="font-bold">Tú</TableCell><TableCell className="font-black text-primary">ERES</TableCell></TableRow>
+                                            <TableRow><TableCell className="font-bold">Él / Ella / Usted</TableCell><TableCell className="font-black text-primary">ES</TableCell></TableRow>
+                                            <TableRow><TableCell className="font-bold">Nosotros/as</TableCell><TableCell className="font-black text-primary">SOMOS</TableCell></TableRow>
+                                            <TableRow><TableCell className="font-bold">Ellos / Ellas / Ustedes</TableCell><TableCell className="font-black text-primary">SON</TableCell></TableRow>
+                                        </TableBody>
+                                    </Table>
+                                </div>
+                                <div className="p-6 bg-brand-purple/5 rounded-[2rem] border-2 border-brand-purple/20 shadow-sm">
+                                    <h3 className="text-2xl font-black text-brand-purple uppercase mb-4 border-b pb-2">VERBO ESTAR</h3>
+                                    <p className="text-xs text-muted-foreground mb-4 italic font-bold">Ubicación, estados temporales y sentimientos.</p>
+                                    <Table>
+                                        <TableBody>
+                                            <TableRow><TableCell className="font-bold">Yo</TableCell><TableCell className="font-black text-brand-purple">ESTOY</TableCell></TableRow>
+                                            <TableRow><TableCell className="font-bold">Tú</TableCell><TableCell className="font-black text-brand-purple">ESTÁS</TableCell></TableRow>
+                                            <TableRow><TableCell className="font-bold">Él / Ella / Usted</TableCell><TableCell className="font-black text-brand-purple">ESTÁ</TableCell></TableRow>
+                                            <TableRow><TableCell className="font-bold">Nosotros/as</TableCell><TableCell className="font-black text-brand-purple">ESTAMOS</TableCell></TableRow>
+                                            <TableRow><TableCell className="font-bold">Ellos / Ellas / Ustedes</TableCell><TableCell className="font-black text-brand-purple">ESTÁN</TableCell></TableRow>
+                                        </TableBody>
+                                    </Table>
+                                </div>
+                            </div>
+                            <Separator />
+                            <div className="p-6 bg-muted/50 rounded-2xl border-l-8 border-primary text-left">
+                                <h4 className="text-xl font-black text-foreground uppercase mb-2">LA DIFERENCIA EN UNA FRASE:</h4>
+                                <div className="space-y-4 font-bold text-lg text-foreground">
+                                    <div className="flex items-center gap-2">
+                                        <div className="h-2 w-2 bg-primary rounded-full shrink-0" />
+                                        <span>Yo <span className="text-primary underline">soy</span> de Colombia y <span className="text-brand-purple underline">estoy</span> en Medellín.</span>
+                                    </div>
+                                    <p className="text-sm text-muted-foreground italic font-black ml-4">
+                                        (Soy de Colombia [Rasgo permanente] y estoy en Medellín [Ubicación temporal]).
+                                    </p>
+                                </div>
+                            </div>
+                        </CardContent>
+                        <CardFooter className="justify-center border-t pt-6"><Button onClick={() => handleTopicComplete('ser_y_estar')} size="lg" className="px-16 font-bold h-12 uppercase">¡Entendido!</Button></CardFooter>
+                    </Card>
+                );
             case 'mixed_exercises': return <MixedExercise onComplete={() => handleTopicComplete('mixed_exercises')} />;
-            default: return <p>Selecciona un tema para empezar.</p>;
+            default: return null;
         }
     };
 
-    if (!isClient) return <div className="flex h-screen items-center justify-center"><Loader2 className="h-16 w-16 animate-spin text-primary" /></div>;
+    if (isUserLoading || isProfileLoading) return <div className="flex h-screen items-center justify-center"><Loader2 className="h-16 w-16 animate-spin text-primary" /></div>;
 
     return (
         <div className="flex w-full flex-col min-h-screen espanol-dashboard-bg">
             <DashboardHeader />
             <main className="flex-1 p-4 md:p-8">
                 <div className="max-w-7xl mx-auto">
-                    <div className="mb-8">
-                        <Link href="/espanol/intro" className="hover:underline text-sm text-muted-foreground">Volver a Aventura Intro</Link>
-                        <h1 className="text-4xl font-bold dark:text-primary">Intro 2 Español</h1>
+                    <div className="mb-8 text-left">
+                        <Link href="/espanol/intro" className="hover:underline text-sm text-white/80 flex items-center gap-2 mb-2"><ArrowLeft className="h-4 w-4" /> Volver a Aventura Intro</Link>
+                        <h1 className="text-4xl font-black text-white uppercase tracking-tighter [text-shadow:2px_2px_4px_black]">Intro 2 Español (2E)</h1>
                     </div>
                     <div className="grid gap-8 md:grid-cols-12">
-                        <div className="md:col-span-4">
-                            <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple">
-                                <CardHeader><CardTitle>Ruta de Aprendizaje</CardTitle></CardHeader>
+                        {/* Sidebar MOVIDA A LA IZQUIERDA (md:order-1 order-1) */}
+                        <div className="md:col-span-3 md:order-1 order-1 text-left">
+                            <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
+                                <CardHeader><CardTitle className="text-lg font-black text-primary uppercase">Misión 2E</CardTitle></CardHeader>
                                 <CardContent>
-                                    <nav>
-                                        <ul className="space-y-1">
-                                            {learningPath.map(item => (
+                                    <nav><ul className="space-y-1">
+                                        {learningPath.map(item => {
+                                            const StatusIcon = ICONS[item.status as keyof typeof ICONS] || BookOpen;
+                                            return (
                                                 <li key={item.key} onClick={() => handleTopicSelect(item.key)}
-                                                    className={cn('flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer',
-                                                        item.status === 'locked' && !isAdmin ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted',
-                                                        selectedTopic === item.key && 'bg-muted text-primary font-semibold'
+                                                    className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer text-foreground',
+                                                        item.status === 'locked' && !isAdmin ? 'text-muted-foreground/30 cursor-not-allowed' : 'hover:bg-muted',
+                                                        selectedTopic === item.key && 'bg-muted text-primary font-black border-l-4 border-primary shadow-sm'
                                                     )}>
-                                                    {item.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500"/> : <item.icon className="h-5 w-5" />}
-                                                    <span>{item.name}</span>
-                                                    {item.status === 'locked' && !isAdmin && <Lock className="h-4 w-4 text-yellow-500 ml-auto" />}
+                                                    <div className="flex items-center gap-3">
+                                                        <StatusIcon className={cn("h-5 w-5", item.status === 'completed' && "text-green-500", item.status === 'locked' && "text-yellow-500")} />
+                                                        <span className="truncate max-w-[150px] text-xs font-bold uppercase">{item.name}</span>
+                                                    </div>
+                                                    {item.status === 'locked' && !isAdmin && <Lock className="h-3 w-3 text-yellow-500/30" />}
                                                 </li>
-                                            ))}
-                                        </ul>
-                                    </nav>
-                                     <div className="mt-6 pt-6 border-t">
-                                        <div className="flex justify-between items-center text-sm font-medium text-muted-foreground mb-2">
-                                            <span>Progreso</span><span className="font-bold text-foreground">{progress}%</span>
-                                        </div>
-                                        <Progress value={progress} className="h-2" />
-                                    </div>
+                                            );
+                                        })}
+                                    </ul></nav>
+                                    <div className="mt-6 pt-6 border-t"><div className="flex justify-between items-center text-xs mb-2 font-black uppercase text-muted-foreground"><span>Progreso</span><span className="text-primary font-bold">{progressValue}%</span></div><Progress value={progressValue} className="h-2 rounded-full" /></div>
                                 </CardContent>
                             </Card>
                         </div>
-                        <div className="md:col-span-8">
-                           {renderContent()}
-                        </div>
+
+                        {/* Contenido principal (md:order-2 order-2) */}
+                        <div className="md:col-span-9 md:order-2 order-2">{renderContent()}</div>
                     </div>
                 </div>
             </main>
