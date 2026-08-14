@@ -105,7 +105,7 @@ const timeExercisesData = [
     { time: '5:15', word: 'Son las cinco y cuarto' },
     { time: '10:45', word: 'falta un cuarto para las once' },
     { time: '8:00', word: 'Son las ocho en punto' },
-    { time: '12:00', word: 'Es mediodia','son las doce en punto' },
+    { time: '12:00', word: 'son las doce en punto' },
     { time: '6:45', word: 'falta un cuarto para las siete' },
     { time: '3:15', word: 'Son las tres y cuarto' },
     { time: '1:30', word: 'Es la una y media' },
