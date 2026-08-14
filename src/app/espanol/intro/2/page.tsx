@@ -105,7 +105,7 @@ const timeExercisesData = [
     { time: '5:15', word: 'Son las cinco y cuarto' },
     { time: '10:45', word: 'falta un cuarto para las once' },
     { time: '8:00', word: 'Son las ocho en punto' },
-    { time: '12:00', word: 'Es mediodía' },
+    { time: '12:00', word: 'Es mediodia','son las doce en punto'},
     { time: '6:45', word: 'falta un cuarto para las siete' },
     { time: '3:15', word: 'Son las tres y cuarto' },
     { time: '1:30', word: 'Es la una y media' },
@@ -126,8 +126,10 @@ const countriesExerciseData = [
     { english: 'United States', spanish: 'Estados Unidos', nationality: 'Estadounidense', language: 'Inglés' },
     { english: 'Canada', spanish: 'Canadá', nationality: 'Canadiense', language: 'Inglés' },
     { english: 'Mexico', spanish: 'México', nationality: 'Mexicano', language: 'Español' },
+    { english: 'Colombia', spanish: 'Colombia', nationality: 'Colombiano', language: 'Español' },
     { english: 'Brazil', spanish: 'Brasil', nationality: 'Brasileño', language: 'Portugués' },
     { english: 'England', spanish: 'Inglaterra', nationality: 'Inglés', language: 'Inglés' },
+    { english: 'Spain', spanish: 'España', nationality: 'Español', language: 'Español' },
     { english: 'France', spanish: 'Francia', nationality: 'Francés', language: 'Francés' },
     { english: 'Germany', spanish: 'Alemania', nationality: 'Alemán', language: 'Alemán' },
     { english: 'Italy', spanish: 'Italia', nationality: 'Italiano', language: 'Italiano' },
@@ -400,7 +402,7 @@ const CountriesExercise = ({ onComplete }: { onComplete: () => void }) => {
         <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left">
             <CardHeader><CardTitle>Países y Nacionalidades</CardTitle><CardDescription>Completa la tabla traduciendo los términos al español.</CardDescription></CardHeader>
             <CardContent className="overflow-x-auto"><Table>
-                <TableHeader><TableRow className="bg-muted/50"><TableHead className="font-bold">Country (Inglés)</TableHead><TableHead className="font-bold">País (Español)</TableHead><TableHead className="font-bold">Nacionalidad</TableHead><TableHead className="font-bold">Idioma</TableHead></TableRow></TableHeader>
+                <TableHeader><TableRow className="bg-muted/50"><TableHead className="font-bold">Country (Inglés)</TableHead><TableHead className="font-bold">País (Español)</TableHead><TableHead className="font-bold">Nacionalidad</TableHead><TableHead className="font-bold">Idioma (Language)</TableHead></TableRow></TableHeader>
                 <TableBody>{countriesExerciseData.map((data, i) => (<TableRow key={i}>
                     <TableCell className="font-bold text-sm">{data.english}</TableCell>
                     <TableCell><Input value={userAnswers[i]?.spanish || ''} onChange={e => setUserAnswers({...userAnswers, [i]: {...(userAnswers[i] || {}), spanish: e.target.value}})} className={cn("h-8 text-xs uppercase", validation[i]?.spanish === 'correct' ? 'border-green-500 bg-green-50/10' : validation[i]?.spanish === 'incorrect' ? 'border-red-500 bg-red-50/10' : '')} autoComplete="off" /></TableCell>
