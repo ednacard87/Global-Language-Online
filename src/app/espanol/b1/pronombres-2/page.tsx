@@ -172,9 +172,9 @@ const ex4Options = [
 ];
 
 const completionPrompts = [
-    { s: "1. Yo (vender) _______ mi carro hace un momento.", a: "yo lo vendí" },
+    { s: "1. Yo (vender) _______ mi carro hace un momento.", a: "yo lo vendi" },
     { s: "2. Tú (enviar) _______ un regalo a ella el sábado.", a: "tu le enviaste" },
-    { s: "3. Ella (buscar) _______ sus llaves por 5 minutos.", a: "ella las buscó" },
+    { s: "3. Ella (buscar) _______ sus llaves por 5 minutos.", a: "ella las busco" },
     { s: "4. Nosotros (comprar) _______ las entradas.", a: "nosotros las compramos" },
     { s: "5. Ellos (traer) _______ el café para mí.", a: "ellos me trajeron" },
     { s: "6. Él (mostrar) _______ las fotos a nosotros.", a: "el nos mostro" },
@@ -193,7 +193,7 @@ const completionPrompts = [
     { s: "19. Ella (escribir) _______ una carta a mí hace 2 años.", a: "ella me escribio" },
     { s: "20. Nosotros (limpiar) _______ la casa ayer.", a: "nosotros la limpiamos" },
     { s: "21. Ellos (vender) _______ su casa la semana pasada.", a: "ellos la vendieron" },
-    { s: "22. Yo (comprar) _______ flores esta mañana.", a: "yo las compré" },
+    { s: "22. Yo (comprar) _______ flores esta mañana.", a: "yo las compre" },
     { s: "23. Tú (enviar) _______ el mensaje temprano.", a: "tu lo enviaste" },
     { s: "24. Ella (buscar) _______ a su novio en la universidad.", a: "ella lo busco" },
     { s: "25. Nosotros (ahorrar) _______ el dinero.", a: "nosotros lo ahorramos" },
