@@ -704,10 +704,10 @@ function Pronombres2ContentInternal() {
                                     <h3 className="text-xl font-black text-primary uppercase">1. Objeto Directo (Lo, La, Los, Las)</h3>
                                     <p>Sustituyen a la cosa o persona que recibe la acción directamente (¿Qué?).</p>
                                     <ul className="list-disc pl-6 space-y-1">
-                                        <li>Veo el celular &rarr; <span className="text-primary font-black">Lo</span> veo.</li>
+                                        <li>Yo veo el celular &rarr; <span className="text-primary font-black">Lo</span> veo.</li>
                                         <li>Yo veo a Juan &rarr; <span className="text-primary font-black">Lo</span> veo.</li>
-                                        <li>Compro las flores &rarr; <span className="text-primary font-black">Las</span> compro.</li>
-                                        <li>Compro la computadora &rarr; <span className="text-primary font-black">La</span> compro.</li>
+                                        <li>Yo compro las flores &rarr; <span className="text-primary font-black">Las</span> compro.</li>
+                                        <li>Yo compro la computadora &rarr; <span className="text-primary font-black">La</span> compro.</li>
                                     </ul>
                                     <p className="font-black text-primary bg-background p-2 rounded inline-block mt-2">VERBOS O.D = Ver - conocer - visitar - ayudar - escuchar -  invitar - llamar - amar</p>
                                 </div>
@@ -716,8 +716,8 @@ function Pronombres2ContentInternal() {
                                     <p>Indican a quién va dirigida la acción (¿A quién?).</p>
                                     <ul className="list-disc pl-6 space-y-1">
                                         <li>Yo Escribo a mi jefe &rarr; <span className="text-brand-purple font-black">Le</span> escribo.</li>
-                                        <li>Envío mensajes a ellos &rarr; <span className="text-brand-purple font-black">Les</span> envío mensajes.</li>
-                                        <li> Yo compro un carro a mi hermana &rarr; <span className="text-brand-purple font-black">Les</span> yo le compro un carro.</li>
+                                        <li>Yo Envío mensajes a ellos &rarr; <span className="text-brand-purple font-black">Les</span> envío mensajes.</li>
+                                        <li>Yo compro un carro a mi hermana &rarr; <span className="text-brand-purple font-black">Les</span> compro un carro.</li>
                                     </ul>
                                     <p className="font-black text-primary bg-background p-2 rounded inline-block mt-2">VERBOS O.I = Escribir - enviar - dar - decir - preguntar - contar - explicar - prometer - gustar - responder - comprar</p>
                                 </div>
