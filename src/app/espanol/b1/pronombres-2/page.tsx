@@ -717,7 +717,7 @@ function Pronombres2ContentInternal() {
                                     <ul className="list-disc pl-6 space-y-1">
                                         <li>Yo Escribo a mi jefe &rarr; <span className="text-brand-purple font-black">Le</span> escribo.</li>
                                         <li>Yo Envío mensajes a ellos &rarr; <span className="text-brand-purple font-black">Les</span> envío mensajes.</li>
-                                        <li>Yo compro un carro a mi hermana &rarr; <span className="text-brand-purple font-black">Les</span> compro un carro.</li>
+                                        <li>Yo compro un carro a mi hermana &rarr; <span className="text-brand-purple font-black">Le</span> compro un carro.</li>
                                     </ul>
                                     <p className="font-black text-primary bg-background p-2 rounded inline-block mt-2">VERBOS O.I = Escribir - enviar - dar - decir - preguntar - contar - explicar - prometer - gustar - responder - comprar</p>
                                 </div>
