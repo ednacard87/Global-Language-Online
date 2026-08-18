@@ -55,11 +55,11 @@ const ICONS_CONFIG: Record<string, React.ElementType> = {
 // --- DATA ---
 
 const plansVocab = [
-    { en: "PROFESSION", es: "PROFESIÓN" }, { en: "TECHNOLOGY", es: "TECNOLOGÍA" }, { en: "FUTURE", es: "FUTURO" },
+    { en: "PROFESSION", es: "PROFESION" }, { en: "TECHNOLOGY", es: "TECNOLOGIA" }, { en: "FUTURE", es: "FUTURO" },
     { en: "PROJECT", es: "PROYECTO" }, { en: "CAREER", es: "CARRERA" }, { en: "CITY", es: "CIUDAD" },
     { en: "ENVIRONMENT", es: "MEDIO AMBIENTE" }, { en: "PLANET", es: "PLANETA" }, { en: "GOAL", es: "META" },
-    { en: "OBJECTIVE", es: "OBJETIVO" }, { en: "PREDICTION", es: "PREDICCIÓN" }, { en: "CHANGE", es: "CAMBIO" },
-    { en: "EVOLUTION", es: "EVOLUCIÓN" }, { en: "ROBOT", es: "ROBOT" }, { en: "ARTIFICIAL INTELLIGENCE", es: "INTELIGENCIA ARTIFICIAL" },
+    { en: "OBJECTIVE", es: "OBJETIVO" }, { en: "PREDICTION", es: "PREDICCION" }, { en: "CHANGE", es: "CAMBIO" },
+    { en: "EVOLUTION", es: "EVOLUCION" }, { en: "ROBOT", es: "ROBOT" }, { en: "ARTIFICIAL INTELLIGENCE", es: "INTELIGENCIA ARTIFICIAL" },
     { en: "JOB", es: "EMPLEO" }, { en: "SUCCESS", es: "ÉXITO" }, { en: "OPPORTUNITY", es: "OPORTUNIDAD" },
     { en: "LIFE", es: "VIDA" }, { en: "DREAM", es: "SUEÑO" },
 ];
@@ -85,48 +85,48 @@ const futureVerbs = [
 ];
 
 const ex1Prompts = [
-    { en: "I will talk to my boss.", answer: ["hablaré con mi jefe", "yo hablaré con mi jefe"] },
-    { en: "You will eat a pizza tonight.", answer: ["comerás una pizza esta noche", "tú comerás una pizza esta noche"] },
-    { en: "She will live in London.", answer: ["vivirá en londres", "ella vivirá en londres"] },
+    { en: "I will talk to my boss.", answer: ["yo hablaré con mi jefe", "yo hablare con mi jefe"] },
+    { en: "You will eat a pizza tonight.", answer: ["tu comerás una pizza esta noche", "tu comeras una pizza esta noche"] },
+    { en: "She will live in London.", answer: ["ella vivirá en londres", "ella vivira en londres"] },
     { en: "We will study for the exam.", answer: ["estudiaremos para el examen", "nosotros estudiaremos para el examen"] },
-    { en: "They will work on the project.", answer: ["trabajarán en el proyecto", "ellos trabajarán en el proyecto"] },
-    { en: "He will travel to Japan next year.", answer: ["viajará a japón el próximo año", "él viajará a japón el año que viene"] },
-    { en: "I will buy a new computer.", answer: ["compraré una computadora nueva", "yo compraré una computadora nueva"] },
-    { en: "We will learn a new language.", answer: ["aprenderemos un idioma nuevo", "aprenderemos un nuevo idioma"] },
-    { en: "She will open the door.", answer: ["abrirá la puerta", "ella abrirá la puerta"] },
-    { en: "They will run in the park.", answer: ["correrán en el parque", "ellos correrán en el parque"] },
-    { en: "You will write a book in the future.", answer: ["escribirás un libro en el futuro", "tú escribirás un libro en el futuro"] },
-    { en: "He will cook a special dinner.", answer: ["cocinará una cena especial", "él cocinará una cena especial"] },
+    { en: "They will work on the project.", answer: ["ellos trabajarán en el proyecto", "ellos trabajaran en el proyecto"] },
+    { en: "He will travel to Japan next year.", answer: ["el viajara a japon el proximo año", "él viajará a japón el año que viene"] },
+    { en: "I will buy a new computer.", answer: ["yo compraré una computadora nueva", "yo comprare una computadora nueva"] },
+    { en: "We will learn a new language.", answer: ["nosotros aprenderemos un idioma nuevo", "nosotrosaprenderemos un nuevo idioma"] },
+    { en: "She will open the door.", answer: ["ella abrirá la puerta", "ella abrira la puerta"] },
+    { en: "They will run in the park.", answer: ["ellos correrán en el parque", "ellos correran en el parque"] },
+    { en: "You will write a book in the future.", answer: ["tu escribiras un libro en el futuro", "tú escribirás un libro en el futuro"] },
+    { en: "He will cook a special dinner.", answer: ["el cocinara una cena especial", "él cocinará una cena especial"] },
 ];
 
 const ex2Prompts = [
-    { en: "I will have a better job.", answer: ["tendré un mejor empleo", "tendré un mejor trabajo"] },
-    { en: "She will do her homework later.", answer: ["hará su tarea más tarde", "ella hará su tarea luego"] },
+    { en: "I will have a better job.", answer: ["yo tendre un mejor empleo", "tendré un mejor trabajo"] },
+    { en: "She will do her homework later.", answer: ["ella hara su tarea mas tarde", "ella hará su tarea luego"] },
     { en: "We will be able to travel soon.", answer: ["podremos viajar pronto", "nosotros podremos viajar pronto"] },
-    { en: "They will say the truth.", answer: ["dirán la verdad", "ellos dirán la verdad"] },
-    { en: "You will leave at 8 o'clock.", answer: ["saldrás a las ocho", "saldrás a las 8"] },
-    { en: "He will put the keys on the table.", answer: ["pondrá las llaves sobre la mesa"] },
-    { en: "I will want more coffee.", answer: ["querré más café", "yo querré más café"] },
-    { en: "They will come to the party.", answer: ["vendrán a la fiesta", "ellos vendrán a la fiesta"] },
-    { en: "We will know the answer tomorrow.", answer: ["sabré la respuesta mañana", "sabremos el resultado mañana"] },
-    { en: "She will have a surprise for you.", answer: ["tendrá una sorpresa para ti"] },
-    { en: "I will do my best.", answer: ["haré mi mejor esfuerzo", "haré lo mejor que pueda"] },
-    { en: "You will be able to speak Spanish.", answer: ["podrás hablar español", "tú podrás hablar español"] },
+    { en: "They will say the truth.", answer: ["ellos diran la verdad", "ellos dirán la verdad"] },
+    { en: "You will leave at 8 o'clock.", answer: ["tu saldras a las ocho en punto", "saldrás a las 8 en punto"] },
+    { en: "He will put the keys on the table.", answer: ["el pondra las llaves sobre la mesa", "él pondrá las llaves sobre la mesa"] },
+    { en: "I will want more coffee.", answer: ["yo querre mas cafe", "yo querré más café"] },
+    { en: "They will come to the party.", answer: ["ellos vendran a la fiesta", "ellos vendrán a la fiesta"] },
+    { en: "We will know the answer tomorrow.", answer: ["nosotros sabremos la respuesta mañana", "nosotros sabremos el resultado mañana"] },
+    { en: "She will have a surprise for you.", answer: ["ella tendra una sorpresa para ti", "ella tendrá una sorpresa para ti"] },
+    { en: "I will do my best.", answer: ["yo hare mi mejor esfuerzo", "yo haré mi mejor esfuerzo"] },
+    { en: "You will be able to speak Spanish.", answer: ["tu podras hablar español", "tú podrás hablar español"] },
 ];
 
 const ex3Prompts = [
-    { en: "Tomorrow it will be sunny.", answer: ["mañana estará soleado"] },
-    { en: "I will have a big project in June.", answer: ["tendré un proyecto grande en junio", "tendré un gran proyecto en junio"] },
-    { en: "She will study architecture at the university.", answer: ["estudiará arquitectura en la universidad"] },
-    { en: "We will do the evolution of the city.", answer: ["haremos la evolución de la ciudad"] },
-    { en: "They will come with more technology.", answer: ["vendrán con más tecnología"] },
-    { en: "I will say my prediction.", answer: ["diré mi predicción", "yo diré mi predicción"] },
-    { en: "He will work in a robot factory.", answer: ["trabajará en una fábrica de robots"] },
-    { en: "You will live your dream.", answer: ["vivirás tu sueño", "tú vivirás tu sueño"] },
-    { en: "We will have success in the career.", answer: ["tendremos éxito en la carrera"] },
-    { en: "They will want a change in the environment.", answer: ["querrán un cambio en el medio ambiente"] },
-    { en: "She will sell her house next month.", answer: ["venderá su casa el próximo mes"] },
-    { en: "I will learn about artificial intelligence.", answer: ["aprenderé sobre inteligencia artificial"] },
+    { en: "Tomorrow it will be sunny.", answer: ["mañana estará soleado" , "mañana estara soleado"] },
+    { en: "I will have a big project in June.", answer: ["yo tendre un proyecto grande en junio", "yo tendré un gran proyecto en junio"] },
+    { en: "She will study architecture at the university.", answer: ["ella estudiará arquitectura en la universidad" , "ella estudiara arquitectura en la universidad"] },
+    { en: "We will do the evolution of the city.", answer: ["nosotros haremos la evolución de la ciudad" , "nosotros haremos la evolucion de la ciudad"] },
+    { en: "They will come with more technology.", answer: ["ellos vendrán con más tecnología" , "ellos vendran con mas tecnologia"] },
+    { en: "I will say my prediction.", answer: ["yo diré mi predicción", "yo dire mi prediccion"] },
+    { en: "He will work in a robot factory.", answer: ["él trabajará en una fábrica de robots" , "el trabajara en una fabrica de robots"] },
+    { en: "You will live your dream.", answer: ["tú vivirás tu sueño", "tu viviras tu sueño"] },
+    { en: "We will have success in the career.", answer: ["nosotros tendremos éxito en la carrera" , "nosotros tendremos exito en la carrera"] },
+    { en: "They will want a change in the environment.", answer: ["ellos querrán un cambio en el medio ambiente" , "ellos querran un cambio en el medio ambiente"] },
+    { en: "She will sell her house next month.", answer: ["ella venderá su casa el próximo mes" , "ella vendera su casa el proximo mes"] },
+    { en: "I will learn about artificial intelligence.", answer: ["yo aprenderé sobre inteligencia artificial", "yo aprendere sobre inteligencia artificial"] },
 ];
 
 const readingData = {
@@ -147,6 +147,9 @@ const choiceExercisesData = [
     { text: "Nosotros _______ (hacer) el proyecto juntos.", options: ["HAREMOS", "HACEREMOS", "HACEMOS"], answer: "HAREMOS" },
     { text: "Tú _______ (poder) hablar español muy bien.", options: ["PODRÁS", "PODERÁS", "PUEDES"], answer: "PODRÁS" },
     { text: "Ella _______ (salir) de viaje el lunes.", options: ["SALDRÁ", "SALIRÁ", "SALE"], answer: "SALDRÁ" },
+    { text: "Nosotros _______ (ir) al parque mañana.", options: ["IREMOS", "IRÉMOS", "VAMOS"], answer: "IREMOS" },
+    { text: "Ustedes _______ (salir) de vacaciones en octubre.", options: ["SALDRÁN", "SALIRÁN", "SALEN"], answer: "SALDRÁN" },
+    { text: "", options: ["", "SALIRÁ", "SALE"], answer: "SALDRÁ" },
 ];
 
 const completionPrompts = [
@@ -185,21 +188,21 @@ const completionPrompts = [
 const translationTextEng = "In the future, technology will change our lives. We will have smart homes and robots will do the housework. I will work in a digital city and I will have many opportunities. The environment will be cleaner and we will use renewable energy. I will travel to other countries and I will learn new cultures. Success will be easy if we study hard.";
 
 const finalNegativePrompts = [
-    { en: "I will not talk to him.", answer: ["no hablaré con él", "yo no hablaré con él"] },
-    { en: "She will not eat meat.", answer: ["no comerá carne", "ella no comerá carne"] },
-    { en: "We will not live here.", answer: ["no viviremos aquí", "nosotros no viviremos aquí"] },
-    { en: "They will not have time.", answer: ["no tendrán tiempo", "ellos no tendrán tiempo"] },
-    { en: "I will not do that.", answer: ["no lo haré", "yo no haré eso"] },
-    { en: "You will not say anything.", answer: ["no dirás nada", "tú no dirás nada"] },
-    { en: "He will not come tomorrow.", answer: ["no vendrá mañana", "él no vendrá mañana"] },
-    { en: "She will not want this.", answer: ["no querrá esto", "ella no querrá esto"] },
+    { en: "I will not talk to him.", answer: ["yo no hablaré con él", "yo no hablare con él"] },
+    { en: "She will not eat meat.", answer: ["ella no comerá carne", "ella no comera carne"] },
+    { en: "We will not live here.", answer: ["no viviremos aquí", "nosotros no viviremos aqui"] },
+    { en: "They will not have time.", answer: ["ellos no tendrán tiempo", "ellos no tendran tiempo"] },
+    { en: "I will not do that.", answer: ["yo no lo haré", "yo no hare eso"] },
+    { en: "You will not say anything.", answer: ["tu no diras nada", "tú no dirás nada"] },
+    { en: "He will not come tomorrow.", answer: ["el no vendra mañana", "él no vendrá mañana"] },
+    { en: "She will not want this.", answer: ["ella no querra esto", "ella no querrá esto"] },
     { en: "We will not be able to go.", answer: ["no podremos ir", "nosotros no podremos ir"] },
-    { en: "They will not leave early.", answer: ["no saldrán temprano", "ellos no saldrán temprano"] },
-    { en: "I will not put the keys there.", answer: ["no pondré las llaves allí", "no pondré las llaves ahí"] },
-    { en: "You will not buy that car.", answer: ["no comprarás ese carro", "no comprarás ese coche"] },
-    { en: "He will not study tonight.", answer: ["no estudiará esta noche", "él no estudiará esta noche"] },
-    { en: "She will not know the truth.", answer: ["no sabrá la verdad", "ella no sabrá la verdad"] },
-    { en: "We will not forget the mission.", answer: ["no olvidaremos la misión", "nosotros no olvidaremos la misión"] },
+    { en: "They will not leave early.", answer: ["ellos no saldran temprano", "ellos no saldrán temprano"] },
+    { en: "I will not put the keys there.", answer: ["yo no pondre las llaves allí", "yo no pondré las llaves ahí"] },
+    { en: "You will not buy that car.", answer: ["tu no compraras ese carro", "tú no comprarás ese coche"] },
+    { en: "He will not study tonight.", answer: ["el no estudiara esta noche", "él no estudiará esta noche"] },
+    { en: "She will not know the truth.", answer: ["ella no sabra la verdad", "ella no sabrá la verdad"] },
+    { en: "We will not forget the mission.", answer: ["nosotros no olvidaremos la mision", "nosotros no olvidaremos la misión"] },
 ];
 
 // --- HELPER COMPONENTS ---
