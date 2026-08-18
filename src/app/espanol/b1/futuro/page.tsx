@@ -149,7 +149,20 @@ const choiceExercisesData = [
     { text: "Ella _______ (salir) de viaje el lunes.", options: ["SALDRÁ", "SALIRÁ", "SALE"], answer: "SALDRÁ" },
     { text: "Nosotros _______ (ir) al parque mañana.", options: ["IREMOS", "IRÉMOS", "VAMOS"], answer: "IREMOS" },
     { text: "Ustedes _______ (salir) de vacaciones en octubre.", options: ["SALDRÁN", "SALIRÁN", "SALEN"], answer: "SALDRÁN" },
-    { text: "", options: ["", "SALIRÁ", "SALE"], answer: "SALDRÁ" },
+    { text: "el lunes yo _____ (comer) sushi", options: ["comeré", "comerá", "como"], answer: "comeré" },
+    { text: "tú _____ (vivir) en una ciudad inteligente", options: ["vivirás", "vivirá", "vives"], answer: "vivirás" },
+    { text: "ella _____ (aprender) a programar", options: ["aprenderá", "aprenderá", "aprende"], answer: "aprenderá" },
+    { text: "nosotros _____ (viajar) a Marte", options: ["viajaremos", "viajarán", "viajamos"], answer: "viajaremos" },
+    { text: "ellos _____ (vender) sus productos por internet", options: ["venderán", "vendrán", "venden"], answer: "venderán" },
+    { text: "en Octubre yo_____ (viajar) al Eje Cafetero", options: ["viajaré", "viajará", "viajo"], answer: "viajaré" },
+    { text: "tú _____ (estudiar) medicina", options: ["estudiarás", "estudiará", "estudio"], answer: "estudiarás" },
+    { text: "ella _____ (trabajar) en una empresa tecnológica", options: ["trabajarán", "trabajaría", "trabaja"], answer: "trabajarán" },
+    { text: "nosotros _____ (descubrir) nuevos planetas", options: ["descubriremos", "descubrirán", "descubrimos"], answer: "descubriremos" },
+    { text: "ellos _____ (crear) soluciones sostenibles", options: ["crearán", "crearan", "crean"], answer: "crearán" },
+    { text: "en el futuro, yo _____ (vivir) en un mundo mejor", options: ["viviré", "vivirá", "vivo"], answer: "viviré" },
+    { text: "el proximo año ella me _____ (llamar) ", options: ["llamará", "llamará", "llama"], answer: "llamará" },
+    { text: "en el futuro, nosotros _____ (vivir) en casas inteligentes", options: ["viviremos", "vivirán", "vivimos"], answer: "viviremos" },
+    { text: "ellos _____ (trabajar) en proyectos innovadores", options: ["trabajarán", "trabajarían", "trabajan"], answer: "trabajarán" },
 ];
 
 const completionPrompts = [
