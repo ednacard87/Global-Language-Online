@@ -37,6 +37,7 @@ import { Separator } from '@/components/ui/separator';
 import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 // --- DATA & CONSTANTS ---
 
@@ -131,15 +132,15 @@ const intExercises = [
 
 const ex1Prompts = [
     { spanish: "TU JUEGAS TENIS EL LUNES", answers: { affirmative: ["you play tennis on monday"], negative: ["you do not play tennis on monday", "you don't play tennis on monday"], interrogative: ["do you play tennis on monday?"], shortAffirmative: ["yes, i do"], shortNegative: ["no, i do not", "no, i don't"] } },
-    { spanish: "NOSOTROS CAMINAMOS EN EL PARQUE", answers: { affirmative: ["we walk in the park"], negative: ["we do not walk in the park", "we don't walk in the park"], interrogative: ["do we walk in the park?"], shortAffirmative: ["yes, we do"], shortNegative: ["no, we do not", "no, we don't"] } },
-    { spanish: "ELLOS VAN A LA UNIVERSIDAD EL SABADO.", answers: { affirmative: ["they go to the university on saturday", "they go to university on saturday"], negative: ["they do not go to the university on saturday", "they don't go to the university on saturday"], interrogative: ["do they go to the university on saturday?"], shortAffirmative: ["yes, they do"], shortNegative: ["no, they do not", "no, they don't"] } },
+    { spanish: "NOSOTROS CAMINAMOS EN EL PARQUE", answers: { affirmative: ["we walk in the park"], negative: ["we do not walk in the park", "we don't walk in the park"], interrogative: ["do we walk in the park?"], shortAffirmative: ["yes, we do"], shortNegative: ["no, i do not", "no, i don't"] } },
+    { spanish: "ELLOS VAN A LA UNIVERSIDAD EL SABADO.", answers: { affirmative: ["they go to the university on saturday", "they go to university on saturday"], negative: ["they do not go to the university on saturday", "they don't go to the university on saturday"], interrogative: ["do they go to the university on saturday?"], shortAffirmative: ["yes, they do"], shortNegative: ["no, i do not", "no, i don't"] } },
     { spanish: "TÚ DUERMES EN LA TARDE", answers: { affirmative: ["you sleep in the afternoon"], negative: ["you do not sleep in the afternoon", "you don't sleep in the afternoon"], interrogative: ["do you sleep in the afternoon?"], shortAffirmative: ["yes, i do"], shortNegative: ["no, i do not", "no, i don't"] } },
-    { spanish: "NOSOTROS COMEMOS CARNE Y ENSALADA", answers: { affirmative: ["we eat meat and salad"], negative: ["we do not eat meat and salad", "we don't eat meat and salad"], interrogative: ["do we eat meat and salad?"], shortAffirmative: ["yes, we do"], shortNegative: ["no, we do not", "no, we don't"] } },
-    { spanish: "ELLOS BEBEN CERVEZA", answers: { affirmative: ["they drink beer"], negative: ["they do not drink beer", "they don't drink beer"], interrogative: ["do they drink beer?"], shortAffirmative: ["yes, they do"], shortNegative: ["no, they do not", "no, they don't"] } },
-    { spanish: "ELLOS VAN A LA IGLESIA EL MIERCOLES", answers: { affirmative: ["they go to the church on wednesday"], negative: ["they do not go to thechurch on wednesday", "they don't go to the church on wednesday"], interrogative: ["do they go to the church on wednesday?"], shortAffirmative: ["yes, they do"], shortNegative: ["no, they do not", "no, they don't"] } },
-    { spanish: "NOSOTROS JUGAMOS FUTBOL LOS SABADOS", answers: { affirmative: ["we play soccer on saturdays", "we play football on saturdays"], negative: ["we do not play soccer on saturdays", "we don't play soccer on saturdays", "we do not play football on saturdays", "we don't play football on saturdays"], interrogative: ["do we play soccer on saturdays?"], shortAffirmative: ["yes, we do"], shortNegative: ["no, we do not", "no, we don't"] } },
+    { spanish: "NOSOTROS COMEMOS CARNE Y ENSALADA", answers: { affirmative: ["we eat meat and salad"], negative: ["we do not eat meat and salad", "we don't eat meat and salad"], interrogative: ["do we eat meat and salad?"], shortAffirmative: ["yes, we do"], shortNegative: ["no, i do not", "no, i don't"] } },
+    { spanish: "ELLOS BEBEN CERVEZA", answers: { affirmative: ["they drink beer"], negative: ["they do not drink beer", "they don't drink beer"], interrogative: ["do they drink beer?"], shortAffirmative: ["yes, they do"], shortNegative: ["no, i do not", "no, i don't"] } },
+    { spanish: "ELLOS VAN A LA IGLESIA EL MIERCOLES", answers: { affirmative: ["they go to the church on wednesday"], negative: ["they do not go to thechurch on wednesday", "they don't go to the church on wednesday"], interrogative: ["do they go to the church on wednesday?"], shortAffirmative: ["yes, they do"], shortNegative: ["no, i do not", "no, i don't"] } },
+    { spanish: "NOSOTROS JUGAMOS FUTBOL LOS SABADOS", answers: { affirmative: ["we play soccer on saturdays", "we play football on saturdays"], negative: ["we do not play soccer on saturdays", "we don't play soccer on saturdays", "we do not play football on saturdays", "we don't play football on saturdays"], interrogative: ["do we play soccer on saturdays?"], shortAffirmative: ["yes, we do"], shortNegative: ["no, i do not", "no, i don't"] } },
     { spanish: "YO VEO PELÍCULAS LOS VIERNES EN LA NOCHE", answers: { affirmative: ["i watch movies on fridays at night", "i see movies on fridays at night"], negative: ["i do not watch movies on fridays at night", "i don't watch movies on fridays at night", "i do not see movies on fridays at night", "i don't see movies on fridays at night"], interrogative: ["do i watch movies on fridays at night?"], shortAffirmative: ["yes, i do"], shortNegative: ["no, i do not", "no, i don't"] } },
-    { spanish: "NOSOTROS TRABAJAMOS LOS DOMINGOS.", answers: { affirmative: ["we work on sundays"], negative: ["we do not work on sundays", "we don't work on sundays"], interrogative: ["do we work on sundays?"], shortAffirmative: ["yes, we do"], shortNegative: ["no, we do not", "no, we don't"] } },
+    { spanish: "NOSOTROS TRABAJAMOS LOS DOMINGOS.", answers: { affirmative: ["we work on sundays"], negative: ["we do not work on sundays", "we don't work on sundays"], interrogative: ["do we work on sundays?"], shortAffirmative: ["yes, we do"], shortNegative: ["no, i do not", "no, i don't"] } },
 ];
 
 const ex2Prompts = [
@@ -180,18 +181,20 @@ const SingleFormExerciseInternal = ({ title, data, onComplete, vocab, formType }
     };
 
     return (
-        <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground">
+        <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground text-left">
             <CardHeader className="flex flex-row items-center justify-between">
                 <div><CardTitle className='dark:text-primary'>{title}</CardTitle><CardDescription>Traduce la frase correctamente.</CardDescription></div>
                 {vocab && (
                     <Popover>
-                        <PopoverTrigger asChild><Button variant="outline" size="sm" className='border-brand-blue border-2'><BookText className="mr-2 h-4 w-4" /> Vocabulary</Button></PopoverTrigger>
+                        <PopoverTrigger asChild><Button variant="outline" size="sm" className='border-brand-blue border-2 animate-border-pulse'><BookText className="mr-2 h-4 w-4" /> Vocabulary</Button></PopoverTrigger>
                         <PopoverContent className="w-64">
-                            <div className="grid grid-cols-2 gap-2 text-sm text-foreground text-left">
-                                {Object.entries(vocab).map(([es, en]: any) => (
-                                    <React.Fragment key={es}><span className="text-muted-foreground capitalize">{es}:</span><span className="font-bold text-right">{en}</span></React.Fragment>
-                                ))}
-                            </div>
+                            <ScrollArea className="h-48 pr-4">
+                                <div className="grid grid-cols-2 gap-2 text-sm text-foreground text-left">
+                                    {Object.entries(vocab).map(([es, en]: any) => (
+                                        <React.Fragment key={es}><span className="text-muted-foreground capitalize">{es}:</span><span className="font-bold text-right">{en}</span></React.Fragment>
+                                    ))}
+                                </div>
+                            </ScrollArea>
                         </PopoverContent>
                     </Popover>
                 )}
@@ -201,8 +204,11 @@ const SingleFormExerciseInternal = ({ title, data, onComplete, vocab, formType }
                 <Input value={answer} onChange={e => setAnswer(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleCheck()} className={cn("h-12 text-lg text-foreground", status === 'correct' ? 'border-green-500 bg-green-50/5' : status === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} placeholder="Tu traducción..." autoComplete="off" />
             </CardContent>
             <CardFooter className="justify-between border-t pt-6">
-                <Button onClick={handleCheck} variant="secondary">Verificar</Button>
-                <Button onClick={handleNext} disabled={status !== 'correct'} className='text-white font-bold'>Siguiente <ArrowRight className="ml-2 h-4 w-4" /></Button>
+                <Button variant="outline" onClick={() => setCurrentIndex(p => Math.max(0, p - 1))} disabled={currentIndex === 0}>Anterior</Button>
+                <div className="flex gap-2">
+                    <Button onClick={handleCheck} variant="secondary">Verificar</Button>
+                    <Button onClick={handleNext} disabled={status !== 'correct'} className='text-white font-bold'>Siguiente <ArrowRight className="ml-2 h-4 w-4" /></Button>
+                </div>
             </CardFooter>
         </Card>
     );
@@ -253,17 +259,19 @@ const MultiFormExerciseInternal = ({ title, prompts, onComplete, vocabulary, sho
     return (
         <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground">
             <CardHeader>
-                <div className="flex justify-between items-start">
+                <div className="flex justify-between items-start text-left">
                     <div><CardTitle className='dark:text-primary'>{title}</CardTitle><CardDescription>Traduce la frase en todas sus formas gramaticales.</CardDescription></div>
                     {showVocab && vocabulary && (
                         <Popover>
-                            <PopoverTrigger asChild><Button variant="outline" size="sm" className='border-brand-blue border-2 animate-border-pulse'><BookText className="mr-2 h-4 w-4" /> Vocabulary</Button></PopoverTrigger>
+                            <PopoverTrigger asChild><Button variant="outline" size="sm" className='border-brand-blue border-2 animate-border-pulse text-foreground'><BookText className="mr-2 h-4 w-4" /> Vocabulary</Button></PopoverTrigger>
                             <PopoverContent className="w-64">
-                                <div className="grid grid-cols-2 gap-2 text-sm text-foreground text-left">
-                                    {Object.entries(vocabulary).map(([es, en]: any) => (
-                                        <React.Fragment key={es}><span className="text-muted-foreground capitalize">{es}:</span><span className="font-bold text-right">{en}</span></React.Fragment>
-                                    ))}
-                                </div>
+                                <ScrollArea className="h-48 pr-4">
+                                    <div className="grid grid-cols-2 gap-2 text-sm text-foreground text-left">
+                                        {Object.entries(vocabulary).map(([es, en]: any) => (
+                                            <React.Fragment key={es}><span className="text-muted-foreground capitalize">{es}:</span><span className="font-bold text-right">{en}</span></React.Fragment>
+                                        ))}
+                                    </div>
+                                </ScrollArea>
                             </PopoverContent>
                         </Popover>
                     )}
@@ -307,6 +315,7 @@ const MultiFormExerciseInternal = ({ title, prompts, onComplete, vocabulary, sho
 // --- MAIN CLASS COMPONENT ---
 
 export default function Class2Content() {
+    const { t } = useTranslation();
     const { toast } = useToast();
     const { user, isUserLoading } = useUser();
     const firestore = useFirestore();
@@ -353,8 +362,8 @@ export default function Class2Content() {
         let savedST = '';
         if (isAdmin) {
             path.forEach(item => { item.status = 'completed'; if (item.subItems) item.subItems.forEach(s => s.status = 'completed'); });
-        } else if(studentProfile?.lessonProgress?.[progressStorageKey]) {
-            const d = studentProfile.lessonProgress[progressStorageKey];
+        } else if(studentProfile?.lessonProgress?.[progressStorageVersion]) {
+            const d = studentProfile.lessonProgress[progressStorageVersion];
             path.forEach(item => {
                 if (d[item.key]) item.status = d[item.key];
                 if (item.subItems && d.subItems?.[item.key]) {
@@ -389,7 +398,8 @@ export default function Class2Content() {
         }
 
         setLearningPath(path);
-        setSelectedTopic(savedST || path.find(p => p.status === 'active')?.key || path.flatMap(p => p.subItems || []).find(sp => sp?.status === 'active')?.key || 'vocabulary');
+        const firstA = path.find(p => p.status === 'active') || path.flatMap(p => p.subItems || []).find(sp => sp?.status === 'active');
+        setSelectedTopic(savedST || firstA?.key || path[0]?.key || 'vocabulary');
         setIsInitialLoading(false);
     }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading, isUserLoading]);
 
@@ -414,7 +424,7 @@ export default function Class2Content() {
                 item.subItems.forEach(sub => { data.subItems[item.key][sub.key] = sub.status; });
             }
         });
-        updateDocumentNonBlocking(studentDocRef, { [`lessonProgress.${progressStorageKey}`]: data, [`progress.${mainProgressKey}`]: progressValue });
+        updateDocumentNonBlocking(studentDocRef, { [`lessonProgress.${progressStorageVersion}`]: data, [`progress.${mainProgressKey}`]: progressValue });
         if (progressValue >= 100) window.dispatchEvent(new CustomEvent('progressUpdated'));
     }, [learningPath, isAdmin, progressValue, studentDocRef, selectedTopic, isInitialLoading, studentProfile]);
 
@@ -431,9 +441,9 @@ export default function Class2Content() {
                 if (curT.key === topicToComplete) {
                     if (curT.status !== 'completed') curT.status = 'completed';
                     if (i + 1 < newP.length && newP[i + 1].status === 'locked') {
-                        const n = newP[i + 1]; n.status = 'active'; wasUnlocked = true;
-                        nextToSel = n.subItems?.[0]?.key || n.key;
-                        if (n.subItems?.[0]) n.subItems[0].status = 'active';
+                        const nextM = newP[i + 1]; nextM.status = 'active'; wasUnlocked = true;
+                        nextToSel = nextM.subItems?.[0]?.key || nextM.key;
+                        if (nextM.subItems?.[0]) nextM.subItems[0].status = 'active';
                     }
                     found = true;
                 } else if (curT.subItems) {
@@ -441,14 +451,14 @@ export default function Class2Content() {
                     if (subIdx !== -1) {
                         if (curT.subItems[subIdx].status !== 'completed') curT.subItems[subIdx].status = 'completed';
                         const nextSubIdx = subIdx + 1;
-                        if (nextSubIdx < newP[i].subItems!.length && newP[i].subItems![nextSubIdx].status === 'locked') {
-                            newP[i].subItems![nextSubIdx].status = 'active'; nextToSel = newP[i].subItems![nextSubIdx].key; wasUnlocked = true;
-                        } else if (newP[i].subItems!.every((sub: any) => sub.status === 'completed')) {
+                        if (nextSubIdx < curT.subItems.length && curT.subItems[nextSubIdx].status === 'locked') {
+                            curT.subItems[nextSubIdx].status = 'active'; nextToSel = curT.subItems[nextSubIdx].key; wasUnlocked = true;
+                        } else if (curT.subItems.every((sub: any) => sub.status === 'completed')) {
                             if (curT.status !== 'completed') curT.status = 'completed';
                             if (i + 1 < newP.length && newP[i + 1].status === 'locked') {
-                                const n = newP[i + 1]; n.status = 'active'; wasUnlocked = true;
-                                nextToSel = n.subItems?.[0]?.key || n.key;
-                                if (n.subItems?.[0]) n.subItems[0].status = 'active';
+                                const nextM = newP[i + 1]; nextM.status = 'active'; wasUnlocked = true;
+                                nextToSel = nextM.subItems?.[0]?.key || nextM.key;
+                                if (nextM.subItems?.[0]) nextM.subItems[0].status = 'active';
                             }
                         }
                         found = true;
@@ -593,7 +603,7 @@ export default function Class2Content() {
                             {learningPath.map(item => (
                                 <li key={item.key}>
                                     {!item.subItems ? (
-                                        <div onClick={() => handleTopicSelect(item.key)} className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer text-foreground', (item.status === 'locked' && !isAdmin) ? 'text-muted-foreground/50' : 'hover:bg-muted', selectedTopic === item.key && 'bg-muted text-primary font-bold')}>
+                                        <div onClick={() => handleTopicSelect(item.key)} className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer text-foreground', (item.status === 'locked' && !isAdmin) ? 'text-muted-foreground/50' : 'hover:bg-muted', selectedTopic === item.key && (item.status !== 'locked' || isAdmin) && 'bg-muted text-primary font-bold')}>
                                             <div className="flex items-center gap-3">{(item.status === 'completed') ? <CheckCircle className="h-5 w-5 text-green-500" /> : <item.icon className="h-5 w-5" />}<span>{item.name}</span></div>
                                             {(item.status === 'locked' && !isAdmin) && <Lock className="h-4 w-4 text-yellow-500" />}
                                         </div>
