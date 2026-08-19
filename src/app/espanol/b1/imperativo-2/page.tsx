@@ -530,16 +530,19 @@ function Imperativo2ContentInternal() {
                                 <h3 className="text-xl font-black text-primary uppercase mb-4">1. Formas Básicas</h3>
                                 <div className='grid md:grid-cols-2 gap-4'>
                                     <div className='p-4 bg-green-500/5 rounded-xl border border-green-500/20'>
-                                        <p className='text-green-600 mb-1'>AFIRMATIVO (+)</p>   
-                                        <p className='text-2xl font-black'> (Tú )      = Come verduras.</p>
-                                        <p className='text-2xl font-black'> (usted )   = Coma verduras.</p>
-                                        <p className='text-2xl font-black'> (ustedes ) = Coman verduras.</p>
+                                        <p className='text-green-600 mb-1'>AFIRMATIVO (+)</p> <br />
+                                        <p className='text-1xl font-black'> (Tú - Verbo ar )      = habla español.</p>
+                                        <p className='text-1xl font-black'> (usted - Verbo ar)    = hable español.</p>
+                                        <p className='text-1xl font-black'> (ustedes - Verbo ar ) = hablen español.</p> <br />
+                                        <p className='text-1xl font-black'> (Tú - Verbo er/ir )      = Come verduras.</p>
+                                        <p className='text-1xl font-black'> (usted - Verbo er/ir )   = Coma verduras.</p>
+                                        <p className='text-1xl font-black'> (ustedes - Verbo er/ir ) = Coman verduras.</p>
                                     </div>
                                     <div className='p-4 bg-red-500/5 rounded-xl border border-red-500/20'>
-                                        <p className='text-red-600 mb-1'>NEGATIVO (-)</p>
-                                        <p className='text-2xl font-black'> (Tú )      = No comas azúcar.</p>
-                                        <p className='text-2xl font-black'> (usted )   = No coma azúcar.</p>
-                                        <p className='text-2xl font-black'> (ustedes ) = No coman azúcar.</p>
+                                        <p className='text-red-600 mb-1'>NEGATIVO (-)</p> <br />
+                                        <p className='text-2xl font-black mt-2'> (Tú - Verbo er/ir )      = No comas azúcar.</p>
+                                        <p className='text-2xl font-black mt-2'> (usted - Verbo er/ir )   = No coma azúcar.</p>
+                                        <p className='text-2xl font-black mt-2'> (ustedes - Verbo er/ir ) = No coman azúcar.</p>
                                     </div>
                                 </div>
                             </div>
