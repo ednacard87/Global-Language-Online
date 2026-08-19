@@ -45,7 +45,7 @@ import { VocabularyMatchingGame } from '@/components/dashboard/vocabulary-matchi
 import { Textarea } from '@/components/ui/textarea';
 
 // --- CONFIGURACIÓN DE INGENIERÍA ---
-const progressStorageVersion = 'progress_es_b1_imp_2_v2_final_stable';
+const progressStorageVersion = 'progress_es_b1_imp_2_v27_final_stable';
 const mainProgressKey = 'progress_b1_es_imperativo_2';
 
 interface Topic {
@@ -55,7 +55,7 @@ interface Topic {
   status: 'completed' | 'active' | 'locked';
 }
 
-const ICONS_CONFIG: Record<string, React.ElementType> = {
+const ICONS_CONFIG = {
     locked: Lock,
     active: BookOpen,
     completed: CheckCircle,
@@ -78,36 +78,36 @@ const healthVocab = [
 ];
 
 const conjugationVerbs = [
-    { en: "EAT", es: "COMER", aff: "COME / COMA", neg: "NO COMAS / NO COMA" },
-    { en: "DRINK", es: "BEBER", aff: "BEBE / BEBA", neg: "NO BEBAS / NO BEBA" },
-    { en: "WALK", es: "CAMINAR", aff: "CAMINA / CAMINE", neg: "NO CAMINES / NO CAMINE" },
-    { en: "SLEEP", es: "DORMIR", aff: "DUERME / DUERMA", neg: "NO DUERMAS / NO DUERMA" },
-    { en: "DO", es: "HACER", aff: "HAZ / HAGA", neg: "NO HAGAS / NO HAGA" },
-    { en: "GO", es: "IR", aff: "VE / VAYA", neg: "NO VAYAS / NO VAYA" },
-    { en: "TAKE", es: "TOMAR", aff: "TOMA / TOME", neg: "NO TOMES / NO TOME" },
-    { en: "SAY", es: "DECIR", aff: "DI / DIGA", neg: "NO DIGAS / NO DIGA" },
-    { en: "COME", es: "VENIR", aff: "VEN / VENGA", neg: "NO VENGAS / NO VENGA" },
-    { en: "PUT", es: "PONER", aff: "PON / PONGA", neg: "NO PONGAS / NO PONGA" },
-    { en: "LEAVE", es: "SALIR", aff: "SAL / SALGA", neg: "NO SALGAS / NO SALGA" },
-    { en: "HAVE", es: "TENER", aff: "TEN / TENGA", neg: "NO TENGAS / NO TENGA" },
-    { en: "LISTEN", es: "ESCUCHAR", aff: "ESCUCHA / ESCUCHE", neg: "NO ESCUCHES / NO ESCUCHE" },
-    { en: "READ", es: "LEER", aff: "LEE / LEA", neg: "NO LEAS / NO LEA" },
-    { en: "WRITE", es: "ESCRIBIR", aff: "ESCRIBE / ESCRIBA", neg: "NO ESCRIBAS / NO ESCRIBA" },
-    { en: "RUN", es: "CORRER", aff: "CORRE / CORRA", neg: "NO CORRAS / NO CORRA" },
-    { en: "WASH", es: "LAVAR", aff: "LAVA / LAVE", neg: "NO LAVES / NO LAVE" },
-    { en: "OPEN", es: "ABRIR", aff: "ABRE / ABRA", neg: "NO ABRAS / NO ABRA" },
-    { en: "CLOSE", es: "CERRAR", aff: "CIERRA / CIERRE", neg: "NO CIERRES / NO CIERRE" },
-    { en: "SIT", es: "SENTARSE", aff: "SIÉNTATE / SIÉNTESE", neg: "NO TE SIENTES / NO SE SIENTE" },
-    { en: "GET UP", es: "LEVANTARSE", aff: "LEVÁNTATE / LEVÁNTESE", neg: "NO TE LEVANTES / NO SE LEVANTE" },
-    { en: "BUY", es: "COMPRAR", aff: "COMPRA / COMPRE", neg: "NO COMPRES / NO COMPRE" },
-    { en: "SELL", es: "VENDER", aff: "VENDE / VENDA", neg: "NO VENDAS / NO VENDA" },
-    { en: "BRING", es: "TRAER", aff: "TRAE / TRAIGA", neg: "NO TRAIGAS / NO TRAIGA" },
-    { en: "PLAY", es: "JUGAR", aff: "JUEGA / JUEGUE", neg: "NO JUEGUES / NO JUEGUE" },
-    { en: "STUDY", es: "ESTUDIAR", aff: "ESTUDIA / ESTUDIE", neg: "NO ESTUDIES / NO ESTUDIE" },
-    { en: "WORK", es: "TRABAJAR", aff: "TRABAJA / TRABAJE", neg: "NO TRABAJES / NO TRABAJE" },
-    { en: "CALL", es: "LLAMAR", aff: "LLAMA / LLAME", neg: "NO LLAMES / NO LLAME" },
-    { en: "GIVE", es: "DAR", aff: "DA / DÉ", neg: "NO DES / NO DÉ" },
-    { en: "WATCH", es: "MIRAR", aff: "MIRA / MIRE", neg: "NO MIRES / NO MIRE" }
+    { en: "EAT", es: "COMER", aff: "come / coma / comamos / coman", neg: "no comas / no coma / no comamos / no coman" },
+    { en: "DRINK", es: "BEBER", aff: "bebe / beba / bebamos / beban", neg: "no bebas / no beba / no bebamos / no beban" },
+    { en: "WALK", es: "CAMINAR", aff: "camina / camine / caminemos / caminen", neg: "no camines / no camine / no caminemos / no caminen" },
+    { en: "SLEEP", es: "DORMIR", aff: "duerme / duerma / durmamos / duerman", neg: "no duermas / no duerma / no durmamos / no duerman" },
+    { en: "DO", es: "HACER", aff: "haz / haga / hagamos / hagan", neg: "no hagas / no haga / no hagamos / no hagan" },
+    { en: "GO", es: "IR", aff: "ve / vaya / vayamos / vayan", neg: "no vayas / no vaya / no vayamos / no vayan" },
+    { en: "TAKE", es: "TOMAR", aff: "toma / tome / tomemos / tomen", neg: "no tomes / no tome / no tomemos / no tomen" },
+    { en: "SAY", es: "DECIR", aff: "di / diga / digamos / digan", neg: "no digas / no diga / no digamos / no digan" },
+    { en: "COME", es: "VENIR", aff: "ven / venga / vengamos / vengan", neg: "no vengas / no venga / no vengamos / no vengan" },
+    { en: "PUT", es: "PONER", aff: "pon / ponga / pongamos / pongan", neg: "no pongas / no ponga / no pongamos / no pongan" },
+    { en: "LEAVE", es: "SALIR", aff: "sal / salga / salgamos / salgan", neg: "no salgas / no salga / no salgamos / no salgan" },
+    { en: "HAVE", es: "TENER", aff: "ten / tenga / tengamos / tengan", neg: "no tengas / no tenga / no tengamos / no tengan" },
+    { en: "LISTEN", es: "ESCUCHAR", aff: "escucha / escuche / escuchemos / escuchen", neg: "no escuches / no escuche / no escuchemos / no escuchen" },
+    { en: "READ", es: "LEER", aff: "lee / lea / leamos / lean", neg: "no leas / no lea / no leamos / no lean" },
+    { en: "WRITE", es: "ESCRIBIR", aff: "escribe / escriba / escribamos / escriban", neg: "no escribas / no escriba / no escribamos / no escriban" },
+    { en: "RUN", es: "CORRER", aff: "corre / corra / corramos / corran", neg: "no corras / no corra / no corramos / no corran" },
+    { en: "WASH", es: "LAVAR", aff: "lava / lave / lavemos / lavan", neg: "no laves / no lave / no lavemos / no lavan" },
+    { en: "OPEN", es: "ABRIR", aff: "abre / abra / abramos / abran", neg: "no abras / no abra / no abramos / no abran" },
+    { en: "CLOSE", es: "CERRAR", aff: "cierra / cierre / cerremos / cierran", neg: "no cierres / no cierre / no cerremos / no cierran" },
+    { en: "SING", es: "CANTAR", aff: "canta / cante / cantemos / canten", neg: "no cantes / no cante / no cantemos / no canten" },
+    { en: "DANCE", es: "BAILAR", aff: "baila / baile / bailemos / bailen", neg: "no bailes / no baile / no bailemos / no bailen" },
+    { en: "PLAY", es: "JUGAR", aff: "juega / juegue / juguemos / jueguen", neg: "no juegues / no juegue / no juguemos / no jueguen" },
+    { en: "THINK", es: "PENSAR", aff: "piensa / piense / pensemos / piensen", neg: "no pienses / no piense / no pensemos / no piensen" },
+    { en: "SERVE", es: "SERVIR", aff: "sirve / sirva / sirvamos / sirvan", neg: "no sirvas / no sirva / no sirvamos / no sirvan" },
+    { en: "ORDER", es: "PEDIR", aff: "pide / pida / pidamos / pidan", neg: "no pidas / no pida / no pidamos / no pidan" },
+    { en: "FOLLOW", es: "SEGUIR", aff: "sigue / siga / sigamos / sigan", neg: "no sigas / no siga / no sigamos / no sigan" },
+    { en: "WORK", es: "TRABAJAR", aff: "trabaja / trabaje / trabajemos / trabajen", neg: "no trabajes / no trabaje / no trabajemos / no trabajen" },
+    { en: "STUDY", es: "ESTUDIAR", aff: "estudia / estudie / estudiemos / estudien", neg: "no estudies / no estudie / no estudiemos / no estudien" },
+    { en: "PREPARE", es: "PREPARAR", aff: "prepara / prepare / preparemos / preparen", neg: "no prepares / no prepare / no preparemos / no preparen" },
+    { en: "CLEAN", es: "LIMPIAR", aff: "limpia / limpie / limpiemos / limpien", neg: "no limpies / no limpie / no limpiemos / no limpien" },
 ];
 
 const ex1Prompts = [
@@ -252,10 +252,6 @@ const BallsExercise = ({ title, prompts, onComplete, vocabulary, isSupervisionMo
         setCurrentIndex(0); setUserAnswers({}); setStatus({});
     }, [prompts]);
 
-    useEffect(() => {
-        // preserve typed answer
-    }, [currentIndex]);
-
     const handleCheck = () => {
         if (isSupervisionMode) return;
         const currentAnswer = userAnswers[currentIndex] || '';
@@ -338,8 +334,8 @@ function Imperativo2ContentInternal() {
     const [canAdvanceVocab, setCanAdvanceVocab] = useState(false);
 
     const [conjIdx, setConjIdx] = useState(0);
-    const [conjAns, setConjAns] = useState<string[]>(Array(4).fill(''));
-    const [conjVal, setConjVal] = useState<any[]>(Array(4).fill('unchecked'));
+    const [conjAns, setConjAns] = useState<string[]>(Array(8).fill(''));
+    const [conjVal, setConjVal] = useState<any[]>(Array(8).fill('unchecked'));
 
     const [optIdx, setOptIdx] = useState(0);
     const [optSolved, setOptSolved] = useState<Record<number, boolean>>({});
@@ -387,6 +383,9 @@ function Imperativo2ContentInternal() {
             const savedData = studentProfile.lessonProgress[progressStorageVersion];
             path.forEach(item => { if (savedData[item.key]) item.status = savedData[item.key]; });
             savedST = savedData.lastSelectedTopic || '';
+            if (savedData.vocabAns) setVocabAns(savedData.vocabAns);
+            if (savedData.transText) setTransText(savedData.transText);
+            if (savedData.readAns) setReadAns(savedData.readAns);
         }
 
         if (!isAdmin || targetStudentId) {
@@ -415,13 +414,21 @@ function Imperativo2ContentInternal() {
         
         const currentSerialized = JSON.stringify({ 
             lastSelectedTopic: selectedTopic, 
-            p: learningPath.map(t => t.status) 
+            p: learningPath.map(t => t.status),
+            v: vocabAns,
+            t: transText,
+            r: readAns
         });
 
         if (currentSerialized === lastSerializedRef.current) return;
 
         const saveTimer = setTimeout(() => {
-            const s: any = { lastSelectedTopic: selectedTopic };
+            const s: any = { 
+                lastSelectedTopic: selectedTopic,
+                vocabAns,
+                transText,
+                readAns
+            };
             learningPath.forEach(item => { s[item.key] = item.status; });
             lastSerializedRef.current = currentSerialized;
             updateDocumentNonBlocking(studentDocRef, { 
@@ -431,7 +438,7 @@ function Imperativo2ContentInternal() {
         }, 2000);
 
         return () => clearTimeout(saveTimer);
-    }, [learningPath, progressValue, selectedTopic, isAdmin, studentDocRef, isInitialLoading, initialLoadComplete, targetStudentId]);
+    }, [learningPath, progressValue, selectedTopic, isAdmin, studentDocRef, isInitialLoading, initialLoadComplete, targetStudentId, vocabAns, transText, readAns]);
 
     useEffect(() => {
         if (!topicToComplete) return;
@@ -465,7 +472,7 @@ function Imperativo2ContentInternal() {
             return; 
         }
         setSelectedTopic(topicKey);
-        if (topicKey === 'grammar') handleTopicCompleteInternal(topicKey);
+        if (topicKey === 'grammar') handleTopicCompleteInternal('grammar');
     };
 
     const handleTopicCompleteInternal = (completedKey: string) => {
@@ -485,16 +492,22 @@ function Imperativo2ContentInternal() {
 
     const handleCheckConj = () => {
         const v = conjugationVerbs[conjIdx];
-        const corrects = [v.aff.split('/')[0].trim(), v.aff.split('/')[1].trim(), v.neg.split('/')[0].trim(), v.neg.split('/')[1].trim()];
-        const nv = conjAns.map((a, i) => corrects[i].toLowerCase() === a.trim().toLowerCase() ? 'correct' : 'incorrect');
+        const corrects = [
+            v.aff.split('/')[0].trim(), v.aff.split('/')[1].trim(), v.aff.split('/')[2].trim(), v.aff.split('/')[3].trim(),
+            v.neg.split('/')[0].trim(), v.neg.split('/')[1].trim(), v.neg.split('/')[2].trim(), v.neg.split('/')[3].trim()
+        ];
+        const nv = conjAns.map((a, i) => {
+            if (!corrects[i]) return 'incorrect';
+            return corrects[i].toLowerCase() === a.trim().toLowerCase() ? 'correct' : 'incorrect';
+        });
         setConjVal(nv);
         if (nv.every(st => st === 'correct')) {
             toast({ title: "¡Excelente!" });
             if (conjIdx < conjugationVerbs.length - 1) {
                 setTimeout(() => {
                     setConjIdx(p => p + 1);
-                    setConjAns(Array(4).fill(''));
-                    setConjVal(Array(4).fill('unchecked'));
+                    setConjAns(Array(8).fill(''));
+                    setConjVal(Array(8).fill('unchecked'));
                 }, 800);
             } else handleTopicCompleteInternal('conjugation');
         } else toast({ variant: 'destructive', title: "Revisa la conjugación" });
@@ -522,7 +535,7 @@ function Imperativo2ContentInternal() {
                     </Card>
                 );
             case 'grammar':
-                return (
+                 return (
                     <Card className="shadow-soft border-2 border-brand-purple bg-slate-100 dark:bg-slate-800/50 p-8 text-left text-foreground overflow-hidden">
                         <CardHeader className='px-0 pb-6 border-b mb-6'><CardTitle className="text-3xl font-black text-primary uppercase">GRAMMAR: EL IMPERATIVO</CardTitle></CardHeader>
                         <CardContent className="space-y-8 px-0 font-bold">
@@ -530,22 +543,32 @@ function Imperativo2ContentInternal() {
                                 <h3 className="text-xl font-black text-primary uppercase mb-4">1. Formas Básicas</h3>
                                 <div className='grid md:grid-cols-2 gap-4'>
                                     <div className='p-4 bg-green-500/5 rounded-xl border border-green-500/20'>
-                                        <p className='text-green-600 mb-2'>AFIRMATIVO (+)</p> <br />
-                                        <p className='text-1xl font-black'> (Tú - Verbo ar )      = habla en español.</p>
-                                        <p className='text-1xl font-black'> (usted - Verbo ar)    = hable en español.</p>
-                                        <p className='text-1xl font-black'> (ustedes - Verbo ar ) = hablen en español.</p> <br />
-                                        <p className='text-1xl font-black'> (Tú - Verbo er/ir )      = Come verduras.</p>
-                                        <p className='text-1xl font-black'> (usted - Verbo er/ir )   = Coma verduras.</p>
-                                        <p className='text-1xl font-black'> (ustedes - Verbo er/ir ) = Coman verduras.</p>
+                                        <p className='text-green-600 mb-2 font-black'>AFIRMATIVO (+)</p>
+                                        <p className='text-sm italic mb-4 text-muted-foreground'>Se usa para dar órdenes directas o instrucciones.</p>
+                                        <div className='space-y-2 text-base'>
+                                            <p> (Tú - Verbo ar )      = habla en español.</p>
+                                            <p> (usted - Verbo ar)    = hable en español.</p>
+                                            <p> (ustedes - Verbo ar ) = hablen en español.</p><br />
+                                            <p> (Tú - Verbo er/ir )      = Come verduras.</p>
+                                            <p> (usted - Verbo er/ir )   = Coma verduras.</p>
+                                            <p> (ustedes - Verbo er/ir ) = Coman verduras.</p>
+                                            <Separator />
+                                            <p className='text-primary'>¡Estudia Español!</p>
+                                        </div>
                                     </div>
                                     <div className='p-4 bg-red-500/5 rounded-xl border border-red-500/20'>
-                                        <p className='text-red-600 mb-2'>NEGATIVO (-)</p> <br />
-                                        <p className='text-1xl font-black'> (Tú - Verbo ar )      = No hables en inglés.</p>
-                                        <p className='text-1xl font-black'> (usted - Verbo ar)    = No hable en inglés.</p>
-                                        <p className='text-1xl font-black'> (ustedes - Verbo ar ) = No hablen en inglés.</p> <br />
-                                        <p className='text-1xl font-black'> (Tú - Verbo er/ir )      = No comas azúcar.</p>
-                                        <p className='text-1xl font-black'> (usted - Verbo er/ir )   = No coma azúcar.</p>
-                                        <p className='text-1xl font-black'> (ustedes - Verbo er/ir ) = No coman azúcar.</p>
+                                        <p className='text-red-600 mb-2 font-black'>NEGATIVO (-)</p>
+                                        <p className='text-sm italic mb-4 text-muted-foreground'>Para prohibiciones. ¡Atención! Cambia la terminación.</p>
+                                        <div className='space-y-2 text-base'>
+                                            <p> (Tú) - No hables en inglés.</p>
+                                            <p> (Usted) - No hable en inglés.</p>
+                                            <p> (Ustedes) - No hablen en inglés.</p><br />
+                                            <p> (Tú)      = No comas verduras.</p>
+                                            <p> (usted)   = No coma verduras.</p>
+                                            <p> (ustedes) = No coman verduras.</p>
+                                            <Separator />
+                                            <p className='text-destructive'>¡No te rindas!</p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -553,13 +576,45 @@ function Imperativo2ContentInternal() {
                                 <h3 className="text-xl font-black text-brand-purple uppercase mb-4">2. Uso de Pronombres (Objetos)</h3>
                                 <div className='space-y-4 font-mono'>
                                     <div className='p-4 border rounded-xl bg-card'>
-                                        <p className='text-primary'>Afirmativo: Verbo + Pronombre (pegado)</p>
+                                        <p className='text-primary font-black'>Afirmativo: Verbo + Pronombre (Pegado)</p>
                                         <p className='text-2xl font-black mt-2'>¡Tómalo!</p>
                                     </div>
                                     <div className='p-4 border rounded-xl bg-card'>
-                                        <p className='text-brand-purple'>Negativo: NO + Pronombre + Verbo (separado)</p>
+                                        <p className='text-brand-purple font-black'>Negativo: NO + Pronombre + Verbo (Separado)</p>
                                         <p className='text-2xl font-black mt-2'>¡No lo tomes!</p>
                                     </div>
+                                </div>
+                            </div>
+                            <div className="p-6 bg-white/60 dark:bg-background/20 rounded-[2rem] border shadow-sm">
+                                <h3 className="text-xl font-black text-orange-500 uppercase mb-4">3. Imperativos Irregulares (Tú)</h3>
+                                <div className='p-1 border rounded-xl overflow-hidden'>
+                                    <Table>
+                                        <TableHeader className='bg-muted/50'>
+                                            <TableRow>
+                                                <TableHead className='font-black text-foreground'>Infinitivo</TableHead>
+                                                <TableHead className='font-black text-green-600'>Afirmativo (+)</TableHead>
+                                                <TableHead className='font-black text-red-600'>Negativo (-)</TableHead>
+                                            </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {[
+                                                {v: "Decir", a: "Di", n: "No digas"},
+                                                {v: "Hacer", a: "Haz", n: "No hagas"},
+                                                {v: "Ir", a: "Ve", n: "No vayas"},
+                                                {v: "Poner", a: "Pon", n: "No pongas"},
+                                                {v: "Salir", a: "Sal", n: "No salgas"},
+                                                {v: "Ser", a: "Sé", n: "No seas"},
+                                                {v: "Tener", a: "Ten", n: "No tengas"},
+                                                {v: "Venir", a: "Ven", n: "No vengas"}
+                                            ].map((item, i) => (
+                                                <TableRow key={i}>
+                                                    <TableCell className='font-bold text-foreground'>{item.v}</TableCell>
+                                                    <TableCell className='text-green-600 font-black text-lg'>{item.a}</TableCell>
+                                                    <TableCell className='text-red-600 font-black text-lg'>{item.n}</TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
                                 </div>
                             </div>
                         </CardContent>
@@ -567,16 +622,25 @@ function Imperativo2ContentInternal() {
                     </Card>
                 );
             case 'conjugation':
-                const v = conjugationVerbs[conjIdx];
+                const verb = conjugationVerbs[conjIdx];
                 return (
                     <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left overflow-hidden">
-                        <CardHeader className='bg-primary/5 border-b'><CardTitle className='text-primary uppercase tracking-tighter'>Conjugación: Imperativo ({conjIdx+1}/30)</CardTitle><CardDescription>Escribe las formas de 'Tú' y 'Usted' en afirmativo y negativo.</CardDescription></CardHeader>
+                        <CardHeader className='bg-primary/5 border-b'><CardTitle className='text-primary uppercase tracking-tighter'>Conjugación: Imperativo ({conjIdx+1}/30)</CardTitle></CardHeader>
                         <CardContent className="space-y-8 pt-8 flex flex-col items-center">
-                            <div className="p-8 bg-gradient-to-br from-primary/5 to-brand-purple/5 rounded-[2.5rem] border-2 border-dashed border-primary/20 text-center"><h3 className="text-5xl font-black text-primary uppercase tracking-tighter">{v.es}</h3></div>
-                            <div className='grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-xl text-foreground'>
-                                {["TÚ (+)", "USTED (+)", "TÚ (-)", "USTED (-)"].map((p, i) => (
-                                    <div key={i} className='space-y-1'><Label className='text-[10px] font-black uppercase text-muted-foreground'>{p}</Label><Input value={conjAns[i] || ''} onChange={e => { if (targetStudentId) return; const na = [...conjAns]; na[i] = e.target.value; setConjAns(na); const nv = [...conjVal]; nv[i] = 'unchecked'; setConjVal(nv); }} className={cn("h-10 text-lg uppercase transition-all", conjVal[i] === 'correct' ? 'border-green-500 bg-green-50/10' : conjVal[i] === 'incorrect' ? 'border-red-500 bg-red-50/10' : '')} autoComplete="off" readOnly={!!targetStudentId} /></div>
-                                ))}
+                            <div className="p-8 bg-gradient-to-br from-primary/5 to-brand-purple/5 rounded-[2.5rem] border-2 border-dashed border-primary/20 text-center"><h3 className="text-5xl font-black text-primary uppercase tracking-tighter">{verb.es} ({verb.en})</h3></div>
+                            <div className='grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-2xl mx-auto'>
+                                <div className='space-y-4'>
+                                    <h4 className='text-green-600 font-black uppercase text-center border-b pb-2'>Afirmativo (+)</h4>
+                                    {["TÚ", "USTED", "NOSOTROS", "USTEDES"].map((p, i) => (
+                                        <div key={i} className='space-y-1'><Label className='text-[10px] font-black uppercase text-muted-foreground'>{p}</Label><Input value={conjAns[i] || ''} onChange={e => { if (targetStudentId) return; const na = [...conjAns]; na[i] = e.target.value; setConjAns(na); const nv = [...conjVal]; nv[i] = 'unchecked'; setConjVal(nv); }} className={cn("h-10 text-lg uppercase transition-all", conjVal[i] === 'correct' ? 'border-green-500 bg-green-50/10' : conjVal[i] === 'incorrect' ? 'border-red-500 bg-red-50/10' : '')} autoComplete="off" readOnly={!!targetStudentId} /></div>
+                                    ))}
+                                </div>
+                                <div className='space-y-4'>
+                                    <h4 className='text-red-600 font-black uppercase text-center border-b pb-2'>Negativo (-)</h4>
+                                    {["TÚ", "USTED", "NOSOTROS", "USTEDES"].map((p, i) => (
+                                        <div key={i+4} className='space-y-1'><Label className='text-[10px] font-black uppercase text-muted-foreground'>{p}</Label><Input value={conjAns[i+4] || ''} onChange={e => { if (targetStudentId) return; const na = [...conjAns]; na[i+4] = e.target.value; setConjAns(na); const nv = [...conjVal]; nv[i+4] = 'unchecked'; setConjVal(nv); }} className={cn("h-10 text-lg uppercase transition-all", conjVal[i+4] === 'correct' ? 'border-green-500 bg-green-50/10' : conjVal[i+4] === 'incorrect' ? 'border-red-500 bg-red-50/10' : '')} autoComplete="off" readOnly={!!targetStudentId} /></div>
+                                    ))}
+                                </div>
                             </div>
                         </CardContent>
                         <CardFooter className="justify-center border-t p-8 bg-muted/5"><Button onClick={handleCheckConj} size="lg" className="px-20 font-black h-14 text-xl shadow-xl uppercase">Verificar Verbo</Button></CardFooter>
@@ -588,7 +652,7 @@ function Imperativo2ContentInternal() {
             case 'exercise_3': return <BallsExercise title="Exercise 3: Mixed Challenge" prompts={ex3Prompts} onComplete={() => handleTopicCompleteInternal('exercise_3')} vocabulary={{"early": "temprano", "tonight": "esta noche", "neighbor": "vecino"}} isSupervisionMode={!!targetStudentId} isAdmin={isAdmin} />;
             case 'reading':
                 return (
-                    <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left">
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 text-foreground text-left">
                         <CardHeader><CardTitle>{readingData.title}</CardTitle></CardHeader>
                         <CardContent className="space-y-6 pt-6">
                             <div className="p-6 bg-muted rounded-2xl border italic text-lg leading-relaxed shadow-inner text-foreground">{readingData.content}</div>
@@ -642,10 +706,22 @@ function Imperativo2ContentInternal() {
             case 'translate':
                 return (
                     <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground text-left">
-                        <CardHeader><div className="flex justify-between items-start"><div><CardTitle className='text-primary uppercase'>Traducción de Texto: Health Advice</CardTitle><CardDescription className='font-bold text-foreground'>Traduce el párrafo al español.</CardDescription></div><Popover><PopoverTrigger asChild><Button variant="outline" size="sm" className="border-2 border-brand-blue animate-border-pulse"><BookText className="mr-2 h-4 w-4" /> Vocabulario</Button></PopoverTrigger><PopoverContent className="w-64"><ScrollArea className="h-48 pr-4 text-foreground"><div className="grid grid-cols-2 gap-2 text-sm">{Object.entries({"healthy": "saludable", "rest": "descansar", "medicine": "medicina", "avoid": "evitar", "habits": "hábitos", "lifestyle": "estilo de vida"}).map(([en, es], i) => (<div key={i} className="flex justify-between text-xs border-b pb-1"><span className="text-muted-foreground">{en}:</span><span className="font-bold text-primary">{es}</span></div>))}</div></ScrollArea></PopoverContent></Popover></div></CardHeader>
+                        <CardHeader><div className="flex justify-between items-start"><div><CardTitle className='text-primary uppercase'>Traducción de Texto: Medical Advice</CardTitle><CardDescription className='font-bold text-foreground'>Traduce el párrafo al español.</CardDescription></div><Popover><PopoverTrigger asChild><Button variant="outline" size="sm" className="border-2 border-brand-blue animate-border-pulse shrink-0"><BookText className="mr-2 h-4 w-4" /> Vocabulario</Button></PopoverTrigger><PopoverContent className="w-64">
+                            <ScrollArea className="h-48 pr-4 text-foreground">
+                                <div className="flex flex-col gap-2">
+                                    <div className="flex justify-between text-xs border-b pb-1"><span>Healthy:</span> <span className="font-bold">saludable</span></div>
+                                    <div className="flex justify-between text-xs border-b pb-1"><span>Should:</span> <span className="font-bold">debería</span></div>
+                                    <div className="flex justify-between text-xs border-b pb-1"><span>Fruits:</span> <span className="font-bold">frutas</span></div>
+                                    <div className="flex justify-between text-xs border-b pb-1"><span>Drink:</span> <span className="font-bold">beber</span></div>
+                                    <div className="flex justify-between text-xs border-b pb-1"><span>Worry:</span> <span className="font-bold">preocuparse</span></div>
+                                    <div className="flex justify-between text-xs border-b pb-1"><span>Lifestyle:</span> <span className="font-bold">estilo de vida</span></div>
+                                    <div className="flex justify-between text-xs border-b pb-1"><span>Appointment:</span> <span className="font-bold">cita</span></div>
+                                </div>
+                            </ScrollArea>
+                        </PopoverContent></Popover></div></CardHeader>
                         <CardContent className="space-y-6 pt-6">
-                            <div className="p-6 bg-muted/50 rounded-2xl border italic text-lg leading-relaxed shadow-sm text-foreground">"If you want a healthy life, follow these instructions. First, eat more vegetables and don't drink soda. Exercise for thirty minutes every day and rest enough. Take your medicine and visit the doctor twice a year. Change your bad habits and avoid stress. This is the best way to improve your lifestyle."</div>
-                            <Separator /><div className="space-y-2"><Label className='font-black text-primary uppercase text-sm'>Tu Traducción:</Label><Textarea value={transText} onChange={(e) => { if (!targetStudentId) setTransText(e.target.value); }} placeholder="Escribe el texto en español aquí..." className="min-h-[250px] text-lg text-foreground" readOnly={!!targetStudentId} /></div>
+                            <div className="p-6 bg-muted/50 rounded-2xl border italic text-lg leading-relaxed shadow-sm text-foreground">"If you want to be healthy, follow these instructions. First, eat more fruit and vegetables. Don't drink too much soda and don't smoke. Exercise every day and rest eight hours. Take your medicine on time and call the doctor if you have symptoms. Improve your lifestyle today!"</div>
+                            <Separator /><div className="space-y-2"><Label className='font-black text-primary uppercase text-sm'>Tu Traducción:</Label><Textarea value={transText} onChange={(e) => { if (targetStudentId) return; setTransText(e.target.value); }} placeholder="Escribe el texto en español aquí..." className="min-h-[250px] text-lg text-foreground" readOnly={!!targetStudentId} /></div>
                         </CardContent>
                         <CardFooter className="justify-center border-t pt-6 bg-muted/20"><Button onClick={() => handleTopicCompleteInternal('translate')} size="lg" className="px-24 font-black h-16 text-2xl shadow-xl bg-primary hover:bg-primary/90 text-primary-foreground uppercase tracking-tighter">Continuar <ArrowRight className='ml-3 h-8 w-8' /></Button></CardFooter>
                     </Card>
