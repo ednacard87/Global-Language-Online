@@ -142,18 +142,17 @@ const readingData = {
 };
 
 const choiceExercisesData = [
-    { text: "Mañana yo _______ (hablar) con mi profesor.", options: ["HABLARÉ", "HABLARÁ", "HABLARE"], answer: "HABLARÉ" },
-    { text: "Ellos _______ (tener) una casa nueva pronto.", options: ["TENDRÁN", "TENERÁN", "TIENEN"], answer: "TENDRÁN" },
-    { text: "Nosotros _______ (hacer) el proyecto juntos.", options: ["HAREMOS", "HACEREMOS", "HACEMOS"], answer: "HAREMOS" },
-    { text: "Tú _______ (poder) hablar español muy bien.", options: ["PODRÁS", "PODERÁS", "PUEDES"], answer: "PODRÁS" },
-    { text: "Ella _______ (salir) de viaje el lunes.", options: ["SALDRÁ", "SALIRÁ", "SALE"], answer: "SALDRÁ" },
+    { text: "Mañana yo _______ (hablar) con mi profesor.", options: ["HABLARE", "HABLARÁ", "HABLARÉ"], answer: "HABLARÉ" },
+    { text: "Ellos _______ (tener) una casa nueva pronto.", options: ["TENDRÁ", "TENDRÁN", "TIENEN"], answer: "TENDRÁN" },
+    { text: "Nosotros _______ (hacer) el proyecto juntos.", options: ["HACEMOS", "HACEREMOS", "HAREMOS"], answer: "HAREMOS" },
+    { text: "Tú _______ (poder) hablar español muy bien.", options: ["PODERÁS", "PODRÁS", "PUEDES"], answer: "PODRÁS" },
+    { text: "Ella _______ (salir) de viaje el lunes.", options: ["SALDRÁS", "SALIRÁ", "SALDRÁ"], answer: "SALDRÁ" },
     { text: "Nosotros _______ (ir) al parque mañana.", options: ["IREMOS", "IRÉMOS", "VAMOS"], answer: "IREMOS" },
-    { text: "Ustedes _______ (salir) de vacaciones en octubre.", options: ["SALDRÁN", "SALIRÁN", "SALEN"], answer: "SALDRÁN" },
+    { text: "Ustedes _______ (salir) de vacaciones en octubre.", options: ["SALDRAN", "SALIRÁN", "SALDRÁN"], answer: "SALDRÁN" },
     { text: "el lunes yo _______ (comer) sushi", options: ["comere", "comerá", "comeré"], answer: "comeré" },
     { text: "tú _______ (vivir) en una ciudad inteligente", options: ["vivirá", "vivirás", "vives"], answer: "vivirás" },
     { text: "nosotros _______ (viajar) a Marte", options: ["viajamos", "viajarán", "viajaremos"], answer: "viajaremos" },
     { text: "ellos _______ (vender) sus productos por internet", options: ["vendirán", "venderán", "venden"], answer: "venderán" },
-    { text: "en Octubre yo _______ (viajar) al Eje Cafetero", options: ["viajará", "viajará", "viajaré"], answer: "viajaré" },
     { text: "tú _______ (estudiar) medicina", options: ["estudiaráss", "estudiarás", "estudio"], answer: "estudiarás" },
     { text: "ella _______ (trabajar) en una empresa tecnológica", options: ["trabajarán", "trabajaría", "trabajará"], answer: "trabajará" },
     { text: "nosotros _______ (descubrir) nuevos planetas", options: ["descubrimos", "descubrirán", "descubriremos"], answer: "descubriremos" },
@@ -163,6 +162,7 @@ const choiceExercisesData = [
     { text: "ellos _______ (trabajar) en proyectos innovadores", options: ["trabajarán", "trabajarían", "trabajan"], answer: "trabajarán" },
     { text: "el proximo año ella me _______ (llamar) ", options: ["llamarán", "llamarás", "llamará"], answer: "llamará" },
     { text: "ella _______ (aprender) a programar", options: ["aprenderán", "aprenderá", "aprendá"], answer: "aprenderá" },
+     { text: "en Octubre yo _______ (viajar) al Eje Cafetero", options: ["viajará", "viajará", "viajaré"], answer: "viajaré" },
 ];
 
 const completionPrompts = [
