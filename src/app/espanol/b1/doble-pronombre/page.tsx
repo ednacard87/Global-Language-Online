@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo, useRef, useCallback, Suspense, Fragment } from 'react';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { 
     BookOpen, 
     PenSquare, 
@@ -23,8 +23,8 @@ import {
     X,
     Info,
     Repeat,
-    ListChecks,
-    Gift
+    Gift,
+    ListChecks
 } from 'lucide-react';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -44,7 +44,7 @@ import { VocabularyMatchingGame } from '@/components/dashboard/vocabulary-matchi
 import { Textarea } from '@/components/ui/textarea';
 
 // --- CONFIGURACIÓN DE INGENIERÍA ---
-const progressStorageVersion = 'progress_es_b1_doble_pron_v1_secure';
+const progressStorageVersion = 'progress_es_b1_doble_pron_v2_fixed_val';
 const mainProgressKey = 'progress_b1_es_doble_pronombre';
 
 interface Topic {
@@ -240,8 +240,10 @@ const BallsExercise = ({ title, prompts, onComplete, vocabulary, isSupervisionMo
         if (isSupervisionMode) return;
         const currentAnswer = userAnswers[currentIndex] || '';
         const userVal = currentAnswer.trim().toLowerCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' ');
-        const corrects = prompts[currentIndex]?.answer || [];
+        // CRITICAL FIX: Look for correct answers in both 'answer' and 'es' properties
+        const corrects = prompts[currentIndex]?.answer || prompts[currentIndex]?.es || [];
         const isCorrect = corrects.some((a: string) => (a || '').toLowerCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' ') === userVal);
+        
         setStatus(prev => ({ ...prev, [currentIndex]: isCorrect ? 'correct' : 'incorrect' }));
         if (isCorrect) toast({ title: "¡Buen trabajo!" });
         else toast({ variant: 'destructive', title: "Sigue intentando" });
@@ -273,9 +275,9 @@ const BallsExercise = ({ title, prompts, onComplete, vocabulary, isSupervisionMo
                                 <ScrollArea className="h-48 pr-4 text-left text-foreground">
                                     <div className="flex flex-col gap-2 text-sm">
                                         {Object.entries(vocabulary).map(([en, es]: any) => (
-                                            <div key={en} className="flex flex-col border-b pb-1">
-                                                <span className="text-muted-foreground capitalize text-[10px]">{en}:</span>
-                                                <span className="font-bold text-primary">{String(es || '').toUpperCase()}</span>
+                                            <div key={en} className="flex items-center justify-between border-b pb-1 mb-1 gap-4">
+                                                <span className="text-muted-foreground font-semibold capitalize text-[10px]">{en}:</span>
+                                                <span className="font-bold text-primary text-right">{String(es || '').toUpperCase()}</span>
                                             </div>
                                         ))}
                                     </div>
@@ -360,7 +362,7 @@ const ChoiceExercise = ({ prompts, onComplete, title, isSupervisionMode, isAdmin
             </CardContent>
             <CardFooter className="justify-between border-t pt-6">
                 <Button variant="outline" onClick={() => setCurrentIndex(p => Math.max(0, p - 1))} disabled={currentIndex === 0}>Anterior</Button>
-                <Button onClick={() => currentIndex < prompts.length - 1 ? setCurrentIndex(i => i + 1) : onComplete()} disabled={status[currentIndex] !== 'correct' && !isAdmin} className="px-12 font-black h-12 shadow-xl">Siguiente</Button>
+                <Button onClick={() => currentIndex < prompts.length - 1 ? setCurrentIndex(i => i + 1) : onComplete()} disabled={status[currentIndex] !== 'correct'} className="px-12 font-black h-12 shadow-xl">Siguiente</Button>
             </CardFooter>
         </Card>
     );
@@ -384,7 +386,6 @@ function DoblePronombreContentInternal() {
     const [initialLoadComplete, setInitialLoadComplete] = useState(false);
     
     const hasInitialized = useRef(false);
-    const lastSerializedRef = useRef<string>('');
 
     // Form states
     const [vocabAns, setVocabAns] = useState<string[]>(Array(vocabData.length).fill(''));
@@ -603,8 +604,8 @@ function DoblePronombreContentInternal() {
                 );
             case 'exercise_1': return <BallsExercise title="Ejercicio 1" prompts={ex1Prompts} onComplete={() => handleTopicCompleteInternal('exercise_1')} vocabulary={{"flowers": "flores", "report": "informe", "lend": "prestar", "deal": "trato", "wrap": "envolver"}} isSupervisionMode={!!targetStudentId} isAdmin={isAdmin} />;
             case 'exercise_2': return <ChoiceExercise title="Ejercicio 2: Elección Gramatical" prompts={ex2Options} onComplete={() => handleTopicCompleteInternal('exercise_2')} isSupervisionMode={!!targetStudentId} isAdmin={isAdmin} />;
-            case 'vocab_game': return <VocabularyMatchingGame data={vocabData.map(v => ({ spanish: v.es, english: [v.en] }))} onComplete={() => handleTopicCompleteInternal('vocab_game')} title="Double Pronoun Memory" />;
-            case 'exercise_3': return <BallsExercise title="Ejercicio 3: Posiciones Mixtas" prompts={ex3Prompts} onComplete={() => handleTopicCompleteInternal('exercise_3')} vocabulary={{"wrap": "envolver", "discount": "descuento", "deliver": "entregar"}} isSupervisionMode={!!targetStudentId} isAdmin={isAdmin} />;
+            case 'vocab_game': return <VocabularyMatchingGame data={vocabData.map(v => ({ spanish: v.es, english: [v.en] }))} onComplete={() => handleTopicCompleteInternal('vocab_game')} title="Double Pronombre Memory" />;
+            case 'exercise_3': return <BallsExercise title="Ejercicio 3" prompts={ex3Prompts} onComplete={() => handleTopicCompleteInternal('exercise_3')} vocabulary={{"wrap": "envolver", "discount": "descuento", "deliver": "entregar"}} isSupervisionMode={!!targetStudentId} isAdmin={isAdmin} />;
             case 'reading':
                 return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 text-foreground text-left">
@@ -647,7 +648,7 @@ function DoblePronombreContentInternal() {
                                     <PopoverContent className="w-64">
                                         <ScrollArea className="h-48 pr-4 text-foreground text-left">
                                             <div className="flex flex-col gap-2 text-xs">
-                                                {Object.entries({ "necklace": "collar", "give it to her": "dárselo / se lo voy a dar", "already wrote it": "ya se la escribí", "didn't send it yet": "no se la he enviado todavía", "showing it to him": "mostrándoselo / se lo estoy mostrando", "fast": "rápido" }).map(([en, es], i) => (<div key={i} className="flex flex-col border-b pb-1 mb-1"><span className="text-muted-foreground font-semibold">{en}:</span><span className="font-bold text-primary">{es.toUpperCase()}</span></div>))}
+                                                {Object.entries({ "necklace": "collar", "give it to her": "dárselo / se lo voy a dar", "already wrote it": "ya se la escribí", "didn't send it yet": "no se la he enviado todavía", "showing it to him": "mostrándoselo / se lo estoy mostrando", "fast": "rápido" }).map(([en, es], i) => (<div key={i} className="flex items-center justify-between border-b pb-1 mb-1 gap-4"><span className="text-muted-foreground font-semibold uppercase text-[10px]">{en}:</span><span className="font-bold text-primary text-right">{es.toUpperCase()}</span></div>))}
                                             </div>
                                         </ScrollArea>
                                     </PopoverContent>
