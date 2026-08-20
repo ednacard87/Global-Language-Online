@@ -28,7 +28,6 @@ import {
     HelpCircle,
     MapPin,
     HeartPulse,
-    Book,
     Scale,
     BookText as BookTextIcon
 } from 'lucide-react';
@@ -48,10 +47,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { VocabularyMatchingGame } from '@/components/dashboard/vocabulary-matching-game';
 import { SentenceCompletionExercise, type CompletionPrompt } from '@/components/kids/exercises/sentence-completion-exercise';
-import { DashboardHeader } from '@/components/dashboard/header';
 
 // --- CONFIGURACIÓN DE INGENIERÍA ---
-const progressStorageVersion = 'progress_a2_eng_u1_c1_v19_stable';
+const progressStorageVersion = 'progress_a2_eng_u1_c1_v20_final';
 const mainProgressKey = 'progress_a2_eng_unit_1_class_1';
 
 const ICONS_CONFIG = {
@@ -249,7 +247,9 @@ const BallsExercise = ({ title, prompts, onComplete, vocabulary, isSupervisionMo
     const [status, setStatus] = useState<Record<number, 'correct' | 'incorrect' | 'unchecked'>>({});
 
     useEffect(() => {
-        setCurrentIndex(0); setAnswer(''); setStatus({});
+        setCurrentIndex(0);
+        setAnswer('');
+        setStatus({});
     }, [prompts]);
 
     useEffect(() => {
@@ -275,11 +275,11 @@ const BallsExercise = ({ title, prompts, onComplete, vocabulary, isSupervisionMo
             <CardHeader>
                 <div className="flex justify-between items-start text-left">
                     <div className="w-full">
-                        <CardTitle className="uppercase font-black text-primary">{title}</CardTitle>
-                        <CardDescription className='font-bold text-foreground mt-1'>Traduce la frase al español correctamente.</CardDescription>
+                        <CardTitle>{title}</CardTitle>
+                        <CardDescription className='font-bold text-foreground mt-1'>Traduce la frase correctamente.</CardDescription>
                         <div className="flex gap-2 justify-start flex-wrap pt-4">
                             {prompts.map((_: any, i: number) => (
-                                <div key={i} onClick={() => setCurrentIndex(i)} className={cn("h-8 w-8 rounded-full border-2 flex items-center justify-center text-sm font-bold cursor-pointer transition-all", currentIndex === i ? "border-primary ring-2 ring-primary scale-110" : "border-muted", status[i] === 'correct' ? "bg-green-500 text-white border-green-500" : status[i] === 'incorrect' ? "bg-red-500 text-white border-red-500" : "bg-card text-foreground")}>{i + 1}</div>
+                                <div key={i} onClick={() => setCurrentIndex(i)} className={cn("h-8 w-8 rounded-full border-2 flex items-center justify-center text-sm font-bold cursor-pointer transition-all", currentIndex === i ? "border-primary ring-2 ring-primary" : "border-muted", status[i] === 'correct' ? "bg-green-500 text-white border-green-500" : status[i] === 'incorrect' ? "bg-red-500 text-white border-red-500" : "bg-card text-foreground")}>{i + 1}</div>
                             ))}
                         </div>
                     </div>
@@ -287,20 +287,24 @@ const BallsExercise = ({ title, prompts, onComplete, vocabulary, isSupervisionMo
                         <Popover>
                             <PopoverTrigger asChild>
                                 <Button variant="outline" size="sm" className="border-2 border-brand-blue animate-border-pulse shrink-0">
-                                    <BookTextIcon className="mr-2 h-4 w-4" /> Vocabulary
+                                    <BookTextIcon className="mr-2 h-4 w-4" />
+                                    Vocabulary
                                 </Button>
                             </PopoverTrigger>
                             <PopoverContent className="w-64">
-                                <ScrollArea className="h-48 pr-4 text-left text-foreground">
-                                    <div className="grid grid-cols-2 gap-2 text-sm text-foreground">
-                                        {Object.entries(vocabulary).map(([en, es]: any) => (
-                                            <Fragment key={en}>
-                                                <span className="text-muted-foreground capitalize">{en}:</span>
-                                                <span className="font-semibold text-right text-primary">{(es || '').toUpperCase()}</span>
-                                            </Fragment>
-                                        ))}
-                                    </div>
-                                </ScrollArea>
+                                <div className="space-y-2 text-foreground text-left">
+                                    <h4 className="font-bold border-b pb-1 text-primary">Vocabulario Útil</h4>
+                                    <ScrollArea className="h-48 pr-4">
+                                        <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
+                                            {Object.entries(vocabulary).map(([es, en]: any) => (
+                                                <Fragment key={es}>
+                                                    <span className="text-muted-foreground capitalize">{es}:</span>
+                                                    <span className="font-semibold text-right">{en}</span>
+                                                </Fragment>
+                                            ))}
+                                        </div>
+                                    </ScrollArea>
+                                </div>
                             </PopoverContent>
                         </Popover>
                     )}
@@ -308,20 +312,9 @@ const BallsExercise = ({ title, prompts, onComplete, vocabulary, isSupervisionMo
             </CardHeader>
             <CardContent className="space-y-6">
                 <div className="bg-muted p-6 rounded-2xl border-2 border-dashed text-center font-bold text-xl uppercase tracking-tighter text-foreground">
-                    {prompts[currentIndex]?.spanish}
+                    {currentPrompt.spanish}
                 </div>
-                <Input 
-                    value={answer} 
-                    onChange={e => {
-                        if (isSupervisionMode) return;
-                        setAnswer(e.target.value);
-                    }} 
-                    onKeyDown={e => e.key === 'Enter' && handleCheck()} 
-                    className={cn("h-12 text-lg text-foreground", status[currentIndex] === 'correct' ? 'border-green-500 bg-green-50/5' : status[currentIndex] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} 
-                    placeholder="Escribe tu respuesta..." 
-                    autoComplete="off" 
-                    readOnly={isSupervisionMode} 
-                />
+                <Input value={answer} onChange={e => setAnswer(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleCheck()} className={cn("h-12 text-lg text-foreground", status[currentIndex] === 'correct' ? 'border-green-500 bg-green-50/5' : status[currentIndex] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} placeholder="Tu traducción..." autoComplete="off" readOnly={isSupervisionMode} />
             </CardContent>
             <CardFooter className="justify-between border-t pt-6">
                 <Button variant="outline" onClick={() => setCurrentIndex(p => Math.max(0, p - 1))} disabled={currentIndex === 0}>Anterior</Button>
@@ -348,13 +341,18 @@ const ErrorCorrectionExercise = ({ prompts, onComplete, title, isSupervisionMode
         if (isSupervisionMode) return;
         const userVal = answer.trim().toLowerCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' ');
         const isOk = currentPrompt.correctAnswers.some((a: string) => a.toLowerCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' ') === userVal);
-        setStatus(p => ({ ...p, [currentIndex]: isOk ? 'correct' : 'incorrect' }));
-        if (isOk) toast({ title: "¡Corregido!" });
-        else toast({ variant: 'destructive', title: "Sigue intentando" });
+        
+        if (isOk) {
+            setStatus(prev => ({ ...prev, [currentIndex]: 'correct' }));
+            toast({ title: "¡Corregido!" });
+        } else {
+            setStatus(prev => ({ ...prev, [currentIndex]: 'incorrect' }));
+            toast({ variant: 'destructive', title: "Sigue intentando" });
+        }
     };
 
     return (
-        <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground">
+        <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left">
             <CardHeader>
                 <CardTitle>{title}</CardTitle>
                 <CardDescription className='font-bold text-foreground mt-1'>Encuentra el error y escribe la frase correcta.</CardDescription>
@@ -368,24 +366,13 @@ const ErrorCorrectionExercise = ({ prompts, onComplete, title, isSupervisionMode
                 <div className="p-6 bg-destructive/10 rounded-xl border-2 border-dashed border-destructive text-center font-bold text-lg text-destructive uppercase">
                     {currentPrompt.incorrect}
                 </div>
-                <Input 
-                    value={answer} 
-                    onChange={e => {
-                        if (isSupervisionMode) return;
-                        setAnswer(e.target.value);
-                    }} 
-                    onKeyDown={e => e.key === 'Enter' && handleCheck()} 
-                    placeholder="Tu corrección..." 
-                    className={cn("h-12 text-lg uppercase", status[currentIndex] === 'correct' ? 'border-green-500 bg-green-50/5' : status[currentIndex] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} 
-                    autoComplete="off"
-                    readOnly={isSupervisionMode}
-                />
+                <Input value={answer} onChange={e => setAnswer(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleCheck()} placeholder="Tu corrección..." className={cn("h-12 text-lg uppercase", status[currentIndex] === 'correct' ? 'border-green-500 bg-green-50/5' : status[currentIndex] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} autoComplete="off" readOnly={isSupervisionMode} />
             </CardContent>
             <CardFooter className="justify-between border-t pt-6">
                 <Button variant="outline" onClick={() => setCurrentIndex(p => Math.max(0, p - 1))} disabled={currentIndex === 0}>Anterior</Button>
                 <div className="flex gap-2">
                     {!isSupervisionMode && <Button onClick={handleCheck} variant="secondary">Verificar</Button>}
-                    <Button onClick={() => currentIndex < prompts.length - 1 ? setCurrentIndex(i => i + 1) : onComplete()} disabled={status[currentIndex] !== 'correct' && !isAdmin} className="font-bold">Siguiente</Button>
+                    <Button onClick={() => currentIndex < prompts.length - 1 ? setCurrentIndex(i => i + 1) : onComplete()} disabled={status[currentIndex] !== 'correct' && !isAdmin} className="text-white font-bold">Siguiente</Button>
                 </div>
             </CardFooter>
         </Card>
@@ -407,7 +394,6 @@ export default function Class1Content({ overrideStudentId }: { overrideStudentId
     const [initialLoadComplete, setInitialLoadComplete] = useState(false);
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
     const [selectedTopic, setSelectedTopic] = useState<string>('');
-    const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
     const hasInitialized = useRef(false);
 
     const [vocabAnswers, setVocabAnswers] = useState<string[]>(Array(bodyPartsVocab.length).fill(''));
@@ -422,21 +408,21 @@ export default function Class1Content({ overrideStudentId }: { overrideStudentId
     const isAdmin = useMemo(() => (user && (authUserProfile?.role === 'admin' || user.email === 'ednacard87@gmail.com')), [user, authUserProfile]);
 
     const initialPathData = useMemo(() => [
-        { key: 'vocabulary_body', name: '1. Vocabulary (Body)', icon: Activity, status: 'active' },
-        { key: 'grammar_prepositions', name: '2. Grammar (AT-ON-IN)', icon: Clock, status: 'locked' },
-        { key: 'exercise_1', name: '3. Exercise 1', icon: PenSquare, status: 'locked' },
-        { key: 'grammar_description', name: '4. Grammar 2 (Physical)', icon: User, status: 'locked' },
-        { key: 'exercise_2', name: '5. Exercise 2', icon: PenSquare, status: 'locked' },
-        { key: 'find_mistake_1', name: '6. Find the Mistake', icon: Search, status: 'locked' },
-        { key: 'exercise_3', name: '7. Exercise 3', icon: PenSquare, status: 'locked' },
-        { key: 'vocab_game', name: '8. Vocabulary (Game)', icon: Gamepad2, status: 'locked' },
-        { key: 'exercise_4', name: '9. Exercise 4', icon: PenSquare, status: 'locked' },
-        { key: 'complete_activity', name: '10. Complete', icon: Pencil, status: 'locked' },
-        { key: 'exercise_5', name: '11. Exercise 5', icon: PenSquare, status: 'locked' },
-        { key: 'find_mistake_2', name: '12. Find the Mistake 2', icon: Search, status: 'locked' },
-        { key: 'reading_section', name: '13. Reading', icon: BookText, status: 'locked' },
-        { key: 'differences_section', name: '14. Differences', icon: Split, status: 'locked' },
-        { key: 'final_exercise', name: '15. Last Exercise', icon: Trophy, status: 'locked' },
+        { key: 'vocabulary_body', name: '1. Vocabulary (Body)', icon: Activity },
+        { key: 'grammar_prepositions', name: '2. Grammar (AT-ON-IN)', icon: Clock },
+        { key: 'exercise_1', name: '3. Exercise 1', icon: PenSquare },
+        { key: 'grammar_description', name: '4. Grammar 2 (Physical)', icon: User },
+        { key: 'exercise_2', name: '5. Exercise 2', icon: PenSquare },
+        { key: 'find_mistake_1', name: '6. Find the Mistake', icon: Search },
+        { key: 'exercise_3', name: '7. Exercise 3', icon: PenSquare },
+        { key: 'vocab_game', name: '8. Vocabulary (Game)', icon: Gamepad2 },
+        { key: 'exercise_4', name: '9. Exercise 4', icon: PenSquare },
+        { key: 'complete_activity', name: '10. Complete', icon: Pencil },
+        { key: 'exercise_5', name: '11. Exercise 5', icon: PenSquare },
+        { key: 'find_mistake_2', name: '12. Find the Mistake 2', icon: Search },
+        { key: 'reading_section', name: '13. Reading', icon: BookText },
+        { key: 'differences_section', name: '14. Differences', icon: Split },
+        { key: 'final_exercise', name: '15. Last Exercise', icon: Trophy },
     ], []);
 
     useEffect(() => {
@@ -450,8 +436,8 @@ export default function Class1Content({ overrideStudentId }: { overrideStudentId
         if (isAdmin && !targetStudentId) p.forEach(t => t.status = 'completed');
         else {
             path.forEach(t => { if (d[t.key]) t.status = d[t.key]; });
-            let last = true;
-            for (let i = 0; i < p.length; i++) { if (last && p[i].status === 'locked') p[i].status = 'active'; last = p[i].status === 'completed'; }
+            let lastDone = true;
+            for (let i = 0; i < p.length; i++) { if (lastDone && p[i].status === 'locked') p[i].status = 'active'; lastDone = p[i].status === 'completed'; }
         }
         setLearningPath(p); setSelectedTopic(d.lastSelectedTopic || p.find(it => it.status === 'active')?.key || p[0].key);
         setInitialLoadComplete(true);
@@ -475,7 +461,10 @@ export default function Class1Content({ overrideStudentId }: { overrideStudentId
             const currentOverallProgress = studentProfile?.progress?.[mainProgressKey];
             
             if (JSON.stringify(s) !== JSON.stringify(currentSavedData) || progressValue !== currentOverallProgress) {
-                updateDocumentNonBlocking(studentDocRef, { [`lessonProgress.${progressStorageVersion}`]: s, [`progress.${mainProgressKey}`]: progressValue });
+                updateDocumentNonBlocking(studentDocRef, { 
+                    [`lessonProgress.${progressStorageVersion}`]: s, 
+                    [`progress.${mainProgressKey}`]: progressValue 
+                });
             }
         }, 1500);
 
@@ -539,7 +528,9 @@ export default function Class1Content({ overrideStudentId }: { overrideStudentId
     };
 
     const renderContent = () => {
-        if (isInitialLoading) return <div className="flex justify-center items-center h-64"><Loader2 className="animate-spin text-primary" /></div>;
+        const topic = learningPath.find(t => t.key === selectedTopic);
+        if (!topic) return null;
+
         switch (selectedTopic) {
             case 'vocabulary_body':
                 return (
@@ -552,7 +543,7 @@ export default function Class1Content({ overrideStudentId }: { overrideStudentId
                                     {bodyPartsVocab.map((v, i) => (
                                         <Fragment key={i}>
                                             <div className="p-3 border rounded bg-white/5 font-bold flex items-center text-sm">{v.es}</div>
-                                            <Input value={vocabAnswers[i] || ''} onChange={e => { const na = [...vocabAnswers]; na[i] = e.target.value; setVocabAnswers(na); const nv = [...vocabValidation]; nv[i] = 'unchecked'; setVocabValidation(nv); }} className={cn("h-12 uppercase font-mono text-foreground transition-all", vocabValidation[i] === 'correct' ? '!border-green-500 !bg-green-50/10' : vocabValidation[i] === 'incorrect' ? '!border-destructive !bg-destructive/10' : '')} autoComplete="off" readOnly={isAdmin && !!targetStudentId} />
+                                            <Input value={vocabAnswers[i] || ''} onChange={e => { const na = [...vocabAnswers]; na[i] = e.target.value; setVocabAnswers(na); const nv = [...vocabValidation]; nv[i] = 'unchecked'; setVocabValidation(nv); }} className={cn("h-12 uppercase font-mono", vocabValidation[i] === 'correct' ? 'border-green-500 bg-green-50/10' : vocabValidation[i] === 'incorrect' ? 'border-red-500 bg-red-50/10' : '')} autoComplete="off" readOnly={isAdmin && !!targetStudentId} />
                                         </Fragment>
                                     ))}
                                 </div>
@@ -615,8 +606,8 @@ export default function Class1Content({ overrideStudentId }: { overrideStudentId
                         </Card>
                     </div>
                 );
-            case 'exercise_2': return <BallsExercise title="Exercise 2: Translation" prompts={ex2Prompts} onComplete={() => handleTopicComplete('exercise_2')} vocabulary={physicalVocab} isAdmin={isAdmin} isSupervisionMode={!!targetStudentId} />;
-            case 'find_mistake_1': return <ErrorCorrectionExercise title="Find the Mistake 1" prompts={error1Prompts} onComplete={() => handleTopicComplete('find_mistake_1')} isAdmin={isAdmin} isSupervisionMode={!!targetStudentId} />;
+            case 'exercise_2': return <BallsExercise title="Exercise 2: Translation" prompts={ex2Prompts} onComplete={() => handleTopicComplete('exercise_2')} vocabulary={physicalVocab} isSupervisionMode={!!overrideStudentId} isAdmin={isAdmin} />;
+            case 'find_mistake_1': return <ErrorCorrectionExercise title="Find the Mistake 1" prompts={error1Prompts} onComplete={() => handleTopicComplete('find_mistake_1')} isSupervisionMode={!!overrideStudentId} isAdmin={isAdmin} />;
             case 'exercise_3': return <SentenceCompletionExercise title="Exercise 3" description="Completa con AT, ON o IN." data={ex3Prompts} onComplete={() => handleTopicComplete('exercise_3')} />;
             case 'vocab_game': 
                 return (
@@ -626,19 +617,19 @@ export default function Class1Content({ overrideStudentId }: { overrideStudentId
                         title="Body Parts Memory" 
                     />
                 );
-            case 'exercise_4': return <BallsExercise title="Exercise 4: Comparisons" prompts={ex4Prompts} onComplete={() => handleTopicComplete('exercise_4')} vocabulary={{"más grande": "bigger", "que": "than", "tan": "as", "aeropuerto": "airport", "caliente": "hot / hottest"}} isAdmin={isAdmin} isSupervisionMode={!!targetStudentId} />;
+            case 'exercise_4': return <BallsExercise title="Exercise 4: Comparisons" prompts={ex4Prompts} onComplete={() => handleTopicComplete('exercise_4')} vocabulary={{"más grande": "bigger", "que": "than", "tan": "as", "aeropuerto": "airport", "caliente": "hot / hottest"}} isSupervisionMode={!!overrideStudentId} isAdmin={isAdmin} />;
             case 'complete_activity': return <SentenceCompletionExercise title="Complete: Place Prepositions" description="Completa con AT, ON o IN." data={completePrompts} onComplete={() => handleTopicComplete('complete_activity')} />;
-            case 'exercise_5': return <BallsExercise title="Exercise 5: Detailed Description" prompts={ex5Prompts} onComplete={() => handleTopicComplete('exercise_5')} vocabulary={{"pelirroja": "redhead", "bajas": "short", "calvo": "bald", "sobrepeso": "overweight", "castaño": "brown (hair)"}} isAdmin={isAdmin} isSupervisionMode={!!targetStudentId} />;
-            case 'find_mistake_2': return <ErrorCorrectionExercise title="Find the Mistake 2" prompts={error2Prompts} onComplete={() => handleTopicComplete('find_mistake_2')} isAdmin={isAdmin} isSupervisionMode={!!targetStudentId} />;
+            case 'exercise_5': return <BallsExercise title="Exercise 5: Detailed Description" prompts={ex5Prompts} onComplete={() => handleTopicComplete('exercise_5')} vocabulary={{"pelirroja": "redhead", "bajas": "short", "calvo": "bald", "sobrepeso": "overweight", "castaño": "brown (hair)"}} isSupervisionMode={!!overrideStudentId} isAdmin={isAdmin} />;
+            case 'find_mistake_2': return <ErrorCorrectionExercise title="Find the Mistake 2" prompts={error2Prompts} onComplete={() => handleTopicComplete('find_mistake_2')} isSupervisionMode={!!overrideStudentId} isAdmin={isAdmin} />;
             case 'reading_section':
                 return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 text-foreground text-left">
                         <CardHeader><CardTitle>{readingContent.title}</CardTitle></CardHeader>
                         <CardContent className="p-6 space-y-6">
-                            <div className="p-6 bg-muted rounded-2xl border italic text-lg leading-relaxed shadow-inner whitespace-pre-wrap">{readingContent.text}</div>
+                            <div className="p-6 bg-muted rounded-2xl border italic text-lg leading-relaxed shadow-inner whitespace-pre-wrap text-foreground">{readingContent.text}</div>
                             <Separator /><div className="space-y-4">{readingContent.questions.map(q => (
-                                <div key={q.id} className="space-y-2"><Label className='font-bold'>{q.question}</Label>
-                                <Input value={readAns[q.id] || ''} onChange={e => { if (targetStudentId) return; setReadAns({...readAns, [q.id]: e.target.value}); setReadVal({...readVal, [q.id]: 'unchecked'}); }} className={cn(readVal[q.id] === 'correct' ? 'border-green-500 bg-green-50/10' : readVal[q.id] === 'incorrect' ? 'border-red-500 bg-red-50/10' : '')} autoComplete="off" readOnly={isAdmin && !!targetStudentId} /></div>
+                                <div key={q.id} className="space-y-2"><Label className='font-bold text-foreground'>{q.question}</Label>
+                                <Input value={readAns[q.id] || ''} onChange={e => setReadAns({...readAns, [q.id]: e.target.value})} className={cn(readVal[q.id] === 'correct' ? 'border-green-500 bg-green-50/10' : readVal[q.id] === 'incorrect' ? 'border-red-500 bg-red-50/10' : '')} autoComplete="off" readOnly={isAdmin && !!targetStudentId} /></div>
                             ))}</div>
                         </CardContent>
                         <CardFooter className="justify-center border-t pt-6"><Button onClick={handleCheckReading} size="lg" className="px-12 font-bold" disabled={isAdmin && !!targetStudentId}>Verificar Lectura</Button></CardFooter>
@@ -672,89 +663,59 @@ export default function Class1Content({ overrideStudentId }: { overrideStudentId
                         <CardFooter className="justify-center border-t pt-6"><Button onClick={() => handleTopicComplete('differences_section')} size="lg" className="px-12 font-bold h-12 uppercase">Entendido</Button></CardFooter>
                     </Card>
                 );
-            case 'final_exercise': return <BallsExercise title="Last Exercise" prompts={lastExPrompts} onComplete={() => handleTopicComplete('final_exercise')} vocabulary={{"conferencia": "conference"}} isAdmin={isAdmin} isSupervisionMode={!!targetStudentId} />;
+            case 'final_exercise': return <BallsExercise title="Last Exercise" prompts={lastExPrompts} onComplete={() => handleTopicComplete('final_exercise')} vocabulary={{"conferencia": "conference"}} isSupervisionMode={!!overrideStudentId} isAdmin={isAdmin} />;
             default: return null;
         }
     };
 
     return (
-        <div className="flex w-full flex-col min-h-screen ingles-dashboard-bg">
-            <DashboardHeader />
-            <main className="flex-1 p-4 md:p-8">
-                <div className="max-w-7xl mx-auto">
-                    {isAdmin && targetStudentId && (
-                        <div className="mb-6 bg-yellow-500/20 border-2 border-yellow-500 p-4 rounded-xl flex items-center justify-between shadow-lg backdrop-blur-md">
-                            <div className="flex items-center gap-3 text-yellow-700 dark:text-yellow-400">
-                                <Star className="h-6 w-6 fill-current animate-pulse" />
-                                <p className="font-black uppercase tracking-tighter text-sm">Modo Supervisión: {studentProfile?.name || currentUID}</p>
+        <div className="grid gap-8 md:grid-cols-12 text-foreground animate-in fade-in duration-500">
+            <div className="md:col-span-9 md:order-1 order-2">{renderContent()}</div>
+            <div className="md:col-span-3 md:order-2 order-1 text-left">
+                <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
+                    <CardHeader className="pb-4 border-b bg-muted/30">
+                        <CardTitle className="text-lg font-black text-primary uppercase flex items-center gap-2">
+                            <Trophy className="h-5 w-5 text-primary" /> Misión 1A
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-4">
+                        <nav>
+                            <ul className="space-y-1">
+                                {learningPath.map((item) => {
+                                    const isLocked = item.status === 'locked' && !isAdmin;
+                                    const Icon = ICONS_CONFIG[item.status as keyof typeof ICONS_CONFIG] || BookOpen;
+                                    return (
+                                        <li key={item.key} onClick={() => handleTopicSelect(item.key)}
+                                            className={cn(
+                                                'flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer text-foreground',
+                                                isLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted',
+                                                selectedTopic === item.key && 'bg-muted text-primary font-black border-l-4 border-primary shadow-sm'
+                                            )}
+                                        >
+                                            <div className="flex items-center gap-3">
+                                                {item.status === 'completed' ? (
+                                                    <CheckCircle className="h-5 w-5 text-green-500" />
+                                                ) : (
+                                                    <Icon className={cn("h-5 w-5", isLocked ? "text-yellow-500/50" : "text-primary")} />
+                                                )}
+                                                <span className="truncate max-w-[150px] text-[10px] uppercase font-bold">{item.name}</span>
+                                            </div>
+                                            {isLocked && <Lock className="h-3 w-3 text-yellow-500/30" />}
+                                        </li>
+                                    );
+                                })}
+                            </ul>
+                        </nav>
+                        <div className="mt-6 pt-6 border-t">
+                            <div className="flex justify-between items-center text-xs mb-2 font-black uppercase text-muted-foreground">
+                                <span>Avance</span>
+                                <span className="text-primary">{progressValue}%</span>
                             </div>
-                            <Button variant="outline" size="sm" asChild className="border-yellow-600 text-yellow-700 hover:bg-yellow-500/10 transition-colors">
-                                <Link href="/admin">Cerrar</Link>
-                            </Button>
+                            <Progress value={progressValue} className="h-2 rounded-full" />
                         </div>
-                    )}
-
-                    <div className="mb-8 text-left text-white">
-                        <Link href="/ingles/a2" className="hover:underline text-sm font-bold text-white/80 flex items-center gap-2 mb-2">
-                            <ArrowLeft className="h-4 w-4" /> Volver al Curso A2
-                        </Link>
-                        <h1 className="text-4xl font-black [text-shadow:2px_2px_4px_rgba(0,0,0,0.5)] uppercase tracking-tight flex items-center gap-3">
-                           <Activity className='h-10 w-10 text-primary' /> Class 1 (A2) 🇬🇧
-                        </h1>
-                    </div>
-
-                    <div className="grid gap-8 md:grid-cols-12 text-foreground animate-in fade-in duration-500">
-                        <div className="md:col-span-9 md:order-1 order-2">
-                            {renderContent()}
-                        </div>
-                        <div className="md:col-span-3 md:order-2 order-1 text-left">
-                            <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
-                                <CardHeader className="pb-4 border-b bg-muted/30">
-                                    <CardTitle className="text-lg font-black text-primary uppercase flex items-center gap-2">
-                                        <Trophy className="h-5 w-5 text-primary" /> Misión 1A
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent className="p-4">
-                                    <nav>
-                                        <ul className="space-y-1">
-                                            {learningPath.map((item) => {
-                                                const isLocked = item.status === 'locked' && !isAdmin;
-                                                const Icon = ICONS_CONFIG[item.status as keyof typeof ICONS_CONFIG] || BookOpen;
-                                                return (
-                                                    <li key={item.key} onClick={() => handleTopicSelect(item.key)}
-                                                        className={cn(
-                                                            'flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer text-foreground',
-                                                            isLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted',
-                                                            selectedTopic === item.key && 'bg-muted text-primary font-black border-l-4 border-primary shadow-sm'
-                                                        )}
-                                                    >
-                                                        <div className="flex items-center gap-3">
-                                                            {item.status === 'completed' ? (
-                                                                <CheckCircle className="h-5 w-5 text-green-500" />
-                                                            ) : (
-                                                                <Icon className={cn("h-5 w-5", isLocked ? "text-yellow-500/50" : "text-primary")} />
-                                                            )}
-                                                            <span className="truncate max-w-[150px] text-[10px] uppercase font-bold">{item.name}</span>
-                                                        </div>
-                                                        {isLocked && <Lock className="h-3 w-3 text-yellow-500/30" />}
-                                                    </li>
-                                                );
-                                            })}
-                                        </ul>
-                                    </nav>
-                                    <div className="mt-6 pt-6 border-t">
-                                        <div className="flex justify-between items-center text-xs mb-2 font-black uppercase text-muted-foreground">
-                                            <span>Avance</span>
-                                            <span className="text-primary">{progressValue}%</span>
-                                        </div>
-                                        <Progress value={progressValue} className="h-2 rounded-full" />
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        </div>
-                    </div>
-                </div>
-            </main>
+                    </CardContent>
+                </Card>
+            </div>
         </div>
     );
 }
