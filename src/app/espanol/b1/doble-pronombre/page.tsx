@@ -92,8 +92,8 @@ const conjugationVerbs = [
 
 const ex1Prompts = [
     { en: "I buy the flowers for her.", answer: ["se las compro", "yo se las compro"] },
-    { en: "You send the message to me.", answer: ["me lo envías", "tú me lo envías"] },
-    { en: "He shows the report to them.", answer: ["se lo muestra", "él se lo muestra"] },
+    { en: "You send the message to me.", answer: ["tu me lo envias", "tú me lo envías"] },
+    { en: "He shows the report to them.", answer: ["el se lo muestra", "él se lo muestra"] },
     { en: "We lend the car to you.", answer: ["te lo prestamos", "nosotros te lo prestamos"] },
     { en: "They offer the deal to us.", answer: ["nos lo ofrecen", "ellos nos lo ofrecen"] },
     { en: "I explain the presentation to him.", answer: ["se la explico", "yo se la explico"] },
@@ -107,17 +107,17 @@ const ex1Prompts = [
 
 const ex2Options = [
     { text: "Yo (enviar) _______ el correo a Juan ayer.", options: ["LO ENVIÉ", "SE LO ENVIÉ", "ME LO ENVIÉ"], answer: "SE LO ENVIÉ" },
-    { text: "Tú (dar) _______ las flores a María.", options: ["SE LAS DISTE", "TE LAS DIO", "LAS DISTE"], answer: "SE LAS DISTE" },
-    { text: "Nosotros (explicar) _______ el problema a ellos.", options: ["SE LO EXPLICAMOS", "NOS LO EXPLICA", "LOS EXPLICAMOS"], answer: "SE LO EXPLICAMOS" },
+    { text: "Tú (dar) _______ las flores a María.", options: ["TE LAS DIO", "SE LAS DISTE", "LAS DISTE"], answer: "SE LAS DISTE" },
+    { text: "Nosotros (explicar) _______ el problema a ellos.", options: ["LOS EXPLICAMOS", "NOS LO EXPLICA", "SE LO EXPLICAMOS"], answer: "SE LO EXPLICAMOS" },
     { text: "Ellos (traer) _______ el regalo para mí.", options: ["ME LO TRAJERON", "SE LO TRAJERON", "LO TRAJERON"], answer: "ME LO TRAJERON" },
-    { text: "Ella (mostrar) _______ las fotos a nosotros.", options: ["NOS LAS MOSTRÓ", "SE LAS MOSTRÓ", "LAS MOSTRÓ"], answer: "NOS LAS MOSTRÓ" },
+    { text: "Ella (mostrar) _______ las fotos a nosotros.", options: ["LAS MOSTRÓ", "SE LAS MOSTRÓ", "NOS LAS MOSTRÓ"], answer: "NOS LAS MOSTRÓ" },
     { text: "Ustedes (prestar) _______ el libro a él.", options: ["SE LO PRESTARON", "LO PRESTARON", "TE LO PRESTARON"], answer: "SE LO PRESTARON" },
-    { text: "Yo (decir) _______ la verdad a ti.", options: ["TE LA DIJE", "SE LA DIJE", "LA DIJE"], answer: "TE LA DIJE" },
-    { text: "Él (comprar) _______ el reloj para ella.", options: ["SE LO COMPRÓ", "LO COMPRÓ", "ME LO COMPRÓ"], answer: "SE LO COMPRÓ" },
-    { text: "Nosotros (vender) _______ la casa a ellos.", options: ["SE LA VENDIMOS", "LA VENDIMOS", "NOS LA VENDIERON"], answer: "SE LA VENDIMOS" },
-    { text: "Tú (entregar) _______ el informe al jefe.", options: ["SE LO ENTREGASTE", "LO ENTREGASTE", "ME LO ENTREGASTE"], answer: "SE LO ENTREGASTE" },
-    { text: "Ellas (traer) _______ los documentos a mí.", options: ["ME LOS TRAJERON", "SE LOS TRAJERON", "LOS TRAJERON"], answer: "ME LOS TRAJERON" },
-    { text: "Yo (ofrecer) _______ un café a usted.", options: ["SE LO OFRECÍ", "LO OFRECÍ", "TE LO OFRECÍ"], answer: "SE LO OFRECÍ" },
+    { text: "Yo (decir) _______ la verdad a ti.", options: ["SE LA DIJE", "TE LA DIJE", "LA DIJE"], answer: "TE LA DIJE" },
+    { text: "Él (comprar) _______ el reloj para ella.", options: ["SE LO COMPRAN", "SE LO COMPRÓ", "ME LO COMPRÓ"], answer: "SE LO COMPRÓ" },
+    { text: "Nosotros (vender) _______ la casa a ellos.", options: ["LA VENDIMOS", "SE LA VENDIMOS", "NOS LA VENDIERON"], answer: "SE LA VENDIMOS" },
+    { text: "Tú (entregar) _______ el informe al jefe.", options: ["TE LO ENTREGASTE", "LO ENTREGASTE", "SE LO ENTREGASTE"], answer: "SE LO ENTREGASTE" },
+    { text: "Ellas (traer) _______ los documentos a mí.", options: ["TE LOS TRAJERON", "ME LOS TRAJERON", "LOS TRAJERON"], answer: "ME LOS TRAJERON" },
+    { text: "Yo (ofrecer) _______ un café a usted.", options: ["TE LO OFRECÍ", "LO OFRECÍ", "SE LO OFRECÍ"], answer: "SE LO OFRECÍ" },
 ];
 
 const ex3Prompts = [
@@ -152,25 +152,25 @@ const readingData = {
 
 const ex4Options = [
     { text: "El profesor _______ (explicar) la lección a nosotros.", options: ["NOS LA EXPLICÓ", "SE LA EXPLICÓ", "LA EXPLICÓ"], answer: "NOS LA EXPLICÓ" },
-    { text: "Yo _______ (comprar) un regalo para mi novia.", options: ["SE LO COMPRÉ", "LO COMPRÉ", "ME LO COMPRÉ"], answer: "SE LO COMPRÉ" },
-    { text: "Tú _______ (prestar) el dinero a ellos.", options: ["SE LO PRESTASTE", "LO PRESTASTE", "LES PRESTASTE"], answer: "SE LO PRESTASTE" },
+    { text: "Yo _______ (comprar) un regalo para mi novia.", options: ["LO COMPRÉ", "SE LO COMPRÉ", "ME LO COMPRÉ"], answer: "SE LO COMPRÉ" },
+    { text: "Tú _______ (prestar) el dinero a ellos.", options: ["TE LO PRESTASTE", "LO PRESTASTE", "SE LO PRESTASTE"], answer: "SE LO PRESTASTE" },
     { text: "Nosotros _______ (enviar) el mensaje a ti.", options: ["TE LO ENVIAMOS", "SE LO ENVIAMOS", "LO ENVIAMOS"], answer: "TE LO ENVIAMOS" },
-    { text: "Ellos _______ (mostrar) los resultados al equipo.", options: ["SE LOS MOSTRARON", "LOS MOSTRARON", "NOS LOS MOSTRARON"], answer: "SE LOS MOSTRARON" },
-    { text: "Ella _______ (dar) la noticia a su madre.", options: ["SE LA DIO", "LA DIO", "LE DIO"], answer: "SE LA DIO" },
-    { text: "Ustedes _______ (traer) el café para mí.", options: ["ME LO TRAJERON", "SE LO TRAJERON", "LO TRAJERON"], answer: "ME LO TRAJERON" },
+    { text: "Ellos _______ (mostrar) los resultados al equipo.", options: ["LOS MOSTRARON", "SE LOS MOSTRARON", "NOS LOS MOSTRARON"], answer: "SE LOS MOSTRARON" },
+    { text: "Ella _______ (dar) la noticia a su madre.", options: ["TE LA DIO", "SE LA DIO", "LE DIO"], answer: "SE LA DIO" },
+    { text: "Ustedes _______ (traer) el café para mí.", options: ["LO TRAJERON", "SE LO TRAJERON", "ME LO TRAJERON"], answer: "ME LO TRAJERON" },
     { text: "Yo _______ (escribir) la carta a mis abuelos.", options: ["SE LA ESCRIBÍ", "LA ESCRIBÍ", "LES ESCRIBÍ"], answer: "SE LA ESCRIBÍ" },
-    { text: "Él _______ (entregar) las llaves a la recepcionista.", options: ["SE LAS ENTREGÓ", "LAS ENTREGÓ", "LE ENTREGÓ"], answer: "SE LAS ENTREGÓ" },
+    { text: "Él _______ (entregar) las llaves a la recepcionista.", options: ["LAS ENTREGÓ", "SE LAS ENTREGÓ", "LE ENTREGÓ"], answer: "SE LAS ENTREGÓ" },
     { text: "Nosotros _______ (ofrecer) el descuento a los clientes.", options: ["SE LO OFRECIMOS", "LO OFRECIMOS", "LES OFRECIMOS"], answer: "SE LO OFRECIMOS" },
-    { text: "Tú _______ (contar) el secreto a tu amigo.", options: ["SE LO CONTASTE", "LO CONTASTE", "TE LO CONTÓ"], answer: "SE LO CONTASTE" },
-    { text: "Ella _______ (vender) el coche a su vecino.", options: ["SE LO VENDIO", "LO VENDIÓ", "LE VENDIÓ"], answer: "SE LO VENDIO" },
-    { text: "Yo _______ (traer) las flores para ti.", options: ["TE LAS TRAJE", "SE LAS TRAJE", "LAS TRAJE"], answer: "TE LAS TRAJE" },
+    { text: "Tú _______ (contar) el secreto a tu amigo.", options: ["LO CONTASTE", "SE LO CONTASTE", "TE LO CONTÓ"], answer: "SE LO CONTASTE" },
+    { text: "Ella _______ (vender) el coche a su vecino.", options: ["TE LO VENDIO", "LO VENDIÓ", "SE LO VENDIÓ"], answer: "SE LO VENDIO" },
+    { text: "Yo _______ (traer) las flores para ti.", options: ["LAS TRAJE", "SE LAS TRAJE", "TE LAS TRAJE"], answer: "TE LAS TRAJE" },
     { text: "Ellos _______ (explicar) el plan a nosotros.", options: ["NOS LO EXPLICARON", "SE LO EXPLICARON", "LO EXPLICARON"], answer: "NOS LO EXPLICARON" },
-    { text: "Usted _______ (dar) el informe a su jefe.", options: ["SE LO DIO", "LO DIO", "LE DIO"], answer: "SE LO DIO" },
+    { text: "Usted _______ (dar) el informe a su jefe.", options: ["LE DIO", "LO DIO", "SE LO DIO"], answer: "SE LO DIO" },
     { text: "Nosotros _______ (comprar) los helados para los niños.", options: ["SE LOS COMPRAMOS", "LOS COMPRAMOS", "NOS LOS COMPRARON"], answer: "SE LOS COMPRAMOS" },
-    { text: "Tú _______ (mostrar) el tatuaje a tus padres.", options: ["SE LO MOSTRASTE", "LO MOSTRASTE", "TE LO MOSTRARON"], answer: "SE LO MOSTRASTE" },
-    { text: "Ellas _______ (enviar) el regalo a mí.", options: ["ME LO ENVIARON", "SE LO ENVIARON", "LO ENVIARON"], answer: "ME LO ENVIARON" },
-    { text: "Yo _______ (prestar) mi sombrilla a ella.", options: ["SE LA PRESTÉ", "LA PRESTÉ", "LE PRESTÉ"], answer: "SE LA PRESTÉ" },
-    { text: "Él _______ (traer) el pedido a nosotros.", options: ["NOS LO TRAJO", "SE LO TRAJO", "LO TRAJO"], answer: "NOS LO TRAJO" },
+    { text: "Tú _______ (mostrar) el tatuaje a tus padres.", options: ["LO MOSTRASTE", "SE LO MOSTRASTE", "TE LO MOSTRARON"], answer: "SE LO MOSTRASTE" },
+    { text: "Ellas _______ (enviar) el regalo a mí.", options: ["LO ENVIARON", "ME LO ENVIARON", "SE LO ENVIARON"], answer: "ME LO ENVIARON" },
+    { text: "Yo _______ (prestar) mi sombrilla a ella.", options: ["LA PRESTÉ", "SE LA PRESTÉ", "LE PRESTÉ"], answer: "SE LA PRESTÉ" },
+    { text: "Él _______ (traer) el pedido a nosotros.", options: ["SE LO TRAJO", "NOS LO TRAJO", "LO TRAJO"], answer: "NOS LO TRAJO" },
 ];
 
 const completarPrompts = [
@@ -210,7 +210,7 @@ const translationTextEng = "I have a special gift for my sister. It is a beautif
 
 const finalNegativePrompts = [
     { en: "I don't give it to him.", es: ["no se lo doy", "yo no se lo doy"] },
-    { en: "She doesn't send it to me.", es: ["no me lo envía", "ella no me lo envía"] },
+    { en: "She doesn't send it to me.", es: ["ella no me lo envia", "ella no me lo envía"] },
     { en: "We don't tell it to them.", es: ["no se lo decimos", "nosotros no se lo decimos"] },
     { en: "They don't show it to us.", es: ["no nos lo muestran", "ellos no nos lo muestran"] },
     { en: "You don't lend it to her.", es: ["no se lo prestas", "tú no se lo prestas"] },
