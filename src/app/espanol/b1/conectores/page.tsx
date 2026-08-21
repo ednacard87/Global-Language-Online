@@ -107,14 +107,14 @@ const imperativeVerbs = [
 ];
 
 const ex1Prompts = [
-    { en: "I study a lot, besides I work.", answer: ["estudio mucho además trabajo", "estudio mucho, además trabajo"] },
-    { en: "She is tired, however she continues.", answer: ["ella está cansada sin embargo continúa", "ella está cansada, sin embargo continúa"] },
-    { en: "I will go even though it's raining.", answer: ["iré aunque esté lloviendo"] },
-    { en: "He didn't study, therefore he failed.", answer: ["él no estudió por eso reprobó"] },
+    { en: "I study a lot, besides I work.", answer: ["estudio mucho además trabajo", "yo estudio mucho, ademas trabajo"] },
+    { en: "She is tired, however she continues.", answer: ["ella esta cansada sin embargo ella continua", "ella está cansada, sin embargo continúa"] },
+    { en: "I will go even though it's raining.", answer: ["yo iré aunque esté lloviendo" , "yo ire aunque este lloviendo"] },
+    { en: "He didn't study, therefore he failed.", answer: ["él no estudió por eso reprobó" , "el no estudio por eso reprobo"] },
     { en: "They are happy because they won.", answer: ["ellos están felices porque ganaron"] },
-    { en: "I like tea; on the other hand, he likes coffee.", answer: ["me gusta el té en cambio a él le gusta el café", "me gusta el té, en cambio a él le gusta el café"] },
+    { en: "I like tea; on the other hand, he likes coffee.", answer: ["me gusta el té en cambio a él le gusta el café", "me gusta el te, en cambio a el le gusta el cafe"] },
     { en: "She cooks while I read.", answer: ["ella cocina mientras yo leo"] },
-    { en: "Finally, we are home.", answer: ["finalmente estamos en casa"] },
+    { en: "Finally, we are home.", answer: ["finalmente estamos en casa" , "finalmente nosotros estamos en casa"] },
 ];
 
 const ex2TextParts = [
