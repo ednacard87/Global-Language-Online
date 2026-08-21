@@ -25,7 +25,8 @@ import {
     X,
     Info,
     Globe,
-    ChevronDown
+    ChevronDown,
+    Gift
 } from 'lucide-react';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -46,7 +47,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 // --- CONFIGURACIÓN DE INGENIERÍA ---
-const progressStorageVersion = 'progress_es_b1_conectores_v6_suspense_fix';
+const progressStorageVersion = 'progress_es_b1_conectores_v7_shuffled_fix';
 const mainProgressKey = 'progress_b1_es_conectores';
 
 const ICONS_CONFIG: Record<string, React.ElementType> = {
@@ -335,6 +336,10 @@ function ConectoresContentInternal() {
         setSelectedTopic(d.lastSelectedTopic || path.find(p => p.status === 'active')?.key || path[0].key);
         if (d.vocabAnswers) setVocabAnswers(d.vocabAnswers);
         if (d.transText) setTransText(d.transText);
+        
+        // ALEATORIZACIÓN DEL EJERCICIO 3 AL INICIAR
+        setOrderingItems([...ex3Paragraphs].sort(() => Math.random() - 0.5));
+
         setInitialLoadComplete(true); hasInitialized.current = true;
         setTimeout(() => setIsInitialLoading(false), 800);
     }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading, isUserLoading, targetStudentId]);
@@ -517,8 +522,8 @@ function ConectoresContentInternal() {
                                 <div key={item.id} className="p-4 border rounded-xl bg-muted/20 flex items-center justify-between gap-4">
                                     <span className="flex-1 font-medium text-foreground">{item.text}</span>
                                     <div className="flex flex-col gap-1">
-                                        <Button size="icon" variant="ghost" onClick={() => moveItem(index, 'up')} disabled={index === 0} className='h-8 w-8'><ChevronDown className='rotate-180 h-4 w-4' /></Button>
-                                        <Button size="icon" variant="ghost" onClick={() => moveItem(index, 'down')} disabled={index === orderingItems.length - 1} className='h-8 w-8'><ChevronDown className='h-4 w-4' /></Button>
+                                        <Button size="icon" variant="ghost" onClick={() => moveItem(index, 'up')} disabled={index === 0} className='h-8 w-8'><ChevronDown className='rotate-180 h-4 w-4 text-foreground' /></Button>
+                                        <Button size="icon" variant="ghost" onClick={() => moveItem(index, 'down')} disabled={index === orderingItems.length - 1} className='h-8 w-8'><ChevronDown className='h-4 w-4 text-foreground' /></Button>
                                     </div>
                                 </div>
                             ))}
@@ -575,7 +580,7 @@ function ConectoresContentInternal() {
                             <PopoverContent className="w-64">
                                 <ScrollArea className="h-48 pr-4 text-foreground">
                                     <div className="grid grid-cols-2 gap-2 text-sm">
-                                        {Object.entries({ "besides": "además", "however": "sin embargo", "unemployment": "desempleo", "innovation": "innovación", "challenge": "desafío", "achieve": "lograr" }).map(([en, es], i) => (
+                                        {Object.entries({ "communication": "comunicación", "essential": "esencial", "besides": "además", "however": "sin embargo", "unemployment": "desempleo", "innovation": "innovación", "development": "desarrollo", "improve": "mejorar", "quality": "calidad", "citizen": "ciudadano" }).map(([en, es], i) => (
                                             <div key={i} className="flex justify-between text-xs border-b pb-1"><span className="text-muted-foreground">{en}:</span><span className="font-bold text-primary">{es}</span></div>
                                         ))}
                                     </div>
