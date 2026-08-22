@@ -185,7 +185,6 @@ const ex4Options = [
     { text: "Yo estudio para que tú _______ (aprender).", options: ["APRENDAS", "APRENDES", "APRENDISTE"], answer: "APRENDAS" },
     { text: "Dile la verdad cuando la _______ (ver).", options: ["VEAS", "VEAN", "VISTE"], answer: "VEAS" },
     { text: "Aunque _______ (llover) mañana, iré a la oficina.", options: ["LLUEVE", "LLOVERA", "LLUEVA"], answer: "LLUEVA" },
-    { text: "Necesito que nosotros _______ (lograr) la meta.", options: ["LOGRAMOS", "LOGRAMOS", "LOGREMOS"], answer: "LOGREMOS" },
     { text: "Avísame antes de que _______ (salir).", options: ["SALES", "SALGAS", "SALGASTE"], answer: "SALGAS" },
     { text: "Cuando _______ (terminar) el proyecto, descansaremos.", options: ["TERMINES", "TERMINAS", "TERMINARÁS"], answer: "TERMINES" },
     { text: "Ahorro dinero para que mis hijos _______ (estudiar).", options: ["ESTUDIEN", "ESTUDIAN", "ESTUDIARÁN"], answer: "ESTUDIEN" },
@@ -201,7 +200,8 @@ const ex4Options = [
     { text: "Aunque la tecnología _______ (avanzar), necesitamos personas.", options: ["AVANZA", "AVANZO", "AVANCE"], answer: "AVANCE" },
     { text: "Trabajamos para que el mundo _______ (mejorar).", options: ["MEJORE", "MEJOREN", "MEJORARÍA"], answer: "MEJORE" },
     { text: "Cuando tú _______ (llegar), empezaremos.", options: ["LLEGAS", "LLEGUEN", "LLEGUES"], answer: "LLEGUES" },
-    { text: "Es vital que nosotros _______ (tener) un propósito.", options: ["TENEMOS", "TENGAMOS", "TUVIMOS"], answer: "TENGAMOS" }
+    { text: "Es vital que nosotros _______ (tener) un propósito.", options: ["TENEMOS", "TENGAMOS", "TUVIMOS"], answer: "TENGAMOS" },
+    { text: "Necesito que nosotros _______ (lograr) la meta.", options: ["LOGRAMOS", "LOGRAMOS", "LOGREMOS"], answer: "LOGREMOS" },
 ];
 
 const completarPrompts = [
