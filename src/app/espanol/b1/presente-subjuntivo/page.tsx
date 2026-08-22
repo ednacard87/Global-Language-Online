@@ -138,7 +138,7 @@ const ex2Prompts = [
 ];
 
 const ex3Prompts = [
-    { en: "I am happy that you are here.", answer: ["me alegra que estés aquí", "me alegra que estes aqui"] },
+    { en: "I am happy that you are here.", answer: ["me alegra que estés aquí", "estoy feliz que estes aqui"] },
     { en: "She worries that he is sick.", answer: ["le preocupa que él esté enfermo", "a ella le preocupa que el este enfermo"] },
     { en: "We need you to bring the documents.", answer: ["nosotros necesitamos que traigas los documentos"] },
     { en: "They want me to tell them a story.", answer: ["ellos quieren que les cuente una historia"] },
@@ -239,7 +239,7 @@ const translationTextParagraph = {
 };
 
 const finalExercises = [
-    { en: "I want you to study more.", answer: ["quiero que estudies más", "quiero que estudies mas"] },
+    { en: "I want you to study more.", answer: ["quiero que estudies más", "yo quiero que estudies mas"] },
     { en: "I hope you have a good weekend.", answer: ["espero que tengas un buen fin de semana"] },
     { en: "It is important that you take care of yourself.", answer: ["es importante que te cuides", "es importante que te cuides a ti mismo"] },
     { en: "I recommend that you exercise every day.", answer: ["te recomiendo que hagas ejercicio todos los días", "te recomiendo que hagas ejercicio todos los dias"] },
