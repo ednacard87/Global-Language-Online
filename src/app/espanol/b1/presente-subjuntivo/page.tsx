@@ -484,6 +484,13 @@ function PresenteSubjuntivoContentInternal() {
                                 <p>Se usa para expresar deseos, emociones, recomendaciones, necesidades, dudas y posibilidades.</p>
                                 <div className="grid grid-cols-2 gap-2 text-xs uppercase text-primary">
                                     {["Deseos", "Emociones", "Recomendaciones", "Necesidades"].map(it => <div key={it} className="p-2 border rounded bg-primary/10 text-center">{it}</div>)}
+                                    {["EXPRESION + QUE + SUBJUNTIVO"].map(it => <div key={it} className="p-2 border rounded bg-primary/12 text-center">{it}</div>)}
+                                    <p>Deseo = yo quiero que tú estudies</p>
+                                    <p>Recomendación = recomiendo que estudies más</p>
+                                    <p>Necesidad = necesito que estudies gramática</p>
+                                    <p>Duda = dudo que estudies mucho</p>
+                                    <p>Posibilidad = es posible que estudie los sábados</p>
+                                    <p>Emoción = estoy feliz de que vengas mañana</p>
                                 </div>
                             </div>
                             <div className="p-6 bg-white/60 dark:bg-background/20 rounded-[2rem] border shadow-sm space-y-4">
