@@ -115,51 +115,51 @@ const ex1Prompts = [
     { en: "They work so that we can travel.", answer: ["trabajan para que podamos viajar", "ellos trabajan para que podamos viajar"] },
     { en: "She saves money so that her son studies.", answer: ["ahorra dinero para que su hijo estudie", "ella ahorra dinero para que su hijo estudie"] },
     { en: "We call so that they know.", answer: ["llamamos para que sepan", "nosotros llamamos para que ellos sepan"] },
-    { en: "He explains so that you understand.", answer: ["él explica para que entiendas", "explica para que comprendas"] },
-    { en: "I help you so that you finish early.", answer: ["te ayudo para que termines temprano"] },
-    { en: "They speak loudly so that everyone hears.", answer: ["hablan fuerte para que todos oigan"] },
-    { en: "She cooks so that we eat healthy.", answer: ["cocina para que comamos saludable"] },
-    { en: "We write so that you remember.", answer: ["escribimos para que recuerdes"] },
-    { en: "You study so that you have a better future.", answer: ["estudias para que tengas un mejor futuro"] },
-    { en: "They practice so that they win.", answer: ["practican para que ganen"] },
-    { en: "I clean so that the house is beautiful.", answer: ["limpio para que la casa esté hermosa"] }
+    { en: "He explains so that you understand.", answer: ["él explica para que entiendas", "el explica para que comprendas"] },
+    { en: "I help you so that you finish early.", answer: ["te ayudo para que termines temprano" , "yo te ayudo para que termines temprano"] },
+    { en: "They speak loudly so that everyone hears.", answer: ["ellos hablan fuerte para que todos oigan"] },
+    { en: "She cooks so that we eat healthy.", answer: ["ella cocina para que comamos saludable"] },
+    { en: "We write so that you remember.", answer: ["nosotros escribimos para que recuerdes"] },
+    { en: "You study so that you have a better future.", answer: ["tu estudias para que tengas un mejor futuro" , "tu estudias para que tu tengas un mejor futuro"] },
+    { en: "She practices so that they win.", answer: ["ella practica para que ganen" , "ella practica para que ellosganen"] },
+    { en: "I clean so that the house is beautiful.", answer: ["yo limpio para que la casa este hermosa"] }
 ];
 
 const ex1Vocab = { "aprender": "learn", "ahorrar": "save", "hijo": "son", "saber": "know", "explicar": "explain", "temprano": "early", "oír": "hear", "saludable": "healthy", "ganar": "win", "mejor": "better", "limpiar": "clean" };
 
 const ex2Prompts = [
-    { en: "When you arrive, call me.", answer: ["cuando llegues llámame", "cuando llegues llamame"] },
-    { en: "When she finishes, she will eat.", answer: ["cuando termine comerá", "cuando ella termine comerá"] },
-    { en: "When they have time, they will go.", answer: ["cuando tengan tiempo irán"] },
-    { en: "When we see the result, we will know.", answer: ["cuando veamos el resultado sabremos"] },
-    { en: "When you speak with him, tell the truth.", answer: ["cuando hables con él di la verdad"] },
-    { en: "When he comes back, we will talk.", answer: ["cuando vuelva hablaremos"] },
-    { en: "When the project is ready, I will show it.", answer: ["cuando el proyecto esté listo lo mostraré"] },
-    { en: "When you buy the car, take me.", answer: ["cuando compres el carro llévame"] },
-    { en: "When they sleep, be quiet.", answer: ["cuando duerman haz silencio"] },
-    { en: "When I can, I will help you.", answer: ["cuando pueda te ayudaré"] },
-    { en: "When the sun shines, it will be hot.", answer: ["cuando el sol brille hará calor"] },
-    { en: "When you read this, smile.", answer: ["cuando leas esto sonríe"] }
+    { en: "When you arrive, call me.", answer: ["cuando llegues llámame", "cuando tu llegues llamame"] },
+    { en: "When she finishes, she will eat.", answer: ["cuando termine comerá", "cuando ella termine comera"] },
+    { en: "When they have time, they will go.", answer: ["cuando tengan tiempo ellos iran"] },
+    { en: "When we see the result, we will know.", answer: ["cuando veamos el resultado nosotros sabremos"] },
+    { en: "When you speak with him, tell the truth.", answer: ["cuando hables con el di la verdad"] },
+    { en: "When he comes back, we will talk.", answer: ["cuando vuelva nosotros hablaremos"] },
+    { en: "When the project is ready, I will show it.", answer: ["cuando el proyecto este listo yo lo mostrare"] },
+    { en: "When you buy the car, take me.", answer: ["cuando compres el carro llevame"] },
+    { en: "When they sleep, be quiet.", answer: ["cuando ellos duerman haz silencio"] },
+    { en: "When I can, I will help you.", answer: ["cuando pueda te ayudaré" , "cuando yo pueda te ayudare"] },
+    { en: "When the sun shines, it will be hot.", answer: ["cuando el sol brille hara calor"] },
+    { en: "When you read this, smile.", answer: ["cuando leas esto sonríe" , "cuando tu leas esto sonrie"] }
 ];
 
 const ex2Vocab = { "llegar": "arrive", "terminar": "finish", "comer": "eat", "tiempo": "time", "decir la verdad": "tell the truth", "vuelva": "come back", "listo": "ready", "carro": "car", "dormir": "sleep", "ayudar": "help", "brillar": "shine", "leer": "read", "sonreír": "smile" };
 
 const ex3Prompts = [
-    { en: "Although it rains, I will go.", answer: ["aunque llueva iré"] },
-    { en: "Even if he is tired, he will work.", answer: ["aunque esté cansado trabajará"] },
-    { en: "Although she doesn't want to, she will study.", answer: ["aunque no quiera estudiará"] },
-    { en: "Even if we don't have money, we will travel.", answer: ["aunque no tengamos dinero viajaremos"] },
-    { en: "Although they speak fast, I understand them.", answer: ["aunque hablen rápido los entiendo"] },
-    { en: "Even if you say no, I will do it.", answer: ["aunque digas que no lo haré"] },
-    { en: "Although the project is difficult, we will finish it.", answer: ["aunque el proyecto sea difícil lo terminaremos"] },
-    { en: "Even if it is late, call me.", answer: ["aunque sea tarde llámame"] },
-    { en: "Although he is young, he is very smart.", answer: ["aunque sea joven es muy inteligente"] },
+    { en: "Although it rains, I will go.", answer: ["aunque llueva iré" , "aunque llueva yo ire"] },
+    { en: "Even if he is tired, he will work.", answer: ["aunque esté cansado el trabajará" , "aunque este cansado el trabajara"] },
+    { en: "Although she doesn't want to, she will study.", answer: ["aunque no quiera estudiará" , "aunque ella no quiera estudiara"] },
+    { en: "Even if we don't have money, we will travel.", answer: ["aunque no tengamos dinero viajaremos" , "aunque nosotros no tengamos dinero viajaremos"] },
+    { en: "Although they speak fast, I understand them.", answer: ["aunque hablen rápido los entiendo" , "aunque ellos hablen rapido yo los entiendo"] },
+    { en: "Even if you say no, I will do it.", answer: ["aunque digas que no yo lo haré" , "aunque tu digas que no yo lo hare"] },
+    { en: "Although the project is difficult, we will finish it.", answer: ["aunque el proyecto sea dificil nosotros lo terminaremos"] },
+    { en: "Even if it is late, call me.", answer: ["aunque sea tarde, llámame" , "aunque sea tarde, llamame"] },
+    { en: "Although he is young, he is very smart.", answer: ["aunque sea joven es muy inteligente" , "aunque el sea joven es muy inteligente"] },
     { en: "Even if you don't believe it, it's true.", answer: ["aunque no lo creas es verdad"] },
-    { en: "Although they are far, they call every day.", answer: ["aunque estén lejos llaman todos los días"] },
-    { en: "Even if she arrives now, she is late.", answer: ["aunque llegue ahora llega tarde"] },
-    { en: "Although I have no time, I will read.", answer: ["aunque no tenga tiempo leeré"] },
-    { en: "Even if the technology changes, we will adapt.", answer: ["aunque la tecnología cambie nos adaptaremos"] },
-    { en: "Although there are problems, there is a solution.", answer: ["aunque haya problemas hay una solución"] }
+    { en: "Although they are far, they call every day.", answer: ["aunque estén lejos llaman todos los días" , "aunque ellos esten lejos llaman todos los dias"] },
+    { en: "Even if she arrives now, she is late.", answer: ["aunque llegue ahora llega tarde" , "aunque ella llegue ahora ella llega tarde"] },
+    { en: "Although I have no time, I will read.", answer: ["aunque no tenga tiempo leeré" , "aunque yo no tenga tiempo yo leere"] },
+    { en: "Even if the technology changes, we will adapt.", answer: ["aunque la tecnología cambie nos adaptaremos" , "aunque la tecnología cambie, nosotros nos adaptaremos"] },
+    { en: "Although there are problems, there is a solution.", answer: ["aunque haya problemas, hay una solución"] }
 ];
 
 const ex3Vocab = { "llover": "rain", "cansado": "tired", "trabajar": "work", "querer": "want", "estudiar": "study", "viajar": "travel", "rápido": "fast", "entender": "understand", "difícil": "difficult", "tarde": "late", "lejos": "far", "clima": "weather", "cambiar": "change", "problema": "problem" };
@@ -247,21 +247,21 @@ const translationTextData = {
 };
 
 const finalExercises = [
-    { en: "I study so that my parents are proud.", answer: ["estudio para que mis padres estén orgullosos", "yo estudio para que mis padres estén orgullosos"] },
-    { en: "When the war ends, there will be peace.", answer: ["cuando la guerra termine habrá paz"] },
-    { en: "Although she is sick, she wants to work.", answer: ["aunque esté enferma quiere trabajar"] },
-    { en: "I hope you find a solution to your problem.", answer: ["espero que encuentres una solución a tu problema"] },
-    { en: "It is necessary that we protect the forest.", answer: ["es necesario que protejamos el bosque"] },
-    { en: "Call me before you go to the meeting.", answer: ["llámame antes de que vayas a la reunión"] },
-    { en: "I want you to be happy with your decision.", answer: ["quiero que estés feliz con tu decisión"] },
-    { en: "Although I am tired, I will finish the project.", answer: ["aunque esté cansado terminaré el proyecto"] },
-    { en: "He helps her so that she achieves her goals.", answer: ["la ayuda para que ella logre sus metas", "él la ayuda para que ella logre sus metas"] },
-    { en: "When the technology improves, life will be easier.", answer: ["cuando la tecnología mejore la vida será más fácil"] },
-    { en: "It is better that we save resources for the future.", answer: ["es mejor que ahorremos recursos para el futuro"] },
-    { en: "I recommend that you talk to your boss.", answer: ["te recomiendo que hables con tu jefe"] },
-    { en: "Even if it is difficult, you must try it.", answer: ["aunque sea difícil debes intentarlo"] },
-    { en: "They work hard so that their children have studies.", answer: ["trabajan duro para que sus hijos tengan estudios"] },
-    { en: "I don't think that society is ready for this change.", answer: ["no creo que la sociedad esté lista para este cambio"] }
+    { en: "I study so that my parents are proud.", answer: ["estudio para que mis padres estén orgullosos", "yo estudio para que mis padres esten orgullosos"] },
+    { en: "When the war ends, there will be peace.", answer: ["cuando la guerra termine habra paz"] },
+    { en: "Although she is sick, she wants to work.", answer: ["aunque ella este enferma ella quiere trabajar" , "aunque ella este enferma quiere trabajar"] },
+    { en: "I hope you find a solution to your problem.", answer: ["espero que encuentres una solución a tu problema" , "yo espero que encuentres una solucion a tu problema"] },
+    { en: "It is necessary that we protect the forest.", answer: ["es necesario que nosotros protejamos el bosque"] },
+    { en: "Call me before you go to the meeting.", answer: ["llámame antes de que vayas a la reunión" , "llamame antes de que tu vayas a la reunion"] },
+    { en: "I want you to be happy with your decision.", answer: ["quiero que estés feliz con tu decisión" , "yo quiero que estes feliz con tu decision"] },
+    { en: "Although I am tired, I will finish the project.", answer: ["aunque esté cansado terminaré el proyecto" , "aunque yo este cansado, yo terminare el proyecto"] },
+    { en: "He helps her so that she achieves her goals.", answer: ["el la ayuda para que ella logre sus metas", "él la ayuda para que ella logre sus metas"] },
+    { en: "When the technology improves, life will be easier.", answer: ["cuando la tecnologia mejore, la vida sera más facil" , "cuando la tecnología mejore, la vida será más fácil"] },
+    { en: "It is better that we save resources for the future.", answer: ["es mejor que ahorremos recursos para el futuro" , "es mejor que nosotros ahorremos recursos para el futuro"] },
+    { en: "I recommend that you talk to your boss.", answer: ["te recomiendo que hables con tu jefe" , "yo te recomiendo que hables con tu jefe"] },
+    { en: "Even if it is difficult, you must try it.", answer: ["aunque sea difícil debes intentarlo", "aunque sea dificil tu debes intentarlo"] },
+    { en: "They work hard so that their children have studies.", answer: ["trabajan duro para que sus hijos tengan estudios" , "ellos trabajan duro para que sus hijos tengan estudios"] },
+    { en: "I don't think that society is ready for this change.", answer: ["no creo que la sociedad esté lista para este cambio" , "yo no creo que la sociedad este lista para este cambio"] }
 ];
 
 const finalVocab = { "orgullosos": "proud", "guerra": "war", "paz": "peace", "enferma": "sick", "solución": "solution", "necesario": "necessary", "bosque": "forest", "decisión": "decision", "metas": "goals", "recomiendo": "recommend" };
@@ -546,39 +546,72 @@ function Subjuntivo3ContentInternal() {
                 );
             case 'grammar':
                 return (
-                    <Card className="shadow-soft border-2 border-brand-purple bg-slate-100 dark:bg-slate-800/50 p-8 text-left text-foreground overflow-hidden">
-                        <CardHeader className='px-0 pb-6 border-b mb-6'><CardTitle className="text-3xl font-black text-primary uppercase">Gramática: Finalidad y Condición</CardTitle></CardHeader>
-                        <CardContent className="space-y-8 px-0 font-bold">
-                            <div className="p-6 bg-white/60 dark:bg-background/20 rounded-[2rem] border shadow-sm space-y-4">
-                                <h3 className="text-xl font-black text-primary uppercase">1. PARA QUE + SUBJUNTIVO</h3>
-                                <p>Se usa para expresar la finalidad con sujetos diferentes.</p>
-                                <div className="p-4 bg-muted rounded-xl border-l-4 border-primary">
-                                    <p>Estudio español <strong>para</strong> aprender. (Yo - Yo)</p>
-                                    <p className='text-primary'>Estudio español <strong>para que</strong> mis clientes me entiendan. (Yo - Clientes)</p>
+                    <div className="space-y-6 text-left text-foreground animate-in fade-in duration-700">
+                        <div className="mb-4">
+                            <h2 className="text-3xl font-black text-primary uppercase tracking-tighter">Gramática: Finalidad y Condición</h2>
+                            <p className="text-black font-bold text-lg">Aprende a combinar el subjuntivo con estructuras de futuro y propósito.</p>
+                        </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {/* Ficha 1: Para que */}
+                            <div className="p-8 bg-card/80 dark:bg-slate-800/80 backdrop-blur-md rounded-[2.5rem] border-2 border-primary/20 shadow-xl space-y-4 font-bold transition-all hover:scale-[1.02] hover:border-primary/40 group">
+                                <div className="flex items-center gap-3">
+                                    <div className="p-2 bg-primary/20 rounded-xl text-primary"><Target className="h-6 w-6"/></div>
+                                    <h3 className="text-2xl font-black text-primary uppercase tracking-tight group-hover:text-brand-purple transition-colors">1. Finalidad (Para que)</h3>
+                                </div>
+                                <p className="text-base leading-relaxed text-foreground/90">Usamos el subjuntivo con <span className="text-primary underline">PARA QUE</span> cuando los sujetos de las dos frases son diferentes.</p>
+                                <div className="p-4 bg-primary/5 rounded-xl border border-primary/20 space-y-2">
+                                    <p className="text-xs uppercase text-muted-foreground">Comparación:</p>
+                                    <p>Estudio español <span className="text-primary font-black">PARA</span> aprender. <span className="text-[10px] text-muted-foreground">(Yo - Yo)</span></p>
+                                    <p>Estudio español <span className="text-primary font-black">PARA QUE</span> me <span className="text-brand-purple font-black">entiendan</span>. <span className="text-[10px] text-muted-foreground">(Yo - Clientes)</span></p>
                                 </div>
                             </div>
-                            <div className="p-6 bg-white/60 dark:bg-background/20 rounded-[2rem] border shadow-sm space-y-4">
-                                <h3 className="text-xl font-black text-primary uppercase">2. ANTES DE QUE / CUANDO</h3>
-                                <p>Usamos subjuntivo para acciones futuras.</p>
-                                <p className='font-mono text-foreground'>Llámame <strong>antes de que</strong> salgas.</p>
-                                <p className='font-mono text-foreground'><strong>Cuando</strong> termines, llámame. (Futuro)</p>
-                            </div>
-                            <div className="p-6 bg-white/60 dark:bg-background/20 rounded-[2rem] border shadow-sm space-y-4">
-                                <h3 className="text-xl font-black text-primary uppercase">3. AUNQUE (Hecho vs Posibilidad)</h3>
-                                <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
-                                    <div className='p-3 border rounded bg-background shadow-sm'>
-                                        <p className='text-xs text-muted-foreground uppercase'>Hecho (Indicativo):</p>
-                                        <p className='text-black'>Aunque <strong>está</strong> cansado, trabaja.</p>
+
+                            {/* Ficha 2: Tiempo Futuro */}
+                            <div className="p-8 bg-card/80 dark:bg-slate-800/80 backdrop-blur-md rounded-[2.5rem] border-2 border-brand-purple/20 shadow-xl space-y-4 font-bold transition-all hover:scale-[1.02] hover:border-brand-purple/40 group">
+                                <div className="flex items-center gap-3">
+                                    <div className="p-2 bg-brand-purple/20 rounded-xl text-brand-purple"><Clock className="h-6 w-6"/></div>
+                                    <h3 className="text-2xl font-black text-brand-purple uppercase tracking-tight group-hover:text-primary transition-colors">2. Tiempo (Antes de / Cuando)</h3>
+                                </div>
+                                <p className="text-base leading-relaxed text-foreground/90">Usamos subjuntivo cuando la acción se refiere al <span className="text-brand-purple underline">FUTURO</span>.</p>
+                                <div className="space-y-4">
+                                    <div className="p-4 bg-muted/50 rounded-xl border font-mono text-sm">
+                                        <p>Llámame <span className="text-brand-purple font-bold">ANTES DE QUE</span> salgas.</p>
                                     </div>
-                                    <div className='p-3 border rounded bg-background shadow-sm'>
-                                        <p className='text-xs text-muted-foreground uppercase'>Posibilidad (Subjuntivo):</p>
-                                        <p className='text-primary'>Aunque <strong>esté</strong> cansado, trabajará.</p>
+                                    <div className="p-4 bg-muted/50 rounded-xl border font-mono text-sm">
+                                        <p><span className="text-brand-purple font-bold">CUANDO</span> termines, llámame. <span className="text-[10px] text-muted-foreground">(Futuro)</span></p>
+                                        <p>Cuando terminé, me fui. <span className="text-[10px] text-muted-foreground">(Pasado/Hecho)</span></p>
                                     </div>
                                 </div>
                             </div>
-                        </CardContent>
-                        <CardFooter className="justify-center pt-6 border-t"><Button onClick={() => handleTopicCompleteInternal('grammar')} size="lg" className="px-24 font-black h-14 text-xl shadow-xl uppercase">Entendido</Button></CardFooter>
-                    </Card>
+
+                            {/* Ficha 3: Concesión */}
+                            <div className="md:col-span-2 p-8 bg-gradient-to-br from-primary/5 to-brand-purple/5 backdrop-blur-md rounded-[2.5rem] border-2 border-dashed border-primary/30 shadow-xl space-y-6 font-bold">
+                                <div className="flex items-center gap-3">
+                                    <div className="p-2 bg-primary/20 rounded-xl text-primary"><Sparkles className="h-6 w-6"/></div>
+                                    <h3 className="text-2xl font-black text-primary uppercase tracking-tight group-hover:text-brand-purple transition-colors">3. Concesión (Aunque)</h3>
+                                </div>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                                    <div className="space-y-3">
+                                        <div className="flex items-center gap-2"><CheckCircle2 className="h-5 w-5 text-green-500"/><h4 className="text-lg font-black uppercase text-green-600">Indicativo (Hecho Real)</h4></div>
+                                        <p className="text-sm text-muted-foreground">Usamos indicativo cuando la información es cierta o conocida.</p>
+                                        <div className="p-4 bg-white/60 dark:bg-slate-900/40 rounded-2xl border border-green-500/20 text-xl text-center">Aunque <span className="text-green-600">está</span> cansado, trabaja.</div>
+                                    </div>
+                                    <div className="space-y-3">
+                                        <div className="flex items-center gap-2"><HelpCircle className="h-5 w-5 text-blue-500"/><h4 className="text-lg font-black uppercase text-blue-600">Subjuntivo (Hipótesis)</h4></div>
+                                        <p className="text-sm text-muted-foreground">Usamos subjuntivo cuando es una posibilidad o algo futuro.</p>
+                                        <div className="p-4 bg-white/60 dark:bg-slate-900/40 rounded-2xl border border-blue-500/20 text-xl text-center">Aunque <span className="text-lightblue-600">esté</span> cansado, trabajará.</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="flex justify-center pt-10">
+                            <Button onClick={() => handleTopicCompleteInternal('grammar')} size="lg" className="px-32 font-black h-16 text-2xl shadow-2xl uppercase tracking-widest rounded-full bg-primary hover:bg-primary/90 text-primary-foreground transform transition-all hover:scale-105 active:scale-95">
+                                ¡Misión Comprendida! <ArrowRight className="ml-3 h-8 w-8" />
+                            </Button>
+                        </div>
+                    </div>
                 );
             case 'conjugation':
                 const v = conjugationVerbs[conjIdx];
