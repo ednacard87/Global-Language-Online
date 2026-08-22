@@ -243,7 +243,7 @@ const finalExercises = [
     { en: "I hope you have a good weekend.", answer: ["espero que tengas un buen fin de semana"] },
     { en: "It is important that you take care of yourself.", answer: ["es importante que te cuides", "es importante que te cuides a ti mismo"] },
     { en: "I recommend that you exercise every day.", answer: ["te recomiendo que hagas ejercicio todos los días", "te recomiendo que hagas ejercicio todos los dias"] },
-    { en: "I am happy that you are here.", answer: ["me alegra que estés aquí", "me alegra que estes aqui", "estoy feliz de que estés aquí"] },
+    { en: "I am happy that you are here.", answer: ["me alegra que estés aquí", "me alegra que estes aqui", "yo estoy feliz de que estés aquí"] },
     { en: "She needs me to call her tonight.", answer: ["ella necesita que yo la llame esta noche", "necesita que la llame esta noche"] },
     { en: "It is necessary that we speak the truth.", answer: ["es necesario que digamos la verdad", "es necesario que hablemos la verdad"] },
     { en: "I hope they arrive on time.", answer: ["espero que ellos lleguen a tiempo", "espero que lleguen a tiempo"] },
