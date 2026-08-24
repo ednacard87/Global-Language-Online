@@ -72,10 +72,9 @@ const monosyllabicTableData = [
     { spanish: 'nuevo', answers: { pos: 'new', comp: 'newer', sup: 'the newest' } },
     { spanish: 'largo', answers: { pos: 'long', comp: 'longer', sup: 'the longest' } },
     { spanish: 'corto', answers: { pos: 'short', comp: 'shorter', sup: 'the shortest' } },
-    { spanish: 'gordo', answers: { pos: 'fat', comp: 'fatterer', sup: 'the fattest' } },
+    { spanish: 'gordo', answers: { pos: 'fat', comp: 'fatter', sup: 'the fattest' } },
     { spanish: 'grande', answers: { pos: 'big', comp: 'bigger', sup: 'the biggest' } },
-    { spanish: 'caliente', answers: { pos: 'hot', comp: 'hotter', sup: 'the hotest' } },
-    { spanish: 'alto', answers: { pos: 'tall', comp: 'taller', sup: 'the tallest' } },
+    { spanish: 'caliente', answers: { pos: 'hot', comp: 'hotter', sup: 'the hottest' } },
     { spanish: 'rapido', answers: { pos: 'fast', comp: 'faster', sup: 'the fastest' } },
     { spanish: 'delgado', answers: { pos: 'thin', comp: 'thinner', sup: 'the thinnest' } },
     { spanish: 'mojado', answers: { pos: 'wet', comp: 'wetter', sup: 'the wettest' } },
@@ -128,12 +127,12 @@ const ex_sup = [
 const monoPrompts = [
     { spanish: "EL INVIERNO ES MAS LARGO QUE EL VERANO", answer: ["winter is longer than summer"] },
     { spanish: "SANTA MARTA ES MAS PEQUEÑA QUE BARRANQUILLA", answer: ["santa marta is smaller than barranquilla"] },
-    { spanish: "ESTE ES EL PERRO MAS VIEJO DE ESE BARRIO", answer: ["this is the oldest dog in that neighborhood"] },
+    { spanish: "ESTE ES EL PERRO MAS VIEJO DE ESE BARRIO", answer: ["this is the oldest dog in that neighborhood" , "this dog is the oldest in that neighborhood"] },
     { spanish: "¿JUAN ES MAS ALTO QUE SARA?", answer: ["is juan taller than sara?"] },
-    { spanish: "MI CARRRO ES MAS RAPIDO QUE EL DE MICHAEL", answer: ["my car is faster than michael's"] },
-    { spanish: "MI CIUDAD ES MAS CALIDA QUE LA TUYA", answer: ["this house is the biggest on this street"] },
+    { spanish: "MI CARRRO ES MAS RAPIDO QUE EL DE MICHAEL", answer: ["my car is faster than michael's" , "my car is faster than michael's car"] },
+    { spanish: "MI CIUDAD ES MAS CALIDA QUE LA TUYA", answer: ["my city is warmer than yours"] },
     { spanish: "YO SOY MAS DELGADA QUE RACHEL", answer: ["i am thinner than rachel"] },
-    { spanish: "COLOMBIA ES MAS CALIENTE QUE CHILE", answer: ["Colombia es hotter than Chile"] },
+    { spanish: "COLOMBIA ES MAS CALIENTE QUE CHILE", answer: ["Colombia is hotter than Chile"] },
     { spanish: "CHILE ES MAS FRIO QUE COLOMBIA", answer: ["Chile is colder than Colombia"] },
     { spanish: "MI RELOJ ES MAS GRANDE QUE EL TUYO", answer: ["my watch is bigger than yours"] },
     { spanish: "TU CARRO ES MAS NUEVO QUE EL MIO", answer: ["your car is newer than mine"] },
@@ -233,8 +232,8 @@ const mixed3Prompts = [
 // --- VOCABULARIES ---
 const exCompVocab = { "escritorio " : "desk", "limpio": "clean", "ancho": "wide", "avenida": "avenue"};
 const exSupVocab = { "barrio": "neighborhood", "pequeño": "small" , "salon de clase" : "classroom" , "pelicula" : "movie" };
-const exMonoVocab = { "cálida": "warmer", "delgada": "thinner", "caliente": "hot", "frío": "cold" };
-const exBisVocab = { "chévere": "cool/nice", "tierno": "tender" };
+const exMonoVocab = { "cálida": "warmer", "delgada": "thinner", "caliente": "hot", "frío": "cold" , "invierno" : "winter" , "barrio" : "neighborhood" , "reloj" : "clock/watch" , "verano" : "summer" , "calle" : "street" };
+const exBisVocab = { "chévere": "cool/nice", "tierno": "tender" , "ejercicio" : "exercise" , "otro" : "other" , "caja" : "box" , "angosto" : "narrow" , "mujer" : "woman" , "avenida" : "avenue" };
 const exLongVocab = { "caro": "expensive", "peligroso": "dangerous", "artículo": "article", "revista": "magazine", "elegante": "elegant", "famoso": "famous", "difícil": "difficult", "moderna": "modern" };
 const exIrregVocab = { "mejor": "best/better", "lejos": "farther/further", "peor": "worst/worse", "delicioso": "delicious", "aburridor": "boring" };
 const exEqualityVocab = { "tan ... como": "as ... as", "alto": "tall", "caro": "expensive", "inteligente": "intelligent" , "portátil": "laptop" , "hermosa": "beautiful" , "primos": "cousins" ,"educado": "polite", "flaco": "thin" };
@@ -728,7 +727,7 @@ export default function Class13Content({ overrideStudentId }: { overrideStudentI
                             <p>Existen tres grados de comparación para los adjetivos:</p>
                             <ul className="space-y-2 list-disc pl-5">
                                 <li><span className="text-primary">GRADO POSITIVO:</span> El adjetivo en su forma base (Tall, Big). <br/>  ------------------- Susan es alta = Susan is tall.</li> <br/>   
-                                <li><span className="text-primary">GRADO COMPARATIVO:</span> Se usa para comparar dos cosas (Taller, Bigger). <br/>  ------------------------- Susan es mas alta que Nick = Susan is taller than Nick </li> <br/>                          
+                                <li><span className="text-primary">GRADO COMPARATIVO:</span> Se usa para comparar dos sustantivos (Taller, Bigger). <br/>  ------------------------- Susan es mas alta que Nick = Susan is taller than Nick </li> <br/>                          
                                 <li><span className="text-primary">GRADO SUPERLATIVO:</span> Indica el extremo superior (The tallest, The biggest). <br/>  ------------------------ Susan es la mas alta = Susan is the tallest.</li> <br/>                        
                             </ul>
                         </CardContent>
