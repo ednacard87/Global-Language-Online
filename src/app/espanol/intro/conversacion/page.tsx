@@ -26,15 +26,15 @@ const personalPresentationData = [
     { id: 5, question: "¿QUÉ ESTUDIAS?", answer: "ESTUDIO ________________" },
     { id: 6, question: "¿DÓNDE ESTUDIAS?", answer: "ESTUDIO EN ______________" },
     { id: 7, question: "¿DÓNDE TRABAJAS?", answer: "TRABAJO EN: ______________" },
-    { id: 8, question: "¿HABLAS ESPAÑOL?", answer: "SÍ, HABLO ESPAÑOL // UN POCO" },
-    { id: 9, question: "¿HABLAS INGLÉS?", answer: "MÁS O MENOS - EN ESTE MOMENTO ESTOY ESTUDIANDO INGLÉS." },
+    { id: 8, question: "¿HABLAS INGLES?", answer: "SÍ, HABLO ESPAÑOL // UN POCO" },
+    { id: 9, question: "¿HABLAS ESPAÑOL?", answer: "MÁS O MENOS - EN ESTE MOMENTO ESTOY ESTUDIANDO INGLÉS." },
     { id: 10, question: "¿CÓMO SE DELETREA TU NOMBRE?", answer: "MI NOMBRE ES: (Deletreo...)" },
-    { id: 11, question: "¿CUÁL ES TU CORREO ELECTRÓNICO?", answer: "MI CORREO ES: _________________", extra: "¿CÓMO SE DELETREA TU CORREO? -> MI CORREO ES: (Deletreo...)" },
-    { id: 12, question: "¿TIENES HERMANOS O HERMANAS?", answer: "SÍ, TENGO: _______" },
-    { id: 13, question: "¿CUÁNTOS AÑOS TIENES?", answer: "TENGO ____ AÑOS" },
+    { id: 11, question: "¿CUÁL ES TU CORREO ELECTRÓNICO?", answer: "MI CORREO ES: _________________", extra: "@ arroba / . punto" },
+    { id: 12, question: "¿TIENES HERMANOS O HERMANAS?", answer: "SÍ, YO TENGO: _______" },
+    { id: 13, question: "¿CUÁNTOS AÑOS TIENES?", answer: "YO TENGO ____ AÑOS" },
     { id: 14, question: "¿CUÁNDO ES TU CUMPLEAÑOS?", answer: "MI CUMPLEAÑOS ES EL: Día de Mes" },
     { id: 15, question: "¿CUÁL ES TU NÚMERO DE TELÉFONO?", answer: "MI NÚMERO ES: _________________" },
-    { id: 16, question: "¿QUÉ TE GUSTA HACER?", answer: "ME GUSTA ______________" },
+    { id: 16, question: "¿QUÉ TE GUSTA HACER?", answer: "ME GUSTA = ESTUDIAR-COMER-DESCANSAR..." },
     { id: 17, question: "¿CUÁL ES TU MÚSICA FAVORITA?", answer: "MI MÚSICA FAVORITA ES __________" },
 ];
 
@@ -53,8 +53,8 @@ const vocabularyAide = [
 
 const helpfulQuestions = [
     "¿Puedes repetir despacio, por favor?",
-    "¿Puedes repetir de nuevo, por favor?",
-    "¿Puedes hablar más lento?",
+    "¿Puedes repetir otra vez, por favor?",
+    "¿Puedes hablar más lento/despacio?",
     "¿Cómo se dice en inglés: _____?",
     "¿Cómo se dice en español: ______?",
     "¿Cómo se deletrea: _________?",
