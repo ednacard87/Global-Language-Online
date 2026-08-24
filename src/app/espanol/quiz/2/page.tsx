@@ -30,8 +30,8 @@ const quizQuestions = [
     },
     {
         question: "En el contexto de la hora, 'quarter to' significa...",
-        options: ["Y cuarto", "Menos cuarto", "Y media"],
-        correctAnswer: "Menos cuarto"
+        options: ["Y cuarto", "Falta un cuarto", "Y media"],
+        correctAnswer: "Falta un cuarto"
     },
     {
         question: "¿Cómo se traduce 'The United States' al español?",
@@ -106,7 +106,7 @@ const quizQuestions = [
     },
     {
         question: "Para decir las '12:00 PM', en español usamos...",
-        options: ["Es medianoche", "Es mediodía", "Son las doce en punto"],
+        options: ["Es medianoche", "Es mediodía", "Son las doce y media"],
         correctAnswer: "Es mediodía"
     },
     {
