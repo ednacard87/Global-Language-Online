@@ -51,27 +51,27 @@ const ICONS_CONFIG = {
 };
 
 const verbVocabulary = [
-    { spanish: 'JUGAR', english: 'play' },
-    { spanish: 'CAMINAR', english: 'walk' },
-    { spanish: 'IR', english: 'go' },
-    { spanish: 'TRABAJAR', english: 'work' },
-    { spanish: 'DORMIR', english: 'sleep' },
-    { spanish: 'COMER', english: 'eat' },
-    { spanish: 'BEBER', english: 'drink' },
-    { spanish: 'VER', english: 'see' },
-    { spanish: 'MIRAR', english: 'look' },
-    { spanish: 'SALIR', english: 'go out' },
-    { spanish: 'CORRER', english: 'run' },
-    { spanish: 'CANTAR', english: 'sing' },
-    { spanish: 'HABLAR', english: 'speak' },
-    { spanish: 'PENSAR', english: 'think' },
-    { spanish: 'TENER', english: 'have' },
-    { spanish: 'HACER', english: 'do' },
-    { spanish: 'ESTUDIAR', english: 'study' },
-    { spanish: 'ESCRIBIR', english: 'write' },
-    { spanish: 'LEER', english: 'read' },
-    { spanish: 'APRENDER', english: 'learn' },
-    { spanish: 'ENSEÑAR', english: 'teach' },
+    { spanish: 'JUGAR', english: 'to play' },
+    { spanish: 'CAMINAR', english: 'to walk' },
+    { spanish: 'IR', english: 'to go' },
+    { spanish: 'TRABAJAR', english: 'to work' },
+    { spanish: 'DORMIR', english: 'to sleep' },
+    { spanish: 'COMER', english: 'to eat' },
+    { spanish: 'BEBER', english: 'to drink' },
+    { spanish: 'VER', english: 'to see' },
+    { spanish: 'MIRAR', english: 'to look' },
+    { spanish: 'SALIR', english: 'to go out' },
+    { spanish: 'CORRER', english: 'to run' },
+    { spanish: 'CANTAR', english: 'to sing' },
+    { spanish: 'HABLAR', english: 'to speak' },
+    { spanish: 'PENSAR', english: 'to think' },
+    { spanish: 'TENER', english: 'to have' },
+    { spanish: 'HACER', english: 'to do' },
+    { spanish: 'ESTUDIAR', english: 'to study' },
+    { spanish: 'ESCRIBIR', english: 'to write' },
+    { spanish: 'LEER', english: 'to read' },
+    { spanish: 'APRENDER', english: 'to learn' },
+    { spanish: 'ENSEÑAR', english: 'to teach' },
 ];
 
 const basicWords = [
@@ -90,7 +90,7 @@ const basicWords = [
 ];
 
 const simpleFormVocab = {
-    "beber": "drink", "agua": "water", "jugar": "play", "futbol": "soccer/football", 
+    "beber": "to drink", "agua": "water", "jugar": "to play", "futbol": "soccer/football", 
     "escuchar": "listen", "música": "music", "hablar": "speak", "abrir": "open", "puerta": "door"
 };
 
