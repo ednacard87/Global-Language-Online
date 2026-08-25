@@ -554,7 +554,7 @@ export default function Class2Content() {
                 );
             case 'grammar':
                 return (
-                    // Gramatica 1 - (Do/Does  + usos principales + estructura + contracciones)
+                     // Gramatica 1 - (Do/Does  + usos principales + estructura + contracciones)
                     <div className="space-y-6 text-left">
                         <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-slate-100 dark:bg-slate-800/50">
                             <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase tracking-tight">Present Simple: “DO - DOES”</CardTitle></CardHeader>
