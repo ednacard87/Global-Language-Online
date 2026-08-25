@@ -560,8 +560,8 @@ export default function Class2Content() {
                             <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase tracking-tight">Present Simple: “DO - DOES”</CardTitle></CardHeader>
                             <CardContent className="space-y-8 font-bold text-lg pt-4 text-foreground">
                                 <div className="p-6 bg-white/80 dark:bg-background/20 rounded-2xl border text-black">
-                                    <p className="text-lg font-bold">1 - USOS PRINCIPALES:</p>
-                                    <p className="text-lg mt-2"> AUXILIAR = “DO-DOES”  // como VERBO (HACER = TO DO).</p>
+                                    <p className="text-1xl font-black text-primary uppercase tracking-tight">1 - USOS PRINCIPALES:</p>
+                                    <p className="text-white mt-2"> AUXILIAR = “DO-DOES”  // como VERBO (HACER = TO DO).</p>
                                     <p className="font-mono text-xl font-black text-primary mt-4 uppercase text-center"> I - YOU - WE - THEY = DO // HE - SHE - IT = DOES</p>
                                 </div>
 
