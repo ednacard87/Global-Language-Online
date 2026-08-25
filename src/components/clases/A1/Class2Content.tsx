@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -41,8 +41,8 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 
 // --- DATA & CONSTANTS ---
 
-const progressStorageKey = 'progress_a1_eng_u1_c2_v200_blindado';
-const mainProgressKey = 'progress_a1_eng_unit_1_class_2';
+const progressStorageVersion = 'progress_a2_eng_u1_c2_v200_blindado';
+const mainProgressKey = 'progress_a2_eng_unit_1_class_2';
 
 const ICONS_CONFIG = {
     locked: Lock,
@@ -324,6 +324,7 @@ export default function Class2Content() {
     const [selectedTopic, setSelectedTopic] = useState<string>('');
     const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
     const [isInitialLoading, setIsInitialLoading] = useState(true);
+    const hasInitialized = useRef(false);
 
     const [verbsAnswers, setVerbsAnswers] = useState<string[]>(Array(verbVocabulary.length).fill(''));
     const [wordsAnswers, setWordsAnswers] = useState<string[]>(Array(basicWords.length).fill(''));
@@ -357,7 +358,7 @@ export default function Class2Content() {
     ], []);
 
     useEffect(() => {
-        if (isProfileLoading || isUserLoading || !studentProfile) return;
+        if (isProfileLoading || isUserLoading || !studentProfile || hasInitialized.current) return;
         let path = initialLearningPath.map(t => ({...t, subItems: t.subItems ? t.subItems.map(s => ({...s})) : undefined}));
         let savedST = '';
         if (isAdmin) {
@@ -380,7 +381,7 @@ export default function Class2Content() {
             }
 
             if (path[i].subItems) {
-                let allSubsDone = true;
+                let allDone = true;
                 let subStepReady = lastMainDone && path[i].status !== 'locked'; 
                 
                 for(let j=0; j < path[i].subItems!.length; j++) {
@@ -389,9 +390,9 @@ export default function Class2Content() {
                     }
                     const isSubCompleted = path[i].subItems![j].status === 'completed';
                     subStepReady = isSubCompleted;
-                    if (!isSubCompleted) allSubsDone = false;
+                    if (!isSubCompleted) allDone = false;
                 }
-                lastMainDone = allSubsDone;
+                lastMainDone = allDone;
             } else {
                 lastMainDone = (path[i].status === 'completed');
             }
@@ -401,6 +402,7 @@ export default function Class2Content() {
         const firstA = path.find(p => p.status === 'active') || path.flatMap(p => p.subItems || []).find(sp => sp?.status === 'active');
         setSelectedTopic(savedST || firstA?.key || path[0]?.key || 'vocabulary');
         setIsInitialLoading(false);
+        hasInitialized.current = true;
     }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading, isUserLoading]);
 
     const progressValue = useMemo(() => {
@@ -413,9 +415,11 @@ export default function Class2Content() {
         return total > 0 ? Math.round((done / total) * 100) : 0;
     }, [learningPath]);
 
+    // ASYNC FLOW 2: Persistencia con Debounce y Comparación Profunda (Anti-Bucle)
     useEffect(() => {
-        if (isInitialLoading || isAdmin || !studentDocRef || learningPath.length === 0) return;
-        const data: any = { lastSelectedTopic: selectedTopic };
+        if (isInitialLoading || isAdmin || !studentDocRef || learningPath.length === 0 || !user || !hasInitialized.current) return;
+        
+        const data: Record<string, any> = { lastSelectedTopic: selectedTopic };
         learningPath.forEach(item => {
             data[item.key] = item.status;
             if (item.subItems) {
@@ -424,9 +428,24 @@ export default function Class2Content() {
                 item.subItems.forEach(sub => { data.subItems[item.key][sub.key] = sub.status; });
             }
         });
-        updateDocumentNonBlocking(studentDocRef, { [`lessonProgress.${progressStorageVersion}`]: data, [`progress.${mainProgressKey}`]: progressValue });
-        if (progressValue >= 100) window.dispatchEvent(new CustomEvent('progressUpdated'));
-    }, [learningPath, isAdmin, progressValue, studentDocRef, selectedTopic, isInitialLoading, studentProfile]);
+
+        // Deep comparison to prevent infinite loops
+        const currentSavedData = studentProfile?.lessonProgress?.[progressStorageVersion];
+        const currentOverallProgress = studentProfile?.progress?.[mainProgressKey];
+        if (JSON.stringify(data) === JSON.stringify(currentSavedData) && progressValue === currentOverallProgress) {
+            return;
+        }
+
+        const saveTimer = setTimeout(() => {
+            updateDocumentNonBlocking(studentDocRef, {
+                [`lessonProgress.${progressStorageVersion}`]: data,
+                [`progress.${mainProgressKey}`]: progressValue
+            });
+            if (progressValue >= 100) window.dispatchEvent(new CustomEvent('progressUpdated'));
+        }, 1500);
+
+        return () => clearTimeout(saveTimer);
+    }, [learningPath, isAdmin, progressValue, studentDocRef, selectedTopic, isInitialLoading, studentProfile, user]);
 
     const handleTopicCompleteInternal = useCallback((key: string) => setTopicToComplete(key), []);
 
@@ -593,11 +612,11 @@ export default function Class2Content() {
     };
 
     return (
-        <div className="grid gap-8 md:grid-cols-12 animate-in fade-in duration-500">
+        <div className="grid gap-8 md:grid-cols-12 animate-in fade-in duration-500 text-foreground">
             <div className="md:col-span-9 md:order-1 order-2">{renderContent()}</div>
             <div className="md:col-span-3 md:order-2 order-1 text-left">
                 <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
-                    <CardHeader><CardTitle className="text-lg uppercase font-black tracking-tighter text-primary">Ruta Clase 2 (A1)</CardTitle></CardHeader>
+                    <CardHeader><CardTitle className="text-lg uppercase font-black tracking-tighter text-primary">Ruta Clase 2 (A2)</CardTitle></CardHeader>
                     <CardContent>
                         <nav><ul className="space-y-1">
                             {learningPath.map(item => (
@@ -619,7 +638,7 @@ export default function Class2Content() {
                                                 const subL = sub.status === 'locked' && !isAdmin;
                                                 const SubI = ICONS_CONFIG[sub.status as keyof typeof ICONS_CONFIG] || PenSquare;
                                                 return (
-                                                    <li key={sub.key} onClick={() => handleTopicSelect(sub.key)} className={cn('flex items-center gap-3 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors cursor-pointer text-foreground', subL ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === sub.key && 'bg-muted text-primary font-bold')}>
+                                                    <li key={sub.key} onClick={() => handleTopicSelect(sub.key)} className={cn('flex items-center justify-between gap-3 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors cursor-pointer text-foreground', subL ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === sub.key && 'bg-muted text-primary font-bold')}>
                                                         <SubI className={cn("h-4 w-4", sub.status === 'completed' && 'text-green-500')} /><span>{sub.name}</span>
                                                         {subL && <Lock className="h-4 w-4 text-yellow-500" />}
                                                     </li>
