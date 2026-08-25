@@ -112,6 +112,11 @@ const posExercises = [
     { spanish: 'ellos escuchan música', answer: ["they listen to music"] },
     { spanish: 'yo  hablo ingles', answer: ["I speak English"] },
     { spanish: 'tu abres la puerta', answer: ["you open the door"] },
+    { spanish: 'yo tomo leche', answer: ["I drink milk"] },
+    { spanish: 'yo estudio inglés', answer: ["I study English"] },
+    { spanish: 'nosotros comemos en el restaurante', answer: ["we eat at the restaurant"] },
+    { spanish: 'ellos van al cine', answer: ["they go to the movies"] },
+    { spanish: 'nosotros aprendemos a cocinar', answer: ["we learn to cook"] },
 ];
 
 const negExercises = [
@@ -120,6 +125,11 @@ const negExercises = [
     { spanish: 'ellos no escuchan música', answer: ["they do not listen to music", "they don't listen to music"] },
     { spanish: 'yo no hablo ingles', answer: ["I do not speak English", "I don't speak English"] },
     { spanish: 'tu no abres la puerta', answer: ["you do not open the door", "you don't open the door"] },
+    { spanish: 'yo no tomo leche', answer: ["I do not drink milk", "I don't drink milk"] },
+    { spanish: 'yo no estudio inglés', answer: ["I do not study English", "I don't study English"] },
+    { spanish: 'nosotros no comemos en el restaurante', answer: ["we do not eat at the restaurant", "we don't eat at the restaurant"] },
+    { spanish: 'ellos no van al cine', answer: ["they do not go to the cinema", "they don't go to the cinema"] },
+    { spanish: 'nosotros no aprendemos a cocinar', answer: ["we do not learn to cook", "we don't learn to cook"] },
 ];
 
 const intExercises = [
@@ -128,6 +138,11 @@ const intExercises = [
     { spanish: '¿ellos escuchan música?', answer: ["do they listen to music?"] },
     { spanish: '¿yo  hablo ingles?', answer: ["do i speak english?"] },
     { spanish: '¿tu abres la puerta?', answer: ["do you open the door?"] },
+    { spanish: '¿yo tomo leche?', answer: ["do i drink milk?"] },
+    { spanish: '¿yo estudio inglés?', answer: ["do i study English?"] },
+    { spanish: '¿nosotros comemos en el restaurante?', answer: ["do we eat at the restaurant?"] },
+    { spanish: '¿ellos van al cine?', answer: ["do they go to the cinema?"] },
+    { spanish: '¿nosotros aprendemos a cocinar?', answer: ["do we learn to cook?"] },
 ];
 
 const ex1Prompts = [
