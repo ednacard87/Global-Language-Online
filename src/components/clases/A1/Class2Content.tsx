@@ -103,7 +103,7 @@ const ex1Vocab = {
 };
 
 const ex2Vocab = {
-    "hacer": "do", "tarea": "homework", "ejercicio": "exercise"
+    "hacer": "do", "tarea": "homework", "la compra": "the shopping"
 };
 
 const posExercises = [
@@ -160,7 +160,7 @@ const ex1Prompts = [
 
 const ex2Prompts = [
     { spanish: "TU HACES LA TAREA", answers: { affirmative: ["you do the homework"], negative: ["you do not do the homework", "you don't do the homework"], interrogative: ["do you do the homework?"], shortAffirmative: ["yes, i do"], shortNegative: ["no, i do not", "no, i don't"] } },
-    { spanish: "ELLA HACE EJERCICIO", answers: { affirmative: ["she does exercise"], negative: ["she does not do exercise", "she doesn't do exercise"], interrogative: ["does she do exercise?"], shortAffirmative: ["yes, she does"], shortNegative: ["no, she does not", "no, she doesn't"] } },
+    { spanish: "ELLA HACE LA COMPRA", answers: { affirmative: ["she does the shopping"], negative: ["she does not do the shopping", "she doesn't do the shopping"], interrogative: ["does she do the shopping?"], shortAffirmative: ["yes, she does"], shortNegative: ["no, she does not", "no, she doesn't"] } },
 ];
 
 // --- SUB-COMPONENTS ---
