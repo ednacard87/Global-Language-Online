@@ -91,7 +91,7 @@ const basicWords = [
 
 const simpleFormVocab = {
     "beber": "to drink", "agua": "water", "jugar": "to play", "futbol": "soccer/football", 
-    "escuchar": "listen", "música": "music", "hablar": "speak", "abrir": "open", "puerta": "door"
+    "escuchar": "listen", "música": "music", "hablar": "speak", "abrir": "open", "cine" : "cinema" , "puerta": "door"
 };
 
 const ex1Vocab = {
@@ -114,8 +114,8 @@ const posExercises = [
     { spanish: 'tu abres la puerta', answer: ["you open the door"] },
     { spanish: 'yo tomo leche', answer: ["I drink milk"] },
     { spanish: 'yo estudio inglés', answer: ["I study English"] },
-    { spanish: 'nosotros comemos en el restaurante', answer: ["we eat at the restaurant"] },
-    { spanish: 'ellos van al cine', answer: ["they go to the movies"] },
+    { spanish: 'nosotros comemos en el restaurante', answer: ["we eat at the restaurant" , "we eat in the restaurant"] },
+    { spanish: 'ellos van al cine', answer: ["they go to the cinema"] },
     { spanish: 'nosotros aprendemos a cocinar', answer: ["we learn to cook"] },
 ];
 
@@ -127,7 +127,7 @@ const negExercises = [
     { spanish: 'tu no abres la puerta', answer: ["you do not open the door", "you don't open the door"] },
     { spanish: 'yo no tomo leche', answer: ["I do not drink milk", "I don't drink milk"] },
     { spanish: 'yo no estudio inglés', answer: ["I do not study English", "I don't study English"] },
-    { spanish: 'nosotros no comemos en el restaurante', answer: ["we do not eat at the restaurant", "we don't eat at the restaurant"] },
+    { spanish: 'nosotros no comemos en el restaurante', answer: ["we do not eat at the restaurant", "we don't eat at the restaurant" , "we do not eat in the restaurant", "we don't eat in the restaurant"] },
     { spanish: 'ellos no van al cine', answer: ["they do not go to the cinema", "they don't go to the cinema"] },
     { spanish: 'nosotros no aprendemos a cocinar', answer: ["we do not learn to cook", "we don't learn to cook"] },
 ];
@@ -140,22 +140,22 @@ const intExercises = [
     { spanish: '¿tu abres la puerta?', answer: ["do you open the door?"] },
     { spanish: '¿yo tomo leche?', answer: ["do i drink milk?"] },
     { spanish: '¿yo estudio inglés?', answer: ["do i study English?"] },
-    { spanish: '¿nosotros comemos en el restaurante?', answer: ["do we eat at the restaurant?"] },
+    { spanish: '¿nosotros comemos en el restaurante?', answer: ["do we eat at the restaurant?", "do we eat in the restaurant?"] },
     { spanish: '¿ellos van al cine?', answer: ["do they go to the cinema?"] },
     { spanish: '¿nosotros aprendemos a cocinar?', answer: ["do we learn to cook?"] },
 ];
 
 const ex1Prompts = [
     { spanish: "TU JUEGAS TENIS EL LUNES", answers: { affirmative: ["you play tennis on monday"], negative: ["you do not play tennis on monday", "you don't play tennis on monday"], interrogative: ["do you play tennis on monday?"], shortAffirmative: ["yes, i do"], shortNegative: ["no, i do not", "no, i don't"] } },
-    { spanish: "NOSOTROS CAMINAMOS EN EL PARQUE", answers: { affirmative: ["we walk in the park"], negative: ["we do not walk in the park", "we don't walk in the park"], interrogative: ["do we walk in the park?"], shortAffirmative: ["yes, we do"], shortNegative: ["no, i do not", "no, i don't"] } },
-    { spanish: "ELLOS VAN A LA UNIVERSIDAD EL SABADO.", answers: { affirmative: ["they go to the university on saturday", "they go to university on saturday"], negative: ["they do not go to the university on saturday", "they don't go to the university on saturday"], interrogative: ["do they go to the university on saturday?"], shortAffirmative: ["yes, they do"], shortNegative: ["no, i do not", "no, i don't"] } },
+    { spanish: "NOSOTROS CAMINAMOS EN EL PARQUE", answers: { affirmative: ["we walk in the park"], negative: ["we do not walk in the park", "we don't walk in the park"], interrogative: ["do we walk in the park?"], shortAffirmative: ["yes, we do"], shortNegative: ["no, we do not", "no, we don't"] } },
+    { spanish: "ELLOS VAN A LA UNIVERSIDAD EL SABADO.", answers: { affirmative: ["they go to the university on saturday", "they go to university on saturday"], negative: ["they do not go to the university on saturday", "they don't go to the university on saturday"], interrogative: ["do they go to the university on saturday?"], shortAffirmative: ["yes, they do"], shortNegative: ["no, they do not", "no, they don't"] } },
     { spanish: "TÚ DUERMES EN LA TARDE", answers: { affirmative: ["you sleep in the afternoon"], negative: ["you do not sleep in the afternoon", "you don't sleep in the afternoon"], interrogative: ["do you sleep in the afternoon?"], shortAffirmative: ["yes, i do"], shortNegative: ["no, i do not", "no, i don't"] } },
-    { spanish: "NOSOTROS COMEMOS CARNE Y ENSALADA", answers: { affirmative: ["we eat meat and salad"], negative: ["we do not eat meat and salad", "we don't eat meat and salad"], interrogative: ["do we eat meat and salad?"], shortAffirmative: ["yes, we do"], shortNegative: ["no, i do not", "no, i don't"] } },
-    { spanish: "ELLOS BEBEN CERVEZA", answers: { affirmative: ["they drink beer"], negative: ["they do not drink beer", "they don't drink beer"], interrogative: ["do they drink beer?"], shortAffirmative: ["yes, they do"], shortNegative: ["no, i do not", "no, i don't"] } },
-    { spanish: "ELLOS VAN A LA IGLESIA EL MIERCOLES", answers: { affirmative: ["they go to the church on wednesday"], negative: ["they do not go to thechurch on wednesday", "they don't go to the church on wednesday"], interrogative: ["do they go to the church on wednesday?"], shortAffirmative: ["yes, they do"], shortNegative: ["no, i do not", "no, i don't"] } },
-    { spanish: "NOSOTROS JUGAMOS FUTBOL LOS SABADOS", answers: { affirmative: ["we play soccer on saturdays", "we play football on saturdays"], negative: ["we do not play soccer on saturdays", "we don't play soccer on saturdays", "we do not play football on saturdays", "we don't play football on saturdays"], interrogative: ["do we play soccer on saturdays?"], shortAffirmative: ["yes, we do"], shortNegative: ["no, i do not", "no, i don't"] } },
+    { spanish: "NOSOTROS COMEMOS CARNE Y ENSALADA", answers: { affirmative: ["we eat meat and salad"], negative: ["we do not eat meat and salad", "we don't eat meat and salad"], interrogative: ["do we eat meat and salad?"], shortAffirmative: ["yes, we do"], shortNegative: ["no, we do not", "no, we don't"] } },
+    { spanish: "ELLOS BEBEN CERVEZA", answers: { affirmative: ["they drink beer"], negative: ["they do not drink beer", "they don't drink beer"], interrogative: ["do they drink beer?"], shortAffirmative: ["yes, they do"], shortNegative: ["no, they do not", "no, they don't"] } },
+    { spanish: "ELLOS VAN A LA IGLESIA EL MIERCOLES", answers: { affirmative: ["they go to the church on wednesday"], negative: ["they do not go to thechurch on wednesday", "they don't go to the church on wednesday"], interrogative: ["do they go to the church on wednesday?"], shortAffirmative: ["yes, they do"], shortNegative: ["no, they do not", "no, they don't"] } },
+    { spanish: "NOSOTROS JUGAMOS FUTBOL LOS SABADOS", answers: { affirmative: ["we play soccer on saturdays", "we play football on saturdays"], negative: ["we do not play soccer on saturdays", "we don't play soccer on saturdays", "we do not play football on saturdays", "we don't play football on saturdays"], interrogative: ["do we play soccer on saturdays?"], shortAffirmative: ["yes, we do"], shortNegative: ["no, we do not", "no, we don't"] } },
     { spanish: "YO VEO PELÍCULAS LOS VIERNES EN LA NOCHE", answers: { affirmative: ["i watch movies on fridays at night", "i see movies on fridays at night"], negative: ["i do not watch movies on fridays at night", "i don't watch movies on fridays at night", "i do not see movies on fridays at night", "i don't see movies on fridays at night"], interrogative: ["do i watch movies on fridays at night?"], shortAffirmative: ["yes, i do"], shortNegative: ["no, i do not", "no, i don't"] } },
-    { spanish: "NOSOTROS TRABAJAMOS LOS DOMINGOS.", answers: { affirmative: ["we work on sundays"], negative: ["we do not work on sundays", "we don't work on sundays"], interrogative: ["do we work on sundays?"], shortAffirmative: ["yes, we do"], shortNegative: ["no, i do not", "no, i don't"] } },
+    { spanish: "NOSOTROS TRABAJAMOS LOS DOMINGOS.", answers: { affirmative: ["we work on sundays"], negative: ["we do not work on sundays", "we don't work on sundays"], interrogative: ["do we work on sundays?"], shortAffirmative: ["yes, we do"], shortNegative: ["no, we do not", "no, we don't"] } },
 ];
 
 const ex2Prompts = [
