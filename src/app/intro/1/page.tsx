@@ -1,12 +1,12 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { DashboardHeader } from "@/components/dashboard/header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { BookOpen, CheckCircle, Lock, Lightbulb, Volume2, Loader2, Trophy, ArrowRight } from "lucide-react";
+import { BookOpen, CheckCircle, Lock, Lightbulb, Volume2, Loader2, Trophy, ArrowRight, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SpellingExercise, type SpellingExerciseKey } from "@/components/dashboard/spelling-exercise";
 import { TranslationExercise } from "@/components/dashboard/translation-exercise";
@@ -175,7 +175,7 @@ function AlphabetGrid({ highlightedItem, onHighlight }: { highlightedItem: strin
     };
 
     return (
-        <div className="grid grid-cols-5 sm:grid-cols-7 md:grid-cols-8 gap-2 text-center">
+        <div className="grid grid-cols-5 sm:grid-cols-7 md:grid-cols-8 gap-2 text-center text-foreground">
             {alphabetWithPronunciation.map(({ letter, pronunciation, audioSrc }) => (
                 <Card key={letter} className={cn(
                     "p-3 flex flex-col items-center justify-center gap-2 transition-colors",
@@ -237,7 +237,7 @@ function NumbersGrid({ highlightedItem, onHighlight }: { highlightedItem: string
     };
 
     return (
-        <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2 text-center">
+        <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2 text-center text-foreground">
             {numbersWithAudio.map(({ number, name, audioSrc }) => (
                 <Card key={number} className={cn(
                     "p-3 flex flex-col items-center justify-center gap-1.5 transition-colors",
@@ -289,12 +289,34 @@ const numbersWithAudio: { number: string; name: string; audioSrc: string | null;
     { number: '100', name: 'one hundred', audioSrc: '/Audio/Numbers/Numbers0/onehundred.mp3' },
 ];
 
-type PathItem = {
-    key: string;
-    name: string;
-    href?: string;
-    status: 'completed' | 'active' | 'locked';
-};
+const possessivesData = [
+    { english: 'My', spanish: 'Mi / Mis' },
+    { english: 'Your', spanish: 'Tu / Tus (de ti)' },
+    { english: 'His', spanish: 'Su / Sus (de él)' },
+    { english: 'Her', spanish: 'Su / Sus (de ella)' },
+    { english: 'Its', spanish: 'Su / Sus (de eso)' },
+    { english: 'Our', spanish: 'Nuestro / Nuestra / Nuestros / Nuestras' },
+    { english: 'Your', spanish: 'Su / Sus (de ustedes)' },
+    { english: 'Their', spanish: 'Su / Sus (de ellos/as)' },
+];
+
+const verbToBeData = [
+    { ser: 'Yo soy', tobe: 'I am', estar: 'Yo estoy' },
+    { ser: 'Tú eres / usted es', tobe: 'You are', estar: 'Tú estás / usted está' },
+    { ser: 'Él es', tobe: 'He is', estar: 'Él está' },
+    { ser: 'Ella es', tobe: 'She is', estar: 'Ella está' },
+    { ser: 'Esto es', tobe: 'It is', estar: 'Esto está' },
+    { ser: 'Nosotros somos', tobe: 'We are', estar: 'Nosotros estamos' },
+    { ser: 'Ustedes son', tobe: 'You are', estar: 'Ustedes están' },
+    { ser: 'Ellos son', tobe: 'They are', estar: 'Ellos están' },
+];
+
+const demonstrativesData = [
+    { english: 'This', spanish: 'Este - Esta', usage: 'Singular, cerca' },
+    { english: 'These', spanish: 'Estos - Estas', usage: 'Plural, cerca' },
+    { english: 'That', spanish: 'Ese - Esa', usage: 'Singular, lejos' },
+    { english: 'Those', spanish: 'Esos - Esas', usage: 'Plural, lejos' },
+];
 
 interface Student {
     role?: 'admin' | 'student';
@@ -302,7 +324,7 @@ interface Student {
     progress?: Record<string, number>;
 }
 
-const progressStorageVersion = "_v1_sequential_admin";
+const progressStorageVersion = "_v1_final_card_fix";
 
 export default function Intro1Page() {
     const { t } = useTranslation();
@@ -312,6 +334,7 @@ export default function Intro1Page() {
     
     const [selectedSpellingTopic, setSelectedSpellingTopic] = useState<SpellingExerciseKey | null>(null);
     const [showCongratulations, setShowCongratulations] = useState(false);
+    const [isIntro1Finished, setIsIntro1Finished] = useState(false);
     
     const [highlightedLetter, setHighlightedLetter] = useState<string | null>(null);
     const [highlightedNumber, setHighlightedNumber] = useState<string | null>(null);
@@ -330,35 +353,6 @@ export default function Intro1Page() {
         return studentProfile?.role === 'admin' || user.email === 'ednacard87@gmail.com';
     }, [user, studentProfile]);
 
-    const possessivesData = [
-        { english: 'My', spanish: 'Mi / Mis' },
-        { english: 'Your', spanish: 'Tu / Tus (de ti)' },
-        { english: 'His', spanish: 'Su / Sus (de él)' },
-        { english: 'Her', spanish: 'Su / Sus (de ella)' },
-        { english: 'Its', spanish: 'Su / Sus (del animal)' },
-        { english: 'Our', spanish: 'Nuestro / Nuestra / Nuestros / Nuestras' },
-        { english: 'Your', spanish: 'Su / Sus (de ustedes)' },
-        { english: 'Their', spanish: 'Su / Sus (de ellos/as)' },
-    ];
-
-    const verbToBeData = [
-        { ser: 'Yo soy', tobe: 'I am', estar: 'Yo estoy' },
-        { ser: 'Tú eres / usted es', tobe: 'You are', estar: 'Tú estás / usted está' },
-        { ser: 'Él es', tobe: 'He is', estar: 'Él está' },
-        { ser: 'Ella es', tobe: 'She is', estar: 'Ella está' },
-        { ser: 'Esto es', tobe: 'It is', estar: 'Esto está' },
-        { ser: 'Nosotros somos', tobe: 'We are', estar: 'Nosotros estamos' },
-        { ser: 'Ustedes son', tobe: 'You are', estar: 'Ustedes están' },
-        { ser: 'Ellos son', tobe: 'They are', estar: 'Ellos están' },
-    ];
-
-    const demonstrativesData = [
-        { english: 'This', spanish: 'Este - Esta', usage: 'Singular, cerca' },
-        { english: 'These', spanish: 'Estos - Estas', usage: 'Plural, cerca' },
-        { english: 'That', spanish: 'Ese - Esa', usage: 'Singular, lejos' },
-        { english: 'Those', spanish: 'Esos - Esas', usage: 'Plural, lejos' },
-    ];
-
     const [isClient, setIsClient] = useState(false);
 
     useEffect(() => {
@@ -366,14 +360,14 @@ export default function Intro1Page() {
     }, []);
 
     const intro1Path = useMemo(() => {
-        const defaultPath = getIntro1PathData(t).map(item => ({ ...item, href: '#' } as PathItem));
+        const defaultPath = getIntro1PathData(t).map(item => ({ ...item, href: '#' } as any));
         if (!isClient || isProfileLoading) return defaultPath;
-        if (isAdmin) return defaultPath.map(item => ({ ...item, status: 'active' }));
+        if (isAdmin) return defaultPath.map((item: any) => ({ ...item, status: 'active' }));
 
         const versionedKey = 'intro1Path' + progressStorageVersion;
         const savedStatuses = studentProfile?.lessonProgress?.[versionedKey] || {};
         
-        return defaultPath.map(item => ({
+        return defaultPath.map((item: any) => ({
             ...item,
             status: (savedStatuses[item.key] || item.status) as 'completed' | 'active' | 'locked'
         }));
@@ -407,18 +401,12 @@ export default function Intro1Page() {
         }));
     }, [t, isAdmin, studentProfile, isProfileLoading, isClient]);
 
-    useEffect(() => {
-        setHighlightedLetter(null);
-        setHighlightedNumber(null);
-    }, [selectedTopicKey]);
-
     const handleTopicComplete = (completedTopicKey: string) => {
         if (!studentDocRef || isAdmin) return;
 
         const versionedKey = 'intro1Path' + progressStorageVersion;
         const currentStatuses = studentProfile?.lessonProgress?.[versionedKey] || {};
         
-        // Prevent duplicate updates if already completed
         if (currentStatuses[completedTopicKey] === 'completed') {
             return;
         }
@@ -445,10 +433,6 @@ export default function Intro1Page() {
             const nextKey = defaultPath[completedIndex + 1].key;
             if (!newStatuses[nextKey] || newStatuses[nextKey] === 'locked') {
                 newStatuses[nextKey] = 'active';
-                toast({
-                    title: '¡Siguiente tema desbloqueado!',
-                    description: `Ahora puedes continuar con el siguiente paso`,
-                });
             }
         }
 
@@ -461,10 +445,9 @@ export default function Intro1Page() {
         });
     };
 
-    // Auto-mark as complete when viewing an informational topic
     useEffect(() => {
         if (selectedTopicKey) {
-            const viewOnlyTopics = ['abc', 'numbers', 'pronouns', 'possessives', 'verbtobe1', 'verbtobe2', 'verbtobe3', 'demonstratives'];
+            const viewOnlyTopics = ['abc', 'numbers', 'pronouns', 'possessives', 'verbtobe1', 'verbtobe2', 'verbtobe3'];
             if (viewOnlyTopics.includes(selectedTopicKey)) {
                 handleTopicComplete(selectedTopicKey);
             }
@@ -472,12 +455,13 @@ export default function Intro1Page() {
     }, [selectedTopicKey]);
     
     const handleTopicSelect = (topicName: string) => {
-        const currentItem = intro1Path.find(item => item.name === topicName);
+        const currentItem = intro1Path.find((item: any) => item.name === topicName);
         if (!isAdmin && (!currentItem || currentItem.status === 'locked')) return;
     
         setSelectedTopic(topicName);
         setSelectedTopicKey(currentItem!.key);
         setShowCongratulations(false);
+        setIsIntro1Finished(false);
     
         if (currentItem!.key === 'abcspelling' && !selectedSpellingTopic) {
             setSelectedSpellingTopic('femaleNames');
@@ -496,10 +480,6 @@ export default function Intro1Page() {
         }
     };
 
-    const handleAbcExerciseComplete = () => {
-        handleTopicComplete('abcExercise');
-    };
-    
     const handleSpellingTopicComplete = (completedSubTopicKey: SpellingExerciseKey) => {
         if (!studentDocRef || isAdmin) {
             setShowCongratulations(true);
@@ -555,7 +535,7 @@ export default function Intro1Page() {
     const progress = studentProfile?.progress?.intro1Progress || 0;
 
   return (
-    <div className="flex w-full flex-col ingles-dashboard-bg min-h-screen">
+    <div className="flex w-full flex-col ingles-dashboard-bg min-h-screen text-foreground">
       <DashboardHeader />
       <main className="flex-1 p-4 md:p-8">
         <div className="max-w-7xl mx-auto">
@@ -593,7 +573,7 @@ export default function Intro1Page() {
                         );
                     }
                     if (selectedTopicKey === 'abcExercise') {
-                        return <AbcPronunciationExercise onGameComplete={handleAbcExerciseComplete} />;
+                        return <AbcPronunciationExercise onGameComplete={() => handleTopicComplete('abcExercise')} />;
                     }
                     if (selectedTopicKey === 'numbers') {
                         return (
@@ -623,7 +603,7 @@ export default function Intro1Page() {
                     }
                     if (selectedTopicKey === 'pronouns') {
                         return (
-                            <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                            <Card className="shadow-soft rounded-lg border-2 border-brand-purple text-foreground text-left">
                                 <CardHeader>
                                     <CardTitle>{t('intro1Page.pronouns')}</CardTitle>
                                     <CardDescription className="pt-2 text-lg font-semibold flex items-center gap-2">
@@ -657,7 +637,7 @@ export default function Intro1Page() {
                     }
                     if (selectedTopicKey === 'possessives') {
                         return (
-                            <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                            <Card className="shadow-soft rounded-lg border-2 border-brand-purple text-foreground text-left">
                                 <CardHeader>
                                     <CardTitle>{t('intro1Page.possessives')}</CardTitle>
                                     <CardDescription className="pt-2 text-lg font-semibold flex items-center gap-2">
@@ -689,7 +669,7 @@ export default function Intro1Page() {
                     }
                     if (selectedTopicKey === 'verbtobe1') {
                         return (
-                            <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                            <Card className="shadow-soft rounded-lg border-2 border-brand-purple text-foreground text-left">
                                 <CardHeader>
                                     <CardTitle>{t('intro1Page.verbtobe1')}</CardTitle>
                                     <CardDescription className="pt-2 text-lg font-semibold flex items-center gap-2">
@@ -738,7 +718,7 @@ export default function Intro1Page() {
                     }
                     if (selectedTopicKey === 'verbtobe2') {
                         return (
-                            <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                            <Card className="shadow-soft rounded-lg border-2 border-brand-purple text-foreground text-left">
                                 <CardHeader>
                                     <CardTitle>{t('intro1Page.verbtobe2')}</CardTitle>
                                     <CardDescription className="pt-2 text-lg font-semibold flex items-center gap-2">
@@ -787,7 +767,7 @@ export default function Intro1Page() {
                     }
                     if (selectedTopicKey === 'verbtobe3') {
                         return (
-                            <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                            <Card className="shadow-soft rounded-lg border-2 border-brand-purple text-foreground text-left">
                                 <CardHeader>
                                     <CardTitle>{t('intro1Page.verbtobe3')}</CardTitle>
                                     <CardDescription className="pt-2 text-lg font-semibold flex items-center gap-2">
@@ -835,8 +815,21 @@ export default function Intro1Page() {
                         );
                     }
                     if (selectedTopicKey === 'demonstratives') {
+                        if (isIntro1Finished) {
+                            return (
+                                <Card className="shadow-soft rounded-lg border-2 border-green-500 bg-green-500/10 p-12 text-center flex flex-col items-center animate-in fade-in zoom-in duration-500 text-foreground">
+                                    <Trophy className="h-24 w-24 text-yellow-400 mb-6 animate-bounce" />
+                                    <h2 className="text-4xl font-black uppercase text-green-600 tracking-tighter">CONGRATULATIONS!</h2>
+                                    <p className="text-2xl mt-4 font-bold">¡Has terminado la Intro 1!</p>
+                                    <p className='text-muted-foreground mt-2 text-lg'>Misión completada al 100%.</p>
+                                    <Button asChild className="mt-8 px-12 h-12 font-bold" variant="outline">
+                                        <Link href="/intro">Volver al Laberinto</Link>
+                                    </Button>
+                                </Card>
+                            );
+                        }
                         return (
-                            <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                            <Card className="shadow-soft rounded-lg border-2 border-brand-purple text-foreground text-left">
                                 <CardHeader>
                                     <CardTitle>{t('intro1Page.demonstratives')}</CardTitle>
                                     <CardDescription className="pt-2 text-lg font-semibold flex items-center gap-2">
@@ -861,7 +854,10 @@ export default function Intro1Page() {
                                     </div>
                                 </CardContent>
                                 <CardFooter className="justify-center">
-                                    <Button onClick={() => handleTopicComplete('demonstratives')}>Terminar Intro 1</Button>
+                                    <Button onClick={() => {
+                                        setIsIntro1Finished(true);
+                                        handleTopicComplete('demonstratives');
+                                    }} className="px-12 font-bold">Terminar Intro 1</Button>
                                 </CardFooter>
                             </Card>
                         );
@@ -871,7 +867,6 @@ export default function Intro1Page() {
                             'un- una': 'a / an',
                             'abogado': 'lawyer',
                             'enfermo': 'sick',
-                            'estudiante' : 'student',
                             'enfermero': 'nurse'
                         };
                         return <TranslationExercise 
@@ -885,7 +880,6 @@ export default function Intro1Page() {
                         const vocab = {
                             'amigo': 'friend',
                             'hijo': 'son',
-                            'padre' : 'father' ,
                             'perro': 'dog'
                         };
                         return <TranslationExercise 
@@ -900,11 +894,6 @@ export default function Intro1Page() {
                             'enfermera': 'nurse',
                             'abuelos': 'grandparents',
                             'pensionado': 'retired',
-                            'un-una' : 'a / an' ,
-                            'el-la-los-las' : 'the' ,
-                            'pequeño' : 'small' ,
-                            'cama' : 'bed' ,
-                            'sobre' : 'on' ,
                             'juguete': 'toy'
                         };
                         return <TranslationExercise 
@@ -918,7 +907,7 @@ export default function Intro1Page() {
                         const isNumbersExercise = selectedTopicKey === 'numbersspelling';
                         const currentSpellingSubPath = isNumbersExercise ? numbersSpellingPath : abcSpellingPath;
                         return (
-                            <div className="grid gap-8 md:grid-cols-12">
+                            <div className="grid gap-8 md:grid-cols-12 text-foreground">
                                 <div className="md:col-span-4">
                                     <div className="sticky top-24 space-y-4">
                                         <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
@@ -1032,7 +1021,7 @@ export default function Intro1Page() {
                 <CardContent>
                     <nav>
                         <ul className="space-y-1">
-                        {intro1Path.map((item) => {
+                        {intro1Path.map((item: any) => {
                             const isLocked = item.status === 'locked';
                             const isSelected = selectedTopic === item.name;
                             const isActive = item.status === 'active';
