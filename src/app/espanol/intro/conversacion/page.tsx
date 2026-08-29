@@ -39,16 +39,16 @@ const personalPresentationData = [
 ];
 
 const vocabularyAide = [
-    { label: "Música", value: "Música" },
-    { label: "Cantante", value: "Cantante" },
-    { label: "Deporte", value: "Deporte" },
+    { label: "Music", value: "Música" },
+    { label: "Singer", value: "Cantante" },
+    { label: "Sport", value: "Deporte" },
     { label: "Color", value: "Color" },
-    { label: "Libro", value: "Libro" },
-    { label: "Película", value: "Película" },
-    { label: "Series", value: "Series" },
-    { label: "Comida", value: "Comida" },
-    { label: "Helado", value: "Helado" },
-    { label: "No me gusta", value: "No me gusta" },
+    { label: "Book", value: "Libro" },
+    { label: "Movie", value: "Película" },
+    { label: "Series", value: "Serie" },
+    { label: "Food", value: "Comida" },
+    { label: "Ice Cream", value: "Helado" },
+    { label: "I don't like", value: "No me gusta" },
 ];
 
 const helpfulQuestions = [
@@ -194,9 +194,12 @@ export default function ConversacionEspanolPage() {
                                 <CardFooter className="p-6 bg-muted/30 border-t flex flex-col sm:flex-row justify-between items-center gap-4">
                                     <p className="text-sm text-muted-foreground text-center sm:text-left">
                                         Practica estas preguntas en voz alta hasta que te sientas cómodo/a presentándote.
+                                    </p> <br />
+                                    <p className="text-sm text-muted-foreground text-center sm:text-left">
+                                        Practice these questions out loud until you feel comfortable introducing yourself.
                                     </p>
                                     <Button onClick={handleComplete} disabled={isCompleting} className="w-full sm:w-auto min-w-[200px] h-12 text-lg font-bold">
-                                        {isCompleting ? <Loader2 className="animate-spin" /> : "He terminado de practicar"}
+                                        {isCompleting ? <Loader2 className="animate-spin" /> : "TERMINAR"}
                                         <CheckCircle className="ml-2 h-5 w-5" />
                                     </Button>
                                 </CardFooter>
