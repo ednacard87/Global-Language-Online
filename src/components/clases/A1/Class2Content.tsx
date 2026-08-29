@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, Fragment } from 'react';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
 import { 
     Card, 
     CardContent, 
@@ -12,7 +11,6 @@ import {
     CardDescription 
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
 import { 
@@ -36,22 +34,22 @@ import {
     Star,
     ArrowLeft
 } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Separator } from '@/components/ui/separator';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
 import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { VerbMemoryGame } from '@/components/kids/exercises/verb-memory-game';
 import { VocabularyMatchingGame } from '@/components/dashboard/vocabulary-matching-game';
-import { Separator } from '@/components/ui/separator';
-import { Label } from '@/components/ui/label';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { SingleFormExercise } from '@/components/kids/exercises/single-form';
 import { PresentSimpleExercise } from '@/components/kids/exercises/present-simple';
-import { DashboardHeader } from '@/components/dashboard/header';
 
 // --- CONFIGURACIÓN DE INGENIERÍA ---
-const progressStorageVersion = 'progress_a1_eng_u1_c2_v321_fixed_icons';
+const progressStorageVersion = 'progress_a1_eng_u1_c2_v322_clean_titles';
 const mainProgressKey = 'progress_a1_eng_unit_1_class_2';
 
 const ICONS_CONFIG = {
@@ -112,11 +110,6 @@ const posExercises = [
     { spanish: 'ellos escuchan música', answer: ["they listen to music"] },
     { spanish: 'yo hablo ingles', answer: ["I speak English"] },
     { spanish: 'tu abres la puerta', answer: ["you open the door"] },
-    { spanish: 'yo tomo leche', answer: ["I drink milk"] },
-    { spanish: 'yo estudio inglés', answer: ["I study English"] },
-    { spanish: 'nosotros comemos en el restaurante', answer: ["we eat at the restaurant" , "we eat in the restaurant"] },
-    { spanish: 'ellos van al cine', answer: ["they go to the cinema"] },
-    { spanish: 'nosotros aprendemos a cocinar', answer: ["we learn to cook"] },
 ];
 
 const negExercises = [
@@ -124,11 +117,6 @@ const negExercises = [
     { spanish: 'nosotros no jugamos futbol', answer: ["we do not play soccer", "we don't play soccer", "we do not play football", "we don't play football"] },
     { spanish: 'ellos no escuchan música', answer: ["they do not listen to music", "they don't listen to music"] },
     { spanish: 'yo no hablo ingles', answer: ["I do not speak English", "I don't speak English"] },
-    { spanish: 'yo no tomo leche', answer: ["I do not drink milk", "I don't drink milk"] },
-    { spanish: 'yo no estudio inglés', answer: ["I do not study English", "I don't study English"] },
-    { spanish: 'nosotros no comemos en el restaurante', answer: ["we do not eat at the restaurant", "we don't eat at the restaurant" , "we do not eat in the restaurant", "we don't eat in the restaurant"] },
-    { spanish: 'ellos no van al cine', answer: ["they do not go to the cinema", "they don't go to the cinema"] },
-    { spanish: 'nosotros no aprendemos a cocinar', answer: ["we do not learn to cook", "we don't learn to cook"] },
     { spanish: 'tu no abres la puerta', answer: ["you do not open the door", "you don't open the door"] },
 ];
 
@@ -138,11 +126,6 @@ const intExercises = [
     { spanish: '¿ellos escuchan música?', answer: ["do they listen to music?"] },
     { spanish: '¿yo hablo ingles?', answer: ["do i speak english?"] },
     { spanish: '¿tu abres la puerta?', answer: ["do you open the door?"] },
-    { spanish: '¿yo tomo leche?', answer: ["do i drink milk?"] },
-    { spanish: '¿yo estudio inglés?', answer: ["do i study English?"] },
-    { spanish: '¿nosotros comemos en el restaurante?', answer: ["do we eat at the restaurant?", "do we eat in the restaurant?"] },
-    { spanish: '¿ellos van al cine?', answer: ["do they go to the cinema?"] },
-    { spanish: '¿nosotros aprendemos a cocinar?', answer: ["do we learn to cook?"] },
 ];
 
 const ex1Prompts = [
@@ -152,10 +135,10 @@ const ex1Prompts = [
     { spanish: "TÚ DUERMES EN LA TARDE", answers: { affirmative: ["you sleep in the afternoon"], negative: ["you do not sleep in the afternoon", "you don't sleep in the afternoon"], interrogative: ["do you sleep in the afternoon?"], shortAffirmative: ["yes, i do"], shortNegative: ["no, i do not", "no, i don't"] } },
     { spanish: "NOSOTROS COMEMOS CARNE Y ENSALADA", answers: { affirmative: ["we eat meat and salad"], negative: ["we do not eat meat and salad", "we don't eat meat and salad"], interrogative: ["do we eat meat and salad?"], shortAffirmative: ["yes, we do"], shortNegative: ["no, i do not", "no, i don't"] } },
     { spanish: "ELLOS BEBEN CERVEZA", answers: { affirmative: ["they drink beer"], negative: ["they do not drink beer", "they don't drink beer"], interrogative: ["do they drink beer?"], shortAffirmative: ["yes, they do"], shortNegative: ["no, i do not", "no, i don't"] } },
-    { spanish: "ELLOS VAN A LA IGLESIA EL MIERCOLES", answers: { affirmative: ["they go to the church on wednesday"], negative: ["they do not go to thechurch on wednesday", "they don't go to the church on wednesday"], interrogative: ["do they go to the church on wednesday?"], shortAffirmative: ["yes, they do"], shortNegative: ["no, i do not", "no, i don't"] } },
+    { spanish: "ELLOS VAN A LA IGLESIA EL MIERCOLES", answers: { affirmative: ["they go to the church on wednesday"], negative: ["they do not go to the church on wednesday", "they don't go to the church on wednesday"], interrogative: ["do they go to the church on wednesday?"], shortAffirmative: ["yes, they do"], shortNegative: ["no, i do not", "no, i don't"] } },
     { spanish: "NOSOTROS JUGAMOS FUTBOL LOS SABADOS", answers: { affirmative: ["we play soccer on saturdays", "we play football on saturdays"], negative: ["we do not play soccer on saturdays", "we don't play soccer on saturdays", "we do not play football on saturdays", "we don't play football on saturdays"], interrogative: ["do we play soccer on saturdays?"], shortAffirmative: ["yes, we do"], shortNegative: ["no, i do not", "no, i don't"] } },
     { spanish: "YO VEO PELÍCULAS LOS VIERNES EN LA NOCHE", answers: { affirmative: ["i watch movies on fridays at night", "i see movies on fridays at night"], negative: ["i do not watch movies on fridays at night", "i don't watch movies on fridays at night", "i do not see movies on fridays at night", "i don't see movies on fridays at night"], interrogative: ["do i watch movies on fridays at night?"], shortAffirmative: ["yes, i do"], shortNegative: ["no, i do not", "no, i don't"] } },
-    { spanish: "NOSOTROS TRABAJAMOS LOS SABADOS.", answers: { affirmative: ["we work on saturdays"], negative: ["we do not work on saturdays", "we don't work on saturdays"], interrogative: ["do we work on saturdays?"], shortAffirmative: ["yes, we do"], shortNegative: ["no, i do not", "no, i don't"] } },
+    { spanish: "NOSOTROS TRABAJAMOS LOS DOMINGOS.", answers: { affirmative: ["we work on sundays"], negative: ["we do not work on sundays", "we don't work on sundays"], interrogative: ["do we work on sundays?"], shortAffirmative: ["yes, we do"], shortNegative: ["no, i do not", "no, i don't"] } },
 ];
 
 const ex2Prompts = [
@@ -238,10 +221,6 @@ export default function Class2Content({ overrideStudentId }: { overrideStudentId
     const handleTopicComplete = useCallback((completedKey: string) => {
         setTopicToComplete(completedKey);
     }, []);
-
-    const handleTopicCompleteInternal = useCallback((key: string) => {
-        handleTopicComplete(key);
-    }, [handleTopicComplete]);
 
     useEffect(() => {
         if (isProfileLoading || isUserLoading || !studentProfile || hasInitialized.current) return;
@@ -391,8 +370,10 @@ export default function Class2Content({ overrideStudentId }: { overrideStudentId
             nv[q.id] = isOk ? 'correct' : 'incorrect'; if (!isOk) allOk = false;
         });
         setReadVal(nv);
-        if (allOk) toast({ title: "¡Lectura superada!" });
-        else toast({ variant: 'destructive', title: "Revisa tus respuestas" });
+        if (allOk) {
+            toast({ title: "¡Lectura superada!" });
+            handleTopicComplete('reading');
+        } else toast({ variant: 'destructive', title: "Revisa tus respuestas" });
     };
 
     const renderContent = () => {
@@ -411,7 +392,7 @@ export default function Class2Content({ overrideStudentId }: { overrideStudentId
                                 </div>
                             </ScrollArea>
                         </CardContent>
-                        <CardFooter className="flex justify-between border-t pt-6 mt-4"><Button onClick={handleCheckVocab} variant="secondary">Check</Button><Button onClick={() => handleTopicCompleteInternal('vocabulary')} disabled={!canAdvanceVocab && !isAdmin} className='text-white font-bold'>Next <ArrowRight className="ml-2 h-4 w-4"/></Button></CardFooter>
+                        <CardFooter className="flex justify-between border-t pt-6 mt-4"><Button onClick={handleCheckVocab} variant="secondary">Check</Button><Button onClick={() => handleTopicComplete('vocabulary')} disabled={!canAdvanceVocab && !isAdmin} className='text-white font-bold'>Next <ArrowRight className="ml-2 h-4 w-4"/></Button></CardFooter>
                     </Card>
                 );
             case 'grammar':
@@ -451,21 +432,20 @@ export default function Class2Content({ overrideStudentId }: { overrideStudentId
                               </div>
                           </CardContent>
                           <CardFooter className="justify-center border-t pt-6">
-                              <Button onClick={() => handleTopicCompleteInternal('grammar')} size="lg" className="px-16 font-bold h-14 text-xl text-white">
+                              <Button onClick={() => handleTopicComplete('grammar')} size="lg" className="px-16 font-bold h-14 text-xl text-white">
                                   Entendido <ArrowRight className="ml-2" />
                               </Button>
                           </CardFooter>
                       </Card>
                   </div>
                 );
-            case 'ex-pos': return <SingleFormExercise key="ex-pos" title="Positive Form" exerciseData={posExercises} onComplete={() => handleTopicCompleteInternal('ex-pos')} vocabulary={simpleFormVocab} formType="affirmative" />;
-            case 'ex-neg': return <SingleFormExercise key="ex-neg" title="Negative Form" exerciseData={negExercises} onComplete={() => handleTopicCompleteInternal('ex-neg')} vocabulary={simpleFormVocab} formType="negative" />;
-            case 'ex-int': return <SingleFormExercise key="ex-int" title="Interrogative Form" exerciseData={intExercises} onComplete={() => handleTopicCompleteInternal('ex-int')} vocabulary={simpleFormVocab} formType="interrogative" />;
-            case 'memory-verbs': return <VerbMemoryGame onComplete={() => handleTopicCompleteInternal('memory-verbs')} />;
-            case 'ex1': return <PresentSimpleExercise key="ex1" title="Exercise 1: Multi-Form" exerciseData={ex1Prompts} onComplete={() => handleTopicCompleteInternal('ex1')} />;
-            case 'ex2': return <PresentSimpleExercise key="ex2" title="Exercise 2: Multi-Form" exerciseData={ex2Prompts} onComplete={() => handleTopicCompleteInternal('ex2')} vocabulary={{"tarea": "homework", "hacer": "to do", "pizza": "pizza", "comer": "to eat" , "la compra" : "the shopping"}} />;
+            case 'ex-pos': return <SingleFormExercise key="ex-pos" title="Positive Form" exerciseData={posExercises} onComplete={() => handleTopicComplete('ex-pos')} vocabulary={simpleFormVocab} formType="affirmative" />;
+            case 'ex-neg': return <SingleFormExercise key="ex-neg" title="Negative Form" exerciseData={negExercises} onComplete={() => handleTopicComplete('ex-neg')} vocabulary={simpleFormVocab} formType="negative" />;
+            case 'ex-int': return <SingleFormExercise key="ex-int" title="Interrogative Form" exerciseData={intExercises} onComplete={() => handleTopicComplete('ex-int')} vocabulary={simpleFormVocab} formType="interrogative" />;
+            case 'memory-verbs': return <VerbMemoryGame onComplete={() => handleTopicComplete('memory-verbs')} />;
+            case 'ex1': return <PresentSimpleExercise key="ex1" title="Exercise 1: Multi-Form" exerciseData={ex1Prompts} onComplete={() => handleTopicComplete('ex1')} />;
+            case 'ex2': return <PresentSimpleExercise key="ex2" title="Exercise 2: Multi-Form" exerciseData={ex2Prompts} onComplete={() => handleTopicComplete('ex2')} vocabulary={{"tarea": "homework", "hacer": "to do", "pizza": "pizza", "comer": "to eat" , "la compra" : "the shopping"}} />;
             case 'reading':
-                const readingOk = Object.keys(readVal).length === readingData.questions.length && Object.values(readVal).every(v => v === 'correct');
                 return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 text-foreground text-left">
                         <CardHeader>
@@ -495,9 +475,8 @@ export default function Class2Content({ overrideStudentId }: { overrideStudentId
                                 <Input value={readAns[q.id] || ''} onChange={e => { if (overrideStudentId) return; setReadAns({...readAns, [q.id]: e.target.value}); setReadVal({...readVal, [q.id]: 'unchecked'}); }} className={cn('mt-1 text-lg h-12 text-foreground', readVal[q.id] === 'correct' ? 'border-green-500 bg-green-50/10' : readVal[q.id] === 'incorrect' ? 'border-destructive bg-destructive/10' : '')} autoComplete="off" readOnly={!!overrideStudentId} /></div>
                             ))}</div>
                         </CardContent>
-                        <CardFooter className="justify-between border-t pt-6">
-                            <Button onClick={handleCheckReading} variant="secondary">Check Answers</Button>
-                            <Button onClick={() => handleTopicCompleteInternal('reading')} disabled={!readingOk && !isAdmin} className='text-white font-bold'>Continue <ArrowRight className="ml-2 h-4 w-4"/></Button>
+                        <CardFooter className="justify-center border-t pt-6">
+                            <Button onClick={handleCheckReading} size="lg" className='px-12 font-bold' disabled={!!overrideStudentId}>Check Answers</Button>
                         </CardFooter>
                     </Card>
                 );
@@ -519,13 +498,11 @@ export default function Class2Content({ overrideStudentId }: { overrideStudentId
                 return (
                     <div className="space-y-6">
                         <VocabularyMatchingGame data={gameData} onComplete={() => {}} title="Final Vocab Game" />
-                        <Card className="border-t pt-6 bg-muted/20">
-                            <CardFooter className="justify-center">
-                                <Button onClick={() => { setIsClassFinished(true); handleTopicCompleteInternal('vocab_game'); }} size="lg" className="px-24 font-black h-16 text-2xl shadow-xl uppercase bg-primary hover:bg-primary/90 text-white">
-                                    Finish <CheckCircle className="ml-2 h-6 w-6" />
-                                </Button>
-                            </CardFooter>
-                        </Card>
+                        <div className="flex justify-center pt-6">
+                            <Button onClick={() => { setIsClassFinished(true); handleTopicComplete('vocab_game'); }} size="lg" className="px-24 font-black h-16 text-2xl shadow-xl uppercase bg-primary hover:bg-primary/90 text-white">
+                                Finish <CheckCircle className="ml-2 h-6 w-6" />
+                            </Button>
+                        </div>
                     </div>
                 );
             default: return null;
@@ -533,73 +510,64 @@ export default function Class2Content({ overrideStudentId }: { overrideStudentId
     };
 
     return (
-        <div className="flex w-full flex-col min-h-screen ingles-dashboard-bg text-foreground">
-            <DashboardHeader />
-            <main className="flex-1 p-4 md:p-8">
-                <div className="max-w-7xl mx-auto">
-                    {isAdmin && overrideStudentId && (
-                        <div className="mb-6 bg-yellow-500/20 border-2 border-yellow-500 p-4 rounded-xl flex items-center justify-between shadow-lg backdrop-blur-md">
-                            <div className="flex items-center gap-3 text-yellow-700 dark:text-yellow-400"><Star className="h-6 w-6 fill-current animate-pulse" /><p className="font-black uppercase tracking-tighter text-sm">Modo Supervisión: {studentProfile?.name || currentUID}</p></div>
-                            <Button variant="outline" size="sm" asChild className="border-yellow-600 text-yellow-700 hover:bg-yellow-500/10 transition-colors">
-                                <Link href="/admin">Cerrar</Link>
-                            </Button>
-                        </div>
-                    )}
-                    <div className="mb-8 text-left text-white">
-                        <Link href="/ingles/a1/unit/1" className="hover:underline text-sm font-bold flex items-center gap-2 mb-2"><ArrowLeft className="h-4 w-4" /> Volver a la Unidad 1</Link>
-                        <h1 className="text-4xl font-black uppercase tracking-tighter [text-shadow:2px_2px_4px_rgba(0,0,0,0.5)]">Class 2 (A1) 🇬🇧</h1>
-                    </div>
-                    <div className="grid gap-8 md:grid-cols-12 text-foreground">
-                        <div className="md:col-span-9 md:order-1 order-2">{renderContent()}</div>
-                        <div className="md:col-span-3 md:order-2 order-1 text-left">
-                            <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
-                                <CardHeader className="pb-4 border-b bg-muted/30">
-                                    <CardTitle className="text-lg font-black text-primary uppercase tracking-tighter flex items-center gap-2"><Trophy className="h-5 w-5 text-primary" /> Misión 2A</CardTitle>
-                                </CardHeader>
-                                <CardContent className="p-4">
-                                    <nav><ul className="space-y-1">
-                                        {learningPath.map((item) => {
-                                            const isLocked = item.status === 'locked' && !isAdmin;
-                                            const Icon = ICONS_CONFIG[item.status as keyof typeof ICONS_CONFIG] || BookOpen;
-                                            const isSelected = selectedTopic === item.key || item.subItems?.some(s => s.key === selectedTopic);
-                                            return (
-                                                <li key={item.key}>
-                                                    {!item.subItems ? (
-                                                        <div onClick={() => handleTopicSelect(item.key)} className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer text-foreground dark:text-white', isLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', isSelected && 'bg-muted text-primary font-bold shadow-sm')}>
-                                                            <div className="flex items-center gap-3">
-                                                                {item.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500" /> : <Icon className={cn("h-5 w-5", isLocked ? "text-yellow-500/50" : "text-primary")} />}
-                                                                <span className="truncate max-w-[150px] uppercase font-bold text-[10px]">{item.name}</span>
-                                                            </div>
-                                                            {isLocked && <Lock className="h-3 w-3 text-yellow-500/30" />}
-                                                        </div>
-                                                    ) : (
-                                                        <div className="space-y-1 text-foreground dark:text-white">
-                                                            <div className={cn('flex items-center gap-3 px-3 py-2 text-sm font-bold uppercase text-primary tracking-tighter', isLocked && "opacity-40")}><PenSquare className="h-5 w-5" /><span>{item.name}</span></div>
-                                                            <ul className="pl-6 space-y-1">{item.subItems.map(sub => {
-                                                                const subLocked = sub.status === 'locked' && !isAdmin;
-                                                                return (
-                                                                    <li key={sub.key} onClick={() => handleTopicSelect(sub.key)} className={cn('flex items-center justify-between gap-3 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors cursor-pointer text-foreground dark:text-white', subLocked ? 'text-muted-foreground/30 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === sub.key && 'bg-muted text-primary font-bold')}>
-                                                                        <div className="flex items-center gap-2">
-                                                                            {sub.status === 'completed' ? <CheckCircle className="h-4 w-4 text-green-500" /> : <PenSquare className={cn("h-4 w-4", subLocked ? "text-yellow-500/50" : "text-primary")} />}
-                                                                            <span className='uppercase font-bold text-[10px]'>{sub.name}</span>
-                                                                        </div>
-                                                                        {subLocked && <Lock className="h-3 w-3 text-yellow-500/30" />}
-                                                                    </li>
-                                                                );
-                                                            })}</ul>
-                                                        </div>
-                                                    )}
-                                                </li>
-                                            );
-                                        })}
-                                    </ul></nav>
-                                    <div className="mt-6 pt-6 border-t"><div className="flex justify-between items-center text-xs mb-2 font-black uppercase text-muted-foreground"><span>Avance</span><span className="text-primary">{progressValue}%</span></div><Progress value={progressValue} className="h-2 rounded-full" /></div>
-                                </CardContent>
-                            </Card>
-                        </div>
-                    </div>
+        <div className="animate-in fade-in duration-500 text-foreground">
+            {isAdmin && overrideStudentId && (
+                <div className="mb-6 bg-yellow-500/20 border-2 border-yellow-500 p-4 rounded-xl flex items-center justify-between shadow-lg backdrop-blur-md">
+                    <div className="flex items-center gap-3 text-yellow-700 dark:text-yellow-400"><Star className="h-6 w-6 fill-current animate-pulse" /><p className="font-black uppercase tracking-tighter text-sm">Modo Supervisión: {studentProfile?.name || currentUID}</p></div>
+                    <Button variant="outline" size="sm" asChild className="border-yellow-600 text-yellow-700 hover:bg-yellow-500/10 transition-colors">
+                        <Link href="/admin">Cerrar</Link>
+                    </Button>
                 </div>
-            </main>
+            )}
+            <div className="grid gap-8 md:grid-cols-12 text-foreground">
+                <div className="md:col-span-9 md:order-1 order-2">{renderContent()}</div>
+                <div className="md:col-span-3 md:order-2 order-1 text-left">
+                    <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
+                        <CardHeader className="pb-4 border-b bg-muted/30">
+                            <CardTitle className="text-lg font-black text-primary uppercase tracking-tighter flex items-center gap-2"><Trophy className="h-5 w-5 text-primary" /> Misión 2A</CardTitle>
+                        </CardHeader>
+                        <CardContent className="p-4">
+                            <nav><ul className="space-y-1">
+                                {learningPath.map((item) => {
+                                    const isLocked = item.status === 'locked' && !isAdmin;
+                                    const Icon = ICONS_CONFIG[item.status as keyof typeof ICONS_CONFIG] || BookOpen;
+                                    const isSelected = selectedTopic === item.key || item.subItems?.some(s => s.key === selectedTopic);
+                                    return (
+                                        <li key={item.key}>
+                                            {!item.subItems ? (
+                                                <div onClick={() => handleTopicSelect(item.key)} className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer text-foreground dark:text-white', isLocked ? 'text-muted-foreground/50 cursor-not-allowed' : 'hover:bg-muted', isSelected && 'bg-muted text-primary font-bold shadow-sm')}>
+                                                    <div className="flex items-center gap-3">
+                                                        {item.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500" /> : <Icon className={cn("h-5 w-5", isLocked ? "text-yellow-500/50" : "text-primary")} />}
+                                                        <span className="truncate max-w-[150px] uppercase font-bold text-[10px] dark:text-white">{item.name}</span>
+                                                    </div>
+                                                    {isLocked && <Lock className="h-3 w-3 text-yellow-500/30" />}
+                                                </div>
+                                            ) : (
+                                                <div className="space-y-1 text-foreground dark:text-white">
+                                                    <div className={cn('flex items-center gap-3 px-3 py-2 text-sm font-bold uppercase text-primary tracking-tighter', isLocked && "opacity-40")}><PenSquare className="h-5 w-5" /><span>{item.name}</span></div>
+                                                    <ul className="pl-6 space-y-1">{item.subItems.map(sub => {
+                                                        const subLocked = sub.status === 'locked' && !isAdmin;
+                                                        return (
+                                                            <li key={sub.key} onClick={() => handleTopicSelect(sub.key)} className={cn('flex items-center justify-between gap-3 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors cursor-pointer text-foreground dark:text-white', subLocked ? 'text-muted-foreground/30 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === sub.key && 'bg-muted text-primary font-bold')}>
+                                                                <div className="flex items-center gap-2">
+                                                                    {sub.status === 'completed' ? <CheckCircle className="h-4 w-4 text-green-500" /> : <PenSquare className={cn("h-4 w-4", subLocked ? "text-yellow-500/50" : "text-primary")} />}
+                                                                    <span className='uppercase font-bold text-[10px] dark:text-white'>{sub.name}</span>
+                                                                </div>
+                                                                {subLocked && <Lock className="h-3 w-3 text-yellow-500/30" />}
+                                                            </li>
+                                                        );
+                                                    })}</ul>
+                                                </div>
+                                            )}
+                                        </li>
+                                    );
+                                })}
+                            </ul></nav>
+                            <div className="mt-6 pt-6 border-t"><div className="flex justify-between items-center text-xs mb-2 font-black uppercase text-muted-foreground"><span>Avance</span><span className="text-primary">{progressValue}%</span></div><Progress value={progressValue} className="h-2 rounded-full" /></div>
+                        </CardContent>
+                    </Card>
+                </div>
+            </div>
         </div>
     );
 }
