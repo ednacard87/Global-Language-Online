@@ -422,7 +422,7 @@ const exercises = {
             { spanish: 'ESTE NO ES SU CARRO (DE ELLOS)', english: ["this is not their car", "this isn't their car"] },
             { spanish: 'ELLA ES MI HERMANA', english: ["she is my sister", "she's my sister"] },
             { spanish: '¿DÓNDE ESTÁ TU CHAQUETA?', english: ["where is your jacket?", "where's your jacket?"] },
-            { spanish: '¿CUÁL ES TU CUMPLEAÑOS?', english: ["when is your birthday?", "when's your birthday?"] },
+            { spanish: '¿CUANDO ES TU CUMPLEAÑOS?', english: ["when is your birthday?", "when's your birthday?"] },
             { spanish: 'ELLA NO VA ALLÁ', english: ["she does not go there", "she doesn't go there"] },
             { spanish: 'ELLOS SON SUS AMIGOS (DE ÉL)', english: ["they are his friends", "they're his friends"] },
             { spanish: '¿DÓNDE CORREN ELLOS?', english: ["where do they run?"] },

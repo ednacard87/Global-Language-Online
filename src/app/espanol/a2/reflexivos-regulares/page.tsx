@@ -117,7 +117,7 @@ const ex3Prompts = [
     { en: "They fasten their seatbelts.", es: ["ellos se abrochan los cinturones", "se abrochan los cinturones"] },
     { en: "I stretch before running.", es: ["yo me estiro antes de correr", "me estiro antes de correr"] },
     { en: "She bathes (herself).", es: ["ella se baña"] },
-    { en: "We fix ourselves up for the wedding.", es: ["nosotros nos arreglamos para la boda", "nos arreglamos para la boda"] },
+    { en: "We fix ourselves up for the wedding.", es: ["nosotros nos arreglamos para la boda", "nos arreglamos para la boda" , "nosotros nos arreglamos para el matrimonio", "nos arreglamos para el matrimonio"] },
     { en: "You (informal) allow yourself a break.", es: ["tú te permites un descanso", "tu te permites un descanso"] },
     { en: "The cat licks itself (washes itself).", es: ["el gato se lava"] },
     { en: "We get dressed quickly.", es: ["nosotros nos vestimos rapidamente"] },

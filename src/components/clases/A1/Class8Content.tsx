@@ -30,7 +30,10 @@ import {
     Trophy,
     Pencil,
     Gamepad2,
-    Clock
+    Clock,
+    Book,
+    Square,
+    Info
 } from 'lucide-react';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
@@ -44,10 +47,11 @@ import { VocabularyMatchingGame } from '@/components/dashboard/vocabulary-matchi
 import { SentenceCompletionExercise, type CompletionPrompt } from '@/components/kids/exercises/sentence-completion-exercise';
 import { CreativeWritingExercise } from '@/components/dashboard/creative-writing-exercise';
 import { useToast } from '@/hooks/use-toast';
+import { Separator } from '@/components/ui/separator';
 
 // --- CONFIGURACIÓN DE INGENIERÍA ---
-const progressStorageVersion = 'progress_a1_eng_u2_c8_v300_ultra_stable';
-const mainProgressKey = 'progress_a1_eng_unit_2_class_12'; // Usando la misma key por consistencia de curso
+const progressStorageVersion = 'progress_a1_eng_u2_c8_v315_final_icon_fix';
+const mainProgressKey = 'progress_a1_eng_unit_2_class_8';
 
 const ICONS_CONFIG = {
     locked: Lock,
@@ -77,9 +81,9 @@ const vocabularyData = [
 ];
 
 const ex1Prompts = [
-    { spanish: "¿ELLOS VAN A LA ESCUELA?", answer: ["do they go to school?"] },
+    { spanish: "¿ELLOS VAN A LA ESCUELA?", answer: ["do they go to school?" , "do they go to the school?"] },
     { spanish: "¿ESTAS ENOJADO (ANGRY)?", answer: ["are you angry?"] },
-    { spanish: "ELLA NO ESTUDIA ALEMAN (GERMAN)- POR EL CONTRARIO, ELLA ESTUDIA INGLES", answer: ["she is not study german - on the contrary, she studies english", "she doesn't study german - on the contrary, she studies english"] },
+    { spanish: "ELLA NO ESTUDIA ALEMAN (GERMAN)- POR EL CONTRARIO, ELLA ESTUDIA INGLES", answer: ["she does not study german - on the contrary, she studies english", "she doesn't study german - on the contrary, she studies english"] },
     { spanish: "A ELLA LE GUSTA LA CARNE (MEAT)- POR OTRO LADO, SU ESPOSO ES VEGETARIANO", answer: ["she likes meat - on the other hand, her husband is a vegetarian", "she likes meat - on the other hand, her husband is vegetarian"] },
     { spanish: "¿ELLA ES TU HERMANA?", answer: ["is she your sister?"] },
     { spanish: "¿A DONDE VA TU HERMANO?", answer: ["where does your brother go?"] },
@@ -101,67 +105,55 @@ const exercise5Data: CompletionPrompt[] = [
     { parts: ["I DO NOT LIKE ", " SUNNY DAYS."], answers: [""] },
     { parts: ["HE ISN'T ", " ANTHONY'S HOUSE."], answers: [""] },
     { parts: ["", " DOOR OF MY HOUSE."], answers: ["THE"] },
-    { parts: ["SHE WORKS WITH ", " ENGINEER."], answers: [""] },
+    { parts: ["SHE WORKS WITH ", " ENGINEER."], answers: ["THE"] },
 ];
 
-const ex1VocabHelp = { "tarde": "late", "llegar": "arrive", "escuela": "school", "supermercado": "supermarket", "clima": "weather", "verano": "summer", "regar": "water", "jardín": "garden", "seco": "dry", "funciona": "works", "beber": "drink", "excursión": "hiking", "platos": "dishes", "esposo": "husband" };
+const ex1VocabHelp = { "tarde": "late", "llegar": "arrive", "escuela": "school", "supermercado": "supermarket", "clima": "weather", "verano": "summer", "regar": "water", "jardín": "garden", "seco": "dry", "funciona": "works", "beber": "drink", "excursión": "hiking", "platos": "dishes", "esposo": "husband" , "por el contrario": "on the contrary", "vegetariano": "vegetarian" };
 const genericVocabHelp = { "siempre": "always", "nunca": "never", "a veces": "sometimes", "a menudo": "often", "usualmente": "usually", "cansado": "tired", "trabaja": "works", "oficina": "office", "triste": "sad", "preocupada": "worried", "hospital": "hospital", "cirugía": "surgery" };
 
 // --- HELPERS ---
 
-const RealTimeGradingExercise = ({ title, description, prompts, onComplete, studentDocRef, isAdmin, storageKeyLines, storageKeyGrades, initialLines, initialGrades, isSupervisionMode, scrollHeight = "h-[500px]" }: any) => {
+const RealTimeGradingExercise = ({ title, description, onComplete, studentDocRef, isAdmin, storageKeyLines, storageKeyGrades, initialLines, initialGrades, sections, isSupervisionMode, lineCount = 30, customHeight = "h-[600px]" }: any) => {
     const { toast } = useToast();
-    const [lines, setLines] = useState<string[]>(Array(prompts.length).fill(''));
-    const [grades, setGrades] = useState<Record<number, 'correct' | 'incorrect' | null>>(initialGrades || {});
+    const [lines, setLines] = useState<string[]>(Array(lineCount).fill(''));
+    const [grades, setGrades] = useState<Record<number, 'correct' | 'incorrect' | 'blue' | 'darkgreen' | null>>(initialGrades || {});
     const [hasLoadedInitial, setHasLoadedInitial] = useState(false);
 
-    // Initial load logic - solo ocurre una vez para el estudiante
     useEffect(() => {
         if (!hasLoadedInitial && initialLines && Array.isArray(initialLines)) {
-            const newLines = [...Array(prompts.length).fill('')];
-            initialLines.forEach((val: string, i: number) => { if (i < prompts.length) newLines[i] = val || ''; });
+            const newLines = [...Array(lineCount).fill('')];
+            initialLines.forEach((val: string, i: number) => { if (i < lineCount) newLines[i] = val || ''; });
             setLines(newLines);
             setHasLoadedInitial(true);
         } else if (!hasLoadedInitial && !isSupervisionMode) {
             setHasLoadedInitial(true);
         }
-    }, [initialLines, prompts.length, hasLoadedInitial, isSupervisionMode]);
+    }, [initialLines, lineCount, hasLoadedInitial, isSupervisionMode]);
 
-    // Live sync for Admin only (Student keeps their local edits)
     useEffect(() => {
         if (isSupervisionMode && initialLines && Array.isArray(initialLines)) {
-            const remoteLines = [...Array(prompts.length).fill('')];
-            initialLines.forEach((val: string, i: number) => { if (i < prompts.length) remoteLines[i] = val || ''; });
+            const remoteLines = [...Array(lineCount).fill('')];
+            initialLines.forEach((val: string, i: number) => { if (i < lineCount) remoteLines[i] = val || ''; });
             setLines(remoteLines);
         }
-    }, [initialLines, isSupervisionMode, prompts.length]);
+    }, [initialLines, isSupervisionMode, lineCount]);
 
-    // Live sync for Grades (Student needs to see them immediately)
     useEffect(() => {
-        if (initialGrades) {
-            setGrades(initialGrades);
-        }
+        if (initialGrades) setGrades(initialGrades);
     }, [initialGrades]);
 
     const handleLineChange = (idx: number, val: string) => {
         if (isSupervisionMode) return;
-        const nl = [...lines]; 
-        nl[idx] = val; 
-        setLines(nl);
-        
-        if (studentDocRef) {
-            updateDocumentNonBlocking(studentDocRef, { [`lessonProgress.${progressStorageVersion}.${storageKeyLines}`]: nl });
-        }
+        const nl = [...lines]; nl[idx] = val; setLines(nl);
+        if (studentDocRef) updateDocumentNonBlocking(studentDocRef, { [`lessonProgress.${progressStorageVersion}.${storageKeyLines}`]: nl });
     };
 
-    const handleToggleGrade = (idx: number, type: 'correct' | 'incorrect') => {
+    const handleToggleGrade = (idx: number, type: 'correct' | 'incorrect' | 'blue' | 'darkgreen') => {
         if (!isAdmin) return;
         const newGrades = { ...grades }; 
         newGrades[idx] = newGrades[idx] === type ? null : type; 
         setGrades(newGrades);
-        if (studentDocRef) {
-            updateDocumentNonBlocking(studentDocRef, { [`lessonProgress.${progressStorageVersion}.${storageKeyGrades}`]: newGrades });
-        }
+        if (studentDocRef) updateDocumentNonBlocking(studentDocRef, { [`lessonProgress.${progressStorageVersion}.${storageKeyGrades}`]: newGrades });
     };
 
     return (
@@ -178,38 +170,45 @@ const RealTimeGradingExercise = ({ title, description, prompts, onComplete, stud
                 </div>
             </CardHeader>
             <CardContent className="p-6 text-left">
-                <ScrollArea className={cn(scrollHeight, "pr-4")}>
+                <ScrollArea className={cn(customHeight, "pr-4")}>
                     <div className="space-y-4">
-                        {lines.map((line, i) => {
-                            return (
-                                <div key={i} className="flex items-center gap-3">
-                                    <span className="font-bold w-12 text-right text-muted-foreground">
-                                        {i === 0 && title.includes('DICTATION') ? 'TITLE' : i}.
-                                    </span>
+                        {lines.map((line, i) => (
+                            <Fragment key={i}>
+                                {sections && sections[i] && (
+                                    <div className="py-4 bg-muted/50 rounded-lg text-center font-black text-primary uppercase border-y my-4">{sections[i]}</div>
+                                )}
+                                <div className="flex items-center gap-3">
+                                    <span className="font-bold w-10 text-right text-muted-foreground">{i === 0 && title.includes('DICTATION') ? 'TITLE' : i}.</span>
                                     <Input 
                                         value={line || ''} 
                                         onChange={e => handleLineChange(i, e.target.value)} 
                                         className={cn(
                                             "flex-1 h-10 transition-all font-medium text-foreground",
                                             grades[i] === 'correct' ? 'border-green-500 bg-green-500/10 shadow-[0_0_10px_rgba(34,197,94,0.2)]' : 
-                                            grades[i] === 'incorrect' ? 'border-red-500 bg-red-50/10 shadow-[0_0_10px_rgba(239,68,68,0.2)]' : ''
+                                            grades[i] === 'incorrect' ? 'border-red-500 bg-red-50/10 shadow-[0_0_10px_rgba(239,68,68,0.2)]' : 
+                                            grades[i] === 'blue' ? 'border-blue-500 bg-blue-500/10 shadow-[0_0_10px_rgba(59,130,246,0.2)]' :
+                                            grades[i] === 'darkgreen' ? 'border-green-800 bg-green-800/10 shadow-[0_0_10px_rgba(22,101,52,0.2)]' : ''
                                         )} 
                                         readOnly={isSupervisionMode} 
                                         autoComplete="off"
                                     />
                                     <div className="flex gap-1 shrink-0">
-                                        <Button size="icon" variant="ghost" onClick={() => handleToggleGrade(i, 'correct')} className={cn("h-8 w-8 rounded-full transition-colors", grades[i] === 'correct' ? "bg-green-500 text-white" : "bg-muted opacity-50")} disabled={!isAdmin}><Check className="h-4 w-4"/></Button>
-                                        <Button size="icon" variant="ghost" onClick={() => handleToggleGrade(i, 'incorrect')} className={cn("h-8 w-8 rounded-full transition-colors", grades[i] === 'incorrect' ? "bg-red-500 text-white" : "bg-muted opacity-50")} disabled={!isAdmin}><X className="h-4 w-4"/></Button>
+                                        <Button size="icon" variant="ghost" onClick={() => handleToggleGrade(i, 'correct')} className={cn("h-7 w-7 rounded-full transition-colors", grades[i] === 'correct' ? "bg-green-500 text-white hover:bg-green-600" : "bg-muted text-muted-foreground opacity-50")} disabled={!isAdmin}><Check className="h-4 w-4"/></Button>
+                                        <Button size="icon" variant="ghost" onClick={() => handleToggleGrade(i, 'incorrect')} className={cn("h-7 w-7 rounded-full transition-colors", grades[i] === 'incorrect' ? "bg-red-500 text-white hover:bg-red-600" : "bg-muted text-muted-foreground opacity-50")} disabled={!isAdmin}><X className="h-4 w-4"/></Button>
+                                        {/* Azul con icono Info */}
+                                        <Button size="icon" variant="ghost" onClick={() => handleToggleGrade(i, 'blue')} title="Observación" className={cn("h-7 w-7 rounded-full transition-colors", grades[i] === 'blue' ? "bg-blue-500 text-white hover:bg-blue-600" : "bg-muted text-muted-foreground opacity-50")} disabled={!isAdmin}><Info className="h-4 w-4"/></Button>
+                                        {/* Verde Oscuro con icono Trophy */}
+                                        <Button size="icon" variant="ghost" onClick={() => handleToggleGrade(i, 'darkgreen')} title="Excelente" className={cn("h-7 w-7 rounded-full transition-colors", grades[i] === 'darkgreen' ? "bg-green-900 text-white hover:bg-green-950" : "bg-muted text-muted-foreground opacity-50")} disabled={!isAdmin}><Trophy className="h-4 w-4"/></Button>
                                     </div>
                                 </div>
-                            );
-                        })}
+                            </Fragment>
+                        ))}
                     </div>
                 </ScrollArea>
             </CardContent>
             <CardFooter className="pt-6 border-t flex justify-center">
-                <Button onClick={onComplete} size="lg" className="px-16 font-bold h-14 uppercase">
-                    Avanzar <ArrowRight className="ml-2 h-6 w-6" />
+                <Button onClick={onComplete} size="lg" className="px-16 font-black h-14 uppercase">
+                    {title.includes('2') || title.includes('DICTATION 2') ? 'Finish' : 'Continue'} <ArrowRight className="ml-2 h-6 w-6" />
                 </Button>
             </CardFooter>
         </Card>
@@ -219,23 +218,37 @@ const RealTimeGradingExercise = ({ title, description, prompts, onComplete, stud
 const BallsExerciseInternal = ({ title, prompts, onComplete, vocabulary }: any) => {
     const { toast } = useToast();
     const [currentIndex, setCurrentIndex] = useState(0);
-    const [answer, setAnswer] = useState('');
+    const [userAnswers, setUserAnswers] = useState<Record<number, string>>({});
     const [status, setStatus] = useState<Record<number, 'correct' | 'incorrect' | 'unchecked'>>({});
 
-    useEffect(() => { setCurrentIndex(0); setAnswer(''); setStatus({}); }, [prompts]);
-    useEffect(() => { setAnswer(''); }, [currentIndex]);
-
-    const currentPrompt = prompts[currentIndex];
-    if (!currentPrompt) return null;
+    const handleInputChange = (val: string) => {
+        setUserAnswers(prev => ({ ...prev, [currentIndex]: val }));
+        if (status[currentIndex] !== 'unchecked') {
+            setStatus(prev => ({ ...prev, [currentIndex]: 'unchecked' }));
+        }
+    };
 
     const handleCheck = () => {
-        const userVal = answer.trim().toLowerCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' ');
-        const corrects = currentPrompt.answer;
-        const isCorrect = corrects.some((a: string) => a.toLowerCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' ') === userVal);
-        setStatus(prev => ({ ...prev, [currentIndex]: isCorrect ? 'correct' : 'incorrect' }));
-        if (isCorrect) toast({ title: "¡Buen trabajo!" });
-        else toast({ variant: 'destructive', title: "Sigue intentando" });
+        const newStatus: Record<number, 'correct' | 'incorrect' | 'unchecked'> = {};
+        let allOk = true;
+
+        prompts.forEach((prompt: any, i: number) => {
+            const userVal = (userAnswers[i] || '').trim().toLowerCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' ');
+            const isOk = prompt.answer.some((a: string) => a.toLowerCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' ') === userVal);
+            newStatus[i] = isOk ? 'correct' : 'incorrect';
+            if (!isOk) allOk = false;
+        });
+
+        setStatus(newStatus);
+        if (allOk) {
+            toast({ title: "¡Perfecto!", description: "Has completado todas las frases correctamente." });
+            onComplete();
+        } else {
+            toast({ variant: 'destructive', title: "Revisa tus respuestas", description: "Algunas frases tienen errores." });
+        }
     };
+
+    const isLast = currentIndex === prompts.length - 1;
 
     return (
         <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground">
@@ -243,7 +256,6 @@ const BallsExerciseInternal = ({ title, prompts, onComplete, vocabulary }: any) 
                 <div className="flex justify-between items-start text-left">
                     <div className="w-full">
                         <CardTitle>{title}</CardTitle>
-                        <CardDescription className='font-bold text-foreground mt-1'>Traduce la frase correctamente.</CardDescription>
                         <div className="flex gap-2 justify-start flex-wrap pt-4">
                             {prompts.map((_: any, i: number) => (
                                 <div key={i} onClick={() => setCurrentIndex(i)} className={cn("h-8 w-8 rounded-full border-2 flex items-center justify-center text-sm font-bold cursor-pointer transition-all", currentIndex === i ? "border-primary ring-2 ring-primary" : "border-muted", status[i] === 'correct' ? "bg-green-500 text-white border-green-500" : status[i] === 'incorrect' ? "bg-red-500 text-white border-red-500" : "bg-card text-foreground")}>{i + 1}</div>
@@ -253,18 +265,13 @@ const BallsExerciseInternal = ({ title, prompts, onComplete, vocabulary }: any) 
                     {vocabulary && (
                         <Popover>
                             <PopoverTrigger asChild>
-                                <Button variant="outline" size="sm" className="border-2 border-brand-blue animate-border-pulse shrink-0">
-                                    <BookText className="mr-2 h-4 w-4" /> Vocabulary
-                                </Button>
+                                <Button variant="outline" size="sm" className="border-2 border-brand-blue animate-border-pulse shrink-0"><BookText className="mr-2 h-4 w-4" /> Vocabulary</Button>
                             </PopoverTrigger>
                             <PopoverContent className="w-64">
                                 <ScrollArea className="h-48 pr-4 text-left">
                                     <div className="grid grid-cols-2 gap-2 text-sm text-foreground">
                                         {Object.entries(vocabulary).map(([es, en]: any) => (
-                                            <Fragment key={es}>
-                                                <span className="text-muted-foreground capitalize">{es}:</span>
-                                                <span className="font-semibold text-right">{en}</span>
-                                            </Fragment>
+                                            <Fragment key={es}><span className="text-muted-foreground capitalize">{es}:</span><span className="font-semibold text-right">{en}</span></Fragment>
                                         ))}
                                     </div>
                                 </ScrollArea>
@@ -274,14 +281,19 @@ const BallsExerciseInternal = ({ title, prompts, onComplete, vocabulary }: any) 
                 </div>
             </CardHeader>
             <CardContent className="space-y-6">
-                <div className="bg-muted p-6 rounded-2xl border-2 border-dashed text-center font-bold text-xl uppercase tracking-tighter text-foreground">{currentPrompt.spanish}</div>
-                <Input value={answer} onChange={e => setAnswer(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleCheck()} className={cn("h-12 text-lg text-foreground", status[currentIndex] === 'correct' ? 'border-green-500 bg-green-50/5' : status[currentIndex] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} placeholder="Tu traducción..." autoComplete="off" />
+                <div className="bg-muted p-6 rounded-2xl border-2 border-dashed text-center font-bold text-xl uppercase tracking-tighter text-foreground">
+                    {prompts[currentIndex].spanish}
+                </div>
+                <Input value={userAnswers[currentIndex] || ''} onChange={e => handleInputChange(e.target.value)} onKeyDown={e => e.key === 'Enter' && !isLast && setCurrentIndex(i => i + 1)} className={cn("h-12 text-lg text-foreground", status[currentIndex] === 'correct' ? 'border-green-500 bg-green-50/5' : status[currentIndex] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} placeholder="Tu traducción..." autoComplete="off" />
             </CardContent>
             <CardFooter className="justify-between border-t pt-6">
                 <Button variant="outline" onClick={() => setCurrentIndex(p => Math.max(0, p - 1))} disabled={currentIndex === 0}>Anterior</Button>
                 <div className="flex gap-2">
-                    <Button onClick={handleCheck} variant="secondary">Verificar</Button>
-                    <Button onClick={() => currentIndex < prompts.length - 1 ? setCurrentIndex(i => i + 1) : onComplete()} disabled={status[currentIndex] !== 'correct'} className="text-white font-bold">{currentIndex === prompts.length - 1 ? 'Finalizar' : 'Siguiente'}</Button>
+                    {isLast ? (
+                        <Button onClick={handleCheck} variant="secondary" className='font-bold px-8'>Verificar</Button>
+                    ) : (
+                        <Button onClick={() => setCurrentIndex(i => i + 1)} className="text-white font-bold">Siguiente</Button>
+                    )}
                 </div>
             </CardFooter>
         </Card>
@@ -304,6 +316,7 @@ export default function Class8Content({ overrideStudentId }: { overrideStudentId
     const [selectedTopic, setSelectedTopic] = useState<string>('');
     const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
     const [initialLoadComplete, setInitialLoadComplete] = useState(false);
+    const [isClassFinished, setIsClassFinished] = useState(false);
     const hasInitialized = useRef(false);
 
     const [vocabAnswers, setVocabAnswers] = useState<string[]>(Array(vocabularyData.length).fill(''));
@@ -331,7 +344,6 @@ export default function Class8Content({ overrideStudentId }: { overrideStudentId
         { key: 'writing2', name: '11. Writing 2', icon: Pencil, status: 'locked' },
     ], []);
 
-    // ASYNC FLOW 1: Inicialización de la Ruta y Carga de Firestore
     useEffect(() => {
         if (isProfileLoading || isUserLoading || !studentProfile || hasInitialized.current) return;
         
@@ -362,7 +374,6 @@ export default function Class8Content({ overrideStudentId }: { overrideStudentId
         return Math.round((comp / learningPath.length) * 100);
     }, [learningPath]);
 
-    // ASYNC FLOW 2: Persistencia con Debounce (Solo estudiantes en su propia cuenta)
     useEffect(() => {
         if (!initialLoadComplete || isInitialLoading || isAdmin || !studentDocRef || targetStudentId || !user) return;
         
@@ -384,19 +395,6 @@ export default function Class8Content({ overrideStudentId }: { overrideStudentId
 
         return () => clearTimeout(saveTimer);
     }, [learningPath, progressValue, selectedTopic, isAdmin, studentDocRef, isInitialLoading, targetStudentId, initialLoadComplete, vocabAnswers, vocabValidation, user]);
-
-    // Monitoreo de vocabulario para habilitar botón avanzar
-    useEffect(() => {
-        if (vocabValidation.length > 0 && vocabValidation.every(v => v === 'correct')) {
-            setCanAdvanceVocab(true);
-        } else {
-            setCanAdvanceVocab(false);
-        }
-    }, [vocabValidation]);
-
-    const handleTopicCompleteInternal = useCallback((completedKey: string) => {
-        setTopicToComplete(completedKey);
-    }, [toast]);
 
     useEffect(() => {
         if (!topicToComplete) return;
@@ -448,10 +446,31 @@ export default function Class8Content({ overrideStudentId }: { overrideStudentId
         else toast({ variant: 'destructive', title: "Sigue intentando" });
     };
 
+    const handleFinishClass = () => {
+        setIsClassFinished(true);
+        handleTopicCompleteInternal('writing2');
+    };
+
     const renderContent = () => {
         if (isInitialLoading) return <div className="flex justify-center items-center h-64"><Loader2 className="animate-spin text-primary" /></div>;
+        
+        if (isClassFinished) {
+            return (
+                <Card className="shadow-soft border-2 border-green-500 bg-green-50/10 p-12 text-center flex flex-col items-center animate-in fade-in zoom-in duration-500 text-foreground">
+                    <Trophy className="h-24 w-24 text-yellow-400 mb-6 animate-bounce" />
+                    <h2 className="text-4xl font-black uppercase text-green-600 tracking-tighter">Congratulations!</h2>
+                    <p className="text-2xl mt-4 font-bold">You finished this Class</p>
+                    <p className='text-muted-foreground mt-2 text-lg'>Misión cumplida al 100%.</p>
+                    <Button asChild className="mt-8 px-12 h-12 font-bold" variant="outline">
+                        <Link href="/ingles/a1">Back to Course A1</Link>
+                    </Button>
+                </Card>
+            );
+        }
+
         switch (selectedTopic) {
             case 'vocabulary':
+                const allVocabOk = vocabValidation.length > 0 && vocabValidation.every(v => v === 'correct');
                 return (
                     <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground text-left">
                         <CardHeader><CardTitle>Vocabulary: Basic Words (16)</CardTitle></CardHeader>
@@ -465,7 +484,7 @@ export default function Class8Content({ overrideStudentId }: { overrideStudentId
                                             <Input 
                                                 value={vocabAnswers[i] || ''} 
                                                 onChange={e => { if (targetStudentId) return; const na = [...vocabAnswers]; na[i] = e.target.value; setVocabAnswers(na); const nv = [...vocabValidation]; nv[i] = 'unchecked'; setVocabValidation(nv); }} 
-                                                className={cn("h-12 uppercase font-mono text-foreground", vocabValidation[i] === 'correct' ? 'border-green-500 bg-green-50/10' : vocabValidation[i] === 'incorrect' ? 'border-red-500 bg-red-50/10' : '')} 
+                                                className={cn("uppercase font-mono", vocabValidation[i] === 'correct' ? 'border-green-500 bg-green-50/10' : vocabValidation[i] === 'incorrect' ? 'border-red-500 bg-red-50/10' : '')} 
                                                 autoComplete="off" 
                                                 readOnly={isAdmin && !!targetStudentId} 
                                             />
@@ -476,26 +495,60 @@ export default function Class8Content({ overrideStudentId }: { overrideStudentId
                         </CardContent>
                         <CardFooter className="flex justify-between border-t pt-6 mt-4">
                             <Button onClick={handleCheckVocab} variant="secondary">Verificar</Button>
-                            <Button onClick={() => handleTopicCompleteInternal('vocabulary')} disabled={!canAdvanceVocab && !isAdmin} className='text-white font-bold'>Avanzar</Button>
+                            <Button onClick={() => handleTopicCompleteInternal('vocabulary')} disabled={!allVocabOk && !isAdmin} className='text-white font-bold'>Continue</Button>
                         </CardFooter>
                     </Card>
                 );
             case 'dictation1': 
-                return <RealTimeGradingExercise title="DICTATION 1" description="Escucha a tu profesor y escribe las 23 líneas de dictado." prompts={Array(23).fill('')} onComplete={() => handleTopicCompleteInternal('dictation1')} studentDocRef={studentDocRef} isAdmin={isAdmin} storageKeyLines="dict1Lines" storageKeyGrades="dict1Grades" initialLines={studentProfile?.lessonProgress?.[progressStorageVersion]?.dict1Lines} initialGrades={studentProfile?.lessonProgress?.[progressStorageVersion]?.dict1Grades} isSupervisionMode={!!targetStudentId} />;
-            case 'ex1': return <BallsExerciseInternal key="ex1" title="Exercise 1" prompts={ex1Prompts} onComplete={() => handleTopicCompleteInternal('ex1')} vocabulary={ex1VocabHelp} />;
+                return <RealTimeGradingExercise title="DICTATION 1" description="Escucha y escribe las líneas de dictado." onComplete={() => handleTopicCompleteInternal('dictation1')} studentDocRef={studentDocRef} isAdmin={isAdmin} storageKeyLines="dict1Lines" storageKeyGrades="dict1Grades" initialLines={studentProfile?.lessonProgress?.[progressStorageVersion]?.dict1Lines} initialGrades={studentProfile?.lessonProgress?.[progressStorageVersion]?.dict1Grades} isSupervisionMode={!!targetStudentId} />;
+            case 'ex1': 
+                return <BallsExerciseInternal title="Exercise 1" prompts={ex1Prompts} onComplete={() => handleTopicCompleteInternal('ex1')} vocabulary={ex1VocabHelp} />;
             case 'dictation2': 
-                return <RealTimeGradingExercise title="DICTATION 2" description="Escucha a tu profesor y escribe las 22 líneas de dictado." prompts={Array(22).fill('')} onComplete={() => handleTopicCompleteInternal('dictation2')} studentDocRef={studentDocRef} isAdmin={isAdmin} storageKeyLines="dict2Lines" storageKeyGrades="dict2Grades" initialLines={studentProfile?.lessonProgress?.[progressStorageVersion]?.dict2Lines} initialGrades={studentProfile?.lessonProgress?.[progressStorageVersion]?.dict2Grades} isSupervisionMode={!!targetStudentId} />;
-            case 'ex2': return <SimpleTranslationExercise exerciseKey="c8_ex2" course="a1" onComplete={() => handleTopicCompleteInternal('ex2')} vocabulary={{ "mío": "mine", "tuyo": "yours", "suyo/a": "his/hers", "nuestro": "ours" }} highlightVocabulary={true} />;
-            case 'ex3': return <SimpleTranslationExercise exerciseKey="c8_ex3" course="a1" onComplete={() => handleTopicCompleteInternal('ex3')} vocabulary={{ "nadar": "swim", "veloz": "fast", "comportamiento": "behavior" }} highlightVocabulary={true} />;
+                return <RealTimeGradingExercise title="DICTATION 2" description="Escucha y escribe las líneas de dictado." onComplete={() => handleTopicCompleteInternal('dictation2')} studentDocRef={studentDocRef} isAdmin={isAdmin} storageKeyLines="dict2Lines" storageKeyGrades="dict2Grades" initialLines={studentProfile?.lessonProgress?.[progressStorageVersion]?.dict2Lines} initialGrades={studentProfile?.lessonProgress?.[progressStorageVersion]?.dict2Grades} isSupervisionMode={!!targetStudentId} />;
+            case 'ex2': return <SimpleTranslationExercise exerciseKey="c8_ex2" course="a1" onComplete={() => handleTopicCompleteInternal('ex2')} vocabulary={{ "mío": "mine", "tuyo": "yours", "suyo/a": "his/hers", "nuestro": "ours" , "celular" : "cellphone" , "cuadros" : "painting" }} highlightVocabulary={true} />;
+            case 'ex3': return <SimpleTranslationExercise exerciseKey="c8_ex3" course="a1" onComplete={() => handleTopicCompleteInternal('ex3')} vocabulary={{ "nadar": "swim", "veloz": "fast", "comportamiento": "behavior" , "viaje" : "trip" , "baloncesto" : "basketball" , "correr" : "to run" , "iglesia" : "church" }} highlightVocabulary={true} />;
             case 'vocab_game': return <VocabularyMatchingGame data={vocabularyData.map(v => ({ spanish: v.spanish, english: [v.english] }))} onComplete={() => handleTopicCompleteInternal('vocab_game')} title="Memory Game: Basic Words" />;
             case 'ex4': return <SimpleTranslationExercise exerciseKey="c8_ex4" course="a1" onComplete={() => handleTopicCompleteInternal('ex4')} vocabulary={{ "vaso": "glass", "chaqueta": "jacket", "cumpleaños": "birthday" }} highlightVocabulary={true} />;
             case 'ex5': return <SentenceCompletionExercise title="Exercise 5" description="Completa con THE o deja vacío si no es necesario." data={exercise5Data} onComplete={() => handleTopicCompleteInternal('ex5')} />;
-            case 'writing1': return <CreativeWritingExercise title="Writing 1" description="About your school." prompts={[{ id: 'w1', question: 'Describe your school experience using possessives and adjectives.' }]} onComplete={() => handleTopicCompleteInternal('writing1')} studentDocRef={studentDocRef} initialData={studentProfile?.lessonProgress?.[progressStorageVersion]?.create1 || {}} savePath={`lessonProgress.${progressStorageVersion}.create1`} />;
+            case 'writing1': 
+                return (
+                    <RealTimeGradingExercise 
+                        title="WRITING 1" 
+                        description="Describe your school experience using possessives and adjectives." 
+                        onComplete={() => handleTopicCompleteInternal('writing1')} 
+                        studentDocRef={studentDocRef} 
+                        isAdmin={isAdmin} 
+                        storageKeyLines="write1Lines" 
+                        storageKeyGrades="write1Grades" 
+                        initialLines={studentProfile?.lessonProgress?.[progressStorageVersion]?.write1Lines} 
+                        initialGrades={studentProfile?.lessonProgress?.[progressStorageVersion]?.write1Grades} 
+                        isSupervisionMode={!!targetStudentId} 
+                        lineCount={6}
+                        customHeight="h-[300px]"
+                    />
+                );
             case 'writing2': 
-                return <RealTimeGradingExercise title="Writing 2" description="Crea 6 frases usando los temas aprendidos hoy." prompts={Array(6).fill('')} onComplete={() => handleTopicCompleteInternal('writing2')} studentDocRef={studentDocRef} isAdmin={isAdmin} storageKeyLines="writing2Lines" storageKeyGrades="writing2Grades" initialLines={studentProfile?.lessonProgress?.[progressStorageVersion]?.writing2Lines} initialGrades={studentProfile?.lessonProgress?.[progressStorageVersion]?.writing2Grades} isSupervisionMode={!!targetStudentId} scrollHeight="h-[320px]" />;
+                return <RealTimeGradingExercise 
+                    title="WRITING 2" 
+                    description="Crea 6 frases usando Posesivos." 
+                    onComplete={handleFinishClass} 
+                    studentDocRef={studentDocRef} 
+                    isAdmin={isAdmin} 
+                    storageKeyLines="writing2Lines" 
+                    storageKeyGrades="writing2Grades" 
+                    initialLines={studentProfile?.lessonProgress?.[progressStorageVersion]?.writing2Lines} 
+                    initialGrades={studentProfile?.lessonProgress?.[progressStorageVersion]?.writing2Grades} 
+                    isSupervisionMode={!!targetStudentId} 
+                    lineCount={6}
+                    customHeight="h-[300px]"
+                />;
             default: return null;
         }
     };
+
+    const handleTopicCompleteInternal = useCallback((completedKey: string) => {
+        setTopicToComplete(completedKey);
+    }, []);
 
     return (
         <div className="flex w-full flex-col min-h-screen ingles-dashboard-bg text-foreground">
