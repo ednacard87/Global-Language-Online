@@ -3,11 +3,13 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { DashboardHeader } from "@/components/dashboard/header";
 import { MazeGame } from "@/components/dashboard/maze-game";
-import { getB1EspanolPath, PathItem } from "@/lib/course-data";
+import { getB1EspanolMainPath, PathItem } from "@/lib/course-data";
 import { useTranslation } from "@/context/language-context";
 import { useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import Link from "next/link";
+import { Progress } from "@/components/ui/progress";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function B1EspanolCoursePage() {
   const { t } = useTranslation();
@@ -19,7 +21,7 @@ export default function B1EspanolCoursePage() {
     () => (user ? doc(firestore, 'students', user.uid) : null),
     [firestore, user]
   );
-  const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{role?: 'admin' | 'student', progress?: Record<string, number>}>(studentDocRef);
+  const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{role?: 'admin' | 'student', progress?: Record<string, number>, unlockedClasses?: string[]}>(studentDocRef);
 
   const isAdmin = useMemo(() => {
       if (!user) return false;
@@ -30,7 +32,7 @@ export default function B1EspanolCoursePage() {
     if (isProfileLoading) return;
 
     const updatePath = () => {
-        const initialPath = getB1EspanolPath();
+        const initialPath = getB1EspanolMainPath();
 
         const itemsWithProgress = initialPath.map(item => {
             const newItem = { ...item };
@@ -44,11 +46,13 @@ export default function B1EspanolCoursePage() {
             if (isAdmin) {
                 return { ...item, locked: false };
             }
-            if (index === 0) { // Start is always unlocked
+
+            if (index === 0) { // El inicio siempre está desbloqueado
                 return { ...item, locked: false };
             }
             const previousItem = arr[index - 1];
             
+            // Desbloqueo secuencial simple basado en el 100% de progreso del item anterior
             const isLocked = (previousItem.progress ?? 0) < 100;
             return { ...item, locked: isLocked };
         });
@@ -71,26 +75,47 @@ export default function B1EspanolCoursePage() {
     };
   }, [t, isAdmin, studentProfile, isProfileLoading]);
 
+  const overallB1Progress = useMemo(() => {
+    if (!studentProfile?.progress) return 0;
+    const progressKeys = ['progress_b1_es_unit_1', 'progress_b1_es_unit_2', 'progress_b1_es_unit_3'];
+    const total = progressKeys.reduce((acc, key) => acc + (studentProfile.progress![key] || 0), 0);
+    return Math.round(total / 3);
+  }, [studentProfile]);
+
 
   return (
     <div className="flex w-full flex-col espanol-dashboard-bg min-h-screen">
       <DashboardHeader />
       <main className="flex flex-1 flex-col items-center gap-8 p-4 md:py-12">
         <div className="text-center">
-             <Link href="/espanol" className="text-sm text-muted-foreground hover:underline mt-2 inline-block">
-                &larr; Volver a Español
+             <Link href="/espanol" className="text-sm text-white/80 hover:underline mt-2 inline-block">
+                &larr; Volver al Panel General de Español
             </Link>
-            <h1 className="text-4xl font-bold text-brand-purple dark:text-primary [text-shadow:1px_1px_1.5px_hsl(var(--accent)/0.8)]">Curso B1 - Español</h1>
+            <h1 className="text-4xl font-bold text-white [text-shadow:1px_1px_2.5px_black] uppercase">Curso B1 - Español</h1>
         </div>
-        <div className="w-full max-w-7xl">
+        <div className="w-full max-w-5xl">
             <MazeGame 
                 pathItems={pathItems} 
-                title="THE LEARNING ADVENTURE"
-                description="Sigue la ruta para dominar nuevas habilidades."
+                title="THE LEARNING ADVENTURE B1"
+                description="Domina el español intermedio a través de estas misiones épicas."
                 isLoading={isProfileLoading}
-            />
+            >
+                 <CardContent className="p-8 pt-4 border-t bg-card/80 backdrop-blur-sm rounded-b-lg">
+                    <CardHeader className="p-0">
+                        <CardTitle className="text-primary uppercase tracking-tighter">Progreso Global B1</CardTitle>
+                        <CardDescription className="text-foreground font-medium">Completa las unidades para alcanzar la fluidez total.</CardDescription>
+                    </CardHeader>
+                    <div className="pt-4">
+                        <Progress value={overallB1Progress} className="h-4" />
+                        <div className="mt-2 flex justify-end text-sm font-black text-primary">
+                            <span>{overallB1Progress}%</span>
+                        </div>
+                    </div>
+                </CardContent>
+            </MazeGame>
         </div>
       </main>
     </div>
   );
 }
+
