@@ -105,7 +105,7 @@ const ex2Prompts = [
     { en: "She brushes her teeth.", es: ["ella se cepilla los dientes", "ella se cepilla sus dientes"] },
     { en: "We relax on Sundays.", es: ["nosotros nos relajamos los domingos", "nos relajamos los domingos"] },
     { en: "They train at the gym.", es: ["ellos se entrenan en el gimnasio"] },
-    { en: "We brush our teeth every day.", es: ["nosotros nos cepillamos los dientes"] },
+    { en: "We brush our teeth every day.", es: ["nosotros nos cepillamos los dientes todos los dias"] },
     { en: "You (plural) calm down.", es: ["ustedes se calman"] },
     { en: "She gets angry easily.", es: ["ella se enoja fácilmente", "ella se enoja facilmente"] },
 ];
@@ -114,14 +114,14 @@ const ex3Prompts = [
     { en: "I name myself Juan.", es: ["yo me llamo juan", "me llamo juan"] },
     { en: "He gets bored in class.", es: ["él se aburre en clase", "el se aburre en clase"] },
     { en: "We help each other with the homework.", es: ["nosotros nos ayudamos con la tarea"] },
-    { en: "They fasten their seatbelts.", es: ["ellos se abrochan los cinturones", "se abrochan los cinturones"] },
+    { en: "They fasten their seatbelts.", es: ["ellos se abrochan sus cinturones", "ellos se abrochan los cinturones"] },
     { en: "I stretch before running.", es: ["yo me estiro antes de correr", "me estiro antes de correr"] },
     { en: "She bathes (herself).", es: ["ella se baña"] },
     { en: "We fix ourselves up for the wedding.", es: ["nosotros nos arreglamos para la boda", "nos arreglamos para la boda" , "nosotros nos arreglamos para el matrimonio", "nos arreglamos para el matrimonio"] },
     { en: "You (informal) allow yourself a break.", es: ["tú te permites un descanso", "tu te permites un descanso"] },
-    { en: "The cat licks itself (washes itself).", es: ["el gato se lava"] },
+    { en: "The cat licks itself (washes itself).", es: ["el gato se lava" , "el gato se lame"] },
     { en: "We get dressed quickly.", es: ["nosotros nos vestimos rapidamente"] },
-    { en: "He gets lost easily.", es: ["él se pierde fácilmente", "el se pierde facilmente"] },
+    { en: "He gets lost easily.", es: ["el se pierde fácilmente", "el se pierde facilmente"] },
     { en: "She gets nervous before speaking.", es: ["ella se pone nerviosa antes de hablar", "ella se pone nerviosa antes de hablar"] },
 ];
 
@@ -132,7 +132,7 @@ const readingData = {
         { id: 'q1', question: "¿A qué hora se levanta Mateo?", a: ["a las seis", "a las 6", "a las seis de la mañana"] },
         { id: 'q2', question: "¿Qué hace Mateo primero en la cama?", a: ["se estira", "se estira un poco"] },
         { id: 'q3', question: "¿Con qué tipo de agua se ducha?", a: ["agua fría", "con agua fría"] },
-        { id: 'q4', question: "¿Qué hace Elena después de lavarse la cara?", a: ["se maquilla"] },
+        { id: 'q4', question: "¿Qué hace Elena después de lavarse la cara?", a: ["se maquilla" , "ella se maquilla" , "maquillarse"] },
         { id: 'q5', question: "¿Cuándo se relaja Mateo?", a: ["cuando llega a casa", "en la casa"] },
     ]
 };

@@ -91,6 +91,9 @@ const ex1Prompts = [
     { en: "The windows", es: ["las ventanas"] },
     { en: "A backpack", es: ["una maleta", "una mochila"] },
     { en: "The floor", es: ["el piso"] },
+    { en: "The city", es: ["la ciudad"] },
+    { en: "The water", es: ["el agua"] },
+    { en: "The problem", es: ["el problema"] },
 ];
 
 const ex2Prompts = [
@@ -102,6 +105,8 @@ const ex2Prompts = [
     { en: "A small eraser", es: ["un borrador pequeño", "un borrador pequeno"] },
     { en: "The black board", es: ["el tablero negro"] },
     { en: "Some gray rulers", es: ["unas reglas grises"] },
+    { en: "the gray laptop", es: ["el portátil gris"] },
+    { en: "The white watch", es: ["el reloj blanco"] },
 ];
 
 const ex3Prompts = [

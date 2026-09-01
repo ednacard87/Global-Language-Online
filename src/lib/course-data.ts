@@ -13,6 +13,7 @@ export interface PathItem {
     storageKey?: string;
 }
 
+// ------- CURSO INTRO INGLÉS ------
 export const englishIntroPathData: PathItem[] = [
     { type: 'start', icon: Footprints, label: 'dashboard.start', points: 0 },
     { type: 'class', icon: BookOpen, label: 'englishIntro.intro1', href: '/intro/1', progress: 0, points: 20, storageKey: 'intro1Progress' },
@@ -25,6 +26,7 @@ export const englishIntroPathData: PathItem[] = [
     { type: 'end', icon: Flag, label: 'dashboard.end', href: '/pricing', points: 0 },
 ];
 
+// ------- CURSO INTRO NIÑOS ------
 export const kidsIntroPathData: PathItem[] = [
     { type: 'start', icon: Footprints, label: 'dashboard.start' },
     { type: 'class', icon: Smile, label: 'kidsPage.intro1', href: '/kids/intro1', storageKey: 'kidsIntro1Progress' },
@@ -35,6 +37,7 @@ export const kidsIntroPathData: PathItem[] = [
     { type: 'end', icon: Flag, label: 'dashboard.finish' }
 ];
 
+// ------- CURSO INTRO ESPAÑOL ------
 export const espanolIntroPathData: PathItem[] = [
     { type: 'start', icon: Footprints, label: 'dashboard.start' },
     { type: 'class', icon: BookOpen, label: 'espanolIntroCourse.intro1', href: '/espanol/intro/1', storageKey: 'progress_espanol_intro_1' },
@@ -122,6 +125,7 @@ export type Topic = {
   status: 'locked' | 'active' | 'completed';
 };
   
+// ------- CURSO INTRO 1 INGLÉS ------
 export const getIntro1PathData = (t: (key: string, values?: { [key: string]: string | number }) => string): Omit<Topic, 'icon'>[] => [
     { key: "abc", name: t('intro1Page.abc'), status: "active" },
     { key: "abcExercise", name: t('intro1Page.abcExercise'), status: "locked" },
@@ -187,6 +191,7 @@ export interface KidsIntro2PathItem {
     status: 'completed' | 'active' | 'locked';
 }
 
+// ------- CURSO INTRO 2 NIÑOS ------
 export const getKidsIntro2PathData = (): KidsIntro2PathItem[] => [
     { key: 'tip', name: 'Tip Importante', icon: Lightbulb, status: 'active' },
     { key: 'mixed1', name: 'Ejercicios Mixtos 1', icon: PenSquare, status: 'locked' },
@@ -214,6 +219,7 @@ export interface EnglishIntro2PathItem {
     status: 'completed' | 'active' | 'locked';
 }
 
+// ------- CURSO INTRO 2 INGLÉS ------
 export const getEnglishIntro2PathData = (t: (key: string) => string): EnglishIntro2PathItem[] => [
     { key: 'tip', name: t('intro2Page.tip'), icon: Lightbulb, status: 'active' },
     { key: 'mixed1', name: t('intro2Page.mixed1'), icon: PenSquare, status: 'locked' },
@@ -368,26 +374,58 @@ export const spellingExercisesData: Record<SpellingExerciseKey, SpellingExercise
     },
 };
 
-export const getA1MainPath = (t: (key: string) => string): PathItem[] => [
+// --- CURSO A1 ESPAÑOL ---
+export const getA1SpanishMainPath = (): PathItem[] => [
     { type: 'start', icon: Footprints, label: 'dashboard.start' },
-    { type: 'class', icon: BookOpen, label: 'Articulos y Genero', href: '/espanol/a1/articulos-y-genero', storageKey: 'progress_a1_es_articulos_y_genero' },
-    { type: 'class', icon: BookOpen, label: 'Posesivos y Tener', href: '/espanol/a1/posesivos-y-tener', storageKey: 'progress_a1_es_posesivos_y_tener' },
-    { type: 'class', icon: BookOpen, label: 'Ser', href: '/espanol/a1/ser', storageKey: 'progress_a1_es_ser' },
-    { type: 'class', icon: BookOpen, label: 'Estar', href: '/espanol/a1/estar', storageKey: 'progress_a1_es_estar' },
-    { type: 'class', icon: BookOpen, label: 'Ser y Estar', href: '/espanol/a1/ser-y-estar', storageKey: 'progress_a1_es_ser_y_estar' },
-    { type: 'class', icon: BookOpen, label: 'Preposiciones de lugar', href: '/espanol/a1/preposiciones-de-lugar', storageKey: 'progress_a1_es_preposiciones_de_lugar' },
-    { type: 'class', icon: BookOpen, label: 'Ubicacion', href: '/espanol/a1/ubicacion', storageKey: 'progress_a1_es_ubicacion' },
-    { type: 'class', icon: BookOpen, label: 'Preguntas', href: '/espanol/a1/preguntas', storageKey: 'progress_a1_es_preguntas' },
-    { type: 'class', icon: BookOpen, label: 'Comida y restaurante', href: '/espanol/a1/comida-y-restaurante', storageKey: 'progress_a1_es_comida_y_restaurante' },
-    { type: 'class', icon: BookOpen, label: 'Presente simple Regulares', href: '/espanol/a1/presente-simple-regulares', storageKey: 'progress_a1_es_presente_simple_regulares' },
-    { type: 'class', icon: BookOpen, label: 'Comparativos y Superlativos', href: '/espanol/a1/comparativos-y-superlativos', storageKey: 'progress_a1_es_comparativos_y_superlativos' },
-    { type: 'class', icon: BookOpen, label: 'Demostrativos', href: '/espanol/a1/demostrativos', storageKey: 'progress_a1_es_demostrativos' },
-    { type: 'class', icon: BookOpen, label: 'Verbos de Preferencia', href: '/espanol/a1/verbos-de-preferencia', storageKey: 'progress_a1_es_verbos_de_preferencia' },
-    { type: 'class', icon: BookOpen, label: 'Presente Continuo', href: '/espanol/a1/presente-continuo', storageKey: 'progress_a1_es_presente_continuo' },
-    { type: 'class', icon: BookOpen, label: 'Presente simple irregulares', href: '/espanol/a1/presente-simple-irregulares', storageKey: 'progress_a1_es_presente_simple_irregulares' },
-    { type: 'end', icon: Flag, label: 'dashboard.finish' },
+    { type: 'class', icon: BookOpen, label: 'Unidad 1 (A1)', href: '/espanol/a1/unit/1', storageKey: 'progress_a1_es_unit_1' },
+    { type: 'practice', icon: Puzzle, label: 'Repaso 1 (A1)', href: '#', storageKey: 'progress_a1_es_review_1' },
+    { type: 'class', icon: BookOpen, label: 'Unidad 2 (A1)', href: '/espanol/a1/unit/2', storageKey: 'progress_a1_es_unit_2' },
+    { type: 'practice', icon: Puzzle, label: 'Repaso 2 (A1)', href: '#', storageKey: 'progress_a1_es_review_2' },
+    { type: 'class', icon: BookOpen, label: 'Unidad 3 (A1)', href: '/espanol/a1/unit/3', storageKey: 'progress_a1_es_unit_3' },
+    { type: 'practice', icon: Puzzle, label: 'Repaso 3 (A1)', href: '#', storageKey: 'progress_a1_es_review_3' },
+    { type: 'class', icon: BookOpen, label: 'Unidad 4 (A1)', href: '/espanol/a1/unit/4', storageKey: 'progress_a1_es_unit_4' },
+    { type: 'practice', icon: Puzzle, label: 'Repaso 4 (A1)', href: '#', storageKey: 'progress_a1_es_review_4' },
+    { type: 'end', icon: Flag, label: 'Final' }
 ];
 
+export const getA1SpanishUnitPath = (unitId: string | number): PathItem[] => {
+    const unitPaths: {[key: string]: PathItem[]} = {
+        '1': [
+            { type: 'start', icon: Footprints, label: 'dashboard.start' },
+            { type: 'class', icon: BookOpen, label: 'Articulos y Genero', href: '/espanol/a1/articulos-y-genero', storageKey: 'progress_a1_es_articulos_y_genero' },
+            { type: 'class', icon: BookOpen, label: 'Posesivos y Tener', href: '/espanol/a1/posesivos-y-tener', storageKey: 'progress_a1_es_posesivos_y_tener' },
+            { type: 'class', icon: BookOpen, label: 'Ser', href: '/espanol/a1/ser', storageKey: 'progress_a1_es_ser' },
+            { type: 'class', icon: BookOpen, label: 'Estar', href: '/espanol/a1/estar', storageKey: 'progress_a1_es_estar' },
+            { type: 'end', icon: Flag, label: 'dashboard.finish' }
+        ],
+        '2': [
+            { type: 'start', icon: Footprints, label: 'dashboard.start' },
+            { type: 'class', icon: BookOpen, label: 'Ser y Estar', href: '/espanol/a1/ser-y-estar', storageKey: 'progress_a1_es_ser_y_estar' },
+            { type: 'class', icon: BookOpen, label: 'Preposiciones de lugar', href: '/espanol/a1/preposiciones-de-lugar', storageKey: 'progress_a1_es_preposiciones_de_lugar' },
+            { type: 'class', icon: BookOpen, label: 'Ubicación', href: '/espanol/a1/ubicacion', storageKey: 'progress_a1_es_ubicacion' },
+            { type: 'class', icon: BookOpen, label: 'Preguntas', href: '/espanol/a1/preguntas', storageKey: 'progress_a1_es_preguntas' },
+            { type: 'end', icon: Flag, label: 'dashboard.finish' }
+        ],
+        '3': [
+            { type: 'start', icon: Footprints, label: 'dashboard.start' },
+            { type: 'class', icon: BookOpen, label: 'Comida y Restaurante', href: '/espanol/a1/comida-y-restaurante', storageKey: 'progress_a1_es_comida_y_restaurante' },
+            { type: 'class', icon: BookOpen, label: 'Presente Simple Regulares', href: '/espanol/a1/presente-simple-regulares', storageKey: 'progress_a1_es_presente_simple_regulares' },
+            { type: 'class', icon: BookOpen, label: 'Comparativos y Superlativos', href: '/espanol/a1/comparativos-y-superlativos', storageKey: 'progress_a1_es_comparativos_y_superlativos' },
+            { type: 'class', icon: BookOpen, label: 'Demostrativos', href: '/espanol/a1/demostrativos', storageKey: 'progress_a1_es_demostrativos' },
+            { type: 'end', icon: Flag, label: 'dashboard.finish' }
+        ],
+        '4': [
+            { type: 'start', icon: Footprints, label: 'dashboard.start' },
+            { type: 'class', icon: BookOpen, label: 'Verbos de Preferencia', href: '/espanol/a1/verbos-de-preferencia', storageKey: 'progress_a1_es_verbos_de_preferencia' },
+            { type: 'class', icon: BookOpen, label: 'Presente Continuo', href: '/espanol/a1/presente-continuo', storageKey: 'progress_a1_es_presente_continuo' },
+            { type: 'class', icon: BookOpen, label: 'Presente Simple Irregulares', href: '/espanol/a1/presente-simple-irregulares', storageKey: 'progress_a1_es_presente_simple_irregulares' },
+            { type: 'end', icon: Flag, label: 'dashboard.finish' }
+        ]
+    };
+    return unitPaths[String(unitId)] || [];
+};
+
+// ------- CURSO A1 INGLÉS ------
 export const getA1EngMainPath = (t: (key: string) => string): PathItem[] => [
     { type: 'start', icon: Footprints, label: 'dashboard.start' },
     { type: 'class', icon: BookOpen, label: 'a1Eng.unit1', href: '/ingles/a1/unit/1', storageKey: 'progress_a1_eng_unit_1' },
@@ -447,7 +485,7 @@ export const getA1UnitPath = (unitId: string | number, t: (key: string) => strin
     return unitPaths[String(unitId)] || [];
 };
 
-
+// ------- CURSO A2 INGLÉS ------
 export const getA2EngMainPath = (t: (key: string) => string): PathItem[] => [
     { type: 'start', icon: Footprints, label: 'dashboard.start' },
     { type: 'class', icon: BookOpen, label: 'a2Eng.unit1', href: '/ingles/a2/unit/1', storageKey: 'progress_a2_eng_unit_1' },
@@ -517,6 +555,7 @@ export const getA1EngUnitPath = (unitId: string | number, t: (key: string) => st
     return unitPaths[String(unitId)] || [];
 }
 
+// A2 Espanol Path
 export const getA2EspanolPath = (t: (key: string) => string): PathItem[] => [
     { type: 'start', icon: Footprints, label: 'dashboard.start' },
     { type: 'class', icon: BookOpen, label: 'Reflexivos Regulares', href: '/espanol/a2/reflexivos-regulares', storageKey: 'progress_a2_es_reflexivos_regulares' },
@@ -537,6 +576,7 @@ export const getA2EspanolPath = (t: (key: string) => string): PathItem[] => [
     { type: 'end', icon: Flag, label: 'dashboard.finish' },
 ];
 
+// B1 Espanol Path
 export const getB1EspanolMainPath = (): PathItem[] => [
     { type: 'start', icon: Footprints, label: 'dashboard.start' },
     { type: 'class', icon: BookOpen, label: 'Unidad 1 (B1)', href: '/espanol/b1/unit/1', storageKey: 'progress_b1_es_unit_1' },
@@ -603,6 +643,7 @@ export const getA2UnitPath = (unitId: string | number, t: (key: string) => strin
     return unitPaths[String(unitId)] || [];
 }
 
+// B1 English Path
 export const getB1MainPath = (t: (key: string) => string): PathItem[] => [
     { type: 'start', icon: Footprints, label: 'dashboard.start' },
     { type: 'practice', icon: Video, label: 'Ted x Talks 0', href: '/ingles/b1/ted-talks-0', storageKey: 'progress_b1_ted_talks_0' },
@@ -647,6 +688,7 @@ export const getB1UnitPath = (unitId: string | number, t: (key: string) => strin
     return unitPaths[String(unitId)] || [];
 }
 
+// B2 English Path
 export const getB2MainPath = (t: (key: string) => string): PathItem[] => [
     { type: 'start', icon: Footprints, label: 'dashboard.start' },
     { type: 'class', icon: BookOpen, label: 'b2course.unit1', href: '/ingles/b2/unit/1', storageKey: 'progress_b2_unit_1' },
@@ -698,6 +740,7 @@ export const getB2UnitPath = (unitId: string | number, t: (key: string) => strin
     return unitPaths[String(unitId)] || [];
 }
 
+// A1 Kids
 export const getKidsA1MainPath = (t: (key: string) => string): PathItem[] => [
     { type: 'start', icon: Footprints, label: 'dashboard.start' },
     { type: 'class', icon: GraduationCap, label: 'kidsA1.toBe', href: '/kids/a1/to-be', storageKey: 'progress_kids_a1_tobe' },
@@ -716,6 +759,7 @@ export const getKidsA1MainPath = (t: (key: string) => string): PathItem[] => [
     { type: 'end', icon: Flag, label: 'dashboard.finish', href: '/kids' },
 ];
 
+// A2 Kids
 export const getKidsA2MainPath = (t: (key: string) => string): PathItem[] => [
     { type: 'start', icon: Footprints, label: 'dashboard.start' },
     { type: 'class', icon: GraduationCap, label: 'kidsA2.atOnIn1', href: '/kids/a2/at-on-in-1', storageKey: 'progress_kids_a2_at_on_in_1' },
@@ -728,6 +772,7 @@ export const getKidsA2MainPath = (t: (key: string) => string): PathItem[] => [
     { type: 'end', icon: Flag, label: 'dashboard.finish', href: '/kids' },
 ];
 
+// B1 Kids
 export const getKidsB1MainPath = (t: (key: string) => string): PathItem[] => [
     { type: 'start', icon: Footprints, label: 'dashboard.start' },
     { type: 'class', icon: GraduationCap, label: 'kidsB1.will', href: '/kids/b1/will', storageKey: 'progress_kids_b1_will' },
@@ -744,6 +789,7 @@ export const getKidsB1MainPath = (t: (key: string) => string): PathItem[] => [
     { type: 'end', icon: Flag, label: 'dashboard.finish' }
 ];
 
+// A1 Spanish Classes
 export const getA1SpanishClasses = () => [
     { id: 'es-a1-articulos-y-genero', name: 'Articulos y Genero' },
     { id: 'es-a1-posesivos-y-tener', name: 'Posesivos y Tener' },
@@ -762,6 +808,8 @@ export const getA1SpanishClasses = () => [
     { id: 'es-a1-presente-simple-irregulares', name: 'Presente simple irregulares' },
 ];
 
+
+// A2 Spanish Classes
 export const getA2SpanishClasses = () => [
     { id: 'es-a2-reflexivos-regulares', name: 'Reflexivos Regulares' },
     { id: 'es-a2-reflexivos-irregulares', name: 'Reflexivos Irregulares' },
@@ -780,6 +828,7 @@ export const getA2SpanishClasses = () => [
     { id: 'es-a2-pronombres-1', name: 'Pronombres 1: O.D / O.I' },
 ];
 
+// B1 Spanish Classes
 export const getB1SpanishClasses = () => [
     { id: 'es-b1-pronombres-2', name: 'Pronombres 2' },
     { id: 'es-b1-por-para', name: 'Por/Para' },
