@@ -13,7 +13,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { useTranslation } from '@/context/language-context';
-import { calculateEspanolIntroProgress, getA1SpanishMainPath, getA2EspanolPath, getB1EspanolPath } from '@/lib/course-data';
+import { calculateEspanolIntroProgress, getA1EspanolMainPath, getA2EspanolMainPath, getB1EspanolMainPath } from '@/lib/course-data';
 import { cn } from '@/lib/utils';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -136,7 +136,6 @@ export default function EspanolDashboardPage() {
 
     const a1Progress = useMemo(() => {
         if (!studentProfile?.progress) return 0;
-        const mainPath = getA1SpanishMainPath();
         const unitKeys = ['progress_a1_es_unit_1', 'progress_a1_es_unit_2', 'progress_a1_es_unit_3', 'progress_a1_es_unit_4'];
         const total = unitKeys.reduce((acc, key) => acc + (studentProfile.progress![key] || 0), 0);
         return Math.round(total / unitKeys.length);
@@ -144,17 +143,10 @@ export default function EspanolDashboardPage() {
 
     const a2Progress = useMemo(() => {
         if (!studentProfile?.progress) return 0;
-        const a2Items = getA2EspanolPath(t);
-        const totalItems = a2Items.length - 2; // exclude start and end
-        if (totalItems <= 0) return 0;
-        const completedItems = a2Items.reduce((acc, item) => {
-            if (item.storageKey && (studentProfile.progress?.[item.storageKey] ?? 0) >= 100) {
-                return acc + 1;
-            }
-            return acc;
-        }, 0);
-        return Math.round((completedItems / totalItems) * 100);
-    }, [studentProfile, t]);
+        const unitKeys = ['progress_a2_es_unit_1', 'progress_a2_es_unit_2', 'progress_a2_es_unit_3', 'progress_a2_es_unit_4'];
+        const total = unitKeys.reduce((acc, key) => acc + (studentProfile.progress![key] || 0), 0);
+        return Math.round(total / unitKeys.length);
+    }, [studentProfile]);
 
     const b1Progress = useMemo(() => {
         if (!studentProfile?.progress) return 0;
