@@ -98,7 +98,7 @@ export const calculateEnglishIntroCourseProgress = (progress: Record<string, num
 };
 
 // ------- CURSO A1 ESPAÑOL (Estandarizado) ------
-export const getA1EspanolMainPath = (): PathItem[] => [
+export const getA1SpanishMainPath = (): PathItem[] => [
     { type: 'start', icon: Footprints, label: 'dashboard.start' },
     { type: 'class', icon: BookOpen, label: 'a1Eng.unit1', href: '/espanol/a1/unit/1', storageKey: 'progress_a1_es_unit_1' },
     { type: 'practice', icon: Puzzle, label: 'a1Eng.review1', href: '#', storageKey: 'progress_a1_es_review_1' },
@@ -111,7 +111,7 @@ export const getA1EspanolMainPath = (): PathItem[] => [
     { type: 'end', icon: Flag, label: 'dashboard.finish' }
 ];
 
-export const getA1EspanolUnitPath = (unitId: string | number): PathItem[] => {
+export const getA1SpanishUnitPath = (unitId: string | number): PathItem[] => {
     const unitPaths: {[key: string]: PathItem[]} = {
         '1': [
             { type: 'start', icon: Footprints, label: 'dashboard.start' },
@@ -149,20 +149,20 @@ export const getA1EspanolUnitPath = (unitId: string | number): PathItem[] => {
 };
 
 // ------- CURSO A2 ESPAÑOL (Estandarizado) ------
-export const getA2EspanolMainPath = (): PathItem[] => [
+export const getA2SpanishMainPath = (): PathItem[] => [
     { type: 'start', icon: Footprints, label: 'dashboard.start' },
-    { type: 'class', icon: BookOpen, label: 'a2Eng.unit1', href: '/espanol/a2/unit/1', storageKey: 'progress_a2_es_unit_1' },
-    { type: 'practice', icon: Puzzle, label: 'a2Eng.review1', href: '#', storageKey: 'progress_a2_es_review_1' },
-    { type: 'class', icon: BookOpen, label: 'a2Eng.unit2', href: '/espanol/a2/unit/2', storageKey: 'progress_a2_es_unit_2' },
-    { type: 'practice', icon: Puzzle, label: 'a2Eng.review2', href: '#', storageKey: 'progress_a2_es_review_2' },
-    { type: 'class', icon: BookOpen, label: 'a2Eng.unit3', href: '/espanol/a2/unit/3', storageKey: 'progress_a2_es_unit_3' },
-    { type: 'practice', icon: Puzzle, label: 'a2Eng.review3', href: '#', storageKey: 'progress_a2_es_review_3' },
-    { type: 'class', icon: BookOpen, label: 'a2Eng.unit4', href: '/espanol/a2/unit/4', storageKey: 'progress_a2_es_unit_4' },
-    { type: 'practice', icon: Puzzle, label: 'a2Eng.review4', href: '#', storageKey: 'progress_a2_es_review_4' },
+    { type: 'class', icon: BookOpen, label: 'a2Spa.unit1', href: '/espanol/a2/unit/1', storageKey: 'progress_a2_es_unit_1' },
+    { type: 'practice', icon: Puzzle, label: 'a2Spa.review1', href: '#', storageKey: 'progress_a2_es_review_1' },
+    { type: 'class', icon: BookOpen, label: 'a2Spa.unit2', href: '/espanol/a2/unit/2', storageKey: 'progress_a2_es_unit_2' },
+    { type: 'practice', icon: Puzzle, label: 'a2Spa.review2', href: '#', storageKey: 'progress_a2_es_review_2' },
+    { type: 'class', icon: BookOpen, label: 'a2Spa.unit3', href: '/espanol/a2/unit/3', storageKey: 'progress_a2_es_unit_3' },
+    { type: 'practice', icon: Puzzle, label: 'a2Spa.review3', href: '#', storageKey: 'progress_a2_es_review_3' },
+    { type: 'class', icon: BookOpen, label: 'a2Spa.unit4', href: '/espanol/a2/unit/4', storageKey: 'progress_a2_es_unit_4' },
+    { type: 'practice', icon: Puzzle, label: 'a2Spa.review4', href: '#', storageKey: 'progress_a2_es_review_4' },
     { type: 'end', icon: Flag, label: 'dashboard.finish' }
 ];
 
-export const getA2EspanolUnitPath = (unitId: string | number): PathItem[] => {
+export const getA2SpanishUnitPath = (unitId: string | number): PathItem[] => {
     const unitPaths: {[key: string]: PathItem[]} = {
         '1': [
             { type: 'start', icon: Footprints, label: 'dashboard.start' },
@@ -201,17 +201,17 @@ export const getA2EspanolUnitPath = (unitId: string | number): PathItem[] => {
 };
 
 // ------- CURSO B1 ESPAÑOL (Estandarizado) ------
-export const getB1EspanolMainPath = (): PathItem[] => [
+export const getB1SpanishMainPath = (): PathItem[] => [
     { type: 'start', icon: Footprints, label: 'dashboard.start' },
-    { type: 'class', icon: BookOpen, label: 'b1Eng.unit1', href: '/espanol/b1/unit/1', storageKey: 'progress_b1_es_unit_1' },
-    { type: 'practice', icon: Puzzle, label: 'b1Eng.review1', href: '#', storageKey: 'progress_b1_es_review_1' },
-    { type: 'class', icon: BookOpen, label: 'b1Eng.unit2', href: '/espanol/b1/unit/2', storageKey: 'progress_b1_es_unit_2' },
-    { type: 'practice', icon: Puzzle, label: 'b1Eng.review2', href: '#', storageKey: 'progress_b1_es_review_2' },
-    { type: 'class', icon: BookOpen, label: 'b1Eng.unit3', href: '/espanol/b1/unit/3', storageKey: 'progress_b1_es_unit_3' },
+    { type: 'class', icon: BookOpen, label: 'b1Spa.unit1', href: '/espanol/b1/unit/1', storageKey: 'progress_b1_es_unit_1' },
+    { type: 'practice', icon: Puzzle, label: 'b1Spa.review1', href: '#', storageKey: 'progress_b1_es_review_1' },
+    { type: 'class', icon: BookOpen, label: 'b1Spa.unit2', href: '/espanol/b1/unit/2', storageKey: 'progress_b1_es_unit_2' },
+    { type: 'practice', icon: Puzzle, label: 'b1Spa.review2', href: '#', storageKey: 'progress_b1_es_review_2' },
+    { type: 'class', icon: BookOpen, label: 'b1Spa.unit3', href: '/espanol/b1/unit/3', storageKey: 'progress_b1_es_unit_3' },
     { type: 'end', icon: Flag, label: 'Final' }
 ];
 
-export const getB1EspanolUnitPath = (unitId: string | number): PathItem[] => {
+export const getB1SpanishUnitPath = (unitId: string | number): PathItem[] => {
     const unitPaths: {[key: string]: PathItem[]} = {
         '1': [
             { type: 'start', icon: Footprints, label: 'dashboard.start' },
