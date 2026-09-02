@@ -44,13 +44,14 @@ const espanolCourseIds = ['a1', 'a2', 'b1'];
 const kidsCourseIds = ['a1', 'a2', 'b1'];
 
 const unitCounts: Record<string, number> = { a1: 3, a2: 4, b1: 4, b2: 4 };
+const spanishUnitCounts: Record<string, number> = { a1: 4, b1: 3, a2: 0 };
 const classCounts: Record<string, number> = { a1: 16, a2: 20, b1: 20, b2: 20 };
 
 // Mapeo de slugs para cursos no numéricos
 const courseSlugs: Record<string, string[]> = {
   'es-a1': ['articulos-y-genero', 'posesivos-y-tener', 'ser', 'estar', 'ser-y-estar', 'preposiciones-de-lugar', 'ubicacion', 'preguntas', 'comida-y-restaurante', 'presente-simple-regulares', 'comparativos-y-superlativos', 'demostrativos', 'verbos-de-preferencia', 'presente-continuo', 'presente-simple-irregulares'],
   'es-a2': ['reflexivos-regulares', 'reflexivos-irregulares', 'reflexivos-mix', 'pasado-regulares', 'pasado-irregulares', 'reflexivos-pasado', 'imperfecto', 'pasado-vs-imperfecto', 'pasado-continuo', 'obligacion', 'perifrases-verbales', 'comparativos-avanzados', 'imperativo-afirmativo', 'preterito-perfecto', 'pronombres-1'],
-  'es-b1': ['pronombres', 'doble-pronombre', 'por-para', 'futuro', 'imperativo', 'presente-subjuntivo'],
+  'es-b1': ['pronombres-2', 'por-para', 'futuro', 'imperativo-2', 'pronombres-3', 'doble-pronombre', 'conectores', 'condicional-simple', 'presente-subjuntivo', 'subjuntivo-2', 'subjuntivo-3', 'voz-pasiva'],
   'kids-a1': ['to-be', 'present-simple', 'can', 'genitivo-sajon', 'wh-questions', 'posesivos', 'verbos-preferencia', 'demostrativos', 'one-ones', 'present-continuous', 'pronombres-objeto', 'comparativos-y-superlativos', 'adverbios-de-frecuencia'],
   'kids-a2': ['at-on-in-1', 'at-on-in-2', 'pasado-simple', 'pasado-continuo', 'contables-y-no-contables', 'presente-perfecto', 'used-to'],
   'kids-b1': ['will', 'may', 'be-going-to', 'zero-conditional', 'first-conditional', 'would-like-to', 'should', 'must-have-to', 'second-conditional', '1-2-conditional', 'connectors']
@@ -137,7 +138,7 @@ export default function AdminDashboardPage() {
         const lowerKey = key.toLowerCase();
         if (selectedCourse === 'ingles') return !lowerKey.includes('kids') && !lowerKey.includes('espanol');
         if (selectedCourse === 'kids') return lowerKey.includes('kids');
-        if (selectedCourse === 'espanol') return lowerKey.includes('espanol') || lowerKey.startsWith('progress_es_');
+        if (selectedCourse === 'espanol') return lowerKey.includes('espanol') || lowerKey.startsWith('progress_es_') || lowerKey.includes('_es_');
         return true;
     });
 
@@ -152,10 +153,10 @@ export default function AdminDashboardPage() {
 
         const getPathForSupervision = () => {
             const parts = key.split('_');
-            if (key.includes('a1_eng')) return `/a1/${parts[parts.length-1]}?studentId=${student.id}`;
-            if (key.includes('a2_eng')) return `/a2/${parts[parts.length-1]}?studentId=${student.id}`;
-            if (key.includes('b1_eng')) return `/b1/${parts[parts.length-1]}?studentId=${student.id}`;
-            if (key.startsWith('progress_es_')) return `/espanol-a1/${parts[parts.length-1]}?studentId=${student.id}`;
+            if (key.includes('a1_eng')) return `/ingles/a1/class/${parts[parts.length-1]}?studentId=${student.id}`;
+            if (key.includes('a2_eng')) return `/ingles/a2/class/${parts[parts.length-1]}?studentId=${student.id}`;
+            if (key.includes('b1_eng')) return `/ingles/b1/class/${parts[parts.length-1]}?studentId=${student.id}`;
+            if (key.startsWith('progress_es_')) return `/espanol/a1/${parts[parts.length-1]}?studentId=${student.id}`;
             return '#';
         };
 
@@ -188,7 +189,7 @@ export default function AdminDashboardPage() {
 
     return (
         <div className="flex flex-col gap-3 mt-3 pt-3 border-t">
-            {/* Gestión de Unidades (Visual mejorada con estados claros) */}
+            {/* Gestión de Unidades (Inglés) */}
             {isEnglish && (
                 <div className="space-y-1">
                     <p className="text-[9px] font-black text-primary uppercase flex items-center gap-1">
@@ -213,6 +214,40 @@ export default function AdminDashboardPage() {
                                         )}
                                     >
                                         {isUnlocked ? <Unlock className="mr-1 h-2 w-2 text-green-600" /> : <Lock className="mr-1 h-2 w-2 text-muted-foreground" />}
+                                        {courseId.toUpperCase()} U{i + 1}
+                                    </Button>
+                                );
+                            });
+                        })}
+                    </div>
+                </div>
+            )}
+
+            {/* Gestión de Unidades (Español) */}
+            {isSpanish && (
+                <div className="space-y-1">
+                    <p className="text-[9px] font-black text-primary uppercase flex items-center gap-1">
+                        <Layers className="h-2 w-2" /> UNIDADES ESPAÑOL
+                    </p>
+                    <div className="flex flex-wrap gap-1">
+                        {(student.unlockedCourses || []).map(courseId => {
+                            const count = spanishUnitCounts[courseId] || 0;
+                            if (count === 0) return null;
+                            return Array.from({ length: count }, (_, i) => {
+                                const uId = `${courseId}-es-unit-${i + 1}`;
+                                const isUnlocked = (student.unlockedUnits || []).includes(uId);
+                                return (
+                                    <Button 
+                                        key={uId} 
+                                        size="sm" 
+                                        variant={isUnlocked ? 'secondary' : 'outline'} 
+                                        onClick={() => handleToggleUnitAccess(student.id, uId, student.unlockedUnits || [])}
+                                        className={cn(
+                                            "h-6 text-[9px] px-1.5 font-black transition-all",
+                                            isUnlocked ? "bg-orange-100 border-orange-500 text-orange-700 hover:bg-orange-200" : "text-muted-foreground"
+                                        )}
+                                    >
+                                        {isUnlocked ? <Unlock className="mr-1 h-2 w-2 text-orange-600" /> : <Lock className="mr-1 h-2 w-2 text-muted-foreground" />}
                                         {courseId.toUpperCase()} U{i + 1}
                                     </Button>
                                 );
@@ -316,9 +351,9 @@ export default function AdminDashboardPage() {
   const visibleStudents = useMemo(() => (displayedStudents || []).filter(s => s.email !== 'ednacard87@gmail.com'), [displayedStudents]);
 
   return (
-    <div className="flex w-full flex-col min-h-screen bg-background">
+    <div className="flex w-full flex-col min-h-screen bg-background text-foreground">
         <DashboardHeader />
-        <main className="flex-1 p-4 md:p-8">
+        <main className="flex-1 p-4 md:p-8 text-foreground">
             <Card className="shadow-soft rounded-lg border-2 border-brand-purple overflow-hidden">
                 <CardHeader className='bg-muted/30 border-b'>
                     <CardTitle>Panel de Administración</CardTitle>

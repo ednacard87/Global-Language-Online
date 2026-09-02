@@ -21,7 +21,7 @@ export default function B1EspanolCoursePage() {
     () => (user ? doc(firestore, 'students', user.uid) : null),
     [firestore, user]
   );
-  const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{role?: 'admin' | 'student', progress?: Record<string, number>, unlockedClasses?: string[]}>(studentDocRef);
+  const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{role?: 'admin' | 'student', progress?: Record<string, number>, unlockedCourses?: string[], unlockedUnits?: string[]}>(studentDocRef);
 
   const isAdmin = useMemo(() => {
       if (!user) return false;
@@ -45,6 +45,15 @@ export default function B1EspanolCoursePage() {
         const itemsWithLockState = itemsWithProgress.map((item, index, arr) => {
             if (isAdmin) {
                 return { ...item, locked: false };
+            }
+
+            // Desbloqueo manual por administrador para unidades de español
+            if (item.href?.includes('/unit/')) {
+                const unitNum = item.href.split('/').pop();
+                const unitKey = `b1-es-unit-${unitNum}`;
+                if (studentProfile?.unlockedUnits?.includes(unitKey)) {
+                    return { ...item, locked: false };
+                }
             }
 
             if (index === 0) { // El inicio siempre está desbloqueado

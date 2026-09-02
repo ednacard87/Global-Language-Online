@@ -47,17 +47,17 @@ export default function A1SpanishDashboardPage() {
                 return { ...item, locked: false };
             }
             
-            if (index === 0) {
-                return { ...item, locked: false };
-            }
-
-            // Desbloqueo manual por administrador
+            // Desbloqueo manual por administrador para unidades de español
             if (item.href?.includes('/unit/')) {
                 const unitNum = item.href.split('/').pop();
                 const unitKey = `a1-es-unit-${unitNum}`;
                 if (studentProfile?.unlockedUnits?.includes(unitKey)) {
                     return { ...item, locked: false };
                 }
+            }
+
+            if (index === 0) {
+                return { ...item, locked: false };
             }
 
             const previousItem = arr[index - 1];
