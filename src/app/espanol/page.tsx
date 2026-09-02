@@ -13,7 +13,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { useTranslation } from '@/context/language-context';
-import { calculateEspanolIntroProgress, getA1EspanolMainPath, getA2EspanolMainPath, getB1EspanolMainPath } from '@/lib/course-data';
+import { calculateEspanolIntroProgress } from '@/lib/course-data';
 import { cn } from '@/lib/utils';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -22,9 +22,9 @@ import { Separator } from '@/components/ui/separator';
 
 const NeonCard = ({ icon: Icon, title, href, bgImage, onClick }: { icon: React.ElementType, title: string, href?: string, bgImage?: string, onClick?: () => void }) => {
     const cardContent = (
-        <Card className="bg-card border-2 border-primary/50 rounded-2xl text-center p-4 transition-all hover:bg-primary/10 hover:border-primary hover:shadow-lg hover:shadow-primary/20 aspect-square flex flex-col justify-center items-center relative overflow-hidden">
+        <Card className="bg-card border-2 border-primary/50 rounded-2xl text-center p-4 transition-all hover:bg-primary/10 hover:border-primary hover:shadow-lg hover:shadow-primary/20 aspect-square flex flex-col justify-center items-center relative overflow-hidden text-foreground">
             {bgImage && (
-                <div className="absolute inset-0 z-0">
+                <div className="absolute inset-0 z-0 text-foreground">
                     <Image 
                         src={bgImage} 
                         alt="" 
@@ -60,10 +60,10 @@ const NeonCard = ({ icon: Icon, title, href, bgImage, onClick }: { icon: React.E
 const AdventureCard = ({ title, description, href, progress, locked, icon: Icon }: { title: string, description: string, href: string, progress?: number, locked?: boolean, icon: React.ElementType }) => (
     <Link href={locked ? '#' : href} className={cn("block", locked && "cursor-not-allowed")}>
         <Card className={cn(
-            "bg-card border-2 border-primary/50 p-4 transition-all",
+            "bg-card border-2 border-brand-purple/50 p-4 transition-all",
             locked ? "opacity-50" : "hover:bg-primary/10 hover:border-primary hover:shadow-lg hover:shadow-primary/20"
         )}>
-            <div className="flex justify-between items-start">
+            <div className="flex justify-between items-start text-foreground">
                 <div>
                     <CardTitle className="text-2xl font-bold mt-1 flex items-center gap-2">
                         <Icon className="h-8 w-8 text-primary" />
@@ -191,7 +191,7 @@ export default function EspanolDashboardPage() {
             icon: Rocket
         },
         ];
-    }, [t, studentProfile, user, introProgress, a1Progress, a2Progress, b1Progress, isAdmin]);
+    }, [studentProfile, isAdmin, introProgress, a1Progress, a2Progress, b1Progress]);
 
     const introCourse = useMemo(() => courses.find(c => c.href === "/espanol/intro"), [courses]);
     const otherCourses = useMemo(() => courses.filter(c => c.href !== "/espanol/intro"), [courses]);
@@ -210,22 +210,22 @@ export default function EspanolDashboardPage() {
       <DashboardHeader />
       <main className="flex-1 p-4 md:p-8">
         <div className="max-w-7xl mx-auto space-y-8">
-            <div className="flex justify-between items-center rounded-lg bg-card/80 backdrop-blur-sm border-2 border-brand-purple p-4">
+            <div className="flex justify-between items-center rounded-lg bg-card/80 backdrop-blur-sm border-2 border-brand-purple p-4 text-foreground">
                 <div>
-                    <h1 className="text-3xl font-bold text-primary">BIENVENIDO, {studentProfile?.name?.split(' ')[0] || 'Estudiante'}!</h1>
-                    <p className="text-muted-foreground">¿Listo para tu proximo reto?</p>
+                    <h1 className="text-3xl font-bold text-primary uppercase tracking-tighter">BIENVENIDO, {studentProfile?.name?.split(' ')[0] || 'Estudiante'}!</h1>
+                    <p className="text-muted-foreground font-medium">¿Listo para tu proximo reto?</p>
                 </div>
                 <div className="flex items-center gap-4">
-                    <Avatar className="h-16 w-16 border-4 border-primary">
+                    <Avatar className="h-16 w-16 border-4 border-primary shadow-lg">
                         <AvatarImage src={user?.photoURL || vrGamerAvatar?.imageUrl} alt={studentProfile?.name || 'Estudiante'} />
                         <AvatarFallback>{studentProfile?.name?.[0] || 'E'}</AvatarFallback>
                     </Avatar>
                 </div>
             </div>
 
-            <div className="hidden lg:grid lg:grid-cols-3 gap-8">
+            <div className="hidden lg:grid lg:grid-cols-3 gap-8 text-foreground">
                 <div className="lg:col-span-1 space-y-4">
-                    <h2 className="text-xl font-bold text-primary uppercase tracking-wider">{t('dashboard.quickSkills')}</h2>
+                    <h2 className="text-xl font-black text-primary uppercase tracking-wider">{t('dashboard.quickSkills')}</h2>
                     <div className="grid grid-cols-2 gap-4">
                         <Dialog>
                           <DialogTrigger asChild>
@@ -233,49 +233,49 @@ export default function EspanolDashboardPage() {
                                 <NeonCard icon={BookOpen} title={t('dashboard.readingSkill')} />
                             </div>
                           </DialogTrigger>
-                          <DialogContent className="sm:max-w-[600px]">
+                          <DialogContent className="sm:max-w-[600px] text-foreground">
                             <DialogHeader>
-                              <DialogTitle className="text-2xl">Polo y la Mariposa</DialogTitle>
-                              <DialogDescription>
+                              <DialogTitle className="text-2xl uppercase font-black text-primary">Polo y la Mariposa</DialogTitle>
+                              <DialogDescription className="font-bold">
                                 Una pequeña historia para practicar tu lectura en español.
                               </DialogDescription>
                             </DialogHeader>
                             <div className="text-base text-muted-foreground space-y-4 py-4 max-h-[60vh] overflow-y-auto">
-                              <p>
+                              <p className="font-medium">
                                 Había una vez un gato muy curioso llamado Polo. Polo tenía el pelaje suave y gris, y unos grandes ojos verdes que siempre buscaban algo nuevo que explorar.
                               </p>
-                              <p>
+                              <p className="font-medium">
                                 Un día soleado, mientras descansaba en el jardín, Polo vio una mariposa de colores brillantes. Era azul y amarilla, y volaba con mucha gracia entre las flores. La curiosidad de Polo se despertó de inmediato.
                               </p>
-                              <p>
+                              <p className="font-medium">
                                 Se levantó lentamente y comenzó a seguir a la mariposa. Primero, caminó despacio para no asustarla. La mariposa voló hacia un rosal, y Polo la siguió. Luego, voló sobre un pequeño estanque, y Polo saltó con cuidado para no mojarse.
                               </p>
-                              <p>
+                              <p className="font-medium">
                                 La mariposa lo llevó más allá del jardín que conocía, hasta un rincón secreto detrás de unos viejos árboles. Allí, Polo descubrió un jardín escondido, lleno de flores silvestres que nunca había visto y con un aroma dulce y fresco.
                               </p>
-                              <p>
+                              <p className="font-medium">
                                 La mariposa se posó sobre una flor roja y pareció sonreírle. Polo se sentó, feliz por su nueva aventura, y se quedó allí, disfrutando de la paz del jardín secreto hasta que el sol comenzó a bajar.
                               </p>
                               
                               <Separator className="my-6" />
 
                               <div className="space-y-4">
-                                  <h3 className="text-xl font-semibold text-foreground">Preguntas de Comprensión</h3>
+                                  <h3 className="text-xl font-black uppercase text-primary">Preguntas de Comprensión</h3>
                                   <div className="space-y-2">
-                                      <p className="font-medium">1. ¿De qué color era el pelaje de Polo?</p>
+                                      <p className="font-bold text-foreground">1. ¿De qué color era el pelaje de Polo?</p>
                                       <p className="text-sm ml-4">a) Blanco y negro</p>
-                                      <p className="text-sm ml-4">b) Suave y gris</p>
+                                      <p className="text-sm ml-4 font-bold text-primary">b) Suave y gris</p>
                                       <p className="text-sm ml-4">c) Naranja</p>
                                   </div>
                                   <div className="space-y-2">
-                                      <p className="font-medium">2. ¿Qué vio Polo que despertó su curiosidad?</p>
+                                      <p className="font-bold text-foreground">2. ¿Qué vio Polo que despertó su curiosidad?</p>
                                       <p className="text-sm ml-4">a) Un pájaro</p>
                                       <p className="text-sm ml-4">b) Otro gato</p>
-                                      <p className="text-sm ml-4">c) Una mariposa de colores</p>
+                                      <p className="text-sm ml-4 font-bold text-primary">c) Una mariposa de colores</p>
                                   </div>
                                   <div className="space-y-2">
-                                      <p className="font-medium">3. ¿A dónde lo llevó la mariposa?</p>
-                                      <p className="text-sm ml-4">a) A un jardín secreto</p>
+                                      <p className="font-bold text-foreground">3. ¿A dónde lo llevó la mariposa?</p>
+                                      <p className="text-sm ml-4 font-bold text-primary">a) A un jardín secreto</p>
                                       <p className="text-sm ml-4">b) A su casa</p>
                                       <p className="text-sm ml-4">c) A un parque</p>
                                   </div>
@@ -292,7 +292,7 @@ export default function EspanolDashboardPage() {
                 </div>
 
                 <div className="lg:col-span-2 space-y-4">
-                    <h2 className="text-xl font-bold text-primary uppercase tracking-wider">La Aventura de Aprendizaje</h2>
+                    <h2 className="text-xl font-black text-primary uppercase tracking-wider">La Aventura de Aprendizaje</h2>
                     <div className="space-y-3">
                         {courses.map((course, index) => (
                             <AdventureCard key={index} {...course} />
@@ -301,29 +301,29 @@ export default function EspanolDashboardPage() {
                 </div>
             </div>
 
-            <div className="lg:hidden flex flex-col space-y-8">
+            <div className="lg:hidden flex flex-col space-y-8 text-foreground">
               <div className="flex justify-between items-center rounded-lg bg-card/80 backdrop-blur-sm border-2 border-brand-purple p-4">
                   <div>
-                      <h1 className="text-2xl font-bold text-primary">WELCOME, {studentProfile?.name?.split(' ')[0] || 'Player'}!</h1>
-                      <p className="text-gray-400 text-sm">Ready for your next challenge?</p>
+                      <h1 className="text-2xl font-bold text-primary">BIENVENIDO, {studentProfile?.name?.split(' ')[0] || 'Estudiante'}!</h1>
+                      <p className="text-muted-foreground text-sm font-bold">¿Listo para tu proximo reto?</p>
                   </div>
                   <div className="flex items-center gap-4">
-                      <Avatar className="h-12 w-12 border-4 border-purple-500">
-                          <AvatarImage src={user?.photoURL || vrGamerAvatar?.imageUrl} alt={studentProfile?.name || 'Player'} />
-                          <AvatarFallback>{studentProfile?.name?.[0] || 'P'}</AvatarFallback>
+                      <Avatar className="h-12 w-12 border-4 border-primary">
+                          <AvatarImage src={user?.photoURL || vrGamerAvatar?.imageUrl} alt={studentProfile?.name || 'Estudiante'} />
+                          <AvatarFallback>{studentProfile?.name?.[0] || 'E'}</AvatarFallback>
                       </Avatar>
                   </div>
               </div>
               
               {introCourse && (
                 <div>
-                  <h2 className="text-xl font-bold text-primary uppercase tracking-wider mb-4">La Aventura de Aprendizaje</h2>
+                  <h2 className="text-xl font-black text-primary uppercase tracking-wider mb-4">La Aventura de Aprendizaje</h2>
                   <AdventureCard {...introCourse} />
                 </div>
               )}
               
               <div className="space-y-4">
-                <h2 className="text-xl font-bold text-primary uppercase tracking-wider">{t('dashboard.quickSkills')}</h2>
+                <h2 className="text-xl font-black text-primary uppercase tracking-wider">{t('dashboard.quickSkills')}</h2>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                     <Dialog>
                       <DialogTrigger asChild>
@@ -331,50 +331,31 @@ export default function EspanolDashboardPage() {
                             <NeonCard icon={BookOpen} title={t('dashboard.readingSkill')} />
                          </div>
                       </DialogTrigger>
-                      <DialogContent className="sm:max-w-[600px]">
+                      <DialogContent className="sm:max-w-[600px] text-foreground">
                         <DialogHeader>
-                          <DialogTitle className="text-2xl">Polo y la Mariposa</DialogTitle>
-                          <DialogDescription>
+                          <DialogTitle className="text-2xl font-black uppercase text-primary">Polo y la Mariposa</DialogTitle>
+                          <DialogDescription className="font-bold">
                             Una pequeña historia para practicar tu lectura en español.
                           </DialogDescription>
                         </DialogHeader>
                         <div className="text-base text-muted-foreground space-y-4 py-4 max-h-[60vh] overflow-y-auto">
-                          <p>
+                          <p className="font-medium text-foreground">
                             Había una vez un gato muy curioso llamado Polo. Polo tenía el pelaje suave y gris, y unos grandes ojos verdes que siempre buscaban algo nuevo que explorar.
                           </p>
-                          <p>
-                            Un día sunny, mientras descansaba en el jardín, Polo vio una mariposa de colores brillantes. Era azul y amarilla, y volaba con mucha gracia entre las flores. La curiosidad de Polo se despertó de inmediato.
-                          </p>
-                          <p>
-                            Se levantó lentamente and comenzó a seguir a la mariposa. Primero, caminó despacio para no asustarla. La mariposa voló hacia un rosal, y Polo la siguió. Luego, voló sobre un pequeño estanque, y Polo saltó con cuidado para no mojarse.
-                          </p>
-                          <p>
-                            La mariposa lo llevó más allá del jardín que conocía, hasta un rincón secreto detrás de unos viejos árboles. Allí, Polo descubrú un jardín escondido, lleno de flores silvestres que nunca había visto y con un aroma dulce y fresco.
-                          </p>
-                          <p>
-                            La mariposa se posó sobre una flor roja y pareció sonreírle. Polo se sentó, feliz por su nueva aventura, y se quedó allí, disfrutando de la paz del jardín secreto hasta que el sol comenzó a bajar.
+                          <p className="font-medium text-foreground">
+                            Un día soleado, mientras descansaba en el jardín, Polo vio una mariposa de colores brillantes. Era azul y amarilla, y volaba con mucha gracia entre las flores. La curiosidad de Polo se despertó de inmediato.
                           </p>
                           <Separator className="my-6" />
 
                           <div className="space-y-4">
-                              <h3 className="text-xl font-semibold text-foreground">Preguntas de Comprensión</h3>
+                              <h3 className="text-xl font-black uppercase text-primary">Preguntas de Comprensión</h3>
                               <div className="space-y-2">
-                                  <p className="font-medium">1. ¿De qué color era el pelaje de Polo?</p>
-                                  <p className="text-sm ml-4">a) Blanco y negro</p>
-                                  <p className="text-sm ml-4">b) Suave y gris</p>
-                                  <p className="text-sm ml-4">c) Naranja</p>
+                                  <p className="font-bold">1. ¿De qué color era el pelaje de Polo?</p>
+                                  <p className="text-sm ml-4 font-bold text-primary">b) Suave y gris</p>
                               </div>
                               <div className="space-y-2">
-                                  <p className="font-medium">2. ¿Qué vio Polo que despertó su curiosidad?</p>
-                                  <p className="text-sm ml-4">a) Un pájaro</p>
-                                  <p className="text-sm ml-4">b) Otro gato</p>
-                                  <p className="text-sm ml-4">c) Una mariposa de colores</p>
-                              </div>
-                              <div className="space-y-2">
-                                  <p className="font-medium">3. ¿A dónde lo llevó la mariposa?</p>
-                                  <p className="text-sm ml-4">a) A un jardín secreto</p>
-                                  <p className="text-sm ml-4">b) A su casa</p>
-                                  <p className="text-sm ml-4">c) A un parque</p>
+                                  <p className="font-bold">2. ¿Qué vio Polo que despertó su curiosidad?</p>
+                                  <p className="text-sm ml-4 font-bold text-primary">c) Una mariposa de colores</p>
                               </div>
                           </div>
                         </div>
