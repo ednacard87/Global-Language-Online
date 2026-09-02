@@ -308,7 +308,7 @@ export default function EspanolDashboardPage() {
                       <p className="text-gray-400 text-sm">Ready for your next challenge?</p>
                   </div>
                   <div className="flex items-center gap-4">
-                      <Avatar className="h-12 w-12 border-4 border-primary">
+                      <Avatar className="h-12 w-12 border-4 border-purple-500">
                           <AvatarImage src={user?.photoURL || vrGamerAvatar?.imageUrl} alt={studentProfile?.name || 'Player'} />
                           <AvatarFallback>{studentProfile?.name?.[0] || 'P'}</AvatarFallback>
                       </Avatar>
@@ -346,7 +346,7 @@ export default function EspanolDashboardPage() {
                             Un día sunny, mientras descansaba en el jardín, Polo vio una mariposa de colores brillantes. Era azul y amarilla, y volaba con mucha gracia entre las flores. La curiosidad de Polo se despertó de inmediato.
                           </p>
                           <p>
-                            Se levantó lentamente y comenzó a seguir a la mariposa. Primero, caminó despacio para no asustarla. La mariposa voló hacia un rosal, y Polo la siguió. Luego, voló sobre un pequeño estanque, y Polo saltó con cuidado para no mojarse.
+                            Se levantó lentamente and comenzó a seguir a la mariposa. Primero, caminó despacio para no asustarla. La mariposa voló hacia un rosal, y Polo la siguió. Luego, voló sobre un pequeño estanque, y Polo saltó con cuidado para no mojarse.
                           </p>
                           <p>
                             La mariposa lo llevó más allá del jardín que conocía, hasta un rincón secreto detrás de unos viejos árboles. Allí, Polo descubrú un jardín escondido, lleno de flores silvestres que nunca había visto y con un aroma dulce y fresco.
