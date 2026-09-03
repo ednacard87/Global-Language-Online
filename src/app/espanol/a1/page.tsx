@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { DashboardHeader } from "@/components/dashboard/header";
 import { MazeGame } from "@/components/dashboard/maze-game";
-import { getA1SpanishMainPath, PathItem } from "@/lib/course-data";
+import { getA1EspanolMainPath, type PathItem } from "@/lib/course-data";
 import { useTranslation } from "@/context/language-context";
 import { useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
@@ -32,7 +32,8 @@ export default function A1SpanishDashboardPage() {
     if (isProfileLoading || isUserLoading) return;
 
     const updatePath = () => {
-        const initialPath = getA1SpanishMainPath();
+        const initialPath = getA1EspanolMainPath();
+        if (!initialPath || !initialPath.length) return;
 
         const itemsWithProgress = initialPath.map(item => {
             const newItem = { ...item };
@@ -42,32 +43,45 @@ export default function A1SpanishDashboardPage() {
             return newItem;
         });
 
-        const itemsWithLockState = itemsWithProgress.map((item, index, arr) => {
+        // Robust sequential unlock logic using reduce
+        const itemsWithLockState = itemsWithProgress.reduce((acc, item, index) => {
             if (isAdmin) {
-                return { ...item, locked: false };
+                acc.push({ ...item, locked: false });
+                return acc;
             }
             
-            // Desbloqueo manual por administrador para unidades de español
+            // Manual admin unlock
             if (item.href?.includes('/unit/')) {
                 const unitNum = item.href.split('/').pop();
                 const unitKey = `a1-es-unit-${unitNum}`;
-                if (studentProfile?.unlockedUnits?.includes(unitKey)) {
-                    return { ...item, locked: false };
+                if (Array.isArray(studentProfile?.unlockedUnits) && studentProfile.unlockedUnits.includes(unitKey)) {
+                    acc.push({ ...item, locked: false });
+                    return acc;
                 }
             }
 
             if (index === 0) {
-                return { ...item, locked: false };
+                acc.push({ ...item, locked: false });
+                return acc;
             }
 
-            const previousItem = arr[index - 1];
-            // Desbloqueo secuencial basado en el 100% de la unidad/repaso anterior
-            const isLocked = (previousItem.progress ?? 0) < 100;
-            return { ...item, locked: isLocked };
-        });
+            const prevItem = acc[index - 1];
+            let isLocked = true;
+
+            // Sequential logic based on previous item status or progress
+            if (prevItem && !prevItem.locked && (prevItem.progress ?? 0) >= 100) {
+                isLocked = false;
+            } else if (prevItem && !prevItem.locked && !prevItem.storageKey) {
+                // If previous item was purely navigational and not locked, unlock this one
+                isLocked = false;
+            }
+
+            acc.push({ ...item, locked: isLocked });
+            return acc;
+        }, [] as PathItem[]);
 
         itemsWithLockState.forEach(item => item.className = '');
-        const nextActiveItem = itemsWithLockState.find(item => !item.locked && (item.progress ?? 0) < 100);
+        const nextActiveItem = itemsWithLockState.find(item => !item.locked && (item.progress ?? 0) < 100 && (item.type === 'class' || item.type === 'practice'));
         if(nextActiveItem) {
           nextActiveItem.className = 'animate-pulse-glow';
         }
@@ -82,7 +96,7 @@ export default function A1SpanishDashboardPage() {
     return () => {
       window.removeEventListener('progressUpdated', updatePath);
     };
-  }, [t, isAdmin, studentProfile, isProfileLoading, isUserLoading]);
+  }, [isAdmin, studentProfile, isProfileLoading, isUserLoading]);
 
   const overallA1Progress = useMemo(() => {
     if (!studentProfile?.progress) return 0;
@@ -94,7 +108,7 @@ export default function A1SpanishDashboardPage() {
   return (
     <div className="flex w-full flex-col espanol-dashboard-bg min-h-screen">
       <DashboardHeader />
-      <main className="flex flex-1 flex-col items-center gap-8 p-4 md:py-12">
+      <main className="flex flex-1 flex-col items-center gap-8 p-4 md:p-8 md:py-12">
         <div className="text-center">
             <h1 className="text-4xl font-bold text-white [text-shadow:1px_1px_2px_black] uppercase">RUTA DE APRENDIZAJE A1 (ESPAÑOL)</h1>
             <Link href="/espanol" className="text-sm text-white/80 hover:underline mt-2 inline-block">
@@ -108,7 +122,7 @@ export default function A1SpanishDashboardPage() {
                 description="Domina los fundamentos del español paso a paso."
                 isLoading={isProfileLoading}
             >
-                <CardContent className="p-8 pt-4 border-t bg-card/80 backdrop-blur-sm rounded-b-lg">
+                <CardContent className="p-8 pt-4 border-t bg-card/80 backdrop-blur-sm rounded-b-lg text-foreground">
                     <CardHeader className="p-0">
                         <CardTitle className="text-primary uppercase tracking-tighter">PROGRESO GLOBAL A1</CardTitle>
                         <CardDescription className="text-foreground font-medium">Completa las unidades para alcanzar la fluidez total.</CardDescription>

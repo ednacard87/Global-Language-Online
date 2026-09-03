@@ -13,7 +13,7 @@ export interface PathItem {
     storageKey?: string;
 }
 
-// ------- FUNCIONES DE CÁLCULO DE PROGRESO (BLINDADAS) -------
+// ------- FUNCIONES DE CÁLCULO DE PROGRESO -------
 
 export const calculateEnglishIntroCourseProgress = (progress: Record<string, number> | undefined) => {
     if (!progress) return 0;
@@ -347,14 +347,14 @@ export const getB1UnitPath = (unitId: string | number, t: (key: string) => strin
 
 export const getB2MainPath = (t: (key: string) => string): PathItem[] => [
     { type: 'start', icon: Footprints, label: 'dashboard.start' },
-    { type: 'class', icon: BookOpen, label: 'b2course.unit1', href: '/ingles/b2/unit/1', storageKey: 'progress_b2_unit_1' },
-    { type: 'practice', icon: Puzzle, label: 'b2course.review1', href: '#', storageKey: 'progress_b2_review_1' },
-    { type: 'class', icon: BookOpen, label: 'b2course.unit2', href: '/ingles/b2/unit/2', storageKey: 'progress_b2_unit_2' },
-    { type: 'practice', icon: Puzzle, label: 'b2course.review2', href: '#', storageKey: 'progress_b2_review_2' },
-    { type: 'class', icon: BookOpen, label: 'b2course.unit3', href: '/ingles/b2/unit/3', storageKey: 'progress_b2_unit_3' },
-    { type: 'practice', icon: Puzzle, label: 'b2course.review3', href: '#', storageKey: 'progress_b2_review_3' },
-    { type: 'class', icon: BookOpen, label: 'b2course.unit4', href: '/ingles/b2/unit/4', storageKey: 'progress_b2_unit_4' },
-    { type: 'practice', icon: Puzzle, label: 'b2course.review4', href: '#', storageKey: 'progress_b2_review_4' },
+    { type: 'class', icon: BookOpen, label: 'b2Eng.unit1', href: '/ingles/b2/unit/1', storageKey: 'progress_b2_unit_1' },
+    { type: 'practice', icon: Puzzle, label: 'b2Eng.review1', href: '#', storageKey: 'progress_b2_review_1' },
+    { type: 'class', icon: BookOpen, label: 'b2Eng.unit2', href: '/ingles/b2/unit/2', storageKey: 'progress_b2_unit_2' },
+    { type: 'practice', icon: Puzzle, label: 'b2Eng.review2', href: '#', storageKey: 'progress_b2_review_2' },
+    { type: 'class', icon: BookOpen, label: 'b2Eng.unit3', href: '/ingles/b2/unit/3', storageKey: 'progress_b2_unit_3' },
+    { type: 'practice', icon: Puzzle, label: 'b2Eng.review3', href: '#', storageKey: 'progress_b2_review_3' },
+    { type: 'class', icon: BookOpen, label: 'b2Eng.unit4', href: '/ingles/b2/unit/4', storageKey: 'progress_b2_unit_4' },
+    { type: 'practice', icon: Puzzle, label: 'b2Eng.review4', href: '#', storageKey: 'progress_b2_review_4' },
     { type: 'end', icon: Flag, label: 'dashboard.finish' },
 ];
 
