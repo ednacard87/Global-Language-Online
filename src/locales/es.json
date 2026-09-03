@@ -447,6 +447,45 @@
     "review3": "Repaso 3",
     "test3": "Examen 3"
   },
+  "a2Eng": {
+    "unit1": "Unidad 1",
+    "review1": "Repaso 1",
+    "test1": "Examen 1",
+    "unit2": "Unidad 2",
+    "review2": "Repaso 2",
+    "test2": "Examen 2",
+    "unit3": "Unidad 3",
+    "review3": "Repaso 3",
+    "test3": "Examen 3",
+    "unit4": "Unidad 4",
+    "review4": "Repaso 4",
+    "finalTest": "Examen Final"
+  },
+  "b1Eng": {
+    "unit1": "Unidad 1",
+    "review1": "Repaso 1",
+    "test1": "Examen 1",
+    "unit2": "Unidad 2",
+    "review2": "Repaso 2",
+    "test2": "Examen 2",
+    "unit3": "Unidad 3",
+    "review3": "Repaso 3",
+    "test3": "Examen 3",
+    "unit4": "Unidad 4",
+    "review4": "Repaso 4",
+    "finalTest": "Examen Final"
+  },
+  "b2Eng": {
+    "unit1": "Unidad 1",
+    "review1": "Repaso 1",
+    "unit2": "Unidad 2",
+    "review2": "Repaso 2",
+    "unit3": "Unidad 3",
+    "review3": "Repaso 3",
+    "unit4": "Unidad 4",
+    "review4": "Repaso 4",
+    "finalTest": "Examen Final"
+  },
   "a2course": {
     "title": "Curso A2 - Español",
     "unit1": "Unidad 1",
@@ -475,20 +514,6 @@
     "test11-15": "Prueba 11-15",
     "review16-20": "Repaso 16-20",
     "test16-20": "Prueba 16-20"
-  },
-  "a2Eng": {
-    "unit1": "Unidad 1",
-    "review1": "Repaso 1",
-    "test1": "Examen 1",
-    "unit2": "Unidad 2",
-    "review2": "Repaso 2",
-    "test2": "Examen 2",
-    "unit3": "Unidad 3",
-    "review3": "Repaso 3",
-    "test3": "Examen 3",
-    "unit4": "Unidad 4",
-    "review4": "Repaso 4",
-    "finalTest": "Examen Final"
   },
   "a2Espanol": {
     "title": "Curso A2 - Español",

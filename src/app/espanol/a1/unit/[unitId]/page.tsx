@@ -6,7 +6,7 @@ import Link from "next/link";
 import { doc } from 'firebase/firestore';
 import { DashboardHeader } from "@/components/dashboard/header";
 import { MazeGame } from "@/components/dashboard/maze-game";
-import { getA1SpanishUnitPath, PathItem } from "@/lib/course-data";
+import { getA1EspanolUnitPath, PathItem } from "@/lib/course-data";
 import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
 import { Loader2, ArrowLeft } from "lucide-react";
 
@@ -33,7 +33,7 @@ export default function EspanolA1UnitPage() {
   useEffect(() => {
     if (!unitId || isProfileLoading) return;
 
-    const initialPath = getA1SpanishUnitPath(unitId);
+    const initialPath = getA1EspanolUnitPath(unitId);
     
     const updatedItems = initialPath.map(item => {
       if (item.storageKey && studentProfile?.progress) {
