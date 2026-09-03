@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -44,13 +45,13 @@ const espanolCourseIds = ['a1', 'a2', 'b1'];
 const kidsCourseIds = ['a1', 'a2', 'b1'];
 
 const unitCounts: Record<string, number> = { a1: 3, a2: 4, b1: 4, b2: 4 };
-const spanishUnitCounts: Record<string, number> = { a1: 4, b1: 3, a2: 0 };
-const classCounts: Record<string, number> = { a1: 16, a2: 20, b1: 20, b2: 20 };
+const spanishUnitCounts: Record<string, number> = { a1: 4, a2: 4, b1: 3 };
+const classCounts: Record<string, number> = { a1: 16, a2: 16, b1: 12, b2: 20 };
 
 // Mapeo de slugs para cursos no numéricos
 const courseSlugs: Record<string, string[]> = {
   'es-a1': ['articulos-y-genero', 'posesivos-y-tener', 'ser', 'estar', 'ser-y-estar', 'preposiciones-de-lugar', 'ubicacion', 'preguntas', 'comida-y-restaurante', 'presente-simple-regulares', 'comparativos-y-superlativos', 'demostrativos', 'verbos-de-preferencia', 'presente-continuo', 'presente-simple-irregulares'],
-  'es-a2': ['reflexivos-regulares', 'reflexivos-irregulares', 'reflexivos-mix', 'pasado-regulares', 'pasado-irregulares', 'reflexivos-pasado', 'imperfecto', 'pasado-vs-imperfecto', 'pasado-continuo', 'obligacion', 'perifrases-verbales', 'comparativos-avanzados', 'imperativo-afirmativo', 'preterito-perfecto', 'pronombres-1'],
+  'es-a2': ['reflexivos-regulares', 'reflexivos-irregulares', 'reflexivos-mix', 'pasado-regulares', 'pasado-irregulares', 'reflexivos-pasado', 'imperfecto', 'pasado-vs-imperfecto', 'pasado-continuo', 'obligacion', 'perifrases-verbales', 'comparativos-avanzados', 'imperativo-afirmativo', 'preterito-perfecto', 'pronombres-1', 'diferencias'],
   'es-b1': ['pronombres-2', 'por-para', 'futuro', 'imperativo-2', 'pronombres-3', 'doble-pronombre', 'conectores', 'condicional-simple', 'presente-subjuntivo', 'subjuntivo-2', 'subjuntivo-3', 'voz-pasiva'],
   'kids-a1': ['to-be', 'present-simple', 'can', 'genitivo-sajon', 'wh-questions', 'posesivos', 'verbos-preferencia', 'demostrativos', 'one-ones', 'present-continuous', 'pronombres-objeto', 'comparativos-y-superlativos', 'adverbios-de-frecuencia'],
   'kids-a2': ['at-on-in-1', 'at-on-in-2', 'pasado-simple', 'pasado-continuo', 'contables-y-no-contables', 'presente-perfecto', 'used-to'],
