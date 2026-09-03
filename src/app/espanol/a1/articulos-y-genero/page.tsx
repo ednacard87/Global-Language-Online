@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, Suspense, Fragment } from 'react';
@@ -40,7 +41,7 @@ import { VocabularyMatchingGame } from '@/components/dashboard/vocabulary-matchi
 import { Textarea } from '@/components/ui/textarea';
 
 // --- CONFIGURACIÓN DE INGENIERÍA ---
-const progressStorageVersion = 'progress_es_a1_art_gen_v3_expanded_content';
+const progressStorageVersion = 'progress_es_a1_art_gen_v6_final_fix';
 const mainProgressKey = 'progress_a1_es_articulos_y_genero';
 
 // --- DATA ---
@@ -136,11 +137,11 @@ const readingData = {
     title: "El Salón de Clase de Ana",
     content: "En el salón de clase de Ana, hay una mesa grande y una silla azul. El tablero es blanco y las paredes son grises. Ana tiene un cuaderno rojo y unos lápices amarillos en su maleta. El borrador está sobre la mesa. Hay unas ventanas grandes y la puerta es de madera.",
     questions: [
-        { q: "¿De qué color es la silla?", a: ["azul"] },
-        { q: "¿De qué color son las paredes?", a: ["grises"] },
-        { q: "¿Qué tiene Ana en su maleta?", a: ["un cuaderno rojo y unos lápices amarillos", "un cuaderno y lápices", "un cuaderno y lapices"] },
-        { q: "¿Dónde está el borrador?", a: ["sobre la mesa", "en la mesa"] },
-        { q: "¿Cómo son las ventanas?", a: ["grandes"] },
+        { id: 'q1', q: "¿De qué color es la silla?", a: ["azul"] },
+        { id: 'q2', q: "¿De qué color son las paredes?", a: ["grises"] },
+        { id: 'q3', q: "¿Qué tiene Ana en su maleta?", a: ["un cuaderno rojo y unos lápices amarillos", "un cuaderno y lápices", "un cuaderno y lapices"] },
+        { id: 'q4', q: "¿Dónde está el borrador?", a: ["sobre la mesa", "en la mesa"] },
+        { id: 'q5', q: "¿Cómo son las ventanas?", a: ["grandes"] },
     ]
 };
 
@@ -208,52 +209,96 @@ const finalExVocab = {
     "pesado": "heavy", "zapato": "shoe", "pájaro": "bird", "antiguo": "ancient", "caja": "box"
 };
 
-const translationVocabHelp = {
-    "classroom": "salón de clase", "large": "grande", "red pencil": "lápiz rojo", "desk": "escritorio",
-    "blackboard": "tablero", "white": "blanco", "walls": "paredes", "gray": "gris",
-    "student": "estudiante", "yellow rulers": "reglas amarillas", "blue notebook": "cuaderno azul",
-    "door": "puerta", "brown": "marrón", "floor": "piso", "clean": "limpio"
-};
-
 // --- HELPER COMPONENTS ---
 
-const BallsExercise = ({ title, prompts, onComplete, vocabulary, type = 'translate' }: any) => {
+const FinalValidationExercise = ({ title, prompts, onComplete, vocabulary, type = 'translate', isFinal = false }: any) => {
     const { toast } = useToast();
     const [currentIndex, setCurrentIndex] = useState(0);
-    const [answer, setAnswer] = useState('');
+    const [userAnswers, setUserAnswers] = useState<string[]>(() => Array(prompts?.length || 0).fill(''));
     const [status, setStatus] = useState<Record<number, 'correct' | 'incorrect' | 'unchecked'>>({});
+    const [hasValidated, setHasChecked] = useState(false);
+    const [isFinished, setIsFinished] = useState(false);
 
     useEffect(() => {
-        setAnswer('');
-    }, [currentIndex]);
+        setCurrentIndex(0);
+        setUserAnswers(Array(prompts?.length || 0).fill(''));
+        setStatus({});
+        setHasChecked(false);
+        setIsFinished(false);
+    }, [prompts]);
 
-    const handleCheck = () => {
-        const userVal = answer.trim().toLowerCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' ');
-        let isCorrect = false;
-        
-        if (type === 'translate') {
-            isCorrect = prompts[currentIndex].es.some((a: string) => a.toLowerCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' ') === userVal);
+    if (!prompts || prompts.length === 0) return null;
+
+    const isLast = currentIndex === prompts.length - 1;
+    const currentPrompt = prompts[currentIndex];
+
+    const handleCheckAll = () => {
+        const newStatus: any = {};
+        let allCorrect = true;
+
+        prompts.forEach((p: any, i: number) => {
+            const userVal = (userAnswers[i] || '').trim().toLowerCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' ');
+            let isCorrect = false;
+            if (type === 'translate') {
+                isCorrect = p.es?.some((a: string) => a.toLowerCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' ') === userVal);
+            } else {
+                isCorrect = userVal === p.answer?.toLowerCase() || userVal === p.a?.toLowerCase();
+            }
+            newStatus[i] = isCorrect ? 'correct' : 'incorrect';
+            if (!isCorrect) allCorrect = false;
+        });
+
+        setStatus(newStatus);
+        setHasChecked(true);
+
+        if (allCorrect) {
+            toast({ title: "¡Excelente!", description: "Todas las respuestas son correctas." });
         } else {
-            isCorrect = userVal === prompts[currentIndex].answer.toLowerCase();
+            toast({ variant: 'destructive', title: "Revisa los errores", description: "Vuelve a las burbujas rojas para corregir." });
         }
-        
-        setStatus(prev => ({ ...prev, [currentIndex]: isCorrect ? 'correct' : 'incorrect' }));
-        if (isCorrect) toast({ title: "¡Buen trabajo!" });
-        else toast({ variant: 'destructive', title: "Sigue intentando" });
     };
+
+    const allAreCorrect = useMemo(() => {
+        return hasValidated && Object.values(status).every(s => s === 'correct') && Object.keys(status).length === prompts.length;
+    }, [status, hasValidated, prompts.length]);
+
+    if (isFinished) {
+        return (
+            <Card className="shadow-soft border-2 border-green-500 bg-green-500/10 p-12 text-center flex flex-col items-center animate-in fade-in zoom-in duration-700">
+                <Trophy className="h-24 w-24 text-yellow-500 mb-6 animate-bounce" />
+                <h2 className="text-4xl font-black text-green-700 dark:text-green-400 uppercase tracking-tighter">¡FELICITACIONES!</h2>
+                <p className="text-2xl mt-4 font-bold text-foreground">Terminaste la Clase de Artículos y Género</p>
+                <Button asChild className="mt-8 px-12 h-14 text-xl font-black shadow-xl" size="lg">
+                    <Link href="/espanol/a1/unit/1">Regresar a la unidad 1</Link>
+                </Button>
+            </Card>
+        );
+    }
 
     return (
         <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground">
             <CardHeader>
                 <div className="flex justify-between items-start">
                     <div className="text-left">
-                        <CardTitle>{title}</CardTitle>
+                        <CardTitle className="uppercase font-black text-primary">{title}</CardTitle>
                         <CardDescription className="font-bold text-foreground mt-1">
-                            {type === 'translate' ? 'Traduce la frase al español.' : 'Escribe el artículo correcto (EL, LA, LOS, LAS).'}
+                            {type === 'translate' ? 'Traduce la frase al español.' : 'Escribe el artículo correcto (EL, LA, LOS, LAS, UN, UNA, UNOS, UNAS).'}
                         </CardDescription>
                         <div className="flex gap-2 justify-start flex-wrap pt-4">
                             {prompts.map((_: any, i: number) => (
-                                <div key={i} onClick={() => setCurrentIndex(i)} className={cn("h-8 w-8 rounded-full border-2 flex items-center justify-center text-xs font-bold cursor-pointer transition-all", currentIndex === i ? "border-primary ring-2 ring-primary" : "border-muted", status[i] === 'correct' ? "bg-green-500 text-white border-green-500" : status[i] === 'incorrect' ? "bg-red-500 text-white border-red-500" : "bg-card text-foreground")}>{i + 1}</div>
+                                <div 
+                                    key={i} 
+                                    onClick={() => setCurrentIndex(i)} 
+                                    className={cn(
+                                        "h-8 w-8 rounded-full border-2 flex items-center justify-center text-xs font-bold cursor-pointer transition-all", 
+                                        currentIndex === i ? "border-primary ring-2 ring-primary scale-110" : "border-muted", 
+                                        status[i] === 'correct' ? "bg-green-500 text-white border-green-500 shadow-[0_0_10px_rgba(34,197,94,0.5)]" : 
+                                        status[i] === 'incorrect' ? "bg-red-500 text-white border-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]" : 
+                                        "bg-card text-foreground"
+                                    )}
+                                >
+                                    {i + 1}
+                                </div>
                             ))}
                         </div>
                     </div>
@@ -270,7 +315,7 @@ const BallsExercise = ({ title, prompts, onComplete, vocabulary, type = 'transla
                                     {Object.entries(vocabulary || globalVocabMap).map(([es, en]: any, i) => (
                                         <div key={i} className="flex justify-between text-[10px] border-b border-muted pb-1">
                                             <span className="text-muted-foreground text-left uppercase">{en}:</span>
-                                            <span className="font-bold text-right text-primary">{es.toUpperCase()}</span>
+                                            <span className="font-bold text-right text-primary">{(es as string).toUpperCase()}</span>
                                         </div>
                                     ))}
                                 </div>
@@ -280,16 +325,46 @@ const BallsExercise = ({ title, prompts, onComplete, vocabulary, type = 'transla
                 </div>
             </CardHeader>
             <CardContent className="space-y-6">
-                <div className="bg-muted p-6 rounded-2xl border-2 border-dashed text-center font-bold text-xl uppercase tracking-tighter text-foreground">
-                    {type === 'translate' ? prompts[currentIndex].en : prompts[currentIndex].word}
+                <div className="bg-muted p-8 rounded-2xl border-2 border-dashed text-center font-bold text-2xl uppercase tracking-tighter text-foreground min-h-[100px] flex items-center justify-center">
+                    {currentPrompt ? (currentPrompt.en || currentPrompt.word || currentPrompt.s) : '...'}
                 </div>
-                <Input value={answer} onChange={e => setAnswer(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleCheck()} className={cn("h-12 text-lg text-foreground", status[currentIndex] === 'correct' ? 'border-green-500 bg-green-50/5' : status[currentIndex] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} placeholder={type === 'translate' ? "Escribe en español..." : "Artículo..."} autoComplete="off" />
+                <Input 
+                    value={userAnswers[currentIndex] || ''} 
+                    onChange={e => {
+                        const na = [...userAnswers]; na[currentIndex] = e.target.value; setUserAnswers(na);
+                        if (status[currentIndex] && status[currentIndex] !== 'unchecked') {
+                             const ns = {...status}; ns[currentIndex] = 'unchecked'; setStatus(ns);
+                             setHasChecked(false);
+                        }
+                    }} 
+                    onKeyDown={e => e.key === 'Enter' && (isLast ? handleCheckAll() : setCurrentIndex(i => i + 1))}
+                    className={cn(
+                        "h-14 text-xl text-foreground text-center border-2", 
+                        status[currentIndex] === 'correct' ? 'border-green-500 bg-green-50/10' : 
+                        status[currentIndex] === 'incorrect' ? 'border-red-500 bg-red-50/10' : 'border-primary'
+                    )} 
+                    placeholder={type === 'translate' ? "Escribe en español..." : "Artículo..."} 
+                    autoComplete="off" 
+                />
             </CardContent>
-            <CardFooter className="justify-between border-t pt-6">
+            <CardFooter className="justify-between border-t pt-6 bg-muted/20">
                 <Button variant="outline" onClick={() => setCurrentIndex(p => Math.max(0, p - 1))} disabled={currentIndex === 0}>Anterior</Button>
+                
                 <div className="flex gap-2">
-                    <Button onClick={handleCheck} variant="secondary">Verificar</Button>
-                    <Button onClick={() => currentIndex < prompts.length - 1 ? setCurrentIndex(i => i + 1) : onComplete()} disabled={status[currentIndex] !== 'correct'} className="font-bold text-white">Siguiente</Button>
+                    {isLast ? (
+                        <Button onClick={handleCheckAll} variant="secondary" className="font-black px-8">Verificar Todo</Button>
+                    ) : (
+                        <Button onClick={() => setCurrentIndex(i => i + 1)} className="font-bold">Siguiente Frase</Button>
+                    )}
+
+                    {allAreCorrect && (
+                        <Button 
+                            onClick={isFinal ? () => setIsFinished(true) : onComplete} 
+                            className={cn("font-black px-10 shadow-xl animate-bounce", isFinal ? "bg-green-600 hover:bg-green-700" : "bg-primary hover:bg-primary/90")}
+                        >
+                            {isFinal ? 'Terminar' : 'Siguiente Paso'}
+                        </Button>
+                    )}
                 </div>
             </CardFooter>
         </Card>
@@ -325,12 +400,8 @@ function ArticulosGeneroContent() {
     const [vocabValidation, setVocabValidation] = useState<any[]>(Array(classVocab.length).fill('unchecked'));
     const [canAdvanceVocab, setCanAdvanceVocab] = useState(false);
 
-    const [readingAns, setReadingAns] = useState<string[]>(Array(readingData.questions.length).fill(''));
-    const [readingVal, setReadingVal] = useState<any[]>(Array(readingData.questions.length).fill('unchecked'));
-
-    const [finalExAns, setFinalExAns] = useState<string[]>(Array(finalExPrompts.length).fill(''));
-    const [finalExVal, setFinalExVal] = useState<any[]>(Array(finalExPrompts.length).fill('unchecked'));
-
+    const [readingAns, setReadingAns] = useState<Record<string, string>>({});
+    const [readingVal, setReadingVal] = useState<Record<string, any>>({});
     const [translationText, setTranslationText] = useState('');
 
     const studentDocRef = useMemoFirebase(() => (currentUID ? doc(firestore, 'students', currentUID) : null), [firestore, currentUID]);
@@ -436,28 +507,23 @@ function ArticulosGeneroContent() {
         else toast({ variant: 'destructive', title: "Necesitas 10 aciertos para avanzar." });
     };
 
-    const handleCheckReading = () => {
-        let allOk = true;
-        const nv = readingData.questions.map((q, i) => {
-            const isOk = q.a.some(ans => (readingAns[i] || '').trim().toLowerCase().includes(ans.toLowerCase()));
-            if (!isOk) allOk = false;
-            return isOk ? 'correct' : 'incorrect';
-        });
-        setReadingVal(nv as any);
-        if (allOk) { toast({ title: "¡Lectura superada!" }); handleTopicComplete('reading'); }
-        else toast({ variant: 'destructive', title: "Revisa tus respuestas." });
-    };
+    const isReadingComplete = useMemo(() => {
+        return readingData.questions.length > 0 && 
+               readingData.questions.every(q => readingVal[q.id] === 'correct');
+    }, [readingVal]);
 
-    const handleCheckFinalEx = () => {
-        let okCount = 0;
-        const nv = finalExPrompts.map((q, i) => {
-            const isOk = q.a.toLowerCase() === (finalExAns[i] || '').trim().toLowerCase();
-            if (isOk) okCount++;
-            return isOk ? 'correct' : 'incorrect';
+    const handleCheckReading = () => {
+        const nv: any = {};
+        let allOk = true;
+        readingData.questions.forEach((q) => {
+            const userVal = (readingAns[q.id] || '').trim().toLowerCase();
+            const isOk = q.a.some(ans => userVal.includes(ans.toLowerCase()));
+            nv[q.id] = isOk ? 'correct' : 'incorrect';
+            if (!isOk) allOk = false;
         });
-        setFinalExVal(nv as any);
-        if (okCount === finalExPrompts.length) { toast({ title: "¡Dominio Total!" }); handleTopicComplete('final_ex'); }
-        else toast({ variant: 'destructive', title: "Hay errores en la lista." });
+        setReadingVal(nv);
+        if (allOk) toast({ title: "¡Lectura superada!", description: "Pulsa CONTINUAR para desbloquear el siguiente paso." });
+        else toast({ variant: 'destructive', title: "Revisa tus respuestas." });
     };
 
     const renderContent = () => {
@@ -490,107 +556,68 @@ function ArticulosGeneroContent() {
                                 <Table><TableHeader className='bg-muted/50'><TableRow><TableHead>Género</TableHead><TableHead>Singular</TableHead><TableHead>Plural</TableHead></TableRow></TableHeader>
                                 <TableBody><TableRow><TableCell className='font-bold'>Masculino</TableCell><TableCell>UN (Un lápiz)</TableCell><TableCell>UNOS (Unos lápices)</TableCell></TableRow><TableRow><TableCell className='font-bold'>Femenino</TableCell><TableCell>UNA (Una regla)</TableCell><TableCell>UNAS (Unas reglas)</TableCell></TableRow></TableBody></Table>
                             </div>
-                            <div className="p-6 bg-white/60 dark:bg-background/20 rounded-[2rem] border shadow-sm space-y-4">
-                                <h3 className="text-xl font-black text-primary uppercase mb-2">3. Excepciones de Género y Artículos</h3>
-                                <div className='grid gap-4 md:grid-cols-2'>
-                                    <div className='p-4 bg-yellow-50 dark:bg-yellow-900/10 border-l-4 border-yellow-500 rounded-r-xl'>
-                                        <h4 className='font-bold text-yellow-800 dark:text-yellow-400'>A tónica inicial:</h4>
-                                        <p className="text-sm italic">Palabras femeninas que empiezan con "a" o "ha" tónica usan <strong>EL</strong> en singular para evitar la cacofonía.</p>
-                                        <p className='text-xs font-mono mt-1'>Ej: El agua / Las aguas, El águila / Las águilas.</p>
-                                    </div>
-                                    <div className='p-4 bg-blue-50 dark:bg-blue-900/10 border-l-4 border-blue-500 rounded-r-xl'>
-                                        <h4 className='font-bold text-blue-800 dark:text-blue-400'>Palabras en -MA:</h4>
-                                        <p className="text-sm italic">Muchas palabras de origen griego terminadas en -ma son <strong>masculinas</strong>.</p>
-                                        <p className='text-xs font-mono mt-1'>Ej: El problema, el tema, el sistema, el idioma, el mapa.</p>
-                                    </div>
-                                    <div className='p-4 bg-pink-50 dark:bg-pink-900/10 border-l-4 border-pink-500 rounded-r-xl'>
-                                        <h4 className='font-bold text-pink-800 dark:text-pink-400'>Terminaciones Femeninas:</h4>
-                                        <p className="text-sm italic">Palabras terminadas en <strong>-dad, -tad, -ción, -sión</strong> suelen ser femeninas.</p>
-                                        <p className='text-xs font-mono mt-1'>Ej: La ciudad, la libertad, la canción, la televisión.</p>
-                                    </div>
-                                    <div className='p-4 bg-orange-50 dark:bg-orange-900/10 border-l-4 border-orange-500 rounded-r-xl'>
-                                        <h4 className='font-bold text-orange-800 dark:text-orange-400'>Irregulares comunes:</h4>
-                                        <ul className='text-xs font-mono space-y-1 mt-1'>
-                                            <li>El día (Termina en -a pero es masculino)</li>
-                                            <li>La mano (Termina en -o pero es femenina)</li>
-                                            <li>La radio / La foto / La moto</li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
                         </CardContent>
                         <CardFooter className="justify-center pt-6 border-t"><Button onClick={() => handleTopicComplete('grammar')} size="lg" className="px-24 font-black h-14 text-xl shadow-xl">He comprendido la gramática</Button></CardFooter>
                     </Card>
                 );
-            case 'ex1': return <BallsExercise title="Ejercicio 1" prompts={ex1Prompts} onComplete={() => handleTopicComplete('ex1')} />;
-            case 'ex2': return <BallsExercise title="Ejercicio 2" prompts={ex2Prompts} onComplete={() => handleTopicComplete('ex2')} />;
+            case 'ex1': return <FinalValidationExercise key="ex1" title="Ejercicio 1" prompts={ex1Prompts} onComplete={() => handleTopicComplete('ex1')} />;
+            case 'ex2': return <FinalValidationExercise key="ex2" title="Ejercicio 2" prompts={ex2Prompts} onComplete={() => handleTopicComplete('ex2')} />;
             case 'vocab_game': return <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm"><CardHeader><CardTitle>Juego de Memoria</CardTitle></CardHeader><CardContent><VocabularyMatchingGame data={classVocab.slice(0, 10).map(v => ({ spanish: v.es, english: [v.en] }))} onComplete={() => handleTopicComplete('vocab_game')} title="Encuentra las parejas de objetos" /></CardContent></Card>;
-            case 'ex3': return <BallsExercise title="Ejercicio 3: ¿Qué artículo es?" type="article" prompts={ex3Prompts} onComplete={() => handleTopicComplete('ex3')} vocabulary={{"estrellas": "stars", "cuadernos": "notebooks", "carro": "car", "reglas": "rulers", "borrador": "eraser"}} />;
+            case 'ex3': return <FinalValidationExercise key="ex3" title="Ejercicio 3: Artículos" type="article" prompts={ex3Prompts} onComplete={() => handleTopicComplete('ex3')} vocabulary={{"estrellas": "stars", "cuadernos": "notebooks", "carro": "car", "reglas": "rulers", "borrador": "eraser"}} />;
             case 'reading':
                 return (
                     <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left overflow-hidden">
-                        <CardHeader className='bg-primary/5 border-b'><CardTitle className='text-primary uppercase tracking-tight'>{readingData.title}</CardTitle></CardHeader>
+                        <CardHeader className='bg-primary/5 border-b'><CardTitle className='text-primary uppercase font-black'>Misión: Lectura Comprensiva</CardTitle></CardHeader>
                         <CardContent className="space-y-6 pt-6">
                             <div className="p-6 bg-muted rounded-2xl border italic text-lg leading-relaxed text-foreground shadow-inner">{readingData.content}</div>
                             <Separator />
                             <div className="space-y-4">
                                 <h3 className='font-black text-primary uppercase text-sm'>Preguntas de Comprensión:</h3>
-                                {readingData.questions.map((q, i) => (
-                                    <div key={i} className="space-y-2 p-3 bg-muted/20 rounded-xl border"><Label className="font-bold">{q.q}</Label><Input value={readingAns[i]} onChange={e => { const na = [...readingAns]; na[i] = e.target.value; setReadingVal(v => { const nv = [...v]; nv[i] = 'unchecked'; return nv as any; }); }} className={cn("h-10", readingVal[i] === 'correct' ? 'border-green-500 bg-green-50/5' : readingVal[i] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} autoComplete="off" /></div>
+                                {readingData.questions.map((q) => (
+                                    <div key={q.id} className="space-y-2 p-3 bg-muted/20 rounded-xl border">
+                                        <Label className="font-bold">{q.q}</Label>
+                                        <Input 
+                                            value={readingAns[q.id] || ''} 
+                                            onChange={e => { setReadingAns({...readingAns, [q.id]: e.target.value}); setReadingVal({...readingVal, [q.id]: 'unchecked'}); }} 
+                                            className={cn("h-10 text-foreground", readingVal[q.id] === 'correct' ? 'border-green-500 bg-green-50/10' : readingVal[q.id] === 'incorrect' ? 'border-red-500 bg-red-50/10' : '')} 
+                                            autoComplete="off" 
+                                        />
+                                    </div>
                                 ))}
                             </div>
                         </CardContent>
-                        <CardFooter className="justify-center border-t p-6 bg-muted/10"><Button onClick={handleCheckReading} size="lg" className="px-16 font-black h-12 shadow-md">Verificar Lectura</Button></CardFooter>
+                        <CardFooter className="flex justify-between border-t p-6 bg-muted/10">
+                            <Button onClick={handleCheckReading} variant="secondary" className="px-10 font-bold h-12">Verificar</Button>
+                            <Button onClick={() => handleTopicComplete('reading')} disabled={!isReadingComplete && !isAdmin} className="px-10 font-bold h-12 bg-primary text-white">Continuar</Button>
+                        </CardFooter>
                     </Card>
                 );
             case 'final_ex':
-                return (
-                    <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left overflow-hidden">
-                        <CardHeader className='bg-primary/5 border-b'>
-                            <div className="flex justify-between items-center w-full">
-                                <CardTitle className='text-primary uppercase tracking-tight'>Ejercicio Final: Completar Frases (30)</CardTitle>
-                                <Popover>
-                                    <PopoverTrigger asChild>
-                                        <Button variant="outline" size="sm" className="border-2 border-brand-blue animate-border-pulse">
-                                            <BookText className="mr-2 h-4 w-4" /> Vocabulario
-                                        </Button>
-                                    </PopoverTrigger>
-                                    <PopoverContent className="w-64">
-                                        <ScrollArea className="h-64 pr-4">
-                                            <div className="space-y-2 text-foreground text-left">
-                                                <h4 className='font-black text-primary text-xs uppercase mb-2 border-b'>Ayuda de Misión</h4>
-                                                {Object.entries(finalExVocab).map(([es, en]: any, i) => (
-                                                    <div key={i} className="flex justify-between text-[10px] border-b border-muted pb-1">
-                                                        <span className="text-muted-foreground text-left uppercase">{es}:</span>
-                                                        <span className="font-bold text-right text-primary">{en.toUpperCase()}</span>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </ScrollArea>
-                                    </PopoverContent>
-                                </Popover>
-                            </div>
-                        </CardHeader>
-                        <CardContent className="p-0"><ScrollArea className="h-[450px] p-6"><div className="space-y-4">
-                            {finalExPrompts.map((q, i) => (
-                                <div key={i} className="flex flex-col gap-2 p-4 bg-muted/10 rounded-2xl border shadow-sm"><p className="font-bold text-lg">{q.s}</p><Input value={finalExAns[i]} onChange={e => { const na = [...finalExAns]; na[i] = e.target.value; setFinalExAns(na); setFinalExVal(v => { const nv = [...v]; nv[i] = 'unchecked'; return nv as any; }); }} className={cn("h-10 max-w-[150px] text-lg font-mono", finalExVal[i] === 'correct' ? 'border-green-500' : finalExVal[i] === 'incorrect' ? 'border-red-500' : '')} placeholder="Respuesta..." autoComplete="off" /></div>
-                            ))}
-                        </div></ScrollArea></CardContent>
-                        <CardFooter className="justify-center border-t p-6 bg-muted/20"><Button onClick={handleCheckFinalEx} size="lg" className="px-24 font-black h-14 text-xl shadow-xl">Verificar Todo</Button></CardFooter>
-                    </Card>
-                );
+                return <FinalValidationExercise key="final_ex" title="Ejercicio Final" type="article" prompts={finalExPrompts} onComplete={() => handleTopicComplete('final_ex')} vocabulary={finalExVocab} />;
             case 'translate_text':
                 return (
                     <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground text-left">
-                        <CardHeader><div className="flex justify-between items-center"><div><CardTitle className='text-primary uppercase'>Traducción de Texto</CardTitle><CardDescription className='font-bold text-foreground'>Traduce el siguiente párrafo al español.</CardDescription></div><Popover><PopoverTrigger asChild><Button variant="outline" size="sm" className="border-2 border-brand-blue animate-border-pulse"><BookText className="mr-2 h-4 w-4" /> Vocabulario</Button></PopoverTrigger><PopoverContent className="w-64"><ScrollArea className="h-48 pr-4"><div className="space-y-2">{Object.entries(translationVocabHelp).map(([en, es], i) => (<div key={i} className="flex justify-between text-xs border-b pb-1"><span className="text-muted-foreground">{en}:</span><span className="font-bold text-primary">{es}</span></div>))}</div></ScrollArea></PopoverContent></Popover></div></CardHeader>
+                        <CardHeader>
+                            <CardTitle className='text-primary uppercase font-black'>Traducción de Texto</CardTitle>
+                            <CardDescription className='font-bold text-foreground'>Traduce el siguiente párrafo al español.</CardDescription>
+                        </CardHeader>
                         <CardContent className="space-y-6">
                             <div className="p-6 bg-muted/50 rounded-2xl border italic text-lg leading-relaxed text-foreground shadow-sm">"The classroom is large. There is a red pencil on the desk. The blackboard is white and the walls are gray. A student has the yellow rulers and a blue notebook. The door is brown and the floor is clean."</div>
-                            <Separator /><div className="space-y-2"><Label className='font-black text-primary uppercase text-sm'>Tu Traducción:</Label><Textarea value={translationText} onChange={(e) => setTranslationText(e.target.value)} placeholder="Escribe el texto en español aquí..." className="min-h-[200px] text-lg leading-relaxed" /></div>
+                            <Separator />
+                            <div className="space-y-2">
+                                <Label className='font-black text-primary uppercase text-sm'>Tu Traducción:</Label>
+                                <Textarea value={translationText} onChange={(e) => setTranslationText(e.target.value)} placeholder="Escribe el texto en español aquí..." className="min-h-[200px] text-lg leading-relaxed" />
+                            </div>
                         </CardContent>
-                        <CardFooter className="justify-center border-t pt-6 bg-muted/20"><Button onClick={() => handleTopicComplete('translate_text')} size="lg" className="px-24 font-black h-16 text-2xl shadow-xl bg-primary hover:bg-primary/90 text-primary-foreground uppercase tracking-tighter">Siguiente Misión <ArrowRight className='ml-3 h-8 w-8' /></Button></CardFooter>
+                        <CardFooter className="justify-center border-t pt-6 bg-muted/20">
+                            <Button onClick={() => { handleTopicComplete('translate_text'); setSelectedTopic('final'); }} size="lg" className="px-24 font-black h-16 text-2xl shadow-xl bg-primary hover:bg-primary/90 text-primary-foreground uppercase tracking-tighter">
+                                Siguiente Mision <ArrowRight className='ml-3 h-8 w-8' />
+                            </Button>
+                        </CardFooter>
                     </Card>
                 );
-            case 'final': return <BallsExercise title="Final: Colores y Objetos" prompts={finalMissionPrompts} onComplete={() => handleTopicComplete('final')} vocabulary={{"libro": "book", "silla": "chair", "lápices": "pencils", "pared": "wall", "borradores": "erasers", "cuadernos": "notebooks", "llave": "key", "ventanas": "windows", "tablero": "blackboard", "maleta": "backpack", "flores": "flowers", "rosado": "pink", "marron": "brown"}} />;
+            case 'final': 
+                return <FinalValidationExercise key="final_mission" title="Final: Colores y Objetos" prompts={finalMissionPrompts} onComplete={() => handleTopicComplete('final')} vocabulary={{"libro": "book", "silla": "chair", "lápices": "pencils", "pared": "wall", "borradores": "erasers", "cuadernos": "notebooks", "llave": "key", "ventanas": "windows", "tablero": "blackboard", "maleta": "backpack", "flores": "flowers", "rosado": "pink", "marron": "brown"}} isFinal={true} />;
             default: return null;
         }
     };
@@ -606,6 +633,7 @@ function ArticulosGeneroContent() {
                             <Button variant="outline" size="sm" asChild className="border-yellow-600 text-yellow-700 hover:bg-yellow-500/10 transition-colors"><Link href="/admin">Cerrar Supervisión</Link></Button>
                         </div>
                     )}
+                    
                     <div className="mb-8 text-left text-white">
                         <Link href="/espanol/a1" className="hover:underline text-sm font-bold text-white/80 flex items-center gap-2 mb-2"><ArrowLeft className="h-4 w-4" /> Volver al Curso A1</Link>
                         <h1 className="text-4xl font-black [text-shadow:2px_2px_4px_rgba(0,0,0,0.5)] uppercase tracking-tight">Artículos y Género 🇪🇸</h1>
@@ -622,7 +650,7 @@ function ArticulosGeneroContent() {
                                             const isSelected = selectedTopic === item.key;
                                             const Icon = item.icon;
                                             return (
-                                                <li key={item.key} onClick={() => handleTopicSelect(item.key)} className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer text-foreground', isLocked ? 'text-muted-foreground/30 cursor-not-allowed' : 'hover:bg-muted', isSelected && 'bg-muted text-primary font-black border-l-4 border-primary')}>
+                                                <li key={item.key} onClick={() => handleTopicSelect(item.key)} className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer text-foreground', isLocked ? 'text-muted-foreground/30 cursor-not-allowed' : 'hover:bg-muted', isSelected && 'bg-muted text-primary font-black border-l-4 border-primary shadow-sm')}>
                                                     <div className="flex items-center gap-3">{item.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500" /> : <Icon className={cn("h-5 w-5", isLocked ? "text-yellow-500/50" : "text-primary")} />}<span className="truncate max-w-[150px]">{item.name}</span></div>
                                                     {isLocked && <Lock className="h-3 w-3 text-yellow-500/30" />}
                                                 </li>
