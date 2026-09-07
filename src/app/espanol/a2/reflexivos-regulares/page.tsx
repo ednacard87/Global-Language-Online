@@ -476,10 +476,10 @@ function ReflexivosRegularesContent() {
         if (isClassFinished) return (
             <Card className="shadow-soft border-2 border-green-500 bg-green-500/10 p-12 text-center flex flex-col items-center animate-in fade-in zoom-in duration-500 text-foreground">
                 <Trophy className="h-24 w-24 text-yellow-400 mb-6 animate-bounce" />
-                <h2 className="text-4xl font-black uppercase text-green-600 tracking-tighter">Congratulations!</h2>
+                <h2 className="text-4xl font-black uppercase text-green-600 tracking-tighter">Felicitaciones!</h2>
                 <p className="text-2xl mt-4 font-bold">¡Has terminado la clase!</p>
                 <p className='text-muted-foreground mt-2 text-lg'>Misión completada al 100%.</p>
-                <Button asChild className="mt-8 px-12 h-12 font-bold" variant="outline"><Link href="/espanol/a2">Volver al panel A2</Link></Button>
+                <Button asChild className="mt-8 px-12 h-12 font-bold" variant="outline"><Link href="/espanol/a2">Regresar a la Unidad A2</Link></Button>
             </Card>
         );
 
