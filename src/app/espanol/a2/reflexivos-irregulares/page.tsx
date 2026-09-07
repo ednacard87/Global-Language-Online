@@ -102,7 +102,7 @@ const ex1ChoiceData = [
     { spanish: "NOSOTROS _______ (ACORDARSE) DE LA FECHA.", options: ["NOS ACORDAMOS", "ME ACUERDO", "SE ACUERDA"], answer: "NOS ACORDAMOS" },
     { spanish: "YO _________ (SENTIRSE) BIEN", options: ["SE SIENTE", "TE SIENTES", "ME SIENTO"], answer: "ME SIENTO" },
     { spanish: "TÚ _______ (VESTIRSE) MUY BIEN.", options: ["ME VISTO", "TE VISTES", "SE VISTEN"], answer: "TE VISTES" },
-    { spanish: "NOSOTROS _______ (PROBARSE) LOS ZAPATOS.", options: ["NOS PRUEBAMOS", "ME PROBAMOS", "SE PRUEBA"], answer: "NOS PROBAMOS" },
+    { spanish: "NOSOTROS _______ (PROBARSE) LOS ZAPATOS.", options: ["NOS PROBAMOS", "NOS PRUEBAMOS", "SE PRUEBA"], answer: "NOS PROBAMOS" },
     { spanish: "ELLA _______ (ENCONTRARSE) CON SU AMIGA.", options: ["ME ENCUENTRO", "SE ENCUENTRA", "TE ENCUENTRAS"], answer: "SE ENCUENTRA" },
     { spanish: "ELLA _______ (REIRSE) DE TODO.", options: ["TE RÍES", "ME RÍO", "SE RÍE"], answer: "SE RÍE" },
 ];
