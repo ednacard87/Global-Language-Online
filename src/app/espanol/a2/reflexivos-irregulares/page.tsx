@@ -632,7 +632,6 @@ function ReflexivosIrregularesInternal() {
                         <Card className="shadow-soft border-2 border-green-500 bg-green-50/10 p-12 text-center flex flex-col items-center text-foreground">
                             <Trophy className="h-24 w-24 text-yellow-400 mb-6 animate-bounce" />
                             <h2 className="text-4xl font-black uppercase text-green-600 tracking-tighter">¡FELICITACIONES!</h2>
-                            <p className="text-2xl mt-4 font-bold">tu completaste esta clase DE Reflexivos Irregulares</p>
                             <p className="text-2xl mt-4 font-bold">¡Has terminado la clase!</p>
                             <p className='text-muted-foreground mt-2 text-lg'>Misión completada al 100%.</p>
                             <Button asChild className="mt-8 px-12 h-12 font-bold" variant="outline"><Link href="/espanol/a2">Regresar a la Unidad A2</Link></Button>
