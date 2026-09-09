@@ -13,6 +13,15 @@ export interface PathItem {
     storageKey?: string;
 }
 
+export type Topic = {
+  key: string;
+  name: string;
+  icon: any;
+  status: 'locked' | 'active' | 'completed';
+};
+
+export type KidsIntro2PathItem = Topic;
+
 // ------- FUNCIONES DE CÁLCULO DE PROGRESO -------
 
 export const calculateEnglishIntroCourseProgress = (progress: Record<string, number> | undefined) => {
@@ -384,6 +393,39 @@ export const getB2UnitPath = (unitId: string | number, t: (key: string) => strin
     return unitPaths[String(unitId)] || [];
 }
 
+// ------- RUTAS CURSO NIÑOS (A1, A2, B1) -------
+
+export const getKidsA1MainPath = (t: (key: string) => string): PathItem[] => [
+    { type: 'start', icon: Footprints, label: 'dashboard.start' },
+    { type: 'class', icon: BookOpen, label: 'kidsA1.toBe', href: '/kids/a1/to-be', storageKey: 'progress_kids_a1_tobe' },
+    { type: 'class', icon: BookOpen, label: 'kidsA1.presentSimple', href: '/kids/a1/present-simple', storageKey: 'progress_kids_a1_presentsimple' },
+    { type: 'class', icon: BookOpen, label: 'kidsA1.presentContinuous', href: '/kids/a1/present-continuous', storageKey: 'progress_kids_a1_present_continuous' },
+    { type: 'class', icon: BookOpen, label: 'kidsA1.comparativesSuperlatives', href: '/kids/a1/comparativos-y-superlativos', storageKey: 'progress_kids_a1_comparatives' },
+    { type: 'practice', icon: Puzzle, label: 'kidsA1.quiz1', href: '#', storageKey: 'progress_kids_a1_quiz1' },
+    { type: 'end', icon: Flag, label: 'dashboard.finish' }
+];
+
+export const getKidsA2MainPath = (t: (key: string) => string): PathItem[] => [
+    { type: 'start', icon: Footprints, label: 'dashboard.start' },
+    { type: 'class', icon: BookOpen, label: 'kidsA2.atOnIn1', href: '/kids/a2/at-on-in-1', storageKey: 'progress_kids_a2_atonin1' },
+    { type: 'class', icon: BookOpen, label: 'kidsA2.atOnIn2', href: '/kids/a2/at-on-in-2', storageKey: 'progress_kids_a2_atonin2' },
+    { type: 'class', icon: BookOpen, label: 'kidsA2.pastSimple', href: '/kids/a2/pasado-simple', storageKey: 'progress_kids_a2_pastsimple' },
+    { type: 'class', icon: BookOpen, label: 'kidsA2.countables', href: '/kids/a2/contables-y-no-contables', storageKey: 'progress_kids_a2_countables' },
+    { type: 'class', icon: BookOpen, label: 'kidsA2.presentPerfect', href: '/kids/a2/presente-perfecto', storageKey: 'progress_kids_a2_present_perfect' },
+    { type: 'practice', icon: Puzzle, label: 'kidsA2.quiz1', href: '#', storageKey: 'progress_kids_a2_quiz1' },
+    { type: 'end', icon: Flag, label: 'dashboard.finish' }
+];
+
+export const getKidsB1MainPath = (t: (key: string) => string): PathItem[] => [
+    { type: 'start', icon: Footprints, label: 'dashboard.start' },
+    { type: 'class', icon: BookOpen, label: 'kidsB1.will', href: '/kids/b1/will', storageKey: 'progress_kids_b1_will' },
+    { type: 'class', icon: BookOpen, label: 'kidsB1.may', href: '/kids/b1/may', storageKey: 'progress_kids_b1_may' },
+    { type: 'class', icon: BookOpen, label: 'kidsB1.beGoingTo', href: '/kids/b1/be-going-to', storageKey: 'progress_kids_b1_be_going_to' },
+    { type: 'class', icon: BookOpen, label: 'kidsB1.zeroConditional', href: '/kids/b1/zero-conditional', storageKey: 'progress_kids_b1_zero_conditional' },
+    { type: 'class', icon: BookOpen, label: 'kidsB1.firstConditional', href: '/kids/b1/first-conditional', storageKey: 'progress_kids_b1_first_conditional' },
+    { type: 'end', icon: Flag, label: 'dashboard.finish' }
+];
+
 // ------- SPELLING DATA ------
 
 export type SpellingExerciseKey = 'femaleNames' | 'maleNames' | 'animalNames' | 'numbers1' | 'numbers2' | 'numbers3' | 'numbers4' | 'phoneNumbers';
@@ -419,6 +461,8 @@ export const getIntro1PathData = (t: (key: string) => string): any[] => [
     { key: "demonstratives", name: t('intro1Page.demonstratives'), status: "locked" },
 ];
 
+export const getKidsIntro1PathData = (t: (key: string) => string): any[] => getIntro1PathData(t);
+
 export const getEnglishIntro2PathData = (t: (key: string) => string): any[] => [
     { key: 'tip', name: t('intro2Page.tip'), icon: Lightbulb, status: 'active' },
     { key: 'mixed1', name: t('intro2Page.mixed1'), icon: PenSquare, status: 'locked' },
@@ -429,6 +473,18 @@ export const getEnglishIntro2PathData = (t: (key: string) => string): any[] => [
     { key: 'time', name: t('intro2Page.time'), icon: Clock, status: 'locked' },
     { key: 'time-exercise', name: t('intro2Page.timeExercise'), icon: PenSquare, status: 'locked' },
     { key: 'countries', name: t('intro2Page.countries'), icon: BookOpen, status: 'locked' },
+];
+
+export const getKidsIntro2PathData = (): any[] => [
+    { key: 'tip', name: 'Important Tip', icon: Lightbulb, status: 'active' },
+    { key: 'mixed1', name: 'Mixed Exercises 1', icon: PenSquare, status: 'locked' },
+    { key: 'greetings', name: 'Greetings', icon: Hand, status: 'locked' },
+    { key: 'farewells', name: 'Farewells', icon: MessageSquare, status: 'locked' },
+    { key: 'memory', name: 'Memory', icon: BrainCircuit, status: 'locked' },
+    { key: 'mixed2', name: 'Mixed Exercises 2', icon: PenSquare, status: 'locked' },
+    { key: 'time', name: 'The Time', icon: Clock, status: 'locked' },
+    { key: 'time-exercise', name: 'Time Exercises', icon: PenSquare, status: 'locked' },
+    { key: 'countries', name: 'Countries and Nationalities', icon: BookOpen, status: 'locked' },
 ];
 
 export const spellingExercisesData: Record<string, any> = {
