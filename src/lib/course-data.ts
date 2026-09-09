@@ -420,7 +420,7 @@ export const getKidsA2MainPath = (t: (key: string) => string): PathItem[] => [
     { type: 'class', icon: BookOpen, label: 'kidsA2.atOnIn2', href: '/kids/a2/at-on-in-2', storageKey: 'progress_kids_a2_atonin2' },
     { type: 'class', icon: BookOpen, label: 'kidsA2.pastSimple', href: '/kids/a2/pasado-simple', storageKey: 'progress_kids_a2_pastsimple' },
     { type: 'class', icon: BookOpen, label: 'kidsA2.pastContinuous', href: '/kids/a2/pasado-continuo', storageKey: 'progress_kids_a2_past_continuous' },  
-    { type: 'class', icon: BookOpen, label: 'kidsA2.pastSimpleAndContinuous', href: '/kids/a2/pasado-simple-y-continuo', storageKey: 'progress_kids_a2_pastsimpleandcontinuous' },
+     { type: 'class', icon: BookOpen, label: 'kidsA2.pastSimpleAndContinuous', href: '/kids/a2/pasado-simple-y-continuo', storageKey: 'progress_kids_a2_pastsimpleandcontinuous' },
     { type: 'class', icon: BookOpen, label: 'kidsA2.countables', href: '/kids/a2/contables-y-no-contables', storageKey: 'progress_kids_a2_countables' },
     { type: 'class', icon: BookOpen, label: 'kidsA2.presentPerfect', href: '/kids/a2/presente-perfecto', storageKey: 'progress_kids_a2_present_perfect' },
     { type: 'practice', icon: Puzzle, label: 'kidsA2.quiz1', href: '#', storageKey: 'progress_kids_a2_quiz1' },
