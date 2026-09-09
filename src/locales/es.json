@@ -1,3 +1,4 @@
+
 {
   "header": {
     "courses": "Español",
@@ -109,8 +110,8 @@
     "conectores": "Conectores",
     "condicionalSimple": "Condicional Simple",
     "presenteSubjuntivo": "Presente Subjuntivo",
-    "subjuntivo2": "Subjuntivo 2",
-    "subjuntivo3": "Subjuntivo 3",
+    "subjuntivo2": "Subjunctive 2",
+    "subjuntivo3": "Subjunctive 3",
     "vozPasiva": "Voz Pasiva Básica",
     "final": "Final"
   },
@@ -601,7 +602,7 @@
     "intro3AdventureTitle": "Aventura Intro 3",
     "adventureTime": "Es hora de tu aventura - ¡vamos a aprender ahora!",
     "a1Title": "WELCOME KIDS",
-    "overallProgress": "Progreso General",
+    "overallProgress": "Overall Progress",
     "overallProgressDescription": "Tu avance total en el curso para niños."
   },
   "kidsA1": {
@@ -611,7 +612,7 @@
     "quiz2": "Quiz 2",
     "unit3": "Unidad 3",
     "quiz3": "Quiz 3",
-    "finalTest": "Prueba Final",
+    "finalTest": "Final Test",
     "unitTitle": "Unidad {{unit}}",
     "backToA1": "Volver al Curso A1 de Niños",
     "unitPath": "Ruta de la Unidad",
@@ -633,7 +634,7 @@
     "objectPronouns": "Pronombres Objeto",
     "comparativesSuperlatives": "Comparativos y Superlativos",
     "demonstratives": "Demostrativos",
-    "oneOnes": "One/Ones",
+    "oneOnes": "One - Ones",
     "frequencyAdverbs": "Adverbios de Frecuencia",
     "can": "Can",
     "memoryToBe": "Memoria (To be)",
@@ -652,6 +653,7 @@
     "atOnIn2": "AT - ON - IN 2",
     "pastSimple": "Pasado Simple",
     "pastContinuous": "Pasado Continuo",
+    "pastSimpleAndContinuous": "Pasado Simple y Continuo",
     "countables": "Contables y No Contables",
     "presentPerfect": "Presente Perfecto",
     "usedTo": "Used to",

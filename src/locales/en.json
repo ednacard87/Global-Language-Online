@@ -503,6 +503,31 @@
     "preteritoPerfecto": "Perfect Preterite",
     "preteritoPerfectoContinuo": "Perfect Continuous Preterite"
   },
+  "b1Eng": {
+    "unit1": "Unit 1",
+    "review1": "Review 1",
+    "test1": "Test 1",
+    "unit2": "Unit 2",
+    "review2": "Review 2",
+    "test2": "Test 2",
+    "unit3": "Unit 3",
+    "review3": "Review 3",
+    "test3": "Test 3",
+    "unit4": "Unit 4",
+    "review4": "Review 4",
+    "finalTest": "Final Test"
+  },
+  "b2Eng": {
+    "unit1": "Unit 1",
+    "review1": "Review 1",
+    "unit2": "Unit 2",
+    "review2": "Review 2",
+    "unit3": "Unit 3",
+    "review3": "Review 3",
+    "unit4": "Unit 4",
+    "review4": "Review 4",
+    "finalTest": "Final Test"
+  },
   "b1course": {
     "unit1": "Unit 1",
     "review1": "Review 1",
@@ -626,6 +651,7 @@
     "atOnIn2": "AT - ON - IN 2",
     "pastSimple": "Past Simple",
     "pastContinuous": "Past Continuous",
+    "pastSimpleAndContinuous": "Past Simple and Continuous",
     "countables": "Countables and Uncountables",
     "presentPerfect": "Present Perfect",
     "usedTo": "Used to",
@@ -653,7 +679,7 @@
     "exercises": "Exercises",
     "positive": "Positive",
     "negative": "Negative",
-    "interrogative": "Interrogative",
+    "interrogative": "Interrogativa",
     "mixed": "Mixed",
     "reading": "Reading",
     "finalVocabulary": "Final Vocabulary"
@@ -703,7 +729,7 @@
     "exerciseInterrogativeDescription": "Translate the sentence to its interrogative form."
   },
   "kidsA1Class3": {
-    "grammar2": "Grammar 2",
+    "grammar2": "Gramática 2",
     "mixedExercises1": "Mixed Exercises 1",
     "presentSimpleUses": "Present Simple Uses",
     "mixedExercises2": "Mixed Exercises 2",
