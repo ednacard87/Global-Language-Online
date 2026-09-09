@@ -399,8 +399,17 @@ export const getKidsA1MainPath = (t: (key: string) => string): PathItem[] => [
     { type: 'start', icon: Footprints, label: 'dashboard.start' },
     { type: 'class', icon: BookOpen, label: 'kidsA1.toBe', href: '/kids/a1/to-be', storageKey: 'progress_kids_a1_tobe' },
     { type: 'class', icon: BookOpen, label: 'kidsA1.presentSimple', href: '/kids/a1/present-simple', storageKey: 'progress_kids_a1_presentsimple' },
+    { type: 'class', icon: BookOpen, label: 'kidsA1.can', href: '/kids/a1/can', storageKey: 'progress_kids_a1_can' },
+    { type: 'class', icon: BookOpen, label: 'kidsA1.saxonGenitive', href: '/kids/a1/genitivo-sajon', storageKey: 'progress_kids_a1_genitivo_sajon' },
+    { type: 'class', icon: BookOpen, label: 'kidsA1.whQuestions', href: '/kids/a1/wh-questions', storageKey: 'progress_kids_a1_whquestions' },
+    { type: 'class', icon: BookOpen, label: 'kidsA1.possessives', href: '/kids/a1/posesivos', storageKey: 'progress_kids_a1_posesivos' },
+    { type: 'class', icon: BookOpen, label: 'kidsA1.demonstratives', href: '/kids/a1/demostrativos', storageKey: 'progress_kids_a1_demostrativos' },
+    { type: 'class', icon: BookOpen, label: 'kidsA1.preferenceVerbs', href: '/kids/a1/verbos-preferencia', storageKey: 'progress_kids_a1_verbos_preferencia' },
+    { type: 'class', icon: BookOpen, label: 'kidsA1.oneOnes', href: '/kids/a1/one-ones', storageKey: 'progress_kids_a1_one_ones' },
     { type: 'class', icon: BookOpen, label: 'kidsA1.presentContinuous', href: '/kids/a1/present-continuous', storageKey: 'progress_kids_a1_present_continuous' },
     { type: 'class', icon: BookOpen, label: 'kidsA1.comparativesSuperlatives', href: '/kids/a1/comparativos-y-superlativos', storageKey: 'progress_kids_a1_comparatives' },
+    { type: 'class', icon: BookOpen, label: 'kidsA1.frequencyAdverbs', href: '/kids/a1/adverbios-de-frecuencia', storageKey: 'progress_kids_a1_adverbios_de_frecuencia' },
+    { type: 'class', icon: BookOpen, label: 'kidsA1.objectPronouns', href: '/kids/a1/pronombres-objeto', storageKey: 'progress_kids_a1_pronombres_objeto' }, 
     { type: 'practice', icon: Puzzle, label: 'kidsA1.quiz1', href: '#', storageKey: 'progress_kids_a1_quiz1' },
     { type: 'end', icon: Flag, label: 'dashboard.finish' }
 ];
