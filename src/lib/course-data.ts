@@ -419,6 +419,8 @@ export const getKidsA2MainPath = (t: (key: string) => string): PathItem[] => [
     { type: 'class', icon: BookOpen, label: 'kidsA2.atOnIn1', href: '/kids/a2/at-on-in-1', storageKey: 'progress_kids_a2_atonin1' },
     { type: 'class', icon: BookOpen, label: 'kidsA2.atOnIn2', href: '/kids/a2/at-on-in-2', storageKey: 'progress_kids_a2_atonin2' },
     { type: 'class', icon: BookOpen, label: 'kidsA2.pastSimple', href: '/kids/a2/pasado-simple', storageKey: 'progress_kids_a2_pastsimple' },
+    { type: 'class', icon: BookOpen, label: 'kidsA2.pastContinuous', href: '/kids/a2/pasado-continuo', storageKey: 'progress_kids_a2_past_continuous' },  
+    { type: 'class', icon: BookOpen, label: 'kidsA2.pastSimpleAndContinuous', href: '/kids/a2/pasado-simple-y-continuo', storageKey: 'progress_kids_a2_pastsimpleandcontinuous' },
     { type: 'class', icon: BookOpen, label: 'kidsA2.countables', href: '/kids/a2/contables-y-no-contables', storageKey: 'progress_kids_a2_countables' },
     { type: 'class', icon: BookOpen, label: 'kidsA2.presentPerfect', href: '/kids/a2/presente-perfecto', storageKey: 'progress_kids_a2_present_perfect' },
     { type: 'practice', icon: Puzzle, label: 'kidsA2.quiz1', href: '#', storageKey: 'progress_kids_a2_quiz1' },
@@ -427,11 +429,16 @@ export const getKidsA2MainPath = (t: (key: string) => string): PathItem[] => [
 
 export const getKidsB1MainPath = (t: (key: string) => string): PathItem[] => [
     { type: 'start', icon: Footprints, label: 'dashboard.start' },
+    { type: 'class', icon: BookOpen, label: 'kidsB1.connectors', href: '/kids/b1/connectors', storageKey: 'progress_kids_b1_connectors' },  
     { type: 'class', icon: BookOpen, label: 'kidsB1.will', href: '/kids/b1/will', storageKey: 'progress_kids_b1_will' },
     { type: 'class', icon: BookOpen, label: 'kidsB1.may', href: '/kids/b1/may', storageKey: 'progress_kids_b1_may' },
+    { type: 'class', icon: BookOpen, label: 'kidsB1.should', href: '/kids/b1/should', storageKey: 'progress_kids_b1_should' },
     { type: 'class', icon: BookOpen, label: 'kidsB1.beGoingTo', href: '/kids/b1/be-going-to', storageKey: 'progress_kids_b1_be_going_to' },
+    { type: 'class', icon: BookOpen, label: 'kidsB1.mustHaveTo', href: '/kids/b1/must-have-to', storageKey: 'progress_kids_b1_must_have_to' },
+    { type: 'class', icon: BookOpen, label: 'kidsB1.wouldLikeTo', href: '/kids/b1/would-like-to', storageKey: 'progress_kids_b1_would_like_to' },
     { type: 'class', icon: BookOpen, label: 'kidsB1.zeroConditional', href: '/kids/b1/zero-conditional', storageKey: 'progress_kids_b1_zero_conditional' },
     { type: 'class', icon: BookOpen, label: 'kidsB1.firstConditional', href: '/kids/b1/first-conditional', storageKey: 'progress_kids_b1_first_conditional' },
+    { type: 'class', icon: BookOpen, label: 'kidsB1.secondConditional', href: '/kids/b1/second-conditional', storageKey: 'progress_kids_b1_second_conditional' },
     { type: 'end', icon: Flag, label: 'dashboard.finish' }
 ];
 
