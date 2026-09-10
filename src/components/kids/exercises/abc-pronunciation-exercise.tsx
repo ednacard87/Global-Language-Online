@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState } from 'react';
@@ -10,6 +11,8 @@ import { useToast } from '@/hooks/use-toast';
 
 export const AbcPronunciationExercise = ({ onGameComplete }: { onGameComplete: () => void }) => {
     const { t } = useTranslation();
+    const { toast } = useToast();
+
     const abcExercises = [
         { pronunciation: '(em) (ou) (ti) (eich) (i) (ar)', answer: 'mother' },
         { pronunciation: '(ef) (ei) (ti) (eich) (i) (ar)', answer: 'father' },
@@ -20,13 +23,22 @@ export const AbcPronunciationExercise = ({ onGameComplete }: { onGameComplete: (
         { pronunciation: '(ar) (i) (di)', answer: 'red' },
         { pronunciation: '(es) (iu) (en)', answer: 'sun' },
         { pronunciation: '(em) (ou) (ou) (en)', answer: 'moon' },
-        { pronunciation: '(es) (ti) (iu) (di) (i) (en) (ti)', answer: 'student' }
+        { pronunciation: '(es) (ti) (iu) (di) (i) (en) (ti)', answer: 'student' },
+        { pronunciation: '(pi) (i) (ei) (ci) (i)', answer: 'peace' },
+        { pronunciation: '(ef) (ar) (i) (i)', answer: 'free' },
+        { pronunciation: '(dabliu) (ou) (ar) (el) (di)', answer: 'world' },
+        { pronunciation: '(es) (ti) (ar) (i) (i) (ti)', answer: 'street' },
+        { pronunciation: '(ef) (ou) (ou) (di)', answer: 'food' },
+        { pronunciation: '(ar) (i) (es) (ti) (ei) (iu) (ar) (ei) (en) (ti)', answer: 'restaurant' },
+        { pronunciation: '(ci) (ou) (em) (pi) (iu) (ti) (i) (ar)', answer: 'computer' },
+        { pronunciation: '(es) (eich) (ou) (i) (es) ', answer: 'shoes' },
+        { pronunciation: '(gi) (ou) (di) ', answer: 'god' },
+        { pronunciation: '(ci) (i) (el) (el) (pi) (eich) (ou) (en) (i)', answer: 'cellphone' }
     ];
 
     const [currentIndex, setCurrentIndex] = useState(0);
     const [answer, setAnswer] = useState('');
     const [showCongratulations, setShowCongratulations] = useState(false);
-    const { toast } = useToast();
 
     const currentExercise = abcExercises[currentIndex];
 
@@ -68,16 +80,22 @@ export const AbcPronunciationExercise = ({ onGameComplete }: { onGameComplete: (
             <CardHeader>
                 <CardTitle>Ejercicio de ABC ({currentIndex + 1}/{abcExercises.length})</CardTitle>
                 <CardDescription>{t('spellingExercise.writeWordForPronunciation')}</CardDescription>
+                <div className="text-muted-foreground pt-2">
+                    <span className="font-semibold">Example:</span> (es) (iu) (en) = SUN
+                </div>
             </CardHeader>
             <CardContent className="space-y-4">
-                <div className="p-4 bg-muted rounded-lg text-center font-mono text-lg tracking-widest">
+                <div className="p-4 bg-muted rounded-lg text-center font-mono text-lg tracking-widest uppercase">
                     {currentExercise.pronunciation}
                 </div>
                 <div>
                     <Input
+                        placeholder={t('spellingExercise.writeTheWord')}
                         value={answer}
                         onChange={(e) => setAnswer(e.target.value)}
                         onKeyDown={handleKeyDown}
+                        className="uppercase"
+                        autoComplete="off"
                     />
                 </div>
             </CardContent>

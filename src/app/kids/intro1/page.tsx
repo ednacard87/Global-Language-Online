@@ -10,11 +10,15 @@ import {
   BrainCircuit,
   CheckCircle,
   Lightbulb,
-  Languages,
   PenSquare,
+  Pencil,
+  ArrowRight,
+  ArrowLeft,
+  Loader2,
+  Trophy
 } from 'lucide-react';
 import { DashboardHeader } from '@/components/dashboard/header';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -31,6 +35,8 @@ import { NumbersMemoryGame } from '@/components/kids/exercises/numbers-memory-ga
 import { ToBeMemoryGame } from '@/components/kids/exercises/tobe-memory-game';
 import { TranslationExercise } from '@/components/dashboard/translation-exercise';
 import { PossessivesMemoryGame } from '@/components/kids/exercises/possessives-memory-game';
+import { AbcPronunciationExercise } from '@/components/kids/exercises/abc-pronunciation-exercise';
+import { SpellingExercise, type SpellingExerciseKey } from '@/components/dashboard/spelling-exercise';
 import { Separator } from '@/components/ui/separator';
 
 const verbToBeData = [
@@ -61,18 +67,19 @@ interface Student {
     progress?: Record<string, number>;
 }
 
-const progressStorageVersion = "kids_intro1_path_v4";
+const progressStorageVersion = "kids_intro1_path_v5";
 
 export default function KidsIntro1Page() {
     const { t } = useTranslation();
     const { toast } = useToast();
     const [selectedTopic, setSelectedTopic] = useState<string>('abc');
+    const [selectedTopicKey, setSelectedTopicKey] = useState<string>('abc');
     const [highlightedLetter, setHighlightedLetter] = useState<string | null>(null);
     const [highlightedNumber, setHighlightedNumber] = useState<string | null>(null);
     const [isClient, setIsClient] = useState(false);
     const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
-    const [previousPath, setPreviousPath] = useState<Topic[] | null>(null);
+    const [isIntro1Finished, setIsIntro1Finished] = useState(false);
 
     const { user } = useUser();
     const firestore = useFirestore();
@@ -110,12 +117,22 @@ export default function KidsIntro1Page() {
               }
             });
         }
-        setLearningPath(path);
+
+        // Reparación de ruta secuencial
+        if (!isAdmin) {
+            let lastDone = true;
+            for (let i = 0; i < path.length; i++) {
+                if (lastDone && path[i].status === 'locked') path[i].status = 'active';
+                lastDone = path[i].status === 'completed';
+            }
+        }
+
+        setLearningPath(path as Topic[]);
         const firstActive = path.find(p => p.status === 'active');
-        setSelectedTopic(firstActive?.key || path[0].key);
+        setSelectedTopicKey(firstActive?.key || path[0].key);
     }, [isAdmin, t, isClient, studentProfile, isProfileLoading, initialLearningPathData]);
     
-    const progress = useMemo(() => {
+    const progressValue = useMemo(() => {
         const completedCount = learningPath.filter(t => t.status === 'completed').length;
         return learningPath.length > 0 ? Math.round((completedCount / learningPath.length) * 100) : 0;
     }, [learningPath]);
@@ -126,28 +143,11 @@ export default function KidsIntro1Page() {
         const statuses = learningPath.reduce((acc, item) => ({ ...acc, [item.key]: item.status }), {});
         updateDocumentNonBlocking(studentDocRef, {
             [`lessonProgress.${progressStorageVersion}`]: statuses,
-            'progress.kidsIntro1Progress': progress
+            'progress.kidsIntro1Progress': progressValue
         });
         window.dispatchEvent(new CustomEvent('progressUpdated'));
 
-    }, [learningPath, progress, isAdmin, isClient, studentDocRef, isProfileLoading]);
-
-    useEffect(() => {
-        if (previousPath && !isAdmin) {
-          const newlyUnlocked = learningPath.find((newItem, index) => {
-            const oldItem = previousPath![index];
-            return oldItem && oldItem.status === 'locked' && newItem.status === 'active';
-          });
-      
-          if (newlyUnlocked) {
-            toast({
-              title: '¡Siguiente tema desbloqueado!',
-              description: `Ahora puedes continuar con ${newlyUnlocked.name}`,
-            });
-          }
-        }
-        setPreviousPath(learningPath);
-    }, [learningPath, previousPath, toast, isAdmin]);
+    }, [learningPath, progressValue, isAdmin, isClient, studentDocRef, isProfileLoading]);
 
     useEffect(() => {
         if (!topicToComplete) return;
@@ -161,19 +161,22 @@ export default function KidsIntro1Page() {
 
                 if (currentIndex + 1 < newPath.length && newPath[currentIndex + 1].status === 'locked') {
                     newPath[currentIndex + 1].status = 'active';
+                    setSelectedTopicKey(newPath[currentIndex + 1].key);
+                    toast({ title: '¡Misión desbloqueada!', description: `Avanzamos a: ${newPath[currentIndex + 1].name}` });
                 }
             }
             return newPath;
         });
 
         setTopicToComplete(null);
-    }, [topicToComplete]);
+    }, [topicToComplete, toast]);
 
     const handleTopicSelect = (topicKey: string) => {
         const currentItem = learningPath.find(item => item.key === topicKey);
         if (!isAdmin && (!currentItem || currentItem.status === 'locked')) return;
         
-        setSelectedTopic(topicKey);
+        setSelectedTopicKey(topicKey);
+        setIsIntro1Finished(false);
 
         const viewOnlyTopics = ['abc', 'numbers', 'tobe', 'possessives', 'tobe-1-grammar', 'tobe-2-grammar', 'tobe-3-grammar'];
         if (viewOnlyTopics.includes(topicKey)) {
@@ -182,17 +185,23 @@ export default function KidsIntro1Page() {
     };
 
     const renderContent = () => {
-        switch (selectedTopic) {
+        switch (selectedTopicKey) {
             case 'abc':
-                return <Card className="shadow-soft rounded-lg border-2 border-brand-purple"><CardHeader><CardTitle>{t('intro1Page.abc')}</CardTitle></CardHeader><CardContent><AlphabetGrid highlightedItem={highlightedLetter} onHighlight={setHighlightedLetter} /></CardContent></Card>;
+                return <Card className="shadow-soft rounded-lg border-2 border-brand-purple"><CardHeader><CardTitle>{t('intro1Page.abc')}</CardTitle></CardHeader><CardContent><AlphabetGrid highlightedItem={highlightedLetter} onHighlight={setHighlightedLetter} /></CardContent><CardFooter className="justify-center"><Button onClick={() => setTopicToComplete('abc')} size="lg" className="px-12 font-bold">He terminado de estudiar</Button></CardFooter></Card>;
+            case 'abcExercise':
+                return <AbcPronunciationExercise onGameComplete={() => setTopicToComplete('abcExercise')} />;
             case 'abc-memory':
                 return <AbcMemoryGame onGameComplete={() => setTopicToComplete('abc-memory')} />;
+            case 'abcspelling':
+                return <SpellingExercise exerciseKey="femaleNames" onComplete={() => setTopicToComplete('abcspelling')} />;
             case 'numbers':
-                return <Card className="shadow-soft rounded-lg border-2 border-brand-purple"><CardHeader><CardTitle>{t('intro1Page.numbers')}</CardTitle></CardHeader><CardContent><NumbersGrid highlightedItem={highlightedNumber} onHighlight={setHighlightedNumber} /></CardContent></Card>;
+                return <Card className="shadow-soft rounded-lg border-2 border-brand-purple"><CardHeader><CardTitle>{t('intro1Page.numbers')}</CardTitle></CardHeader><CardContent><NumbersGrid highlightedItem={highlightedNumber} onHighlight={setHighlightedNumber} /></CardContent><CardFooter className="justify-center"><Button onClick={() => setTopicToComplete('numbers')} size="lg" className="px-12 font-bold">He terminado de estudiar</Button></CardFooter></Card>;
             case 'numbers-memory':
                 return <NumbersMemoryGame onGameComplete={() => setTopicToComplete('numbers-memory')} />;
+            case 'numbersspelling':
+                return <SpellingExercise exerciseKey="numbers1" onComplete={() => setTopicToComplete('numbersspelling')} />;
             case 'tobe':
-                return <Card className="shadow-soft rounded-lg border-2 border-brand-purple"><CardHeader><CardTitle>{t('intro1Page.pronouns')}</CardTitle></CardHeader><CardContent><div className="grid grid-cols-3 gap-x-4 gap-y-2 text-lg"><div className="font-bold p-3 bg-muted rounded-lg text-center">{t('common.ser')}</div><div className="font-bold p-3 bg-muted rounded-lg text-center">{t('common.tobe')}</div><div className="font-bold p-3 bg-muted rounded-lg text-center">{t('common.estar')}</div>{verbToBeData.map((item, index) => (<React.Fragment key={index}><div className="p-3 bg-card border rounded-lg text-center">{item.ser}</div><div className="p-3 bg-card border rounded-lg font-medium text-center">{item.tobe}</div><div className="p-3 bg-card border rounded-lg text-center">{item.estar}</div></React.Fragment>))}</div></CardContent></Card>;
+                return <Card className="shadow-soft rounded-lg border-2 border-brand-purple"><CardHeader><CardTitle>{t('intro1Page.pronouns')}</CardTitle></CardHeader><CardContent><div className="grid grid-cols-3 gap-x-4 gap-y-2 text-lg"><div className="font-bold p-3 bg-muted rounded-lg text-center">{t('common.ser')}</div><div className="font-bold p-3 bg-muted rounded-lg text-center">{t('common.tobe')}</div><div className="font-bold p-3 bg-muted rounded-lg text-center">{t('common.estar')}</div>{verbToBeData.map((item, index) => (<React.Fragment key={index}><div className="p-3 bg-card border rounded-lg text-center">{item.ser}</div><div className="p-3 bg-card border rounded-lg font-medium text-center">{item.tobe}</div><div className="p-3 bg-card border rounded-lg text-center">{item.estar}</div></React.Fragment>))}</div></CardContent><CardFooter className="justify-center"><Button onClick={() => setTopicToComplete('tobe')} size="lg" className="px-12 font-bold">Entendido</Button></CardFooter></Card>;
             case 'tobe-memory':
                 return <ToBeMemoryGame onGameComplete={() => setTopicToComplete('tobe-memory')} />;
             case 'tobe-1-grammar':
@@ -235,7 +244,7 @@ export default function KidsIntro1Page() {
             case 'tobe-1-exercise':
                 return <TranslationExercise exerciseKey="exercises1" onComplete={() => setTopicToComplete('tobe-1-exercise')} />;
             case 'possessives':
-                return <Card className="shadow-soft rounded-lg border-2 border-brand-purple"><CardHeader><CardTitle>{t('intro1Page.possessives')}</CardTitle></CardHeader><CardContent><div className="grid grid-cols-2 gap-x-4 gap-y-2 text-lg"><div className="font-bold p-3 bg-muted rounded-lg text-center">{t('common.english')}</div><div className="font-bold p-3 bg-muted rounded-lg text-center">{t('common.spanish')}</div>{possessivesData.map((item, index) => (<React.Fragment key={index}><div className="p-3 bg-card border rounded-lg font-medium text-center">{item.english}</div><div className="p-3 bg-card border rounded-lg text-center">{item.spanish}</div></React.Fragment>))}</div></CardContent></Card>;
+                return <Card className="shadow-soft rounded-lg border-2 border-brand-purple"><CardHeader><CardTitle>{t('intro1Page.possessives')}</CardTitle></CardHeader><CardContent><div className="grid grid-cols-2 gap-x-4 gap-y-2 text-lg"><div className="font-bold p-3 bg-muted rounded-lg text-center">{t('common.english')}</div><div className="font-bold p-3 bg-muted rounded-lg text-center">{t('common.spanish')}</div>{possessivesData.map((item, index) => (<React.Fragment key={index}><div className="p-3 bg-card border rounded-lg font-medium text-center">{item.english}</div><div className="p-3 bg-card border rounded-lg text-center">{item.spanish}</div></React.Fragment>))}</div></CardContent><CardFooter className="justify-center"><Button onClick={() => setTopicToComplete('possessives')} size="lg" className="px-12 font-bold">Estudiado</Button></CardFooter></Card>;
             case 'possessives-memory':
                 return <PossessivesMemoryGame onGameComplete={() => setTopicToComplete('possessives-memory')} />;
             case 'tobe-2-grammar':
@@ -300,19 +309,22 @@ export default function KidsIntro1Page() {
                 );
             case 'tobe-3-exercise':
                 return <TranslationExercise exerciseKey="exercises3" onComplete={() => setTopicToComplete('tobe-3-exercise')} />;
-            default:
-                const topic = learningPath.find(t => t.key === selectedTopic);
+            case 'demonstratives':
                 return (
-                    <Card className="h-full">
-                        <CardHeader className="text-center">
-                            <CardTitle className="text-3xl">{topic?.name || '¡Bienvenido a la Aventura Intro 1!'}</CardTitle>
-                        </CardHeader>
-                        <CardContent className="text-center px-6 pb-6">
-                            <p className="pt-4 text-lg">Selecciona un tema de la ruta de aprendizaje para comenzar.</p>
-                            <div className="flex items-center justify-center pt-8 gap-2">
-                                {guideFishImage && <Image src={guideFishImage.imageUrl} alt={guideFishImage.description} width={191} height={191} className="rounded-lg object-cover" data-ai-hint={guideFishImage.imageHint} />}
-                            </div>
-                        </CardContent>
+                    <Card className="shadow-soft border-2 border-green-500 bg-green-500/10 p-12 text-center flex flex-col items-center text-foreground">
+                        <Trophy className="h-24 w-24 text-yellow-400 mb-6 animate-bounce" />
+                        <h2 className="text-4xl font-black uppercase text-green-600 tracking-tighter">CONGRATULATIONS!</h2>
+                        <p className="text-2xl mt-4 font-bold">¡Has terminado la Intro 1K!</p>
+                        <Button asChild className="mt-8 px-12 h-12 font-bold" variant="outline">
+                            <Link href="/kids/intro">Volver al Laberinto</Link>
+                        </Button>
+                    </Card>
+                );
+            default:
+                return (
+                    <Card className="flex flex-col items-center justify-center min-h-[400px]">
+                        <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
+                        <p className="text-muted-foreground font-bold tracking-widest animate-pulse uppercase">Cargando Misión...</p>
                     </Card>
                 );
         }
@@ -326,50 +338,55 @@ export default function KidsIntro1Page() {
                 <div className="grid gap-8 md:grid-cols-12">
                 <div className="md:col-span-9">
                     <div className="mb-8">
-                        <Link href="/kids/intro" className="hover:underline text-sm text-muted-foreground">
-                            {t('kidsPage.backToKidsCourse')}
+                        <Link href="/kids/intro" className="hover:underline text-sm text-white/80 flex items-center gap-2 mb-2">
+                            <ArrowLeft className="h-4 w-4" /> {t('kidsPage.backToKidsCourse')}
                         </Link>
-                        <h1 className="text-4xl font-bold text-white">{t('kidsPage.intro1AdventureTitle')}</h1>
+                        <h1 className="text-4xl font-black text-white uppercase tracking-tighter [text-shadow:2px_2px_4px_rgba(0,0,0,0.5)]">
+                            {t('kidsPage.intro1AdventureTitle')}
+                        </h1>
                     </div>
                     {renderContent()}
                 </div>
                 <div className="md:col-span-3">
-                    <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple">
-                    <CardHeader>
-                        <CardTitle>{t('intro1Page.learningPath')}</CardTitle>
+                    <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
+                    <CardHeader className="bg-primary/5 border-b">
+                        <CardTitle className="text-primary font-black uppercase tracking-tighter">Tu Misión</CardTitle>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="p-4">
                         <nav>
                             <ul className="space-y-1">
                             {learningPath.map((item) => {
                                 const isLocked = item.status === 'locked';
-                                const isSelected = selectedTopic === item.key;
-                                const isActive = item.status === 'active';
+                                const isSelected = selectedTopicKey === item.key;
                                 const isCompleted = item.status === 'completed';
                                 
-                                const Icon = isCompleted ? CheckCircle : (isLocked && !isAdmin ? Lock : item.icon);
+                                const Icon = isCompleted ? CheckCircle : (isLocked && !isAdmin ? Lock : (item.icon || BookOpen));
 
                                 return (
                                     <li key={item.key} onClick={() => handleTopicSelect(item.key)} className={cn(!isLocked || isAdmin ? "cursor-pointer" : "cursor-not-allowed")}>
                                         <div className={cn(
-                                            "flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors",
+                                            "flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors",
                                             (!isLocked || isAdmin) && "hover:bg-muted",
-                                            isSelected ? "bg-muted text-primary font-semibold" : (isActive ? "text-foreground" : "text-muted-foreground")
+                                            isSelected ? "bg-muted text-primary font-black border-l-4 border-primary" : "text-foreground",
+                                            item.status === 'active' && !isAdmin && 'animate-pulse-glow'
                                         )}>
-                                            <Icon className={cn("h-5 w-5", isLocked && !isAdmin ? "text-yellow-500" : "text-primary" )} />
-                                            <span>{item.name}</span>
+                                            <div className="flex items-center gap-3">
+                                                <Icon className={cn("h-5 w-5", isLocked && !isAdmin ? "text-yellow-500/50" : isCompleted ? "text-green-500" : "text-primary" )} />
+                                                <span className="truncate max-w-[150px] uppercase font-bold text-[10px]">{item.name}</span>
+                                            </div>
+                                            {isLocked && !isAdmin && <Lock className="h-3 w-3 text-yellow-500/30" />}
                                         </div>
                                     </li>
                                 );
                             })}
                             </ul>
                         </nav>
-                        <div className="mt-6">
-                            <div className="flex justify-between items-center text-sm font-medium text-muted-foreground mb-2">
-                                <span>{t('intro1Page.progress')}</span>
-                                <span className="font-bold text-foreground">{progress}%</span>
+                        <div className="mt-6 pt-6 border-t">
+                            <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-2">
+                                <span>Progreso</span>
+                                <span className="text-primary">{progressValue}%</span>
                             </div>
-                            <Progress value={progress} className="h-4" />
+                            <Progress value={progressValue} className="h-1.5" />
                         </div>
                     </CardContent>
                     </Card>

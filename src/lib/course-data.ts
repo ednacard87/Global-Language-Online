@@ -420,7 +420,7 @@ export const getKidsA2MainPath = (t: (key: string) => string): PathItem[] => [
     { type: 'class', icon: BookOpen, label: 'kidsA2.atOnIn2', href: '/kids/a2/at-on-in-2', storageKey: 'progress_kids_a2_atonin2' },
     { type: 'class', icon: BookOpen, label: 'kidsA2.pastSimple', href: '/kids/a2/pasado-simple', storageKey: 'progress_kids_a2_pastsimple' },
     { type: 'class', icon: BookOpen, label: 'kidsA2.pastContinuous', href: '/kids/a2/pasado-continuo', storageKey: 'progress_kids_a2_past_continuous' },  
-     { type: 'class', icon: BookOpen, label: 'kidsA2.pastSimpleAndContinuous', href: '/kids/a2/pasado-simple-y-continuo', storageKey: 'progress_kids_a2_pastsimpleandcontinuous' },
+    { type: 'class', icon: BookOpen, label: 'kidsA2.pastSimpleAndContinuous', href: '/kids/a2/pasado-simple-y-continuo', storageKey: 'progress_kids_a2_pastsimpleandcontinuous' },
     { type: 'class', icon: BookOpen, label: 'kidsA2.countables', href: '/kids/a2/contables-y-no-contables', storageKey: 'progress_kids_a2_countables' },
     { type: 'class', icon: BookOpen, label: 'kidsA2.presentPerfect', href: '/kids/a2/presente-perfecto', storageKey: 'progress_kids_a2_present_perfect' },
     { type: 'practice', icon: Puzzle, label: 'kidsA2.quiz1', href: '#', storageKey: 'progress_kids_a2_quiz1' },
@@ -477,7 +477,26 @@ export const getIntro1PathData = (t: (key: string) => string): any[] => [
     { key: "demonstratives", name: t('intro1Page.demonstratives'), status: "locked" },
 ];
 
-export const getKidsIntro1PathData = (t: (key: string) => string): any[] => getIntro1PathData(t);
+export const getKidsIntro1PathData = (t: (key: string) => string): any[] => [
+    { key: "abc", name: t('intro1Page.abc'), status: "active", icon: BookOpen },
+    { key: "abcExercise", name: t('intro1Page.abcExercise'), status: "locked", icon: Pencil },
+    { key: "abc-memory", name: "Memory (ABC)", status: "locked", icon: BrainCircuit },
+    { key: "abcspelling", name: t('spellingExercise.abcspelling'), status: "locked", icon: PenSquare },
+    { key: "numbers", name: t('intro1Page.numbers'), status: "locked", icon: BookOpen },
+    { key: "numbers-memory", name: "Memory (Numbers)", status: "locked", icon: BrainCircuit },
+    { key: "numbersspelling", name: t('spellingExercise.numbersspelling'), status: "locked", icon: PenSquare },
+    { key: "tobe", name: t('intro1Page.pronouns'), status: "locked", icon: BookOpen },
+    { key: "tobe-memory", name: "Memory (To Be)", status: "locked", icon: BrainCircuit },
+    { key: "tobe-1-grammar", name: t('intro1Page.verbtobe1'), status: "locked", icon: GraduationCap },
+    { key: "tobe-1-exercise", name: t('intro1Page.exercises1'), status: "locked", icon: PenSquare },
+    { key: "possessives", name: t('intro1Page.possessives'), status: "locked", icon: BookOpen },
+    { key: "possessives-memory", name: "Memory (Possessives)", status: "locked", icon: BrainCircuit },
+    { key: "tobe-2-grammar", name: t('intro1Page.verbtobe2'), status: "locked", icon: GraduationCap },
+    { key: "tobe-2-exercise", name: t('intro1Page.exercises2'), status: "locked", icon: PenSquare },
+    { key: "tobe-3-grammar", name: t('intro1Page.verbtobe3'), status: "locked", icon: GraduationCap },
+    { key: "tobe-3-exercise", name: t('intro1Page.exercises3'), status: "locked", icon: PenSquare },
+    { key: "demonstratives", name: t('intro1Page.demonstratives'), status: "locked", icon: BookOpen },
+];
 
 export const getEnglishIntro2PathData = (t: (key: string) => string): any[] => [
     { key: 'tip', name: t('intro2Page.tip'), icon: Lightbulb, status: 'active' },
