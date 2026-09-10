@@ -131,10 +131,10 @@ const mixedExercise1Data = [
     { spanish: 'ELLOS NO ESTÁN EN CASA (AT HOME)', answer: ['they are not at home', "they aren't at home"] },
     { spanish: '¿ELLA ES TU PRIMA? (COUSIN)', answer: ['is she your cousin?'] },
     { spanish: '¿ELLOS ESTÁN CASADOS? (MARRIED)', answer: ['are they married?'] },
-    { spanish: 'ELLOS ESTÁN EN EL TRABAJO (AT WORK)', english: ['they are at work', "they're at work"] },
-    { spanish: 'NOSOTROS NO SOMOS ESTUDIANTES: (STUDENTS)', english: ['we are not students', "we aren't students"] },
-    { spanish: '¿ELLOS SON TUS PRIMOS? (COUSINS)', english: ['are they your cousins?'] },
-    { spanish: '¿TU MAMA ES ENFERMERA? (NURSE)', english: ['is your mother a nurse?', 'is your mom a nurse?'] },
+    { spanish: 'ELLOS ESTÁN EN EL TRABAJO (AT WORK)', answer: ['they are at work', "they're at work"] },
+    { spanish: 'NOSOTROS NO SOMOS ESTUDIANTES: (STUDENTS)', answer: ['we are not students', "we aren't students"] },
+    { spanish: '¿ELLOS SON TUS PRIMOS? (COUSINS)', answer: ['are they your cousins?'] },
+    { spanish: '¿TU MAMA ES ENFERMERA? (NURSE)', answer: ['is your mother a nurse?', 'is your mom a nurse?'] },
 ];
 
 const mixedExercise2Data = [
@@ -146,11 +146,11 @@ const mixedExercise2Data = [
     { spanish: '¿ella es tu novia? (girlfriend)', answer: ['is she your girlfriend?'] },
     { spanish: 'nosotros somos tus amigos', answer: ['we are your friends', "we're your friends"] },
     { spanish: 'mi madre es vendedora (seller)', answer: ['my mother is a seller', 'my mom is a seller'] },
-    { spanish: 'los hombres están en el restaurante', english: ['the men are in the restaurant', "the men're in the restaurant"] },
-    { spanish: 'mi hermana es profesora de alemán', english: ['my sister is a German teacher', "my sister's a German teacher"] },
-    { spanish: 'su novio no está en el trabajo (su: de ella)', english: ['her boyfriend is not at work', "her boyfriend isn't at work"] },
-    { spanish: 'nuestros padres son amables (kind)', english: ['our parents are kind', 'our parents are nice'] },
-    { spanish: 'tu hijo es un hombre de negocios (businessman)', english: ['your son is a businessman', "your son's a businessman"] },
+    { spanish: 'los hombres están en el restaurante', answer: ['the men are in the restaurant', "the men're in the restaurant"] },
+    { spanish: 'mi hermana es profesora de alemán', answer: ['my sister is a German teacher', "my sister's a German teacher"] },
+    { spanish: 'su novio no está en el trabajo (su: de ella)', answer: ['her boyfriend is not at work', "her boyfriend isn't at work"] },
+    { spanish: 'nuestros padres son amables (kind)', answer: ['our parents are kind', 'our parents are nice'] },
+    { spanish: 'tu hijo es un hombre de negocios (businessman)', answer: ['your son is a businessman', "your son's a businessman"] },
 ];
 
 const mixed1Vocab = { "padres": "parents", "alto": "tall", "ocupado": "busy", "libre": "free", "en casa": "at home", "prima": "cousin", "casados": "married" };
@@ -177,7 +177,7 @@ const TipContent = ({ onComplete }: { onComplete: () => void }) => (
                         <div>
                             <h4 className="font-medium text-primary">IRREGULAR: noun+es</h4>
                             <ul className="list-disc pl-5 mt-1 space-y-2 text-sm">
-                                <li>For nouns ending {`=>`} s, z, sh, ch, x (bus) = “ES”<br/><span className="font-mono bg-muted px-2 py-1 rounded">Ex: address: Addresses // beach: beaches // bus: buses</span></li>
+                                <li>For nouns ending {`=>`} s, z, sh, ch, x = “ES”<br/><span className="font-mono bg-muted px-2 py-1 rounded">Ex: address: Addresses // beach: beaches // bus: buses</span></li>
                                 <li>For nouns ending {`=>`} “Y” cancelamos la “Y” agregamos “ies”<br/><span className="font-mono bg-muted px-2 py-1 rounded">Ex: country: countries // university: universities</span></li>
                                 <li>Completamente irregular:<br/><span className="font-mono bg-muted px-2 py-1 rounded">Man: men // woman: women // child: children // person: people</span></li>
                             </ul>
