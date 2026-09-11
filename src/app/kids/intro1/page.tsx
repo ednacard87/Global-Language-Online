@@ -1,7 +1,6 @@
-
 'use client';
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import {
@@ -62,18 +61,24 @@ const possessivesData = [
     { english: 'Their', spanish: 'Su / Sus (de ellos/as)' },
 ];
 
+const demonstrativesData = [
+    { english: 'This', spanish: 'Este - Esta', usage: 'Singular, cerca' },
+    { english: 'These', spanish: 'Estos - Estas', usage: 'Plural, cerca' },
+    { english: 'That', spanish: 'Ese - Esa', usage: 'Singular, lejos' },
+    { english: 'Those', spanish: 'Esos - Esas', usage: 'Plural, lejos' },
+];
+
 interface Student {
     role?: 'admin' | 'student';
     lessonProgress?: any;
     progress?: Record<string, number>;
 }
 
-const progressStorageVersion = "kids_intro1_path_v5";
+const progressStorageVersion = "kids_intro1_path_v6_fixed";
 
 export default function KidsIntro1Page() {
     const { t } = useTranslation();
     const { toast } = useToast();
-    const [selectedTopic, setSelectedTopic] = useState<string>('abc');
     const [selectedTopicKey, setSelectedTopicKey] = useState<string>('abc');
     const [highlightedLetter, setHighlightedLetter] = useState<string | null>(null);
     const [highlightedNumber, setHighlightedNumber] = useState<string | null>(null);
@@ -81,6 +86,7 @@ export default function KidsIntro1Page() {
     const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
     const [isIntro1Finished, setIsIntro1Finished] = useState(false);
+    const [isInitialLoading, setIsInitialLoading] = useState(true);
 
     const { user } = useUser();
     const firestore = useFirestore();
@@ -109,28 +115,29 @@ export default function KidsIntro1Page() {
         let path = initialLearningPathData.map(item => ({...item}));
 
         if (isAdmin) {
-            path.forEach(topic => { topic.status = 'completed' });
+            path.forEach(topic => { (topic as any).status = 'completed' });
         } else if (studentProfile?.lessonProgress?.[progressStorageVersion]) {
             const savedStatuses = studentProfile.lessonProgress[progressStorageVersion];
             path.forEach(item => {
               if (savedStatuses[item.key]) {
-                item.status = savedStatuses[item.key];
+                (item as any).status = savedStatuses[item.key];
               }
             });
+            if (savedStatuses.isIntro1Finished) setIsIntro1Finished(true);
         }
 
-        // Reparación de ruta secuencial
         if (!isAdmin) {
             let lastDone = true;
             for (let i = 0; i < path.length; i++) {
-                if (lastDone && path[i].status === 'locked') path[i].status = 'active';
+                if (lastDone && path[i].status === 'locked') (path[i] as any).status = 'active';
                 lastDone = path[i].status === 'completed';
             }
         }
 
         setLearningPath(path as Topic[]);
         const firstActive = path.find(p => p.status === 'active');
-        setSelectedTopicKey(firstActive?.key || path[0].key);
+        setSelectedTopicKey(studentProfile?.lessonProgress?.[progressStorageVersion]?.lastSelectedTopic || firstActive?.key || path[0].key);
+        setIsInitialLoading(false);
     }, [isAdmin, t, isClient, studentProfile, isProfileLoading, initialLearningPathData]);
     
     const progressValue = useMemo(() => {
@@ -139,16 +146,19 @@ export default function KidsIntro1Page() {
     }, [learningPath]);
 
     useEffect(() => {
-        if (!isClient || isProfileLoading || isAdmin || !studentDocRef) return;
+        if (!isClient || isInitialLoading || isAdmin || !studentDocRef) return;
 
-        const statuses = learningPath.reduce((acc, item) => ({ ...acc, [item.key]: item.status }), {});
+        const statuses: any = learningPath.reduce((acc, item) => ({ ...acc, [item.key]: item.status }), {});
+        statuses.lastSelectedTopic = selectedTopicKey;
+        statuses.isIntro1Finished = isIntro1Finished;
+
         updateDocumentNonBlocking(studentDocRef, {
             [`lessonProgress.${progressStorageVersion}`]: statuses,
             'progress.kidsIntro1Progress': progressValue
         });
         window.dispatchEvent(new CustomEvent('progressUpdated'));
 
-    }, [learningPath, progressValue, isAdmin, isClient, studentDocRef, isProfileLoading]);
+    }, [learningPath, progressValue, isAdmin, isClient, studentDocRef, isInitialLoading, selectedTopicKey, isIntro1Finished]);
 
     useEffect(() => {
         if (!topicToComplete) return;
@@ -161,7 +171,7 @@ export default function KidsIntro1Page() {
                 newPath[currentIndex].status = 'completed';
 
                 if (currentIndex + 1 < newPath.length && newPath[currentIndex + 1].status === 'locked') {
-                    newPath[currentIndex + 1].status = 'active';
+                    (newPath[currentIndex + 1] as any).status = 'active';
                     setSelectedTopicKey(newPath[currentIndex + 1].key);
                     toast({ title: '¡Misión desbloqueada!', description: `Avanzamos a: ${newPath[currentIndex + 1].name}` });
                 }
@@ -174,10 +184,12 @@ export default function KidsIntro1Page() {
 
     const handleTopicSelect = (topicKey: string) => {
         const currentItem = learningPath.find(item => item.key === topicKey);
-        if (!isAdmin && (!currentItem || currentItem.status === 'locked')) return;
+        if (!isAdmin && (!currentItem || currentItem.status === 'locked')) {
+            toast({ variant: 'destructive', title: 'Contenido Bloqueado' });
+            return;
+        }
         
         setSelectedTopicKey(topicKey);
-        setIsIntro1Finished(false);
 
         const viewOnlyTopics = ['abc', 'numbers', 'tobe', 'possessives', 'tobe-1-grammar', 'tobe-2-grammar', 'tobe-3-grammar'];
         if (viewOnlyTopics.includes(topicKey)) {
@@ -186,6 +198,8 @@ export default function KidsIntro1Page() {
     };
 
     const renderContent = () => {
+        if (isInitialLoading) return <div className="flex justify-center items-center h-96"><Loader2 className="animate-spin text-primary h-12 w-12" /></div>;
+
         switch (selectedTopicKey) {
             case 'abc':
                 return <Card className="shadow-soft rounded-lg border-2 border-brand-purple"><CardHeader><CardTitle>{t('intro1Page.abc')}</CardTitle></CardHeader><CardContent><AlphabetGrid highlightedItem={highlightedLetter} onHighlight={setHighlightedLetter} /></CardContent><CardFooter className="justify-center"><Button onClick={() => setTopicToComplete('abc')} size="lg" className="px-12 font-bold">He terminado de estudiar</Button></CardFooter></Card>;
@@ -240,6 +254,7 @@ export default function KidsIntro1Page() {
                                 </div>
                             </div>
                         </CardContent>
+                        <CardFooter className='justify-center border-t pt-4'><Button onClick={() => setTopicToComplete('tobe-1-grammar')} size="lg" className="font-bold">Continuar</Button></CardFooter>
                     </Card>
                 );
             case 'tobe-1-exercise':
@@ -275,6 +290,7 @@ export default function KidsIntro1Page() {
                                 </div>
                             </div>
                         </CardContent>
+                        <CardFooter className='justify-center border-t pt-4'><Button onClick={() => setTopicToComplete('tobe-2-grammar')} size="lg" className="font-bold">Avanzar</Button></CardFooter>
                     </Card>
                 );
             case 'tobe-2-exercise':
@@ -306,19 +322,55 @@ export default function KidsIntro1Page() {
                                 </div>
                             </div>
                         </CardContent>
+                        <CardFooter className='justify-center border-t pt-4'><Button onClick={() => setTopicToComplete('tobe-3-grammar')} size="lg" className="font-bold">Avanzar</Button></CardFooter>
                     </Card>
                 );
             case 'tobe-3-exercise':
                 return <TranslationExercise exerciseKey="exercises3" onComplete={() => setTopicToComplete('tobe-3-exercise')} />;
             case 'demonstratives':
+                if (isIntro1Finished) {
+                    return (
+                        <Card className="shadow-soft border-2 border-green-500 bg-green-500/10 p-12 text-center flex flex-col items-center text-foreground">
+                            <Trophy className="h-24 w-24 text-yellow-400 mb-6 animate-bounce" />
+                            <h2 className="text-4xl font-black uppercase text-green-600 tracking-tighter">Congratulations!</h2>
+                            <p className="text-2xl mt-4 font-bold text-black dark:text-white">You finish Intro 1 Kids</p>
+                            <Button asChild className="mt-8 px-12 h-12 font-bold" variant="outline">
+                                <Link href="/kids/intro">Volver al Laberinto</Link>
+                            </Button>
+                        </Card>
+                    );
+                }
                 return (
-                    <Card className="shadow-soft border-2 border-green-500 bg-green-500/10 p-12 text-center flex flex-col items-center text-foreground">
-                        <Trophy className="h-24 w-24 text-yellow-400 mb-6 animate-bounce" />
-                        <h2 className="text-4xl font-black uppercase text-green-600 tracking-tighter">CONGRATULATIONS!</h2>
-                        <p className="text-2xl mt-4 font-bold">¡Has terminado la Intro 1K!</p>
-                        <Button asChild className="mt-8 px-12 h-12 font-bold" variant="outline">
-                            <Link href="/kids/intro">Volver al Laberinto</Link>
-                        </Button>
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple text-foreground text-left">
+                        <CardHeader>
+                            <CardTitle>{t('intro1Page.demonstratives')}</CardTitle>
+                            <CardDescription className="pt-2 text-lg font-semibold flex items-center gap-2">
+                                <Lightbulb className="h-5 w-5 text-yellow-400 animate-pulse" />
+                                <span className="bg-gradient-to-r from-brand-purple to-brand-teal text-transparent bg-clip-text">
+                                    {t('intro1Page.demonstrativesStudyHint')}
+                                </span>
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="grid grid-cols-3 gap-x-4 gap-y-2 text-lg">
+                                <div className="font-bold p-3 bg-muted rounded-lg text-center">{t('common.english')}</div>
+                                <div className="font-bold p-3 bg-muted rounded-lg text-center">{t('common.spanish')}</div>
+                                <div className="font-bold p-3 bg-muted rounded-lg text-center">{t('intro1Page.usage')}</div>
+                                {demonstrativesData.map((item, index) => (
+                                    <React.Fragment key={index}>
+                                        <div className="p-3 bg-card border rounded-lg font-medium text-center">{item.english}</div>
+                                        <div className="p-3 bg-card border rounded-lg text-center">{item.spanish}</div>
+                                        <div className="p-3 bg-card border rounded-lg text-center text-xs flex items-center justify-center">{item.usage}</div>
+                                    </React.Fragment>
+                                ))}
+                            </div>
+                        </CardContent>
+                        <CardFooter className="justify-end">
+                            <Button onClick={() => {
+                                setIsIntro1Finished(true);
+                                setTopicToComplete('demonstratives');
+                            }} className="px-12 font-bold">Finish</Button>
+                        </CardFooter>
                     </Card>
                 );
             default:
@@ -337,20 +389,20 @@ export default function KidsIntro1Page() {
           <main className="flex-1 p-4 md:p-8">
             <div className="max-w-7xl mx-auto">
                 <div className="grid gap-8 md:grid-cols-12">
-                <div className="md:col-span-9">
-                    <div className="mb-8">
-                        <Link href="/kids/intro" className="hover:underline text-sm text-white/80 flex items-center gap-2 mb-2">
-                            <ArrowLeft className="h-4 w-4" /> {t('kidsPage.backToKidsCourse')}
+                <div className="md:col-span-9 md:order-1 order-2">
+                    <div className="mb-8 text-left text-white">
+                        <Link href="/kids/intro" className="hover:underline text-sm font-bold flex items-center gap-2 mb-2">
+                            <ArrowLeft className="h-4 w-4" /> Volver al laberinto
                         </Link>
-                        <h1 className="text-4xl font-black text-white uppercase tracking-tighter [text-shadow:2px_2px_4px_rgba(0,0,0,0.5)]">
+                        <h1 className="text-4xl font-black uppercase tracking-tighter [text-shadow:2px_2px_4px_rgba(0,0,0,0.5)]">
                             {t('kidsPage.intro1AdventureTitle')}
                         </h1>
                     </div>
                     {renderContent()}
                 </div>
-                <div className="md:col-span-3">
+                <div className="md:col-span-3 md:order-2 order-1">
                     <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
-                    <CardHeader className="bg-primary/5 border-b">
+                    <CardHeader className="bg-primary/5 border-b text-left">
                         <CardTitle className="text-primary font-black uppercase tracking-tighter">Tu Misión</CardTitle>
                     </CardHeader>
                     <CardContent className="p-4">
@@ -368,21 +420,21 @@ export default function KidsIntro1Page() {
                                         <div className={cn(
                                             "flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors",
                                             (!isLocked || isAdmin) && "hover:bg-muted",
-                                            isSelected ? "bg-muted text-primary font-black border-l-4 border-primary" : "text-foreground",
+                                            isSelected ? "bg-muted text-primary font-black border-l-4 border-primary shadow-sm" : "text-foreground",
                                             item.status === 'active' && !isAdmin && 'animate-pulse-glow'
                                         )}>
-                                            <div className="flex items-center gap-3">
-                                                <Icon className={cn("h-5 w-5", isLocked && !isAdmin ? "text-yellow-500/50" : isCompleted ? "text-green-500" : "text-primary" )} />
+                                            <div className="flex items-center gap-3 text-left">
+                                                <Icon className={cn("h-5 w-5 shrink-0", isLocked && !isAdmin ? "text-yellow-500/50" : isCompleted ? "text-green-500" : "text-primary" )} />
                                                 <span className="truncate max-w-[150px] uppercase font-bold text-[10px]">{item.name}</span>
                                             </div>
-                                            {isLocked && !isAdmin && <Lock className="h-3 w-3 text-yellow-500/30" />}
+                                            {isLocked && <Lock className="h-3 w-3 text-yellow-500/30" />}
                                         </div>
                                     </li>
                                 );
                             })}
                             </ul>
                         </nav>
-                        <div className="mt-6 pt-6 border-t">
+                        <div className="mt-6 pt-6 border-t text-left">
                             <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-2">
                                 <span>Progreso</span>
                                 <span className="text-primary">{progressValue}%</span>
