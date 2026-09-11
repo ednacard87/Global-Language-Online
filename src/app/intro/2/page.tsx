@@ -180,7 +180,7 @@ const TipContent = ({ onComplete }: { onComplete: () => void }) => (
                         <div>
                             <h4 className="font-medium text-primary">IRREGULAR: noun+es</h4>
                             <ul className="list-disc pl-5 mt-1 space-y-2 text-sm">
-                                <li>For nouns ending {`=>`} s, z, sh, ch, x (bus) = “ES”<br/><span className="font-mono bg-muted px-2 py-1 rounded">Ex: address: Addresses // beach: beaches // bus: buses</span></li>
+                                <li>For nouns ending {`=>`} s, z, sh, ch, x  = “ES”<br/><span className="font-mono bg-muted px-2 py-1 rounded">Ex: address: Addresses // beach: beaches // bus: buses</span></li>
                                 <li>For nouns ending {`=>`} “Y” cancelamos la “Y” agregamos “ies”<br/><span className="font-mono bg-muted px-2 py-1 rounded">Ex: country: countries // university: universities</span></li>
                                 <li>Completamente irregular:<br/><span className="font-mono bg-muted px-2 py-1 rounded">Man: men // woman: women // child: children // person: people</span></li>
                             </ul>
