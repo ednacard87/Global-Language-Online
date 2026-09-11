@@ -1,4 +1,5 @@
-import { BookOpen, Flag, Footprints, Puzzle, Mic, Ear, Smile, GraduationCap, Star, Hand, MessageSquare, BrainCircuit, PenSquare, Lightbulb, Clock, Languages, Video, Rocket } from 'lucide-react';
+
+import { BookOpen, Flag, Footprints, Puzzle, Mic, Ear, Smile, GraduationCap, Star, Hand, MessageSquare, BrainCircuit, PenSquare, Lightbulb, Clock, Languages, Video, Rocket, Pencil } from 'lucide-react';
 import type { ComponentType } from 'react';
 
 export interface PathItem {
@@ -87,7 +88,7 @@ export const getA1EspanolMainPath = (): PathItem[] => [
     { type: 'start', icon: Footprints, label: 'dashboard.start' },
     { type: 'class', icon: BookOpen, label: 'a1course.unit1', href: '/espanol/a1/unit/1', storageKey: 'progress_a1_es_unit_1' },
     { type: 'practice', icon: Puzzle, label: 'a1course.review1', href: '#', storageKey: 'progress_a1_es_review_1' },
-    { type: 'class', icon: BookOpen, label: 'a1course.unit2', href: '/espanol/a1/unit/2', storageKey: 'progress_a1_es_unit_2' },
+    { type: 'class', icon: BookOpen, label: 'a2course.unit2', href: '/espanol/a1/unit/2', storageKey: 'progress_a1_es_unit_2' },
     { type: 'practice', icon: Puzzle, label: 'a1course.review2', href: '#', storageKey: 'progress_a1_es_review_2' },
     { type: 'class', icon: BookOpen, label: 'a1course.unit3', href: '/espanol/a1/unit/3', storageKey: 'progress_a1_es_unit_3' },
     { type: 'practice', icon: Puzzle, label: 'a1course.review3', href: '#', storageKey: 'progress_a1_es_review_3' },
@@ -142,7 +143,7 @@ export const getA2EspanolMainPath = (): PathItem[] => [
     { type: 'class', icon: BookOpen, label: 'a2course.unit3', href: '/espanol/a2/unit/3', storageKey: 'progress_a2_es_unit_3' },
     { type: 'practice', icon: Puzzle, label: 'a2course.review3', href: '#', storageKey: 'progress_a2_es_review_3' },
     { type: 'class', icon: BookOpen, label: 'a2course.unit4', href: '/espanol/a2/unit/4', storageKey: 'progress_a2_es_unit_4' },
-    { type: 'practice', icon: Puzzle, label: 'a2course.finalTest', href: '#', storageKey: 'progress_a2_es_review_4' },
+    { type: 'practice', icon: Puzzle, label: 'a2course.review4', href: '#', storageKey: 'progress_a2_es_review_4' },
     { type: 'end', icon: Flag, label: 'dashboard.finish' }
 ];
 
@@ -159,7 +160,7 @@ export const getA2EspanolUnitPath = (unitId: string | number): PathItem[] => {
         '2': [
             { type: 'start', icon: Footprints, label: 'dashboard.start' },
             { type: 'class', icon: BookOpen, label: 'Pasado Irregulares', href: '/espanol/a2/pasado-irregulares', storageKey: 'progress_a2_es_pasado_irregulares' },
-            { type: 'class', icon: BookOpen, label: 'Reflexivos Pasado', href: '/espanol/a2/reflexivos-pasado', storageKey: 'progress_a2_es_reflexivos_pasado' },
+            { type: 'class', icon: BookOpen, label: 'Reflexivos Pasado', href: '/espanol/a2/reflexivos-pasado', storageKey: 'progress_a2_es_pasado_irregulares' },
             { type: 'class', icon: BookOpen, label: 'Imperfecto', href: '/espanol/a2/imperfecto', storageKey: 'progress_a2_es_imperfecto' },
             { type: 'class', icon: BookOpen, label: 'Pasado vs Imperfecto', href: '/espanol/a2/pasado-vs-imperfecto', storageKey: 'progress_a2_es_pasado_vs_imperfecto' },
             { type: 'end', icon: Flag, label: 'dashboard.finish' }
@@ -420,7 +421,7 @@ export const getKidsA2MainPath = (t: (key: string) => string): PathItem[] => [
     { type: 'class', icon: BookOpen, label: 'kidsA2.atOnIn2', href: '/kids/a2/at-on-in-2', storageKey: 'progress_kids_a2_atonin2' },
     { type: 'class', icon: BookOpen, label: 'kidsA2.pastSimple', href: '/kids/a2/pasado-simple', storageKey: 'progress_kids_a2_pastsimple' },
     { type: 'class', icon: BookOpen, label: 'kidsA2.pastContinuous', href: '/kids/a2/pasado-continuo', storageKey: 'progress_kids_a2_past_continuous' },  
-    { type: 'class', icon: BookOpen, label: 'kidsA2.pastSimpleAndContinuous', href: '/kids/a2/pasado-simple-y-continuo', storageKey: 'progress_kids_a2_pastsimpleandcontinuous' },
+    { type: 'class', icon: BookOpen, label: 'kidsA2.pastSimpleAndContinuous', href: '/kids/a2/pastSimpleAndContinuous', storageKey: 'progress_kids_a2_pastsimpleandcontinuous' },
     { type: 'class', icon: BookOpen, label: 'kidsA2.countables', href: '/kids/a2/contables-y-no-contables', storageKey: 'progress_kids_a2_countables' },
     { type: 'class', icon: BookOpen, label: 'kidsA2.presentPerfect', href: '/kids/a2/presente-perfecto', storageKey: 'progress_kids_a2_present_perfect' },
     { type: 'practice', icon: Puzzle, label: 'kidsA2.quiz1', href: '#', storageKey: 'progress_kids_a2_quiz1' },
@@ -434,7 +435,7 @@ export const getKidsB1MainPath = (t: (key: string) => string): PathItem[] => [
     { type: 'class', icon: BookOpen, label: 'kidsB1.may', href: '/kids/b1/may', storageKey: 'progress_kids_b1_may' },
     { type: 'class', icon: BookOpen, label: 'kidsB1.should', href: '/kids/b1/should', storageKey: 'progress_kids_b1_should' },
     { type: 'class', icon: BookOpen, label: 'kidsB1.beGoingTo', href: '/kids/b1/be-going-to', storageKey: 'progress_kids_b1_be_going_to' },
-    { type: 'class', icon: BookOpen, label: 'kidsB1.mustHaveTo', href: '/kids/b1/must-have-to', storageKey: 'progress_kids_b1_must_have_to' },
+    { type: 'class', icon: BookOpen, label: 'kidsB1.mustHaveTo', href: '/kids/b1/must-Have-to', storageKey: 'progress_kids_b1_must_have_to' },
     { type: 'class', icon: BookOpen, label: 'kidsB1.wouldLikeTo', href: '/kids/b1/would-like-to', storageKey: 'progress_kids_b1_would_like_to' },
     { type: 'class', icon: BookOpen, label: 'kidsB1.zeroConditional', href: '/kids/b1/zero-conditional', storageKey: 'progress_kids_b1_zero_conditional' },
     { type: 'class', icon: BookOpen, label: 'kidsB1.firstConditional', href: '/kids/b1/first-conditional', storageKey: 'progress_kids_b1_first_conditional' },
