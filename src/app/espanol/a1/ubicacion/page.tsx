@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, Suspense, Fragment, useRef } from 'react';
@@ -44,7 +45,7 @@ import { VocabularyMatchingGame } from '@/components/dashboard/vocabulary-matchi
 import { Textarea } from '@/components/ui/textarea';
 
 // --- CONFIGURACIÓN DE INGENIERÍA ---
-const progressStorageVersion = 'progress_es_a1_ubicacion_v57_img_fix';
+const progressStorageVersion = 'progress_es_a1_ubicacion_v66_final_fix_vis';
 const mainProgressKey = 'progress_a1_es_ubicacion';
 
 const ICONS_MAP = {
@@ -144,11 +145,19 @@ const finalExPromptsMap = [
     { spanish: "ENTRE EL TEATRO Y LA COMISARIA ESTA...", answer: ["el banco"] },
     { spanish: "AL FRENTE DE LA CAFETERIA ESTÁ...", answer: ["la plaza"] },
     { spanish: "DETRAS DE LA FARMACIA ESTÁ...", answer: ["la universidad"] },
-    
 ];
 
 const negativePrompts = [
     { en: "There is no hospital here.", es: ["no hay un hospital aquí", "no hay hospital aquí"] },
+    { en: "The car is not in the garage.", es: ["el carro no está en el garaje", "el carro no esta en el garaje"] },
+    { en: "We are not at the airport.", es: ["no estamos en el aeropuerto"] },
+    { en: "The bus is not at the station.", es: ["el bus no está en la estación", "el bus no esta en la estacion"] },
+    { en: "There are no taxis in the street.", es: ["no hay taxis en la calle"] },
+    { en: "The school is not far.", es: ["la escuela no está lejos", "la escuela no esta lejos"] },
+    { en: "The restaurant is not open.", es: ["el restaurante no está abierto", "el restaurante no esta abierto"] },
+    { en: "There is no supermarket near here.", es: ["no hay un supermercado cerca de aquí", "no hay supermercado cerca de aqui"] },
+    { en: "The motorcycle is not in the park.", es: ["la moto no está en el parque", "la motocicleta no esta en el parque"] },
+    { en: "The bank is not behind the museum.", es: ["el banco no está detrás del museo", "el banco no esta detras del museo"] },
     { en: "The bus is not at the station.", es: ["el bus no está en la estación", "el bus no esta en la estacion"] },
     { en: "There isn't a bank in this street.", es: ["no hay un banco en esta calle", "no hay banco en esta calle"] },
     { en: "She is not at the library.", es: ["ella no está en la biblioteca", "no está en la biblioteca"] },
@@ -179,8 +188,9 @@ const BlockValidationExercise = ({ title, prompts, onComplete, vocabulary, initi
         let allOk = true;
         prompts.forEach((p: any, i: number) => {
             const userVal = (initialAns[i] || '').trim().toLowerCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' ');
-            const corrects = p.answer.map((a: string) => a.toLowerCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' '));
-            const isOk = corrects.includes(userVal);
+            const corrects = p.es || p.answer || [];
+            const correctsNormalized = (Array.isArray(corrects) ? corrects : [corrects]).map((a: string) => a.toLowerCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' '));
+            const isOk = correctsNormalized.includes(userVal);
             newVal[i] = isOk ? 'correct' : 'incorrect';
             if (!isOk) allOk = false;
         });
@@ -190,6 +200,8 @@ const BlockValidationExercise = ({ title, prompts, onComplete, vocabulary, initi
     };
 
     const isFinished = Object.values(valStatus).length === prompts.length && Object.values(valStatus).every(v => v === 'correct');
+
+    if (!prompts || !prompts[currentIndex]) return null;
 
     return (
         <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground">
@@ -213,7 +225,7 @@ const BlockValidationExercise = ({ title, prompts, onComplete, vocabulary, initi
             </CardHeader>
             <CardContent className="space-y-6">
                 <div className="bg-muted p-6 rounded-2xl border-2 border-dashed text-center font-bold text-xl uppercase tracking-tighter text-foreground">
-                    {prompts[currentIndex].spanish}
+                    {prompts[currentIndex].en || prompts[currentIndex].spanish}
                 </div>
                 <Input value={initialAns[currentIndex] || ''} onChange={e => { if (isSupervisionMode) return; onAnsChange(currentIndex, e.target.value); setValStatus({...valStatus, [currentIndex]: 'unchecked'}); }} className={cn("h-12 text-lg text-foreground", valStatus[currentIndex] === 'correct' ? 'border-green-500 bg-green-50/10' : valStatus[currentIndex] === 'incorrect' ? 'border-red-500 bg-red-50/10' : '')} placeholder="Tu respuesta..." autoComplete="off" readOnly={isSupervisionMode} />
             </CardContent>
@@ -223,7 +235,7 @@ const BlockValidationExercise = ({ title, prompts, onComplete, vocabulary, initi
                     {currentIndex === prompts.length - 1 && (
                         <>
                             {!isFinished && !isSupervisionMode && <Button onClick={handleCheck} variant="secondary">Verificar</Button>}
-                            <Button onClick={onComplete} disabled={!isFinished && !isAdmin} className="text-white font-bold bg-primary hover:bg-primary/90">{title.includes('Final') ? 'TERMINAR' : 'Continuar'}</Button>
+                            <Button onClick={onComplete} disabled={!isFinished && !isAdmin} className="text-white font-bold bg-primary hover:bg-primary/90">{title.includes('Final') || title.includes('Negativos') ? 'TERMINAR' : 'Continuar'}</Button>
                         </>
                     )}
                     {currentIndex < prompts.length - 1 && <Button onClick={() => setCurrentIndex(i => i + 1)}>Siguiente</Button>}
@@ -253,6 +265,7 @@ function UbicacionContent() {
     // States for content
     const [vocabAns, setVocabAns] = useState<string[]>(Array(cityVocab.length).fill(''));
     const [vocabVal, setVocabVal] = useState<any[]>(Array(cityVocab.length).fill('unchecked'));
+    const [canAdvanceVocab, setCanAdvanceVocab] = useState(false);
     const [ex1Ans, setEx1Ans] = useState<string[]>(Array(ex1Prompts.length).fill(''));
     const [ex2Ans, setEx2Ans] = useState<string[]>(Array(ex2Prompts.length).fill(''));
     const [ex3Ans, setEx3Ans] = useState<string[]>(Array(ex3Prompts.length).fill(''));
@@ -278,7 +291,7 @@ function UbicacionContent() {
         { key: 'exercise_3', name: '5. Ejercicio 3', icon: PenSquare, status: 'locked' },
         { key: 'vocab_game', name: '6. Vocabulario (Juego)', icon: Gamepad2, status: 'locked' },
         { key: 'reading', name: '7. Lectura', icon: BookText, status: 'locked' },
-        { key: 'final_ex', name: '8. Ejercicio Final', icon: Navigation, status: 'locked' },
+        { key: 'final_ex', name: '8. Mapa de La Ciudad', icon: Navigation, status: 'locked' },
         { key: 'translate_text', name: '9. Traducir Texto', icon: Pencil, status: 'locked' },
         { key: 'final', name: '10. Final (Negativos)', icon: CheckCircle, status: 'locked' },
     ], []);
@@ -362,16 +375,16 @@ function UbicacionContent() {
                             {cityVocab.map((v, i) => (
                                 <Fragment key={i}>
                                     <div className="p-3 border rounded bg-white/5 font-bold flex items-center text-sm">{v.en}</div>
-                                    <Input value={vocabAns[i] || ''} onChange={e => { if (targetStudentId) return; const na = [...vocabAns]; na[i] = e.target.value; setVocabAns(na); const nv = [...vocabVal]; nv[i] = 'unchecked'; setVocabVal(nv); }} className={cn("h-10 uppercase", vocabVal[i] === 'correct' ? 'border-green-500 bg-green-50/10' : vocabVal[i] === 'incorrect' ? 'border-red-500 bg-red-50/10' : '')} autoComplete="off" readOnly={!!targetStudentId} />
+                                    <Input value={vocabAns[i] || ''} onChange={e => { if (targetStudentId) return; const na = [...vocabAns]; na[i] = e.target.value; setVocabAns(na); const nv = [...vocabVal]; nv[i] = 'unchecked'; setVocabVal(nv); setCanAdvanceVocab(false); }} className={cn("h-10 uppercase", vocabVal[i] === 'correct' ? 'border-green-500 bg-green-50/10' : vocabVal[i] === 'incorrect' ? 'border-red-500 bg-red-50/10' : '')} autoComplete="off" readOnly={!!targetStudentId} />
                                 </Fragment>
                             ))}
                         </div></ScrollArea></CardContent>
                         <CardFooter className="justify-between border-t pt-6 bg-muted/20">
                             <Button onClick={() => {
                                 let ok = true; const nv = cityVocab.map((v, i) => { const res = v.es.toLowerCase() === (vocabAns[i] || '').trim().toLowerCase(); if (!res) ok = false; return res ? 'correct' : 'incorrect'; });
-                                setVocabVal(nv); if (ok) toast({ title: "¡Perfecto!" }); else toast({ variant: 'destructive', title: "Revisa el vocabulario" });
+                                setVocabVal(nv); setCanAdvanceVocab(ok); if (ok) toast({ title: "¡Perfecto!" }); else toast({ variant: 'destructive', title: "Revisa el vocabulario" });
                             }} variant="secondary">Verificar</Button>
-                            <Button onClick={() => handleTopicComplete('vocabulary')} disabled={!vocabOk && !isAdmin} className='text-white font-bold'>Continuar</Button>
+                            <Button onClick={() => handleTopicComplete('vocabulary')} disabled={!canAdvanceVocab && !isAdmin} className='text-white font-bold'>Continuar</Button>
                         </CardFooter>
                     </Card>
                 );
@@ -421,9 +434,9 @@ function UbicacionContent() {
                         <CardFooter className="justify-center pt-6 border-t"><Button onClick={() => handleTopicComplete('grammar')} size="lg" className="px-24 font-black h-14 text-xl shadow-xl">He comprendido la gramática</Button></CardFooter>
                     </Card>
                 );
-            case 'exercise_1': return <BlockValidationExercise key="ex1" title="Ejercicio 1" prompts={ex1Prompts} onComplete={() => handleTopicComplete('exercise_1')} initialAns={ex1Ans} onAnsChange={(i: number, v: string) => { const na = [...ex1Ans]; na[i] = v; setEx1Ans(na); }} vocabulary={{"hospital": "hospital", "cerca": "near", "calle": "street"}} isAdmin={isAdmin} isSupervisionMode={!!targetStudentId} />;
-            case 'exercise_2': return <BlockValidationExercise key="ex2" title="Ejercicio 2" prompts={ex2Prompts} onComplete={() => handleTopicComplete('exercise_2')} initialAns={ex2Ans} onAnsChange={(i: number, v: string) => { const na = [...ex2Ans]; na[i] = v; setEx2Ans(na); }} vocabulary={{"farmacia": "pharmacy", "al lado de": "next to", "detrás de": "behind"}} isAdmin={isAdmin} isSupervisionMode={!!targetStudentId} />;
-            case 'exercise_3': return <BlockValidationExercise key="ex3" title="Ejercicio 3" prompts={ex3Prompts} onComplete={() => handleTopicComplete('exercise_3')} initialAns={ex3Ans} onAnsChange={(i: number, v: string) => { const na = [...ex3Ans]; na[i] = v; setEx3Ans(na); }} vocabulary={{"gimnasio": "gym", "delante de": "in front of", "entre": "between", "camión": "truck"}} isAdmin={isAdmin} isSupervisionMode={!!targetStudentId} />;
+            case 'exercise_1': return <BlockValidationExercise key="exercise_1" title="Ejercicio 1" prompts={ex1Prompts} onComplete={() => handleTopicComplete('exercise_1')} initialAns={ex1Ans} onAnsChange={(i: number, v: string) => { const na = [...ex1Ans]; na[i] = v; setEx1Ans(na); }} vocabulary={{"hospital": "hospital", "cerca": "near", "calle": "street"}} isAdmin={isAdmin} isSupervisionMode={!!targetStudentId} />;
+            case 'exercise_2': return <BlockValidationExercise key="exercise_2" title="Ejercicio 2" prompts={ex2Prompts} onComplete={() => handleTopicComplete('exercise_2')} initialAns={ex2Ans} onAnsChange={(i: number, v: string) => { const na = [...ex2Ans]; na[i] = v; setEx2Ans(na); }} vocabulary={{"farmacia": "pharmacy", "al lado de": "next to", "detrás de": "behind"}} isAdmin={isAdmin} isSupervisionMode={!!targetStudentId} />;
+            case 'exercise_3': return <BlockValidationExercise key="exercise_3" title="Ejercicio 3" prompts={ex3Prompts} onComplete={() => handleTopicComplete('exercise_3')} initialAns={ex3Ans} onAnsChange={(i: number, v: string) => { const na = [...ex3Ans]; na[i] = v; setEx3Ans(na); }} vocabulary={{"gimnasio": "gym", "delante de": "in front of", "entre": "between", "camión": "truck"}} isAdmin={isAdmin} isSupervisionMode={!!targetStudentId} />;
             case 'vocab_game': return <VocabularyMatchingGame data={cityVocab.slice(0, 10).map(v => ({ spanish: v.es, english: [v.en] }))} onComplete={() => handleTopicComplete('vocab_game')} title="Memory Game: Ciudad" />;
             case 'reading':
                 const readOk = Object.values(readVal).length === readingData.questions.length && Object.values(readVal).every(v => v === 'correct');
@@ -449,10 +462,17 @@ function UbicacionContent() {
             case 'final_ex':
                 return (
                     <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left overflow-hidden">
-                        <CardHeader className="bg-primary/5 border-b"><CardTitle className="uppercase tracking-tighter text-foreground">Ejercicio Final: Mapa de la Ciudad</CardTitle><CardDescription className="font-bold text-foreground">Identifica los lugares según su posición en el mapa.</CardDescription></CardHeader>
+                        <CardHeader className="bg-primary/5 border-b"><CardTitle className="uppercase tracking-tighter text-foreground">Mapa de La Ciudad</CardTitle><CardDescription className="font-bold text-foreground">Identifica los lugares según su posición en el mapa.</CardDescription></CardHeader>
                         <CardContent className="p-6 space-y-8">
                             <div className="relative aspect-video w-full overflow-hidden rounded-3xl border-4 border-muted shadow-2xl bg-white flex items-center justify-center">
-                                <Image src="https://letsspeakspanish.com/wp-content/uploads/2021/11/WhatsApp-Image-2021-11-16-at-13.41.071.jpeg" alt="City Map" fill className="object-contain" data-ai-hint="city map directions" />
+                                <Image 
+                                    src="https://letsspeakspanish.com/wp-content/uploads/2021/11/WhatsApp-Image-2021-11-16-at-13.41.071.jpeg" 
+                                    alt="City Map" 
+                                    fill 
+                                    className="object-contain" 
+                                    data-ai-hint="city map directions"
+                                    unoptimized
+                                />
                             </div>
                             <BlockValidationExercise key="final_ex_map" title="Identifica el Lugar" prompts={finalExPromptsMap} onComplete={() => handleTopicComplete('final_ex')} initialAns={finalExAns} onAnsChange={(i: number, v: string) => { const na = [...finalExAns]; na[i] = v; setFinalExAns(na); }} vocabulary={{"al lado de": "next to", "entre": "between", "en frente de": "across from"}} isAdmin={isAdmin} isSupervisionMode={!!targetStudentId} />
                         </CardContent>
@@ -485,13 +505,13 @@ function UbicacionContent() {
                         <Card className="shadow-soft border-2 border-green-500 bg-green-50/10 p-12 text-center flex flex-col items-center">
                             <Trophy className="h-24 w-24 text-yellow-400 mb-6 animate-bounce" />
                             <h2 className="text-4xl font-black uppercase text-green-600 tracking-tighter">¡FELICITACIONES!</h2>
-                            <p className="text-2xl mt-4 font-bold">¡Has terminado la clase Ubicación!</p>
+                            <p className="text-2xl mt-4 font-bold text-foreground">Tu completaste esta clase Ubicacion</p>
                             <p className='text-muted-foreground mt-2 text-lg'>Misión completada al 100%.</p>
-                            <Button asChild className="mt-8 px-12 h-12 font-bold" variant="outline"><Link href="/espanol/a1">Regresar a la Unidad 2</Link></Button>
+                            <Button asChild className="mt-8 px-12 h-12 font-bold" variant="outline"><Link href="/espanol/a1">Regresar a Ruta A1</Link></Button>
                         </Card>
                     );
                 }
-                return <BlockValidationExercise key="final_challenge" title="Reto Final: Negativos" prompts={negativePrompts} onComplete={() => { setIsFinished(true); handleTopicComplete('final'); }} initialAns={negAns} onAnsChange={(i: number, v: string) => { const na = [...negAns]; na[i] = v; setNegAns(na); }} vocabulary={{"no hay": "there is no", "abierta": "open", "garaje": "garage"}} isAdmin={isAdmin} isSupervisionMode={!!targetStudentId} />;
+                return <BlockValidationExercise key="final_neg_block" title="Reto Final: Negativos" prompts={negativePrompts} onComplete={() => { setIsFinished(true); handleTopicComplete('final'); }} initialAns={negAns} onAnsChange={(i: number, v: string) => { const na = [...negAns]; na[i] = v; setNegAns(na); }} vocabulary={{"no hay": "there is no", "abierta": "open", "garaje": "garage"}} isAdmin={isAdmin} isSupervisionMode={!!targetStudentId} />;
             default: return null;
         }
     };
