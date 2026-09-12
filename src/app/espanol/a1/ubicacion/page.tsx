@@ -140,12 +140,20 @@ const readingData = {
 };
 
 const finalExPromptsMap = [
-    { spanish: "AL LADO DEL PARQUE ESTÁ...", answer: ["el mercado"] },
+    { spanish: "AL LADO DE LA PLAZA ESTÁ...", answer: ["el mercado"] },
     { spanish: "AL LADO DE LA BIBLIOTECA ESTÁ...", answer: ["el centro comercial"] },
     { spanish: "ENTRE EL TEATRO Y LA COMISARIA ESTA...", answer: ["el banco"] },
     { spanish: "AL FRENTE DE LA CAFETERIA ESTÁ...", answer: ["la plaza"] },
     { spanish: "DETRAS DE LA FARMACIA ESTÁ...", answer: ["la universidad"] },
+    { spanish: "AL LADO DERECHO DE LA FRUTERIA ESTÁ...", answer: ["la panaderia"] },
+    { spanish: "DETRAS DEL CARRO ROJO ESTÁ...", answer: ["la pescaderia"] },
+    { spanish: "AL FRENTE DEL COLEGIO ESTÁ...", answer: ["la fruteria"] },
+    { spanish: "A LA IZQUIERDA DEL BANCO ESTÁ...", answer: ["el teatro"] },
+    { spanish: "AL LADO DEL SEMAFORO ESTÁ...", answer: ["la biblioteca"] },
+    { spanish: "EN LA ESQUINA IZQUIERDA SUPERIOR ESTÁ...", answer: ["el hospital"] },
+    { spanish: "EN LA ESQUINA DERECHA INFERIOR ESTÁ...", answer: ["la escuela"] },
 ];
+
 
 const negativePrompts = [
     { en: "There is no hospital here.", es: ["no hay un hospital aquí", "no hay hospital aquí"] },
@@ -507,7 +515,7 @@ function UbicacionContent() {
                             <h2 className="text-4xl font-black uppercase text-green-600 tracking-tighter">¡FELICITACIONES!</h2>
                             <p className="text-2xl mt-4 font-bold text-foreground">Tu completaste esta clase Ubicacion</p>
                             <p className='text-muted-foreground mt-2 text-lg'>Misión completada al 100%.</p>
-                            <Button asChild className="mt-8 px-12 h-12 font-bold" variant="outline"><Link href="/espanol/a1">Regresar a Ruta A1</Link></Button>
+                            <Button asChild className="mt-8 px-12 h-12 font-bold" variant="outline"><Link href="/espanol/a1">Regresar a la Ruta A1</Link></Button>
                         </Card>
                     );
                 }

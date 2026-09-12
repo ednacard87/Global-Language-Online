@@ -538,7 +538,7 @@ function PreposicionesLugarContent() {
                             <h2 className="text-4xl font-black uppercase text-green-600 tracking-tighter">¡EXCELENTE!</h2>
                             <p className="text-2xl mt-4 font-bold">¡Has terminado la clase Preposiciones de Lugar!</p>
                             <p className='text-muted-foreground mt-2 text-lg'>Misión completada al 100%.</p>
-                            <Button asChild className="mt-8 px-12 h-12 font-bold" variant="outline"><Link href="/espanol/a1">Regresar a la Unidad 2</Link></Button>
+                            <Button asChild className="mt-8 px-12 h-12 font-bold" variant="outline"><Link href="/espanol/a1">Regresar a la Ruta A1</Link></Button>
                         </Card>
                     );
                 }
