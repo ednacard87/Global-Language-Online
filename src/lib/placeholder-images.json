@@ -131,6 +131,12 @@
       "description": "Mapa político de Colombia",
       "imageUrl": "https://i.pinimg.com/474x/e2/23/72/e22372e5ec66b63e0548f9d566ccc9e3.jpg",
       "imageHint": "colombia map"
+    },
+    {
+      "id": "city-map-directions",
+      "description": "A cartoon style city map for directions practice",
+      "imageUrl": "https://letsspeakspanish.com/wp-content/uploads/2021/11/WhatsApp-Image-2021-11-16-at-13.41.071.jpeg",
+      "imageHint": "city map directions"
     }
   ]
 }
