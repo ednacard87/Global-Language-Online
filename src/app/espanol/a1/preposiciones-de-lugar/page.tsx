@@ -40,7 +40,7 @@ import { VocabularyMatchingGame } from '@/components/dashboard/vocabulary-matchi
 import { Textarea } from '@/components/ui/textarea';
 
 // --- CONFIGURACIÓN DE INGENIERÍA ---
-const progressStorageVersion = 'progress_es_a1_prep_lugar_v52_fixed_ref';
+const progressStorageVersion = 'progress_es_a1_prep_lugar_v60_indep_vocab';
 const mainProgressKey = 'progress_a1_es_preposiciones_de_lugar';
 
 const ICONS_MAP = {
@@ -92,11 +92,18 @@ const vocabularyData = {
     ]
 };
 
+// --- VOCABULARIO INDEPENDIENTE POR EJERCICIO ---
+const ex1VocabHelp = { "mesa": "table", "silla": "chair", "delante de": "in front of", "detrás de": "behind", "entre": "between", "al lado de": "next to", "dentro de": "inside", "libro": "book", "gato": "cat", "perro": "dog" };
+const ex2VocabHelp = { "piso": "floor", "llaves": "keys", "sofá": "sofa", "profesor": "teacher", "tablero": "blackboard", "jardín": "garden", "casa": "house", "nevera": "fridge", "cocina": "kitchen", "espejo": "mirror", "puerta": "door", "regla": "ruler" };
+const ex3VocabHelp = { "computador": "computer", "escritorio": "desk", "zapatos": "shoes", "mesa": "table", "mapa": "map", "pared": "pared", "silla": "chair", "ventana": "window", "horno": "oven", "carro": "car", "parque": "park", "escuela": "school" };
+const translateVocabHelp = { "cerca de": "near", "parque": "park", "sala": "living room", "sofá": "sofa", "tv": "television", "cocina": "kitchen", "limpia": "clean", "nevera": "fridge", "horno": "oven", "perro": "dog", "árbol": "tree", "feliz": "happy" };
+const finalExVocabHelp = { "encima de": "on / above", "debajo de": "under", "delante de": "in front of", "detrás de": "behind", "entre": "between", "al lado de": "next to", "dentro de": "inside" };
+const negativeVocabHelp = { "jardín": "garden", "mesa": "table", "cocina": "kitchen", "llaves": "keys", "cama": "bed", "escuela": "school", "casa": "house", "sofá": "sofa", "cuarto": "room", "maleta": "backpack" };
+
 const allVocabList = [...vocabularyData.casa, ...vocabularyData.aula, ...vocabularyData.muebles];
-const helpVocabMap = allVocabList.reduce((acc, curr) => ({ ...acc, [curr.es.toLowerCase()]: curr.en.toLowerCase() }), {});
 
 const ex1Prompts = [
-    { en: "The book is on the table.", es: ["el libro está encima de la mesa", "el libro está sobre la mesa", "el libro está en la mesa"] },
+    { en: "The book is on the table.", es: ["el libro está encima de la mesa", "el libro esta sobre la mesa", "el libro está en la mesa"] },
     { en: "The cat is under the chair.", es: ["el gato está debajo de la silla", "el gato está bajo la silla"] },
     { en: "The pencil is in front of the notebook.", es: ["el lápiz está delante del cuaderno", "el lápiz está en frente del cuaderno"] },
     { en: "The dog is behind the door.", es: ["el perro está detrás de la puerta"] },
@@ -116,7 +123,7 @@ const ex2Prompts = [
 ];
 
 const ex3Prompts = [
-    { en: "The computer is on the desk.", es: ["el computador está encima del escritorio", "el ordenador está sobre el escritorio"] },
+    { en: "The computer is on the desk.", es: ["el computador está encima del escritorio", "el computador esta sobre el escritorio"] },
     { en: "The shoes are under the table.", es: ["los zapatos están debajo de la mesa"] },
     { en: "There is a map on the wall.", es: ["hay un mapa en la pared", "hay un mapa sobre la pared"] },
     { en: "The chair is next to the window.", es: ["la silla está al lado de la ventana"] },
@@ -151,28 +158,27 @@ const finalExPrompts = [
     { s: "8. El perro duerme _______ (under) el sofá.", answer: ["debajo de", "bajo"] },
     { s: "9. El tablero está _______ (on) la pared.", answer: ["en", "sobre", "encima de"] },
     { s: "10. La cuchara está _______ (next to) el plato.", answer: ["al lado de", "junto al"] },
-    { s: "11. Hay un espejo ___ (in front of) la cama.", answer: "delante de" },
-    { s: "12. El jardín está ___ (behind) el edificio.", answer: "detrás de" },
-    { s: "13. La nevera está ___ (between) la pared y la mesa.", answer: "entre" },
-    { s: "14. El lápiz está ___ (inside) el estuche.", answer: "dentro de" },
-    { s: "15. El sol está ___ (above) las nubes.", answer: "encima de" },
-    { s: "16. El carro está ___ (in front of) el garaje.", answer: "delante de" },
-    { s: "17. La farmacia está ___ (next to) el hospital.", answer: "al lado de" },
-    { s: "18. El ratón está ___ (under) el escritorio.", answer: "debajo de" },
-    { s: "19. Estamos ___ (inside) la clase.", answer: "dentro de" },
-    { s: "20. La biblioteca está ___ (between) el parque y el cine.", answer: "entre" },
-    { s: "21. El cuadro está ___ (on) la pared.", answer: "en" },
-    { s: "22. El borrador está ___ (next to) el tablero.", answer: "al lado de" },
-    { s: "23. La maleta está ___ (behind) la silla.", answer: "detrás de" },
-    { s: "24. Hay una alfombra ___ (under) la mesa.", answer: "debajo de" },
-    { s: "25. Mi teléfono está ___ (inside) mi bolsillo.", answer: "dentro de" },
-    { s: "26. La panadería está ___ (in front of) la plaza.", answer: "delante de" },
-    { s: "27. El gato salta ___ (on) la cama.", answer: "encima de" },
-    { s: "28. El profesor está ___ (between) los estudiantes.", answer: "entre" },
-    { s: "29. La ventana está ___ (next to) el escritorio.", answer: "al lado de" },
-    { s: "30. El sótano está ___ (under) la casa.", answer: "debajo de" },
+    { s: "11. Hay un espejo ___ (in front of) la cama.", answer: ["delante de"] },
+    { s: "12. El jardín está ___ (behind) el edificio.", answer: ["detrás de"] },
+    { s: "13. La nevera está ___ (between) la pared y la mesa.", answer: ["entre"] },
+    { s: "14. El lápiz está ___ (inside) el estuche.", answer: ["dentro de"] },
+    { s: "15. El sol está ___ (above) las nubes.", answer: ["encima de"] },
+    { s: "16. El carro está ___ (in front of) el garaje.", answer: ["delante de"] },
+    { s: "17. La farmacia está ___ (next to) el hospital.", answer: ["al lado de"] },
+    { s: "18. El ratón está ___ (under) el escritorio.", answer: ["debajo de"] },
+    { s: "19. Estamos ___ (inside) la clase.", answer: ["dentro de"] },
+    { s: "20. La biblioteca está ___ (between) el parque y el cine.", answer: ["entre"] },
+    { s: "21. El cuadro está ___ (on) la pared.", answer: ["en"] },
+    { s: "22. El borrador está ___ (next to) el tablero.", answer: ["al lado de"] },
+    { s: "23. La maleta está ___ (behind) la silla.", answer: ["detrás de"] },
+    { s: "24. Hay una alfombra ___ (under) la mesa.", answer: ["debajo de"] },
+    { s: "25. Mi teléfono está ___ (inside) mi bolsillo.", answer: ["dentro de"] },
+    { s: "26. La panadería está ___ (in front of) la plaza.", answer: ["delante de"] },
+    { s: "27. El gato salta ___ (on) la cama.", answer: ["encima de"] },
+    { s: "28. El profesor está ___ (between) los estudiantes.", answer: ["entre"] },
+    { s: "29. La ventana está ___ (next to) el escritorio.", answer: ["al lado de"] },
+    { s: "30. El sótano está ___ (under) la casa.", answer: ["debajo de"] },
 ];
-
 
 const negativePrompts = [
     { en: "I am not in the garden.", es: ["no estoy en el jardín", "yo no estoy en el jardín"] },
@@ -199,7 +205,6 @@ const negativePrompts = [
     { en: "The cars are not on the street.", es: ["los carros no están en la calle"] },
     { en: "The coffee is not on the table.", es: ["el café no está en la mesa", "el cafe no esta sobre la mesa"] },
     { en: "The students are not in the classroom.", es: ["los estudiantes no están en el aula", "los estudiantes no están en el salón de clase"] },
-   
 ];
 
 // --- COMPONENTS ---
@@ -226,7 +231,7 @@ const VocabHelp = ({ vocabulary }: { vocabulary: Record<string, string> }) => (
     </Popover>
 );
 
-const BlockValidationExercise = ({ title, prompts, onComplete, vocabulary, savedAnswers, onAnswerChange, isAdmin, isSupervisionMode, isFinal = false }: any) => {
+const BlockValidationExercise = ({ title, prompts, onComplete, vocabulary, savedAnswers, onAnswerChange, isAdmin, isSupervisionMode, isFinal = false, type = 'translate' }: any) => {
     const { toast } = useToast();
     const [currentIndex, setCurrentIndex] = useState(0);
     const [validationStatus, setValidationStatus] = useState<Record<number, 'correct' | 'incorrect' | 'unchecked'>>({});
@@ -263,12 +268,12 @@ const BlockValidationExercise = ({ title, prompts, onComplete, vocabulary, saved
                             ))}
                         </div>
                     </div>
-                    <VocabHelp vocabulary={vocabulary || helpVocabMap} />
+                    {vocabulary && <VocabHelp vocabulary={vocabulary} />}
                 </div>
             </CardHeader>
             <CardContent className="space-y-6 pt-4">
                 <div className="bg-muted p-6 rounded-2xl border-2 border-dashed text-center font-bold text-xl uppercase tracking-tighter text-foreground">
-                    {prompts[currentIndex]?.en || prompts[currentIndex]?.s}
+                    {type === 'translate' ? prompts[currentIndex]?.en : prompts[currentIndex]?.s}
                 </div>
                 <Input value={savedAnswers[currentIndex] || ''} onChange={e => { if (isSupervisionMode) return; onAnswerChange(currentIndex, e.target.value); setValidationStatus({ ...validationStatus, [currentIndex]: 'unchecked' }); }} className={cn("h-12 text-lg text-foreground", validationStatus[currentIndex] === 'correct' ? 'border-green-500 bg-green-50/10' : validationStatus[currentIndex] === 'incorrect' ? 'border-red-500 bg-red-50/10' : '')} placeholder="Respuesta..." autoComplete="off" readOnly={isSupervisionMode} />
             </CardContent>
@@ -341,7 +346,7 @@ function PreposicionesLugarContent() {
         { key: 'reading', name: '7. Lectura', icon: BookText, status: 'locked' },
         { key: 'final_exercise', name: '8. Ejercicio Final', icon: Pencil, status: 'locked' },
         { key: 'translate', name: '9. Traducir Texto', icon: Pencil, status: 'locked' },
-        { key: 'final', name: '10. Final (Negativos)', icon: Trophy, status: 'locked' },
+        { key: 'final', name: '10. Final', icon: Trophy, status: 'locked' },
     ], []);
 
     useEffect(() => {
@@ -466,7 +471,7 @@ function PreposicionesLugarContent() {
                                         { es: "Dentro de", en: "Inside / In" },
                                         { es: "Fuera de", en: "Outside" }
                                     ].map((p, i) => (
-                                        <div key={i} className='p-4 bg-background/50 rounded-xl border flex justify-between items-center'>
+                                        <div key={i} className='p-4 bg-background/50 rounded-xl border flex justify-between items-center text-foreground'>
                                             <span className='font-bold text-primary'>{p.es}</span>
                                             <span className='text-sm italic text-muted-foreground'>{p.en}</span>
                                         </div>
@@ -474,12 +479,12 @@ function PreposicionesLugarContent() {
                                 </div>
                             </div>
                         </CardContent>
-                        <CardFooter className="justify-center pt-6 border-t"><Button onClick={() => handleTopicComplete('grammar')} size="lg" className="px-24 font-black h-14 text-xl shadow-xl">He comprendido la gramática</Button></CardFooter>
+                        <CardFooter className="justify-center pt-6 border-t"><Button onClick={() => handleTopicComplete('grammar')} size="lg" className="px-24 font-black h-14 text-xl shadow-xl uppercase">Entendido</Button></CardFooter>
                     </Card>
                 );
-            case 'ex1': return <BlockValidationExercise key="ex1" title="Ejercicio 1" prompts={ex1Prompts} onComplete={() => handleTopicComplete('ex1')} savedAnswers={ex1Ans} onAnswerChange={(idx: number, val: string) => setEx1Ans({...ex1Ans, [idx]: val})} isAdmin={isAdmin} isSupervisionMode={!!targetStudentId} />;
-            case 'ex2': return <BlockValidationExercise key="ex2" title="Ejercicio 2" prompts={ex2Prompts} onComplete={() => handleTopicComplete('ex2')} savedAnswers={ex2Ans} onAnswerChange={(idx: number, val: string) => setEx2Ans({...ex2Ans, [idx]: val})} isAdmin={isAdmin} isSupervisionMode={!!targetStudentId} />;
-            case 'ex3': return <BlockValidationExercise key="ex3" title="Ejercicio 3" prompts={ex3Prompts} onComplete={() => handleTopicComplete('ex3')} savedAnswers={ex3Ans} onAnswerChange={(idx: number, val: string) => setEx3Ans({...ex3Ans, [idx]: val})} isAdmin={isAdmin} isSupervisionMode={!!targetStudentId} />;
+            case 'ex1': return <BlockValidationExercise key="ex1" title="Ejercicio 1" prompts={ex1Prompts} onComplete={() => handleTopicComplete('ex1')} savedAnswers={ex1Ans} onAnswerChange={(idx: number, val: string) => setEx1Ans({...ex1Ans, [idx]: val})} isAdmin={isAdmin} isSupervisionMode={!!targetStudentId} vocabulary={ex1VocabHelp} />;
+            case 'ex2': return <BlockValidationExercise key="ex2" title="Ejercicio 2" prompts={ex2Prompts} onComplete={() => handleTopicComplete('ex2')} savedAnswers={ex2Ans} onAnswerChange={(idx: number, val: string) => setEx2Ans({...ex2Ans, [idx]: val})} isAdmin={isAdmin} isSupervisionMode={!!targetStudentId} vocabulary={ex2VocabHelp} />;
+            case 'ex3': return <BlockValidationExercise key="ex3" title="Ejercicio 3" prompts={ex3Prompts} onComplete={() => handleTopicComplete('ex3')} savedAnswers={ex3Ans} onAnswerChange={(idx: number, val: string) => setEx3Ans({...ex3Ans, [idx]: val})} isAdmin={isAdmin} isSupervisionMode={!!targetStudentId} vocabulary={ex3VocabHelp} />;
             case 'vocab_game': return <VocabularyMatchingGame data={allVocabList.map(v => ({ spanish: v.es, english: [v.en] }))} onComplete={() => handleTopicComplete('vocab_game')} title="Memory: Casa y Aula" />;
             case 'reading':
                 const readingOk = readingData.questions.every(q => readVal[q.id] === 'correct');
@@ -506,14 +511,14 @@ function PreposicionesLugarContent() {
                         </CardFooter>
                     </Card>
                 );
-            case 'final_exercise': return <BlockValidationExercise key="final_exercise" title="Ejercicio Final (Completar)" prompts={finalExPrompts} onComplete={() => handleTopicComplete('final_exercise')} savedAnswers={finalExAns} onAnswerChange={(idx: number, val: string) => setFinalExAns({...finalExAns, [idx]: val})} isAdmin={isAdmin} isSupervisionMode={!!targetStudentId} />;
+            case 'final_exercise': return <BlockValidationExercise key="final_exercise" title="Ejercicio Final (Completar)" prompts={finalExPrompts} onComplete={() => handleTopicComplete('final_exercise')} savedAnswers={finalExAns} onAnswerChange={(idx: number, val: string) => setFinalExAns({...finalExAns, [idx]: val})} isAdmin={isAdmin} isSupervisionMode={!!targetStudentId} type="spanish" vocabulary={finalExVocabHelp} />;
             case 'translate':
                 return (
                     <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left">
                         <CardHeader>
                             <div className='flex justify-between items-start'>
                                 <div><CardTitle>Traducción de Texto</CardTitle><CardDescription className='font-bold text-foreground'>Traduce el párrafo al español.</CardDescription></div>
-                                <VocabHelp vocabulary={helpVocabMap} />
+                                <VocabHelp vocabulary={translateVocabHelp} />
                             </div>
                         </CardHeader>
                         <CardContent className="space-y-6 pt-6">
@@ -537,7 +542,7 @@ function PreposicionesLugarContent() {
                         </Card>
                     );
                 }
-                return <BlockValidationExercise key="final_negatives" title="Final: Frases Negativas" prompts={negativePrompts} onComplete={() => { setIsFinished(true); handleTopicComplete('final'); }} isFinal={true} savedAnswers={negativeAns} onAnswerChange={(idx: number, val: string) => setNegativeAns({...negativeAns, [idx]: val})} isAdmin={isAdmin} isSupervisionMode={!!targetStudentId} />;
+                return <BlockValidationExercise key="final_negatives" title="Final: Frases Negativas" prompts={negativePrompts} onComplete={() => { setIsFinished(true); handleTopicComplete('final'); }} isFinal={true} savedAnswers={negativeAns} onAnswerChange={(idx: number, val: string) => setNegativeAns({...negativeAns, [idx]: val})} isAdmin={isAdmin} isSupervisionMode={!!targetStudentId} vocabulary={negativeVocabHelp} />;
             default: return null;
         }
     };
