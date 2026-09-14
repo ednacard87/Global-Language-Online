@@ -15,7 +15,8 @@ import {
   ArrowRight,
   ArrowLeft,
   Loader2,
-  Trophy
+  Trophy,
+  BookText
 } from 'lucide-react';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -258,7 +259,12 @@ export default function KidsIntro1Page() {
                     </Card>
                 );
             case 'tobe-1-exercise':
-                return <TranslationExercise exerciseKey="exercises1" onComplete={() => setTopicToComplete('tobe-1-exercise')} />;
+                return <TranslationExercise 
+                    exerciseKey="exercises1" 
+                    onComplete={() => setTopicToComplete('tobe-1-exercise')} 
+                    vocabulary={{ 'un- una': 'a / an', 'abogado': 'lawyer', 'enfermo': 'sick', 'enfermero': 'nurse' }}
+                    highlightVocabulary={true}
+                />;
             case 'possessives':
                 return <Card className="shadow-soft rounded-lg border-2 border-brand-purple"><CardHeader><CardTitle>{t('intro1Page.possessives')}</CardTitle></CardHeader><CardContent><div className="grid grid-cols-2 gap-x-4 gap-y-2 text-lg"><div className="font-bold p-3 bg-muted rounded-lg text-center">{t('common.english')}</div><div className="font-bold p-3 bg-muted rounded-lg text-center">{t('common.spanish')}</div>{possessivesData.map((item, index) => (<React.Fragment key={index}><div className="p-3 bg-card border rounded-lg font-medium text-center">{item.english}</div><div className="p-3 bg-card border rounded-lg text-center">{item.spanish}</div></React.Fragment>))}</div></CardContent><CardFooter className="justify-center"><Button onClick={() => setTopicToComplete('possessives')} size="lg" className="px-12 font-bold">Estudiado</Button></CardFooter></Card>;
             case 'possessives-memory':
@@ -294,7 +300,12 @@ export default function KidsIntro1Page() {
                     </Card>
                 );
             case 'tobe-2-exercise':
-                return <TranslationExercise exerciseKey="exercises2" onComplete={() => setTopicToComplete('tobe-2-exercise')} />;
+                return <TranslationExercise 
+                    exerciseKey="exercises2" 
+                    onComplete={() => setTopicToComplete('tobe-2-exercise')} 
+                    vocabulary={{ 'amigo': 'friend', 'hijo': 'son', 'perro': 'dog' }}
+                    highlightVocabulary={true}
+                />;
             case 'tobe-3-grammar':
                 return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
@@ -326,11 +337,16 @@ export default function KidsIntro1Page() {
                     </Card>
                 );
             case 'tobe-3-exercise':
-                return <TranslationExercise exerciseKey="exercises3" onComplete={() => setTopicToComplete('tobe-3-exercise')} />;
+                return <TranslationExercise 
+                    exerciseKey="exercises3" 
+                    onComplete={() => setTopicToComplete('tobe-3-exercise')} 
+                    vocabulary={{ 'enfermera': 'nurse', 'abuelos': 'grandparents', 'pensionado': 'retired', 'juguete': 'toy' }}
+                    highlightVocabulary={true}
+                />;
             case 'demonstratives':
                 if (isIntro1Finished) {
                     return (
-                        <Card className="shadow-soft border-2 border-green-500 bg-green-500/10 p-12 text-center flex flex-col items-center text-foreground">
+                        <Card className="shadow-soft rounded-lg border-2 border-green-500 bg-green-500/10 p-12 text-center flex flex-col items-center text-foreground">
                             <Trophy className="h-24 w-24 text-yellow-400 mb-6 animate-bounce" />
                             <h2 className="text-4xl font-black uppercase text-green-600 tracking-tighter">Congratulations!</h2>
                             <p className="text-2xl mt-4 font-bold text-black dark:text-white">You finish Intro 1 Kids</p>
@@ -450,3 +466,4 @@ export default function KidsIntro1Page() {
         </div>
       );
 }
+
