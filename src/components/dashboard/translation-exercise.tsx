@@ -113,10 +113,10 @@ const answerKeys = {
     ],
     exercises2: [
         { affirmative: ["she is my sister", "she's my sister"], negative: ["she is not my sister", "she isn't my sister", "she's not my sister"], interrogative: ["is she my sister?"], shortAffirmative: ["yes, she is"], shortNegative: ["no, she is not", "no, she isn't"] },
-        { affirmative: ["he is your father", "he's your father", "he is your dad", "he's your dad"], negative: ["he is not your father", "he isn't your father", "he's not your father", "he is not your dad", "he isn't your dad", "he's not your dad"], interrogative: ["is he your father?", "is he your dad?"], shortAffirmative: ["yes, he is"], shortNegative: ["no, he is not", "no, he isn't"] },
+        { affirmative: ["he is your father", "he's your father", "he is your dad", "he's your dad"], negative: ["he is not your father", "he isn't your father", "he's not your father", "he is not your dad", "he isn't your dad", "he's not your dad"], interrogative: ["is he your father?", "is he your dad?"], shortAffirmative: ["yes, he is"], shortNegative: ["no, she is not", "no, she isn't"] },
         { affirmative: ["they are her friends", "they're her friends"], negative: ["they are not her friends", "they aren't her friends", "they're not her friends"], interrogative: ["are they her friends?"], shortAffirmative: ["yes, they are"], shortNegative: ["no, they are not", "no, they aren't"] },
-        { affirmative: ["he is their son", "he's their son"], negative: ["he is not their son", "he isn't their son", "he's not their son"], interrogative: ["is he their son?"], shortAffirmative: ["yes, he is"], shortNegative: ["no, he is not", "no, he isn't"] },
-        { affirmative: ["Tommy is your dog", "Tommy's your dog"], negative: ["Tommy is not your dog", "Tommy isn't your dog", "Tommy's not your dog"], interrogative: ["is Tommy your dog?"], shortAffirmative: ["yes, he is"], shortNegative: ["no, he is not", "no, he isn't"] }
+        { affirmative: ["he is their son", "he's their son"], negative: ["he is not their son", "he isn't their son", "he's not their son"], interrogative: ["is he their son?"], shortAffirmative: ["yes, he is"], shortNegative: ["no, they are not", "no, they aren't"] },
+        { affirmative: ["Tommy is your dog", "Tommy's your dog"], negative: ["Tommy is not your dog", "Tommy isn't your dog", "Tommy's not your dog"], interrogative: ["is Tommy your dog?"], shortAffirmative: ["yes, he is"], shortNegative: ["no, they are not", "no, they aren't"] }
     ],
     exercises3: [
         { affirmative: ["their sister is a nurse", "their sister's a nurse"], negative: ["their sister is not a nurse", "their sister isn't a nurse"], interrogative: ["is their sister a nurse?"], shortAffirmative: ["yes, she is"], shortNegative: ["no, she is not", "no, she isn't"] },
@@ -218,7 +218,7 @@ export function TranslationExercise({
     const [isPristine, setIsPristine] = useState(true);
     const [allCurrentFieldsCorrect, setAllCurrentFieldsCorrect] = useState(false);
     const [showCompletionMessage, setShowCompletionMessage] = useState(false);
-    const exerciseVersion = "v3_sep";
+    const exerciseVersion = "v4_vercel_fix";
 
     useEffect(() => {
         const storedStatus = localStorage.getItem(`completionStatus_${exerciseKey}_${exerciseVersion}`);
@@ -467,6 +467,7 @@ export function TranslationExercise({
                                     height={28}
                                     className="object-contain"
                                     data-ai-hint={nemoImage.imageHint}
+                                    unoptimized
                                 />
                             </div>
                         )}
@@ -479,6 +480,7 @@ export function TranslationExercise({
                                     height={28}
                                     className="object-contain"
                                     data-ai-hint={clownFishImage.imageHint}
+                                    unoptimized
                                 />
                             </div>
                         )}
@@ -494,6 +496,7 @@ export function TranslationExercise({
                             height={60}
                             className="rounded-lg hidden sm:block"
                             data-ai-hint={clownFishImage.imageHint}
+                            unoptimized
                         />}
                         <div className="relative w-full">
                              <div className="bg-muted p-4 rounded-lg border">

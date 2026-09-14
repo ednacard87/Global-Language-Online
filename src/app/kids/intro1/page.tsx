@@ -75,7 +75,13 @@ interface Student {
     progress?: Record<string, number>;
 }
 
-const progressStorageVersion = "kids_intro1_path_v6_fixed";
+const progressStorageVersion = "kids_intro1_path_v7_vercel_fix";
+
+const ICONS: Record<string, React.ElementType> = {
+    locked: Lock,
+    active: BookOpen,
+    completed: CheckCircle,
+};
 
 export default function KidsIntro1Page() {
     const { t } = useTranslation();
@@ -203,7 +209,7 @@ export default function KidsIntro1Page() {
 
         switch (selectedTopicKey) {
             case 'abc':
-                return <Card className="shadow-soft rounded-lg border-2 border-brand-purple"><CardHeader><CardTitle>{t('intro1Page.abc')}</CardTitle></CardHeader><CardContent><AlphabetGrid highlightedItem={highlightedLetter} onHighlight={setHighlightedLetter} /></CardContent><CardFooter className="justify-center"><Button onClick={() => setTopicToComplete('abc')} size="lg" className="px-12 font-bold">He terminado de estudiar</Button></CardFooter></Card>;
+                return <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 text-foreground text-left"><CardHeader><CardTitle>{t('intro1Page.abc')}</CardTitle></CardHeader><CardContent><AlphabetGrid highlightedItem={highlightedLetter} onHighlight={setHighlightedLetter} /></CardContent><CardFooter className="justify-center"><Button onClick={() => setTopicToComplete('abc')} size="lg" className="px-12 font-bold uppercase">He terminado de estudiar</Button></CardFooter></Card>;
             case 'abcExercise':
                 return <AbcPronunciationExercise onGameComplete={() => setTopicToComplete('abcExercise')} />;
             case 'abc-memory':
@@ -211,26 +217,26 @@ export default function KidsIntro1Page() {
             case 'abcspelling':
                 return <SpellingExercise exerciseKey="femaleNames" onComplete={() => setTopicToComplete('abcspelling')} />;
             case 'numbers':
-                return <Card className="shadow-soft rounded-lg border-2 border-brand-purple"><CardHeader><CardTitle>{t('intro1Page.numbers')}</CardTitle></CardHeader><CardContent><NumbersGrid highlightedItem={highlightedNumber} onHighlight={setHighlightedNumber} /></CardContent><CardFooter className="justify-center"><Button onClick={() => setTopicToComplete('numbers')} size="lg" className="px-12 font-bold">He terminado de estudiar</Button></CardFooter></Card>;
+                return <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 text-foreground text-left"><CardHeader><CardTitle>{t('intro1Page.numbers')}</CardTitle></CardHeader><CardContent><NumbersGrid highlightedItem={highlightedNumber} onHighlight={setHighlightedNumber} /></CardContent><CardFooter className="justify-center"><Button onClick={() => setTopicToComplete('numbers')} size="lg" className="px-12 font-bold uppercase">He terminado de estudiar</Button></CardFooter></Card>;
             case 'numbers-memory':
                 return <NumbersMemoryGame onGameComplete={() => setTopicToComplete('numbers-memory')} />;
             case 'numbersspelling':
                 return <SpellingExercise exerciseKey="numbers1" onComplete={() => setTopicToComplete('numbersspelling')} />;
             case 'tobe':
-                return <Card className="shadow-soft rounded-lg border-2 border-brand-purple"><CardHeader><CardTitle>{t('intro1Page.pronouns')}</CardTitle></CardHeader><CardContent><div className="grid grid-cols-3 gap-x-4 gap-y-2 text-lg"><div className="font-bold p-3 bg-muted rounded-lg text-center">{t('common.ser')}</div><div className="font-bold p-3 bg-muted rounded-lg text-center">{t('common.tobe')}</div><div className="font-bold p-3 bg-muted rounded-lg text-center">{t('common.estar')}</div>{verbToBeData.map((item, index) => (<React.Fragment key={index}><div className="p-3 bg-card border rounded-lg text-center">{item.ser}</div><div className="p-3 bg-card border rounded-lg font-medium text-center">{item.tobe}</div><div className="p-3 bg-card border rounded-lg text-center">{item.estar}</div></React.Fragment>))}</div></CardContent><CardFooter className="justify-center"><Button onClick={() => setTopicToComplete('tobe')} size="lg" className="px-12 font-bold">Entendido</Button></CardFooter></Card>;
+                return <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 text-foreground text-left"><CardHeader><CardTitle>{t('intro1Page.pronouns')}</CardTitle></CardHeader><CardContent><div className="grid grid-cols-3 gap-x-4 gap-y-2 text-lg"><div className="font-bold p-3 bg-muted rounded-lg text-center uppercase">SER</div><div className="font-bold p-3 bg-muted rounded-lg text-center uppercase">TO BE</div><div className="font-bold p-3 bg-muted rounded-lg text-center uppercase">ESTAR</div>{verbToBeData.map((item, index) => (<React.Fragment key={index}><div className="p-3 bg-card border rounded-lg text-center">{item.ser}</div><div className="p-3 bg-card border rounded-lg font-medium text-center">{item.tobe}</div><div className="p-3 bg-card border rounded-lg text-center">{item.estar}</div></React.Fragment>))}</div></CardContent><CardFooter className="justify-center"><Button onClick={() => setTopicToComplete('tobe')} size="lg" className="px-12 font-bold uppercase">Entendido</Button></CardFooter></Card>;
             case 'tobe-memory':
                 return <ToBeMemoryGame onGameComplete={() => setTopicToComplete('tobe-memory')} />;
             case 'tobe-1-grammar':
                 return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 text-foreground text-left">
                         <CardHeader>
                             <CardTitle>To be 1</CardTitle>
-                            <CardDescription>Aprende la estructura básica del verbo To be.</CardDescription>
+                            <CardDescription className="font-bold text-foreground">Aprende la estructura básica del verbo To be.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-6">
                             <div>
                                 <h3 className="text-xl font-semibold mb-2">{t('intro1Page.verbtobeStructureTitle')}</h3>
-                                <div className="space-y-2 p-4 bg-muted rounded-lg font-mono text-base">
+                                <div className="space-y-2 p-4 bg-muted rounded-lg font-mono text-base text-foreground">
                                     <p><span className="font-bold text-lg text-green-500 mr-2">(+)</span> pronoun + to be + complement</p>
                                     <p><span className="font-bold text-lg text-red-500 mr-2">(-)</span> pronoun + to be + not + complement</p>
                                     <p><span className="font-bold text-lg text-blue-500 mr-2">(?)</span> to be + pronoun + complement ?</p>
@@ -239,7 +245,7 @@ export default function KidsIntro1Page() {
                             <Separator />
                             <div>
                                 <h3 className="text-xl font-semibold mb-2">{t('intro1Page.shortAnswersTitle')}</h3>
-                                <div className="space-y-2 p-4 bg-muted rounded-lg font-mono text-base">
+                                <div className="space-y-2 p-4 bg-muted rounded-lg font-mono text-base text-foreground">
                                     <p><span className="font-bold text-lg text-green-500 mr-2">(+A)</span> Yes, pronoun + to be</p>
                                     <p><span className="font-bold text-lg text-red-500 mr-2">(-A)</span> No, pronoun + to be + not</p>
                                 </div>
@@ -248,14 +254,14 @@ export default function KidsIntro1Page() {
                             <div>
                                 <h3 className="text-xl font-semibold mb-2">{t('intro1Page.exampleTitle')}</h3>
                                 <p className="text-lg italic text-muted-foreground mb-2">"ellos son estudiantes"</p>
-                                <div className="space-y-2 p-4 bg-muted rounded-lg font-mono text-base">
+                                <div className="space-y-2 p-4 bg-muted rounded-lg font-mono text-base text-foreground">
                                     <p><span className="font-bold text-lg text-green-500 mr-2">(+)</span> They are students</p>
                                     <p><span className="font-bold text-lg text-red-500 mr-2">(-)</span> They are not students</p>
                                     <p><span className="font-bold text-lg text-blue-500 mr-2">(?)</span> Are they students?</p>
                                 </div>
                             </div>
                         </CardContent>
-                        <CardFooter className='justify-center border-t pt-4'><Button onClick={() => setTopicToComplete('tobe-1-grammar')} size="lg" className="font-bold">Continuar</Button></CardFooter>
+                        <CardFooter className='justify-center border-t pt-4'><Button onClick={() => setTopicToComplete('tobe-1-grammar')} size="lg" className="font-bold uppercase">Continuar</Button></CardFooter>
                     </Card>
                 );
             case 'tobe-1-exercise':
@@ -266,20 +272,20 @@ export default function KidsIntro1Page() {
                     highlightVocabulary={true}
                 />;
             case 'possessives':
-                return <Card className="shadow-soft rounded-lg border-2 border-brand-purple"><CardHeader><CardTitle>{t('intro1Page.possessives')}</CardTitle></CardHeader><CardContent><div className="grid grid-cols-2 gap-x-4 gap-y-2 text-lg"><div className="font-bold p-3 bg-muted rounded-lg text-center">{t('common.english')}</div><div className="font-bold p-3 bg-muted rounded-lg text-center">{t('common.spanish')}</div>{possessivesData.map((item, index) => (<React.Fragment key={index}><div className="p-3 bg-card border rounded-lg font-medium text-center">{item.english}</div><div className="p-3 bg-card border rounded-lg text-center">{item.spanish}</div></React.Fragment>))}</div></CardContent><CardFooter className="justify-center"><Button onClick={() => setTopicToComplete('possessives')} size="lg" className="px-12 font-bold">Estudiado</Button></CardFooter></Card>;
+                return <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 text-foreground text-left"><CardHeader><CardTitle>{t('intro1Page.possessives')}</CardTitle></CardHeader><CardContent><div className="grid grid-cols-2 gap-x-4 gap-y-2 text-lg"><div className="font-bold p-3 bg-muted rounded-lg text-center uppercase">{t('common.english')}</div><div className="font-bold p-3 bg-muted rounded-lg text-center uppercase">{t('common.spanish')}</div>{possessivesData.map((item, index) => (<React.Fragment key={index}><div className="p-3 bg-card border rounded-lg font-medium text-center">{item.english}</div><div className="p-3 bg-card border rounded-lg text-center">{item.spanish}</div></React.Fragment>))}</div></CardContent><CardFooter className="justify-center"><Button onClick={() => setTopicToComplete('possessives')} size="lg" className="px-12 font-bold uppercase">Estudiado</Button></CardFooter></Card>;
             case 'possessives-memory':
                 return <PossessivesMemoryGame onGameComplete={() => setTopicToComplete('possessives-memory')} />;
             case 'tobe-2-grammar':
                 return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 text-foreground text-left">
                         <CardHeader>
                             <CardTitle>To be 2</CardTitle>
-                            <CardDescription>Estructura con adjetivos posesivos.</CardDescription>
+                            <CardDescription className="font-bold text-foreground">Estructura con adjetivos posesivos.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-6">
                             <div>
                                 <h3 className="text-xl font-semibold mb-2">{t('intro1Page.verbtobeStructureTitle')}</h3>
-                                <div className="space-y-2 p-4 bg-muted rounded-lg font-mono text-base">
+                                <div className="space-y-2 p-4 bg-muted rounded-lg font-mono text-base text-foreground">
                                     <p><span className="font-bold text-lg text-green-500 mr-2">(+)</span> pronoun + to be + possessive + noun + complement</p>
                                     <p><span className="font-bold text-lg text-red-500 mr-2">(-)</span> pronoun + to be + not + possessive + noun + complement</p>
                                     <p><span className="font-bold text-lg text-blue-500 mr-2">(?)</span> to be + pronoun + possessive + noun + complement ?</p>
@@ -289,14 +295,14 @@ export default function KidsIntro1Page() {
                             <div>
                                 <h3 className="text-xl font-semibold mb-2">{t('intro1Page.exampleTitle')}</h3>
                                 <p className="text-lg italic text-muted-foreground mb-2">"Ellos son mis amigos"</p>
-                                <div className="space-y-2 p-4 bg-muted rounded-lg font-mono text-base">
+                                <div className="space-y-2 p-4 bg-muted rounded-lg font-mono text-base text-foreground">
                                     <p><span className="font-bold text-lg text-green-500 mr-2">(+)</span> They are my friends</p>
                                     <p><span className="font-bold text-lg text-red-500 mr-2">(-)</span> They are not my friends</p>
                                     <p><span className="font-bold text-lg text-blue-500 mr-2">(?)</span> Are they my friends?</p>
                                 </div>
                             </div>
                         </CardContent>
-                        <CardFooter className='justify-center border-t pt-4'><Button onClick={() => setTopicToComplete('tobe-2-grammar')} size="lg" className="font-bold">Avanzar</Button></CardFooter>
+                        <CardFooter className='justify-center border-t pt-4'><Button onClick={() => setTopicToComplete('tobe-2-grammar')} size="lg" className="font-bold uppercase">Avanzar</Button></CardFooter>
                     </Card>
                 );
             case 'tobe-2-exercise':
@@ -308,15 +314,15 @@ export default function KidsIntro1Page() {
                 />;
             case 'tobe-3-grammar':
                 return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 text-foreground text-left">
                         <CardHeader>
                             <CardTitle>To be 3</CardTitle>
-                            <CardDescription>Estructura iniciando con adjetivos posesivos.</CardDescription>
+                            <CardDescription className="font-bold text-foreground">Estructura iniciando con adjetivos posesivos.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-6">
                             <div>
                                 <h3 className="text-xl font-semibold mb-2">{t('intro1Page.verbtobeStructureTitle')}</h3>
-                                <div className="space-y-2 p-4 bg-muted rounded-lg font-mono text-base">
+                                <div className="space-y-2 p-4 bg-muted rounded-lg font-mono text-base text-foreground">
                                     <p><span className="font-bold text-lg text-green-500 mr-2">(+)</span> possessive + noun + to be + complement</p>
                                     <p><span className="font-bold text-lg text-red-500 mr-2">(-)</span> possessive + noun + to be + not + complement</p>
                                     <p><span className="font-bold text-lg text-blue-500 mr-2">(?)</span> to be + possessive + noun + complement ?</p>
@@ -326,14 +332,14 @@ export default function KidsIntro1Page() {
                             <div>
                                 <h3 className="text-xl font-semibold mb-2">{t('intro1Page.exampleTitle')}</h3>
                                 <p className="text-lg italic text-muted-foreground mb-2">"Mi mamá es una enfermera"</p>
-                                <div className="space-y-2 p-4 bg-muted rounded-lg font-mono text-base">
+                                <div className="space-y-2 p-4 bg-muted rounded-lg font-mono text-base text-foreground">
                                     <p><span className="font-bold text-lg text-green-500 mr-2">(+)</span> My mother is a nurse</p>
                                     <p><span className="font-bold text-lg text-red-500 mr-2">(-)</span> My mother is not a nurse</p>
                                     <p><span className="font-bold text-lg text-blue-500 mr-2">(?)</span> Is my mother a nurse?</p>
                                 </div>
                             </div>
                         </CardContent>
-                        <CardFooter className='justify-center border-t pt-4'><Button onClick={() => setTopicToComplete('tobe-3-grammar')} size="lg" className="font-bold">Avanzar</Button></CardFooter>
+                        <CardFooter className='justify-center border-t pt-4'><Button onClick={() => setTopicToComplete('tobe-3-grammar')} size="lg" className="font-bold uppercase">Avanzar</Button></CardFooter>
                     </Card>
                 );
             case 'tobe-3-exercise':
@@ -346,7 +352,7 @@ export default function KidsIntro1Page() {
             case 'demonstratives':
                 if (isIntro1Finished) {
                     return (
-                        <Card className="shadow-soft rounded-lg border-2 border-green-500 bg-green-500/10 p-12 text-center flex flex-col items-center text-foreground">
+                        <Card className="shadow-soft rounded-lg border-2 border-green-500 bg-green-500/10 p-12 text-center flex flex-col items-center text-foreground animate-in zoom-in duration-500">
                             <Trophy className="h-24 w-24 text-yellow-400 mb-6 animate-bounce" />
                             <h2 className="text-4xl font-black uppercase text-green-600 tracking-tighter">Congratulations!</h2>
                             <p className="text-2xl mt-4 font-bold text-black dark:text-white">You finish Intro 1 Kids</p>
@@ -357,7 +363,7 @@ export default function KidsIntro1Page() {
                     );
                 }
                 return (
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple text-foreground text-left">
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 text-foreground text-left">
                         <CardHeader>
                             <CardTitle>{t('intro1Page.demonstratives')}</CardTitle>
                             <CardDescription className="pt-2 text-lg font-semibold flex items-center gap-2">
@@ -369,32 +375,54 @@ export default function KidsIntro1Page() {
                         </CardHeader>
                         <CardContent>
                             <div className="grid grid-cols-3 gap-x-4 gap-y-2 text-lg">
-                                <div className="font-bold p-3 bg-muted rounded-lg text-center">{t('common.english')}</div>
-                                <div className="font-bold p-3 bg-muted rounded-lg text-center">{t('common.spanish')}</div>
-                                <div className="font-bold p-3 bg-muted rounded-lg text-center">{t('intro1Page.usage')}</div>
+                                <div className="font-bold p-3 bg-muted rounded-lg text-center uppercase">{t('common.english')}</div>
+                                <div className="font-bold p-3 bg-muted rounded-lg text-center uppercase">{t('common.spanish')}</div>
+                                <div className="font-bold p-3 bg-muted rounded-lg text-center uppercase">{t('intro1Page.usage')}</div>
                                 {demonstrativesData.map((item, index) => (
                                     <React.Fragment key={index}>
                                         <div className="p-3 bg-card border rounded-lg font-medium text-center">{item.english}</div>
                                         <div className="p-3 bg-card border rounded-lg text-center">{item.spanish}</div>
-                                        <div className="p-3 bg-card border rounded-lg text-center text-xs flex items-center justify-center">{item.usage}</div>
+                                        <div className="p-3 bg-card border rounded-lg text-center text-xs flex items-center justify-center italic">{item.usage}</div>
                                     </React.Fragment>
                                 ))}
                             </div>
                         </CardContent>
-                        <CardFooter className="justify-end">
+                        <CardFooter className="justify-center border-t pt-4">
                             <Button onClick={() => {
                                 setIsIntro1Finished(true);
                                 setTopicToComplete('demonstratives');
-                            }} className="px-12 font-bold">Finish</Button>
+                            }} className="px-12 font-bold uppercase h-12">Finish</Button>
                         </CardFooter>
                     </Card>
                 );
             default:
                 return (
-                    <Card className="flex flex-col items-center justify-center min-h-[400px]">
-                        <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
-                        <p className="text-muted-foreground font-bold tracking-widest animate-pulse uppercase">Cargando Misión...</p>
-                    </Card>
+                    <div className="flex flex-col items-center scale-110">
+                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/90 backdrop-blur-sm">
+                            <CardHeader className="text-center">
+                                <CardTitle className="text-3xl text-foreground uppercase tracking-tight">{t('intro1Page.welcomeTitle')}</CardTitle>
+                                <CardDescription className="text-base font-bold text-foreground">{t('intro1Page.welcomeDescription')}</CardDescription>
+                            </CardHeader>
+                            <CardContent className="text-center px-6 pb-6 text-foreground">
+                                <p className="pt-4 text-lg font-medium">{t('intro1Page.welcomeHint')}</p>
+                            </CardContent>
+                        </Card>
+                        <div className="flex items-center justify-center pt-8 gap-2">
+                            <div className="relative bg-card p-4 rounded-lg shadow-soft text-center text-base max-w-[220px] border-2 border-brand-purple">
+                                <p className="font-bold text-lg bg-gradient-to-r from-brand-purple to-brand-teal text-transparent bg-clip-text uppercase tracking-tighter">¡Hola! Soy tu guía. Empecemos por el ABC.</p>
+                                <div className="absolute left-full top-1/2 -translate-y-1/2 w-0 h-0 border-t-8 border-t-transparent border-b-8 border-b-transparent border-l-8 border-l-card" />
+                            </div>
+                            {guideFishImage && <Image
+                                src={guideFishImage.imageUrl}
+                                alt={guideFishImage.description}
+                                width={191}
+                                height={191}
+                                className="rounded-lg object-cover"
+                                data-ai-hint={guideFishImage.imageHint}
+                                unoptimized
+                            />}
+                        </div>
+                    </div>
                 );
         }
     };
@@ -411,7 +439,7 @@ export default function KidsIntro1Page() {
                             <ArrowLeft className="h-4 w-4" /> Volver al laberinto
                         </Link>
                         <h1 className="text-4xl font-black uppercase tracking-tighter [text-shadow:2px_2px_4px_rgba(0,0,0,0.5)]">
-                            {t('kidsPage.intro1AdventureTitle')}
+                            Intro 1 Kids 🇬🇧
                         </h1>
                     </div>
                     {renderContent()}
@@ -466,4 +494,3 @@ export default function KidsIntro1Page() {
         </div>
       );
 }
-
