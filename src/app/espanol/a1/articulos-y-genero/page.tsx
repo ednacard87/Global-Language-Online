@@ -21,7 +21,8 @@ import {
     Check,
     X,
     Info,
-    Search
+    Search,
+    Pencil
 } from 'lucide-react';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -41,8 +42,14 @@ import { VocabularyMatchingGame } from '@/components/dashboard/vocabulary-matchi
 import { Textarea } from '@/components/ui/textarea';
 
 // --- CONFIGURACIÓN DE INGENIERÍA ---
-const progressStorageVersion = 'progress_es_a1_art_gen_v6_final_fix';
+const progressStorageVersion = 'progress_es_a1_art_gen_v9_final_fix';
 const mainProgressKey = 'progress_a1_es_articulos_y_genero';
+
+const ICONS_CONFIG = {
+    locked: Lock,
+    active: BookOpen,
+    completed: CheckCircle,
+};
 
 // --- DATA ---
 
@@ -170,7 +177,7 @@ const finalExPrompts = [
     { s: "21. ___ profesor es amable.", a: "el" },
     { s: "22. Hay ___ borrador verde.", a: "un" },
     { s: "23. ___ mochilas son pesadas.", a: "las" },
-    { s: "24. Compro ___ zapatos nuevs.", a: "unos" },
+    { s: "24. Compro ___ zapatos nuevos.", a: "unos" },
     { s: "25. ___ gatas son pequeñas.", a: "las" },
     { s: "26. Veo ___ pájaro azul.", a: "un" },
     { s: "27. ___ reloj es antiguo.", a: "el" },
@@ -197,22 +204,94 @@ const finalMissionPrompts = [
     { en: "The pink flowers.", es: ["las flores rosadas", "las flores rosa"] },
 ];
 
-const globalVocabMap: Record<string, string> = classVocab.reduce((acc, curr) => {
-    acc[curr.es.toLowerCase()] = curr.en.toLowerCase();
-    return acc;
-}, {} as Record<string, string>);
+const ex1VocabMap = {
+    "libro": "book",
+    "silla": "chair",
+    "mesas": "tables",
+    "lápices": "pencils",
+    "ventanas": "windows",
+    "maleta / mochila": "backpack",
+    "piso": "floor",
+    "ciudad": "city",
+    "agua": "water",
+    "problema": "problem"
+};
 
-const finalExVocab = {
-    "interesante": "interesting", "cómodo": "comfortable", "borrador": "eraser", "llaves": "keys",
-    "ventana": "window", "gris": "gray", "puerta": "door", "aplicado": "diligent", "mapa": "map",
-    "tijeras": "scissors", "filoso": "sharp", "regla": "ruler", "teléfono": "phone", "flores": "flowers",
-    "bonito": "pretty", "helado": "ice cream", "rápido": "fast", "gafas": "glasses", "amable": "kind",
-    "pesado": "heavy", "zapato": "shoe", "pájaro": "bird", "antiguo": "ancient", "caja": "box"
+const ex2VocabMap = {
+    "lápiz rojo": "red pencil",
+    "silla azul": "blue chair",
+    "mesas verdes": "green tables",
+    "cuadernos amarillos": "yellow notebooks",
+    "puerta blanca": "white door",
+    "borrador pequeño": "small eraser",
+    "tablero negro": "black board",
+    "reglas grises": "gray rulers",
+    "portátil gris": "gray laptop",
+    "reloj blanco": "white watch"
+};
+
+const ex3VocabMap = {
+    "portátil": "laptop",
+    "pared": "wall",
+    "tableros": "blackboards",
+    "llaves": "keys",
+    "reloj": "watch",
+    "billetera": "wallet",
+    "teléfonos": "phones",
+    "tijeras": "scissors",
+    "piso": "floor",
+    "mochila": "backpack",
+    "cielo": "sky",
+    "luna": "moon",
+    "sol": "sun",
+    "estrellas": "stars",
+    "flores": "flowers",
+    "carro": "car",
+    "manzanas": "apples",
+    "cuadernos": "notebooks",
+    "reglas": "rulers",
+    "borrador": "eraser"
+};
+
+const mixedExVocabMap = {
+    "interesante": "interesting",
+    "cómodas": "comfortable",
+    "manzanas": "apples",
+    "rojas": "red",
+    "comprar": "buy",
+    "nuevo": "new",
+    "abiertas": "open",
+    "aplicados": "hardworking",
+    "mapa": "map",
+    "filosas": "sharp",
+    "bonitas": "pretty",
+    "rápido": "fast",
+    "gafas": "glasses",
+    "amable": "kind",
+    "pesadas": "heavy",
+    "pájaro": "bird",
+    "antiguo": "old / antique",
+    "cajas": "boxes"
+};
+
+const translateVocabMap = {
+    "salón / aula": "classroom",
+    "grande": "large",
+    "lápiz rojo": "red pencil",
+    "escritorio": "desk",
+    "blanco": "white",
+    "paredes": "walls",
+    "cuaderno": "notebook",
+    "puerta": "door",
+    "marrón / café": "brown",
+    "piso": "floor",
+    "limpio": "clean",
+    "estudiante": "student"
 };
 
 // --- HELPER COMPONENTS ---
 
-const FinalValidationExercise = ({ title, prompts, onComplete, vocabulary, type = 'translate', isFinal = false }: any) => {
+const FinalValidationExercise = ({ title, prompts, onComplete, vocabulary, type = 'translate', isFinal = false, instructionOverride }: any) => {
     const { toast } = useToast();
     const [currentIndex, setCurrentIndex] = useState(0);
     const [userAnswers, setUserAnswers] = useState<string[]>(() => Array(prompts?.length || 0).fill(''));
@@ -268,9 +347,10 @@ const FinalValidationExercise = ({ title, prompts, onComplete, vocabulary, type 
             <Card className="shadow-soft border-2 border-green-500 bg-green-500/10 p-12 text-center flex flex-col items-center animate-in fade-in zoom-in duration-700">
                 <Trophy className="h-24 w-24 text-yellow-500 mb-6 animate-bounce" />
                 <h2 className="text-4xl font-black text-green-700 dark:text-green-400 uppercase tracking-tighter">¡FELICITACIONES!</h2>
-                <p className="text-2xl mt-4 font-bold text-foreground">Terminaste la Clase de Artículos y Género</p>
+                <p className="text-2xl mt-4 font-bold">¡Terminaste la clase Articulos y Genero!</p>
+                            <p className='text-muted-foreground mt-2 text-lg'>Misión completada al 100%.</p>
                 <Button asChild className="mt-8 px-12 h-14 text-xl font-black shadow-xl" size="lg">
-                    <Link href="/espanol/a1/unit/1">Regresar a la unidad 1</Link>
+                    <Link href="/espanol/a1">Regresar a la Ruta A1</Link>
                 </Button>
             </Card>
         );
@@ -283,7 +363,7 @@ const FinalValidationExercise = ({ title, prompts, onComplete, vocabulary, type 
                     <div className="text-left">
                         <CardTitle className="uppercase font-black text-primary">{title}</CardTitle>
                         <CardDescription className="font-bold text-foreground mt-1">
-                            {type === 'translate' ? 'Traduce la frase al español.' : 'Escribe el artículo correcto (EL, LA, LOS, LAS, UN, UNA, UNOS, UNAS).'}
+                            {instructionOverride ? instructionOverride : (type === 'translate' ? 'Traduce la frase al español.' : 'Escribe el artículo correcto.')}
                         </CardDescription>
                         <div className="flex gap-2 justify-start flex-wrap pt-4">
                             {prompts.map((_: any, i: number) => (
@@ -313,7 +393,7 @@ const FinalValidationExercise = ({ title, prompts, onComplete, vocabulary, type 
                             <ScrollArea className="h-64 pr-4">
                                 <div className="space-y-2 text-foreground text-left">
                                     <h4 className='font-black text-primary text-xs uppercase mb-2 border-b'>Ayuda de Misión</h4>
-                                    {Object.entries(vocabulary || globalVocabMap).map(([es, en]: any, i) => (
+                                    {Object.entries(vocabulary || {}).map(([es, en]: any, i) => (
                                         <div key={i} className="flex justify-between text-[10px] border-b border-muted pb-1">
                                             <span className="text-muted-foreground text-left uppercase">{en}:</span>
                                             <span className="font-bold text-right text-primary">{(es as string).toUpperCase()}</span>
@@ -360,7 +440,10 @@ const FinalValidationExercise = ({ title, prompts, onComplete, vocabulary, type 
 
                     {allAreCorrect && (
                         <Button 
-                            onClick={isFinal ? () => setIsFinished(true) : onComplete} 
+                            onClick={() => {
+                                if (isFinal) setIsFinished(true);
+                                onComplete();
+                            }} 
                             className={cn("font-black px-10 shadow-xl animate-bounce", isFinal ? "bg-green-600 hover:bg-green-700" : "bg-primary hover:bg-primary/90")}
                         >
                             {isFinal ? 'Terminar' : 'Siguiente Paso'}
@@ -561,14 +644,38 @@ function ArticulosGeneroContent() {
                         <CardFooter className="justify-center pt-6 border-t"><Button onClick={() => handleTopicComplete('grammar')} size="lg" className="px-24 font-black h-14 text-xl shadow-xl">He comprendido la gramática</Button></CardFooter>
                     </Card>
                 );
-            case 'ex1': return <FinalValidationExercise key="ex1" title="Ejercicio 1" prompts={ex1Prompts} onComplete={() => handleTopicComplete('ex1')} />;
-            case 'ex2': return <FinalValidationExercise key="ex2" title="Ejercicio 2" prompts={ex2Prompts} onComplete={() => handleTopicComplete('ex2')} />;
+            case 'ex1': return <FinalValidationExercise key="ex1" title="Ejercicio 1" prompts={ex1Prompts} onComplete={() => handleTopicComplete('ex1')} vocabulary={ex1VocabMap} />;
+            case 'ex2': return <FinalValidationExercise key="ex2" title="Ejercicio 2" prompts={ex2Prompts} onComplete={() => handleTopicComplete('ex2')} vocabulary={ex2VocabMap} />;
             case 'vocab_game': return <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm"><CardHeader><CardTitle>Juego de Memoria</CardTitle></CardHeader><CardContent><VocabularyMatchingGame data={classVocab.slice(0, 10).map(v => ({ spanish: v.es, english: [v.en] }))} onComplete={() => handleTopicComplete('vocab_game')} title="Encuentra las parejas de objetos" /></CardContent></Card>;
-            case 'ex3': return <FinalValidationExercise key="ex3" title="Ejercicio 3: Artículos" type="article" prompts={ex3Prompts} onComplete={() => handleTopicComplete('ex3')} vocabulary={{"estrellas": "stars", "cuadernos": "notebooks", "carro": "car", "reglas": "rulers", "borrador": "eraser"}} />;
+            case 'ex3': return <FinalValidationExercise key="ex3" title="Ejercicio 3" type="article" prompts={ex3Prompts} onComplete={() => handleTopicComplete('ex3')} vocabulary={ex3VocabMap} instructionOverride="Escribe el articulo correcto (EL, LA, LOS, LAS)" />;
             case 'reading':
                 return (
                     <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left overflow-hidden">
-                        <CardHeader className='bg-primary/5 border-b'><CardTitle className='text-primary uppercase font-black'>Misión: Lectura Comprensiva</CardTitle></CardHeader>
+                        <CardHeader className='bg-primary/5 border-b'>
+                            <div className="flex justify-between items-start">
+                                <CardTitle className='text-primary uppercase font-black'>Misión: Lectura Comprensiva</CardTitle>
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                        <Button variant="outline" size="sm" className="border-2 border-brand-blue animate-border-pulse">
+                                            <BookText className="mr-2 h-4 w-4" /> Vocabulario
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-64">
+                                        <ScrollArea className="h-64 pr-4">
+                                            <div className="space-y-2 text-foreground text-left">
+                                                <h4 className='font-black text-primary text-xs uppercase mb-2 border-b'>Ayuda de Misión</h4>
+                                                {Object.entries(translateVocabMap).map(([es, en]: any, i) => (
+                                                    <div key={i} className="flex justify-between text-[10px] border-b border-muted pb-1">
+                                                        <span className="text-muted-foreground text-left uppercase">{en}:</span>
+                                                        <span className="font-bold text-right text-primary">{(es as string).toUpperCase()}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </ScrollArea>
+                                    </PopoverContent>
+                                </Popover>
+                            </div>
+                        </CardHeader>
                         <CardContent className="space-y-6 pt-6">
                             <div className="p-6 bg-muted rounded-2xl border italic text-lg leading-relaxed text-foreground shadow-inner">{readingData.content}</div>
                             <Separator />
@@ -594,13 +701,35 @@ function ArticulosGeneroContent() {
                     </Card>
                 );
             case 'final_ex':
-                return <FinalValidationExercise key="final_ex" title="Ejercicio Final" type="article" prompts={finalExPrompts} onComplete={() => handleTopicComplete('final_ex')} vocabulary={finalExVocab} />;
+                return <FinalValidationExercise key="final_ex" title="Ejercicio Mixto" type="article" prompts={finalExPrompts} onComplete={() => handleTopicComplete('final_ex')} vocabulary={mixedExVocabMap} instructionOverride="Escribe el artículo correcto - al inicio de las frases : EL, LA, LOS, LAS // después de un verbo : UN, UNA, UNOS, UNAS" />;
             case 'translate_text':
                 return (
                     <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground text-left">
-                        <CardHeader>
-                            <CardTitle className='text-primary uppercase font-black'>Traducción de Texto</CardTitle>
-                            <CardDescription className='font-bold text-foreground'>Traduce el siguiente párrafo al español.</CardDescription>
+                        <CardHeader className="flex flex-row justify-between items-start">
+                            <div>
+                                <CardTitle className='text-primary uppercase font-black'>Traducción de Texto</CardTitle>
+                                <CardDescription className='font-bold text-foreground mt-1'>Traduce el siguiente párrafo al español.</CardDescription>
+                            </div>
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                    <Button variant="outline" size="sm" className="border-2 border-brand-blue animate-border-pulse shrink-0">
+                                        <BookText className="mr-2 h-4 w-4" /> Vocabulario
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-64">
+                                    <ScrollArea className="h-64 pr-4 text-foreground">
+                                        <div className="space-y-2 text-left">
+                                            <h4 className='font-black text-primary text-xs uppercase mb-2 border-b'>Ayuda de Misión</h4>
+                                            {Object.entries(translateVocabMap).map(([es, en], i) => (
+                                                <div key={i} className="flex justify-between text-[10px] border-b border-muted pb-1">
+                                                    <span className="text-muted-foreground uppercase">{en}:</span>
+                                                    <span className="font-bold text-right text-primary">{es.toUpperCase()}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </ScrollArea>
+                                </PopoverContent>
+                            </Popover>
                         </CardHeader>
                         <CardContent className="space-y-6">
                             <div className="p-6 bg-muted/50 rounded-2xl border italic text-lg leading-relaxed text-foreground shadow-sm">"The classroom is large. There is a red pencil on the desk. The blackboard is white and the walls are white. A student has a yellow book and a blue notebook. The door is brown and the floor is clean."</div>
@@ -611,16 +740,23 @@ function ArticulosGeneroContent() {
                             </div>
                         </CardContent>
                         <CardFooter className="justify-center border-t pt-6 bg-muted/20">
-                            <Button onClick={() => { handleTopicComplete('translate_text'); setSelectedTopic('final'); }} size="lg" className="px-24 font-black h-16 text-2xl shadow-xl bg-primary hover:bg-primary/90 text-primary-foreground uppercase tracking-tighter">
+                            <Button onClick={() => handleTopicComplete('translate_text')} size="lg" className="px-24 font-black h-16 text-2xl shadow-xl bg-primary hover:bg-primary/90 text-primary-foreground uppercase tracking-tighter">
                                 Siguiente Mision <ArrowRight className='ml-3 h-8 w-8' />
                             </Button>
                         </CardFooter>
                     </Card>
                 );
             case 'final': 
-                return <FinalValidationExercise key="final_mission" title="Final: Colores y Objetos" prompts={finalMissionPrompts} onComplete={() => handleTopicComplete('final')} vocabulary={{"libro": "book", "silla": "chair", "lápices": "pencils", "pared": "wall", "borradores": "erasers", "cuadernos": "notebooks", "llave": "key", "ventanas": "windows", "tablero": "blackboard", "maleta": "backpack", "flores": "flowers", "rosado": "pink", "marron": "brown"}} isFinal={true} />;
+                return <FinalValidationExercise key="final_mission" title="Final: Colores y Objetos" prompts={finalMissionPrompts} onComplete={() => handleTopicComplete('final')} vocabulary={finalMissionVocabMap} isFinal={true} />;
             default: return null;
         }
+    };
+
+    const finalMissionVocabMap = {
+        "libro": "book", "silla": "chair", "lápices": "pencils", "pared": "wall", 
+        "borradores": "erasers", "cuadernos": "notebooks", "llave": "key", 
+        "ventanas": "windows", "tablero": "blackboard", "maleta": "backpack", 
+        "flores": "flowers", "rosado": "pink", "marron": "brown", "blanca": "white"
     };
 
     return (
