@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useState, useEffect, useMemo, useCallback, Suspense, Fragment, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef, Fragment, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { 
@@ -43,7 +43,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { VocabularyMatchingGame } from '@/components/dashboard/vocabulary-matching-game';
 
 // --- CONFIGURACIÓN DE INGENIERÍA ---
-const progressStorageVersion = 'progress_es_a1_preguntas_v95_final_syntax_fix';
+const progressStorageVersion = 'progress_es_a1_preguntas_v105_final_fix';
 const mainProgressKey = 'progress_a1_es_preguntas';
 
 const ICONS_CONFIG: Record<string, React.ElementType> = {
@@ -82,17 +82,11 @@ const vocabularyData = [
     { en: "NOW", es: "AHORA" },
     { en: "EARLY", es: "TEMPRANO" },
     { en: "LATE", es: "TARDE" },
-    { en: "MORNING", es: "MAÑANA (M)" },
-    { en: "AFTERNOON", es: "TARDE (A)" },
-    { en: "NIGHT", es: "NOCHE" },
     { en: "FRIEND", es: "AMIGO" },
     { en: "MOTHER", es: "MADRE" },
     { en: "FATHER", es: "PADRE" },
     { en: "BROTHER", es: "HERMANO" },
     { en: "SISTER", es: "HERMANA" },
-    { en: "COUSIN", es: "PRIMO" },
-    { en: "UNCLE", es: "TÍO" },
-    { en: "AUNT", es: "TÍA" },
     { en: "STUDENT", es: "ESTUDIANTE" },
     { en: "TEACHER", es: "PROFESOR" },
     { en: "GOOD", es: "BUENO" },
@@ -153,16 +147,16 @@ const readingData = {
 };
 
 const mixedExPrompts = [
-    { en:  "1. ¿_______ es tu nombre?", answer: "cuál" },
-    { en:  "2. ¿_______ vives?", answer: "dónde" },
-    { en:  "3. ¿_______ es ese hombre?", answer: "quién" },
-    { en:  "4. ¿_______ vas a la fiesta?", answer: "cuándo" },
-    { en:  "5. ¿_______ estás triste hoy?", answer: "por qué" },
-    { en:  "6. ¿_______ cuesta este libro?", answer: "cuánto" },
-    { en:  "7. ¿_______ estás hoy?", answer: "cómo" },
-    { en:  "8. ¿_______ es tu deporte favorito?", answer: "cuál" },
-    { en:  "9. ¿_______ son ellos?", answer: "quiénes" },
-    { en:  "10. ¿_______ haces en tu tiempo libre?", answer: "qué" },
+    { en:  "1. ¿_______ es tu nombre?", answer: ["cuál", "cual"] },
+    { en:  "2. ¿_______ vives?", answer: ["dónde", "donde"] },
+    { en:  "3. ¿_______ es ese hombre?", answer: ["quién", "quien"] },
+    { en:  "4. ¿_______ vas a la fiesta?", answer: ["cuándo", "cuando"] },
+    { en:  "5. ¿_______ estás triste hoy?", answer: ["por qué", "porque"] },
+    { en:  "6. ¿_______ cuesta este libro?", answer: ["cuánto", "cuanto"] },
+    { en:  "7. ¿_______ estás hoy?", answer: ["cómo", "como"] },
+    { en:  "8. ¿_______ es tu deporte favorito?", answer: ["cuál", "cual"] },
+    { en:  "9. ¿_______ son ellos?", answer: ["quiénes", "quienes"] },
+    { en:  "10. ¿_______ haces en tu tiempo libre?", answer: ["qué", "que"] },
     { en:  "11. ¿_______ vive tu hermana?", answer: "dónde" },
     { en:  "12. ¿_______ es tu película favorita?", answer: "cuál" },
     { en:  "13. ¿_______ cocinas la cena?", answer: "cuándo" },
@@ -200,8 +194,13 @@ const negativePrompts = [
     { en: "Don't you have a car?", answer: ["¿no tienes un carro?", "¿no tienes carro?"] },
     { en: "Why aren't you eating?", answer: ["¿por qué no estás comiendo?", "¿por que no estas comiendo?"] },
     { en: "Isn't your father a teacher?", answer: ["¿no es tu padre profesor?", "¿tu padre no es profesor?"] },
-    { en: "Don't they live in Spain?", answer: ["¿no viven ellos en españa?", "¿no viven en españa?"] },
+    { en: "Don't they live in Spain?", answer: ["¿no viven ellos en españa?", "¿ellos no viven en españa?"] },
 ];
+
+const vocabHelp1 = { "how": "cómo", "today": "hoy", "who": "quién", "friend": "amigo", "where": "dónde", "afternoon": "tarde", "when": "cuándo", "why": "por qué", "want": "querer" };
+const vocabHelp2 = { "time": "hora", "father": "padre", "cook": "cocinar", "dinner": "cena", "study": "estudiar", "boring": "aburrido", "drink": "beber" };
+const vocabHelp3 = { "tall": "alto", "man": "hombre", "buy": "comprar", "food": "comida", "travel": "viajar", "how old": "cuántos años", "kind": "tipo", "music": "música", "later": "luego" };
+const vocabHelpMixed = { "cuál": "which", "dónde": "where", "quién": "who", "cuándo": "when", "por qué": "why", "cuánto": "how much", "cómo": "how", "qué": "what" };
 
 // --- HELPER COMPONENTS ---
 
@@ -217,7 +216,7 @@ const BlockValidationExercise = ({ title, prompts, onComplete, initialAns, onAns
         let allOk = true;
         prompts.forEach((p: any, i: number) => {
             const userVal = (initialAns[i] || '').trim().toLowerCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' ');
-            const corrects = p.es || p.answer || [];
+            const corrects = p.answer || [];
             const correctsNormalized = (Array.isArray(corrects) ? corrects : [corrects]).map((a: string) => a.toLowerCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' '));
             const isOk = correctsNormalized.includes(userVal);
             newVal[i] = isOk ? 'correct' : 'incorrect';
@@ -269,7 +268,7 @@ const BlockValidationExercise = ({ title, prompts, onComplete, initialAns, onAns
                         <>
                             {!isAllCorrect && !isSupervisionMode && <Button onClick={handleCheck} variant="secondary">Verificar</Button>}
                             <Button onClick={onComplete} disabled={!isAllCorrect && !isAdmin} className={cn("text-white font-bold", isAllCorrect ? "bg-green-600 hover:bg-green-700" : "bg-primary")}>
-                                {title.includes('Mixto') ? 'Continuar' : title.includes('Final') ? 'Terminar' : 'Siguiente'}
+                                {title.includes('Final') ? 'Terminar' : 'Siguiente'}
                             </Button>
                         </>
                     )}
@@ -409,8 +408,6 @@ export default function PreguntasPage() {
         if (allOk) toast({ title: "¡Vocabulario correcto!" }); else toast({ variant: 'destructive', title: "Sigue intentando" });
     };
 
-    const vocabularyMap = useMemo(() => vocabularyData.reduce((acc, curr) => ({...acc, [curr.es.toLowerCase()]: curr.en.toLowerCase()}), {}), []);
-
     const renderContent = () => {
         if (isInitialLoading) return <div className="flex justify-center items-center h-64"><Loader2 className="animate-spin text-primary" /></div>;
         switch (selectedTopic) {
@@ -528,48 +525,46 @@ export default function PreguntasPage() {
                         <CardFooter className="justify-center pt-6 border-t"><Button onClick={() => handleTopicComplete('grammar')} size="lg" className="px-24 font-black h-14 text-xl shadow-xl">Entendido</Button></CardFooter>
                     </Card>
                 );
-            case 'ex1': return <BlockValidationExercise key="ex1" title="Ejercicio 1" prompts={ex1Prompts} initialAns={ex1Ans} onAnsChange={(i: number, v: string) => { const na = [...ex1Ans]; na[i] = v; setEx1Ans(na); }} onComplete={() => handleTopicComplete('ex1')} isAdmin={isAdmin} isSupervisionMode={!!targetStudentId} vocabulary={vocabularyMap} />;
-            case 'ex2': return <BlockValidationExercise key="ex2" title="Ejercicio 2" prompts={ex2Prompts} initialAns={ex2Ans} onAnsChange={(i: number, v: string) => { const na = [...ex2Ans]; na[i] = v; setEx2Ans(na); }} onComplete={() => handleTopicComplete('ex2')} isAdmin={isAdmin} isSupervisionMode={!!targetStudentId} vocabulary={vocabularyMap} />;
-            case 'ex3': return <BlockValidationExercise key="ex3" title="Ejercicio 3" prompts={ex3Prompts} initialAns={ex3Ans} onAnsChange={(i: number, v: string) => { const na = [...ex3Ans]; na[i] = v; setEx3Ans(na); }} onComplete={() => handleTopicComplete('ex3')} isAdmin={isAdmin} isSupervisionMode={!!targetStudentId} vocabulary={vocabularyMap} />;
+            case 'ex1': return <BlockValidationExercise key="ex1" title="Ejercicio 1" prompts={ex1Prompts} initialAns={ex1Ans} onAnsChange={(i: number, v: string) => { const na = [...ex1Ans]; na[i] = v; setEx1Ans(na); }} onComplete={() => handleTopicComplete('ex1')} isAdmin={isAdmin} isSupervisionMode={!!targetStudentId} vocabulary={vocabHelp1} />;
+            case 'ex2': return <BlockValidationExercise key="ex2" title="Ejercicio 2" prompts={ex2Prompts} initialAns={ex2Ans} onAnsChange={(i: number, v: string) => { const na = [...ex2Ans]; na[i] = v; setEx2Ans(na); }} onComplete={() => handleTopicComplete('ex2')} isAdmin={isAdmin} isSupervisionMode={!!targetStudentId} vocabulary={vocabHelp2} />;
+            case 'ex3': return <BlockValidationExercise key="ex3" title="Ejercicio 3" prompts={ex3Prompts} initialAns={ex3Ans} onAnsChange={(i: number, v: string) => { const na = [...ex3Ans]; na[i] = v; setEx3Ans(na); }} onComplete={() => handleTopicComplete('ex3')} isAdmin={isAdmin} isSupervisionMode={!!targetStudentId} vocabulary={vocabHelp3} />;
             case 'vocab_game': return <VocabularyMatchingGame data={vocabularyData.map(v => ({ spanish: v.es, english: [v.en] }))} onComplete={() => handleTopicComplete('vocab_game')} title="Memory Game: Preguntas" />;
             case 'reading':
-                {
-                    const readingOk = Object.values(readVal).length === readingData.questions.length && Object.values(readVal).every(v => v === 'correct');
-                    return (
-                        <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left">
-                            <CardHeader>
-                                <div className="flex justify-between items-start">
-                                    <CardTitle>{readingData.title}</CardTitle>
-                                    <Popover>
-                                        <PopoverTrigger asChild><Button variant="outline" size="sm" className="border-2 border-brand-blue animate-border-pulse shrink-0"><BookText className="mr-2 h-4 w-4" /> Vocabulary</Button></PopoverTrigger>
-                                        <PopoverContent className="w-64">
-                                            <ScrollArea className="h-48 pr-4 text-left">
-                                                <div className="grid grid-cols-2 gap-2 text-sm text-foreground">
-                                                    {Object.entries({ "entrevista": "interview", "periodista": "journalist", "amigable": "friendly" }).map(([es, en]: any) => (<Fragment key={es}><span className="text-muted-foreground capitalize">{es}:</span><span className="font-semibold text-right text-primary">{(en || '').toUpperCase()}</span></Fragment>))}
-                                                </div>
-                                            </ScrollArea>
-                                        </PopoverContent>
-                                    </Popover>
-                                </div>
-                            </CardHeader>
-                            <CardContent className="space-y-6">
-                                <div className="p-6 bg-muted rounded-2xl border italic text-lg leading-relaxed shadow-inner">{readingData.content}</div>
-                                <Separator /><div className="space-y-4">{readingData.questions.map(q => (
-                                    <div key={q.id} className="space-y-2 text-foreground"><Label className='font-bold'>{q.q}</Label><Input value={readAns[q.id] || ''} onChange={e => { if (targetStudentId) return; setReadAns({...readAns, [q.id]: e.target.value}); setReadVal({...readVal, [q.id]: 'unchecked'}); }} className={cn('h-12', readVal[q.id] === 'correct' ? 'border-green-500 bg-green-50/10' : readVal[q.id] === 'incorrect' ? 'border-red-500 bg-red-50/10' : '')} autoComplete="off" readOnly={!!targetStudentId} /></div>
-                                ))}</div>
-                            </CardContent>
-                            <CardFooter className="justify-between border-t pt-6">
-                                <Button onClick={() => {
-                                    let ok = true; const nv: any = {};
-                                    readingData.questions.forEach(q => { const user = (readAns[q.id] || '').trim().toLowerCase(); const isOk = q.a.some(a => user.includes(a.toLowerCase())); nv[q.id] = isOk ? 'correct' : 'incorrect'; if (!isOk) ok = false; });
-                                    setReadVal(nv); if (ok) toast({ title: "¡Lectura superada!" }); else toast({ variant: 'destructive', title: "Revisa las respuestas" });
-                                }} variant="secondary">Verificar</Button>
-                                <Button onClick={() => handleTopicComplete('reading')} disabled={!readingOk && !isAdmin} className="font-bold text-white bg-primary">Continuar</Button>
-                            </CardFooter>
-                        </Card>
-                    );
-                }
-            case 'mixed_ex': return <BlockValidationExercise key="mixed_ex" title="Ejercicio Mixto" prompts={mixedExPrompts} initialAns={mixedExAns} onAnsChange={(i: number, v: string) => { const na = [...mixedExAns]; na[i] = v; setMixedExAns(na); }} onComplete={() => handleTopicComplete('mixed_ex')} isAdmin={isAdmin} isSupervisionMode={!!targetStudentId} vocabulary={vocabularyMap} />;
+                const readingOk = Object.values(readVal).length === readingData.questions.length && Object.values(readVal).every(v => v === 'correct');
+                return (
+                    <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left">
+                        <CardHeader>
+                            <div className="flex justify-between items-start">
+                                <CardTitle>{readingData.title}</CardTitle>
+                                <Popover>
+                                    <PopoverTrigger asChild><Button variant="outline" size="sm" className="border-2 border-brand-blue animate-border-pulse shrink-0"><BookText className="mr-2 h-4 w-4" /> Vocabulary</Button></PopoverTrigger>
+                                    <PopoverContent className="w-64">
+                                        <ScrollArea className="h-48 pr-4 text-left">
+                                            <div className="grid grid-cols-2 gap-2 text-sm text-foreground">
+                                                {Object.entries({ "entrevista": "interview", "periodista": "journalist", "amigable": "friendly" }).map(([es, en]: any) => (<Fragment key={es}><span className="text-muted-foreground capitalize">{es}:</span><span className="font-semibold text-right text-primary">{(en || '').toUpperCase()}</span></Fragment>))}
+                                            </div>
+                                        </ScrollArea>
+                                    </PopoverContent>
+                                </Popover>
+                            </div>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                            <div className="p-6 bg-muted rounded-2xl border italic text-lg leading-relaxed shadow-inner">{readingData.content}</div>
+                            <Separator /><div className="space-y-4">{readingData.questions.map(q => (
+                                <div key={q.id} className="space-y-2 text-foreground"><Label className='font-bold'>{q.q}</Label><Input value={readAns[q.id] || ''} onChange={e => { if (targetStudentId) return; setReadAns({...readAns, [q.id]: e.target.value}); setReadVal({...readVal, [q.id]: 'unchecked'}); }} className={cn('h-12', readVal[q.id] === 'correct' ? 'border-green-500 bg-green-50/10' : readVal[q.id] === 'incorrect' ? 'border-red-500 bg-red-50/10' : '')} autoComplete="off" readOnly={!!targetStudentId} /></div>
+                            ))}</div>
+                        </CardContent>
+                        <CardFooter className="justify-between border-t pt-6">
+                            <Button onClick={() => {
+                                let ok = true; const nv: any = {};
+                                readingData.questions.forEach(q => { const user = (readAns[q.id] || '').trim().toLowerCase(); const isOk = q.a.some(a => user.includes(normalizeString(a))); nv[q.id] = isOk ? 'correct' : 'incorrect'; if (!isOk) ok = false; });
+                                setReadVal(nv); if (ok) toast({ title: "¡Lectura superada!" }); else toast({ variant: 'destructive', title: "Revisa las respuestas" });
+                            }} variant="secondary">Verificar</Button>
+                            <Button onClick={() => handleTopicComplete('reading')} disabled={!readingOk && !isAdmin} className="font-bold text-white bg-primary">Continuar</Button>
+                        </CardFooter>
+                    </Card>
+                );
+            case 'mixed_ex': return <BlockValidationExercise key="mixed_ex" title="Ejercicio Mixto" prompts={mixedExPrompts} initialAns={mixedExAns} onAnsChange={(i: number, v: string) => { const na = [...mixedExAns]; na[i] = v; setMixedExAns(na); }} onComplete={() => handleTopicComplete('mixed_ex')} isAdmin={isAdmin} isSupervisionMode={!!targetStudentId} vocabulary={vocabHelpMixed} />;
             case 'translate':
                 return (
                     <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground text-left">
@@ -605,13 +600,17 @@ export default function PreguntasPage() {
                             <h2 className="text-4xl font-black uppercase text-green-600 tracking-tighter">¡FELICITACIONES!</h2>
                             <p className="text-2xl mt-4 font-bold">¡Has terminado la clase Preguntas!</p>
                             <p className='text-muted-foreground mt-2 text-lg'>Misión completada al 100%.</p>
-                            <Button asChild className="mt-8 px-12 h-12 font-bold" variant="outline"><Link href="/espanol/a1">Regresar a la Ruta A1</Link></Button>
+                            <Button asChild className="mt-8 px-12 h-12 font-bold" variant="outline"><Link href="/espanol/a1">Regresar al Panel</Link></Button>
                         </Card>
                     );
                 }
-                return <BlockValidationExercise key="final" title="Final (Negativos)" prompts={negativePrompts} initialAns={negAns} onAnsChange={(i: number, v: string) => { const na = [...negAns]; na[i] = v; setNegAns(na); }} onComplete={() => { setIsFinished(true); handleTopicComplete('final'); }} isAdmin={isAdmin} isSupervisionMode={!!targetStudentId} vocabulary={vocabularyMap} />;
+                return <BlockValidationExercise key="final" title="Final (Negativos)" prompts={negativePrompts} initialAns={negAns} onAnsChange={(i: number, v: string) => { const na = [...negAns]; na[i] = v; setNegAns(na); }} onComplete={() => { setIsFinished(true); handleTopicComplete('final'); }} isAdmin={isAdmin} isSupervisionMode={!!targetStudentId} vocabulary={vocabHelpMixed} />;
             default: return null;
         }
+    };
+
+    const normalizeString = (str: string) => {
+        return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
     };
 
     return (
