@@ -488,9 +488,10 @@ function PosesivosTenerContent() {
                 <Card className="shadow-soft rounded-lg border-2 border-green-500 bg-green-500/10 p-12 text-center flex flex-col items-center animate-in fade-in zoom-in duration-500 text-foreground">
                     <Trophy className="h-24 w-24 text-yellow-400 mb-6 animate-bounce" />
                     <h2 className="text-4xl font-black uppercase text-green-600 tracking-tighter">FELICITACIONES!</h2>
-                    <p className="text-2xl mt-4 font-bold">Completaste esta clase Posesivos y Tener</p>
+                    <p className="text-2xl mt-4 font-bold">¡Has terminado la clase Posesivos y Tener!</p>
+                            <p className='text-muted-foreground mt-2 text-lg'>Misión completada al 100%.</p>
                     <Button asChild className="mt-8 px-12 h-12 font-bold" variant="outline">
-                        <Link href="/espanol/a1">Regresar a la unidad 1</Link>
+                        <Link href="/espanol/a1">Regresar a la Ruta A1</Link>
                     </Button>
                 </Card>
             );

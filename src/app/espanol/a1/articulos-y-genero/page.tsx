@@ -77,6 +77,7 @@ const classVocab = [
     { en: "GRAY", es: "GRIS" },
     { en: "BROWN", es: "MARRÓN" },
     { en: "KEY", es: "LLAVE" },
+    { en: "BOTTLE", es: "BOTELLA" },
     { en: "WALLET", es: "BILLETERA" },
     { en: "PHONE", es: "TELÉFONO" },
     { en: "WATCH", es: "RELOJ" },
@@ -169,7 +170,7 @@ const finalExPrompts = [
     { s: "21. ___ profesor es amable.", a: "el" },
     { s: "22. Hay ___ borrador verde.", a: "un" },
     { s: "23. ___ mochilas son pesadas.", a: "las" },
-    { s: "24. Compro ___ zapato nuevo.", a: "un" },
+    { s: "24. Compro ___ zapatos nuevs.", a: "unos" },
     { s: "25. ___ gatas son pequeñas.", a: "las" },
     { s: "26. Veo ___ pájaro azul.", a: "un" },
     { s: "27. ___ reloj es antiguo.", a: "el" },
@@ -420,7 +421,7 @@ function ArticulosGeneroContent() {
         { key: 'vocab_game', name: '5. Vocabulario (Juego)', icon: Gamepad2, status: 'locked' },
         { key: 'ex3', name: '6. Ejercicio 3', icon: PenSquare, status: 'locked' },
         { key: 'reading', name: '7. Lectura', icon: BookText, status: 'locked' },
-        { key: 'final_ex', name: '8. Ejercicio Final', icon: Trophy, status: 'locked' },
+        { key: 'final_ex', name: '8. Ejercicio Mixto', icon: Trophy, status: 'locked' },
         { key: 'translate_text', name: '9. Traducir Texto', icon: MessageSquare, status: 'locked' },
         { key: 'final', name: '10. Final', icon: CheckCircle, status: 'locked' },
     ], []);
@@ -602,7 +603,7 @@ function ArticulosGeneroContent() {
                             <CardDescription className='font-bold text-foreground'>Traduce el siguiente párrafo al español.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-6">
-                            <div className="p-6 bg-muted/50 rounded-2xl border italic text-lg leading-relaxed text-foreground shadow-sm">"The classroom is large. There is a red pencil on the desk. The blackboard is white and the walls are gray. A student has the yellow rulers and a blue notebook. The door is brown and the floor is clean."</div>
+                            <div className="p-6 bg-muted/50 rounded-2xl border italic text-lg leading-relaxed text-foreground shadow-sm">"The classroom is large. There is a red pencil on the desk. The blackboard is white and the walls are white. A student has a yellow book and a blue notebook. The door is brown and the floor is clean."</div>
                             <Separator />
                             <div className="space-y-2">
                                 <Label className='font-black text-primary uppercase text-sm'>Tu Traducción:</Label>
