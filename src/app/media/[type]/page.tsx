@@ -22,7 +22,7 @@ const mediaContent = {
   news: { 
     title: "News Update", 
     description: "Watch the latest news in English to stay informed and improve your vocabulary.",
-    url: "https://www.youtube.com/embed/MC6SS_D3psM",
+    url: "https://www.youtube.com/embed/HnOzp8lo-IQ",
     icon: Newspaper,
     progressKey: 'progress_quick_news'
   },
@@ -36,7 +36,7 @@ const mediaContent = {
   music: { 
     title: "Music Experience", 
     description: "Music is a great way to learn rhythm and common expressions.",
-    url: "https://www.youtube.com/embed/XtxYy_CekB8",
+    url: "https://www.youtube.com/embed/mrTdVjvf0rk",
     icon: Music,
     progressKey: 'progress_quick_music'
   },
@@ -50,7 +50,7 @@ const mediaContent = {
   movie: { 
     title: "Movie Time", 
     description: "Watch this movie segment to improve your immersion and listening comprehension.",
-    url: "https://www.youtube.com/embed/4Y41-5hTrNI",
+    url: "https://www.youtube.com/embed/D-Klp2fCZXA",
     icon: Tv,
     progressKey: 'progress_quick_movie'
   },
@@ -58,7 +58,7 @@ const mediaContent = {
   kids_music: {
     title: "Kids Music Adventure",
     description: "Fun songs to help you learn English while you sing and dance!",
-    url: "https://www.youtube.com/embed/3hiLTqaIG-g",
+    url: "https://www.youtube.com/embed/n9eioNf8opI",
     icon: Music,
     progressKey: 'progress_kids_quick_music'
   },
@@ -68,6 +68,13 @@ const mediaContent = {
     url: "https://www.youtube.com/embed/tmORJDin_10",
     icon: CaseSensitive,
     progressKey: 'progress_kids_quick_vocabulary'
+  },
+  kids_movie: {
+    title: "Kids Movie Adventure",
+    description: "Watch this fun movie clip and learn new expressions!",
+    url: "https://www.youtube.com/embed/EgzWLBCQUtI",
+    icon: Tv,
+    progressKey: 'progress_kids_quick_movie'
   },
   // Spanish Content
   es_podcast: {
@@ -87,7 +94,7 @@ const mediaContent = {
   es_music: {
     title: "Música en Español",
     description: "Aprende ritmo y vocabulario a través de la música.",
-    url: "https://www.youtube.com/embed/Zo_pyChNLpo",
+    url: "https://www.youtube.com/embed/p2-sOq_mlMg",
     icon: Music,
     progressKey: 'progress_es_quick_music'
   },
@@ -148,7 +155,7 @@ export default function MediaViewerPage() {
             <DashboardHeader />
             <main className="flex-1 p-4 md:p-8 flex flex-col items-center">
                 <div className="w-full max-w-4xl space-y-6">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 text-white">
                          <Button variant="ghost" onClick={() => router.back()} size="sm" className="text-white hover:bg-white/20">
                             <ArrowLeft className="mr-2 h-4 w-4" />
                             Volver

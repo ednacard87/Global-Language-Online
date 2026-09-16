@@ -1,11 +1,10 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from 'next/navigation';
-import { Loader2, Check, Flame, Gamepad2, Ear, BookOpen, Swords, CaseSensitive, Lock, Star, Rocket, Music, CheckCircle } from 'lucide-react';
+import { Loader2, Check, Flame, Gamepad2, Ear, BookOpen, Swords, CaseSensitive, Lock, Star, Rocket, Music, CheckCircle, Tv } from 'lucide-react';
 import { DashboardHeader } from "@/components/dashboard/header";
 import { useTranslation } from "@/context/language-context";
 import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
@@ -281,16 +280,7 @@ export default function KidsCoursePage() {
                         <NeonCard icon={Ear} title={t('dashboard.listeningSkill')} href="/kids/listening-practice" />
                         <NeonCard icon={BookOpen} title={t('dashboard.readingSkill')} href="/kids/reading-exercise" />
                         <NeonCard icon={Music} title={t('dashboard.musicSkill')} href="/media/kids_music" bgImage={musicBg} />
-                        <NeonCard>
-                            {(studentProfile?.currentStreak || 0) > 1 ? (
-                                <div className="h-12 w-12 mx-auto flex items-center justify-center">
-                                    <span className="text-4xl font-bold text-cyan-400">{studentProfile?.currentStreak}</span>
-                                </div>
-                            ) : (
-                                <Flame className="h-12 w-12 mx-auto text-cyan-400" />
-                            )}
-                            <p className="mt-2 font-bold text-white">{t('dashboard.dailyStreakSkill')}</p>
-                        </NeonCard>
+                        <NeonCard icon={Tv} title="PELICULA" href="/media/kids_movie" />
                     </div>
                 </div>
 
@@ -351,16 +341,7 @@ export default function KidsCoursePage() {
                     <NeonCard icon={Ear} title={t('dashboard.listeningSkill')} href="/kids/listening-practice" />
                     <NeonCard icon={BookOpen} title={t('dashboard.readingSkill')} href="/kids/reading-exercise" />
                     <NeonCard icon={Music} title={t('dashboard.musicSkill')} href="/media/kids_music" bgImage={musicBg} />
-                    <NeonCard>
-                        {(studentProfile?.currentStreak || 0) > 1 ? (
-                            <div className="h-12 w-12 mx-auto flex items-center justify-center">
-                                <span className="text-4xl font-bold text-cyan-400">{studentProfile?.currentStreak}</span>
-                            </div>
-                        ) : (
-                            <Flame className="h-12 w-12 mx-auto text-cyan-400" />
-                        )}
-                        <p className="mt-2 font-bold text-white">{t('dashboard.dailyStreakSkill')}</p>
-                    </NeonCard>
+                    <NeonCard icon={Tv} title="PELICULA" href="/media/kids_movie" />
                 </div>
               </div>
               
