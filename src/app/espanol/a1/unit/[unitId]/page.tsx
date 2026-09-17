@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useRef } from "react";
@@ -31,15 +32,18 @@ export default function EspanolA1UnitPage() {
   const lastSavedProgressRef = useRef<number | null>(null);
 
   useEffect(() => {
-    if (!unitId || isProfileLoading) return;
+    if (!unitId || isProfileLoading || !studentProfile) return;
 
     const initialPath = getA1EspanolUnitPath(unitId);
     
     const updatedItems = initialPath.map(item => {
       if (item.storageKey && studentProfile?.progress) {
-        const itemProgress = studentProfile.progress[item.storageKey] || 0;
+        // Leemos explícitamente el valor almacenado. Si no existe, es 0.
+        const storedVal = studentProfile.progress[item.storageKey];
+        const itemProgress = (storedVal !== undefined && storedVal !== null) ? Number(storedVal) : 0;
         return { ...item, progress: itemProgress };
       }
+      if (item.storageKey) return { ...item, progress: 0 };
       return item;
     });
 
@@ -49,7 +53,6 @@ export default function EspanolA1UnitPage() {
             return acc;
         }
 
-        // Soporte para desbloqueo manual del administrador por clase
         if (item.href && item.href !== '#') {
             const classKey = `es-a1-${item.href.split('/').pop()}`;
             if (studentProfile?.unlockedClasses?.includes(classKey)) {
@@ -80,7 +83,6 @@ export default function EspanolA1UnitPage() {
         return acc;
     }, [] as PathItem[]);
 
-
     itemsWithLockState.forEach(item => item.className = '');
     const nextActiveItem = itemsWithLockState.find(item => !item.locked && (item.progress ?? 0) < 100 && (item.type === 'class' || item.type === 'practice'));
     if(nextActiveItem) {
@@ -88,21 +90,25 @@ export default function EspanolA1UnitPage() {
     }
 
     setPathItems(itemsWithLockState);
-  }, [unitId, isAdmin, studentProfile?.progress, studentProfile?.unlockedClasses, isProfileLoading]);
+  }, [unitId, isAdmin, studentProfile, isProfileLoading]);
 
   const unitProgress = useMemo(() => {
     const classItems = pathItems.filter(item => item.type === 'class');
-    if (!classItems.length) return 100;
-    const totalProgress = classItems.reduce((sum, item) => sum + (item.progress ?? 0), 0);
+    // FIXED: Return 0 instead of 100 if classes aren't loaded to prevent 100% bug
+    if (!classItems.length || pathItems.length === 0) return 0;
+    
+    const validClassItems = classItems.filter(item => item.progress !== undefined);
+    if (validClassItems.length === 0) return 0;
+
+    const totalProgress = validClassItems.reduce((sum, item) => sum + (Number(item.progress) || 0), 0);
     return Math.round(totalProgress / classItems.length);
   }, [pathItems]);
 
-  // PERSISTENCIA BLINDADA
   useEffect(() => {
-    if (isProfileLoading || !studentDocRef || !unitId || isAdmin) return;
+    if (isProfileLoading || !studentDocRef || !unitId || isAdmin || pathItems.length === 0) return;
     
     const progressKey = `progress_a1_es_unit_${unitId}`;
-    const currentSavedProgress = studentProfile?.progress?.[progressKey] || 0;
+    const currentSavedProgress = Number(studentProfile?.progress?.[progressKey] || 0);
     
     if (unitProgress !== currentSavedProgress && unitProgress !== lastSavedProgressRef.current) {
         const timer = setTimeout(() => {
@@ -114,7 +120,7 @@ export default function EspanolA1UnitPage() {
         }, 2000);
         return () => clearTimeout(timer);
     }
-  }, [unitProgress, unitId, studentDocRef, isProfileLoading, isAdmin]);
+  }, [unitProgress, unitId, studentDocRef, isProfileLoading, isAdmin, pathItems, studentProfile]);
 
   if (isUserLoading || isProfileLoading || !unitId) {
     return (

@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, Suspense, Fragment, useRef } from 'react';
@@ -22,7 +23,10 @@ import {
     ListChecks,
     Loader2,
     Star,
-    Palette
+    Palette,
+    Zap,
+    Activity,
+    Search
 } from 'lucide-react';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -42,7 +46,7 @@ import { VocabularyMatchingGame } from '@/components/dashboard/vocabulary-matchi
 import { Textarea } from '@/components/ui/textarea';
 
 // --- CONFIGURACIÓN DE INGENIERÍA ---
-const progressStorageVersion = 'progress_es_a1_comp_sup_v705_layout_fix';
+const progressStorageVersion = 'progress_es_a1_comp_sup_v755_volatile_spaces';
 const mainProgressKey = 'progress_a1_es_comparativos_y_superlativos';
 
 const ICONS_CONFIG: Record<string, React.ElementType> = {
@@ -57,16 +61,17 @@ const mainVocabData = [
     { en: "Tall", es: "Alto" }, { en: "Short", es: "Bajo" }, { en: "Big", es: "Grande" },
     { en: "Small", es: "Pequeño" }, { en: "Fast", es: "Rápido" }, { en: "Slow", es: "Lento" },
     { en: "Expensive", es: "Caro" }, { en: "Cheap", es: "Barato" }, { en: "Interesting", es: "Interesante" },
+    { en: "Happy", es: "Feliz" }, { en: "Sad", es: "Triste" }, { en: "Strong", es: "Fuerte" },
     { en: "Boring", es: "Aburrido" }, { en: "Good", es: "Bueno" }, { en: "Bad", es: "Malo" },
     { en: "Better", es: "Mejor" }, { en: "Worse", es: "Peor" }, { en: "More", es: "Más" },
     { en: "Less", es: "Menos" }, { en: "Than", es: "Que" }, { en: "As... as", es: "Tan... como" },
     { en: "Young", es: "Joven" }, { en: "Old", es: "Viejo" }, { en: "Beautiful", es: "Bonito" },
     { en: "Difficult", es: "Difícil" }, { en: "Easy", es: "Fácil" }, { en: "Strong", es: "Fuerte" },
     { en: "Weak", es: "Débil" }, { en: "Clean", es: "Limpio" }, { en: "Dirty", es: "Sucio" },
-    { en: "Safe", es: "Seguro" }, { en: "Dangerous", es: "Peligroso" }, { en: "Friendly", es: "Amistoso" },
+    { en: "Safe", es: "Seguro" }, { en: "Dangerous", es: "Peligroso" }, { en: "Friendly", es: "Amigable" },
     { en: "Selfish", es: "Egoísta" }, { en: "Intelligent", es: "Inteligente" }, { en: "Funny", es: "Divertido" },
     { en: "Serious", es: "Serio" }, { en: "Wide", es: "Ancho" }, { en: "Narrow", es: "Estrecho" },
-    { en: "Heavy", es: "Pesado" }, { en: "Light", es: "Ligero" }, { en: "Happy", es: "Feliz" },
+    { en: "Heavy", es: "Pesado" }, { en: "Light", es: "Liviano" }, { en: "Happy", es: "Feliz" },
     { en: "Sad", es: "Triste" }
 ];
 
@@ -82,11 +87,14 @@ const irregularTable = [
 const ex1Prompts = [
     { en: "The cat is small.", answer: ["el gato es pequeño"] },
     { en: "The house is big.", answer: ["la casa es grande"] },
+    { en: "I am fast.", answer: ["yo soy rápido", "soy rápido"] },
+    { en: "She is interesting.", answer: ["ella es interesante", "es interesante"] },
     { en: "She is tall.", answer: ["ella es alta"] },
     { en: "He is short.", answer: ["él es bajo", "el es bajo"] },
     { en: "The car is fast.", answer: ["el carro es rápido", "el coche es rápido"] },
     { en: "The book is interesting.", answer: ["el libro es interesante"] },
     { en: "The phone is expensive.", answer: ["el teléfono es caro", "el celular es caro"] },
+    { en: "she is nice.", answer: ["ella es chevere"] },
 ];
 
 const ex2Prompts = [
@@ -116,6 +124,7 @@ const ex2Prompts = [
 const ex3Prompts = [
     { en: "This is the tallest building in the city.", answer: ["este es el edificio mas alto de la ciudad", "este es el edificio más alto de la ciudad"] },
     { en: "She is the smartest student in the class.", answer: ["ella es la estudiante mas inteligente de la clase", "ella es la estudiante más inteligente de la clase"] },
+    { en: "The blue whale is the biggest animal.", answer: ["la ballena azul es el animal más grande"] },
     { en: "It was the best day of my life.", answer: ["fue el mejor dia de mi vida", "fue el mejor día de mi vida"] },
     { en: "This is the most expensive car in the world.", answer: ["este es el coche mas caro del mundo", "este es el carro mas caro del mundo"] },
     { en: "He is the fastest runner on the team.", answer: ["él es el corredor más rápido del equipo", "el es el corredor mas rapido del equipo"] },
@@ -134,6 +143,8 @@ const ex3Prompts = [
 const ex4Prompts = [
     { en: "This is better.", answer: ["esto es mejor"] },
     { en: "That is worse.", answer: ["eso es peor"] },
+    { en: "I am older than her.", answer: ["soy mayor que ella", "soy mas viejo que ella"] },
+    { en: "He is the best player.", answer: ["él es el mejor jugador", "es el mejor jugador"] },
     { en: "I am better than you.", answer: ["soy mejor que tú", "soy mejor que tu"] },
     { en: "He is worse than me.", answer: ["él es peor que yo", "el es peor que yo"] },
     { en: "This is the best.", answer: ["esto es lo mejor"] },
@@ -190,6 +201,7 @@ const mixedExPrompts = [
 const finalNegativePrompts = [
     { en: "I am not taller than my father.", answer: ["no soy más alto que mi padre", "yo no soy mas alto que mi padre"] },
     { en: "This is not the most expensive car.", answer: ["este no es el carro más caro", "este no es el coche mas caro"] },
+    { en: "She is not better than me.", answer: ["ella no es mejor que yo", "no es mejor que yo"] },
     { en: "She is not older than me.", answer: ["ella no es mayor que yo"] },
     { en: "The cat is not faster than the dog.", answer: ["el gato no es más rápido que el perro"] },
     { en: "We are not the best in the class.", answer: ["no somos los mejores de la clase"] },
@@ -214,6 +226,87 @@ const readingData = {
         { id: 'q3', q: "¿Cuál es el edificio más viejo?", a: ["la biblioteca"] },
         { id: 'q4', q: "¿Quién es más alto, Juan o el narrador?", a: ["juan"] },
     ]
+};
+
+// --- HELPER COMPONENTS ---
+
+const BallsExercise = ({ title, prompts, onComplete, vocabulary, initialAns, onAnsChange, isAdmin, isSupervisionMode }: any) => {
+    const { toast } = useToast();
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [valStatus, setValStatus] = useState<Record<number, 'correct' | 'incorrect' | 'unchecked'>>({});
+
+    useEffect(() => { setCurrentIndex(0); setValStatus({}); }, [title]);
+
+    const handleCheck = () => {
+        const newVal: Record<number, 'correct' | 'incorrect'> = {};
+        let allOk = true;
+        prompts.forEach((p: any, i: number) => {
+            const userVal = (initialAns[i] || '').trim().toLowerCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' ');
+            const rawAnswers = Array.isArray(p.answer) ? p.answer : [p.answer];
+            const corrects = rawAnswers.map((a: string) => a.toLowerCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' '));
+            const isOk = corrects.includes(userVal);
+            newVal[i] = isOk ? 'correct' : 'incorrect';
+            if (!isOk) allOk = false;
+        });
+        setValStatus(newVal);
+        if (allOk) toast({ title: "¡Excelente!", description: "Todo está correcto." });
+        else toast({ variant: 'destructive', title: "Hay errores", description: "Revisa las marcas rojas en las bolitas." });
+    };
+
+    const isAllCorrect = Object.values(valStatus).length === prompts.length && Object.values(valStatus).every(v => v === 'correct');
+
+    return (
+        <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground">
+            <CardHeader>
+                <div className="flex justify-between items-center text-left">
+                    <div className="flex-1">
+                        <CardTitle className="text-foreground">{title}</CardTitle>
+                        <div className="flex gap-2 justify-start flex-wrap pt-4">
+                            {prompts.map((_: any, i: number) => (
+                                <div key={i} onClick={() => setCurrentIndex(i)} className={cn("h-8 w-8 rounded-full border-2 flex items-center justify-center text-sm font-bold cursor-pointer transition-all", currentIndex === i ? "border-primary ring-2 ring-primary" : "border-muted", valStatus[i] === 'correct' ? "bg-green-500 text-white border-green-500" : valStatus[i] === 'incorrect' ? "bg-red-500 text-white border-red-500" : "bg-card text-foreground")}>{i + 1}</div>
+                            ))}
+                        </div>
+                    </div>
+                    {vocabulary && (
+                        <Popover>
+                            <PopoverTrigger asChild><Button variant="outline" size="sm" className="border-2 border-brand-blue animate-border-pulse shrink-0"><BookText className="mr-2 h-4 w-4" /> Vocabulary</Button></PopoverTrigger>
+                            <PopoverContent className="w-64">
+                                <ScrollArea className="h-48 pr-4 text-left">
+                                    <div className="flex flex-col gap-2 text-sm text-foreground">
+                                        {Object.entries(vocabulary).map(([es, en]: any) => (
+                                            <div key={es} className="flex justify-between border-b pb-1">
+                                                <span className="text-muted-foreground capitalize font-bold">{es}:</span>
+                                                <span className="font-semibold text-right text-primary">{(en || '').toUpperCase()}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </ScrollArea>
+                            </PopoverContent>
+                        </Popover>
+                    )}
+                </div>
+            </CardHeader>
+            <CardContent className="space-y-6">
+                <div className="bg-muted p-6 rounded-2xl border-2 border-dashed text-center font-bold text-xl uppercase tracking-tighter text-foreground">
+                    {prompts[currentIndex].en}
+                </div>
+                <Input value={initialAns[currentIndex] || ''} onChange={e => { if (isSupervisionMode) return; onAnsChange(currentIndex, e.target.value); setValStatus({...valStatus, [currentIndex]: 'unchecked'}); }} className={cn("h-12 text-lg text-foreground", valStatus[currentIndex] === 'correct' ? 'border-green-500 bg-green-50/10' : valStatus[currentIndex] === 'incorrect' ? 'border-red-500 bg-red-50/10' : '')} placeholder="Tu respuesta..." autoComplete="off" readOnly={isSupervisionMode} />
+            </CardContent>
+            <CardFooter className="justify-between border-t pt-6">
+                <Button variant="outline" onClick={() => setCurrentIndex(p => Math.max(0, p - 1))} disabled={currentIndex === 0}>Anterior</Button>
+                <div className="flex gap-2">
+                    {currentIndex === prompts.length - 1 ? (
+                        <>
+                            {!isAllCorrect && !isSupervisionMode && <Button onClick={handleCheck} variant="secondary">Verificar</Button>}
+                            <Button onClick={onComplete} disabled={!isAllCorrect && !isAdmin} className="text-white font-bold bg-primary hover:bg-primary/90">Continuar</Button>
+                        </>
+                    ) : (
+                        <Button onClick={() => setCurrentIndex(i => i + 1)}>Siguiente</Button>
+                    )}
+                </div>
+            </CardFooter>
+        </Card>
+    );
 };
 
 // --- MAIN PAGE ---
@@ -241,19 +334,15 @@ function ComparativosSuperlativosContentInternal() {
     const [initialLoadComplete, setInitialLoadComplete] = useState(false);
     const hasInitialized = useRef(false);
 
-    // States for content
+    // States for content (Volatile: not loaded from Firestore)
     const [vocabAns, setVocabAns] = useState<string[]>(Array(mainVocabData.length).fill(''));
     const [vocabVal, setVocabVal] = useState<any[]>(Array(mainVocabData.length).fill('unchecked'));
     const [canAdvanceVocab, setCanAdvanceVocab] = useState(false);
     
     const [ex1Ans, setEx1Ans] = useState<string[]>(Array(ex1Prompts.length).fill(''));
-    const [ex1Val, setEx1Val] = useState<any[]>(Array(ex1Prompts.length).fill('unchecked'));
     const [ex2Ans, setEx2Ans] = useState<string[]>(Array(ex2Prompts.length).fill(''));
-    const [ex2Val, setEx2Val] = useState<any[]>(Array(ex2Prompts.length).fill('unchecked'));
     const [ex3Ans, setEx3Ans] = useState<string[]>(Array(ex3Prompts.length).fill(''));
-    const [ex3Val, setEx3Val] = useState<any[]>(Array(ex3Prompts.length).fill('unchecked'));
     const [ex4Ans, setEx4Ans] = useState<string[]>(Array(ex4Prompts.length).fill(''));
-    const [ex4Val, setEx4Val] = useState<any[]>(Array(ex4Prompts.length).fill('unchecked'));
     const [ex5Ans, setEx5Ans] = useState<string[]>(Array(ex5Prompts.length).fill(''));
     const [ex5Val, setEx5Val] = useState<any[]>(Array(ex5Prompts.length).fill('unchecked'));
     const [mixedAns, setMixedAns] = useState<string[]>(Array(mixedExPrompts.length).fill(''));
@@ -296,7 +385,7 @@ function ComparativosSuperlativosContentInternal() {
         setTopicToComplete(completedKey);
     }, []);
 
-    const handleTopicSelect = (topicKey: string) => {
+    const handleTopicSelectInternal = (topicKey: string) => {
         const topic = learningPath.find(t => t.key === topicKey);
         if (!isAdmin && topic?.status === 'locked') { toast({ variant: "destructive", title: "Contenido Bloqueado" }); return; }
         setSelectedTopic(topicKey);
@@ -323,17 +412,6 @@ function ComparativosSuperlativosContentInternal() {
         setLearningPath(path as Topic[]);
         setSelectedTopic(d.lastSelectedTopic || path.find(p => (p as any).status === 'active')?.key || path[0].key);
         
-        if (d.ex1Ans) setEx1Ans(d.ex1Ans);
-        if (d.ex2Ans) setEx2Ans(d.ex2Ans);
-        if (d.ex3Ans) setEx3Ans(d.ex3Ans);
-        if (d.ex4Ans) setEx4Ans(d.ex4Ans);
-        if (d.ex5Ans) setEx5Ans(d.ex5Ans);
-        if (d.mixedAns) setMixedAns(d.mixedAns);
-        if (d.finalAns) setFinalAns(d.finalAns);
-        if (d.readAns) setReadAns(d.readAns);
-        if (d.transText) setTransText(d.transText);
-        if (d.vocabAns) setVocabAns(d.vocabAns);
-
         setInitialLoadComplete(true);
         setTimeout(() => setIsInitialLoading(false), 200);
         hasInitialized.current = true;
@@ -348,15 +426,12 @@ function ComparativosSuperlativosContentInternal() {
     useEffect(() => {
         if (!initialLoadComplete || isInitialLoading || isAdmin || !studentDocRef || learningPath.length === 0 || targetStudentId || !hasInitialized.current || !user) return;
         const saveTimer = setTimeout(() => {
-            const s: any = { 
-                lastSelectedTopic: selectedTopic, 
-                ex1Ans, ex2Ans, ex3Ans, ex4Ans, ex5Ans, mixedAns, finalAns, readAns, transText, vocabAns 
-            };
+            const s: any = { lastSelectedTopic: selectedTopic };
             learningPath.forEach(item => { s[item.key] = item.status; });
             updateDocumentNonBlocking(studentDocRef, { [`lessonProgress.${progressStorageVersion}`]: s, [`progress.${mainProgressKey}`]: progressValue });
         }, 1500);
         return () => clearTimeout(saveTimer);
-    }, [learningPath, progressValue, studentDocRef, initialLoadComplete, selectedTopic, isInitialLoading, ex1Ans, ex2Ans, ex3Ans, ex4Ans, ex5Ans, mixedAns, finalAns, readAns, transText, targetStudentId, vocabAns, isAdmin, user]);
+    }, [learningPath, progressValue, studentDocRef, initialLoadComplete, selectedTopic, isInitialLoading, targetStudentId, isAdmin, user]);
 
     useEffect(() => {
         if (!topicToComplete) return;
@@ -387,19 +462,17 @@ function ComparativosSuperlativosContentInternal() {
         if (ok) toast({ title: "¡Vocabulario completado!" }); else toast({ variant: 'destructive', title: "Revisa las respuestas" });
     };
 
-    const handleVerification = (prompts: any[], answers: string[], setVal: any, currentVal: any[]) => {
+    const handleChoiceCheck = () => {
         const nv: any[] = [];
         let allOk = true;
-        prompts.forEach((p, i) => {
-            const userAns = (answers[i] || '').trim().toLowerCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' ');
-            const corrects = (Array.isArray(p.answer) ? p.answer : [p.answer]).map((a: string) => a.toLowerCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' '));
-            const isOk = corrects.includes(userAns);
+        ex5Prompts.forEach((p, i) => {
+            const isOk = ex5Ans[i] === p.answer;
             nv[i] = isOk ? 'correct' : 'incorrect';
             if (!isOk) allOk = false;
         });
-        setVal(nv);
+        setEx5Val(nv);
         if (allOk) toast({ title: "¡Excelente!", description: "Todo está correcto." });
-        else toast({ variant: 'destructive', title: "Hay errores", description: "Revisa las marcas rojas." });
+        else toast({ variant: 'destructive', title: "Hay errores", description: "Revisa las marcas rojas en las bolitas." });
     };
 
     const handleMixedVerification = () => {
@@ -416,41 +489,20 @@ function ComparativosSuperlativosContentInternal() {
         else toast({ variant: 'destructive', title: "Hay errores", description: "Revisa las marcas rojas." });
     };
 
-    const handleChoiceCheck = () => {
+    const handleFinalVerification = () => {
         const nv: any[] = [];
         let allOk = true;
-        ex5Prompts.forEach((p, i) => {
-            const isOk = ex5Ans[i] === p.answer;
+        finalNegativePrompts.forEach((p, i) => {
+            const userAns = (finalAns[i] || '').trim().toLowerCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' ');
+            const corrects = p.answer.map(a => a.toLowerCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' '));
+            const isOk = corrects.includes(userAns);
             nv[i] = isOk ? 'correct' : 'incorrect';
             if (!isOk) allOk = false;
         });
-        setEx5Val(nv);
-        if (allOk) toast({ title: "¡Excelente!", description: "Todo está correcto." });
+        setFinalVal(nv);
+        if (allOk) toast({ title: "¡Excelente!", description: "Misión terminada al 100%." });
         else toast({ variant: 'destructive', title: "Hay errores", description: "Revisa las marcas rojas." });
     };
-
-    const VocabularyHelp = ({ vocab }: { vocab: Record<string, string> }) => (
-        <Popover>
-            <PopoverTrigger asChild>
-                <Button variant="outline" size="sm" className="border-2 border-brand-blue animate-border-pulse shrink-0">
-                    <BookText className="mr-2 h-4 w-4" /> Vocabulary
-                </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-64">
-                <ScrollArea className="h-64 pr-4">
-                    <div className="space-y-2 text-foreground text-left">
-                        <h4 className="font-bold border-b pb-1 text-primary uppercase text-xs">Ayuda de Misión</h4>
-                        {Object.entries(vocab).map(([es, en]: any) => (
-                            <div key={es} className="flex justify-between items-center text-[11px] border-b border-muted pb-1">
-                                <span className="text-muted-foreground capitalize font-medium">{es}:</span>
-                                <span className="font-black text-primary text-right uppercase">{(en || '').toUpperCase()}</span>
-                            </div>
-                        ))}
-                    </div>
-                </ScrollArea>
-            </PopoverContent>
-        </Popover>
-    );
 
     const renderContent = () => {
         if (isInitialLoading) return <div className="flex justify-center items-center h-64"><Loader2 className="animate-spin text-primary" /></div>;
@@ -504,81 +556,9 @@ function ComparativosSuperlativosContentInternal() {
                         </Card>
                     </div>
                 );
-            case 'ex1':
-                return (
-                    <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left">
-                        <CardHeader>
-                            <div className='flex flex-col sm:flex-row justify-between items-start gap-4'>
-                                <div className="flex-1">
-                                    <CardTitle>Ejercicio 1</CardTitle>
-                                    <div className="flex gap-1.5 mt-4 flex-wrap">{ex1Prompts.map((_, i) => (<div key={i} onClick={() => setCurrentIndex(i)} className={cn("h-7 w-7 rounded-full border-2 flex items-center justify-center text-[10px] font-bold cursor-pointer transition-all", currentIndex === i ? "border-primary ring-2 ring-primary" : "border-muted", ex1Val[i] === 'correct' ? "bg-green-500 text-white border-green-500" : ex1Val[i] === 'incorrect' ? "bg-red-500 text-white border-red-500" : "bg-card")}>{i+1}</div>))}</div>
-                                </div>
-                                <VocabularyHelp vocab={{"gato": "cat", "pequeño": "small", "casa": "house", "grande": "big", "alta": "tall"}} />
-                            </div>
-                        </CardHeader>
-                        <CardContent className="space-y-6 pt-4">
-                            <div className="bg-muted p-6 rounded-2xl border-2 border-dashed text-center font-bold text-xl uppercase tracking-tighter text-foreground">{ex1Prompts[currentIndex].en}</div>
-                            <Input value={ex1Ans[currentIndex] || ''} onChange={e => { if (targetStudentId) return; const na = [...ex1Ans]; na[currentIndex] = e.target.value; setEx1Ans(na); setEx1Val(v => { const nv = [...v]; nv[currentIndex] = 'unchecked'; return nv; }); }} className="h-12 text-lg text-foreground uppercase" placeholder="..." autoComplete="off" />
-                        </CardContent>
-                        <CardFooter className="justify-between border-t pt-6">
-                            <Button variant="outline" onClick={() => setCurrentIndex(p => Math.max(0, p - 1))} disabled={currentIndex === 0}>Anterior</Button>
-                            <div className="flex gap-2">
-                                {currentIndex === ex1Prompts.length - 1 && <Button onClick={() => handleVerification(ex1Prompts, ex1Ans, setEx1Val, ex1Val)} variant="secondary">Verificar</Button>}
-                                <Button onClick={() => currentIndex < ex1Prompts.length - 1 ? setCurrentIndex(i => i + 1) : handleTopicComplete('ex1')} disabled={currentIndex === ex1Prompts.length - 1 && !ex1Val.every(v => v === 'correct') && !isAdmin}>Siguiente</Button>
-                            </div>
-                        </CardFooter>
-                    </Card>
-                );
-            case 'ex2':
-                return (
-                    <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left">
-                        <CardHeader>
-                            <div className='flex flex-col sm:flex-row justify-between items-start gap-4'>
-                                <div className="flex-1">
-                                    <CardTitle>Ejercicio 2</CardTitle>
-                                    <div className="flex gap-1.5 mt-4 flex-wrap">{ex2Prompts.map((_, i) => (<div key={i} onClick={() => setCurrentIndex(i)} className={cn("h-7 w-7 rounded-full border-2 flex items-center justify-center text-[10px] font-bold cursor-pointer transition-all", currentIndex === i ? "border-primary ring-2 ring-primary" : "border-muted", ex2Val[i] === 'correct' ? "bg-green-500 text-white border-green-500" : ex2Val[i] === 'incorrect' ? "bg-red-500 text-white border-red-500" : "bg-card")}>{i+1}</div>))}</div>
-                                </div>
-                                <VocabularyHelp vocab={{"más alto": "taller", "barato": "cheaper", "rápido": "faster", "fácil": "easier"}} />
-                            </div>
-                        </CardHeader>
-                        <CardContent className="space-y-6 pt-4">
-                            <div className="bg-muted p-6 rounded-2xl border-2 border-dashed text-center font-bold text-xl uppercase tracking-tighter text-foreground">{ex2Prompts[currentIndex].en}</div>
-                            <Input value={ex2Ans[currentIndex] || ''} onChange={e => { if (targetStudentId) return; const na = [...ex2Ans]; na[currentIndex] = e.target.value; setEx2Ans(na); setEx2Val(v => { const nv = [...v]; nv[currentIndex] = 'unchecked'; return nv; }); }} className="h-12 text-lg text-foreground uppercase" placeholder="..." autoComplete="off" />
-                        </CardContent>
-                        <CardFooter className="justify-between border-t pt-6">
-                            <Button variant="outline" onClick={() => setCurrentIndex(p => Math.max(0, p - 1))} disabled={currentIndex === 0}>Anterior</Button>
-                            <div className="flex gap-2">
-                                {currentIndex === ex2Prompts.length - 1 && <Button onClick={() => handleVerification(ex2Prompts, ex2Ans, setEx2Val, ex2Val)} variant="secondary">Verificar</Button>}
-                                <Button onClick={() => currentIndex < ex2Prompts.length - 1 ? setCurrentIndex(i => i + 1) : handleTopicComplete('ex2')} disabled={currentIndex === ex2Prompts.length - 1 && !ex2Val.every(v => v === 'correct') && !isAdmin}>Siguiente</Button>
-                            </div>
-                        </CardFooter>
-                    </Card>
-                );
-            case 'ex3':
-                return (
-                    <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left">
-                        <CardHeader>
-                            <div className='flex flex-col sm:flex-row justify-between items-start gap-4'>
-                                <div className="flex-1">
-                                    <CardTitle>Ejercicio 3</CardTitle>
-                                    <div className="flex gap-1.5 mt-4 flex-wrap">{ex3Prompts.map((_, i) => (<div key={i} onClick={() => setCurrentIndex(i)} className={cn("h-7 w-7 rounded-full border-2 flex items-center justify-center text-[10px] font-bold cursor-pointer transition-all", currentIndex === i ? "border-primary ring-2 ring-primary" : "border-muted", ex3Val[i] === 'correct' ? "bg-green-500 text-white border-green-500" : ex3Val[i] === 'incorrect' ? "bg-red-500 text-white border-red-500" : "bg-card")}>{i+1}</div>))}</div>
-                                </div>
-                                <VocabularyHelp vocab={{"edificio": "building", "inteligente": "smartest", "mundo": "world"}} />
-                            </div>
-                        </CardHeader>
-                        <CardContent className="space-y-6 pt-4">
-                            <div className="bg-muted p-6 rounded-2xl border-2 border-dashed text-center font-bold text-xl uppercase tracking-tighter text-foreground">{ex3Prompts[currentIndex].en}</div>
-                            <Input value={ex3Ans[currentIndex] || ''} onChange={e => { if (targetStudentId) return; const na = [...ex3Ans]; na[currentIndex] = e.target.value; setEx3Ans(na); setEx3Val(v => { const nv = [...v]; nv[currentIndex] = 'unchecked'; return nv; }); }} className="h-12 text-lg text-foreground uppercase" placeholder="..." autoComplete="off" />
-                        </CardContent>
-                        <CardFooter className="justify-between border-t pt-6">
-                            <Button variant="outline" onClick={() => setCurrentIndex(p => Math.max(0, p - 1))} disabled={currentIndex === 0}>Anterior</Button>
-                            <div className="flex gap-2">
-                                {currentIndex === ex3Prompts.length - 1 && <Button onClick={() => handleVerification(ex3Prompts, ex3Ans, setEx3Val, ex3Val)} variant="secondary">Verificar</Button>}
-                                <Button onClick={() => currentIndex < ex3Prompts.length - 1 ? setCurrentIndex(i => i + 1) : handleTopicComplete('ex3')} disabled={currentIndex === ex3Prompts.length - 1 && !ex3Val.every(v => v === 'correct') && !isAdmin}>Siguiente</Button>
-                            </div>
-                        </CardFooter>
-                    </Card>
-                );
+            case 'ex1': return <BallsExercise key="ex1" title="Ejercicio 1" prompts={ex1Prompts} initialAns={ex1Ans} onAnsChange={(i: number, v: string) => { const na = [...ex1Ans]; na[i] = v; setEx1Ans(na); }} onComplete={() => handleTopicComplete('ex1')} isAdmin={isAdmin} isSupervisionMode={!!targetStudentId} vocabulary={{"gato": "cat", "pequeño": "small", "casa": "house", "grande": "big", "alta": "tall"}} />;
+            case 'ex2': return <BallsExercise key="ex2" title="Ejercicio 2" prompts={ex2Prompts} initialAns={ex2Ans} onAnsChange={(i: number, v: string) => { const na = [...ex2Ans]; na[i] = v; setEx2Ans(na); }} onComplete={() => handleTopicComplete('ex2')} isAdmin={isAdmin} isSupervisionMode={!!targetStudentId} vocabulary={{"más alto": "taller", "barato": "cheaper", "rápido": "faster", "fácil": "easier"}} />;
+            case 'ex3': return <BallsExercise key="ex3" title="Ejercicio 3" prompts={ex3Prompts} initialAns={ex3Ans} onAnsChange={(i: number, v: string) => { const na = [...ex3Ans]; na[i] = v; setEx3Ans(na); }} onComplete={() => handleTopicComplete('ex3')} isAdmin={isAdmin} isSupervisionMode={!!targetStudentId} vocabulary={{"edificio": "building", "inteligente": "smartest", "mundo": "world"}} />;
             case 'grammar2':
                 return (
                     <Card className="shadow-soft border-2 border-brand-purple bg-slate-100 dark:bg-slate-800/50 p-6 text-foreground text-left">
@@ -610,50 +590,26 @@ function ComparativosSuperlativosContentInternal() {
                     </Card>
                 );
             case 'vocab_game': return <VocabularyMatchingGame data={mainVocabData.map(v => ({ spanish: v.es, english: [v.en] }))} onComplete={() => handleTopicComplete('vocab_game')} title="Memory Game: Comparación" />;
-            case 'ex4':
-                return (
-                    <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left">
-                        <CardHeader>
-                            <div className='flex flex-col sm:flex-row justify-between items-start gap-4'>
-                                <div className="flex-1">
-                                    <CardTitle>Ejercicio 4</CardTitle>
-                                    <div className="flex gap-1.5 mt-4 flex-wrap">{ex4Prompts.map((_, i) => (<div key={i} onClick={() => setCurrentIndex(i)} className={cn("h-7 w-7 rounded-full border-2 flex items-center justify-center text-[10px] font-bold cursor-pointer transition-all", currentIndex === i ? "border-primary ring-2 ring-primary" : "border-muted", ex4Val[i] === 'correct' ? "bg-green-500 text-white border-green-500" : ex4Val[i] === 'incorrect' ? "bg-red-500 text-white border-red-500" : "bg-card")}>{i+1}</div>))}</div>
-                                </div>
-                                <VocabularyHelp vocab={{"mejor": "better", "peor": "worse"}} />
-                            </div>
-                        </CardHeader>
-                        <CardContent className="space-y-6 pt-4">
-                            <div className="bg-muted p-6 rounded-2xl border-2 border-dashed text-center font-bold text-xl uppercase tracking-tighter text-foreground">{ex4Prompts[currentIndex].en}</div>
-                            <Input value={ex4Ans[currentIndex] || ''} onChange={e => { if (targetStudentId) return; const na = [...ex4Ans]; na[currentIndex] = e.target.value; setEx4Ans(na); setEx4Val(v => { const nv = [...v]; nv[currentIndex] = 'unchecked'; return nv; }); }} className="h-12 text-lg text-foreground uppercase" placeholder="..." autoComplete="off" />
-                        </CardContent>
-                        <CardFooter className="justify-between border-t pt-6">
-                            <Button variant="outline" onClick={() => setCurrentIndex(p => Math.max(0, p - 1))} disabled={currentIndex === 0}>Anterior</Button>
-                            <div className="flex gap-2">
-                                {currentIndex === ex4Prompts.length - 1 && <Button onClick={() => handleVerification(ex4Prompts, ex4Ans, setEx4Val, ex4Val)} variant="secondary">Verificar</Button>}
-                                <Button onClick={() => currentIndex < ex4Prompts.length - 1 ? setCurrentIndex(i => i + 1) : handleTopicComplete('ex4')} disabled={currentIndex === ex4Prompts.length - 1 && !ex4Val.every(v => v === 'correct') && !isAdmin}>Siguiente</Button>
-                            </div>
-                        </CardFooter>
-                    </Card>
-                );
+            case 'ex4': return <BallsExercise key="ex4" title="Ejercicio 4" prompts={ex4Prompts} initialAns={ex4Ans} onAnsChange={(i: number, v: string) => { const na = [...ex4Ans]; na[i] = v; setEx4Ans(na); }} onComplete={() => handleTopicComplete('ex4')} isAdmin={isAdmin} isSupervisionMode={!!targetStudentId} vocabulary={{"mejor": "better", "peor": "worse", "viejo": "old", "jugador": "player"}} />;
             case 'ex5':
+                const curEx5 = ex5Prompts[currentIndex];
+                const allEx5Ok = ex5Val.length > 0 && ex5Val.every(v => v === 'correct');
                 return (
                     <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left">
                         <CardHeader>
-                            <div className='flex flex-col sm:flex-row justify-between items-start gap-4'>
+                            <div className='flex justify-between items-start gap-4'>
                                 <div className="flex-1">
                                     <CardTitle className="uppercase font-black text-primary">Ejercicio 5: Selección Múltiple</CardTitle>
                                     <div className="flex gap-1.5 mt-4 flex-wrap">{ex5Prompts.map((_, i) => (<div key={i} onClick={() => setCurrentIndex(i)} className={cn("h-7 w-7 rounded-full border-2 flex items-center justify-center text-[10px] font-bold cursor-pointer transition-all", currentIndex === i ? "border-primary ring-2 ring-primary" : "border-muted", ex5Val[i] === 'correct' ? "bg-green-500 text-white border-green-500" : ex5Val[i] === 'incorrect' ? "bg-red-500 text-white border-red-500" : "bg-card")}>{i+1}</div>))}</div>
                                 </div>
-                                <VocabularyHelp vocab={{"más bonita": "beautiful", "más rápido": "faster"}} />
+                                <Popover><PopoverTrigger asChild><Button variant="outline" size="sm" className='border-2 border-brand-blue animate-border-pulse shrink-0'><BookText className="mr-2 h-4 w-4" /> Vocabulary</Button></PopoverTrigger><PopoverContent className="w-64"><ScrollArea className="h-48 pr-4"><div className="flex flex-col gap-2 text-sm text-foreground">{Object.entries({"más bonita": "beautiful", "más rápido": "faster", "mejor": "better", "más alto": "tallest"}).map(([es, en]) => (<div key={es} className='flex justify-between border-b pb-1'><span>{es}:</span><span className='font-bold uppercase text-primary'>{en}</span></div>))}</div></ScrollArea></PopoverContent></Popover>
                             </div>
                         </CardHeader>
                         <CardContent className="space-y-8 pt-8">
-                            <div className="bg-muted p-6 rounded-2xl border-2 border-dashed text-center font-bold text-2xl uppercase tracking-tighter text-foreground">{ex5Prompts[currentIndex].spanish}</div>
+                            <div className="bg-muted p-6 rounded-2xl border-2 border-dashed text-center font-bold text-2xl uppercase tracking-tighter text-foreground">{curEx5.spanish}</div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto">
-                                {ex5Prompts[currentIndex].options.map((opt) => (
-                                    <Button key={opt} onClick={() => { if (targetStudentId) return; const na = [...ex5Ans]; na[currentIndex] = opt; setEx5Ans(na); setEx5Val(v => { const nv = [...v]; nv[currentIndex] = 'unchecked'; return nv; }); }} variant="outline" className={cn("h-14 text-base font-bold uppercase transition-all", ex5Ans[currentIndex] === opt ? "bg-primary/20 border-primary shadow-md" : "")}>
-                                        {opt}
-                                    </Button>
+                                {curEx5.options.map((opt) => (
+                                    <Button key={opt} onClick={() => { if (targetStudentId) return; const na = [...ex5Ans]; na[currentIndex] = opt; setEx5Ans(na); setEx5Val(v => { const nv = [...v]; nv[currentIndex] = 'unchecked'; return nv; }); }} variant="outline" className={cn("h-14 text-base font-bold uppercase transition-all", ex5Ans[currentIndex] === opt ? "bg-primary/20 border-primary shadow-md" : "")}>{opt}</Button>
                                 ))}
                             </div>
                         </CardContent>
@@ -661,7 +617,7 @@ function ComparativosSuperlativosContentInternal() {
                             <Button variant="outline" onClick={() => setCurrentIndex(p => Math.max(0, p - 1))} disabled={currentIndex === 0}>Anterior</Button>
                             <div className="flex gap-2">
                                 {currentIndex === ex5Prompts.length - 1 && <Button onClick={handleChoiceCheck} variant="secondary">Verificar</Button>}
-                                <Button onClick={() => currentIndex < ex5Prompts.length - 1 ? setCurrentIndex(i => i + 1) : handleTopicComplete('ex5')} disabled={currentIndex === ex5Prompts.length - 1 && !ex5Val.every(v => v === 'correct') && !isAdmin}>Siguiente</Button>
+                                <Button onClick={() => currentIndex < ex5Prompts.length - 1 ? setCurrentIndex(i => i + 1) : handleTopicComplete('ex5')} disabled={currentIndex === ex5Prompts.length - 1 && !allEx5Ok && !isAdmin}>Siguiente</Button>
                             </div>
                         </CardFooter>
                     </Card>
@@ -670,12 +626,7 @@ function ComparativosSuperlativosContentInternal() {
                 const readingOk = Object.values(readVal).length === readingData.questions.length && Object.values(readVal).every(v => v === 'correct');
                 return (
                     <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left">
-                        <CardHeader>
-                             <div className='flex justify-between items-start'>
-                                <div><CardTitle>{readingData.title}</CardTitle></div>
-                                <VocabularyHelp vocab={{"barato": "cheap", "parque": "park"}} />
-                            </div>
-                        </CardHeader>
+                        <CardHeader><div className="flex justify-between items-start"><div><CardTitle>{readingData.title}</CardTitle></div><Popover><PopoverTrigger asChild><Button variant="outline" size="sm" className='border-2 border-brand-blue animate-border-pulse shrink-0'><BookText className="mr-2 h-4 w-4" /> Vocabulary</Button></PopoverTrigger><PopoverContent className="w-64"><ScrollArea className="h-48 pr-4"><div className="flex flex-col gap-2 text-sm text-foreground">{Object.entries({"barato": "cheap", "parque": "park", "biblioteca": "library", "más viejo": "oldest"}).map(([es, en]) => (<div key={es} className='flex justify-between border-b pb-1'><span>{es}:</span><span className='font-bold uppercase text-primary'>{en}</span></div>))}</div></ScrollArea></PopoverContent></Popover></div></CardHeader>
                         <CardContent className="space-y-6 text-foreground">
                             <div className="p-6 bg-muted rounded-2xl border italic text-lg leading-relaxed shadow-inner text-foreground">{readingData.text}</div>
                             <Separator /><div className="space-y-4">{readingData.questions.map(q => (
@@ -697,32 +648,27 @@ function ComparativosSuperlativosContentInternal() {
                     </Card>
                 );
             case 'mixed':
+                const curMixed = mixedExPrompts[currentIndex];
                 const mixedOk = mixedVal.length > 0 && mixedVal.every(v => v === 'correct');
                 return (
                     <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left">
                         <CardHeader>
-                            <div className='flex flex-col sm:flex-row justify-between items-start gap-4'>
+                            <div className='flex justify-between items-start gap-4'>
                                 <div className="flex-1">
                                     <CardTitle className="uppercase font-black text-primary">Ejercicio Mixto</CardTitle>
                                     <div className="flex gap-1.5 mt-4 flex-wrap">{mixedExPrompts.map((_, i) => (<div key={i} onClick={() => setCurrentIndex(i)} className={cn("h-7 w-7 rounded-full border-2 flex items-center justify-center text-[10px] font-bold cursor-pointer transition-all", currentIndex === i ? "border-primary ring-2 ring-primary" : "border-muted", mixedVal[i] === 'correct' ? "bg-green-500 text-white border-green-500" : mixedVal[i] === 'incorrect' ? "bg-red-500 text-white border-red-500" : "bg-card")}>{i+1}</div>))}</div>
                                 </div>
-                                <VocabularyHelp vocab={{"hermano": "brother", "más alto": "taller"}} />
+                                <Popover><PopoverTrigger asChild><Button variant="outline" size="sm" className='border-2 border-brand-blue animate-border-pulse shrink-0'><BookText className="mr-2 h-4 w-4" /> Vocabulary</Button></PopoverTrigger><PopoverContent className="w-64"><ScrollArea className="h-48 pr-4"><div className="flex flex-col gap-2 text-sm text-foreground">{Object.entries({"hermano": "brother", "más alto": "taller", "mejor": "best"}).map(([es, en]) => (<div key={es} className='flex justify-between border-b pb-1'><span>{es}:</span><span className='font-bold uppercase text-primary'>{en}</span></div>))}</div></ScrollArea></PopoverContent></Popover>
                             </div>
                         </CardHeader>
-                        <CardContent className="space-y-8 pt-8">
-                            <div className="bg-primary/5 p-4 rounded-xl border border-primary/20 text-center italic font-bold">"{mixedExPrompts[currentIndex].en}"</div>
+                        <CardContent className="space-y-8 pt-8 text-foreground">
+                            <div className="bg-primary/5 p-4 rounded-xl border border-primary/20 text-center italic font-bold">"{curMixed.en}"</div>
                             <div className="text-3xl font-black text-center flex flex-wrap items-center justify-center gap-2">
-                                {mixedExPrompts[currentIndex].text.split('_______').map((part, i) => (
+                                {curMixed.text.split('_______').map((part, i) => (
                                     <Fragment key={i}>
                                         {part}
                                         {i === 0 && (
-                                            <Input 
-                                                value={mixedAns[currentIndex] || ''} 
-                                                onChange={e => { if (targetStudentId) return; const na = [...mixedAns]; na[currentIndex] = e.target.value; setMixedAns(na); setMixedVal(v => { const nv = [...v]; nv[currentIndex] = 'unchecked'; return nv; }); }} 
-                                                className={cn("w-40 h-10 inline-block text-center font-bold uppercase transition-all", mixedVal[currentIndex] === 'correct' ? "border-green-500 bg-green-50/10" : "border-primary")} 
-                                                autoComplete="off" 
-                                                readOnly={!!targetStudentId}
-                                            />
+                                            <Input value={mixedAns[currentIndex] || ''} onChange={e => { if (targetStudentId) return; const na = [...mixedAns]; na[currentIndex] = e.target.value; setMixedAns(na); setMixedVal(v => { const nv = [...v]; nv[currentIndex] = 'unchecked'; return nv; }); }} className={cn("w-40 h-10 inline-block text-center font-bold uppercase transition-all", mixedVal[currentIndex] === 'correct' ? "border-green-500 bg-green-50/10 text-black dark:text-white" : "border-primary")} autoComplete="off" readOnly={!!targetStudentId}/>
                                         )}
                                     </Fragment>
                                 ))}
@@ -732,7 +678,7 @@ function ComparativosSuperlativosContentInternal() {
                             <Button variant="outline" onClick={() => setCurrentIndex(p => Math.max(0, p - 1))} disabled={currentIndex === 0}>Anterior</Button>
                             <div className="flex gap-2">
                                 {currentIndex === mixedExPrompts.length - 1 && <Button onClick={handleMixedVerification} variant="secondary">Verificar</Button>}
-                                <Button onClick={() => currentIndex < mixedExPrompts.length - 1 ? setCurrentIndex(i => i + 1) : handleTopicComplete('mixed')} disabled={currentIndex === mixedExPrompts.length - 1 && !mixedOk && !isAdmin} className="bg-primary text-white">Continuar</Button>
+                                <Button onClick={() => currentIndex < mixedExPrompts.length - 1 ? setCurrentIndex(i => i + 1) : handleTopicComplete('mixed')} disabled={currentIndex === mixedExPrompts.length - 1 && !mixedOk && !isAdmin} className="bg-primary text-white font-bold">Continuar</Button>
                             </div>
                         </CardFooter>
                     </Card>
@@ -743,7 +689,7 @@ function ComparativosSuperlativosContentInternal() {
                         <CardHeader>
                             <div className='flex justify-between items-center w-full'>
                                 <div><CardTitle className='text-primary font-black uppercase'>Traducción de Texto</CardTitle><CardDescription className='font-bold text-foreground'>Traduce el párrafo al español.</CardDescription></div>
-                                <VocabularyHelp vocab={{"city": "ciudad", "beautiful": "bonito", "expensive": "caro"}} />
+                                <Popover><PopoverTrigger asChild><Button variant="outline" size="sm" className='border-2 border-brand-blue animate-border-pulse shrink-0'><BookText className="mr-2 h-4 w-4" /> Vocabulary</Button></PopoverTrigger><PopoverContent className="w-64"><ScrollArea className="h-64 pr-4"><div className="flex flex-col gap-2 text-sm text-foreground">{Object.entries({"city": "ciudad", "beautiful": "bonito", "expensive": "caro", "easier": "más fácil", "smarter": "más inteligente"}).map(([en, es]: any) => (<div key={en} className="flex justify-between border-b pb-1"><span className="text-muted-foreground capitalize font-medium">{en}:</span><span className="font-black text-primary text-right uppercase">{es.toUpperCase()}</span></div>))}</div></ScrollArea></PopoverContent></Popover>
                             </div>
                         </CardHeader>
                         <CardContent className="space-y-6 pt-6">
@@ -761,7 +707,7 @@ function ComparativosSuperlativosContentInternal() {
                         <Card className="shadow-soft border-2 border-green-500 bg-green-50/10 p-12 text-center flex flex-col items-center text-foreground animate-in zoom-in duration-500">
                             <Trophy className="h-24 w-24 text-yellow-400 mb-6 animate-bounce" />
                             <h2 className="text-4xl font-black uppercase text-green-600 tracking-tighter">¡FELICITACIONES!</h2>
-                            <p className="text-2xl mt-4 font-bold text-black dark:text-white">Tu completaste esta clase Comparativos y Superlativos</p>
+                            <p className="text-2xl mt-4 font-bold text-black dark:text-white"> Tu completaste esta clase Comparativos y Superlativos</p>
                             <Button asChild className="mt-8 px-12 h-12 font-bold" variant="outline"><Link href="/espanol/a1">Regresar a la Ruta A1</Link></Button>
                         </Card>
                     );
@@ -770,25 +716,23 @@ function ComparativosSuperlativosContentInternal() {
                 return (
                     <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left">
                         <CardHeader>
-                            <div className='flex flex-col sm:flex-row justify-between items-start gap-4'>
+                            <div className='flex justify-between items-start gap-4'>
                                 <div className="flex-1">
                                     <CardTitle>Final: Frases Negativas</CardTitle>
-                                    <div className="flex gap-1.5 mt-4 flex-wrap">{finalNegativePrompts.map((_, i) => (<div key={i} onClick={() => setCurrentIndex(i)} className={cn("h-7 w-7 rounded-full border-2 flex items-center justify-center text-[10px] font-bold cursor-pointer transition-all", currentIndex === i ? "border-primary ring-2 ring-primary" : "border-muted", finalVal[i] === 'correct' ? "bg-green-500 text-white border-green-500" : finalVal[i] === 'incorrect' ? "bg-red-500 text-white border-red-500" : "bg-card")}>{i+1}</div>))}</div>
+                                    <div className="flex gap-1.5 mt-4 flex-wrap">{finalNegativePrompts.map((_, i) => (<div key={i} onClick={() => setCurrentIndex(i)} className={cn("h-7 w-7 rounded-full border-2 flex items-center justify-center text-[10px] font-bold cursor-pointer transition-all", currentIndex === i ? "border-primary ring-2 ring-primary" : "border-muted", finalVal[i] === 'correct' ? "bg-green-500 text-white border-green-500" : finalVal[i] === 'incorrect' ? "bg-red-500 text-white border-red-500" : "bg-card text-foreground")}>{i+1}</div>))}</div>
                                 </div>
-                                <VocabularyHelp vocab={{"más alto": "taller", "caro": "expensive"}} />
+                                <Popover><PopoverTrigger asChild><Button variant="outline" size="sm" className='border-2 border-brand-blue animate-border-pulse shrink-0'><BookText className="mr-2 h-4 w-4" /> Vocabulary</Button></PopoverTrigger><PopoverContent className="w-64"><ScrollArea className="h-48 pr-4"><div className="flex flex-col gap-2 text-sm text-foreground">{Object.entries({"más alto": "taller", "caro": "expensive"}).map(([es, en]) => (<div key={es} className='flex justify-between border-b pb-1'><span>{es}:</span><span className='font-bold uppercase text-primary'>{en}</span></div>))}</div></ScrollArea></PopoverContent></Popover>
                             </div>
                         </CardHeader>
                         <CardContent className="space-y-6 pt-4">
                             <div className="bg-muted p-6 rounded-2xl border-2 border-dashed text-center font-bold text-xl uppercase tracking-tighter text-foreground">{finalNegativePrompts[currentIndex].en}</div>
-                            <Input value={finalAns[currentIndex] || ''} onChange={e => { if (targetStudentId) return; const na = [...finalAns]; na[currentIndex] = e.target.value; setFinalAns(na); setFinalVal(v => { const nv = [...v]; nv[currentIndex] = 'unchecked'; return nv; }); }} className="h-12 text-lg text-foreground uppercase" placeholder="..." autoComplete="off" />
+                            <Input value={finalAns[currentIndex] || ''} onChange={e => { if (targetStudentId) return; const na = [...finalAns]; na[currentIndex] = e.target.value; setFinalAns(na); setFinalVal(v => { const nv = [...v]; nv[currentIndex] = 'unchecked'; return nv; }); }} className={cn("h-12 text-lg text-foreground uppercase", finalVal[currentIndex] === 'correct' ? 'border-green-500 bg-green-50/10' : finalVal[currentIndex] === 'incorrect' ? 'border-red-500 bg-red-50/10' : '')} placeholder="..." autoComplete="off" readOnly={!!targetStudentId} />
                         </CardContent>
                         <CardFooter className="justify-between border-t pt-6">
                             <Button variant="outline" onClick={() => setCurrentIndex(p => Math.max(0, p - 1))} disabled={currentIndex === 0}>Anterior</Button>
                             <div className="flex gap-2">
-                                {currentIndex === finalNegativePrompts.length - 1 && <Button onClick={() => handleVerification(finalNegativePrompts, finalAns, setFinalVal, finalVal)} variant="secondary">Verificar</Button>}
-                                <Button onClick={() => { if(currentIndex < finalNegativePrompts.length - 1) { setCurrentIndex(i => i + 1); } else { setIsFinished(true); handleTopicComplete('final'); } }} disabled={currentIndex === finalNegativePrompts.length - 1 && !finalOk && !isAdmin} className={cn("font-bold text-white", finalOk && currentIndex === finalNegativePrompts.length - 1 ? "bg-green-600 hover:bg-green-700" : "bg-primary")}>
-                                    {currentIndex === finalNegativePrompts.length - 1 ? 'Terminar' : 'Siguiente'}
-                                </Button>
+                                {currentIndex === finalNegativePrompts.length - 1 && <Button onClick={handleFinalVerification} variant="secondary">Verificar</Button>}
+                                <Button onClick={() => { if(currentIndex < finalNegativePrompts.length - 1) { setCurrentIndex(i => i + 1); } else { setIsFinished(true); handleTopicComplete('final'); } }} disabled={currentIndex === finalNegativePrompts.length - 1 && !finalOk && !isAdmin} className={cn("font-bold text-white", finalOk && currentIndex === finalNegativePrompts.length - 1 ? "bg-green-600 hover:bg-green-700" : "bg-primary")}>{currentIndex === finalNegativePrompts.length - 1 ? 'Terminar' : 'Siguiente'}</Button>
                             </div>
                         </CardFooter>
                     </Card>
@@ -836,9 +780,9 @@ function ComparativosSuperlativosContentInternal() {
                                     <nav><ul className="space-y-1">
                                         {learningPath.map((item) => {
                                             const isLocked = item.status === 'locked' && !isAdmin;
-                                            const Icon = ICONS_CONFIG[item.status as keyof typeof ICONS_CONFIG] || BookOpen;
+                                            const Icon = ICONS_CONFIG[item.status] || BookOpen;
                                             return (
-                                                <li key={item.key} onClick={() => handleTopicSelect(item.key)} className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer text-foreground', isLocked ? 'text-muted-foreground/30 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === item.key && 'bg-muted text-primary font-black border-l-4 border-primary shadow-sm')}>
+                                                <li key={item.key} onClick={() => handleTopicSelectInternal(item.key)} className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer text-foreground', isLocked ? 'text-muted-foreground/30 cursor-not-allowed' : 'hover:bg-muted', selectedTopic === item.key && 'bg-muted text-primary font-black border-l-4 border-primary shadow-sm')}>
                                                     <div className="flex items-center gap-3">
                                                         {item.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500" /> : <Icon className={cn("h-5 w-5", isLocked ? "text-yellow-500/50" : "text-primary")} />}
                                                         <span className="truncate max-w-[150px] text-[10px] uppercase font-bold text-black dark:text-white">{item.name}</span>
@@ -848,7 +792,7 @@ function ComparativosSuperlativosContentInternal() {
                                             );
                                         })}
                                     </ul></nav>
-                                    <div className="mt-6 pt-6 border-t"><div className="flex justify-between items-center text-xs mb-2 font-black uppercase text-muted-foreground"><span>Avance</span><span className="text-primary">{progressValue}%</span></div><Progress value={progressValue} className="h-2 rounded-full" /></div>
+                                    <div className="mt-6 pt-6 border-t"><div className="flex justify-between items-center text-xs mb-2 font-black uppercase text-muted-foreground"><span>Avance Clase</span><span className="text-primary">{progressValue}%</span></div><Progress value={progressValue} className="h-2 rounded-full" /></div>
                                 </CardContent>
                             </Card>
                         </div>
