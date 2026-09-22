@@ -388,11 +388,11 @@ function DemostrativosContentInternal() {
                                 <div className="grid md:grid-cols-3 gap-4 text-base">
                                     <div className='p-4 border rounded bg-muted'>
                                         <p className='text-primary'>CERCANÍA (Aquí)</p>
-                                        <p>Este / Esta</p><p>Estos / Estas</p>
+                                        <p>THIS = Este / Esta</p><p> THESE = Estos / Estas</p>
                                     </div>
                                     <div className='p-4 border rounded bg-muted'>
                                         <p className='text-primary'>MEDIA (Ahí)</p>
-                                        <p>Ese / Esa</p><p>Esos / Esas</p>
+                                        <p>THAT = Ese / Esa</p><p> THOSE = Esos / Esas</p>
                                     </div>
                                     <div className='p-4 border rounded bg-muted'>
                                         <p className='text-primary'>LEJANÍA (Allá)</p>
@@ -437,6 +437,7 @@ function DemostrativosContentInternal() {
                             <Trophy className="h-24 w-24 text-yellow-400 mb-6 animate-bounce" />
                             <h2 className="text-4xl font-black uppercase text-green-600 tracking-tighter">¡FELICITACIONES!</h2>
                             <p className="text-2xl mt-4 font-bold text-foreground">Tu completaste esta clase Demostrativos</p>
+                            <p className='text-muted-foreground mt-2 text-lg'>Misión completada al 100%.</p>
                             <Button asChild className="mt-8 px-12 h-12 font-bold" variant="outline"><Link href="/espanol/a1">Regresar a la Ruta A1</Link></Button>
                         </Card>
                     );
