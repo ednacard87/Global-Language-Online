@@ -1,6 +1,7 @@
+
 'use client';
 
-import React, { useState, useEffect, useMemo, useCallback, Suspense, Fragment } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense, Fragment } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { 
@@ -19,6 +20,10 @@ import {
     MessageSquare,
     Pencil,
     Activity,
+    Check,
+    X,
+    ListChecks,
+    Info
 } from 'lucide-react';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -32,14 +37,21 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { VocabularyMatchingGame } from '@/components/dashboard/vocabulary-matching-game';
 import { Textarea } from '@/components/ui/textarea';
 
-// --- Engineering Configuration ---
-const progressStorageVersion = 'progress_es_a1_verbos_preferencia_v5_vocab_buttons';
+// --- CONFIGURACIÓN DE INGENIERÍA ---
+const progressStorageVersion = 'progress_es_a1_verbos_preferencia_v26_independent_fixes';
 const mainProgressKey = 'progress_a1_es_verbos_preferencia';
 
-// --- Data ---
+const ICONS_CONFIG: Record<string, React.ElementType> = {
+    locked: Lock,
+    active: BookOpen,
+    completed: CheckCircle,
+};
+
+// --- DATA ---
 const preferenceVocab = [
     { en: "To like", es: "GUSTAR" },
     { en: "To love (things)", es: "ENCANTAR" },
@@ -61,7 +73,9 @@ const preferenceVocab = [
 ];
 
 const ex1Prompts = [
-    { en: "I like pizza.", es: ["me gusta la pizza" , "a mi me gusta la pizza"] },
+    { en: "I like pizza.", es: ["me gusta la pizza", "a mi me gusta la pizza"] },
+    { en: "She likes music.", es: ["le gusta la música", "a ella le gusta la música"] },
+    { en: "We like movies.", es: ["nos gustan las películas", "a nosotros nos gustan las películas"] },
     { en: "They like sports.", es: ["a ellos les gustan los deportes", "les gustan los deportes"] },
     { en: "You like to read.", es: ["a ti te gusta leer", "te gusta leer"] },
     { en: "We like science fiction movies.", es: ["a nosotros nos gustan las películas de ciencia ficcion", "nos gustan las películas de ciencia ficción"] },
@@ -82,13 +96,13 @@ const ex1Prompts = [
     { en: "We like live concerts.", es: ["nos gustan los conciertos en vivo" , "a nosotros nos gustan los conciertos en vivo"] },
     { en: "He likes spicy food.", es: ["a él le gusta la comida picante", "le gusta la comida picante"] },
 ];
-const ex1Vocab = [
-    {en: "Pizza", es: "la pizza"}, {en: "Sports", es: "los deportes"}, {en: "To read", es: "leer"}, {en: "Movies", es: "las películas"}, {en: "Coffee", es: "el café"}, {en: "Spiders", es: "las arañas"}, {en: "To listen", es: "escuchar"}, {en: "Documentaries", es: "los documentales"}, {en: "Ice cream", es: "el helado"}, {en: "Shoes", es: "los zapatos"}, {en: "To play", es: "jugar"}, {en: "Idea", es: "la idea"}
-];
 
 const ex2Prompts = [
-    { q: "A Juan ______ gusta el cafe.", a: "le" },
-    { q: "A mis amigos y a mi ______ encanta viajar.", a: "nos" },
+    { q: "A Juan ______ gusta el café.", a: "le" },
+    { q: "A mis amigos y a mí ______ encanta viajar.", a: "nos" },
+    { q: "A ti ______ interesa el arte.", a: "te" },
+    { q: "A ellos ______ molesta el ruido.", a: "les" },
+    { q: "A mí ______ duele la cabeza.", a: "me" },
     { q: "¿A ti ______ molesta el ruido?", a: "te" },
     { q: "A mí ______ duelen los pies.", a: "me" },
     { q: "A ustedes ______ parece una buena idea.", a: "les" },
@@ -110,8 +124,11 @@ const ex2Prompts = [
 ];
 
 const ex3Prompts = [
-    { en: "I love horror movies.", es: ["me encantan las películas de terror" , "a mi me encantan las películas de terror"] },
-    { en: "She is not interested in politics.", es: ["a ella no le interesa la politica", "no le interesa la politica"] },
+    { en: "I love horror movies.", es: ["me encantan las películas de terror", "a mi me encantan las películas de terror"] },
+    { en: "She is not interested in politics.", es: ["a ella no le interesa la política", "no le interesa la política"] },
+    { en: "We enjoy traveling.", es: ["disfrutamos viajar", "nosotros disfrutamos viajar"] },
+    { en: "It seems easy to me.", es: ["me parece fácil", "a mi me parece fácil"] },
+    { en: "The noise bothers them.", es: ["les molesta el ruido", "a ellos les molesta el ruido"] },
     { en: "Our feet hurt after walking.", es: ["a nosotros nos duelen los pies después de caminar", "nos duelen los pies después de caminar"] },
     { en: "Loud noise bothers you.", es: ["a ti te molesta el ruido fuerte", "te molesta el ruido fuerte"] },
     { en: "Video games bore them.", es: ["a ellos les aburren los videojuegos", "les aburren los videojuegos"] },
@@ -131,26 +148,23 @@ const ex3Prompts = [
     { en: "Your teeth hurt.", es: ["te duelen las muelas", "a ti te duelen las muelas"] },
     { en: "she enjoys to drive.", es: ["ella disfruta manejar"] },
 ];
-const ex3Vocab = [
-    {en: "To love (things)", es: "encantar"}, {en: "To interest", es: "interesar"}, {en: "To hurt", es: "doler"}, {en: "To bother", es: "molestar"}, {en: "To bore", es: "aburrir"}, {en: "To matter", es: "importar"}, {en: "To fit (clothing)", es: "quedar"}, {en: "To seem", es: "parecer"}, {en: "Feet", es: "los pies"}, {en: "Noise", es: "el ruido"}, {en: "Back (body)", es: "la espalda"}, {en: "Lies", es: "las mentiras"}
-];
 
 const readingData = {
     title: "Cosas que nos gustan",
     content: "En mi familia, a todos nos gustan cosas diferentes. A mí me encanta leer libros de aventuras. A mi hermana le interesan mucho los animales; ella tiene dos perros y un gato. A mis padres les gusta escuchar música clásica. Los fines de semana, a nosotros nos gusta ver películas juntos, pero a mi hermana le aburren las películas de acción. A ella le gustan más las comedias. A mi abuelo le duele un poco la espalda, así que no le gusta caminar mucho, pero le encanta jugar ajedrez. A todos nos encanta la pizza que hace mi mamá los viernes. ¡Es la mejor!",
     questions: [
-        { q: "¿Qué tipo de libros me encantan?", a: ["libros de aventuras"] },
-        { q: "¿Qué le interesa a mi hermana?", a: ["los animales"] },
-        { q: "¿Qué tipo de películas le aburren a la hermana?", a: ["las de acción", "las películas de acción"] },
-        { q: "¿Qué le duele al abuelo?", a: ["la espalda"] },
-        { q: "¿Qué le encanta a toda la familia los viernes?", a: ["la pizza", "la pizza que hace mi mamá"] }
+        { id: 'q1', q: "¿Qué tipo de libros me encantan?", a: ["libros de aventuras"] },
+        { id: 'q2', q: "¿Qué le interesa a mi hermana?", a: ["los animales"] },
+        { id: 'q3', q: "¿Qué tipo de películas le aburren a la hermana?", a: ["las de acción", "las películas de acción"] },
+        { id: 'q4', q: "¿Qué le duele al abuelo?", a: ["la espalda"] },
+        { id: 'q5', q: "¿Qué le encanta a toda la familia los viernes?", a: ["la pizza", "la pizza que hace mi mamá"] }
     ]
 };
 
-const finalExPrompts = [
-    { en: "I like the blue car.", es: ["me gusta el coche azul"] },
+const mixedExPrompts = [
+    { en: "I like the blue car but he likes the black one.", es: ["me gusta el carro azul pero a el le gusta el negro", "me gusta el carro azul pero a el le gusta el carro negro"] },
     { en: "They love to dance.", es: ["a ellos les encanta bailar", "les encanta bailar"] },
-    { en: "My head hurts.", es: ["me duele la cabeza"] },
+    { en: "My head hurts.", es: ["me duele la cabeza", "a mi me duele la cabeza"] },
     { en: "History interests us.", es: ["a nosotros nos interesa la historia", "nos interesa la historia"] },
     { en: "The noise bothers her.", es: ["a ella le molesta el ruido", "le molesta el ruido"] },
     { en: "Do you like fruits?", es: ["a ti te gustan las frutas?", "te gustan las frutas?"] },
@@ -160,7 +174,7 @@ const finalExPrompts = [
     { en: "The news doesn't matter to them.", es: ["a ellos no les importa la noticia", "no les importa la noticia"] },
     { en: "I like to travel.", es: ["me gusta viajar"] },
     { en: "You love chocolate.", es: ["a ti te encanta el chocolate", "te encanta el chocolate"] },
-    { en: "His stomach hurts.", es: ["a él le duele el estomago", "le duele el estómago"] },
+    { en: "His stomach hurts.", es: ["a él le duelo el estomago", "le duele el estómago"] },
     { en: "Are you bothered by the smoke?", es: ["a ti te molesta el humo?", "te molesta el humo?"] },
     { en: "We are interested in art.", es: ["a nosotros nos interesa el arte", "nos interesa el arte"] },
     { en: "They like horror movies.", es: ["a ellos les gustan las películas de terror", "les gustan las películas de terror"] },
@@ -169,232 +183,144 @@ const finalExPrompts = [
     { en: "It seems strange to us.", es: ["a nosotros nos parece raro", "nos parece raro"] },
     { en: "I have two euros left.", es: ["me quedan dos euros"] },
 ];
-const finalExVocab = [
-    {en: "Car", es: "el coche"}, {en: "To dance", es: "bailar"}, {en: "Head", es: "la cabeza"}, {en: "History", es: "la historia"}, {en: "To travel", es: "viajar"}, {en: "Stomach", es: "el estómago"}, {en: "Smoke", es: "el humo"}, {en: "Art", es: "el arte"}, {en: "Eyes", es: "los ojos"}, {en: "Strange", es: "raro"}, {en: "To have left", es: "quedar"}
-];
 
-const translationTextData = {
-    title: "Traduce este texto",
-    paragraph: "I love Spanish classes because many things interest me. I like the grammar, but the new verbs bother me a little because they are difficult. My classmates and I love to practice conversation. My head hurts when I don't understand, but it doesn't matter. The important thing is to learn. It seems to me that Spanish is a very beautiful language.",
-    vocabulary: [
-        {en: "Classes", es: "las clases"}, {en: "To interest", es: "interesar"}, {en: "Grammar", es: "la gramática"}, {en: "To bother", es: "molestar"}, {en: "Difficult", es: "difícil"}, {en: "Classmates", es: "los compañeros"}, {en: "To practice", es: "practicar"}, {en: "Conversation", es: "la conversación"}, {en: "To hurt", es: "doler"}, {en: "To understand", es: "entender"}, {en: "To matter", es: "importar"}, {en: "To seem", es: "parecer"}
-    ]
-};
+// --- HELPERS ---
 
-
-// --- Reusable Sentence Fill-in-the-blank component ---
-const FillInTheBlankExercise = ({ title, prompts, onComplete, instruction }: { title: string, prompts: { q: string, a: string }[], onComplete: () => void, instruction: string }) => {
+const BlockValidationExercise = ({ title, prompts, onComplete, vocabulary, isAdmin, isSupervisionMode }: any) => {
     const { toast } = useToast();
     const [currentIndex, setCurrentIndex] = useState(0);
-    const [currentAnswer, setCurrentAnswer] = useState('');
-    const [statuses, setStatuses] = useState<('correct' | 'incorrect' | 'unchecked')[]>(() => Array(prompts.length).fill('unchecked'));
+    const [userAnswers, setUserAnswers] = useState<Record<number, string>>({});
+    const [validationStatus, setValidationStatus] = useState<Record<number, 'correct' | 'incorrect' | 'unchecked'>>({});
 
+    // IMPORTANTE: Resetear estados al cambiar de ejercicio (props)
     useEffect(() => {
-        if (statuses[currentIndex] !== 'correct') {
-             setCurrentAnswer('');
-        }
-    }, [currentIndex, statuses]);
+        setCurrentIndex(0);
+        setUserAnswers({});
+        setValidationStatus({});
+    }, [title]);
 
     const handleCheck = () => {
-        const prompt = prompts[currentIndex];
-        if (!prompt) return;
-
-        const isCorrect = currentAnswer.trim().toLowerCase() === prompt.a.toLowerCase();
-
-        const newStatuses = [...statuses];
-        newStatuses[currentIndex] = isCorrect ? 'correct' : 'incorrect';
-        setStatuses(newStatuses);
-
-        if (isCorrect) {
-            toast({ title: "¡Correcto!" });
-            if (currentIndex < prompts.length - 1) {
-                 setTimeout(() => setCurrentIndex(i => i + 1), 800);
-            }
-        } else {
-            toast({ variant: 'destructive', title: "Incorrecto, intenta de nuevo." });
-        }
+        const newVal: Record<number, 'correct' | 'incorrect'> = {};
+        let allOk = true;
+        prompts.forEach((p: any, i: number) => {
+            const user = (userAnswers[i] || '').trim().toLowerCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' ');
+            const rawAnswers = p.es || p.answer || [];
+            const corrects = (Array.isArray(rawAnswers) ? rawAnswers : [rawAnswers])
+                .map((a: string) => a.toLowerCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' '));
+            const isOk = corrects.includes(user);
+            newVal[i] = isOk ? 'correct' : 'incorrect';
+            if (!isOk) allOk = false;
+        });
+        setValidationStatus(newVal);
+        if (allOk) toast({ title: "¡Excelente!", description: "Todo está correcto." });
+        else toast({ variant: 'destructive', title: "Hay errores", description: "Revisa los contornos rojos." });
     };
 
-    const goToNext = () => {
-        if (currentIndex < prompts.length - 1) {
-            setCurrentIndex(i => i + 1);
-        } else {
-            checkCompletion();
-        }
-    };
-
-    const checkCompletion = () => {
-         if (statuses.every(s => s === 'correct')) {
-             toast({ title: "¡Felicidades!", description: "Has completado el ejercicio.", className: "bg-green-500 text-white" });
-             onComplete();
-         } else {
-             toast({ variant: 'destructive', title: "Aún hay errores", description: "Completa todas las frases correctamente para finalizar." });
-             const firstIncorrect = statuses.findIndex(s => s !== 'correct');
-             if (firstIncorrect !== -1) {
-                 setCurrentIndex(firstIncorrect);
-             }
-         }
-    };
-
-    const isCurrentCorrect = statuses[currentIndex] === 'correct';
-    const allDone = useMemo(() => statuses.every(s => s === 'correct'), [statuses]);
+    const isFinished = Object.values(validationStatus).length === prompts.length && Object.values(validationStatus).every(v => v === 'correct');
 
     return (
-        <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground">
-            <CardHeader>
-                <CardTitle className="text-primary uppercase tracking-tighter">{title}</CardTitle>
-                <CardDescription className="font-bold text-foreground mt-1">Frase {currentIndex + 1} de {prompts.length}</CardDescription>
-                <div className="flex gap-1.5 justify-center flex-wrap pt-4">
-                    {prompts.map((_, i) => (
-                        <div key={i} onClick={() => setCurrentIndex(i)} className={cn("h-3 flex-1 rounded-full cursor-pointer transition-all", "min-w-[20px]", currentIndex === i && "ring-2 ring-primary ring-offset-2 ring-offset-background", statuses[i] === 'correct' ? "bg-green-500" : statuses[i] === 'incorrect' ? "bg-red-500" : "bg-muted")} />
-                    ))}
-                </div>
-            </CardHeader>
-            <CardContent className="flex flex-col items-center space-y-6 pt-6 text-center">
-                <p className="text-sm font-semibold text-muted-foreground uppercase tracking-widest">{instruction}</p>
-                <div className="bg-muted p-6 rounded-2xl border-2 border-dashed text-center font-bold text-2xl tracking-tighter text-foreground min-h-[8rem] flex items-center justify-center w-full">
-                    {prompts[currentIndex]?.q}
-                </div>
-                <Input
-                    value={currentAnswer}
-                    onChange={e => setCurrentAnswer(e.target.value)}
-                    onKeyDown={e => { if (e.key === 'Enter') { isCurrentCorrect ? goToNext() : handleCheck(); } }}
-                    className={cn("h-12 text-lg text-foreground text-center max-w-md border-2", isCurrentCorrect ? 'border-green-500' : statuses[currentIndex] === 'incorrect' ? 'border-red-500' : 'border-input')}
-                    placeholder="Escribe aquí..."
-                    autoComplete="off"
-                    disabled={isCurrentCorrect}
-                />
-            </CardContent>
-            <CardFooter className="justify-between border-t pt-6 bg-muted/10">
-                <Button variant="outline" onClick={() => setCurrentIndex(p => Math.max(0, p - 1))} disabled={currentIndex === 0}>Anterior</Button>
-                <div className="flex gap-2">
-                    {!isCurrentCorrect && <Button onClick={handleCheck} variant="secondary">Verificar</Button>}
-                    {allDone ? <Button onClick={onComplete} className="font-bold text-white bg-green-600 hover:bg-green-700 animate-pulse">Completar Ejercicio <Trophy className='ml-2 h-4 w-4'/></Button> : <Button onClick={goToNext} disabled={!isCurrentCorrect}>Siguiente <ArrowRight className='ml-2 h-4 w-4'/></Button>}
-                </div>
-            </CardFooter>
-        </Card>
-    );
-};
-
-
-// --- Reusable Translation Exercise Component (with Vocab button) ---
-const SingleStepExercise = ({ title, prompts, onComplete, vocabulary }: { title: string, prompts: { en: string, es: string[] }[], onComplete: () => void, vocabulary?: {en: string, es: string}[] }) => {
-    const { toast } = useToast();
-    const [currentIndex, setCurrentIndex] = useState(0);
-    const [currentAnswer, setCurrentAnswer] = useState('');
-    const [statuses, setStatuses] = useState<('correct' | 'incorrect' | 'unchecked')[]>(() => Array(prompts.length).fill('unchecked'));
-    const [showVocab, setShowVocab] = useState(false);
-
-    useEffect(() => {
-        if (statuses[currentIndex] !== 'correct') {
-             setCurrentAnswer('');
-        }
-    }, [currentIndex, statuses]);
-
-    const handleCheck = () => {
-        const prompt = prompts[currentIndex];
-        if (!prompt) return;
-
-        const userAnswer = currentAnswer.trim().toLowerCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' ');
-        const isCorrect = prompt.es.some(correctAnswer =>
-            correctAnswer.toLowerCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' ') === userAnswer
-        );
-
-        const newStatuses = [...statuses];
-        newStatuses[currentIndex] = isCorrect ? 'correct' : 'incorrect';
-        setStatuses(newStatuses);
-
-        if (isCorrect) {
-            toast({ title: "¡Correcto!" });
-            if (currentIndex < prompts.length - 1) {
-                 setTimeout(() => setCurrentIndex(i => i + 1), 800);
-            }
-        } else {
-            toast({ variant: 'destructive', title: "Incorrecto, intenta de nuevo." });
-        }
-    };
-
-    const goToNext = () => {
-        if (currentIndex < prompts.length - 1) {
-            setCurrentIndex(i => i + 1);
-        } else {
-            checkCompletion();
-        }
-    };
-    
-    const checkCompletion = () => {
-         if (statuses.every(s => s === 'correct')) {
-             toast({ title: "¡Felicidades!", description: "Has completado el ejercicio.", className: "bg-green-500 text-white" });
-             onComplete();
-         } else {
-             toast({ variant: 'destructive', title: "Aún hay errores", description: "Completa todas las frases correctamente para finalizar." });
-             const firstIncorrect = statuses.findIndex(s => s !== 'correct');
-             if (firstIncorrect !== -1) {
-                 setCurrentIndex(firstIncorrect);
-             }
-         }
-    };
-
-    const isCurrentCorrect = statuses[currentIndex] === 'correct';
-    const allDone = useMemo(() => statuses.every(s => s === 'correct'), [statuses]);
-
-    return (
-         <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground">
+        <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground">
             <CardHeader>
                 <div className="flex justify-between items-start">
-                    <div className="flex-1">
-                        <CardTitle className="text-primary uppercase tracking-tighter">{title}</CardTitle>
-                        <CardDescription className="font-bold text-foreground mt-1">Frase {currentIndex + 1} de {prompts.length}</CardDescription>
+                    <div className="text-left">
+                        <CardTitle>{title}</CardTitle>
+                        <CardDescription className='font-bold text-foreground mt-1'>Traduce la frase correctamente.</CardDescription>
+                        <div className="flex gap-2 justify-start flex-wrap pt-4">
+                            {prompts.map((_: any, i: number) => (
+                                <div key={i} onClick={() => setCurrentIndex(i)} className={cn("h-8 w-8 rounded-full border-2 flex items-center justify-center text-sm font-bold cursor-pointer transition-all", currentIndex === i ? "border-primary ring-2 ring-primary" : "border-muted", validationStatus[i] === 'correct' ? "bg-green-500 text-white border-green-500" : validationStatus[i] === 'incorrect' ? "bg-red-500 text-white border-red-500" : "bg-card text-foreground")}>{i + 1}</div>
+                            ))}
+                        </div>
                     </div>
                     {vocabulary && (
-                        <Button variant="outline" size="sm" onClick={() => setShowVocab(!showVocab)}>
-                            <BookOpen className="mr-2 h-4 w-4" />
-                            {showVocab ? 'Ocultar' : 'Mostrar'} Vocab.
-                        </Button>
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button variant="outline" size="sm" className="border-2 border-brand-blue animate-border-pulse shrink-0"><BookText className="mr-2 h-4 w-4" /> Vocabulary</Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-64">
+                                <ScrollArea className="h-48 pr-4">
+                                    <div className="grid grid-cols-2 gap-2 text-sm text-left">
+                                        {Object.entries(vocabulary).map(([en, es]: any) => (<Fragment key={en}><span className="text-muted-foreground capitalize font-bold">{en}:</span><span className="font-semibold text-right text-primary">{(es || '').toUpperCase()}</span></Fragment>))}
+                                    </div>
+                                </ScrollArea>
+                            </PopoverContent>
+                        </Popover>
                     )}
                 </div>
-                {showVocab && vocabulary && (
-                    <ScrollArea className="h-32 w-full mt-4"><div className="p-4 bg-muted rounded-lg border text-sm">
-                        <h4 className="font-bold mb-2 text-primary">Vocabulario del Ejercicio</h4>
-                        <ul className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-2">{
-                            vocabulary.map(v => <li key={v.en}><strong>{v.en}:</strong> {v.es}</li>)
-                        }</ul>
-                    </div></ScrollArea>
-                )}
-                <div className="flex gap-1.5 justify-center flex-wrap pt-4">
-                    {prompts.map((_, i) => (
-                        <div key={i} onClick={() => setCurrentIndex(i)} className={cn("h-3 flex-1 rounded-full cursor-pointer transition-all", "min-w-[20px]", currentIndex === i && "ring-2 ring-primary ring-offset-2 ring-offset-background", statuses[i] === 'correct' ? "bg-green-500" : statuses[i] === 'incorrect' ? "bg-red-500" : "bg-muted")} />
-                    ))}
-                </div>
             </CardHeader>
-            <CardContent className="flex flex-col items-center space-y-6 pt-6 text-center">
-                 <p className="text-sm font-semibold text-muted-foreground uppercase tracking-widest">Traduce al español</p>
-                <div className="bg-muted p-6 rounded-2xl border-2 border-dashed text-center font-bold text-2xl uppercase tracking-tighter text-foreground min-h-[8rem] flex items-center justify-center w-full">
+            <CardContent className="space-y-6 pt-4">
+                <div className="bg-muted p-6 rounded-2xl border-2 border-dashed text-center font-bold text-xl uppercase tracking-tighter text-foreground">
                     {prompts[currentIndex]?.en}
                 </div>
-                <Input
-                    value={currentAnswer}
-                    onChange={e => setCurrentAnswer(e.target.value)}
-                    onKeyDown={e => { if (e.key === 'Enter') { isCurrentCorrect ? goToNext() : handleCheck(); } }}
-                    className={cn("h-12 text-lg text-foreground text-center max-w-md border-2", isCurrentCorrect ? 'border-green-500' : statuses[currentIndex] === 'incorrect' ? 'border-red-500' : 'border-input')}
-                    placeholder="Escribe en español..."
-                    autoComplete="off"
-                    disabled={isCurrentCorrect}
-                />
+                <Input value={userAnswers[currentIndex] || ''} onChange={e => { if (isSupervisionMode) return; setUserAnswers({ ...userAnswers, [currentIndex]: e.target.value }); setValidationStatus({ ...validationStatus, [currentIndex]: 'unchecked' }); }} className={cn("h-12 text-lg text-foreground", validationStatus[currentIndex] === 'correct' ? 'border-green-500 bg-green-50/10' : validationStatus[currentIndex] === 'incorrect' ? 'border-red-500 bg-red-50/10' : '')} placeholder="Respuesta..." autoComplete="off" readOnly={isSupervisionMode} />
             </CardContent>
-            <CardFooter className="justify-between border-t pt-6 bg-muted/10">
+            <CardFooter className="justify-between border-t pt-6">
                 <Button variant="outline" onClick={() => setCurrentIndex(p => Math.max(0, p - 1))} disabled={currentIndex === 0}>Anterior</Button>
                 <div className="flex gap-2">
-                    {!isCurrentCorrect && <Button onClick={handleCheck} variant="secondary">Verificar</Button>}
-                    {allDone ? <Button onClick={onComplete} className="font-bold text-white bg-green-600 hover:bg-green-700 animate-pulse">Completar Ejercicio <Trophy className='ml-2 h-4 w-4'/></Button> : <Button onClick={goToNext} disabled={!isCurrentCorrect}>Siguiente <ArrowRight className='ml-2 h-4 w-4'/></Button>}
+                    {currentIndex === prompts.length - 1 && !isFinished && !isSupervisionMode && (
+                        <Button onClick={handleCheck} variant="secondary">Verificar</Button>
+                    )}
+                    <Button onClick={() => currentIndex < prompts.length - 1 ? setCurrentIndex(i => i + 1) : onComplete()} disabled={!isFinished && !isAdmin} className="text-white font-bold bg-primary hover:bg-primary/90">
+                        {currentIndex === prompts.length - 1 ? 'Continuar' : 'Siguiente'}
+                    </Button>
                 </div>
             </CardFooter>
         </Card>
     );
 };
 
+const FillInTheBlankExercise = ({ title, prompts, onComplete, instruction, isSupervisionMode, isAdmin }: any) => {
+    const { toast } = useToast();
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [answer, setAnswer] = useState('');
+    const [status, setStatus] = useState<Record<number, 'correct' | 'incorrect' | 'unchecked'>>({});
 
-// --- Main Page Component ---
+    useEffect(() => { setAnswer(''); }, [currentIndex]);
+
+    const handleCheck = () => {
+        if (isSupervisionMode) return;
+        const isOk = answer.trim().toLowerCase() === prompts[currentIndex].a.toLowerCase();
+        setStatus(prev => ({ ...prev, [currentIndex]: isOk ? 'correct' : 'incorrect' }));
+        if (isOk) toast({ title: "¡Correcto!" });
+        else toast({ variant: 'destructive', title: "Sigue intentando" });
+    };
+
+    return (
+        <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left">
+            <CardHeader>
+                <div>
+                    <CardTitle>{title}</CardTitle>
+                    <CardDescription className='font-bold text-foreground mt-1'>{instruction}</CardDescription>
+                    <div className="flex gap-2 justify-start flex-wrap pt-4">
+                        {prompts.map((_: any, i: number) => (
+                            <div key={i} onClick={() => setCurrentIndex(i)} className={cn("h-8 w-8 rounded-full border-2 flex items-center justify-center text-sm font-bold cursor-pointer transition-all", currentIndex === i ? "border-primary ring-2 ring-primary" : "border-muted", status[i] === 'correct' ? "bg-green-500 text-white border-green-500" : status[i] === 'incorrect' ? "bg-red-500 text-white border-red-500" : "bg-card text-foreground")}>{i + 1}</div>
+                        ))}
+                    </div>
+                </div>
+            </CardHeader>
+            <CardContent className="space-y-8 py-10">
+                <div className="text-2xl font-black text-center leading-relaxed text-foreground">
+                    {prompts[currentIndex].q.split('______').map((part: string, i: number) => (
+                        <Fragment key={i}>
+                            {part}
+                            {i < 1 && <span className={cn("border-b-4 border-dashed px-4 mx-2 text-primary", status[currentIndex] === 'correct' ? "border-primary" : "text-muted-foreground")}>{status[currentIndex] === 'correct' ? prompts[currentIndex].a : '...'}</span>}
+                        </Fragment>
+                    ))}
+                </div>
+                <Input value={answer} onChange={e => setAnswer(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleCheck()} className={cn("h-12 text-lg text-center max-w-sm mx-auto", status[currentIndex] === 'correct' ? 'border-green-500 bg-green-50/10' : status[currentIndex] === 'incorrect' ? 'border-red-500 bg-red-50/10' : '')} placeholder="Escribe aquí..." autoComplete="off" readOnly={isSupervisionMode} />
+            </CardContent>
+            <CardFooter className="justify-between border-t pt-6">
+                <Button variant="outline" onClick={() => setCurrentIndex(p => Math.max(0, p - 1))} disabled={currentIndex === 0}>Anterior</Button>
+                <div className="flex gap-2">
+                    {!isSupervisionMode && <Button onClick={handleCheck} variant="secondary">Verificar</Button>}
+                    <Button onClick={() => currentIndex < prompts.length - 1 ? setCurrentIndex(i => i + 1) : onComplete()} disabled={status[currentIndex] !== 'correct' && !isAdmin} className="text-white font-bold">Siguiente</Button>
+                </div>
+            </CardFooter>
+        </Card>
+    );
+};
+
+// --- MAIN PAGE ---
+
 interface Topic {
     key: string;
     name: string;
@@ -416,14 +342,15 @@ function VerbosPreferenciaContent() {
     const [selectedTopic, setSelectedTopic] = useState<string>('');
     const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
     const [initialLoadComplete, setInitialLoadComplete] = useState(false);
-    
-    const [vocabAnswers, setVocabAnswers] = useState<string[]>(Array(preferenceVocab.length).fill(''));
-    const [vocabValidation, setVocabValidation] = useState<any[]>(Array(preferenceVocab.length).fill('unchecked'));
-    const [canAdvanceVocab, setCanAdvanceVocab] = useState(false);
-    const [readingAns, setReadingAns] = useState<string[]>(Array(readingData.questions.length).fill(''));
-    const [readingVal, setReadingVal] = useState<any[]>(Array(readingData.questions.length).fill('unchecked'));
-    const [translationText, setTranslationText] = useState('');
-    const [showTranslateVocab, setShowTranslateVocab] = useState(false);
+    const hasInitialized = useRef(false);
+
+    // States for content
+    const [vocabAns, setVocabAns] = useState<string[]>(Array(preferenceVocab.length).fill(''));
+    const [vocabVal, setVocabVal] = useState<any[]>(Array(preferenceVocab.length).fill('unchecked'));
+    const [readAns, setReadAns] = useState<Record<string, string>>({});
+    const [readVal, setReadVal] = useState<Record<string, any>>({});
+    const [transText, setTransText] = useState('');
+    const [isFinished, setIsFinished] = useState(false);
 
     const studentDocRef = useMemoFirebase(() => (currentUID ? doc(firestore, 'students', currentUID) : null), [firestore, currentUID]);
     const authUserRef = useMemoFirebase(() => (user ? doc(firestore, 'students', user.uid) : null), [firestore, user]);
@@ -435,123 +362,234 @@ function VerbosPreferenciaContent() {
 
     const initialLearningPath = useMemo((): Topic[] => [
         { key: 'vocabulary', name: '1. Vocabulario', icon: BookOpen, status: 'active' },
-        { key: 'grammar1', name: '2. Gramática: Estructura', icon: GraduationCap, status: 'locked' },
-        { key: 'grammar2', name: '3. Gramática: Singular/Plural', icon: GraduationCap, status: 'locked' },
-        { key: 'ex1', name: '4. Ejercicio 1: Traducción', icon: PenSquare, status: 'locked' },
-        { key: 'ex2', name: '5. Ejercicio 2: Pronombres', icon: PenSquare, status: 'locked' },
-        { key: 'vocab_game', name: '6. Vocabulario (Juego)', icon: Gamepad2, status: 'locked' },
-        { key: 'reading', name: '7. Lectura', icon: BookText, status: 'locked' },
-        { key: 'ex3', name: '8. Ejercicio 3: Traducción', icon: PenSquare, status: 'locked' },
-        { key: 'final_ex', name: '9. Ejercicio Final', icon: Trophy, status: 'locked' },
-        { key: 'translate_text', name: '10. Traducir Texto', icon: MessageSquare, status: 'locked' },
+        { key: 'grammar', name: '2. Gramática', icon: GraduationCap, status: 'locked' },
+        { key: 'ex1', name: '3. Ejercicio 1', icon: PenSquare, status: 'locked' },
+        { key: 'ex2', name: '4. Ejercicio 2', icon: ListChecks, status: 'locked' },
+        { key: 'vocab_game', name: '5. Vocabulario (Juego)', icon: Gamepad2, status: 'locked' },
+        { key: 'reading', name: '6. Lectura', icon: BookText, status: 'locked' },
+        { key: 'ex3', name: '7. Ejercicio 3', icon: PenSquare, status: 'locked' },
+        { key: 'mixed', name: '8. Ejercicio Mixto', icon: Trophy, status: 'locked' },
+        { key: 'translate', name: '9. Traducir Texto', icon: Pencil, status: 'locked' },
     ], []);
+
+    const handleTopicComplete = useCallback((completedKey: string) => { 
+        setTopicToComplete(completedKey); 
+    }, []);
 
     useEffect(() => {
         if (isProfileLoading || isUserLoading || !studentProfile || initialLoadComplete) return;
+
         let path = initialLearningPath.map(topic => ({ ...topic }));
         let savedST = '';
+
         if (isAdmin && !targetStudentId) {
             path.forEach(item => { item.status = 'completed'; });
         } else if (studentProfile?.lessonProgress?.[progressStorageVersion]) {
             const savedData = studentProfile.lessonProgress[progressStorageVersion];
             path.forEach(item => { if (savedData[item.key]) item.status = savedData[item.key]; });
             savedST = savedData.lastSelectedTopic || '';
+            if (savedData.vocabAns) setVocabAns(savedData.vocabAns);
+            if (savedData.readAns) setReadAns(savedData.readAns);
+            if (savedData.transText) setTransText(savedData.transText);
+            if (savedData.isFinished) setIsFinished(savedData.isFinished);
         }
+
         let lastDone = true;
         for (let i = 0; i < path.length; i++) {
             if (lastDone && path[i].status === 'locked') path[i].status = 'active';
             lastDone = path[i].status === 'completed';
         }
+
         setLearningPath(path);
         setSelectedTopic(savedST || path.find(p => p.status === 'active')?.key || path[0].key);
         setInitialLoadComplete(true);
         setTimeout(() => setIsInitialLoading(false), 200);
+        hasInitialized.current = true;
     }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading, isUserLoading, initialLoadComplete, targetStudentId]);
 
     const progressValue = useMemo(() => {
         if (learningPath.length === 0) return 0;
-        const completedCount = learningPath.filter(t => t.status === 'completed').length;
-        return Math.round((completedCount / (learningPath.length || 1)) * 100);
+        const comp = learningPath.filter(t => t.status === 'completed').length;
+        return Math.round((comp / learningPath.length) * 100);
     }, [learningPath]);
 
     useEffect(() => {
-        if (!initialLoadComplete || isInitialLoading || isAdmin || !studentDocRef || learningPath.length === 0 || targetStudentId) return;
-        const s: Record<string, any> = { lastSelectedTopic: selectedTopic };
-        learningPath.forEach(item => { s[item.key] = item.status; });
-        updateDocumentNonBlocking(studentDocRef, { [`lessonProgress.${progressStorageVersion}`]: s, [`progress.${mainProgressKey}`]: progressValue });
-        if (progressValue >= 100) window.dispatchEvent(new CustomEvent('progressUpdated'));
-    }, [learningPath, isAdmin, progressValue, studentDocRef, initialLoadComplete, selectedTopic, isInitialLoading, targetStudentId]);
+        if (!initialLoadComplete || isInitialLoading || isAdmin || !studentDocRef || targetStudentId || !hasInitialized.current || !user) return;
+        const saveTimer = setTimeout(() => {
+            const s: any = { lastSelectedTopic: selectedTopic, vocabAns, readAns, transText, isFinished };
+            learningPath.forEach(t => s[t.key] = t.status);
+            updateDocumentNonBlocking(studentDocRef, { [`lessonProgress.${progressStorageVersion}`]: s, [`progress.${mainProgressKey}`]: progressValue });
+        }, 1500);
+        return () => clearTimeout(saveTimer);
+    }, [learningPath, progressValue, selectedTopic, isAdmin, studentDocRef, isInitialLoading, targetStudentId, initialLoadComplete, vocabAns, readAns, transText, isFinished, user]);
 
-    const handleTopicComplete = (completedKey: string) => setTopicToComplete(completedKey);
-
-     useEffect(() => {
+    useEffect(() => {
         if (!topicToComplete) return;
-        setLearningPath(currentPath => {
-            let win = false; let next: string | null = null;
-            const newPath = currentPath.map(t => ({ ...t }));
-            const idx = newPath.findIndex(t => t.key === topicToComplete);
-            if (idx !== -1 && newPath[idx].status !== 'completed') {
-                newPath[idx].status = 'completed';
-                if (idx + 1 < newPath.length && newPath[idx + 1].status === 'locked') {
-                    newPath[idx + 1].status = 'active'; win = true; next = newPath[idx + 1].key;
-                }
+        setLearningPath(curr => {
+            let next: string | null = null; const np = [...curr];
+            const i = np.findIndex(t => t.key === topicToComplete);
+            if (i !== -1 && np[i].status !== 'completed') {
+                np[i].status = 'completed';
+                if (i + 1 < np.length && np[i + 1].status === 'locked') { np[i + 1].status = 'active'; next = np[i + 1].key; }
             }
-            if (win) setTimeout(() => toast({ title: "¡Siguiente misión desbloqueada!" }), 0);
-            if (next) { const n = next; setTimeout(() => setSelectedTopic(n), 0); }
-            return newPath;
+            if (next) { const n = next; setTimeout(() => { toast({ title: "¡Misión completada!" }); setSelectedTopic(n); }, 0); }
+            return np;
         });
         setTopicToComplete(null);
     }, [topicToComplete, toast]);
 
     const handleTopicSelect = (topicKey: string) => {
-        const topic = learningPath.find(t => t.key === topicKey);
-        if (!isAdmin && topic?.status === 'locked') { toast({ variant: "destructive", title: "Contenido Bloqueado" }); return; }
+        const t = learningPath.find(it => it.key === topicKey);
+        if (!isAdmin && t?.status === 'locked') { toast({ variant: "destructive", title: "Contenido Bloqueado" }); return; }
         setSelectedTopic(topicKey);
-        if ((topicKey === 'grammar1' || topicKey === 'grammar2') && topic?.status !== 'completed') {
-            handleTopicComplete(topicKey); 
-        }
+        if (['grammar'].includes(topicKey)) handleTopicComplete(topicKey);
     };
 
-    const handleVocabCheck = () => {
-        let okCount = 0;
-        const nv = preferenceVocab.map((item, idx) => {
-            const isCorrect = item.es.toLowerCase().split(' ')[0] === (vocabAnswers[idx] || '').trim().toLowerCase().split(' ')[0];
-            if (isCorrect) okCount++;
-            return isCorrect ? 'correct' : 'incorrect';
+    const handleCheckVocab = () => {
+        const nv = preferenceVocab.map((v, i) => {
+            const res = v.es.toLowerCase() === (vocabAns[i] || '').trim().toLowerCase();
+            return res ? 'correct' : 'incorrect';
         });
-        setVocabValidation(nv as any);
-        if (okCount >= 8) { setCanAdvanceVocab(true); toast({ title: "¡Buen avance!" }); }
-        else toast({ variant: 'destructive', title: `Necesitas ${8 - okCount} más aciertos para avanzar.` });
+        setVocabVal(nv); 
+        if (nv.every(v => v === 'correct')) toast({ title: "¡Vocabulario correcto!" }); else toast({ variant: 'destructive', title: "Sigue intentando" });
     };
 
     const handleCheckReading = () => {
-        let allOk = true;
-        const nv = readingData.questions.map((q, i) => {
-            const isOk = q.a.some(ans => (readingAns[i] || '').trim().toLowerCase().includes(ans.toLowerCase()));
-            if (!isOk) allOk = false;
-            return isOk ? 'correct' : 'incorrect';
+        let allOk = true; const nv: any = {};
+        readingData.questions.forEach(q => {
+            const userAns = (readAns[q.id] || '').trim().toLowerCase();
+            const isOk = q.a.some(a => userAns.includes(a.toLowerCase()));
+            nv[q.id] = isOk ? 'correct' : 'incorrect'; if (!isOk) allOk = false;
         });
-        setReadingVal(nv as any);
-        if (allOk) { toast({ title: "¡Lectura superada!" }); handleTopicComplete('reading'); }
-        else toast({ variant: 'destructive', title: "Revisa tus respuestas." });
+        setReadVal(nv); 
+        if (allOk) toast({ title: "¡Lectura superada!" }); 
+        else toast({ variant: 'destructive', title: "Revisa las respuestas" });
     };
 
+    const isReadComplete = Object.values(readVal).length === readingData.questions.length && Object.values(readVal).every(v => v === 'correct');
 
     const renderContent = () => {
-        if (isInitialLoading) return <div className="flex justify-center items-center h-96"><Loader2 className="animate-spin text-primary h-12 w-12" /></div>;
-
+        if (isInitialLoading) return <div className="flex justify-center items-center h-64"><Loader2 className="animate-spin text-primary" /></div>;
         switch (selectedTopic) {
-            case 'vocabulary': return <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm"><CardHeader><CardTitle>Vocabulario: Verbos de Preferencia</CardTitle><CardDescription>Escribe el verbo o sustantivo en español.</CardDescription></CardHeader><CardContent><div className="grid grid-cols-2 gap-4">{preferenceVocab.map((v, i) => (<Fragment key={i}><Label className='font-semibold'>{v.en}</Label><Input value={vocabAnswers[i]} onChange={e => { const na = [...vocabAnswers]; na[i] = e.target.value; setVocabAnswers(na); const newValidation = [...vocabValidation]; newValidation[i] = 'unchecked'; setVocabValidation(newValidation); setCanAdvanceVocab(false); }} className={cn("h-10 uppercase", vocabValidation[i] === 'correct' ? 'border-green-500' : vocabValidation[i] === 'incorrect' ? 'border-red-500' : '')} /></Fragment>))}</div></CardContent><CardFooter className="flex justify-between border-t pt-6"><Button onClick={handleVocabCheck} variant="secondary">Verificar</Button><Button onClick={() => handleTopicComplete('vocabulary')} disabled={!canAdvanceVocab && !isAdmin}>Avanzar <ArrowRight className='ml-2 h-4 w-4' /></Button></CardFooter></Card>;
-            case 'grammar1': return <Card className="shadow-soft border-2 border-brand-purple"><CardHeader><CardTitle>Gramática: La Estructura Especial</CardTitle></CardHeader><CardContent className="space-y-6"><div><h3 className='font-bold text-lg text-primary'>Estructura Inversa</h3><p>Con verbos como GUSTAR, la persona que siente la emoción (I, you, he) se convierte en un objeto indirecto en español (me, te, le). La cosa que provoca la emoción es el sujeto de la oración.</p><p className='mt-2 p-3 bg-muted rounded-lg font-mono'>I like music → <span className='text-blue-500'>Me</span> <span className='text-red-500'>gusta</span> <span className='text-green-500'>la música</span>.</p></div><div><h3 className='font-bold text-lg text-primary'>Pronombres de Objeto Indirecto</h3><p>Estos son los pronombres que SIEMPRE se usan con estos verbos:</p><ul className="list-none space-y-2 mt-2">{[ {p: "(A mí)", i: "me"}, {p: "(A ti)", i: "te"}, {p: "(A él/ella/usted)", i: "le"}, {p: "(A nosotros/as)", i: "nos"}, {p: "(A ellos/as/ustedes)", i: "les"}].map(item => <li key={item.i} className='flex items-center'><span className='w-1/3 text-muted-foreground'>{item.p}</span><span className='font-bold text-lg'>{item.i}</span></li>)}</ul><p className='text-sm text-muted-foreground mt-2'>La parte entre paréntesis (A mí, A ti...) es opcional y se usa para dar énfasis o aclarar.</p></div></CardContent><CardFooter className='justify-end'><Button onClick={() => handleTopicComplete('grammar1')}>Comprendido <CheckCircle className='ml-2 h-4 w-4' /></Button></CardFooter></Card>;
-            case 'grammar2': return <Card className="shadow-soft border-2 border-brand-purple"><CardHeader><CardTitle>Gramática: Singular vs. Plural</CardTitle></CardHeader><CardContent className="space-y-6"><div><h3 className='font-bold text-lg text-primary'>Usando el Singular (gusta, encanta, duele)</h3><p>Usa la forma singular del verbo cuando la cosa que te gusta es:</p><ul className='list-disc pl-5 mt-2 space-y-1'><li>Un sustantivo singular: <span className='font-mono'>Me gusta <strong>el libro</strong>.</span></li><li>Un verbo en infinitivo: <span className='font-mono'>Nos encanta <strong>viajar</strong>.</span></li></ul></div><div><h3 className='font-bold text-lg text-primary'>Usando el Plural (gustan, encantan, duelen)</h3><p>Usa la forma plural del verbo cuando la cosa que te gusta es un sustantivo plural:</p><ul className='list-disc pl-5 mt-2 space-y-1'><li><span className='font-mono'>Te gustan <strong>los perros</strong>.</span></li><li><span className='font-mono'>Les duelen <strong>las muelas</strong>.</span></li></ul></div><div className='p-4 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg text-yellow-800 dark:text-yellow-300'><p><strong>¡Recuerda!</strong> El verbo concuerda con la cosa (el sujeto), no con la persona (el objeto indirecto).</p></div></CardContent><CardFooter className='justify-end'><Button onClick={() => handleTopicComplete('grammar2')}>¡Listo! <CheckCircle className='ml-2 h-4 w-4' /></Button></CardFooter></Card>;
-            case 'ex1': return <SingleStepExercise title="Ejercicio 1: Traducción (gusta/gustan)" prompts={ex1Prompts} onComplete={() => handleTopicComplete('ex1')} vocabulary={ex1Vocab} />;
-            case 'ex2': return <FillInTheBlankExercise title="Ejercicio 2: Los Pronombres" prompts={ex2Prompts} onComplete={() => handleTopicComplete('ex2')} instruction="Completa la frase con el pronombre correcto (me, te, le, nos, les)." />;
-            case 'vocab_game': return <Card className="shadow-soft border-2 border-brand-purple bg-card/95"><CardHeader><CardTitle>Juego de Vocabulario</CardTitle></CardHeader><CardContent><VocabularyMatchingGame data={preferenceVocab.slice(0, 8).map(v => ({ spanish: v.es, english: [v.en] }))} onComplete={() => handleTopicComplete('vocab_game')} title="Encuentra las parejas" /></CardContent></Card>;
-            case 'reading': return <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left overflow-hidden"><CardHeader className='bg-primary/5 border-b'><CardTitle className='text-primary uppercase tracking-tight'>{readingData.title}</CardTitle></CardHeader><CardContent className="space-y-6 pt-6"><div className="p-6 bg-muted rounded-2xl border italic text-lg leading-relaxed text-foreground shadow-inner">{readingData.content}</div><Separator /><div className="space-y-4"><h3 className='font-black text-primary uppercase text-sm'>Preguntas de Comprensión:</h3>{readingData.questions.map((q, i) => (<div key={i} className="space-y-2 p-3 bg-muted/20 rounded-xl border"><Label className="font-bold">{q.q}</Label><Input value={readingAns[i]} onChange={e => { const na = [...readingAns]; na[i] = e.target.value; setReadingAns(na); setReadingVal(v => { const nv = [...v]; nv[i] = 'unchecked'; return nv as any; }); }} className={cn("h-10", readingVal[i] === 'correct' ? 'border-green-500 bg-green-50/5' : readingVal[i] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} autoComplete="off" /></div>))}</div></CardContent><CardFooter className="justify-center border-t p-6 bg-muted/10"><Button onClick={handleCheckReading} size="lg" className="px-16 font-black h-12 shadow-md">Verificar Lectura</Button></CardFooter></Card>;
-            case 'ex3': return <SingleStepExercise title="Ejercicio 3: Traducción (Otros Verbos)" prompts={ex3Prompts} onComplete={() => handleTopicComplete('ex3')} vocabulary={ex3Vocab} />;
-            case 'final_ex': return <SingleStepExercise title="Ejercicio Final: Traducción General" prompts={finalExPrompts} onComplete={() => handleTopicComplete('final_ex')} vocabulary={finalExVocab} />;
-            case 'translate_text': return <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground text-left"><CardHeader><div className="flex justify-between items-start"><div className="flex-1"><CardTitle className='text-primary uppercase'>{translationTextData.title}</CardTitle><CardDescription className='font-bold text-foreground'>Traduce el siguiente párrafo al español.</CardDescription></div><Button variant="outline" size="sm" onClick={() => setShowTranslateVocab(!showTranslateVocab)}><BookOpen className="mr-2 h-4 w-4" />{showTranslateVocab ? 'Ocultar' : 'Mostrar'} Vocab.</Button></div>{showTranslateVocab && <ScrollArea className="h-32 w-full mt-4"><div className="p-4 bg-muted rounded-lg border text-sm"><h4 className="font-bold mb-2 text-primary">Vocabulario del Ejercicio</h4><ul className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-2">{translationTextData.vocabulary.map(v => <li key={v.en}><strong>{v.en}:</strong> {v.es}</li>)}</ul></div></ScrollArea>}</CardHeader><CardContent className="space-y-6 pt-6"><div className="p-6 bg-muted/50 rounded-2xl border italic text-lg leading-relaxed text-foreground shadow-sm">{translationTextData.paragraph}</div><Separator /><div className="space-y-2"><Label className='font-black text-primary uppercase text-sm'>Tu Traducción:</Label><Textarea value={translationText} onChange={(e) => setTranslationText(e.target.value)} placeholder="Escribe el texto en español aquí..." className="min-h-[200px] text-lg leading-relaxed" /></div></CardContent><CardFooter className="justify-center border-t pt-6 bg-muted/20"><Button onClick={() => handleTopicComplete('translate_text')} size="lg" className="px-24 font-black h-16 text-2xl shadow-xl bg-primary hover:bg-primary/90 text-primary-foreground uppercase tracking-tighter">Misión Final <ArrowRight className='ml-3 h-8 w-8' /></Button></CardFooter></Card>;
-            default: return <div className="text-center p-8">Selecciona una misión para comenzar.</div>;
+            case 'vocabulary':
+                const vocabAllOk = vocabVal.length > 0 && vocabVal.every((v: any) => v === 'correct');
+                return (
+                    <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left">
+                        <CardHeader><CardTitle>Vocabulario: Verbos de Preferencia</CardTitle></CardHeader>
+                        <CardContent><ScrollArea className="h-[450px] pr-4"><div className="grid grid-cols-2 gap-4 text-foreground">
+                            <div className="font-black text-primary border-b pb-2 uppercase text-xs">English</div><div className="font-black text-primary border-b pb-2 uppercase text-xs">Español</div>
+                            {preferenceVocab.map((v, i) => (
+                                <Fragment key={i}>
+                                    <div className="p-2 border rounded bg-white/5 font-bold flex items-center text-sm">{v.en}</div>
+                                    <Input value={vocabAns[i] || ''} onChange={e => { if (targetStudentId) return; const na = [...vocabAns]; na[i] = e.target.value; setVocabAns(na); const nv = [...vocabVal]; nv[i] = 'unchecked'; setVocabVal(nv); }} className={cn("uppercase transition-all", vocabVal[i] === 'correct' ? 'border-green-500 bg-green-50/5' : vocabVal[i] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} autoComplete="off" readOnly={!!targetStudentId} />
+                                </Fragment>
+                            ))}
+                        </div></ScrollArea></CardContent>
+                        <CardFooter className="justify-between border-t pt-6"><Button onClick={handleCheckVocab} variant="secondary">Verificar</Button><Button onClick={() => handleTopicComplete('vocabulary')} disabled={!vocabAllOk && !isAdmin} className='text-white font-bold'>Avanzar</Button></CardFooter>
+                    </Card>
+                );
+            case 'grammar':
+                return (
+                    <Card className="shadow-soft border-2 border-brand-purple bg-slate-100 dark:bg-slate-800/50 p-6 text-foreground text-left overflow-hidden">
+                        <CardHeader className='px-0 pb-6 border-b mb-6'><CardTitle className="text-3xl font-black text-primary uppercase">Gramática: Estructura de Preferencias</CardTitle></CardHeader>
+                        <CardContent className="space-y-8 px-0 font-medium">
+                            <div className="p-6 bg-white/60 dark:bg-background/20 rounded-[2rem] border shadow-sm">
+                                <h3 className="text-xl font-black text-primary uppercase mb-4">1. Pronombres de Objeto Directo</h3>
+                                <p className="mb-4">Para expresar lo que nos gusta, nos duele o nos encanta, usamos:</p>
+                                <div className='grid grid-cols-5 gap-2 text-center font-bold text-lg'>
+                                    <div className='p-2 bg-primary/10 rounded border border-primary/20'>ME</div>
+                                    <div className='p-2 bg-primary/10 rounded border border-primary/20'>TE</div>
+                                    <div className='p-2 bg-primary/10 rounded border border-primary/20'>LE</div>
+                                    <div className='p-2 bg-primary/10 rounded border border-primary/20'>NOS</div>
+                                    <div className='p-2 bg-primary/10 rounded border border-primary/20'>LES</div>
+                                </div><br />
+                                <p className="mb-4">CONJUGACION</p><br />
+                                <p className="mb-4">A mi me gusta : I like</p>
+                                <p className="mb-4">A ti te gusta : you like</p>
+                                <p className="mb-4">A él le gusta : he likes</p>
+                                <p className="mb-4">A ella le gusta: she likes</p>
+                                <p className="mb-4">A nosotros nos gusta: we like</p>
+                                <p className="mb-4">A ellos les gusta   : they like</p>
+                            </div>
+                            <div className="p-6 bg-white/60 dark:bg-background/20 rounded-[2rem] border shadow-sm space-y-6 text-foreground">
+                                <h3 className="text-xl font-black text-primary uppercase mb-2">2. Concordancia: Singular vs Plural</h3>
+                                <div className='text-foreground'>
+                                    <h4 className='font-bold text-primary'>GUSTA / ENCANTA / DUELE (Singular):</h4>
+                                    <p className='text-sm italic'>Se usa cuando lo que nos gusta es una sola cosa o una acción (verbo).</p>
+                                    <p className='font-mono bg-muted p-2 rounded mt-1'>Me gusta la pizza / Me encanta viajar / Me duele la cabeza.</p>
+                                </div>
+                                <Separator />
+                                <div className='text-foreground'>
+                                    <h4 className='font-bold text-primary'>GUSTAN / ENCANTAN / DUELEN (Plural):</h4>
+                                    <p className='text-sm italic'>Se usa cuando lo que nos gusta son varias cosas.</p>
+                                    <p className='font-mono bg-muted p-2 rounded mt-1'>Me gustan los libros / Me encantan las flores / Me duelen los pies.</p>
+                                </div>
+                            </div>
+                        </CardContent>
+                        <CardFooter className="justify-center pt-6 border-t"><Button onClick={() => handleTopicComplete('grammar')} size="lg" className="px-24 font-black h-14 text-xl shadow-xl uppercase">Entendido</Button></CardFooter>
+                    </Card>
+                );
+            case 'ex1': return <BlockValidationExercise title="Ejercicio 1" prompts={ex1Prompts} onComplete={() => handleTopicComplete('ex1')} vocabulary={preferenceVocab.reduce((acc, curr) => ({...acc, [curr.en]: curr.es}), {})} isAdmin={isAdmin} isSupervisionMode={!!targetStudentId} />;
+            case 'ex2': return <FillInTheBlankExercise title="Ejercicio 2" prompts={ex2Prompts} onComplete={() => handleTopicComplete('ex2')} instruction="Completa con el pronombre correcto (me, te, le, nos, les)." isAdmin={isAdmin} isSupervisionMode={!!targetStudentId} />;
+            case 'vocab_game': return <VocabularyMatchingGame data={preferenceVocab.map(v => ({ spanish: v.es, english: [v.en] }))} onComplete={() => handleTopicComplete('vocab_game')} title="Memory: Preferencias" />;
+            case 'reading':
+                return (
+                    <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left">
+                        <CardHeader><CardTitle>{readingData.title}</CardTitle></CardHeader>
+                        <CardContent className="space-y-6">
+                            <div className="p-6 bg-muted rounded-2xl border italic text-lg leading-relaxed shadow-inner text-foreground">{readingData.content}</div>
+                            <Separator /><div className="space-y-4">{readingData.questions.map(q => (
+                                <div key={q.id} className="space-y-2 text-foreground"><Label className='font-bold text-foreground'>{q.q}</Label><Input value={readAns[q.id] || ''} onChange={e => { if (targetStudentId) return; setReadAns({...readAns, [q.id]: e.target.value}); setReadVal({...readVal, [q.id]: 'unchecked'}); }} className={cn('h-12 text-foreground', readVal[q.id] === 'correct' ? 'border-green-500 bg-green-50/10' : readVal[q.id] === 'incorrect' ? 'border-red-500 bg-red-50/10' : '')} autoComplete="off" readOnly={!!targetStudentId} /></div>
+                            ))}</div>
+                        </CardContent>
+                        <CardFooter className="justify-between border-t pt-6 bg-muted/10">
+                            <Button onClick={handleCheckReading} variant="secondary">Verificar</Button>
+                            <Button onClick={() => handleTopicComplete('reading')} disabled={!isReadComplete && !isAdmin} className="font-bold text-white bg-primary hover:bg-primary/90">Continuar <ArrowRight className="ml-2 h-5 w-5" /></Button>
+                        </CardFooter>
+                    </Card>
+                );
+            case 'ex3': return <BlockValidationExercise key="ex3-independent" title="Ejercicio 3" prompts={ex3Prompts} onComplete={() => handleTopicComplete('ex3')} vocabulary={preferenceVocab.reduce((acc, curr) => ({...acc, [curr.en]: curr.es}), {})} isAdmin={isAdmin} isSupervisionMode={!!targetStudentId} />;
+            case 'mixed': return <BlockValidationExercise key="mixed-independent" title="Ejercicio Mixto" prompts={mixedExPrompts} onComplete={() => handleTopicComplete('mixed')} vocabulary={preferenceVocab.reduce((acc, curr) => ({...acc, [curr.en]: curr.es}), {})} isAdmin={isAdmin} isSupervisionMode={!!targetStudentId} />;
+            case 'translate':
+                if (isFinished) {
+                    return (
+                        <Card className="shadow-soft border-2 border-green-500 bg-green-50/10 p-12 text-center flex flex-col items-center text-foreground animate-in fade-in duration-500">
+                            <Trophy className="h-24 w-24 text-yellow-400 mb-6 animate-bounce" />
+                            <h2 className="text-4xl font-black uppercase text-green-600 tracking-tighter">¡FELICITACIONES!</h2>
+                            <p className="text-2xl mt-4 font-bold">Tu completaste esta clase Verbos de Preferencia</p>
+                            <Button asChild className="mt-8 px-12 h-12 font-bold" variant="outline"><Link href="/espanol/a1">Regresar a la Ruta A1</Link></Button>
+                        </Card>
+                    );
+                }
+                return (
+                    <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left">
+                        <CardHeader>
+                            <div className='flex justify-between items-center w-full'>
+                                <div><CardTitle>Traducción de Texto</CardTitle><CardDescription className='font-bold text-foreground'>Traduce el párrafo al español.</CardDescription></div>
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                        <Button variant="outline" size="sm" className="border-2 border-brand-blue animate-border-pulse shrink-0"><BookText className="mr-2 h-4 w-4" /> Vocabulary</Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-64">
+                                        <ScrollArea className="h-48 pr-4 text-left text-foreground">
+                                            <div className="grid grid-cols-2 gap-2 text-sm text-foreground">
+                                                {Object.entries(preferenceVocab.reduce((acc, curr) => ({...acc, [curr.en]: curr.es}), {})).map(([en, es]: any) => (<Fragment key={en}><span className="text-muted-foreground capitalize font-bold">{en}:</span><span className="font-semibold text-right text-primary uppercase">{es}</span></Fragment>))}
+                                            </div>
+                                        </ScrollArea>
+                                    </PopoverContent>
+                                </Popover>
+                            </div>
+                        </CardHeader>
+                        <CardContent className="space-y-6 pt-6 text-foreground">
+                            <div className="p-6 bg-muted/50 rounded-2xl border italic text-lg leading-relaxed shadow-sm text-foreground">"I love my family and we enjoy to travel together. My sister is interested in animals, but she doesn't like spiders. My father likes classical music. My mother loves to cook, but she doesn't like loud noise because her head hurts."</div>
+                            <Separator /><div className="space-y-2 text-foreground"><Label className='font-black text-primary uppercase text-sm'>Tu Traducción:</Label><Textarea value={transText} onChange={(e) => { if (!targetStudentId) setTransText(e.target.value); }} placeholder="Escribe el texto en español aquí..." className="min-h-[200px] text-lg text-foreground" readOnly={!!targetStudentId} /></div>
+                        </CardContent>
+                        <CardFooter className="justify-center border-t pt-6 bg-muted/20">
+                            <Button onClick={() => { if (targetStudentId && !isAdmin) return; setIsFinished(true); handleTopicComplete('translate'); }} size="lg" className="px-24 font-black h-16 text-2xl shadow-xl bg-primary hover:bg-primary/90 text-primary-foreground uppercase tracking-tighter transition-all active:scale-95">MISIÓN FINAL</Button>
+                        </CardFooter>
+                    </Card>
+                );
+            default: return null;
         }
     };
 
@@ -560,17 +598,46 @@ function VerbosPreferenciaContent() {
             <DashboardHeader />
             <main className="flex-1 p-4 md:p-8">
                 <div className="max-w-7xl mx-auto">
-                    {targetStudentId && isAdmin && (
-                        <div className="mb-6 bg-yellow-500/20 border-2 border-yellow-500 p-4 rounded-xl flex items-center justify-between shadow-lg backdrop-blur-md"><div className="flex items-center gap-3 text-yellow-700 dark:text-yellow-400"><Star className="h-6 w-6 fill-current animate-pulse" /><p className="font-black uppercase tracking-tighter text-sm">Modo Supervisión: {studentProfile?.name || '...'}</p></div><Button variant="outline" size="sm" asChild className="border-yellow-600 text-yellow-700 hover:bg-yellow-500/10"><Link href="/admin">Cerrar</Link></Button></div>
+                    {isAdmin && targetStudentId && (
+                        <div className="mb-6 bg-yellow-500/20 border-2 border-yellow-500 p-4 rounded-xl flex items-center justify-between shadow-lg backdrop-blur-md">
+                            <div className="flex items-center gap-3 text-yellow-700 dark:text-yellow-400"><Star className="h-6 w-6 fill-current animate-pulse" />
+                            <p className="font-black uppercase tracking-tighter text-sm">Modo Supervisión: {studentProfile?.name || targetStudentId}</p></div>
+                            <Button variant="outline" size="sm" asChild className="border-yellow-600 text-yellow-700 hover:bg-yellow-500/10 transition-colors"><Link href="/admin">Cerrar</Link></Button>
+                        </div>
                     )}
+                    
                     <div className="mb-8 text-left text-white">
                         <Link href="/espanol/a1" className="hover:underline text-sm font-bold text-white/80 flex items-center gap-2 mb-2"><ArrowLeft className="h-4 w-4" /> Volver al Curso A1</Link>
-                        <h1 className="text-4xl font-black [text-shadow:2px_2px_4px_rgba(0,0,0,0.5)] uppercase tracking-tight flex items-center gap-3"><Activity className='h-10 w-10 text-primary' /> Verbos de Preferencia 🇪🇸</h1>
+                        <h1 className="text-4xl font-black [text-shadow:2px_2px_4px_rgba(0,0,0,0.5)] uppercase tracking-tight flex items-center gap-3 text-white"><Activity className='h-10 w-10 text-primary' /> Verbos de Preferencia 🇪🇸</h1>
                     </div>
+
                     <div className="grid gap-8 md:grid-cols-12 text-foreground">
                         <div className="md:col-span-9 md:order-1 order-2">{renderContent()}</div>
                         <div className="md:col-span-3 md:order-2 order-1 text-left">
-                            <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm"><CardHeader className="pb-4 border-b bg-muted/30"><CardTitle className="text-lg font-black text-primary uppercase tracking-tighter flex items-center gap-2"><Trophy className="h-5 w-5 text-primary" /> Ruta de Misión</CardTitle></CardHeader><CardContent className="p-4"><nav><ul className="space-y-1">{learningPath.map((item) => { const isLocked = item.status === 'locked' && !isAdmin; const isSelected = selectedTopic === item.key; const Icon = item.icon; return (<li key={item.key} onClick={() => handleTopicSelect(item.key)} className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer text-foreground', isLocked ? 'text-muted-foreground/30 cursor-not-allowed' : 'hover:bg-muted', isSelected && 'bg-muted text-primary font-black border-l-4 border-primary shadow-sm')}><div className="flex items-center gap-3">{item.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500" /> : <Icon className={cn("h-5 w-5", isLocked ? "text-yellow-500/50" : "text-primary")} />}<span className="truncate max-w-[150px]">{item.name}</span></div>{isLocked && <Lock className="h-3 w-3 text-yellow-500/30" />}</li>);})}</ul></nav><div className="mt-6 pt-6 border-t"><div className="flex justify-between items-center text-xs mb-2 font-black uppercase tracking-widest text-muted-foreground"><span>Progreso Total</span><span className="text-primary">{progressValue}%</span></div><Progress value={progressValue} className="h-2 rounded-full" /></div></CardContent></Card>
+                            <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground">
+                                <CardHeader className="pb-4 border-b bg-muted/30">
+                                    <CardTitle className="text-lg font-black text-primary uppercase flex items-center gap-2"><Trophy className="h-5 w-5 text-primary" /> Misión A1</CardTitle>
+                                </CardHeader>
+                                <CardContent className="p-4">
+                                    <nav><ul className="space-y-1">
+                                        {learningPath.map((item) => {
+                                            const isLocked = item.status === 'locked' && !isAdmin;
+                                            const isSelected = selectedTopic === item.key;
+                                            const Icon = ICONS_CONFIG[item.status as keyof typeof ICONS_CONFIG] || BookOpen;
+                                            return (
+                                                <li key={item.key} onClick={() => handleTopicSelect(item.key)} className={cn('flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer text-foreground', isLocked ? 'text-muted-foreground/30 cursor-not-allowed' : 'hover:bg-muted', isSelected && 'bg-muted text-primary font-black border-l-4 border-primary shadow-sm', item.status === 'active' && !isAdmin && "animate-pulse-glow")}>
+                                                    <div className="flex items-center gap-3">
+                                                        {item.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500" /> : <Icon className={cn("h-5 w-5", isLocked ? "text-yellow-500/50" : "text-primary")} />}
+                                                        <span className="truncate max-w-[150px] text-[10px] uppercase font-bold text-black dark:text-white">{item.name}</span>
+                                                    </div>
+                                                    {isLocked && <Lock className="h-3 w-3 text-yellow-500/30" />}
+                                                </li>
+                                            );
+                                        })}
+                                    </ul></nav>
+                                    <div className="mt-6 pt-6 border-t"><div className="flex justify-between items-center text-xs mb-2 font-black uppercase text-muted-foreground"><span>Avance</span><span className="text-primary">{progressValue}%</span></div><Progress value={progressValue} className="h-2 rounded-full" /></div>
+                                </CardContent>
+                            </Card>
                         </div>
                     </div>
                 </div>
@@ -580,5 +647,9 @@ function VerbosPreferenciaContent() {
 }
 
 export default function VerbosPreferenciaPage() {
-    return (<Suspense fallback={<div className="flex h-screen w-full items-center justify-center bg-background"><Loader2 className="animate-spin h-12 w-12 text-primary" /></div>}><VerbosPreferenciaContent /></Suspense>);
+    return (
+        <Suspense fallback={<div className="flex h-screen w-full items-center justify-center bg-background"><Loader2 className="animate-spin h-12 w-12 text-primary" /></div>}>
+            <VerbosPreferenciaContent />
+        </Suspense>
+    );
 }
