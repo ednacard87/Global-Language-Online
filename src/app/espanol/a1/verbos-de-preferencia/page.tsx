@@ -503,7 +503,7 @@ function VerbosPreferenciaContent() {
                                     <div className='p-2 bg-primary/10 rounded border border-primary/20'>NOS</div>
                                     <div className='p-2 bg-primary/10 rounded border border-primary/20'>LES</div>
                                 </div><br />
-                                <p className="mb-4">CONJUGACION</p><br />
+                                <h4 className="text-xl font-black text-primary uppercase mb-4">Conjugación</h4><br />
                                 <p className="mb-4">A mi me gusta : I like</p>
                                 <p className="mb-4">A ti te gusta : you like</p>
                                 <p className="mb-4">A él le gusta : he likes</p>
