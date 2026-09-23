@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense, Fragment } from 'react';
@@ -184,6 +183,106 @@ const mixedExPrompts = [
     { en: "I have two euros left.", es: ["me quedan dos euros"] },
 ];
 
+
+// --- VOCABULARIO INDEPENDIENTE POR ACTIVIDAD ---
+// Cada actividad tiene su propia lista. Así, cada botón "Vocabulary"
+// muestra únicamente las palabras de esa actividad.
+
+const ex1Vocabulary = [
+    { en: "To like", es: "Gustar" },
+    { en: "Pizza", es: "Pizza" },
+    { en: "Music", es: "Música" },
+    { en: "Movies", es: "Películas" },
+    { en: "Sports", es: "Deportes" },
+    { en: "To read", es: "Leer" },
+    { en: "Science fiction", es: "Ciencia ficción" },
+    { en: "Coffee", es: "Café" },
+    { en: "In the morning", es: "Por la mañana" },
+    { en: "Sunny days", es: "Días soleados" },
+    { en: "Spiders", es: "Arañas" },
+    { en: "To listen", es: "Escuchar" },
+    { en: "Rock music", es: "Música rock" },
+    { en: "Parents", es: "Padres" },
+    { en: "Documentaries", es: "Documentales" },
+    { en: "Chocolate ice cream", es: "Helado de chocolate" },
+    { en: "Strawberries", es: "Fresas" },
+    { en: "Beach", es: "Playa" },
+    { en: "Shoes", es: "Zapatos" },
+    { en: "Children", es: "Niños" },
+    { en: "Mathematics", es: "Matemáticas" },
+    { en: "Boss", es: "Jefe" },
+    { en: "Order", es: "Orden" },
+    { en: "Black cats", es: "Gatos negros" },
+    { en: "Idea", es: "Idea" },
+    { en: "Live concerts", es: "Conciertos en vivo" },
+    { en: "Spicy food", es: "Comida picante" },
+];
+
+const ex3Vocabulary = [
+    { en: "To love", es: "Encantar" },
+    { en: "Horror movies", es: "Películas de terror" },
+    { en: "To be interested in", es: "Interesar" },
+    { en: "Politics", es: "Política" },
+    { en: "To enjoy", es: "Disfrutar" },
+    { en: "Traveling", es: "Viajar" },
+    { en: "Easy", es: "Fácil" },
+    { en: "Noise", es: "Ruido" },
+    { en: "Thunder", es: "Truenos" },
+    { en: "Video games", es: "Videojuegos" },
+    { en: "Important", es: "Importante" },
+    { en: "Mystery novels", es: "Novelas de misterio" },
+    { en: "Exotic food", es: "Comida exótica" },
+    { en: "Cold mornings", es: "Mañanas frías" },
+    { en: "Back", es: "Espalda" },
+    { en: "Feet", es: "Pies" },
+    { en: "Lies", es: "Mentiras" },
+    { en: "To have left", es: "Quedar" },
+    { en: "Family", es: "Familia" },
+    { en: "Rainy days", es: "Días de lluvia" },
+    { en: "Teeth", es: "Muelas / dientes" },
+    { en: "To drive", es: "Manejar / conducir" },
+];
+
+const mixedVocabulary = [
+    { en: "Blue car", es: "Carro azul" },
+    { en: "Black car", es: "Carro negro" },
+    { en: "To dance", es: "Bailar" },
+    { en: "Head", es: "Cabeza" },
+    { en: "History", es: "Historia" },
+    { en: "Noise", es: "Ruido" },
+    { en: "Fruits", es: "Frutas" },
+    { en: "Dogs", es: "Perros" },
+    { en: "Feet", es: "Pies" },
+    { en: "Idea", es: "Idea" },
+    { en: "News", es: "Noticia" },
+    { en: "To travel", es: "Viajar" },
+    { en: "Chocolate", es: "Chocolate" },
+    { en: "Stomach", es: "Estómago" },
+    { en: "Smoke", es: "Humo" },
+    { en: "Art", es: "Arte" },
+    { en: "Horror movies", es: "Películas de terror" },
+    { en: "Eyes", es: "Ojos" },
+    { en: "Sunny days", es: "Días soleados" },
+    { en: "Strange", es: "Raro / extraño" },
+    { en: "Two euros left", es: "Dos euros restantes" },
+];
+
+const translationVocabulary = [
+    { en: "I love", es: "Me encanta" },
+    { en: "My family", es: "Mi familia" },
+    { en: "We enjoy", es: "Disfrutamos" },
+    { en: "To travel together", es: "Viajar juntos" },
+    { en: "My sister", es: "Mi hermana" },
+    { en: "Interested in animals", es: "Interesada en los animales" },
+    { en: "Spiders", es: "Arañas" },
+    { en: "My father", es: "Mi padre" },
+    { en: "Classical music", es: "Música clásica" },
+    { en: "My mother", es: "Mi madre" },
+    { en: "To cook", es: "Cocinar" },
+    { en: "Loud noise", es: "Ruido fuerte" },
+    { en: "Her head hurts", es: "Le duele la cabeza" },
+];
+
 // --- HELPERS ---
 
 const BlockValidationExercise = ({ title, prompts, onComplete, vocabulary, isAdmin, isSupervisionMode }: any) => {
@@ -239,7 +338,7 @@ const BlockValidationExercise = ({ title, prompts, onComplete, vocabulary, isAdm
                             <PopoverContent className="w-64">
                                 <ScrollArea className="h-48 pr-4">
                                     <div className="grid grid-cols-2 gap-2 text-sm text-left">
-                                        {Object.entries(vocabulary).map(([en, es]: any) => (<Fragment key={en}><span className="text-muted-foreground capitalize font-bold">{en}:</span><span className="font-semibold text-right text-primary">{(es || '').toUpperCase()}</span></Fragment>))}
+                                        {vocabulary.map((item: { en: string; es: string }) => (<Fragment key={item.en}><span className="text-muted-foreground capitalize font-bold">{item.en}:</span><span className="font-semibold text-right text-primary">{(item.es || '').toUpperCase()}</span></Fragment>))}
                                     </div>
                                 </ScrollArea>
                             </PopoverContent>
@@ -529,7 +628,7 @@ function VerbosPreferenciaContent() {
                         <CardFooter className="justify-center pt-6 border-t"><Button onClick={() => handleTopicComplete('grammar')} size="lg" className="px-24 font-black h-14 text-xl shadow-xl uppercase">Entendido</Button></CardFooter>
                     </Card>
                 );
-            case 'ex1': return <BlockValidationExercise title="Ejercicio 1" prompts={ex1Prompts} onComplete={() => handleTopicComplete('ex1')} vocabulary={preferenceVocab.reduce((acc, curr) => ({...acc, [curr.en]: curr.es}), {})} isAdmin={isAdmin} isSupervisionMode={!!targetStudentId} />;
+            case 'ex1': return <BlockValidationExercise title="Ejercicio 1" prompts={ex1Prompts} onComplete={() => handleTopicComplete('ex1')} vocabulary={ex1Vocabulary} isAdmin={isAdmin} isSupervisionMode={!!targetStudentId} />;
             case 'ex2': return <FillInTheBlankExercise title="Ejercicio 2" prompts={ex2Prompts} onComplete={() => handleTopicComplete('ex2')} instruction="Completa con el pronombre correcto (me, te, le, nos, les)." isAdmin={isAdmin} isSupervisionMode={!!targetStudentId} />;
             case 'vocab_game': return <VocabularyMatchingGame data={preferenceVocab.map(v => ({ spanish: v.es, english: [v.en] }))} onComplete={() => handleTopicComplete('vocab_game')} title="Memory: Preferencias" />;
             case 'reading':
@@ -548,8 +647,8 @@ function VerbosPreferenciaContent() {
                         </CardFooter>
                     </Card>
                 );
-            case 'ex3': return <BlockValidationExercise key="ex3-independent" title="Ejercicio 3" prompts={ex3Prompts} onComplete={() => handleTopicComplete('ex3')} vocabulary={preferenceVocab.reduce((acc, curr) => ({...acc, [curr.en]: curr.es}), {})} isAdmin={isAdmin} isSupervisionMode={!!targetStudentId} />;
-            case 'mixed': return <BlockValidationExercise key="mixed-independent" title="Ejercicio Mixto" prompts={mixedExPrompts} onComplete={() => handleTopicComplete('mixed')} vocabulary={preferenceVocab.reduce((acc, curr) => ({...acc, [curr.en]: curr.es}), {})} isAdmin={isAdmin} isSupervisionMode={!!targetStudentId} />;
+            case 'ex3': return <BlockValidationExercise key="ex3-independent" title="Ejercicio 3" prompts={ex3Prompts} onComplete={() => handleTopicComplete('ex3')} vocabulary={ex3Vocabulary} isAdmin={isAdmin} isSupervisionMode={!!targetStudentId} />;
+            case 'mixed': return <BlockValidationExercise key="mixed-independent" title="Ejercicio Mixto" prompts={mixedExPrompts} onComplete={() => handleTopicComplete('mixed')} vocabulary={mixedVocabulary} isAdmin={isAdmin} isSupervisionMode={!!targetStudentId} />;
             case 'translate':
                 if (isFinished) {
                     return (
@@ -557,6 +656,7 @@ function VerbosPreferenciaContent() {
                             <Trophy className="h-24 w-24 text-yellow-400 mb-6 animate-bounce" />
                             <h2 className="text-4xl font-black uppercase text-green-600 tracking-tighter">¡FELICITACIONES!</h2>
                             <p className="text-2xl mt-4 font-bold">Tu completaste esta clase Verbos de Preferencia</p>
+                            <p className='text-muted-foreground mt-2 text-lg'>Misión completada al 100%.</p>
                             <Button asChild className="mt-8 px-12 h-12 font-bold" variant="outline"><Link href="/espanol/a1">Regresar a la Ruta A1</Link></Button>
                         </Card>
                     );
@@ -573,7 +673,7 @@ function VerbosPreferenciaContent() {
                                     <PopoverContent className="w-64">
                                         <ScrollArea className="h-48 pr-4 text-left text-foreground">
                                             <div className="grid grid-cols-2 gap-2 text-sm text-foreground">
-                                                {Object.entries(preferenceVocab.reduce((acc, curr) => ({...acc, [curr.en]: curr.es}), {})).map(([en, es]: any) => (<Fragment key={en}><span className="text-muted-foreground capitalize font-bold">{en}:</span><span className="font-semibold text-right text-primary uppercase">{es}</span></Fragment>))}
+                                                {translationVocabulary.map((item) => (<Fragment key={item.en}><span className="text-muted-foreground capitalize font-bold">{item.en}:</span><span className="font-semibold text-right text-primary uppercase">{item.es}</span></Fragment>))}
                                             </div>
                                         </ScrollArea>
                                     </PopoverContent>
