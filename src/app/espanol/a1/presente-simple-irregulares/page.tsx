@@ -1,16 +1,16 @@
 'use client';
 
-import React, { useState, useEffect, useMemo, useCallback, Suspense, Fragment } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, Suspense, Fragment, useRef } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { 
-    BookOpen, 
-    PenSquare, 
-    Lock, 
-    GraduationCap, 
-    CheckCircle, 
-    Gamepad2, 
-    BookText, 
+import {
+    BookOpen,
+    PenSquare,
+    Lock,
+    GraduationCap,
+    CheckCircle,
+    Gamepad2,
+    BookText,
     Trophy,
     ArrowLeft,
     ArrowRight,
@@ -233,33 +233,52 @@ const negativePrompts = [
 
 // --- HELPER COMPONENTS ---
 
-const BallsExercise = ({ title, prompts, onComplete, vocabulary }: any) => {
+const BallsExercise = ({ title, prompts, onComplete, vocabulary, isFinalSection }: any) => {
     const { toast } = useToast();
     const [currentIndex, setCurrentIndex] = useState(0);
-    const [answer, setAnswer] = useState('');
+    const [answers, setAnswers] = useState<Record<number, string>>({});
     const [status, setStatus] = useState<Record<number, 'correct' | 'incorrect' | 'unchecked'>>({});
+    const [allVerified, setAllVerified] = useState(false);
 
     useEffect(() => {
         setCurrentIndex(0);
-        setAnswer('');
+        setAnswers({});
         setStatus({});
+        setAllVerified(false);
     }, [prompts]);
 
-    const handleCheck = () => {
-        const currentPrompt = prompts[currentIndex];
-        if (!currentPrompt?.es) return;
+    const currentAnswer = answers[currentIndex] || '';
 
-        const userVal = answer.trim().toLowerCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' ');
-        const isCorrect = currentPrompt.es.some((a: string) => a.toLowerCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' ') === userVal);
-        
-        setStatus(prev => ({ ...prev, [currentIndex]: isCorrect ? 'correct' : 'incorrect' }));
-        
-        if (isCorrect) {
-            toast({ title: "¡Buen trabajo!" });
-        } else {
-            toast({ variant: 'destructive', title: "Sigue intentando" });
+    const handleAnswerChange = (val: string) => {
+        setAnswers(prev => ({ ...prev, [currentIndex]: val }));
+        // Reset status for this index when editing
+        if (status[currentIndex]) {
+            setStatus(prev => { const n = { ...prev }; delete n[currentIndex]; return n; });
+            setAllVerified(false);
         }
     };
+
+    // Verify ALL prompts at once (only triggered from last prompt)
+    const handleVerifyAll = () => {
+        const newStatus: Record<number, 'correct' | 'incorrect'> = {};
+        let allOk = true;
+        prompts.forEach((p: any, i: number) => {
+            const userVal = (answers[i] || '').trim().toLowerCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' ');
+            const isCorrect = p.es.some((a: string) => a.toLowerCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' ') === userVal);
+            newStatus[i] = isCorrect ? 'correct' : 'incorrect';
+            if (!isCorrect) allOk = false;
+        });
+        setStatus(newStatus);
+        setAllVerified(true);
+        if (allOk) {
+            toast({ title: "¡Excelente!", description: "Todos los ejercicios están correctos.", className: "bg-green-600 text-white" });
+        } else {
+            toast({ variant: 'destructive', title: "Hay errores", description: "Las frases en rojo necesitan corrección." });
+        }
+    };
+
+    const isLastPrompt = currentIndex === prompts.length - 1;
+    const allCorrect = allVerified && prompts.length > 0 && Object.keys(status).length === prompts.length && Object.values(status).every(v => v === 'correct');
 
     if (!prompts || prompts.length === 0 || !prompts[currentIndex]) {
         return (
@@ -310,13 +329,50 @@ const BallsExercise = ({ title, prompts, onComplete, vocabulary }: any) => {
                 <div className="bg-muted p-6 rounded-2xl border-2 border-dashed text-center font-bold text-xl uppercase tracking-tighter text-foreground">
                     {prompts[currentIndex]?.en}
                 </div>
-                <Input value={answer} onChange={e => setAnswer(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleCheck()} className={cn("h-12 text-lg text-foreground", status[currentIndex] === 'correct' ? 'border-green-500 bg-green-50/5' : status[currentIndex] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} placeholder="Escribe en español..." autoComplete="off" />
+                <Input
+                    value={currentAnswer}
+                    onChange={e => handleAnswerChange(e.target.value)}
+                    onKeyDown={e => e.key === 'Enter' && isLastPrompt && handleVerifyAll()}
+                    className={cn("h-12 text-lg text-foreground",
+                        status[currentIndex] === 'correct' ? 'border-green-500 bg-green-50/5' :
+                            status[currentIndex] === 'incorrect' ? 'border-red-500 bg-red-50/5' : ''
+                    )}
+                    placeholder="Escribe en español..."
+                    autoComplete="off"
+                />
+                {status[currentIndex] === 'incorrect' && (
+                    <p className="text-red-500 text-sm font-bold text-center animate-in fade-in">✗ Respuesta incorrecta. Intenta de nuevo.</p>
+                )}
+                {status[currentIndex] === 'correct' && (
+                    <p className="text-green-500 text-sm font-bold text-center animate-in fade-in">✓ ¡Correcto!</p>
+                )}
             </CardContent>
-            <CardFooter className="justify-between border-t pt-6">
+            <CardFooter className="justify-between border-t pt-6 flex-wrap gap-3">
                 <Button variant="outline" onClick={() => setCurrentIndex(p => Math.max(0, p - 1))} disabled={currentIndex === 0}>Anterior</Button>
-                <div className="flex gap-2">
-                    <Button onClick={handleCheck} variant="secondary">Verificar</Button>
-                    <Button onClick={() => currentIndex < prompts.length - 1 ? setCurrentIndex(i => i + 1) : onComplete()} disabled={status[currentIndex] !== 'correct'} className="font-bold text-white">Siguiente</Button>
+                <div className="flex gap-2 flex-wrap justify-end">
+                    {/* Verificar only on last prompt */}
+                    {isLastPrompt && !allCorrect && (
+                        <Button onClick={handleVerifyAll} variant="secondary" className="font-bold">
+                            <ListChecks className="mr-2 h-4 w-4" /> Verificar
+                        </Button>
+                    )}
+                    {/* Terminar button - only visible when all correct in final section */}
+                    {isFinalSection && allCorrect && (
+                        <Button
+                            onClick={onComplete}
+                            className="font-bold text-white bg-green-600 hover:bg-green-700 animate-in zoom-in duration-300 shadow-xl"
+                        >
+                            <Trophy className="mr-2 h-4 w-4" /> Terminar
+                        </Button>
+                    )}
+                    {/* Next button - hidden on last prompt if it's the final section */}
+                    {!isLastPrompt && (
+                        <Button onClick={() => setCurrentIndex(i => i + 1)} className="font-bold text-white">Siguiente</Button>
+                    )}
+                    {/* For non-final sections, show Continue on last prompt when verified */}
+                    {isLastPrompt && !isFinalSection && allCorrect && (
+                        <Button onClick={onComplete} className="font-bold text-white">Continuar</Button>
+                    )}
                 </div>
             </CardFooter>
         </Card>
@@ -346,6 +402,8 @@ function PresenteSimpleIrregularesContent() {
     const [selectedTopic, setSelectedTopic] = useState<string>('');
     const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
     const [initialLoadComplete, setInitialLoadComplete] = useState(false);
+    const [missionCompleted, setMissionCompleted] = useState(false);
+    const hasInitialized = useRef(false);
 
     // States for content
     const [vocabAnswers, setVocabAnswers] = useState<string[]>(Array(irregularVerbsVocab.length).fill(''));
@@ -361,12 +419,15 @@ function PresenteSimpleIrregularesContent() {
 
     const [readingAns, setReadingAns] = useState<string[]>(Array(readingData.questions.length).fill(''));
     const [readingVal, setReadingVal] = useState<any[]>(Array(readingData.questions.length).fill('unchecked'));
+    const [readingAllCorrect, setReadingAllCorrect] = useState(false);
+
+    const [finalExAllCorrect, setFinalExAllCorrect] = useState(false);
 
     const [translationText, setTranslationText] = useState('');
 
     const studentDocRef = useMemoFirebase(() => (currentUID ? doc(firestore, 'students', currentUID) : null), [firestore, currentUID]);
     const authUserRef = useMemoFirebase(() => (user ? doc(firestore, 'students', user.uid) : null), [firestore, user]);
-    
+
     const { data: authUserProfile } = useDoc<{ role?: string }>(authUserRef);
     const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{ role?: string, lessonProgress?: any, progress?: any, name?: string }>(studentDocRef);
 
@@ -381,7 +442,7 @@ function PresenteSimpleIrregularesContent() {
         { key: 'vocab_game', name: '6. Vocabulario (Juego)', icon: Gamepad2, status: 'locked' },
         { key: 'ex3', name: '7. Ejercicio 3', icon: PenSquare, status: 'locked' },
         { key: 'reading', name: '8. Lectura', icon: BookText, status: 'locked' },
-        { key: 'final_ex', name: '9. Ejercicio Final', icon: Trophy, status: 'locked' },
+        { key: 'final_ex', name: '9. Ejercicio Mixto', icon: Trophy, status: 'locked' },
         { key: 'translate_text', name: '10. Traducir Texto', icon: MessageSquare, status: 'locked' },
         { key: 'final', name: '11. Final', icon: CheckCircle, status: 'locked' },
     ], []);
@@ -398,6 +459,8 @@ function PresenteSimpleIrregularesContent() {
             const savedData = studentProfile.lessonProgress[progressStorageVersion];
             path.forEach(item => { if (savedData[item.key]) item.status = savedData[item.key]; });
             savedST = savedData.lastSelectedTopic || '';
+            if (savedData.missionCompleted) setMissionCompleted(true);
+            if (savedData.translationText) setTranslationText(savedData.translationText);
         }
 
         let lastDone = true;
@@ -409,22 +472,30 @@ function PresenteSimpleIrregularesContent() {
         setLearningPath(path);
         setSelectedTopic(savedST || path.find(p => p.status === 'active')?.key || path[0].key);
         setInitialLoadComplete(true);
+        hasInitialized.current = true;
         setTimeout(() => setIsInitialLoading(false), 800);
     }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading, isUserLoading, initialLoadComplete, targetStudentId]);
 
     const progressValue = useMemo(() => {
+        if (missionCompleted) return 100;
         if (learningPath.length === 0) return 0;
         const completedCount = learningPath.filter(t => t.status === 'completed').length;
         return Math.round((completedCount / learningPath.length) * 100);
-    }, [learningPath]);
+    }, [learningPath, missionCompleted]);
 
     useEffect(() => {
-        if (!initialLoadComplete || isInitialLoading || isAdmin || !studentDocRef || learningPath.length === 0 || targetStudentId) return;
-        const s: Record<string, any> = { lastSelectedTopic: selectedTopic };
-        learningPath.forEach(item => { s[item.key] = item.status; });
-        updateDocumentNonBlocking(studentDocRef, { [`lessonProgress.${progressStorageVersion}`]: s, [`progress.${mainProgressKey}`]: progressValue });
-        if (progressValue >= 100) window.dispatchEvent(new CustomEvent('progressUpdated'));
-    }, [learningPath, isAdmin, progressValue, studentDocRef, initialLoadComplete, selectedTopic, isInitialLoading, targetStudentId]);
+        if (!initialLoadComplete || isInitialLoading || isAdmin || !studentDocRef || learningPath.length === 0 || targetStudentId || !hasInitialized.current) return;
+        const saveTimer = setTimeout(() => {
+            const s: Record<string, any> = { lastSelectedTopic: selectedTopic, missionCompleted, translationText };
+            learningPath.forEach(item => { s[item.key] = item.status; });
+            const currentSaved = studentProfile?.lessonProgress?.[progressStorageVersion];
+            if (JSON.stringify(s) !== JSON.stringify(currentSaved)) {
+                updateDocumentNonBlocking(studentDocRef, { [`lessonProgress.${progressStorageVersion}`]: s, [`progress.${mainProgressKey}`]: progressValue });
+            }
+            if (progressValue >= 100) window.dispatchEvent(new CustomEvent('progressUpdated'));
+        }, 1500);
+        return () => clearTimeout(saveTimer);
+    }, [learningPath, isAdmin, progressValue, studentDocRef, initialLoadComplete, selectedTopic, isInitialLoading, targetStudentId, missionCompleted, translationText, studentProfile]);
 
     useEffect(() => {
         if (!topicToComplete) return;
@@ -456,6 +527,11 @@ function PresenteSimpleIrregularesContent() {
         setTopicToComplete(completedKey);
     };
 
+    const handleFinalMission = () => {
+        setMissionCompleted(true);
+        handleTopicComplete('final');
+    };
+
     const handleVocabCheck = () => {
         let okCount = 0;
         const nv = irregularVerbsVocab.map((item, idx) => {
@@ -471,10 +547,10 @@ function PresenteSimpleIrregularesContent() {
     const handleConjCheck = () => {
         const verb = irregularConjVerbs[conjIdx];
         const corrects = verb.forms;
-    
+
         const nv = conjAnswers.map((a, i) => a.trim().toLowerCase() === corrects[i] ? 'correct' : 'incorrect');
         setConjValidation(nv as any);
-    
+
         if (nv.every(st => st === 'correct')) {
             toast({ title: "¡Perfecto!" });
             if (conjIdx < irregularConjVerbs.length - 1) {
@@ -497,8 +573,13 @@ function PresenteSimpleIrregularesContent() {
             return isOk ? 'correct' : 'incorrect';
         });
         setReadingVal(nv as any);
-        if (allOk) { toast({ title: "¡Lectura superada!" }); handleTopicComplete('reading'); }
-        else toast({ variant: 'destructive', title: "Revisa tus respuestas." });
+        if (allOk) {
+            setReadingAllCorrect(true);
+            toast({ title: "¡Lectura superada!", description: "Puedes continuar al siguiente ejercicio.", className: "bg-green-600 text-white" });
+        } else {
+            setReadingAllCorrect(false);
+            toast({ variant: 'destructive', title: "Revisa tus respuestas." });
+        }
     };
 
     const handleCheckFinalEx = () => {
@@ -509,8 +590,13 @@ function PresenteSimpleIrregularesContent() {
             return isOk ? 'correct' : 'incorrect';
         });
         setFinalExVal(nv as any);
-        if (okCount === finalExPrompts.length) { toast({ title: "¡Dominio Total!" }); handleTopicComplete('final_ex'); }
-        else toast({ variant: 'destructive', title: "Hay errores en la lista." });
+        if (okCount === finalExPrompts.length) {
+            setFinalExAllCorrect(true);
+            toast({ title: "¡Dominio Total!", description: "Puedes continuar al siguiente paso.", className: "bg-green-600 text-white" });
+        } else {
+            setFinalExAllCorrect(false);
+            toast({ variant: 'destructive', title: "Hay errores en la lista." });
+        }
     };
 
     const renderContent = () => {
@@ -525,7 +611,7 @@ function PresenteSimpleIrregularesContent() {
                             <div className="font-black text-primary border-b pb-2 uppercase tracking-widest text-xs">English</div><div className="font-black text-primary border-b pb-2 uppercase tracking-widest text-xs">Español</div>
                             {irregularVerbsVocab.map((v, i) => (<Fragment key={i}><div className="flex items-center font-bold py-1 text-sm">{v.en}</div><Input value={vocabAnswers[i]} onChange={e => { const na = [...vocabAnswers]; na[i] = e.target.value; setVocabAnswers(na); setVocabValidation(vv => { const nv = [...vv]; nv[i] = 'unchecked'; return nv as any; }); setCanAdvanceVocab(false); }} className={cn("h-10 uppercase", vocabValidation[i] === 'correct' ? 'border-green-500' : vocabValidation[i] === 'incorrect' ? 'border-red-500' : '')} autoComplete="off" /></Fragment>))}
                         </div></ScrollArea></CardContent>
-                        <CardFooter className="flex justify-between border-t pt-6 bg-muted/20"><Button onClick={handleVocabCheck} variant="secondary">Verificar</Button><Button onClick={() => handleTopicComplete('vocabulary')} disabled={!canAdvanceVocab && !isAdmin} className='text-white font-bold'>Avanzar <ArrowRight className='ml-2'/></Button></CardFooter>
+                        <CardFooter className="flex justify-between border-t pt-6 bg-muted/20"><Button onClick={handleVocabCheck} variant="secondary">Verificar</Button><Button onClick={() => handleTopicComplete('vocabulary')} disabled={!canAdvanceVocab && !isAdmin} className='text-white font-bold'>Avanzar <ArrowRight className='ml-2' /></Button></CardFooter>
                     </Card>
                 );
             case 'grammar':
@@ -559,7 +645,7 @@ function PresenteSimpleIrregularesContent() {
                             { name: "CERRAR", data: ["cierro", "cierras", "cierra", "cerramos", "cierran"] },
                         ]
                     },
-                     {
+                    {
                         title: "4. Cambio de Raíz (O > UE)",
                         description: "La 'o' en la raíz del verbo cambia a 'ue' en todas las formas excepto 'nosotros'.",
                         verbs: [
@@ -600,10 +686,10 @@ function PresenteSimpleIrregularesContent() {
                                     <h3 className="text-xl font-black text-primary uppercase mb-2">{group.title}</h3>
                                     <p className="mb-4 text-muted-foreground">{group.description}</p>
                                     {group.verbs.map(verb => (
-                                         <div key={verb.name} className="mb-4">
+                                        <div key={verb.name} className="mb-4">
                                             <h4 className="font-bold text-lg mb-2 text-brand-blue">{verb.name}</h4>
-                                            <Table><TableHeader className='bg-muted/50'><TableRow>{pronouns.map(p=><TableHead key={p}>{p}</TableHead>)}</TableRow></TableHeader>
-                                            <TableBody><TableRow>{verb.data.map((c, i)=><TableCell key={i}>{c}</TableCell>)}</TableRow></TableBody></Table>
+                                            <Table><TableHeader className='bg-muted/50'><TableRow>{pronouns.map(p => <TableHead key={p}>{p}</TableHead>)}</TableRow></TableHeader>
+                                                <TableBody><TableRow>{verb.data.map((c, i) => <TableCell key={i}>{c}</TableCell>)}</TableRow></TableBody></Table>
                                         </div>
                                     ))}
                                 </div>
@@ -644,31 +730,31 @@ function PresenteSimpleIrregularesContent() {
                                             {conjValidation[i] === 'correct' && <Check className="h-3 w-3 text-green-500" />}
                                             {conjValidation[i] === 'incorrect' && <X className="h-3 w-3 text-red-500" />}
                                         </div>
-                                        <Input 
-                                            value={conjAnswers[i]} 
-                                            onChange={e => { 
-                                                const na = [...conjAnswers]; 
-                                                na[i] = e.target.value; 
-                                                setConjAnswers(na); 
-                                                setConjValidation(vv => { const nvv = [...vv]; nvv[i] = 'unchecked'; return nvv as any; }); 
-                                            }} 
+                                        <Input
+                                            value={conjAnswers[i]}
+                                            onChange={e => {
+                                                const na = [...conjAnswers];
+                                                na[i] = e.target.value;
+                                                setConjAnswers(na);
+                                                setConjValidation(vv => { const nvv = [...vv]; nvv[i] = 'unchecked'; return nvv as any; });
+                                            }}
                                             className={cn(
-                                                "h-12 text-lg font-bold border-2 transition-all", 
-                                                conjValidation[i] === 'correct' ? 'border-green-500 bg-green-50/5 focus-visible:ring-green-500' : 
-                                                conjValidation[i] === 'incorrect' ? 'border-red-500 bg-red-50/5 focus-visible:ring-red-500' : 
-                                                'border-muted focus-visible:ring-primary'
-                                            )} 
+                                                "h-12 text-lg font-bold border-2 transition-all",
+                                                conjValidation[i] === 'correct' ? 'border-green-500 bg-green-50/5 focus-visible:ring-green-500' :
+                                                    conjValidation[i] === 'incorrect' ? 'border-red-500 bg-red-50/5 focus-visible:ring-red-500' :
+                                                        'border-muted focus-visible:ring-primary'
+                                            )}
                                             placeholder="..."
-                                            autoComplete="off" 
+                                            autoComplete="off"
                                         />
                                     </div>
                                 ))}
                             </div>
                         </CardContent>
                         <CardFooter className="justify-center border-t p-8 bg-muted/5">
-                            <Button 
-                                onClick={handleConjCheck} 
-                                size="lg" 
+                            <Button
+                                onClick={handleConjCheck}
+                                size="lg"
                                 className="px-20 font-black h-14 text-xl shadow-xl transition-all active:scale-95 group"
                             >
                                 Verificar Verbo <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
@@ -694,19 +780,43 @@ function PresenteSimpleIrregularesContent() {
                                 ))}
                             </div>
                         </CardContent>
-                        <CardFooter className="justify-center border-t p-6 bg-muted/10"><Button onClick={handleCheckReading} size="lg" className="px-16 font-black h-12 shadow-md">Verificar Lectura</Button></CardFooter>
+                        <CardFooter className="flex justify-between border-t p-6 bg-muted/10 gap-3">
+                            <Button onClick={handleCheckReading} variant="secondary" size="lg" className="px-10 font-black h-12 shadow-md">
+                                <ListChecks className="mr-2 h-4 w-4" /> Verificar
+                            </Button>
+                            <Button
+                                onClick={() => { handleTopicComplete('reading'); }}
+                                disabled={!readingAllCorrect && !isAdmin}
+                                size="lg"
+                                className="px-10 font-black h-12 text-white shadow-md"
+                            >
+                                Continuar <ArrowRight className="ml-2 h-4 w-4" />
+                            </Button>
+                        </CardFooter>
                     </Card>
                 );
             case 'final_ex':
                 return (
                     <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left overflow-hidden">
-                        <CardHeader className='bg-primary/5 border-b'><CardTitle className='text-primary uppercase tracking-tight'>Ejercicio Final: Completar Frases (30)</CardTitle></CardHeader>
+                        <CardHeader className='bg-primary/5 border-b'><CardTitle className='text-primary uppercase tracking-tight'>Ejercicio Mixto: Completar Frases (30)</CardTitle></CardHeader>
                         <CardContent className="p-0"><ScrollArea className="h-[450px] p-6"><div className="space-y-4">
                             {finalExPrompts.map((q, i) => (
-                                <div key={i} className="flex flex-col gap-2 p-4 bg-muted/10 rounded-2xl border shadow-sm"><p className="font-bold text-lg">{q.s}</p><Input value={finalExAns[i]} onChange={e => { const na = [...finalExAns]; na[i] = e.target.value; setFinalExAns(na); setFinalExVal(v => { const nv = [...v]; nv[i] = 'unchecked'; return nv as any; }); }} className={cn("h-10 max-w-[150px] text-lg font-mono", finalExVal[i] === 'correct' ? 'border-green-500' : finalExVal[i] === 'incorrect' ? 'border-red-500' : '')} placeholder="Respuesta..." autoComplete="off" /></div>
+                                <div key={i} className="flex flex-col gap-2 p-4 bg-muted/10 rounded-2xl border shadow-sm"><p className="font-bold text-lg">{q.s}</p><Input value={finalExAns[i]} onChange={e => { const na = [...finalExAns]; na[i] = e.target.value; setFinalExAns(na); setFinalExVal(v => { const nv = [...v]; nv[i] = 'unchecked'; return nv as any; }); setFinalExAllCorrect(false); }} className={cn("h-10 max-w-[150px] text-lg font-mono", finalExVal[i] === 'correct' ? 'border-green-500' : finalExVal[i] === 'incorrect' ? 'border-red-500' : '')} placeholder="Respuesta..." autoComplete="off" /></div>
                             ))}
                         </div></ScrollArea></CardContent>
-                        <CardFooter className="justify-center border-t p-6 bg-muted/20"><Button onClick={handleCheckFinalEx} size="lg" className="px-24 font-black h-14 text-xl shadow-xl">Verificar Todo</Button></CardFooter>
+                        <CardFooter className="flex justify-between border-t p-6 bg-muted/20 gap-3">
+                            <Button onClick={handleCheckFinalEx} variant="secondary" size="lg" className="px-10 font-black h-14 text-xl shadow-xl">
+                                <ListChecks className="mr-2 h-5 w-5" /> Verificar
+                            </Button>
+                            <Button
+                                onClick={() => { handleTopicComplete('final_ex'); }}
+                                disabled={!finalExAllCorrect && !isAdmin}
+                                size="lg"
+                                className="px-10 font-black h-14 text-xl text-white shadow-xl"
+                            >
+                                Continuar <ArrowRight className="ml-2 h-5 w-5" />
+                            </Button>
+                        </CardFooter>
                     </Card>
                 );
             case 'translate_text':
@@ -717,10 +827,25 @@ function PresenteSimpleIrregularesContent() {
                             <div className="p-6 bg-muted/50 rounded-2xl border italic text-lg leading-relaxed text-foreground shadow-sm">"I am Carlos and this is my routine. I have a dog. I go to the park with him in the morning. I can see my friends there. We play soccer. I always want to win. My friend says that I am a good player. At night, I do my homework and I go to sleep late. I know that I have to sleep more."</div>
                             <Separator /><div className="space-y-2"><Label className='font-black text-primary uppercase text-sm'>Tu Traducción:</Label><Textarea value={translationText} onChange={(e) => setTranslationText(e.target.value)} placeholder="Escribe el texto en español aquí..." className="min-h-[200px] text-lg leading-relaxed" /></div>
                         </CardContent>
-                        <CardFooter className="justify-center border-t pt-6 bg-muted/20"><Button onClick={() => handleTopicComplete('translate_text')} size="lg" className="px-24 font-black h-16 text-2xl shadow-xl bg-primary hover:bg-primary/90 text-primary-foreground uppercase tracking-tighter">Siguiente Misión <ArrowRight className='ml-3 h-8 w-8' /></Button></CardFooter>
+                        <CardFooter className="justify-center border-t pt-6 bg-muted/20"><Button onClick={() => { handleTopicComplete('translate_text'); setSelectedTopic('final'); }} size="lg" className="px-24 font-black h-16 text-2xl shadow-xl bg-primary hover:bg-primary/90 text-primary-foreground uppercase tracking-tighter">Siguiente Misión <ArrowRight className='ml-3 h-8 w-8' /></Button></CardFooter>
                     </Card>
                 );
-            case 'final': return <BallsExercise title="Final: Repaso de Negativas" prompts={negativePrompts} onComplete={() => handleTopicComplete('final')} vocabulary={{ "student": "estudiante", "at home": "en casa", "money": "dinero", "party": "fiesta", "to eat": "comer", "to come": "venir", "problem": "problema", "answer": "respuesta", "anything": "nada", "well": "bien", "today": "hoy" }} />;
+            case 'final':
+                if (missionCompleted) {
+                    return (
+                        <div className="relative overflow-hidden rounded-3xl border-2 border-green-400 shadow-2xl p-12 text-center flex flex-col items-center gap-6"
+                            style={{ background: 'linear-gradient(135deg, #d4f7e0 0%, #b8eaf4 50%, #c8f0e8 100%)' }}>
+                            <Trophy className="h-24 w-24 text-yellow-400 animate-bounce drop-shadow-lg" />
+                            <h2 className="text-5xl font-black uppercase tracking-tighter" style={{ color: '#1a1a2e' }}>¡FELICITACIONES!</h2>
+                            <p className="text-2xl font-bold" style={{ color: '#1a1a2e' }}> Tu completaste esta clase Presente Simple Irregulares<br /><span className="text-primary">Presente Simple Irregulares</span></p>
+                            <p className="text-lg font-medium italic text-gray-600">Progreso guardado al 100%.</p>
+                            <Button asChild size="lg" className="mt-4 px-16 h-14 font-black text-lg uppercase tracking-widest rounded-full bg-white/70 hover:bg-white text-gray-800 border border-green-300 shadow-md backdrop-blur-sm">
+                                <Link href="/espanol/a1">Regresar a la Ruta A1</Link>
+                            </Button>
+                        </div>
+                    );
+                }
+                return <BallsExercise title="Final: Repaso de Negativas" prompts={negativePrompts} onComplete={handleFinalMission} isFinalSection={true} vocabulary={{ "student": "estudiante", "at home": "en casa", "money": "dinero", "party": "fiesta", "to eat": "comer", "to come": "venir", "problem": "problema", "answer": "respuesta", "anything": "nada", "well": "bien", "today": "hoy" }} />;
             default: return null;
         }
     };
@@ -739,7 +864,7 @@ function PresenteSimpleIrregularesContent() {
                     <div className="mb-8 text-left text-white">
                         <Link href="/espanol/a1" className="hover:underline text-sm font-bold text-white/80 flex items-center gap-2 mb-2"><ArrowLeft className="h-4 w-4" /> Volver al Curso A1</Link>
                         <h1 className="text-4xl font-black [text-shadow:2px_2px_4px_rgba(0,0,0,0.5)] uppercase tracking-tight flex items-center gap-3">
-                           <Zap className='h-10 w-10 text-primary' /> Presente Simple Irregulares 🇪🇸
+                            <Zap className='h-10 w-10 text-primary' /> Presente Simple Irregulares 🇪🇸
                         </h1>
                     </div>
                     <div className="grid gap-8 md:grid-cols-12 text-foreground">

@@ -477,8 +477,8 @@ function PresenteContinuoContent() {
             return (
                 <Card className="shadow-soft border-2 border-green-500 bg-green-500/10 p-12 text-center flex flex-col items-center animate-in zoom-in duration-500 min-h-[500px] justify-center text-foreground">
                     <Trophy className="h-24 w-24 text-yellow-400 mb-6 animate-bounce" />
-                    <h2 className="text-5xl font-black uppercase text-green-600 tracking-tighter dark:text-white">¡EXCELENTE!</h2>
-                    <p className="text-3xl mt-6 font-bold dark:text-white">Felicitaciones - Tu completaste esta clase</p>
+                    <h2 className="text-5xl font-black uppercase text-green-600 tracking-tighter dark:text-white">¡FELICITACIONES!</h2>
+                    <p className="text-3xl mt-6 font-bold dark:text-white"> Tu completaste esta clase Presente Continuo</p>
                     <p className="text-muted-foreground mt-4 text-xl italic font-medium">Progreso guardado al 100%.</p>
                     <Button asChild className="mt-12 px-16 h-14 text-lg font-black uppercase shadow-xl" variant="default">
                         <Link href="/espanol/a1">Regresar a la ruta A1</Link>
