@@ -189,7 +189,6 @@ const mixedExPrompts = [
 // muestra únicamente las palabras de esa actividad.
 
 const ex1Vocabulary = [
-    { en: "To like", es: "Gustar" },
     { en: "Pizza", es: "Pizza" },
     { en: "Music", es: "Música" },
     { en: "Movies", es: "Películas" },
@@ -219,7 +218,6 @@ const ex1Vocabulary = [
 ];
 
 const ex3Vocabulary = [
-    { en: "To love", es: "Encantar" },
     { en: "Horror movies", es: "Películas de terror" },
     { en: "To be interested in", es: "Interesar" },
     { en: "Politics", es: "Política" },
@@ -244,8 +242,6 @@ const ex3Vocabulary = [
 ];
 
 const mixedVocabulary = [
-    { en: "Blue car", es: "Carro azul" },
-    { en: "Black car", es: "Carro negro" },
     { en: "To dance", es: "Bailar" },
     { en: "Head", es: "Cabeza" },
     { en: "History", es: "Historia" },
@@ -264,11 +260,9 @@ const mixedVocabulary = [
     { en: "Eyes", es: "Ojos" },
     { en: "Sunny days", es: "Días soleados" },
     { en: "Strange", es: "Raro / extraño" },
-    { en: "Two euros left", es: "Dos euros restantes" },
 ];
 
 const translationVocabulary = [
-    { en: "I love", es: "Me encanta" },
     { en: "My family", es: "Mi familia" },
     { en: "We enjoy", es: "Disfrutamos" },
     { en: "To travel together", es: "Viajar juntos" },
