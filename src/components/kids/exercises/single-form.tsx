@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Fragment } from 'react';
 import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -123,6 +123,28 @@ export const SingleFormExercise = ({
             <CardHeader>
                 <div className="flex justify-between items-start">
                     <div><CardTitle>{title}</CardTitle><CardDescription>{description}</CardDescription></div>
+                    {vocabulary && Object.keys(vocabulary).length > 0 && (
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button variant="outline" size="sm" className="border-2 border-brand-blue animate-border-pulse shrink-0">
+                                    <BookText className="mr-2 h-4 w-4" /> Vocabulary
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-64">
+                                <div className="space-y-2 text-foreground text-left">
+                                    <h4 className="font-bold border-b pb-1 text-primary">Vocabulary Aide</h4>
+                                    <div className="grid grid-cols-2 gap-2 text-sm">
+                                        {Object.entries(vocabulary).map(([es, en]) => (
+                                            <Fragment key={es}>
+                                                <span className="text-muted-foreground capitalize font-bold">{es}:</span>
+                                                <span className="font-semibold text-right text-primary">{en}</span>
+                                            </Fragment>
+                                        ))}
+                                    </div>
+                                </div>
+                            </PopoverContent>
+                        </Popover>
+                    )}
                 </div>
             </CardHeader>
             <CardContent className="space-y-6">
