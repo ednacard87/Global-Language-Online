@@ -195,6 +195,7 @@ export default function Class2Content({ overrideStudentId }: { overrideStudentId
     const [canAdvanceVocab, setCanAdvanceVocab] = useState(false);
     const [readAns, setReadAns] = useState<Record<string, string>>({});
     const [readVal, setReadVal] = useState<Record<string, any>>({});
+    const [readingAllCorrect, setReadingAllCorrect] = useState(false);
     const [isClassFinished, setIsClassFinished] = useState(false);
 
     const initialLearningPath = useMemo(() => [
@@ -371,9 +372,12 @@ export default function Class2Content({ overrideStudentId }: { overrideStudentId
         });
         setReadVal(nv);
         if (allOk) {
-            toast({ title: "¡Lectura superada!" });
-            handleTopicComplete('reading');
-        } else toast({ variant: 'destructive', title: "Revisa tus respuestas" });
+            setReadingAllCorrect(true);
+            toast({ title: "Reading complete!", description: "You can now continue.", className: "bg-green-600 text-white" });
+        } else {
+            setReadingAllCorrect(false);
+            toast({ variant: 'destructive', title: "Check your answers" });
+        }
     };
 
     const renderContent = () => {
@@ -443,7 +447,7 @@ export default function Class2Content({ overrideStudentId }: { overrideStudentId
             case 'ex-neg': return <SingleFormExercise key="ex-neg" title="Negative Form" exerciseData={negExercises} onComplete={() => handleTopicComplete('ex-neg')} vocabulary={simpleFormVocab} formType="negative" />;
             case 'ex-int': return <SingleFormExercise key="ex-int" title="Interrogative Form" exerciseData={intExercises} onComplete={() => handleTopicComplete('ex-int')} vocabulary={simpleFormVocab} formType="interrogative" />;
             case 'memory-verbs': return <VerbMemoryGame onComplete={() => handleTopicComplete('memory-verbs')} />;
-            case 'ex1': return <PresentSimpleExercise key="ex1" title="Exercise 1: Multi-Form" exerciseData={ex1Prompts} onComplete={() => handleTopicComplete('ex1')} />;
+            case 'ex1': return <PresentSimpleExercise key="ex1" title="Exercise 1: Multi-Form" exerciseData={ex1Prompts} onComplete={() => handleTopicComplete('ex1')} vocabulary={{"lunes": "monday", "parque": "park", "universidad": "university", "tarde": "afternoon", "carne": "meat", "ensalada": "salad", "cerveza": "beer", "iglesia": "church", "películas": "movies", "viernes": "friday", "domingos": "sundays"}} />;
             case 'ex2': return <PresentSimpleExercise key="ex2" title="Exercise 2: Multi-Form" exerciseData={ex2Prompts} onComplete={() => handleTopicComplete('ex2')} vocabulary={{"tarea": "homework", "hacer": "to do", "pizza": "pizza", "comer": "to eat" , "la compra" : "the shopping"}} />;
             case 'reading':
                 return (
@@ -475,8 +479,18 @@ export default function Class2Content({ overrideStudentId }: { overrideStudentId
                                 <Input value={readAns[q.id] || ''} onChange={e => { if (overrideStudentId) return; setReadAns({...readAns, [q.id]: e.target.value}); setReadVal({...readVal, [q.id]: 'unchecked'}); }} className={cn('mt-1 text-lg h-12 text-foreground', readVal[q.id] === 'correct' ? 'border-green-500 bg-green-50/10' : readVal[q.id] === 'incorrect' ? 'border-destructive bg-destructive/10' : '')} autoComplete="off" readOnly={!!overrideStudentId} /></div>
                             ))}</div>
                         </CardContent>
-                        <CardFooter className="justify-center border-t pt-6">
-                            <Button onClick={handleCheckReading} size="lg" className='px-12 font-bold' disabled={!!overrideStudentId}>Check Answers</Button>
+                        <CardFooter className="flex justify-between border-t pt-6 gap-3">
+                            <Button onClick={handleCheckReading} variant="secondary" size="lg" className="px-10 font-bold h-12 shadow-md" disabled={!!overrideStudentId}>
+                                Check Answers
+                            </Button>
+                            <Button
+                                onClick={() => { handleTopicComplete('reading'); }}
+                                disabled={(!readingAllCorrect && !isAdmin) || !!overrideStudentId}
+                                size="lg"
+                                className="px-10 font-bold h-12 text-white shadow-md"
+                            >
+                                Continue <ArrowRight className="ml-2 h-4 w-4" />
+                            </Button>
                         </CardFooter>
                     </Card>
                 );
@@ -486,10 +500,10 @@ export default function Class2Content({ overrideStudentId }: { overrideStudentId
                         <Card className="shadow-soft rounded-lg border-2 border-green-500 bg-green-500/10 p-12 text-center flex flex-col items-center animate-in fade-in zoom-in duration-500 text-foreground">
                             <Trophy className="h-24 w-24 text-yellow-400 mb-6 animate-bounce" />
                             <h2 className="text-4xl font-black uppercase text-green-600 tracking-tighter">Congratulations!</h2>
-                            <p className="text-2xl mt-4 font-bold text-black">Congratulations - you finish Class 2 (A1)</p>
+                            <p className="text-2xl mt-4 font-bold text-black"> you finish Class 2 (A1)</p>
                             <p className='text-muted-foreground mt-2 text-lg font-medium'>Misión completada al 100%.</p>
                             <Button asChild size="lg" className="mt-8 px-12 h-12 font-bold" variant="outline">
-                                <Link href="/ingles/a1/unit/1">Back to Unit <ArrowRight className="ml-2 h-5 w-5" /></Link>
+                                <Link href="/ingles/a1/unit/1">Back to Unit 1<ArrowRight className="ml-2 h-5 w-5" /></Link>
                             </Button>
                         </Card>
                     );
