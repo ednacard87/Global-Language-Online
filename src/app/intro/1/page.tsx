@@ -71,13 +71,13 @@ const AbcPronunciationExercise = ({ onGameComplete }: { onGameComplete: () => vo
             toast({ variant: 'destructive', title: t('spellingExercise.incorrect'), description: t('spellingExercise.incorrectDescription') });
         }
     };
-    
+
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') {
             handleCheck();
         }
     };
-    
+
     if (showCongratulations) {
         return (
             <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
@@ -150,7 +150,7 @@ function AlphabetGrid({ highlightedItem, onHighlight }: { highlightedItem: strin
             audio.removeEventListener('canplaythrough', onCanPlay);
             audio.removeEventListener('error', onError);
         };
-        
+
         const onEnded = () => {
             setPlayingAudio(null);
             audio.removeEventListener('ended', onEnded);
@@ -166,7 +166,7 @@ function AlphabetGrid({ highlightedItem, onHighlight }: { highlightedItem: strin
             audio.removeEventListener('canplaythrough', onCanPlay);
             audio.removeEventListener('error', onError);
         };
-        
+
         audio.addEventListener('canplaythrough', onCanPlay);
         audio.addEventListener('ended', onEnded);
         audio.addEventListener('error', onError);
@@ -212,7 +212,7 @@ function NumbersGrid({ highlightedItem, onHighlight }: { highlightedItem: string
             audio.removeEventListener('canplaythrough', onCanPlay);
             audio.removeEventListener('error', onError);
         };
-        
+
         const onEnded = () => {
             setPlayingAudio(null);
             audio.removeEventListener('ended', onEnded);
@@ -228,7 +228,7 @@ function NumbersGrid({ highlightedItem, onHighlight }: { highlightedItem: string
             audio.removeEventListener('canplaythrough', onCanPlay);
             audio.removeEventListener('error', onError);
         };
-        
+
         audio.addEventListener('canplaythrough', onCanPlay);
         audio.addEventListener('ended', onEnded);
         audio.addEventListener('error', onError);
@@ -241,7 +241,7 @@ function NumbersGrid({ highlightedItem, onHighlight }: { highlightedItem: string
             {numbersWithAudio.map(({ number, name, audioSrc }) => (
                 <Card key={number} className={cn(
                     "p-3 flex flex-col items-center justify-center gap-1.5 transition-colors",
-                     highlightedItem === number && "bg-primary/20"
+                    highlightedItem === number && "bg-primary/20"
                 )}>
                     <span className={cn("font-bold", number.length > 3 ? "text-2xl" : "text-3xl")}>{number}</span>
                     <div className="flex items-center gap-1">
@@ -331,17 +331,17 @@ export default function Intro1Page() {
     const { toast } = useToast();
     const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
     const [selectedTopicKey, setSelectedTopicKey] = useState<string | null>(null);
-    
+
     const [selectedSpellingTopic, setSelectedSpellingTopic] = useState<SpellingExerciseKey | null>(null);
     const [showCongratulations, setShowCongratulations] = useState(false);
     const [isIntro1Finished, setIsIntro1Finished] = useState(false);
-    
+
     const [highlightedLetter, setHighlightedLetter] = useState<string | null>(null);
     const [highlightedNumber, setHighlightedNumber] = useState<string | null>(null);
     const { user } = useUser();
     const firestore = useFirestore();
     const guideFishImage = PlaceHolderImages.find(p => p.id === 'guide-fish');
-    
+
     const studentDocRef = useMemoFirebase(
         () => (user ? doc(firestore, 'students', user.uid) : null),
         [firestore, user]
@@ -366,7 +366,7 @@ export default function Intro1Page() {
 
         const versionedKey = 'intro1Path' + progressStorageVersion;
         const savedStatuses = studentProfile?.lessonProgress?.[versionedKey] || {};
-        
+
         return defaultPath.map((item: any) => ({
             ...item,
             status: (savedStatuses[item.key] || item.status) as 'completed' | 'active' | 'locked'
@@ -380,7 +380,7 @@ export default function Intro1Page() {
 
         const versionedKey = 'abcSpellingPath' + progressStorageVersion;
         const savedStatuses = studentProfile?.lessonProgress?.[versionedKey] || {};
-        
+
         return defaultPath.map(item => ({
             ...item,
             status: (savedStatuses[item.key] || item.status) as 'completed' | 'active' | 'locked'
@@ -394,7 +394,7 @@ export default function Intro1Page() {
 
         const versionedKey = 'numbersSpellingPath' + progressStorageVersion;
         const savedStatuses = studentProfile?.lessonProgress?.[versionedKey] || {};
-        
+
         return defaultPath.map(item => ({
             ...item,
             status: (savedStatuses[item.key] || item.status) as 'completed' | 'active' | 'locked'
@@ -406,7 +406,7 @@ export default function Intro1Page() {
 
         const versionedKey = 'intro1Path' + progressStorageVersion;
         const currentStatuses = studentProfile?.lessonProgress?.[versionedKey] || {};
-        
+
         if (currentStatuses[completedTopicKey] === 'completed') {
             return;
         }
@@ -453,16 +453,16 @@ export default function Intro1Page() {
             }
         }
     }, [selectedTopicKey]);
-    
+
     const handleTopicSelect = (topicName: string) => {
         const currentItem = intro1Path.find((item: any) => item.name === topicName);
         if (!isAdmin && (!currentItem || currentItem.status === 'locked')) return;
-    
+
         setSelectedTopic(topicName);
         setSelectedTopicKey(currentItem!.key);
         setShowCongratulations(false);
         setIsIntro1Finished(false);
-    
+
         if (currentItem!.key === 'abcspelling' && !selectedSpellingTopic) {
             setSelectedSpellingTopic('femaleNames');
         } else if (currentItem!.key === 'numbersspelling' && !selectedSpellingTopic) {
@@ -492,8 +492,8 @@ export default function Intro1Page() {
 
         const currentStatuses = studentProfile?.lessonProgress?.[subPathVersionedKey] || {};
         if (currentStatuses[completedSubTopicKey] === 'completed') {
-             setShowCongratulations(true);
-             return;
+            setShowCongratulations(true);
+            return;
         }
 
         const newStatuses = { ...currentStatuses };
@@ -509,11 +509,11 @@ export default function Intro1Page() {
         }
 
         const allCompleted = defaultSubPath.every(item => newStatuses[item.key] === 'completed');
-        
+
         updateDocumentNonBlocking(studentDocRef, {
             [`lessonProgress.${subPathVersionedKey}`]: newStatuses
         });
-        
+
         if (allCompleted) {
             handleTopicComplete(mainTopicKey);
         }
@@ -534,530 +534,534 @@ export default function Intro1Page() {
 
     const progress = studentProfile?.progress?.intro1Progress || 0;
 
-  return (
-    <div className="flex w-full flex-col ingles-dashboard-bg min-h-screen text-foreground">
-      <DashboardHeader />
-      <main className="flex-1 p-4 md:p-8">
-        <div className="max-w-7xl mx-auto">
-            <div className="grid gap-8 md:grid-cols-12">
-            <div className="md:col-span-9">
-                <Link href="/intro" className="hover:underline">
-                    <h1 className="text-4xl font-bold mb-8 dark:text-primary">{t('intro1Page.title')}</h1>
-                </Link>
+    return (
+        <div className="flex w-full flex-col ingles-dashboard-bg min-h-screen text-foreground">
+            <DashboardHeader />
+            <main className="flex-1 p-4 md:p-8">
+                <div className="max-w-7xl mx-auto">
+                    <div className="grid gap-8 md:grid-cols-12">
+                        <div className="md:col-span-9">
+                            <Link href="/intro" className="hover:underline">
+                                <h1 className="text-4xl font-bold mb-8 dark:text-primary">{t('intro1Page.title')}</h1>
+                            </Link>
 
-                {(() => {
-                    if (selectedTopicKey === 'abc') {
-                        return (
-                            <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-                                <CardHeader>
-                                    <CardTitle>{t('intro1Page.abc')}</CardTitle>
-                                    <CardDescription className="pt-2 text-lg font-semibold flex items-center gap-2">
-                                        <Lightbulb className="h-5 w-5 text-yellow-400 animate-pulse" />
-                                        <span className="bg-gradient-to-r from-brand-purple to-brand-teal text-transparent bg-clip-text">
-                                            {t('intro1Page.abcStudyHint')}
-                                        </span>
-                                    </CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                    <AlphabetGrid 
-                                        highlightedItem={highlightedLetter}
-                                        onHighlight={setHighlightedLetter}
-                                    />
-                                </CardContent>
-                                <CardFooter className="justify-end">
-                                    <Button onClick={handleNextTopic}>
-                                        {t('translationExercise.next')} <ArrowRight className="ml-2 h-4 w-4" />
-                                    </Button>
-                                </CardFooter>
-                            </Card>
-                        );
-                    }
-                    if (selectedTopicKey === 'abcExercise') {
-                        return <AbcPronunciationExercise onGameComplete={() => handleTopicComplete('abcExercise')} />;
-                    }
-                    if (selectedTopicKey === 'numbers') {
-                        return (
-                            <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-                                <CardHeader>
-                                    <CardTitle>{t('intro1Page.numbers')}</CardTitle>
-                                    <CardDescription className="pt-2 text-lg font-semibold flex items-center gap-2">
-                                        <Lightbulb className="h-5 w-5 text-yellow-400 animate-pulse" />
-                                        <span className="bg-gradient-to-r from-brand-purple to-brand-teal text-transparent bg-clip-text">
-                                            {t('intro1Page.numbersStudyHint')}
-                                        </span>
-                                    </CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                    <NumbersGrid 
-                                        highlightedItem={highlightedNumber}
-                                        onHighlight={setHighlightedNumber}
-                                    />
-                                </CardContent>
-                                <CardFooter className="justify-end">
-                                    <Button onClick={handleNextTopic}>
-                                        {t('translationExercise.next')} <ArrowRight className="ml-2 h-4 w-4" />
-                                    </Button>
-                                </CardFooter>
-                            </Card>
-                        );
-                    }
-                    if (selectedTopicKey === 'pronouns') {
-                        return (
-                            <Card className="shadow-soft rounded-lg border-2 border-brand-purple text-foreground text-left">
-                                <CardHeader>
-                                    <CardTitle>{t('intro1Page.pronouns')}</CardTitle>
-                                    <CardDescription className="pt-2 text-lg font-semibold flex items-center gap-2">
-                                        <Lightbulb className="h-5 w-5 text-yellow-400 animate-pulse" />
-                                        <span className="bg-gradient-to-r from-brand-purple to-brand-teal text-transparent bg-clip-text">
-                                            {t('intro1Page.pronounsStudyHint')}
-                                        </span>
-                                    </CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="grid grid-cols-3 gap-x-4 gap-y-2 text-lg">
-                                        <div className="font-bold p-3 bg-muted rounded-lg text-center">{t('common.ser')}</div>
-                                        <div className="font-bold p-3 bg-muted rounded-lg text-center">{t('common.tobe')}</div>
-                                        <div className="font-bold p-3 bg-muted rounded-lg text-center">{t('common.estar')}</div>
-                                        {verbToBeData.map((item, index) => (
-                                            <React.Fragment key={index}>
-                                                <div className="p-3 bg-card border rounded-lg text-center">{item.ser}</div>
-                                                <div className="p-3 bg-card border rounded-lg font-medium text-center">{item.tobe}</div>
-                                                <div className="p-3 bg-card border rounded-lg text-center">{item.estar}</div>
-                                            </React.Fragment>
-                                        ))}
-                                    </div>
-                                </CardContent>
-                                <CardFooter className="justify-end">
-                                    <Button onClick={handleNextTopic}>
-                                        {t('translationExercise.next')} <ArrowRight className="ml-2 h-4 w-4" />
-                                    </Button>
-                                </CardFooter>
-                            </Card>
-                        );
-                    }
-                    if (selectedTopicKey === 'possessives') {
-                        return (
-                            <Card className="shadow-soft rounded-lg border-2 border-brand-purple text-foreground text-left">
-                                <CardHeader>
-                                    <CardTitle>{t('intro1Page.possessives')}</CardTitle>
-                                    <CardDescription className="pt-2 text-lg font-semibold flex items-center gap-2">
-                                        <Lightbulb className="h-5 w-5 text-yellow-400 animate-pulse" />
-                                        <span className="bg-gradient-to-r from-brand-purple to-brand-teal text-transparent bg-clip-text">
-                                            {t('intro1Page.possessivesStudyHint')}
-                                        </span>
-                                    </CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-lg">
-                                        <div className="font-bold p-3 bg-muted rounded-lg text-center">{t('common.english')}</div>
-                                        <div className="font-bold p-3 bg-muted rounded-lg text-center">{t('common.spanish')}</div>
-                                        {possessivesData.map((item, index) => (
-                                            <React.Fragment key={index}>
-                                                <div className="p-3 bg-card border rounded-lg font-medium text-center">{item.english}</div>
-                                                <div className="p-3 bg-card border rounded-lg text-center">{item.spanish}</div>
-                                            </React.Fragment>
-                                        ))}
-                                    </div>
-                                </CardContent>
-                                <CardFooter className="justify-end">
-                                    <Button onClick={handleNextTopic}>
-                                        {t('translationExercise.next')} <ArrowRight className="ml-2 h-4 w-4" />
-                                    </Button>
-                                </CardFooter>
-                            </Card>
-                        );
-                    }
-                    if (selectedTopicKey === 'verbtobe1') {
-                        return (
-                            <Card className="shadow-soft rounded-lg border-2 border-brand-purple text-foreground text-left">
-                                <CardHeader>
-                                    <CardTitle>{t('intro1Page.verbtobe1')}</CardTitle>
-                                    <CardDescription className="pt-2 text-lg font-semibold flex items-center gap-2">
-                                        <Lightbulb className="h-5 w-5 text-yellow-400 animate-pulse" />
-                                        <span className="bg-gradient-to-r from-brand-purple to-brand-teal text-transparent bg-clip-text">
-                                            {t('intro1Page.verbtobeStructureHint')}
-                                        </span>
-                                    </CardDescription>
-                                </CardHeader>
-                                <CardContent className="space-y-6">
-                                    <div>
-                                        <h3 className="text-xl font-semibold mb-2">{t('intro1Page.verbtobeStructureTitle')}</h3>
-                                        <div className="space-y-2 p-4 bg-muted rounded-lg font-mono text-base">
-                                            <p><span className="font-bold text-lg text-green-500 mr-2">(+)</span> pronoun + to be + complement</p>
-                                            <p><span className="font-bold text-lg text-red-500 mr-2">(-)</span> pronoun + to be + not + complement</p>
-                                            <p><span className="font-bold text-lg text-blue-500 mr-2">(?)</span> to be + pronoun + complement ?</p>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <h3 className="text-xl font-semibold mb-2">{t('intro1Page.shortAnswersTitle')}</h3>
-                                        <div className="space-y-2 p-4 bg-muted rounded-lg font-mono text-base">
-                                            <p><span className="font-bold text-lg text-green-500 mr-2">(+A)</span> Yes, pronoun + to be</p>
-                                            <p><span className="font-bold text-lg text-red-500 mr-2">(-A)</span> No, pronoun + to be + not</p>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <h3 className="text-xl font-semibold mb-2">{t('intro1Page.exampleTitle')}</h3>
-                                        <p className="text-lg italic text-muted-foreground mb-2">"ellos son estudiantes"</p>
-                                        <div className="space-y-2 p-4 bg-muted rounded-lg font-mono text-base">
-                                            <p><span className="font-bold text-lg text-green-500 mr-2">(+)</span> They are students</p>
-                                            <p><span className="font-bold text-lg text-red-500 mr-2">(-)</span> They are not students</p>
-                                            <p><span className="font-bold text-lg text-blue-500 mr-2">(?)</span> are they students?</p>
-                                            <div className="border-t my-2 border-border/50" />
-                                            <p><span className="font-bold text-lg text-green-500 mr-2">(+A)</span> Yes, they are</p>
-                                            <p><span className="font-bold text-lg text-red-500 mr-2">(-A)</span> No, they are not</p>
-                                        </div>
-                                    </div>
-                                </CardContent>
-                                <CardFooter className="justify-end">
-                                    <Button onClick={handleNextTopic}>
-                                        {t('translationExercise.next')} <ArrowRight className="ml-2 h-4 w-4" />
-                                    </Button>
-                                </CardFooter>
-                            </Card>
-                        );
-                    }
-                    if (selectedTopicKey === 'verbtobe2') {
-                        return (
-                            <Card className="shadow-soft rounded-lg border-2 border-brand-purple text-foreground text-left">
-                                <CardHeader>
-                                    <CardTitle>{t('intro1Page.verbtobe2')}</CardTitle>
-                                    <CardDescription className="pt-2 text-lg font-semibold flex items-center gap-2">
-                                        <Lightbulb className="h-5 w-5 text-yellow-400 animate-pulse" />
-                                        <span className="bg-gradient-to-r from-brand-purple to-brand-teal text-transparent bg-clip-text">
-                                            {t('intro1Page.verbtobeStructureHint')}
-                                        </span>
-                                    </CardDescription>
-                                </CardHeader>
-                                <CardContent className="space-y-6">
-                                    <div>
-                                        <h3 className="text-xl font-semibold mb-2">{t('intro1Page.verbtobeStructureTitle')}</h3>
-                                        <div className="space-y-2 p-4 bg-muted rounded-lg font-mono text-base">
-                                            <p><span className="font-bold text-lg text-green-500 mr-2">(+)</span> pronoun + To be + possessive + noun + complement</p>
-                                            <p><span className="font-bold text-lg text-red-500 mr-2">(-)</span> pronoun + To be + Not + possessive + noun + complement</p>
-                                            <p><span className="font-bold text-lg text-blue-500 mr-2">(?)</span> To be + pronoun + possessive + noun + complement ?</p>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <h3 className="text-xl font-semibold mb-2">{t('intro1Page.shortAnswersTitle')}</h3>
-                                        <div className="space-y-2 p-4 bg-muted rounded-lg font-mono text-base">
-                                            <p><span className="font-bold text-lg text-green-500 mr-2">(+A)</span> Yes, pronoun + to be</p>
-                                            <p><span className="font-bold text-lg text-red-500 mr-2">(-A)</span> No, pronoun + to be + not</p>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <h3 className="text-xl font-semibold mb-2">{t('intro1Page.exampleTitle')}</h3>
-                                        <p className="text-lg italic text-muted-foreground mb-2">"{t('intro1Page.exampleSentence')}"</p>
-                                        <div className="space-y-2 p-4 bg-muted rounded-lg font-mono text-base">
-                                            <p><span className="font-bold text-lg text-green-500 mr-2">(+)</span> They are my friends</p>
-                                            <p><span className="font-bold text-lg text-red-500 mr-2">(-)</span> They are not my friends</p>
-                                            <p><span className="font-bold text-lg text-blue-500 mr-2">(?)</span> are they my friends?</p>
-                                            <div className="border-t my-2 border-border/50" />
-                                            <p><span className="font-bold text-lg text-green-500 mr-2">(+A)</span> Yes, they are</p>
-                                            <p><span className="font-bold text-lg text-red-500 mr-2">(-A)</span> No, they are not</p>
-                                        </div>
-                                    </div>
-                                </CardContent>
-                                <CardFooter className="justify-end">
-                                    <Button onClick={handleNextTopic}>
-                                        {t('translationExercise.next')} <ArrowRight className="ml-2 h-4 w-4" />
-                                    </Button>
-                                </CardFooter>
-                            </Card>
-                        );
-                    }
-                    if (selectedTopicKey === 'verbtobe3') {
-                        return (
-                            <Card className="shadow-soft rounded-lg border-2 border-brand-purple text-foreground text-left">
-                                <CardHeader>
-                                    <CardTitle>{t('intro1Page.verbtobe3')}</CardTitle>
-                                    <CardDescription className="pt-2 text-lg font-semibold flex items-center gap-2">
-                                        <Lightbulb className="h-5 w-5 text-yellow-400 animate-pulse" />
-                                        <span className="bg-gradient-to-r from-brand-purple to-brand-teal text-transparent bg-clip-text">
-                                            {t('intro1Page.verbtobeStructureHint')}
-                                        </span>
-                                    </CardDescription>
-                                </CardHeader>
-                                <CardContent className="space-y-6">
-                                    <div>
-                                        <h3 className="text-xl font-semibold mb-2">{t('intro1Page.verbtobeStructureTitle')}</h3>
-                                        <div className="space-y-2 p-4 bg-muted rounded-lg font-mono text-base">
-                                            <p><span className="font-bold text-lg text-green-500 mr-2">(+)</span> possessive + noun + to be + complement</p>
-                                            <p><span className="font-bold text-lg text-red-500 mr-2">(-)</span> possessive + noun + to be + Not + complement</p>
-                                            <p><span className="font-bold text-lg text-blue-500 mr-2">(?)</span> To be + possessive + noun + complement ?</p>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <h3 className="text-xl font-semibold mb-2">{t('intro1Page.shortAnswersTitle')}</h3>
-                                        <div className="space-y-2 p-4 bg-muted rounded-lg font-mono text-base">
-                                            <p><span className="font-bold text-lg text-green-500 mr-2">(+A)</span> Yes, pronoun + to be</p>
-                                            <p><span className="font-bold text-lg text-red-500 mr-2">(-A)</span> No, pronoun + to be + not</p>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <h3 className="text-xl font-semibold mb-2">{t('intro1Page.exampleTitle')}</h3>
-                                        <p className="text-lg italic text-muted-foreground mb-2">"My mother is a nurse"</p>
-                                        <div className="space-y-2 p-4 bg-muted rounded-lg font-mono text-base">
-                                            <p><span className="font-bold text-lg text-green-500 mr-2">(+)</span> My mother is a nurse</p>
-                                            <p><span className="font-bold text-lg text-red-500 mr-2">(-)</span> My mother is not a nurse</p>
-                                            <p><span className="font-bold text-lg text-blue-500 mr-2">(?)</span> is my mother a nurse?</p>
-                                            <div className="border-t my-2 border-border/50" />
-                                            <p><span className="font-bold text-lg text-green-500 mr-2">(+A)</span> yes, she is</p>
-                                            <p><span className="font-bold text-lg text-red-500 mr-2">(-A)</span> no, she is not</p>
-                                        </div>
-                                    </div>
-                                </CardContent>
-                                <CardFooter className="justify-end">
-                                    <Button onClick={handleNextTopic}>
-                                        {t('translationExercise.next')} <ArrowRight className="ml-2 h-4 w-4" />
-                                    </Button>
-                                </CardFooter>
-                            </Card>
-                        );
-                    }
-                    if (selectedTopicKey === 'demonstratives') {
-                        if (isIntro1Finished) {
-                            return (
-                                <Card className="shadow-soft rounded-lg border-2 border-green-500 bg-green-500/10 p-12 text-center flex flex-col items-center animate-in fade-in zoom-in duration-500 text-foreground">
-                                    <Trophy className="h-24 w-24 text-yellow-400 mb-6 animate-bounce" />
-                                    <h2 className="text-4xl font-black uppercase text-green-600 tracking-tighter">CONGRATULATIONS!</h2>
-                                    <p className="text-2xl mt-4 font-bold">¡Has terminado la Intro 1!</p>
-                                    <p className='text-muted-foreground mt-2 text-lg'>Misión completada al 100%.</p>
-                                    <Button asChild className="mt-8 px-12 h-12 font-bold" variant="outline">
-                                        <Link href="/intro">Volver al Laberinto</Link>
-                                    </Button>
-                                </Card>
-                            );
-                        }
-                        return (
-                            <Card className="shadow-soft rounded-lg border-2 border-brand-purple text-foreground text-left">
-                                <CardHeader>
-                                    <CardTitle>{t('intro1Page.demonstratives')}</CardTitle>
-                                    <CardDescription className="pt-2 text-lg font-semibold flex items-center gap-2">
-                                        <Lightbulb className="h-5 w-5 text-yellow-400 animate-pulse" />
-                                        <span className="bg-gradient-to-r from-brand-purple to-brand-teal text-transparent bg-clip-text">
-                                            {t('intro1Page.demonstrativesStudyHint')}
-                                        </span>
-                                    </CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="grid grid-cols-3 gap-x-4 gap-y-2 text-lg">
-                                        <div className="font-bold p-3 bg-muted rounded-lg text-center">{t('common.english')}</div>
-                                        <div className="font-bold p-3 bg-muted rounded-lg text-center">{t('common.spanish')}</div>
-                                        <div className="font-bold p-3 bg-muted rounded-lg text-center">{t('intro1Page.usage')}</div>
-                                        {demonstrativesData.map((item, index) => (
-                                            <React.Fragment key={index}>
-                                                <div className="p-3 bg-card border rounded-lg font-medium text-center">{item.english}</div>
-                                                <div className="p-3 bg-card border rounded-lg text-center">{item.spanish}</div>
-                                                <div className="p-3 bg-card border rounded-lg text-center">{item.usage}</div>
-                                            </React.Fragment>
-                                        ))}
-                                    </div>
-                                </CardContent>
-                                <CardFooter className="justify-center">
-                                    <Button onClick={() => {
-                                        setIsIntro1Finished(true);
-                                        handleTopicComplete('demonstratives');
-                                    }} className="px-12 font-bold">Terminar Intro 1</Button>
-                                </CardFooter>
-                            </Card>
-                        );
-                    }
-                    if (selectedTopicKey === 'exercises1') {
-                        const vocab = {
-                            'un- una': 'a / an',
-                            'abogado': 'lawyer',
-                            'enfermo': 'sick',
-                            'enfermero': 'nurse'
-                        };
-                        return <TranslationExercise 
-                            exerciseKey="exercises1" 
-                            onComplete={() => handleTopicComplete(selectedTopicKey!)} 
-                            vocabulary={vocab}
-                            highlightVocabulary={true}
-                        />;
-                    }
-                    if (selectedTopicKey === 'exercises2') {
-                        const vocab = {
-                            'amigo': 'friend',
-                            'hijo': 'son',
-                            'perro': 'dog'
-                        };
-                        return <TranslationExercise 
-                            exerciseKey="exercises2" 
-                            onComplete={() => handleTopicComplete(selectedTopicKey!)} 
-                            vocabulary={vocab}
-                            highlightVocabulary={true}
-                        />;
-                    }
-                    if (selectedTopicKey === 'exercises3') {
-                        const vocab = {
-                            'enfermera': 'nurse',
-                            'abuelos': 'grandparents',
-                            'pensionado': 'retired',
-                            'juguete': 'toy'
-                        };
-                        return <TranslationExercise 
-                            exerciseKey={'exercises3'} 
-                            onComplete={() => handleTopicComplete(selectedTopicKey!)} 
-                            vocabulary={vocab}
-                            highlightVocabulary={true}
-                        />;
-                    }
-                    if (selectedTopicKey === 'abcspelling' || selectedTopicKey === 'numbersspelling') {
-                        const isNumbersExercise = selectedTopicKey === 'numbersspelling';
-                        const currentSpellingSubPath = isNumbersExercise ? numbersSpellingPath : abcSpellingPath;
-                        return (
-                            <div className="grid gap-8 md:grid-cols-12 text-foreground">
-                                <div className="md:col-span-4">
-                                    <div className="sticky top-24 space-y-4">
+                            {(() => {
+                                if (selectedTopicKey === 'abc') {
+                                    return (
                                         <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
                                             <CardHeader>
-                                                <CardTitle>{isNumbersExercise ? t('spellingExercise.numbersspelling') : t('spellingExercise.abcspelling')}</CardTitle>
+                                                <CardTitle>{t('intro1Page.abc')}</CardTitle>
+                                                <CardDescription className="pt-2 text-lg font-semibold flex items-center gap-2">
+                                                    <Lightbulb className="h-5 w-5 text-yellow-400 animate-pulse" />
+                                                    <span className="bg-gradient-to-r from-brand-purple to-brand-teal text-transparent bg-clip-text">
+                                                        {t('intro1Page.abcStudyHint')}
+                                                    </span>
+                                                </CardDescription>
                                             </CardHeader>
                                             <CardContent>
-                                                <nav>
-                                                    <ul className="space-y-1">
-                                                        {currentSpellingSubPath.map((item, index) => {
-                                                            const Icon = ICONS[item.status as keyof typeof ICONS];
-                                                            const isLocked = item.status === 'locked';
-                                                            const isSelected = selectedSpellingTopic === item.key;
-                                                            const isActive = item.status === 'active';
-                                                            
-                                                            const itemContent = (
-                                                                <div className={cn(
-                                                                    "flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors",
-                                                                    !isLocked && "hover:bg-muted",
-                                                                    isSelected ? "bg-muted text-primary font-semibold" : (isActive ? "text-foreground" : "text-muted-foreground"),
-                                                                )}>
-                                                                    <Icon className={cn("h-5 w-5", isLocked ? "text-yellow-500" : (item.status === 'completed' || isSelected || isActive) ? "text-primary" : "text-muted-foreground")} />
-                                                                    <span>{item.name}</span>
-                                                                </div>
-                                                            );
+                                                <AlphabetGrid
+                                                    highlightedItem={highlightedLetter}
+                                                    onHighlight={setHighlightedLetter}
+                                                />
+                                            </CardContent>
+                                            <CardFooter className="justify-end">
+                                                <Button onClick={handleNextTopic}>
+                                                    {t('translationExercise.next')} <ArrowRight className="ml-2 h-4 w-4" />
+                                                </Button>
+                                            </CardFooter>
+                                        </Card>
+                                    );
+                                }
+                                if (selectedTopicKey === 'abcExercise') {
+                                    return <AbcPronunciationExercise onGameComplete={() => handleTopicComplete('abcExercise')} />;
+                                }
+                                if (selectedTopicKey === 'numbers') {
+                                    return (
+                                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                                            <CardHeader>
+                                                <CardTitle>{t('intro1Page.numbers')}</CardTitle>
+                                                <CardDescription className="pt-2 text-lg font-semibold flex items-center gap-2">
+                                                    <Lightbulb className="h-5 w-5 text-yellow-400 animate-pulse" />
+                                                    <span className="bg-gradient-to-r from-brand-purple to-brand-teal text-transparent bg-clip-text">
+                                                        {t('intro1Page.numbersStudyHint')}
+                                                    </span>
+                                                </CardDescription>
+                                            </CardHeader>
+                                            <CardContent>
+                                                <NumbersGrid
+                                                    highlightedItem={highlightedNumber}
+                                                    onHighlight={setHighlightedNumber}
+                                                />
+                                            </CardContent>
+                                            <CardFooter className="justify-end">
+                                                <Button onClick={handleNextTopic}>
+                                                    {t('translationExercise.next')} <ArrowRight className="ml-2 h-4 w-4" />
+                                                </Button>
+                                            </CardFooter>
+                                        </Card>
+                                    );
+                                }
+                                if (selectedTopicKey === 'pronouns') {
+                                    return (
+                                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple text-foreground text-left">
+                                            <CardHeader>
+                                                <CardTitle>{t('intro1Page.pronouns')}</CardTitle>
+                                                <CardDescription className="pt-2 text-lg font-semibold flex items-center gap-2">
+                                                    <Lightbulb className="h-5 w-5 text-yellow-400 animate-pulse" />
+                                                    <span className="bg-gradient-to-r from-brand-purple to-brand-teal text-transparent bg-clip-text">
+                                                        {t('intro1Page.pronounsStudyHint')}
+                                                    </span>
+                                                </CardDescription>
+                                            </CardHeader>
+                                            <CardContent>
+                                                <div className="grid grid-cols-3 gap-x-4 gap-y-2 text-lg">
+                                                    <div className="font-bold p-3 bg-muted rounded-lg text-center">{t('common.ser')}</div>
+                                                    <div className="font-bold p-3 bg-muted rounded-lg text-center">{t('common.tobe')}</div>
+                                                    <div className="font-bold p-3 bg-muted rounded-lg text-center">{t('common.estar')}</div>
+                                                    {verbToBeData.map((item, index) => (
+                                                        <React.Fragment key={index}>
+                                                            <div className="p-3 bg-card border rounded-lg text-center">{item.ser}</div>
+                                                            <div className="p-3 bg-card border rounded-lg font-medium text-center">{item.tobe}</div>
+                                                            <div className="p-3 bg-card border rounded-lg text-center">{item.estar}</div>
+                                                        </React.Fragment>
+                                                    ))}
+                                                </div>
+                                            </CardContent>
+                                            <CardFooter className="justify-end">
+                                                <Button onClick={handleNextTopic}>
+                                                    {t('translationExercise.next')} <ArrowRight className="ml-2 h-4 w-4" />
+                                                </Button>
+                                            </CardFooter>
+                                        </Card>
+                                    );
+                                }
+                                if (selectedTopicKey === 'possessives') {
+                                    return (
+                                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple text-foreground text-left">
+                                            <CardHeader>
+                                                <CardTitle>{t('intro1Page.possessives')}</CardTitle>
+                                                <CardDescription className="pt-2 text-lg font-semibold flex items-center gap-2">
+                                                    <Lightbulb className="h-5 w-5 text-yellow-400 animate-pulse" />
+                                                    <span className="bg-gradient-to-r from-brand-purple to-brand-teal text-transparent bg-clip-text">
+                                                        {t('intro1Page.possessivesStudyHint')}
+                                                    </span>
+                                                </CardDescription>
+                                            </CardHeader>
+                                            <CardContent>
+                                                <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-lg">
+                                                    <div className="font-bold p-3 bg-muted rounded-lg text-center">{t('common.english')}</div>
+                                                    <div className="font-bold p-3 bg-muted rounded-lg text-center">{t('common.spanish')}</div>
+                                                    {possessivesData.map((item, index) => (
+                                                        <React.Fragment key={index}>
+                                                            <div className="p-3 bg-card border rounded-lg font-medium text-center">{item.english}</div>
+                                                            <div className="p-3 bg-card border rounded-lg text-center">{item.spanish}</div>
+                                                        </React.Fragment>
+                                                    ))}
+                                                </div>
+                                            </CardContent>
+                                            <CardFooter className="justify-end">
+                                                <Button onClick={handleNextTopic}>
+                                                    {t('translationExercise.next')} <ArrowRight className="ml-2 h-4 w-4" />
+                                                </Button>
+                                            </CardFooter>
+                                        </Card>
+                                    );
+                                }
+                                if (selectedTopicKey === 'verbtobe1') {
+                                    return (
+                                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple text-foreground text-left">
+                                            <CardHeader>
+                                                <CardTitle>{t('intro1Page.verbtobe1')}</CardTitle>
+                                                <CardDescription className="pt-2 text-lg font-semibold flex items-center gap-2">
+                                                    <Lightbulb className="h-5 w-5 text-yellow-400 animate-pulse" />
+                                                    <span className="bg-gradient-to-r from-brand-purple to-brand-teal text-transparent bg-clip-text">
+                                                        {t('intro1Page.verbtobeStructureHint')}
+                                                    </span>
+                                                </CardDescription>
+                                            </CardHeader>
+                                            <CardContent className="space-y-6">
+                                                <div>
+                                                    <h3 className="text-xl font-semibold mb-2">{t('intro1Page.verbtobeStructureTitle')}</h3>
+                                                    <div className="space-y-2 p-4 bg-muted rounded-lg font-mono text-base">
+                                                        <p><span className="font-bold text-lg text-green-500 mr-2">(+)</span> pronoun + to be + complement</p>
+                                                        <p><span className="font-bold text-lg text-red-500 mr-2">(-)</span> pronoun + to be + not + complement</p>
+                                                        <p><span className="font-bold text-lg text-blue-500 mr-2">(?)</span> to be + pronoun + complement ?</p>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <h3 className="text-xl font-semibold mb-2">{t('intro1Page.shortAnswersTitle')}</h3>
+                                                    <div className="space-y-2 p-4 bg-muted rounded-lg font-mono text-base">
+                                                        <p><span className="font-bold text-lg text-green-500 mr-2">(+A)</span> Yes, pronoun + to be</p>
+                                                        <p><span className="font-bold text-lg text-red-500 mr-2">(-A)</span> No, pronoun + to be + not</p>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <h3 className="text-xl font-semibold mb-2">{t('intro1Page.exampleTitle')}</h3>
+                                                    <p className="text-lg italic text-muted-foreground mb-2">"ellos son estudiantes"</p>
+                                                    <div className="space-y-2 p-4 bg-muted rounded-lg font-mono text-base">
+                                                        <p><span className="font-bold text-lg text-green-500 mr-2">(+)</span> They are students</p>
+                                                        <p><span className="font-bold text-lg text-red-500 mr-2">(-)</span> They are not students</p>
+                                                        <p><span className="font-bold text-lg text-blue-500 mr-2">(?)</span> are they students?</p>
+                                                        <div className="border-t my-2 border-border/50" />
+                                                        <p><span className="font-bold text-lg text-green-500 mr-2">(+A)</span> Yes, they are</p>
+                                                        <p><span className="font-bold text-lg text-red-500 mr-2">(-A)</span> No, they are not</p>
+                                                    </div>
+                                                </div>
+                                            </CardContent>
+                                            <CardFooter className="justify-end">
+                                                <Button onClick={handleNextTopic}>
+                                                    {t('translationExercise.next')} <ArrowRight className="ml-2 h-4 w-4" />
+                                                </Button>
+                                            </CardFooter>
+                                        </Card>
+                                    );
+                                }
+                                if (selectedTopicKey === 'verbtobe2') {
+                                    return (
+                                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple text-foreground text-left">
+                                            <CardHeader>
+                                                <CardTitle>{t('intro1Page.verbtobe2')}</CardTitle>
+                                                <CardDescription className="pt-2 text-lg font-semibold flex items-center gap-2">
+                                                    <Lightbulb className="h-5 w-5 text-yellow-400 animate-pulse" />
+                                                    <span className="bg-gradient-to-r from-brand-purple to-brand-teal text-transparent bg-clip-text">
+                                                        {t('intro1Page.verbtobeStructureHint')}
+                                                    </span>
+                                                </CardDescription>
+                                            </CardHeader>
+                                            <CardContent className="space-y-6">
+                                                <div>
+                                                    <h3 className="text-xl font-semibold mb-2">{t('intro1Page.verbtobeStructureTitle')}</h3>
+                                                    <div className="space-y-2 p-4 bg-muted rounded-lg font-mono text-base">
+                                                        <p><span className="font-bold text-lg text-green-500 mr-2">(+)</span> pronoun + To be + possessive + noun + complement</p>
+                                                        <p><span className="font-bold text-lg text-red-500 mr-2">(-)</span> pronoun + To be + Not + possessive + noun + complement</p>
+                                                        <p><span className="font-bold text-lg text-blue-500 mr-2">(?)</span> To be + pronoun + possessive + noun + complement ?</p>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <h3 className="text-xl font-semibold mb-2">{t('intro1Page.shortAnswersTitle')}</h3>
+                                                    <div className="space-y-2 p-4 bg-muted rounded-lg font-mono text-base">
+                                                        <p><span className="font-bold text-lg text-green-500 mr-2">(+A)</span> Yes, pronoun + to be</p>
+                                                        <p><span className="font-bold text-lg text-red-500 mr-2">(-A)</span> No, pronoun + to be + not</p>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <h3 className="text-xl font-semibold mb-2">{t('intro1Page.exampleTitle')}</h3>
+                                                    <p className="text-lg italic text-muted-foreground mb-2">"{t('intro1Page.exampleSentence')}"</p>
+                                                    <div className="space-y-2 p-4 bg-muted rounded-lg font-mono text-base">
+                                                        <p><span className="font-bold text-lg text-green-500 mr-2">(+)</span> They are my friends</p>
+                                                        <p><span className="font-bold text-lg text-red-500 mr-2">(-)</span> They are not my friends</p>
+                                                        <p><span className="font-bold text-lg text-blue-500 mr-2">(?)</span> are they my friends?</p>
+                                                        <div className="border-t my-2 border-border/50" />
+                                                        <p><span className="font-bold text-lg text-green-500 mr-2">(+A)</span> Yes, they are</p>
+                                                        <p><span className="font-bold text-lg text-red-500 mr-2">(-A)</span> No, they are not</p>
+                                                    </div>
+                                                </div>
+                                            </CardContent>
+                                            <CardFooter className="justify-end">
+                                                <Button onClick={handleNextTopic}>
+                                                    {t('translationExercise.next')} <ArrowRight className="ml-2 h-4 w-4" />
+                                                </Button>
+                                            </CardFooter>
+                                        </Card>
+                                    );
+                                }
+                                if (selectedTopicKey === 'verbtobe3') {
+                                    return (
+                                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple text-foreground text-left">
+                                            <CardHeader>
+                                                <CardTitle>{t('intro1Page.verbtobe3')}</CardTitle>
+                                                <CardDescription className="pt-2 text-lg font-semibold flex items-center gap-2">
+                                                    <Lightbulb className="h-5 w-5 text-yellow-400 animate-pulse" />
+                                                    <span className="bg-gradient-to-r from-brand-purple to-brand-teal text-transparent bg-clip-text">
+                                                        {t('intro1Page.verbtobeStructureHint')}
+                                                    </span>
+                                                </CardDescription>
+                                            </CardHeader>
+                                            <CardContent className="space-y-6">
+                                                <div>
+                                                    <h3 className="text-xl font-semibold mb-2">{t('intro1Page.verbtobeStructureTitle')}</h3>
+                                                    <div className="space-y-2 p-4 bg-muted rounded-lg font-mono text-base">
+                                                        <p><span className="font-bold text-lg text-green-500 mr-2">(+)</span> possessive + noun + to be + complement</p>
+                                                        <p><span className="font-bold text-lg text-red-500 mr-2">(-)</span> possessive + noun + to be + Not + complement</p>
+                                                        <p><span className="font-bold text-lg text-blue-500 mr-2">(?)</span> To be + possessive + noun + complement ?</p>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <h3 className="text-xl font-semibold mb-2">{t('intro1Page.shortAnswersTitle')}</h3>
+                                                    <div className="space-y-2 p-4 bg-muted rounded-lg font-mono text-base">
+                                                        <p><span className="font-bold text-lg text-green-500 mr-2">(+A)</span> Yes, pronoun + to be</p>
+                                                        <p><span className="font-bold text-lg text-red-500 mr-2">(-A)</span> No, pronoun + to be + not</p>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <h3 className="text-xl font-semibold mb-2">{t('intro1Page.exampleTitle')}</h3>
+                                                    <p className="text-lg italic text-muted-foreground mb-2">"Mi madre es enfermera"</p>
+                                                    <div className="space-y-2 p-4 bg-muted rounded-lg font-mono text-base">
+                                                        <p><span className="font-bold text-lg text-green-500 mr-2">(+)</span> My mother is a nurse</p>
+                                                        <p><span className="font-bold text-lg text-red-500 mr-2">(-)</span> My mother is not a nurse</p>
+                                                        <p><span className="font-bold text-lg text-blue-500 mr-2">(?)</span> Is my mother a nurse?</p>
+                                                        <div className="border-t my-2 border-border/50" />
+                                                        <p><span className="font-bold text-lg text-green-500 mr-2">(+A)</span> Yes, she is</p>
+                                                        <p><span className="font-bold text-lg text-red-500 mr-2">(-A)</span> No, she is not</p>
+                                                    </div>
+                                                </div>
+                                            </CardContent>
+                                            <CardFooter className="justify-end">
+                                                <Button onClick={handleNextTopic}>
+                                                    {t('translationExercise.next')} <ArrowRight className="ml-2 h-4 w-4" />
+                                                </Button>
+                                            </CardFooter>
+                                        </Card>
+                                    );
+                                }
+                                if (selectedTopicKey === 'demonstratives') {
+                                    if (isIntro1Finished) {
+                                        return (
+                                            <Card className="shadow-soft rounded-lg border-2 border-green-500 bg-green-500/10 p-12 text-center flex flex-col items-center animate-in fade-in zoom-in duration-500 text-foreground">
+                                                <Trophy className="h-24 w-24 text-yellow-400 mb-6 animate-bounce" />
+                                                <h2 className="text-4xl font-black uppercase text-green-600 tracking-tighter">CONGRATULATIONS!</h2>
+                                                <p className="text-2xl mt-4 font-bold">¡Has terminado la Intro 1!</p>
+                                                <p className='text-muted-foreground mt-2 text-lg'>Misión completada al 100%.</p>
+                                                <Button asChild className="mt-8 px-12 h-12 font-bold" variant="outline">
+                                                    <Link href="/intro">Volver al Laberinto</Link>
+                                                </Button>
+                                            </Card>
+                                        );
+                                    }
+                                    return (
+                                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple text-foreground text-left">
+                                            <CardHeader>
+                                                <CardTitle>{t('intro1Page.demonstratives')}</CardTitle>
+                                                <CardDescription className="pt-2 text-lg font-semibold flex items-center gap-2">
+                                                    <Lightbulb className="h-5 w-5 text-yellow-400 animate-pulse" />
+                                                    <span className="bg-gradient-to-r from-brand-purple to-brand-teal text-transparent bg-clip-text">
+                                                        {t('intro1Page.demonstrativesStudyHint')}
+                                                    </span>
+                                                </CardDescription>
+                                            </CardHeader>
+                                            <CardContent>
+                                                <div className="grid grid-cols-3 gap-x-4 gap-y-2 text-lg">
+                                                    <div className="font-bold p-3 bg-muted rounded-lg text-center">{t('common.english')}</div>
+                                                    <div className="font-bold p-3 bg-muted rounded-lg text-center">{t('common.spanish')}</div>
+                                                    <div className="font-bold p-3 bg-muted rounded-lg text-center">{t('intro1Page.usage')}</div>
+                                                    {demonstrativesData.map((item, index) => (
+                                                        <React.Fragment key={index}>
+                                                            <div className="p-3 bg-card border rounded-lg font-medium text-center">{item.english}</div>
+                                                            <div className="p-3 bg-card border rounded-lg text-center">{item.spanish}</div>
+                                                            <div className="p-3 bg-card border rounded-lg text-center">{item.usage}</div>
+                                                        </React.Fragment>
+                                                    ))}
+                                                </div>
+                                            </CardContent>
+                                            <CardFooter className="justify-center">
+                                                <Button onClick={() => {
+                                                    setIsIntro1Finished(true);
+                                                    handleTopicComplete('demonstratives');
+                                                }} className="px-12 font-bold">Terminar Intro 1</Button>
+                                            </CardFooter>
+                                        </Card>
+                                    );
+                                }
+                                if (selectedTopicKey === 'exercises1') {
+                                    const vocab = {
+                                        'un- una': 'a / an',
+                                        'abogado': 'lawyer',
+                                        'enfermo': 'sick',
+                                        'enfermero': 'nurse',
+                                        'estudiante': "student"
+                                    };
+                                    return <TranslationExercise
+                                        exerciseKey="exercises1"
+                                        onComplete={() => handleTopicComplete(selectedTopicKey!)}
+                                        vocabulary={vocab}
+                                        highlightVocabulary={true}
+                                    />;
+                                }
+                                if (selectedTopicKey === 'exercises2') {
+                                    const vocab = {
+                                        'amigo': 'friend',
+                                        'hijo': 'son',
+                                        'perro': 'dog'
+                                    };
+                                    return <TranslationExercise
+                                        exerciseKey="exercises2"
+                                        onComplete={() => handleTopicComplete(selectedTopicKey!)}
+                                        vocabulary={vocab}
+                                        highlightVocabulary={true}
+                                    />;
+                                }
+                                if (selectedTopicKey === 'exercises3') {
+                                    const vocab = {
+                                        'enfermera': 'nurse',
+                                        'abuelos': 'grandparents',
+                                        'pensionado': 'retired',
+                                        'juguete': 'toy',
+                                        'pequeño': "small",
+                                        'sobre': "on",
+                                        'la cama': "the bed"
+                                    };
+                                    return <TranslationExercise
+                                        exerciseKey={'exercises3'}
+                                        onComplete={() => handleTopicComplete(selectedTopicKey!)}
+                                        vocabulary={vocab}
+                                        highlightVocabulary={true}
+                                    />;
+                                }
+                                if (selectedTopicKey === 'abcspelling' || selectedTopicKey === 'numbersspelling') {
+                                    const isNumbersExercise = selectedTopicKey === 'numbersspelling';
+                                    const currentSpellingSubPath = isNumbersExercise ? numbersSpellingPath : abcSpellingPath;
+                                    return (
+                                        <div className="grid gap-8 md:grid-cols-12 text-foreground">
+                                            <div className="md:col-span-4">
+                                                <div className="sticky top-24 space-y-4">
+                                                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                                                        <CardHeader>
+                                                            <CardTitle>{isNumbersExercise ? t('spellingExercise.numbersspelling') : t('spellingExercise.abcspelling')}</CardTitle>
+                                                        </CardHeader>
+                                                        <CardContent>
+                                                            <nav>
+                                                                <ul className="space-y-1">
+                                                                    {currentSpellingSubPath.map((item, index) => {
+                                                                        const Icon = ICONS[item.status as keyof typeof ICONS];
+                                                                        const isLocked = item.status === 'locked';
+                                                                        const isSelected = selectedSpellingTopic === item.key;
+                                                                        const isActive = item.status === 'active';
 
-                                                            return (
-                                                                <li key={index} onClick={() => handleSpellingTopicSelect(item.key as SpellingExerciseKey)} className={cn(!isLocked ? "cursor-pointer" : "cursor-not-allowed")}>
-                                                                    {itemContent}
-                                                                </li>
-                                                            );
-                                                        })}
-                                                    </ul>
-                                                </nav>
+                                                                        const itemContent = (
+                                                                            <div className={cn(
+                                                                                "flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors",
+                                                                                !isLocked && "hover:bg-muted",
+                                                                                isSelected ? "bg-muted text-primary font-semibold" : (isActive ? "text-foreground" : "text-muted-foreground"),
+                                                                            )}>
+                                                                                <Icon className={cn("h-5 w-5", isLocked ? "text-yellow-500" : (item.status === 'completed' || isSelected || isActive) ? "text-primary" : "text-muted-foreground")} />
+                                                                                <span>{item.name}</span>
+                                                                            </div>
+                                                                        );
+
+                                                                        return (
+                                                                            <li key={index} onClick={() => handleSpellingTopicSelect(item.key as SpellingExerciseKey)} className={cn(!isLocked ? "cursor-pointer" : "cursor-not-allowed")}>
+                                                                                {itemContent}
+                                                                            </li>
+                                                                        );
+                                                                    })}
+                                                                </ul>
+                                                            </nav>
+                                                        </CardContent>
+                                                    </Card>
+                                                    <Card
+                                                        onClick={() => handleTopicSelect(isNumbersExercise ? t('intro1Page.numbers') : t('intro1Page.abc'))}
+                                                        className="shadow-soft rounded-lg flex items-center gap-2 cursor-pointer hover:opacity-80 animate-pulse-glow border-2 border-brand-purple p-4"
+                                                    >
+                                                        <Lightbulb className="h-5 w-5 text-yellow-400 animate-pulse flex-shrink-0" />
+                                                        <p className="text-base font-semibold bg-gradient-to-r from-brand-purple to-brand-teal text-transparent bg-clip-text">
+                                                            {isNumbersExercise ? t('intro1Page.backToNumbersHint') : t('intro1Page.backToAbcHint')}
+                                                        </p>
+                                                    </Card>
+                                                </div>
+                                            </div>
+                                            <div className="md:col-span-8">
+                                                {showCongratulations && (
+                                                    <div className="text-center py-8 mt-4">
+                                                        <h2 className="text-5xl font-bold bg-gradient-to-r from-brand-purple to-brand-teal text-transparent bg-clip-text animate-pulse">
+                                                            {t('intro1Page.congratulations')}
+                                                        </h2>
+                                                        <p className="text-xl mt-4 text-muted-foreground">{t('intro1Page.exerciseComplete')}</p>
+                                                    </div>
+                                                )}
+                                                {selectedSpellingTopic && !showCongratulations ? (<SpellingExercise
+                                                    exerciseKey={selectedSpellingTopic}
+                                                    onComplete={handleSpellingTopicComplete}
+                                                />) : null}
+                                            </div>
+                                        </div>
+                                    );
+                                }
+                                if (selectedTopic && !['abc', 'abcExercise', 'abcspelling', 'numbersspelling', 'numbers', 'pronouns', 'possessives', 'verbtobe1', 'verbtobe2', 'verbtobe3', 'demonstratives', 'exercises1', 'exercises2', 'exercises3'].includes(selectedTopicKey || '')) {
+                                    return (
+                                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                                            <CardHeader>
+                                                <CardTitle>{selectedTopic}</CardTitle>
+                                            </CardHeader>
+                                            <CardContent>
+                                                <p>{t('intro1Page.mainContentPlaceholder', { topic: selectedTopic })}</p>
                                             </CardContent>
                                         </Card>
-                                        <Card 
-                                            onClick={() => handleTopicSelect(isNumbersExercise ? t('intro1Page.numbers') : t('intro1Page.abc'))}
-                                            className="shadow-soft rounded-lg flex items-center gap-2 cursor-pointer hover:opacity-80 animate-pulse-glow border-2 border-brand-purple p-4"
-                                        >
-                                            <Lightbulb className="h-5 w-5 text-yellow-400 animate-pulse flex-shrink-0" />
-                                            <p className="text-base font-semibold bg-gradient-to-r from-brand-purple to-brand-teal text-transparent bg-clip-text">
-                                                {isNumbersExercise ? t('intro1Page.backToNumbersHint') : t('intro1Page.backToAbcHint')}
-                                            </p>
+                                    );
+                                }
+                                return (
+                                    <div className="flex flex-col items-center scale-110">
+                                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                                            <CardHeader className="text-center">
+                                                <CardTitle className="text-3xl">{t('intro1Page.welcomeTitle')}</CardTitle>
+                                                <CardDescription className="text-base">{t('intro1Page.welcomeDescription')}</CardDescription>
+                                            </CardHeader>
+                                            <CardContent className="text-center px-6 pb-6">
+                                                <p className="pt-4 text-lg">{t('intro1Page.welcomeHint')}</p>
+                                            </CardContent>
                                         </Card>
-                                    </div>
-                                </div>
-                                <div className="md:col-span-8">
-                                    {showCongratulations && (
-                                        <div className="text-center py-8 mt-4">
-                                            <h2 className="text-5xl font-bold bg-gradient-to-r from-brand-purple to-brand-teal text-transparent bg-clip-text animate-pulse">
-                                                {t('intro1Page.congratulations')}
-                                            </h2>
-                                            <p className="text-xl mt-4 text-muted-foreground">{t('intro1Page.exerciseComplete')}</p>
+                                        <div className="flex items-center justify-center pt-8 gap-2">
+                                            <div className="relative bg-card p-4 rounded-lg shadow-soft text-center text-base max-w-[220px] border-2 border-brand-purple">
+                                                <p className="font-bold text-lg bg-gradient-to-r from-brand-purple to-brand-teal text-transparent bg-clip-text">{t('intro1Page.penguinHint')}</p>
+                                                <div className="absolute left-full top-1/2 -translate-y-1/2 w-0 h-0 border-t-8 border-t-transparent border-b-8 border-b-transparent border-l-8 border-l-card" />
+                                            </div>
+                                            {guideFishImage && <Image
+                                                src={guideFishImage.imageUrl}
+                                                alt={guideFishImage.description}
+                                                width={191}
+                                                height={191}
+                                                className="rounded-lg object-cover"
+                                                data-ai-hint={guideFishImage.imageHint}
+                                            />}
                                         </div>
-                                    )}
-                                    {selectedSpellingTopic && !showCongratulations ? (<SpellingExercise 
-                                        exerciseKey={selectedSpellingTopic}
-                                        onComplete={handleSpellingTopicComplete}
-                                    />) : null}
-                                </div>
-                            </div>
-                        );
-                    }
-                    if (selectedTopic && !['abc', 'abcExercise', 'abcspelling', 'numbersspelling', 'numbers', 'pronouns', 'possessives', 'verbtobe1', 'verbtobe2', 'verbtobe3', 'demonstratives', 'exercises1', 'exercises2', 'exercises3'].includes(selectedTopicKey || '')) {
-                        return (
-                             <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                                    </div>
+                                );
+                            })()}
+                        </div>
+                        <div className="md:col-span-3">
+                            <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple">
                                 <CardHeader>
-                                    <CardTitle>{selectedTopic}</CardTitle>
+                                    <CardTitle>{t('intro1Page.learningPath')}</CardTitle>
                                 </CardHeader>
                                 <CardContent>
-                                     <p>{t('intro1Page.mainContentPlaceholder', { topic: selectedTopic })}</p>
-                                </CardContent>
-                            </Card>
-                        );
-                    }
-                    return (
-                        <div className="flex flex-col items-center scale-110">
-                            <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-                                <CardHeader className="text-center">
-                                    <CardTitle className="text-3xl">{t('intro1Page.welcomeTitle')}</CardTitle>
-                                    <CardDescription className="text-base">{t('intro1Page.welcomeDescription')}</CardDescription>
-                                </CardHeader>
-                                <CardContent className="text-center px-6 pb-6">
-                                    <p className="pt-4 text-lg">{t('intro1Page.welcomeHint')}</p>
-                                </CardContent>
-                            </Card>
-                            <div className="flex items-center justify-center pt-8 gap-2">
-                                <div className="relative bg-card p-4 rounded-lg shadow-soft text-center text-base max-w-[220px] border-2 border-brand-purple">
-                                    <p className="font-bold text-lg bg-gradient-to-r from-brand-purple to-brand-teal text-transparent bg-clip-text">{t('intro1Page.penguinHint')}</p>
-                                    <div className="absolute left-full top-1/2 -translate-y-1/2 w-0 h-0 border-t-8 border-t-transparent border-b-8 border-b-transparent border-l-8 border-l-card" />
-                                </div>
-                                {guideFishImage && <Image
-                                    src={guideFishImage.imageUrl}
-                                    alt={guideFishImage.description}
-                                    width={191}
-                                    height={191}
-                                    className="rounded-lg object-cover"
-                                    data-ai-hint={guideFishImage.imageHint}
-                                />}
-                            </div>
-                        </div>
-                    );
-                })()}
-            </div>
-            <div className="md:col-span-3">
-                <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple">
-                <CardHeader>
-                    <CardTitle>{t('intro1Page.learningPath')}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <nav>
-                        <ul className="space-y-1">
-                        {intro1Path.map((item: any) => {
-                            const isLocked = item.status === 'locked';
-                            const isSelected = selectedTopic === item.name;
-                            const isActive = item.status === 'active';
-                            const isCompleted = item.status === 'completed';
-                            
-                            const Icon = isCompleted ? CheckCircle : (isLocked && !isAdmin ? Lock : ICONS[item.status as keyof typeof ICONS]);
+                                    <nav>
+                                        <ul className="space-y-1">
+                                            {intro1Path.map((item: any) => {
+                                                const isLocked = item.status === 'locked';
+                                                const isSelected = selectedTopic === item.name;
+                                                const isActive = item.status === 'active';
+                                                const isCompleted = item.status === 'completed';
 
-                            return (
-                                <li key={item.key} onClick={() => handleTopicSelect(item.name)} className={cn(!isLocked || isAdmin ? "cursor-pointer" : "cursor-not-allowed")}>
-                                    <div className={cn(
-                                        "flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors",
-                                        (!isLocked || isAdmin) && "hover:bg-muted",
-                                        isSelected ? "bg-muted text-primary font-semibold" : (isActive ? "text-foreground" : "text-muted-foreground"),
-                                        isActive && item.key === 'abc' && 'animate-pulse-glow'
-                                    )}>
-                                        <Icon className={cn("h-5 w-5", isLocked && !isAdmin ? "text-yellow-500" : (item.status === 'completed' || isSelected || isActive) ? "text-primary" : "text-muted-foreground" )} />
-                                        <span>{item.name}</span>
+                                                const Icon = isCompleted ? CheckCircle : (isLocked && !isAdmin ? Lock : ICONS[item.status as keyof typeof ICONS]);
+
+                                                return (
+                                                    <li key={item.key} onClick={() => handleTopicSelect(item.name)} className={cn(!isLocked || isAdmin ? "cursor-pointer" : "cursor-not-allowed")}>
+                                                        <div className={cn(
+                                                            "flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors",
+                                                            (!isLocked || isAdmin) && "hover:bg-muted",
+                                                            isSelected ? "bg-muted text-primary font-semibold" : (isActive ? "text-foreground" : "text-muted-foreground"),
+                                                            isActive && item.key === 'abc' && 'animate-pulse-glow'
+                                                        )}>
+                                                            <Icon className={cn("h-5 w-5", isLocked && !isAdmin ? "text-yellow-500" : (item.status === 'completed' || isSelected || isActive) ? "text-primary" : "text-muted-foreground")} />
+                                                            <span>{item.name}</span>
+                                                        </div>
+                                                    </li>
+                                                );
+                                            })}
+                                        </ul>
+                                    </nav>
+                                    <div className="mt-6">
+                                        <div className="flex justify-between items-center text-sm font-medium text-muted-foreground mb-2">
+                                            <span>{t('intro1Page.progress')}</span>
+                                            <span className="font-bold text-foreground">{progress}%</span>
+                                        </div>
+                                        <Progress value={progress} className="h-4" />
                                     </div>
-                                </li>
-                            );
-                        })}
-                        </ul>
-                    </nav>
-                    <div className="mt-6">
-                        <div className="flex justify-between items-center text-sm font-medium text-muted-foreground mb-2">
-                            <span>{t('intro1Page.progress')}</span>
-                            <span className="font-bold text-foreground">{progress}%</span>
+                                </CardContent>
+                            </Card>
                         </div>
-                        <Progress value={progress} className="h-4" />
                     </div>
-                </CardContent>
-                </Card>
-            </div>
-            </div>
+                </div>
+            </main>
         </div>
-      </main>
-    </div>
-  );
+    );
 }

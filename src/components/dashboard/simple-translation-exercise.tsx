@@ -129,7 +129,7 @@ const exercises = {
         ]
     },
 
-    // ---CLASS 2 (A1) ---
+    // ---CLASS 3 (A1) ---
     c2_mixed1: {
         title: 'a1class1.exercise',
         prompts: [
