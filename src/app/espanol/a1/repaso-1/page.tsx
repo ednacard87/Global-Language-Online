@@ -257,7 +257,7 @@ const articulosAdjetivosPrompts = [
 // DATA – Ejercicio 10: Repaso Final Mixto (20 prompts)
 // ─────────────────────────────────────────────────────────────────────────────
 const repasoFinalPrompts = [
-    { en: 'The book is on the desk.', es: ['el libro está en el escritorio'] },
+    { en: 'The book is on the desk.', es: ['el libro está sobre el escritorio'] },
     { en: 'My sister is a teacher.', es: ['mi hermana es profesora', 'mi hermana es una profesora'] },
     { en: 'We are happy today.', es: ['nosotros estamos felices hoy', 'estamos felices hoy'] },
     { en: 'Your father has a car.', es: ['tu padre tiene un carro'] },
@@ -277,6 +277,7 @@ const repasoFinalPrompts = [
     { en: 'She is not sad today.', es: ['ella no está triste hoy', 'no está triste hoy'] },
     { en: 'Our dog has a small ball.', es: ['nuestro perro tiene una pelota pequeña', 'nuestro perro tiene una pelota pequena'] },
     { en: 'The young lawyer is intelligent.', es: ['el abogado joven es inteligente', 'la abogada joven es inteligente'] },
+
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -960,7 +961,8 @@ export default function Repaso1Page() {
         // Congratulations only appears when the user clicks Terminar in Repaso Final.
         setSteps(newSteps);
         const active = newSteps.find(s => s.status === 'active');
-        setSelectedStep(savedData.lastSelected || active?.key || 'vocab-typing');
+        const isAllCompleted = newSteps.every(s => s.status === 'completed');
+        setSelectedStep(savedData.lastSelected || active?.key || (isAllCompleted ? 'repaso-final' : 'vocab-typing'));
         setIsInitialLoading(false);
     }, [isAdmin, studentProfile, isProfileLoading, isUserLoading]);
 
