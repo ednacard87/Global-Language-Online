@@ -420,6 +420,7 @@ const DotNavExercise = ({
     onComplete,
     vocabulary,
     showHint = false,
+    verifyAtEndOnly = true,
 }: {
     title: string;
     description: string;
@@ -427,6 +428,7 @@ const DotNavExercise = ({
     onComplete: () => void;
     vocabulary?: Record<string, string>;
     showHint?: boolean;
+    verifyAtEndOnly?: boolean;
 }) => {
     const { toast } = useToast();
     const inputRef = useRef<HTMLInputElement>(null);
@@ -608,14 +610,16 @@ const DotNavExercise = ({
 
                 {/* Verificar + Continuar */}
                 <div className="flex gap-2">
-                    <Button
-                        variant="outline"
-                        className="border-primary text-primary hover:bg-primary/10 font-bold"
-                        onClick={handleVerify}
-                        disabled={answeredCount === 0}
-                    >
-                        <Check className="mr-2 h-4 w-4" /> Verificar
-                    </Button>
+                    {(!verifyAtEndOnly || currentIdx === prompts.length - 1) && (
+                        <Button
+                            variant="outline"
+                            className="border-primary text-primary hover:bg-primary/10 font-bold"
+                            onClick={handleVerify}
+                            disabled={answeredCount === 0}
+                        >
+                            <Check className="mr-2 h-4 w-4" /> Verificar
+                        </Button>
+                    )}
                     {allCorrect && (
                         <Button
                             className="bg-green-600 hover:bg-green-700 text-white font-bold px-6"
@@ -675,6 +679,7 @@ const RepasoFinalExercise = ({ onComplete }: { onComplete: () => void }) => {
     const [verified, setVerified] = useState(false);
 
     const answeredCount = answers.filter(a => a.trim()).length;
+    const allCorrect = verified && results.every(r => r === 'correct');
 
     const norm = (s: string) =>
         s.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[.!?]/g, '').replace(/\s+/g, ' ');
@@ -844,18 +849,26 @@ const RepasoFinalExercise = ({ onComplete }: { onComplete: () => void }) => {
 
                 {/* Verificar + Terminar */}
                 <div className="flex gap-2">
-                    <Button
-                        variant="outline"
-                        className="border-primary text-primary hover:bg-primary/10 font-bold"
-                        onClick={handleVerify}
-                        disabled={answeredCount === 0}
-                    >
-                        <Check className="mr-2 h-4 w-4" /> Verificar
-                    </Button>
-                    {verified && (
+                    {currentIdx === prompts.length - 1 && (
+                        <Button
+                            variant="outline"
+                            className="border-primary text-primary hover:bg-primary/10 font-bold"
+                            onClick={handleVerify}
+                            disabled={answeredCount === 0}
+                        >
+                            <Check className="mr-2 h-4 w-4" /> Verificar
+                        </Button>
+                    )}
+                    {allCorrect && (
                         <Button
                             className="bg-green-600 hover:bg-green-700 text-white font-bold px-6"
-                            onClick={onComplete}
+                            onClick={() => {
+                                toast({
+                                    title: '🎉 ¡Felicitaciones!',
+                                    description: 'Has completado el Repaso Final correctamente.',
+                                });
+                                onComplete();
+                            }}
                         >
                             <Trophy className="mr-2 h-4 w-4" /> Terminar
                         </Button>
@@ -1013,6 +1026,7 @@ export default function Repaso1Page() {
                         description="Escribe el artículo correcto para cada sustantivo. Responde todas las frases para verificar."
                         prompts={articulosPrompts.map(p => ({ question: p.s, answers: [p.a], hint: p.hint }))}
                         onComplete={() => handleStepComplete('articulos')}
+                        verifyAtEndOnly={true}
                     />
                 );
 
