@@ -157,7 +157,7 @@ const mixedExercise2Data = [
 ];
 
 const mixed1Vocab = { "padres": "parents", "alto": "tall", "ocupado": "busy", "libre": "free", "en casa": "at home", "prima": "cousin", "casados": "married" };
-const mixed2Vocab = { "profesores": "teachers", "carro": "car", "amiga": "friend", "universidad": "university", "tio": "uncle", "novia": "girlfriend", "vendedora": "seller" };
+const mixed2Vocab = { "profesores": "teachers", "carro": "car", "amiga": "friend", "universidad": "university", "tio": "uncle", "novia": "girlfriend", "vendedora": "seller" ,"hijo": "son", "con": "with" };
 
 // --- SUB-COMPONENTS ---
 
