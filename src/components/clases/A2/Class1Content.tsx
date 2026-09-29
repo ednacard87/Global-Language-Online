@@ -3,13 +3,13 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback, Fragment } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { 
-    BookOpen, 
-    PenSquare, 
-    Lock, 
-    GraduationCap, 
-    CheckCircle, 
-    Loader2, 
+import {
+    BookOpen,
+    PenSquare,
+    Lock,
+    GraduationCap,
+    CheckCircle,
+    Loader2,
     ArrowRight,
     Gamepad2,
     Trophy,
@@ -107,15 +107,15 @@ const ex1Prompts: CompletionPrompt[] = [
 ];
 
 const ex2Prompts = [
-    { spanish: "ELLA ES DELGADA Y TIENE EL PELO LARGO", answer: ["she is thin and she has long hair", "she's thin and she has long hair" , "she is thin and has long hair" , "she's thin and has long hair"] },
-    { spanish: "ÉL TIENE GAFAS Y UN BIGOTE", answer: ["he has glasses and a mustache" , "he has glasses and he has a mustache"] },
-    { spanish: "ELLA ES ANCIANA Y CANOSA", answer: ["she is old and gray hair", "she's old and grey hair" , "she's old and she has gray hair"] },
+    { spanish: "ELLA ES DELGADA Y TIENE EL PELO LARGO", answer: ["she is thin and she has long hair", "she's thin and she has long hair", "she is thin and has long hair", "she's thin and has long hair"] },
+    { spanish: "ÉL TIENE GAFAS Y UN BIGOTE", answer: ["he has glasses and a mustache", "he has glasses and he has a mustache"] },
+    { spanish: "ELLA ES ANCIANA Y CANOSA", answer: ["she is old and gray hair", "she's old and grey hair", "she's old and she has gray hair"] },
     { spanish: "ELLOS SON MUY ALTOS Y RUBIOS", answer: ["they are very tall and blond", "they're very tall and blond"] },
     { spanish: "ÉL ES GORDO, BAJO Y MUY DIVERTIDO", answer: ["he is fat, short and very funny", "he's fat, short and very funny"] },
-    { spanish: "ELLAS TIENEN PELO LARGO, SON DE MEDIANA EDAD Y MUY SERIAS", answer: [" they have long hair, are of medium age and very serious" , " they have long hair, they're of medium age and very serious"] },
-    { spanish: "ÉL NO ES CALVO, TIENE EL PELO LARGO", answer: ["he is not bald, he has long hair" , "he's not bald, he has long hair"] },
+    { spanish: "ELLAS TIENEN PELO LARGO, SON DE MEDIANA EDAD Y MUY SERIAS", answer: [" they have long hair, are of medium age and very serious", " they have long hair, they're of medium age and very serious"] },
+    { spanish: "ÉL NO ES CALVO, TIENE EL PELO LARGO", answer: ["he is not bald, he has long hair", "he's not bald, he has long hair"] },
     { spanish: "¿ELLA ES RUBIA CON PELO CORTO? ", answer: ["is she blonde with short hair?"] },
-    { spanish: "ÉL ES CALVO, TIENE GAFAS Y ES MUY TRABAJADOR", answer: ["he is bald, has glasses and he is very hardworking" , "he's bald, he has glasses and he's very hardworking"] },
+    { spanish: "ÉL ES CALVO, TIENE GAFAS Y ES MUY TRABAJADOR", answer: ["he is bald, has glasses and he is very hardworking", "he's bald, he has glasses and he's very hardworking"] },
     { spanish: "ELLA TIENE EL PELO CASTAÑO Y CORTO", answer: ["she has brown and short hair"] },
 ];
 
@@ -167,8 +167,8 @@ const completePrompts: CompletionPrompt[] = [
     { parts: ["I MET JOHN ", "MY FRIEND’S PARTY. (BOTH) "], answers: ["AT"] },
     { parts: ["ARE YOU  ", "HOME? "], answers: ["AT"] },
     { parts: ["HOW MANY STUDENTS ARE ", "YOUR CLASS? "], answers: ["IN"] },
-    { parts: ["DON’T STAND ", "THE DOOR! COME IN AND SIT  " , "THE CHAIR."], answers: ["AT" , "ON"] },
-    { parts: ["SHE LIVES ", "THE THIRD FLOOR " , "AN OLD BUILDING" , "THE END OF THAT STREET."], answers: ["ON" , "IN" , "AT"] },
+    { parts: ["DON’T STAND ", "THE DOOR! COME IN AND SIT  ", "THE CHAIR."], answers: ["AT", "ON"] },
+    { parts: ["SHE LIVES ", "THE THIRD FLOOR ", "AN OLD BUILDING", "THE END OF THAT STREET."], answers: ["ON", "IN", "AT"] },
     { parts: ["THE AIR IS FRESHER ", "THE TOP OF THE MOUNTAINS. "], answers: ["AT"] },
     { parts: ["I AM SITTING ", "THE GRASS. "], answers: ["ON"] },
     { parts: ["I LIKE READING WHEN I AM  ", "THE TRAIN.  "], answers: ["ON"] },
@@ -176,15 +176,15 @@ const completePrompts: CompletionPrompt[] = [
 
 const ex5Prompts = [
     { spanish: "ELLA ES MUY ALTA Y ES PELIROJA", answer: ["she is very tall and she is a redhead", "she's very tall and she's red haired"] },
-    { spanish: "ELLAS TIENEN EL PELO RUBIO, SON BAJAS Y DELGADAS", answer: ["they have blond hair, they are short and thin" , "they have blond hair, they're short and thin"] },
+    { spanish: "ELLAS TIENEN EL PELO RUBIO, SON BAJAS Y DELGADAS", answer: ["they have blond hair, they are short and thin", "they have blond hair, they're short and thin"] },
     { spanish: "MI TÍO ES CALVO, BAJO Y TIENE SOBREPESO", answer: ["my uncle is bald, short and he is overweight", "my uncle is bald, short and he has overweight"] },
     { spanish: "ELLOS SON ALTOS, RUBIOS Y TIENEN GAFAS", answer: ["they are tall, blond and they have glasses"] },
-    { spanish: "ELLA ES BAJA, con pelo castaño y es muy divertida", answer: ["she is short with brown hair and she is very funny" , "she's short with brown hair and she's very funny"] },
-    { spanish: "ELLOS SON ALTOS Y MUY DELGADOS", answer: ["they are tall and very thin" , "they're tall and very thin"] },
-    { spanish: "ÉL TIENE OJOS AZULES, EL PELO NEGRO Y CORTO", answer: ["he has blue eyes, black hair and a short hair" , "he has blue eyes, black and short hair"] },
-    { spanish: "ELLA TIENE GAFAS Y ES CRESPA", answer: ["she has glasses and she is curly" , "she has glasses and she's curly"] },
+    { spanish: "ELLA ES BAJA, con pelo castaño y es muy divertida", answer: ["she is short with brown hair and she is very funny", "she's short with brown hair and she's very funny"] },
+    { spanish: "ELLOS SON ALTOS Y MUY DELGADOS", answer: ["they are tall and very thin", "they're tall and very thin"] },
+    { spanish: "ÉL TIENE OJOS AZULES, EL PELO NEGRO Y CORTO", answer: ["he has blue eyes, black hair and a short hair", "he has blue eyes, black and short hair"] },
+    { spanish: "ELLA TIENE GAFAS Y ES CRESPA", answer: ["she has glasses and she is curly", "she has glasses and she's curly"] },
     { spanish: "ELLOS TIENEN LOS OJOS VERDES", answer: ["they have green eyes"] },
-    { spanish: "ÉL ES CANOSO Y MUY ALTO", answer: ["he is gray hair and very tall" , "he's gray hair and very tall"] },
+    { spanish: "ÉL ES CANOSO Y MUY ALTO", answer: ["he is gray hair and very tall", "he's gray hair and very tall"] },
 ];
 
 const error2Prompts = [
@@ -196,27 +196,27 @@ const error2Prompts = [
     { incorrect: "THEY AS HAIR SHORT AND HAS BROWN EYE", translationHint: "they have short hair and brown eyes", correctAnswers: ["they have short hair and brown eyes"] },
     { incorrect: "WE HAVE 30  OLD YEAR", translationHint: "we are 30 years old", correctAnswers: ["we are 30 years old"] },
     { incorrect: "THEY ARN’T TALL AND HAIR BLACK", translationHint: "they aren't tall and they have black hair", correctAnswers: ["they aren't tall and they have black hair"] },
-    { incorrect: "SHE IS BLOND, INTELIGENT AND HAIR RED", translationHint: "she is blond, intelligent and she has red hair", correctAnswers: ["she is blond, intelligent and she has red hair" , "she's blond, intelligent and she has red hair"] },
-    { incorrect: "THEY HAVE BALD AND ARE ON OUR THIRTIES: ", translationHint: "they are bald and they are in their thirties", correctAnswers: ["they are bald and they are in their thirties" , "they're bald and they're in their thirties"] },
+    { incorrect: "SHE IS BLOND, INTELIGENT AND HAIR RED", translationHint: "she is blond, intelligent and she has red hair", correctAnswers: ["she is blond, intelligent and she has red hair", "she's blond, intelligent and she has red hair"] },
+    { incorrect: "THEY HAVE BALD AND ARE ON OUR THIRTIES: ", translationHint: "they are bald and they are in their thirties", correctAnswers: ["they are bald and they are in their thirties", "they're bald and they're in their thirties"] },
     { incorrect: "SHE DON’T IS GLASSES BECAUSE SHE CAN TO SEE VERY GOOD", translationHint: "she doesn't wear glasses because she can see very well", correctAnswers: ["she doesn't wear glasses because she can see very well"] },
     { incorrect: "HE DOESN’T BLOND BECAUSE HE'RE BALT", translationHint: "he isn't blond because he's bald", correctAnswers: ["he isn't blond because he's bald"] },
     { incorrect: "THEY USE A JAQUET IN SUMER BECAUSE THEY FEELS COLD", translationHint: "they wear a jacket in summer because they feel cold", correctAnswers: ["they wear a jacket in summer because they feel cold"] },
-    { incorrect: "HE HAS  35 YEAS OLD AND HE STILL LIVE WITH HER PARENTS", translationHint: "he is 35 years old and he still lives with his parents", correctAnswers: ["he is 35 years old and he still lives with his parents" , "he's 35 years old and he still lives with his parents"] },
+    { incorrect: "HE HAS  35 YEAS OLD AND HE STILL LIVE WITH HER PARENTS", translationHint: "he is 35 years old and he still lives with his parents", correctAnswers: ["he is 35 years old and he still lives with his parents", "he's 35 years old and he still lives with his parents"] },
     { incorrect: "I DO'NT LIKE YOUR SHOES SO YOU CAN TO BUY ANOTHER IT AND YOU USE THEIR IN THE PARTY THIS WEKEND", translationHint: "I don't like your shoes so you can buy another pair and you can use them at the party this weekend", correctAnswers: ["I don't like your shoes so you can buy another pair and you can use them at the party this weekend"] },
-    { incorrect: "SHE HAVE TALL, PRETTTY AND SHE HAVE GLASS", translationHint: "she is tall, pretty and she has glasses", correctAnswers: ["she is tall, pretty and she has glasses" , "she's tall, pretty and she has glasses"] },
+    { incorrect: "SHE HAVE TALL, PRETTTY AND SHE HAVE GLASS", translationHint: "she is tall, pretty and she has glasses", correctAnswers: ["she is tall, pretty and she has glasses", "she's tall, pretty and she has glasses"] },
     { incorrect: "PETER AND JANE DOESN’T WERE BOOTS IN THE MOUNTAIN, THEY USE TENIS", translationHint: "peter and jane don't wear boots in the mountains, they wear tennis shoes", correctAnswers: ["peter and jane don't wear boots in the mountains, they wear tennis shoes"] },
     { incorrect: "JON HAS IN HER SIXTIES AND HE IS GRAY HAI, I LIKE HER STYLE", translationHint: "jon is in his sixties and he is gray hair, i like his style", correctAnswers: ["jon is in his sixties and he is gray hair, i like his style"] },
-    { incorrect: "WE LIKE GO THE BEACH ON SUMMER BECAUSE IS SUNNY", translationHint: "we like to go to the beach in summer because it is sunny", correctAnswers: ["we like to go to the beach in summer because it is sunny" , "we like to go to the beach in summer because it's sunny"] },
+    { incorrect: "WE LIKE GO THE BEACH ON SUMMER BECAUSE IS SUNNY", translationHint: "we like to go to the beach in summer because it is sunny", correctAnswers: ["we like to go to the beach in summer because it is sunny", "we like to go to the beach in summer because it's sunny"] },
     { incorrect: "HE HAVE GOOD MOSTACHO AND BAERD", translationHint: "he has a good mustache and beard", correctAnswers: ["he has a good mustache and beard"] },
 ];
 
 const lastExPrompts = [
-    { spanish: "Kevin hablará en la conferencia", answer: ["kevin will speak at the conference"] } ,
-    { spanish: "yo hablo varios idiomas : español, ingles y frances", answer: ["i speak several languages: spanish, english and french"] } , 
-    { spanish: "yo quiero contarte acerca de un empleo", answer: ["i want to tell you about a job"] } ,
-    { spanish: "nosotros hablamos acerca del fin de semana", answer: ["we talk about the weekend"] } ,
-    { spanish: "Sara me dijo que ella no come carne", answer: ["sara told me that she doesn't eat meat"] } ,
-    { spanish: "Danis dice que ella lo ama", answer: ["danis says that she loves him"] } ,
+    { spanish: "Kevin hablará en la conferencia", answer: ["kevin will speak at the conference"] },
+    { spanish: "yo hablo varios idiomas : español, ingles y frances", answer: ["i speak several languages: spanish, english and french"] },
+    { spanish: "yo quiero contarte acerca de un empleo", answer: ["i want to tell you about a job"] },
+    { spanish: "nosotros hablamos acerca del fin de semana", answer: ["we talk about the weekend"] },
+    { spanish: "Sara me dijo que ella no come carne", answer: ["sara told me that she doesn't eat meat"] },
+    { spanish: "Danis dice que ella lo ama", answer: ["danis says that she loves him"] },
     { spanish: "yo veo el gato en la ventana", answer: ["i see the cat in the window"] },
     { spanish: "cuando tu bailes no mires abajo", answer: ["when you dance don't look down"] },
     { spanish: "mirame", answer: ["look at me"] },
@@ -240,35 +240,43 @@ In his free time, he likes to exercise at the gym. Right now, his arm hurts a li
 
 // --- HELPER COMPONENTS ---
 
-const BallsExercise = ({ title, prompts, onComplete, vocabulary, isSupervisionMode, isAdmin }: any) => {
+const BallsExercise = ({ title, prompts, onComplete, vocabulary, isSupervisionMode, isAdmin, isFinalExercise }: any) => {
     const { toast } = useToast();
     const [currentIndex, setCurrentIndex] = useState(0);
-    const [answer, setAnswer] = useState('');
+    const [answers, setAnswers] = useState<string[]>(Array(prompts.length).fill(''));
     const [status, setStatus] = useState<Record<number, 'correct' | 'incorrect' | 'unchecked'>>({});
+    const [verified, setVerified] = useState(false);
 
     useEffect(() => {
         setCurrentIndex(0);
-        setAnswer('');
+        setAnswers(Array(prompts.length).fill(''));
         setStatus({});
+        setVerified(false);
     }, [prompts]);
-
-    useEffect(() => {
-        setAnswer('');
-    }, [currentIndex]);
 
     const currentPrompt = prompts[currentIndex];
     if (!currentPrompt) return null;
 
-    const handleCheck = () => {
+    const handleVerifyAll = () => {
         if (isSupervisionMode) return;
-        const userVal = answer.trim().toLowerCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' ');
-        const corrects = currentPrompt.answer;
-        const isCorrect = corrects.some((a: string) => a.toLowerCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' ') === userVal);
-        
-        setStatus(prev => ({ ...prev, [currentIndex]: isCorrect ? 'correct' : 'incorrect' }));
-        if (isCorrect) toast({ title: "¡Buen trabajo!" });
-        else toast({ variant: 'destructive', title: "Sigue intentando" });
+        let allOk = true;
+        const newStatus: any = {};
+        prompts.forEach((p: any, i: number) => {
+            const userVal = answers[i].trim().toLowerCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' ');
+            const isOk = p.answer.some((a: string) => a.toLowerCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' ') === userVal);
+            newStatus[i] = isOk ? 'correct' : 'incorrect';
+            if (!isOk) allOk = false;
+        });
+        setStatus(newStatus);
+        setVerified(true);
+        if (allOk) {
+            toast({ title: "¡Buen trabajo! Todas correctas." });
+        } else {
+            toast({ variant: 'destructive', title: "Sigue intentando, revisa las incorrectas." });
+        }
     };
+
+    const allCorrect = verified && prompts.every((_: any, i: number) => status[i] === 'correct');
 
     return (
         <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground">
@@ -279,7 +287,7 @@ const BallsExercise = ({ title, prompts, onComplete, vocabulary, isSupervisionMo
                         <CardDescription className='font-bold text-foreground mt-1'>Traduce la frase correctamente.</CardDescription>
                         <div className="flex gap-2 justify-start flex-wrap pt-4">
                             {prompts.map((_: any, i: number) => (
-                                <div key={i} onClick={() => setCurrentIndex(i)} className={cn("h-8 w-8 rounded-full border-2 flex items-center justify-center text-sm font-bold cursor-pointer transition-all", currentIndex === i ? "border-primary ring-2 ring-primary" : "border-muted", status[i] === 'correct' ? "bg-green-500 text-white border-green-500" : status[i] === 'incorrect' ? "bg-red-500 text-white border-red-500" : "bg-card text-foreground")}>{i + 1}</div>
+                                <div key={i} onClick={() => setCurrentIndex(i)} className={cn("h-8 w-8 rounded-full border-2 flex items-center justify-center text-sm font-bold cursor-pointer transition-all", currentIndex === i ? "border-primary ring-2 ring-primary" : "border-muted", verified && status[i] === 'correct' ? "bg-green-500 text-white border-green-500" : verified && status[i] === 'incorrect' ? "bg-red-500 text-white border-red-500" : answers[i] ? "bg-blue-100 text-blue-600 border-blue-400" : "bg-card text-foreground")}>{i + 1}</div>
                             ))}
                         </div>
                     </div>
@@ -314,13 +322,38 @@ const BallsExercise = ({ title, prompts, onComplete, vocabulary, isSupervisionMo
                 <div className="bg-muted p-6 rounded-2xl border-2 border-dashed text-center font-bold text-xl uppercase tracking-tighter text-foreground">
                     {currentPrompt.spanish}
                 </div>
-                <Input value={answer} onChange={e => setAnswer(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleCheck()} className={cn("h-12 text-lg text-foreground", status[currentIndex] === 'correct' ? 'border-green-500 bg-green-50/5' : status[currentIndex] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} placeholder="Tu traducción..." autoComplete="off" readOnly={isSupervisionMode} />
+                <Input
+                    value={answers[currentIndex]}
+                    onChange={e => {
+                        const newAns = [...answers];
+                        newAns[currentIndex] = e.target.value;
+                        setAnswers(newAns);
+                        if (verified) {
+                            const newStatus = { ...status };
+                            newStatus[currentIndex] = 'unchecked';
+                            setStatus(newStatus);
+                        }
+                    }}
+                    onKeyDown={e => e.key === 'Enter' && currentIndex < prompts.length - 1 && setCurrentIndex(i => i + 1)}
+                    className={cn("h-12 text-lg text-foreground", verified && status[currentIndex] === 'correct' ? 'border-green-500 bg-green-50/5' : verified && status[currentIndex] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')}
+                    placeholder="Tu traducción..." autoComplete="off" readOnly={isSupervisionMode} />
             </CardContent>
             <CardFooter className="justify-between border-t pt-6">
                 <Button variant="outline" onClick={() => setCurrentIndex(p => Math.max(0, p - 1))} disabled={currentIndex === 0}>Anterior</Button>
+
                 <div className="flex gap-2">
-                    {!isSupervisionMode && <Button onClick={handleCheck} variant="secondary">Verificar</Button>}
-                    <Button onClick={() => currentIndex < prompts.length - 1 ? setCurrentIndex(i => i + 1) : onComplete()} disabled={status[currentIndex] !== 'correct' && !isAdmin} className="text-white font-bold">{currentIndex === prompts.length - 1 ? 'Finalizar' : 'Siguiente'}</Button>
+                    <Button variant="outline" onClick={() => setCurrentIndex(p => Math.min(prompts.length - 1, p + 1))} disabled={currentIndex === prompts.length - 1}>Siguiente</Button>
+                </div>
+
+                <div className="flex gap-2">
+                    {currentIndex === prompts.length - 1 && !isSupervisionMode && (
+                        <Button onClick={handleVerifyAll} variant="secondary">Verificar</Button>
+                    )}
+                    {(allCorrect || isAdmin) && (
+                        <Button onClick={onComplete} className={cn("text-white font-bold", isFinalExercise ? "bg-yellow-500 hover:bg-yellow-600" : "bg-green-600 hover:bg-green-700")}>
+                            {isFinalExercise ? 'Finalizar' : 'Continuar'} {isFinalExercise ? <Trophy className="ml-2 h-4 w-4" /> : <ArrowRight className="ml-2 h-4 w-4" />}
+                        </Button>
+                    )}
                 </div>
             </CardFooter>
         </Card>
@@ -330,26 +363,40 @@ const BallsExercise = ({ title, prompts, onComplete, vocabulary, isSupervisionMo
 const ErrorCorrectionExercise = ({ prompts, onComplete, title, isSupervisionMode, isAdmin }: any) => {
     const { toast } = useToast();
     const [currentIndex, setCurrentIndex] = useState(0);
-    const [answer, setAnswer] = useState('');
+    const [answers, setAnswers] = useState<string[]>(Array(prompts.length).fill(''));
     const [status, setStatus] = useState<Record<number, 'correct' | 'incorrect' | 'unchecked'>>({});
+    const [verified, setVerified] = useState(false);
 
-    useEffect(() => { setAnswer(''); }, [currentIndex]);
+    useEffect(() => {
+        setCurrentIndex(0);
+        setAnswers(Array(prompts.length).fill(''));
+        setStatus({});
+        setVerified(false);
+    }, [prompts]);
 
     const currentPrompt = prompts[currentIndex];
+    if (!currentPrompt) return null;
 
-    const handleCheck = () => {
+    const handleVerifyAll = () => {
         if (isSupervisionMode) return;
-        const userVal = answer.trim().toLowerCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' ');
-        const isOk = currentPrompt.correctAnswers.some((a: string) => a.toLowerCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' ') === userVal);
-        
-        if (isOk) {
-            setStatus(prev => ({ ...prev, [currentIndex]: 'correct' }));
-            toast({ title: "¡Corregido!" });
+        let allOk = true;
+        const newStatus: any = {};
+        prompts.forEach((p: any, i: number) => {
+            const userVal = answers[i].trim().toLowerCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' ');
+            const isOk = p.correctAnswers.some((a: string) => a.toLowerCase().replace(/[.?,¿!¡]/g, '').replace(/\s+/g, ' ') === userVal);
+            newStatus[i] = isOk ? 'correct' : 'incorrect';
+            if (!isOk) allOk = false;
+        });
+        setStatus(newStatus);
+        setVerified(true);
+        if (allOk) {
+            toast({ title: "¡Buen trabajo! Todas correctas." });
         } else {
-            setStatus(prev => ({ ...prev, [currentIndex]: 'incorrect' }));
             toast({ variant: 'destructive', title: "Sigue intentando" });
         }
     };
+
+    const allCorrect = verified && prompts.every((_: any, i: number) => status[i] === 'correct');
 
     return (
         <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground text-left">
@@ -358,7 +405,7 @@ const ErrorCorrectionExercise = ({ prompts, onComplete, title, isSupervisionMode
                 <CardDescription className='font-bold text-foreground mt-1'>Encuentra el error y escribe la frase correcta.</CardDescription>
                 <div className="flex gap-2 justify-start flex-wrap pt-4">
                     {prompts.map((_: any, i: number) => (
-                        <div key={i} onClick={() => setCurrentIndex(i)} className={cn("h-8 w-8 rounded-full border-2 flex items-center justify-center text-xs font-bold cursor-pointer transition-all", currentIndex === i ? "border-primary ring-2 ring-primary" : "border-muted", status[i] === 'correct' ? "bg-green-500 text-white border-green-500" : status[i] === 'incorrect' ? "bg-red-500 text-white border-red-500" : "bg-card text-foreground")}>{i + 1}</div>
+                        <div key={i} onClick={() => setCurrentIndex(i)} className={cn("h-8 w-8 rounded-full border-2 flex items-center justify-center text-xs font-bold cursor-pointer transition-all", currentIndex === i ? "border-primary ring-2 ring-primary" : "border-muted", verified && status[i] === 'correct' ? "bg-green-500 text-white border-green-500" : verified && status[i] === 'incorrect' ? "bg-red-500 text-white border-red-500" : answers[i] ? "bg-blue-100 text-blue-600 border-blue-400" : "bg-card text-foreground")}>{i + 1}</div>
                     ))}
                 </div>
             </CardHeader>
@@ -366,18 +413,56 @@ const ErrorCorrectionExercise = ({ prompts, onComplete, title, isSupervisionMode
                 <div className="p-6 bg-destructive/10 rounded-xl border-2 border-dashed border-destructive text-center font-bold text-lg text-destructive uppercase">
                     {currentPrompt.incorrect}
                 </div>
-                <Input value={answer} onChange={e => setAnswer(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleCheck()} placeholder="Tu corrección..." className={cn("h-12 text-lg uppercase", status[currentIndex] === 'correct' ? 'border-green-500 bg-green-50/5' : status[currentIndex] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')} autoComplete="off" readOnly={isSupervisionMode} />
+                <Input
+                    value={answers[currentIndex]}
+                    onChange={e => {
+                        const newAns = [...answers];
+                        newAns[currentIndex] = e.target.value;
+                        setAnswers(newAns);
+                        if (verified) {
+                            const newStatus = { ...status };
+                            newStatus[currentIndex] = 'unchecked';
+                            setStatus(newStatus);
+                        }
+                    }}
+                    onKeyDown={e => e.key === 'Enter' && currentIndex < prompts.length - 1 && setCurrentIndex(i => i + 1)}
+                    placeholder="Tu corrección..."
+                    className={cn("h-12 text-lg uppercase", verified && status[currentIndex] === 'correct' ? 'border-green-500 bg-green-50/5' : verified && status[currentIndex] === 'incorrect' ? 'border-red-500 bg-red-50/5' : '')}
+                    autoComplete="off"
+                    readOnly={isSupervisionMode} />
             </CardContent>
             <CardFooter className="justify-between border-t pt-6">
                 <Button variant="outline" onClick={() => setCurrentIndex(p => Math.max(0, p - 1))} disabled={currentIndex === 0}>Anterior</Button>
+
                 <div className="flex gap-2">
-                    {!isSupervisionMode && <Button onClick={handleCheck} variant="secondary">Verificar</Button>}
-                    <Button onClick={() => currentIndex < prompts.length - 1 ? setCurrentIndex(i => i + 1) : onComplete()} disabled={status[currentIndex] !== 'correct' && !isAdmin} className="text-white font-bold">Siguiente</Button>
+                    <Button variant="outline" onClick={() => setCurrentIndex(p => Math.min(prompts.length - 1, p + 1))} disabled={currentIndex === prompts.length - 1}>Siguiente</Button>
+                </div>
+
+                <div className="flex gap-2">
+                    {currentIndex === prompts.length - 1 && !isSupervisionMode && (
+                        <Button onClick={handleVerifyAll} variant="secondary">Verificar</Button>
+                    )}
+                    {(allCorrect || isAdmin) && (
+                        <Button onClick={onComplete} className="bg-green-600 hover:bg-green-700 text-white font-bold">Continuar <ArrowRight className="ml-2 h-4 w-4" /></Button>
+                    )}
                 </div>
             </CardFooter>
         </Card>
     );
 };
+
+const Congratulations = () => (
+    <Card className="border-2 border-green-500 bg-green-500/10 text-center p-12 flex flex-col items-center animate-in fade-in zoom-in duration-500">
+        <Trophy className="h-24 w-24 text-yellow-400 mb-6 animate-bounce" />
+        <h2 className="text-4xl font-black text-green-600 dark:text-green-400 uppercase tracking-tighter">
+            Congratulations
+        </h2>
+        <p className="text-2xl mt-4 font-bold text-foreground">you finish this class 1 (A2)</p>
+        <Button asChild variant="outline" className="mt-8 px-10 h-12">
+            <Link href="/ingles/a2">Regresar a la unidad 1 A2</Link>
+        </Button>
+    </Card>
+);
 
 // --- MAIN CLASS COMPONENT ---
 
@@ -400,11 +485,12 @@ export default function Class1Content({ overrideStudentId }: { overrideStudentId
     const [vocabValidation, setVocabValidation] = useState<any[]>(Array(bodyPartsVocab.length).fill('unchecked'));
     const [readAns, setReadAns] = useState<Record<string, string>>({});
     const [readVal, setReadVal] = useState<Record<string, any>>({});
+    const [isFinished, setIsFinished] = useState(false);
 
     const studentDocRef = useMemoFirebase(() => (currentUID ? doc(firestore, 'students', currentUID) : null), [firestore, currentUID]);
     const authUserRef = useMemoFirebase(() => (user ? doc(firestore, 'students', user.uid) : null), [firestore, user]);
-    const { data: authUserProfile } = useDoc<{role?: string}>(authUserRef);
-    const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{role?: string, lessonProgress?: any, progress?: any, name?: string}>(studentDocRef);
+    const { data: authUserProfile } = useDoc<{ role?: string }>(authUserRef);
+    const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{ role?: string, lessonProgress?: any, progress?: any, name?: string }>(studentDocRef);
     const isAdmin = useMemo(() => (user && (authUserProfile?.role === 'admin' || user.email === 'ednacard87@gmail.com')), [user, authUserProfile]);
 
     const initialPathData = useMemo(() => [
@@ -435,7 +521,7 @@ export default function Class1Content({ overrideStudentId }: { overrideStudentId
         const d = studentProfile?.lessonProgress?.[progressStorageVersion] || {};
         if (isAdmin && !targetStudentId) p.forEach(t => t.status = 'completed');
         else {
-            path.forEach(t => { if (d[t.key]) t.status = d[t.key]; });
+            p.forEach(t => { if (d[t.key]) t.status = d[t.key]; });
             let lastDone = true;
             for (let i = 0; i < p.length; i++) { if (lastDone && p[i].status === 'locked') p[i].status = 'active'; lastDone = p[i].status === 'completed'; }
         }
@@ -452,18 +538,18 @@ export default function Class1Content({ overrideStudentId }: { overrideStudentId
 
     useEffect(() => {
         if (!initialLoadComplete || isInitialLoading || isAdmin || !studentDocRef || targetStudentId || !hasInitialized.current || !user) return;
-        
+
         const saveTimer = setTimeout(() => {
             const s: any = { lastSelectedTopic: selectedTopic, vocabAnswers, readAns };
             learningPath.forEach(t => s[t.key] = t.status);
-            
+
             const currentSavedData = studentProfile?.lessonProgress?.[progressStorageVersion];
             const currentOverallProgress = studentProfile?.progress?.[mainProgressKey];
-            
+
             if (JSON.stringify(s) !== JSON.stringify(currentSavedData) || progressValue !== currentOverallProgress) {
-                updateDocumentNonBlocking(studentDocRef, { 
-                    [`lessonProgress.${progressStorageVersion}`]: s, 
-                    [`progress.${mainProgressKey}`]: progressValue 
+                updateDocumentNonBlocking(studentDocRef, {
+                    [`lessonProgress.${progressStorageVersion}`]: s,
+                    [`progress.${mainProgressKey}`]: progressValue
                 });
             }
         }, 1500);
@@ -475,11 +561,14 @@ export default function Class1Content({ overrideStudentId }: { overrideStudentId
         setLearningPath(curr => {
             const np = curr.map(t => ({ ...t }));
             const idx = np.findIndex(t => t.key === completedKey);
-            if (idx !== -1 && np[idx].status !== 'completed') {
+            if (idx !== -1) {
                 np[idx].status = 'completed';
-                if (idx + 1 < np.length && np[idx + 1].status === 'locked') {
-                    np[idx + 1].status = 'active'; setSelectedTopic(np[idx + 1].key);
-                    setTimeout(() => toast({ title: "¡Misión desbloqueada!" }), 0);
+                if (idx + 1 < np.length) {
+                    if (np[idx + 1].status === 'locked') {
+                        np[idx + 1].status = 'active';
+                        setTimeout(() => toast({ title: "¡Misión desbloqueada!" }), 0);
+                    }
+                    setSelectedTopic(np[idx + 1].key);
                 }
             }
             return np;
@@ -490,7 +579,6 @@ export default function Class1Content({ overrideStudentId }: { overrideStudentId
         const t = learningPath.find(it => it.key === key);
         if (!isAdmin && t?.status === 'locked') { toast({ variant: "destructive", title: "Contenido Bloqueado" }); return; }
         setSelectedTopic(key);
-        if (['grammar_prepositions', 'grammar_description', 'differences_section'].includes(key)) handleTopicComplete(key);
     };
 
     const handleCheckVocab = () => {
@@ -502,8 +590,7 @@ export default function Class1Content({ overrideStudentId }: { overrideStudentId
         });
         setVocabValidation(nv);
         if (ok) {
-            toast({ title: "¡Vocabulario Completo!" });
-            handleTopicComplete('vocabulary_body');
+            toast({ title: "¡Vocabulario Completo! Pulsa Continuar." });
         } else {
             toast({ variant: 'destructive', title: "Revisa tus respuestas" });
         }
@@ -520,8 +607,7 @@ export default function Class1Content({ overrideStudentId }: { overrideStudentId
         });
         setReadVal(nv);
         if (allOk) {
-            toast({ title: "¡Lectura Superada!" });
-            handleTopicComplete('reading_section');
+            toast({ title: "¡Lectura Superada! Pulsa Continuar." });
         } else {
             toast({ variant: 'destructive', title: "Revisa tus respuestas" });
         }
@@ -533,6 +619,7 @@ export default function Class1Content({ overrideStudentId }: { overrideStudentId
 
         switch (selectedTopic) {
             case 'vocabulary_body':
+                const isVocabComplete = vocabValidation.length > 0 && vocabValidation.every(v => v === 'correct');
                 return (
                     <Card className="shadow-soft border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-foreground text-left">
                         <CardHeader><CardTitle>Vocabulary: The Body (20)</CardTitle></CardHeader>
@@ -551,7 +638,11 @@ export default function Class1Content({ overrideStudentId }: { overrideStudentId
                         </CardContent>
                         <CardFooter className="flex justify-between border-t pt-6 mt-4">
                             <Button onClick={handleCheckVocab} variant="secondary">Verificar</Button>
-                            <Button onClick={() => handleTopicComplete('vocabulary_body')} disabled={!vocabValidation.every(v => v === 'correct') && !isAdmin} className='text-white font-bold'>Avanzar</Button>
+                            {(isVocabComplete || isAdmin) && (
+                                <Button onClick={() => handleTopicComplete('vocabulary_body')} className='bg-green-600 hover:bg-green-700 text-white font-bold'>
+                                    Continuar <ArrowRight className="ml-2 h-4 w-4" />
+                                </Button>
+                            )}
                         </CardFooter>
                     </Card>
                 );
@@ -562,10 +653,10 @@ export default function Class1Content({ overrideStudentId }: { overrideStudentId
                             <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase">GRAMMAR: AT - ON - IN</CardTitle></CardHeader>
                             <CardContent className="space-y-8 font-bold">
                                 <div className="grid md:grid-cols-3 gap-4">
-                                {[
-                                        { title: "AT (Point)" , description: <Fragment><div>Lugares comunes - Lugares especificos -At + Saxon Genitive </div> <br /></Fragment>,  items: ["At home", "At the airport", "At the bus stop", "At work" , "At Laura's" , "At the : top + bottom + front + back + end + door + window"] },
-                                        { title: "ON (Surface)", description: <Fragment><div>Superficies planas - Medios de transporte - partes del cuerpo - Direcciones</div> <br /></Fragment>, items: ["On the table", "On the wall", "On the floor", "On the map" , "on my leg" , "on the left/ right" ,  "on a : train + plane + bus + ship + bicycle + horse "] },
-                                        { title: "IN (Enclosed)", description: <Fragment><div>Espacios cerrados - paises - ciudades - habitaciones - cuerpos de agua - clima - </div> <br /></Fragment>, items: [ "In England" , "In New York" , "In the city", "In the water", "In a box", "In the sky" , "in summer"] }
+                                    {[
+                                        { title: "AT (Point)", description: <Fragment><div>Lugares comunes - Lugares especificos -At + Saxon Genitive </div> <br /></Fragment>, items: ["At home", "At the airport", "At the bus stop", "At work", "At Laura's", "At the : top + bottom + front + back + end + door + window"] },
+                                        { title: "ON (Surface)", description: <Fragment><div>Superficies planas - Medios de transporte - partes del cuerpo - Direcciones</div> <br /></Fragment>, items: ["On the table", "On the wall", "On the floor", "On the map", "on my leg", "on the left/ right", "on a : train + plane + bus + ship + bicycle + horse "] },
+                                        { title: "IN (Enclosed)", description: <Fragment><div>Espacios cerrados - paises - ciudades - habitaciones - cuerpos de agua - clima - </div> <br /></Fragment>, items: ["In England", "In New York", "In the city", "In the water", "In a box", "In the sky", "in summer"] }
                                     ].map((ficha, idx) => (
                                         <div key={idx} className="p-5 bg-card/80 rounded-2xl border-2 border-primary/20 shadow-lg">
                                             <h3 className="text-xl font-black text-primary uppercase mb-3">{ficha.title}</h3>
@@ -609,17 +700,17 @@ export default function Class1Content({ overrideStudentId }: { overrideStudentId
             case 'exercise_2': return <BallsExercise title="Exercise 2: Translation" prompts={ex2Prompts} onComplete={() => handleTopicComplete('exercise_2')} vocabulary={physicalVocab} isSupervisionMode={!!overrideStudentId} isAdmin={isAdmin} />;
             case 'find_mistake_1': return <ErrorCorrectionExercise title="Find the Mistake 1" prompts={error1Prompts} onComplete={() => handleTopicComplete('find_mistake_1')} isSupervisionMode={!!overrideStudentId} isAdmin={isAdmin} />;
             case 'exercise_3': return <SentenceCompletionExercise title="Exercise 3" description="Completa con AT, ON o IN." data={ex3Prompts} onComplete={() => handleTopicComplete('exercise_3')} />;
-            case 'vocab_game': 
+            case 'vocab_game':
                 return (
-                    <VocabularyMatchingGame 
-                        data={bodyPartsVocab.map(v => ({ spanish: v.es, english: [v.en] }))} 
-                        onComplete={() => handleTopicComplete('vocab_game')} 
-                        title="Body Parts Memory" 
+                    <VocabularyMatchingGame
+                        data={bodyPartsVocab.map(v => ({ spanish: v.es, english: [v.en] }))}
+                        onComplete={() => handleTopicComplete('vocab_game')}
+                        title="Body Parts Memory"
                     />
                 );
-            case 'exercise_4': return <BallsExercise title="Exercise 4: Comparisons" prompts={ex4Prompts} onComplete={() => handleTopicComplete('exercise_4')} vocabulary={{"más grande": "bigger", "que": "than", "tan": "as", "aeropuerto": "airport", "caliente": "hot / hottest"}} isSupervisionMode={!!overrideStudentId} isAdmin={isAdmin} />;
+            case 'exercise_4': return <BallsExercise title="Exercise 4: Comparisons" prompts={ex4Prompts} onComplete={() => handleTopicComplete('exercise_4')} vocabulary={{ "más grande": "bigger", "que": "than", "tan": "as", "aeropuerto": "airport", "caliente": "hot / hottest" }} isSupervisionMode={!!overrideStudentId} isAdmin={isAdmin} />;
             case 'complete_activity': return <SentenceCompletionExercise title="Complete: Place Prepositions" description="Completa con AT, ON o IN." data={completePrompts} onComplete={() => handleTopicComplete('complete_activity')} />;
-            case 'exercise_5': return <BallsExercise title="Exercise 5: Detailed Description" prompts={ex5Prompts} onComplete={() => handleTopicComplete('exercise_5')} vocabulary={{"pelirroja": "redhead", "bajas": "short", "calvo": "bald", "sobrepeso": "overweight", "castaño": "brown (hair)"}} isSupervisionMode={!!overrideStudentId} isAdmin={isAdmin} />;
+            case 'exercise_5': return <BallsExercise title="Exercise 5: Detailed Description" prompts={ex5Prompts} onComplete={() => handleTopicComplete('exercise_5')} vocabulary={{ "pelirroja": "redhead", "bajas": "short", "calvo": "bald", "sobrepeso": "overweight", "castaño": "brown (hair)" }} isSupervisionMode={!!overrideStudentId} isAdmin={isAdmin} />;
             case 'find_mistake_2': return <ErrorCorrectionExercise title="Find the Mistake 2" prompts={error2Prompts} onComplete={() => handleTopicComplete('find_mistake_2')} isSupervisionMode={!!overrideStudentId} isAdmin={isAdmin} />;
             case 'reading_section':
                 return (
@@ -629,10 +720,15 @@ export default function Class1Content({ overrideStudentId }: { overrideStudentId
                             <div className="p-6 bg-muted rounded-2xl border italic text-lg leading-relaxed shadow-inner whitespace-pre-wrap text-foreground">{readingContent.text}</div>
                             <Separator /><div className="space-y-4">{readingContent.questions.map(q => (
                                 <div key={q.id} className="space-y-2"><Label className='font-bold text-foreground'>{q.question}</Label>
-                                <Input value={readAns[q.id] || ''} onChange={e => setReadAns({...readAns, [q.id]: e.target.value})} className={cn(readVal[q.id] === 'correct' ? 'border-green-500 bg-green-50/10' : readVal[q.id] === 'incorrect' ? 'border-red-500 bg-red-50/10' : '')} autoComplete="off" readOnly={isAdmin && !!targetStudentId} /></div>
+                                    <Input value={readAns[q.id] || ''} onChange={e => setReadAns({ ...readAns, [q.id]: e.target.value })} className={cn(readVal[q.id] === 'correct' ? 'border-green-500 bg-green-50/10' : readVal[q.id] === 'incorrect' ? 'border-red-500 bg-red-50/10' : '')} autoComplete="off" readOnly={isAdmin && !!targetStudentId} /></div>
                             ))}</div>
                         </CardContent>
-                        <CardFooter className="justify-center border-t pt-6"><Button onClick={handleCheckReading} size="lg" className="px-12 font-bold" disabled={isAdmin && !!targetStudentId}>Verificar Lectura</Button></CardFooter>
+                        <CardFooter className="justify-between border-t pt-6">
+                            <Button onClick={handleCheckReading} variant="secondary" size="lg" className="px-8 font-bold" disabled={isAdmin && !!targetStudentId}>Verificar</Button>
+                            {((Object.keys(readVal).length === readingContent.questions.length && Object.values(readVal).every(v => v === 'correct')) || isAdmin) && (
+                                <Button onClick={() => handleTopicComplete('reading_section')} className="bg-green-600 hover:bg-green-700 text-white font-bold">Continuar <ArrowRight className="ml-2 h-4 w-4" /></Button>
+                            )}
+                        </CardFooter>
                     </Card>
                 );
             case 'differences_section':
@@ -663,7 +759,13 @@ export default function Class1Content({ overrideStudentId }: { overrideStudentId
                         <CardFooter className="justify-center border-t pt-6"><Button onClick={() => handleTopicComplete('differences_section')} size="lg" className="px-12 font-bold h-12 uppercase">Entendido</Button></CardFooter>
                     </Card>
                 );
-            case 'final_exercise': return <BallsExercise title="Last Exercise" prompts={lastExPrompts} onComplete={() => handleTopicComplete('final_exercise')} vocabulary={{"conferencia": "conference"}} isSupervisionMode={!!overrideStudentId} isAdmin={isAdmin} />;
+            case 'final_exercise':
+                if (isFinished) return <Congratulations />;
+                return <BallsExercise title="Last Exercise" prompts={lastExPrompts} onComplete={() => {
+                    handleTopicComplete('final_exercise');
+                    setIsFinished(true);
+                    toast({ title: 'Congratulations', description: 'you finish this class 1 (A2)' });
+                }} vocabulary={{ "conferencia": "conference" }} isSupervisionMode={!!overrideStudentId} isAdmin={isAdmin} isFinalExercise />;
             default: return null;
         }
     };
@@ -675,7 +777,7 @@ export default function Class1Content({ overrideStudentId }: { overrideStudentId
                 <Card className="shadow-soft rounded-lg sticky top-24 border-2 border-brand-purple bg-card/95 backdrop-blur-sm">
                     <CardHeader className="pb-4 border-b bg-muted/30">
                         <CardTitle className="text-lg font-black text-primary uppercase flex items-center gap-2">
-                            <Trophy className="h-5 w-5 text-primary" /> Misión 1A
+                            <Trophy className="h-5 w-5 text-primary" /> Misión 1 -A2
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="p-4">
