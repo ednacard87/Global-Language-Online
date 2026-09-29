@@ -87,7 +87,7 @@ export const espanolIntroPathData: PathItem[] = [
 export const getA1EspanolMainPath = (): PathItem[] => [
     { type: 'start', icon: Footprints, label: 'dashboard.start' },
     { type: 'class', icon: BookOpen, label: 'a1course.unit1', href: '/espanol/a1/unit/1', storageKey: 'progress_a1_es_unit_1' },
-    { type: 'practice', icon: Puzzle, label: 'a1course.review1', href: '#', storageKey: 'progress_a1_es_review_1' },
+     { type: 'practice', icon: Puzzle, label: 'a1course.review1', href: '/espanol/a1/repaso-1', storageKey: 'progress_a1_es_review_1' },
     { type: 'class', icon: BookOpen, label: 'a2course.unit2', href: '/espanol/a1/unit/2', storageKey: 'progress_a1_es_unit_2' },
     { type: 'practice', icon: Puzzle, label: 'a1course.review2', href: '#', storageKey: 'progress_a1_es_review_2' },
     { type: 'class', icon: BookOpen, label: 'a1course.unit3', href: '/espanol/a1/unit/3', storageKey: 'progress_a1_es_unit_3' },
