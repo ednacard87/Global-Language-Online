@@ -536,7 +536,7 @@ const MemoryPaisesNacionalidades = ({ onComplete }: { onComplete: () => void }) 
                 <p className="text-xl md:text-2xl font-bold text-white mb-2 text-center" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.15)' }}>¡Terminaste Intro 2!</p>
                 <p className="text-lg text-slate-500 font-medium mb-8">Misión completada al 100%.</p>
                 <Button asChild size="lg" className="bg-zinc-900 hover:bg-zinc-800 text-white rounded-xl px-8 py-6 font-bold text-lg shadow-lg hover:scale-105 transition-transform">
-                    <Link href="/espanol/a1">Regresar a la Ruta A1</Link>
+                    <Link href="/espanol/intro">Regresar a la Ruta Intro</Link>
                 </Button>
             </Card>
         );
