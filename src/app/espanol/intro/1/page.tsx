@@ -7,7 +7,7 @@ import { DashboardHeader } from '@/components/dashboard/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { BookOpen, PenSquare, Lock, CheckCircle, Hand, GraduationCap, Type, Activity, MessageSquare, BrainCircuit, RefreshCw, Flame, Trophy, Mic, Globe, MapPin, ArrowLeft, ArrowRight, Star, Loader2, Pencil } from 'lucide-react';
+import { BookOpen, PenSquare, Lock, CheckCircle, Hand, GraduationCap, Type, Activity, MessageSquare, BrainCircuit, RefreshCw, Flame, Trophy, Mic, Globe, MapPin, ArrowLeft, ArrowRight, Star, Loader2, Pencil, LucideMapPinOff } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
@@ -26,13 +26,13 @@ const normalizeString = (str: string) => {
 };
 
 type Topic = {
-  key: string;
-  name: string;
-  icon: React.ElementType;
-  status: 'locked' | 'active' | 'completed';
+    key: string;
+    name: string;
+    icon: React.ElementType;
+    status: 'locked' | 'active' | 'completed';
 };
 
-const progressStorageVersion = 'progress_espanol_intro_1_v6_bilingual'; 
+const progressStorageVersion = 'progress_espanol_intro_1_v6_bilingual';
 const mainProgressKey = 'progress_espanol_intro_1';
 
 const saludosData = [
@@ -44,7 +44,6 @@ const saludosData = [
     { spanish: '¿Cómo te va?', english: "How's it going?" },
     { spanish: '¿Qué tal?', english: "What's up?" },
     { spanish: 'Mucho gusto', english: 'Nice to meet you' },
-    { spanish: 'Encantado / Encantada de conocerte', english: 'Delighted / Pleased to meet you' },
 ];
 
 const despedidasData = [
@@ -58,7 +57,9 @@ const despedidasData = [
     { spanish: 'Nos vemos mañana', english: 'See you mañana' },
     { spanish: 'Cuídate', english: 'Take care' },
     { spanish: 'Buenas noches', english: 'Good night (farewell/sleep)' },
-    { spanish: 'Que tengas un buen día', english: 'Have a nice day' },
+    { spanish: 'Feliz dia', english: 'Happy day' },
+    { spanish: 'Feliz tarde', english: 'Happy afternoon' },
+    { spanish: 'Feliz noche', english: 'Happy night' },
 ];
 
 const nounsPracticeData = [
@@ -92,6 +93,10 @@ const adjectivesPracticeData = [
     { english: 'tired', spanish: 'cansado' },
     { english: 'busy', spanish: 'ocupado' },
     { english: 'tidy', spanish: 'ordenado' },
+    { english: 'clean', spanish: 'limpio' },
+    { english: 'dirty', spanish: 'sucio' },
+    { english: 'beautiful', spanish: 'bonito' },
+    { english: 'ugly', spanish: 'feo' },
 ];
 
 const verbsPracticeData = [
@@ -129,6 +134,10 @@ const memoryPairs = [
     { english: 'boyfriend', spanish: 'novio' },
     { english: 'girlfriend', spanish: 'novia' },
     { english: 'university', spanish: 'universidad' },
+    { english: 'clean', spanish: 'limpio' },
+    { english: 'dirty', spanish: 'sucio' },
+    { english: 'beautiful', spanish: 'bonito' },
+    { english: 'ugly', spanish: 'feo' },
 ];
 
 const lecturaData = {
@@ -162,7 +171,7 @@ const VocabularyMatchingGame = ({ onComplete }: { onComplete: () => void }) => {
             { id: index * 2, pairId: index, text: pair.english },
             { id: index * 2 + 1, pairId: index, text: pair.spanish },
         ]).sort(() => Math.random() - 0.5);
-        
+
         setCards(gameCards);
         setSelectedIndices([]);
         setMatchedPairIds([]);
@@ -220,11 +229,11 @@ const VocabularyMatchingGame = ({ onComplete }: { onComplete: () => void }) => {
             </CardHeader>
             <CardContent>
                 {isGameComplete ? (
-                     <div className="text-center p-12 flex flex-col items-center">
+                    <div className="text-center p-12 flex flex-col items-center">
                         <Trophy className="h-20 w-20 text-yellow-400 mb-6 animate-bounce" />
                         <h2 className="text-3xl font-bold">¡Felicidades!</h2>
                         <p className="text-lg text-muted-foreground mt-3">Has dominado el vocabulario básico de Intro 1.</p>
-                     </div>
+                    </div>
                 ) : (
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
                         {cards.map((card, index) => {
@@ -233,9 +242,9 @@ const VocabularyMatchingGame = ({ onComplete }: { onComplete: () => void }) => {
                             return (
                                 <div key={card.id} onClick={() => handleCardClick(index)}
                                     className={cn(
-                                        "flex items-center justify-center min-h-[70px] px-3 py-2 text-center cursor-pointer transition-all border-2 rounded-xl text-base sm:text-lg font-bold select-none shadow-sm", 
-                                        isMatched ? "bg-green-500/10 border-green-500 text-green-700 opacity-50" : 
-                                        isSelected ? "bg-primary/20 border-primary text-primary" : "bg-card border-border hover:bg-muted hover:border-muted-foreground/30"
+                                        "flex items-center justify-center min-h-[70px] px-3 py-2 text-center cursor-pointer transition-all border-2 rounded-xl text-base sm:text-lg font-bold select-none shadow-sm",
+                                        isMatched ? "bg-green-500/10 border-green-500 text-green-700 opacity-50" :
+                                            isSelected ? "bg-primary/20 border-primary text-primary" : "bg-card border-border hover:bg-muted hover:border-muted-foreground/30"
                                     )}>
                                     {card.text}
                                 </div>
@@ -272,6 +281,7 @@ function Intro1SpanishContent() {
 
     const [readingAnswers, setReadingAnswers] = useState<Record<string, string>>({});
     const [readingValidation, setReadingValidation] = useState<Record<string, 'correct' | 'incorrect' | 'unchecked'>>({});
+    const [isReadingFinished, setIsReadingFinished] = useState(false);
 
     const targetStudentId = searchParams.get('studentId');
     const currentUID = targetStudentId || user?.uid;
@@ -293,7 +303,7 @@ function Intro1SpanishContent() {
         if (!user) return false;
         return authUserProfile?.role === 'admin' || user.email === 'ednacard87@gmail.com';
     }, [user, authUserProfile]);
-    
+
     const initialLearningPath = useMemo((): Topic[] => [
         { key: 'fonetica', name: 'Fonética Español', icon: Mic, status: 'active' },
         { key: 'latinoamerica', name: 'Latinoamérica', icon: Globe, status: 'locked' },
@@ -310,7 +320,7 @@ function Intro1SpanishContent() {
     useEffect(() => {
         if (isProfileLoading || isUserLoading || !studentProfile || initialLoadComplete) return;
 
-        let path = initialLearningPath.map(topic => ({...topic}));
+        let path = initialLearningPath.map(topic => ({ ...topic }));
         let savedST = '';
 
         if (isAdmin && !targetStudentId) {
@@ -322,7 +332,7 @@ function Intro1SpanishContent() {
             });
             savedST = savedData.lastSelectedTopic || '';
         }
-        
+
         let lastDone = true;
         for (let i = 0; i < path.length; i++) {
             if (lastDone && path[i].status === 'locked') path[i].status = 'active';
@@ -335,7 +345,7 @@ function Intro1SpanishContent() {
         setTimeout(() => setIsInitialLoading(false), 200);
 
     }, [isAdmin, initialLearningPath, studentProfile, isProfileLoading, isUserLoading, initialLoadComplete, targetStudentId]);
-    
+
     const progressValue = useMemo(() => {
         if (learningPath.length === 0) return 0;
         const completedCount = learningPath.filter(t => t.status === 'completed').length;
@@ -348,7 +358,7 @@ function Intro1SpanishContent() {
         const s: Record<string, any> = { lastSelectedTopic: selectedTopic };
         learningPath.forEach(item => { s[item.key] = item.status; });
 
-        updateDocumentNonBlocking(studentDocRef, { 
+        updateDocumentNonBlocking(studentDocRef, {
             [`lessonProgress.${progressStorageVersion}`]: s,
             [`progress.${mainProgressKey}`]: progressValue
         });
@@ -363,9 +373,9 @@ function Intro1SpanishContent() {
         if (!topicToComplete) return;
 
         setLearningPath(currentPath => {
-            const newPath = currentPath.map(item => ({...item}));
+            const newPath = currentPath.map(item => ({ ...item }));
             const currentIndex = newPath.findIndex((t) => t.key === topicToComplete);
-            
+
             if (currentIndex !== -1) {
                 newPath[currentIndex].status = 'completed';
 
@@ -393,12 +403,12 @@ function Intro1SpanishContent() {
         }
         setSelectedTopic(key);
     };
-    
+
     const handleNounInputChange = (index: number, value: string) => {
         const newAnswers = [...nounAnswers];
         newAnswers[index] = value;
         setNounAnswers(newAnswers);
-        
+
         if (nounValidation[index] !== 'unchecked') {
             const newValidation = [...nounValidation];
             newValidation[index] = 'unchecked';
@@ -420,7 +430,7 @@ function Intro1SpanishContent() {
             toast({ title: '¡Muy bien!', description: 'Todas las traducciones son correctas.' });
             handleTopicComplete('sustantivos');
         } else {
-             toast({ variant: 'destructive', title: 'Algunas respuestas son incorrectas.' });
+            toast({ variant: 'destructive', title: 'Algunas respuestas son incorrectas.' });
         }
     };
 
@@ -428,7 +438,7 @@ function Intro1SpanishContent() {
         const newAnswers = [...adjAnswers];
         newAnswers[index] = value;
         setAdjAnswers(newAnswers);
-        
+
         if (adjValidation[index] !== 'unchecked') {
             const newValidation = [...adjValidation];
             newValidation[index] = 'unchecked';
@@ -450,7 +460,7 @@ function Intro1SpanishContent() {
             toast({ title: '¡Buen trabajo!', description: 'Todos los adjetivos son correctos.' });
             handleTopicComplete('adjetivos');
         } else {
-             toast({ variant: 'destructive', title: 'Algunas respuestas son incorrectas.' });
+            toast({ variant: 'destructive', title: 'Algunas respuestas son incorrectas.' });
         }
     };
 
@@ -458,7 +468,7 @@ function Intro1SpanishContent() {
         const newAnswers = [...verbAnswers];
         newAnswers[index] = value;
         setVerbAnswers(newAnswers);
-        
+
         if (verbValidation[index] !== 'unchecked') {
             const newValidation = [...verbValidation];
             newValidation[index] = 'unchecked';
@@ -475,7 +485,7 @@ function Intro1SpanishContent() {
 
             if (item.english === 'To watch TV' && (userAnswer === 'ver la television' || userAnswer === 'ver tv' || userAnswer === 'ver tele')) isCorrect = true;
             if (item.english === 'To drink' && userAnswer === 'tomar') isCorrect = true;
-            
+
             if (!isCorrect) allCorrect = false;
             return isCorrect ? 'correct' : 'incorrect';
         });
@@ -484,22 +494,22 @@ function Intro1SpanishContent() {
             toast({ title: '¡Excelente!', description: 'Todos los verbos son correctos.' });
             handleTopicComplete('verbos');
         } else {
-             toast({ variant: 'destructive', title: 'Algunas respuestas son incorrectas.' });
+            toast({ variant: 'destructive', title: 'Algunas respuestas son incorrectas.' });
         }
     };
 
     const handleReadingAnswerChange = (id: string, value: string) => {
-        setReadingAnswers(prev => ({...prev, [id]: value}));
-        setReadingValidation(prev => ({...prev, [id]: 'unchecked'}));
+        setReadingAnswers(prev => ({ ...prev, [id]: value }));
+        setReadingValidation(prev => ({ ...prev, [id]: 'unchecked' }));
     };
-    
+
     const handleCheckReading = () => {
         const newValidation: Record<string, 'correct' | 'incorrect' | 'unchecked'> = {};
         let allCorrect = true;
 
         lecturaData.multipleChoice.forEach(q => {
             const isCorrect = readingAnswers[q.id] === q.answer;
-            if(!isCorrect) allCorrect = false;
+            if (!isCorrect) allCorrect = false;
             newValidation[q.id] = isCorrect ? 'correct' : 'incorrect';
         });
 
@@ -507,23 +517,27 @@ function Intro1SpanishContent() {
             const userAnswer = normalizeString(readingAnswers[q.id] || '');
             const correctAnswer = normalizeString(q.answer);
             const isCorrect = userAnswer.includes(correctAnswer);
-            if(!isCorrect) allCorrect = false;
+            if (!isCorrect) allCorrect = false;
             newValidation[q.id] = isCorrect ? 'correct' : 'incorrect';
         });
 
         setReadingValidation(newValidation);
-        if(allCorrect) {
-            toast({ title: '¡Felicitaciones!', description: 'Has respondido todas las preguntas correctamente.' });
-            handleTopicComplete('lectura');
+        if (allCorrect) {
+            toast({ title: '¡Excelente!', description: 'Todas las respuestas son correctas. Ahora haz clic en Terminar.' });
         } else {
             toast({ variant: 'destructive', title: 'Algunas respuestas son incorrectas.' });
         }
     };
 
+    const handleFinishReading = () => {
+        setIsReadingFinished(true);
+        handleTopicComplete('lectura');
+    };
+
     const renderContent = () => {
         if (isInitialLoading) return <div className="flex justify-center items-center h-96"><Loader2 className="animate-spin text-primary h-12 w-12" /></div>;
 
-        switch(selectedTopic) {
+        switch (selectedTopic) {
             case 'fonetica':
                 return (
                     <Card className="shadow-soft border-2 border-brand-purple">
@@ -584,11 +598,11 @@ function Intro1SpanishContent() {
                             </div>
                             <div className="grid md:grid-cols-2 gap-6 text-lg leading-relaxed text-left">
                                 <div className="space-y-4 font-medium text-foreground">
-                                    <p>Latinoamérica es una región vasta que abarca desde México hasta la Patagonia. Con más de 600 millones de personas, es el hogar de una increíble biodiversidad y una rica herencia cultural que mezcla raíces indígenas, europeas y africanas.</p>
+                                    <p>Latinoamérica es una región grande y hermosa que abarca desde México hasta Argentina. Con más de 600 millones de personas, es el hogar de una increíble biodiversidad y una rica herencia cultural que mezcla raíces indígenas, europeas y africanas.</p>
                                     <p>Aprender español te abre las puertas a 20 países con historias, paisajes y tradiciones únicas.</p>
                                 </div>
                                 <div className="space-y-4 text-base italic text-muted-foreground bg-muted/20 p-4 rounded-xl border border-dashed">
-                                    <p>Latin America is a vast region spanning from Mexico to Patagonia. With over 600 million people, it is home to incredible biodiversity and a rich cultural heritage that blends indigenous, European, and African roots.</p>
+                                    <p>Latin America is a vast region spanning from Mexico to Argentina. With over 600 million people, it is home to incredible biodiversity and a rich cultural heritage that blends indigenous, European, and African roots.</p>
                                     <p>Learning Spanish opens the doors to 20 countries with unique stories, landscapes, and traditions.</p>
                                 </div>
                             </div>
@@ -616,18 +630,21 @@ function Intro1SpanishContent() {
                                         <div className="space-y-2">
                                             <p className="font-semibold text-foreground">Colombia es famosa por tener uno de los españoles más claros del mundo, pero tiene mucha variedad regional:</p>
                                             <ul className="list-disc pl-5 text-muted-foreground font-medium">
-                                                <li><strong>Paisa:</strong> De Medellín, muy rítmico y amable.</li>
+                                                <li><strong>Paisa:</strong> De Medellín y Eje cafetero (Manizales, Pereira, Armenia), muy rítmico y amable.</li>
                                                 <li><strong>Rolo:</strong> De Bogotá, neutro y formal.</li>
-                                                <li><strong>Costeño:</strong> De la costa caribe, rápido y alegre.</li>
-                                                <li><strong>Patuso:</strong> Del sur de Colombia Pasto - similar a ecuatoriano.</li>
+                                                <li><strong>Costeño:</strong> De la costa caribe (Barranquilla, Cartagena), rápido y alegre.</li>
+                                                <li><strong>Caleño:</strong> De Cali, rumbero y alegre.</li>
+                                                <li><strong>Patuso:</strong> Del sur de Colombia (Pasto), similar a ecuatoriano.</li>
                                             </ul>
                                         </div>
                                         <div className="p-3 bg-muted rounded-lg border italic text-sm text-muted-foreground">
                                             Colombia is famous for having one of the clearest Spanish accents in the world, but it has a lot of regional variety:
                                             <ul className="list-disc pl-5 mt-1">
-                                                <li><strong>Paisa:</strong> From Medellín, very rhythmic and friendly.</li>
+                                                <li><strong>Paisa:</strong> From Medellín and the Coffee Region (Manizales, Pereira, Armenia), very rhythmic and friendly.</li>
                                                 <li><strong>Rolo:</strong> From Bogotá, neutral and formal.</li>
-                                                <li><strong>Costeño:</strong> From the Caribbean coast, fast and cheerful.</li>
+                                                <li><strong>Costeño:</strong> From the Caribbean coast (Barranquilla, Cartagena), fast and cheerful.</li>
+                                                <li><strong>Caleño:</strong> From Cali, party-loving and cheerful.</li>
+                                                <li><strong>Patuso:</strong> From southern Colombia (Pasto), similar to Ecuadorian.</li>
                                             </ul>
                                         </div>
                                     </AccordionContent>
@@ -638,7 +655,7 @@ function Intro1SpanishContent() {
                                         <div className="space-y-2">
                                             <p className="font-semibold text-foreground">No te puedes ir sin probar:</p>
                                             <ul className="list-disc pl-5 text-muted-foreground font-medium">
-                                                <li><strong>Bandeja Paisa:</strong> El plato más emblemático y abundante.</li>
+                                                <li><strong>Bandeja Paisa:</strong> El plato colombiano más conocido y abundante.</li>
                                                 <li><strong>Arepas:</strong> Pan de maíz circular que acompaña casi todo.</li>
                                                 <li><strong>Ajiaco:</strong> Una sopa de pollo y papas tradicional de Bogotá.</li>
                                             </ul>
@@ -646,7 +663,7 @@ function Intro1SpanishContent() {
                                         <div className="p-3 bg-muted rounded-lg border italic text-sm text-muted-foreground">
                                             You can't leave without trying:
                                             <ul className="list-disc pl-5 mt-1">
-                                                <li><strong>Bandeja Paisa:</strong> The most emblematic and abundant dish.</li>
+                                                <li><strong>Bandeja Paisa:</strong> The most known and abundant Colombian dish.</li>
                                                 <li><strong>Arepas:</strong> Circular corn bread that accompanies almost everything.</li>
                                                 <li><strong>Ajiaco:</strong> A traditional chicken and potato soup from Bogotá.</li>
                                             </ul>
@@ -656,8 +673,8 @@ function Intro1SpanishContent() {
                                 <AccordionItem value="cultura">
                                     <AccordionTrigger className="text-xl font-bold">Cultura / Culture</AccordionTrigger>
                                     <AccordionContent className="space-y-4 pt-2">
-                                        <p className="font-semibold text-foreground">Es la tierra del Realismo Mágico de Gabriel García Márquez. La música es omnipresente: desde la Cumbia y el Vallenato tradicional hasta el Pop y Reggaetón internacional de figuras como Shakira, Juanes o J Balvin.</p>
-                                        <div className="p-3 bg-muted rounded-lg border italic text-sm text-muted-foreground">It is the land of Magical Realism by Gabriel García Márquez. Music is omnipresent: from traditional Cumbia and Vallenato to international Pop and Reggaeton from figures like Shakira, Juanes, or J Balvin.</div>
+                                        <p className="font-semibold text-foreground">Es la tierra del Realismo Mágico de Gabriel García Márquez. La música es muy importante en su cultura, desde la Cumbia y el Vallenato tradicional hasta el Pop y Reggaetón internacional como Shakira, Juanes o J Balvin.</p>
+                                        <div className="p-3 bg-muted rounded-lg border italic text-sm text-muted-foreground">It is the land of Magical Realism by Gabriel García Márquez. Music is very important in their culture, from traditional Cumbia and Vallenato to international Pop and Reggaeton like Shakira, Juanes, or J Balvin.</div>
                                     </AccordionContent>
                                 </AccordionItem>
                             </Accordion>
@@ -764,7 +781,7 @@ function Intro1SpanishContent() {
                         </div>
                     </CardContent>
                     <CardFooter>
-                         <Button onClick={() => handleTopicComplete('sustantivos')} className="font-bold">Continuar</Button>
+                        <Button onClick={() => handleTopicComplete('sustantivos')} className="font-bold">Continuar</Button>
                     </CardFooter>
                 </Card>
             );
@@ -818,7 +835,7 @@ function Intro1SpanishContent() {
                         </div>
                     </CardContent>
                     <CardFooter>
-                         <Button onClick={() => handleTopicComplete('adjetivos')} className="font-bold">Continuar</Button>
+                        <Button onClick={() => handleTopicComplete('adjetivos')} className="font-bold">Continuar</Button>
                     </CardFooter>
                 </Card>
             );
@@ -873,58 +890,79 @@ function Intro1SpanishContent() {
                         </div>
                     </CardContent>
                     <CardFooter>
-                         <Button onClick={() => handleTopicComplete('verbos')} className="font-bold">Continuar</Button>
+                        <Button onClick={() => handleTopicComplete('verbos')} className="font-bold">Continuar</Button>
                     </CardFooter>
                 </Card>
             );
             case 'vocabulario': return <VocabularyMatchingGame onComplete={() => handleTopicComplete('vocabulario')} />;
-            case 'lectura': return (
-                 <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
-                    <CardHeader>
-                        <CardTitle>{lecturaData.title}</CardTitle>
-                        <CardDescription>Practica tu comprensión de lectura con este texto que resume lo aprendido.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-6">
-                        <div className="bg-muted p-6 rounded-lg border italic text-lg leading-relaxed shadow-inner text-left text-foreground">
-                            {lecturaData.content}
-                        </div>
-                        <Separator />
-                        <div className="space-y-8 text-left">
-                            <div className="space-y-6">
-                                <h3 className="text-xl font-bold text-primary">Preguntas de Selección Múltiple</h3>
-                                {lecturaData.multipleChoice.map((q) => (
-                                    <div key={q.id} className="space-y-3 p-4 border rounded-lg bg-card">
-                                        <Label className="text-lg font-semibold text-foreground">{q.question}</Label>
-                                        <RadioGroup value={readingAnswers[q.id] || ''} onValueChange={(val) => handleReadingAnswerChange(q.id, val)} className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                            {q.options.map((option) => (
-                                                <div key={option} className="flex items-center space-x-2">
-                                                    <RadioGroupItem value={option} id={`${q.id}-${option}`} />
-                                                    <Label htmlFor={`${q.id}-${option}`} className="font-medium text-foreground">{option}</Label>
-                                                </div>
-                                            ))}
-                                        </RadioGroup>
-                                        {readingValidation[q.id] === 'incorrect' && <p className="text-xs text-destructive font-bold">Respuesta incorrecta. Inténtalo de nuevo.</p>}
-                                        {readingValidation[q.id] === 'correct' && <p className="text-xs text-green-500 font-bold">¡Correcto!</p>}
-                                    </div>
-                                ))}
+            case 'lectura':
+                if (isReadingFinished) {
+                    return (
+                        <Card className="shadow-soft rounded-2xl border border-green-500 bg-gradient-to-b from-green-50 to-sky-200 p-8 md:p-12 flex flex-col items-center justify-center min-h-[450px]">
+                            <Trophy className="w-24 h-24 text-yellow-400 mb-6" style={{ filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.1))' }} />
+                            <h2 className="text-4xl md:text-5xl font-extrabold text-green-600 mb-4 tracking-tight text-center uppercase" style={{ textShadow: '1px 1px 2px rgba(255,255,255,0.8)' }}>¡FELICITACIONES!</h2>
+                            <p className="text-xl md:text-2xl font-bold text-white mb-2 text-center" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.15)' }}>¡Terminaste la clase Intro 1!</p>
+                            <p className="text-lg text-slate-500 font-medium mb-8">Misión completada al 100%.</p>
+                            <Button asChild size="lg" className="bg-zinc-900 hover:bg-zinc-800 text-white rounded-xl px-8 py-6 font-bold text-lg shadow-lg hover:scale-105 transition-transform">
+                                <Link href="/espanol/intro">Regresar a la Ruta Intro</Link>
+                            </Button>
+                        </Card>
+                    );
+                }
+
+                return (
+                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple">
+                        <CardHeader>
+                            <CardTitle>{lecturaData.title}</CardTitle>
+                            <CardDescription>Practica tu comprensión de lectura con este texto que resume lo aprendido.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                            <div className="bg-muted p-6 rounded-lg border italic text-lg leading-relaxed shadow-inner text-left text-foreground">
+                                {lecturaData.content}
                             </div>
                             <Separator />
-                            <div className="space-y-6 text-left">
-                                <h3 className="text-xl font-bold text-primary">Preguntas de Escritura</h3>
-                                {lecturaData.openQuestions.map((q) => (
-                                    <div key={q.id} className="space-y-2 p-4 border rounded-lg bg-card">
-                                        <Label htmlFor={q.id} className="text-lg font-semibold text-foreground">{q.question}</Label>
-                                        <Input id={q.id} value={readingAnswers[q.id] || ''} onChange={e => handleReadingAnswerChange(q.id, e.target.value)} className={cn('mt-1 text-lg h-12', readingValidation[q.id] === 'correct' && 'border-green-500 bg-green-50/5', readingValidation[q.id] === 'incorrect' && 'border-destructive bg-destructive/5')} placeholder="Escribe tu respuesta aquí..." autoComplete="off" />
-                                    </div>
-                                ))}
+                            <div className="space-y-8 text-left">
+                                <div className="space-y-6">
+                                    <h3 className="text-xl font-bold text-primary">Preguntas de Selección Múltiple</h3>
+                                    {lecturaData.multipleChoice.map((q) => (
+                                        <div key={q.id} className="space-y-3 p-4 border rounded-lg bg-card">
+                                            <Label className="text-lg font-semibold text-foreground">{q.question}</Label>
+                                            <RadioGroup value={readingAnswers[q.id] || ''} onValueChange={(val) => handleReadingAnswerChange(q.id, val)} className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                                {q.options.map((option) => (
+                                                    <div key={option} className="flex items-center space-x-2">
+                                                        <RadioGroupItem value={option} id={`${q.id}-${option}`} />
+                                                        <Label htmlFor={`${q.id}-${option}`} className="font-medium text-foreground">{option}</Label>
+                                                    </div>
+                                                ))}
+                                            </RadioGroup>
+                                            {readingValidation[q.id] === 'incorrect' && <p className="text-xs text-destructive font-bold">Respuesta incorrecta. Inténtalo de nuevo.</p>}
+                                            {readingValidation[q.id] === 'correct' && <p className="text-xs text-green-500 font-bold">¡Correcto!</p>}
+                                        </div>
+                                    ))}
+                                </div>
+                                <Separator />
+                                <div className="space-y-6 text-left">
+                                    <h3 className="text-xl font-bold text-primary">Preguntas de Escritura</h3>
+                                    {lecturaData.openQuestions.map((q) => (
+                                        <div key={q.id} className="space-y-2 p-4 border rounded-lg bg-card">
+                                            <Label htmlFor={q.id} className="text-lg font-semibold text-foreground">{q.question}</Label>
+                                            <Input id={q.id} value={readingAnswers[q.id] || ''} onChange={e => handleReadingAnswerChange(q.id, e.target.value)} className={cn('mt-1 text-lg h-12', readingValidation[q.id] === 'correct' && 'border-green-500 bg-green-50/5', readingValidation[q.id] === 'incorrect' && 'border-destructive bg-destructive/5')} placeholder="Escribe tu respuesta aquí..." autoComplete="off" />
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
-                        </div>
-                    </CardContent>
-                    <CardFooter className="flex justify-center pt-6 border-t">
-                        <Button onClick={handleCheckReading} size="lg" className="w-full sm:w-auto px-12 font-bold">Verificar Respuestas</Button>
-                    </CardFooter>
-                 </Card>
-            );
+                        </CardContent>
+                        <CardFooter className="flex justify-between pt-6 border-t">
+                            <Button onClick={handleCheckReading} size="lg" className="w-full sm:w-auto px-12 font-bold">Verificar</Button>
+                            <Button
+                                onClick={handleFinishReading}
+                                disabled={!lecturaData.multipleChoice.every(q => readingValidation[q.id] === 'correct') || !lecturaData.openQuestions.every(q => readingValidation[q.id] === 'correct')}
+                                size="lg"
+                                className="w-full sm:w-auto px-12 font-bold bg-green-600 hover:bg-green-700 text-white"
+                            >Terminar</Button>
+                        </CardFooter>
+                    </Card>
+                );
             default: return <p className='text-foreground'>Selecciona un tema para empezar.</p>;
         }
     };
@@ -958,7 +996,7 @@ function Intro1SpanishContent() {
                                                             isSelected && 'bg-muted text-primary font-semibold'
                                                         )}
                                                     >
-                                                        {item.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500"/> : <Icon className="h-5 w-5" />}
+                                                        {item.status === 'completed' ? <CheckCircle className="h-5 w-5 text-green-500" /> : <Icon className="h-5 w-5" />}
                                                         <span>{item.name}</span>
                                                         {isLocked && <Lock className="h-4 w-4 text-yellow-500 ml-auto" />}
                                                     </li>
@@ -966,7 +1004,7 @@ function Intro1SpanishContent() {
                                             })}
                                         </ul>
                                     </nav>
-                                     <div className="mt-6 pt-6 border-t text-left">
+                                    <div className="mt-6 pt-6 border-t text-left">
                                         <div className="flex justify-between items-center text-sm font-medium text-muted-foreground mb-2">
                                             <span>Progreso</span><span className="font-bold text-foreground">{progressValue}%</span>
                                         </div>
@@ -976,7 +1014,7 @@ function Intro1SpanishContent() {
                             </Card>
                         </div>
                         <div className="md:col-span-8">
-                           {renderContent()}
+                            {renderContent()}
                         </div>
                     </div>
                 </div>
@@ -992,3 +1030,5 @@ export default function Intro1SpanishPage() {
         </Suspense>
     );
 }
+
+
