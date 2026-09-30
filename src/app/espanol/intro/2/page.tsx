@@ -62,7 +62,9 @@ const intro2EPath = [
     { key: 'countries', name: 'Países y Nacionalidades', icon: Globe },
     { key: 'reading', name: 'Lectura', icon: BookText },
     { key: 'ser_y_estar', name: 'Ser y Estar', icon: GraduationCap },
+    { key: 'memoria_ser_estar', name: 'Memoria (Ser y Estar)', icon: BrainCircuit },
     { key: 'mixed_exercises', name: 'Ejercicios Mixtos', icon: Trophy },
+    { key: 'memoria_paises', name: 'Memoria (Países)', icon: BrainCircuit },
 ];
 
 const greetingsAndFarewellsData = [
@@ -184,9 +186,25 @@ const mixedExercisesData = [
     { english: 'Nice to meet you, goodbye', spanish: ['mucho gusto, adiós', 'mucho gusto, adios'] },
 ];
 
+const serMemoryData = [
+    { english: 'Yo', spanish: 'Soy' },
+    { english: 'Tú', spanish: 'Eres' },
+    { english: 'Él/Ella/Usted', spanish: 'Es' },
+    { english: 'Nosotros', spanish: 'Somos' },
+    { english: 'Ellos/Ustedes', spanish: 'Son' },
+];
+
+const estarMemoryData = [
+    { english: 'Yo', spanish: 'Estoy' },
+    { english: 'Tú', spanish: 'Estás' },
+    { english: 'Él/Ella/Usted', spanish: 'Está' },
+    { english: 'Nosotros', spanish: 'Estamos' },
+    { english: 'Ellos/Ustedes', spanish: 'Están' },
+];
+
 // --- SUB-COMPONENTS ---
 
-const MemoryGame = ({ data, onComplete }: { data: { spanish: string; english: string; }[], onComplete: () => void }) => {
+const MemoryGame = ({ data, onComplete, title = "Juego de Memoria: Saludos y Despedidas" }: { data: { spanish: string; english: string; }[], onComplete: () => void, title?: string }) => {
     const [cards, setCards] = useState<any[]>([]);
     const [flippedIndices, setFlippedIndices] = useState<number[]>([]);
     const [matchedPairIds, setMatchedPairIds] = useState<number[]>([]);
@@ -241,7 +259,7 @@ const MemoryGame = ({ data, onComplete }: { data: { spanish: string; english: st
     return (
         <Card className="shadow-soft border-2 border-brand-purple bg-card/95 text-foreground">
             <CardHeader>
-                <CardTitle>Juego de Memoria: Saludos y Despedidas</CardTitle>
+                <CardTitle>{title}</CardTitle>
                 <div className="flex justify-between items-center pt-2">
                     <Button size="icon" variant="ghost" onClick={initializeGame}><RefreshCw className="h-5 w-5" /></Button>
                     <div className="flex items-center gap-2 text-orange-500 font-bold"><Flame className="h-5 w-5" /><span>{streak}</span></div>
@@ -418,6 +436,7 @@ const CountriesExercise = ({ onComplete }: { onComplete: () => void }) => {
 const ReadingExercise = ({ onComplete }: { onComplete: () => void }) => {
     const [userAnswers, setUserAnswers] = useState<Record<string, string>>({});
     const [validation, setValidation] = useState<Record<string, any>>({});
+    const [isVerified, setIsVerified] = useState(false);
     const { toast } = useToast();
 
     const handleCheck = () => {
@@ -426,7 +445,14 @@ const ReadingExercise = ({ onComplete }: { onComplete: () => void }) => {
             const ok = (userAnswers[q.id] || '').trim().toLowerCase().includes(q.answer.toLowerCase());
             nv[q.id] = ok ? 'correct' : 'incorrect'; if (!ok) allOk = false;
         });
-        setValidation(nv); if (allOk) onComplete(); else toast({ variant: 'destructive', title: 'Revisa tus respuestas' });
+        setValidation(nv); 
+        if (allOk) { 
+            setIsVerified(true);
+            toast({ title: '¡Perfecto! Puedes continuar' }); 
+        } else {
+            setIsVerified(false);
+            toast({ variant: 'destructive', title: 'Revisa tus respuestas' });
+        }
     };
     
     return (
@@ -435,7 +461,10 @@ const ReadingExercise = ({ onComplete }: { onComplete: () => void }) => {
                 <div key={es} className="flex justify-between border-b border-muted pb-1"><span className="font-bold uppercase text-[10px]">{es}:</span><span className="text-muted-foreground italic text-[10px]">{en}</span></div>
             ))}</div></ScrollArea></PopoverContent></Popover></div></CardHeader>
             <CardContent className="space-y-6"><p className="text-lg leading-relaxed bg-muted/30 p-6 rounded-2xl border italic text-left text-foreground shadow-inner">{readingData.content}</p><div className="space-y-4 border-t pt-4 text-left">{readingData.questions.map(q => (<div key={q.id} className='space-y-1'><Label className="text-sm font-black uppercase text-primary">{q.question}</Label><Input value={userAnswers[q.id] || ''} onChange={e => setUserAnswers({...userAnswers, [q.id]: e.target.value})} className={cn('h-10 uppercase', validation[q.id] === 'correct' ? 'border-green-500 bg-green-50/10' : validation[q.id] === 'incorrect' ? 'border-destructive bg-red-50/10' : '')} autoComplete="off" /></div>))}</div></CardContent>
-            <CardFooter><Button onClick={handleCheck} className='w-full font-bold h-12 uppercase'>Verificar Lectura</Button></CardFooter>
+            <CardFooter className="flex justify-between pt-6 border-t gap-4">
+                <Button onClick={handleCheck} size="lg" className="w-full sm:w-auto px-12 font-bold">Verificar</Button>
+                <Button onClick={onComplete} disabled={!isVerified} size="lg" className="w-full sm:w-auto px-12 font-bold bg-green-600 hover:bg-green-700 text-white">Continuar</Button>
+            </CardFooter>
         </Card>
     );
 };
@@ -460,6 +489,74 @@ const MixedExercise = ({ onComplete }: { onComplete: () => void }) => {
             <CardContent className="space-y-6"><div className="text-center py-8 bg-muted rounded-lg border font-bold text-2xl uppercase tracking-tighter">"{currentPrompt.english}"</div><Input value={userAnswers[currentIndex] || ''} onChange={e => { setUserAnswers({...userAnswers, [currentIndex]: e.target.value}); setValidation({...validation, [currentIndex]: 'unchecked'}); }} onKeyDown={e => e.key === 'Enter' && handleCheck()} placeholder="Tu traducción..." className={cn("h-12 text-lg uppercase", validation[currentIndex] === 'correct' ? 'border-green-500' : validation[currentIndex] === 'incorrect' ? 'border-destructive' : '')} autoComplete="off" /></CardContent>
             <CardFooter className="justify-between"><Button variant="outline" onClick={() => setCurrentIndex(p => Math.max(0, p - 1))} disabled={currentIndex === 0}>Anterior</Button><div className="flex gap-2"><Button onClick={handleCheck}>Verificar</Button><Button onClick={() => currentIndex < mixedExercisesData.length - 1 ? setCurrentIndex(p => p + 1) : onComplete()} disabled={validation[currentIndex] !== 'correct'}>Siguiente</Button></div></CardFooter>
         </Card>
+    );
+};
+
+const MemorySerEstar = ({ onComplete }: { onComplete: () => void }) => {
+    const [level, setLevel] = useState<'ser' | 'estar'>('ser');
+    
+    if (level === 'ser') {
+        return (
+            <div className="space-y-4">
+                <h3 className="text-xl font-black text-center text-primary uppercase">Nivel 1: Verbo SER</h3>
+                <MemoryGame title="Empareja Pronombre y Verbo (Ser)" data={serMemoryData} onComplete={() => {
+                    setTimeout(() => setLevel('estar'), 1500);
+                }} />
+            </div>
+        );
+    }
+    
+    return (
+        <div className="space-y-4">
+            <h3 className="text-xl font-black text-center text-brand-purple uppercase">Nivel 2: Verbo ESTAR</h3>
+            <MemoryGame title="Empareja Pronombre y Verbo (Estar)" data={estarMemoryData} onComplete={() => {
+                setTimeout(() => onComplete(), 1500);
+            }} />
+        </div>
+    );
+};
+
+const MemoryPaisesNacionalidades = ({ onComplete }: { onComplete: () => void }) => {
+    const [gameState, setGameState] = useState<'playing' | 'completed' | 'finished'>('playing');
+
+    const handleGameComplete = () => {
+        setGameState('completed');
+    };
+
+    const handleTerminar = () => {
+        setGameState('finished');
+        onComplete();
+    };
+
+    if (gameState === 'finished') {
+        return (
+            <Card className="shadow-soft rounded-2xl border border-green-500 bg-gradient-to-b from-green-50 to-sky-200 p-8 md:p-12 flex flex-col items-center justify-center min-h-[450px]">
+                <Trophy className="w-24 h-24 text-yellow-400 mb-6" style={{ filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.1))' }} />
+                <h2 className="text-4xl md:text-5xl font-extrabold text-green-600 mb-4 tracking-tight text-center uppercase" style={{ textShadow: '1px 1px 2px rgba(255,255,255,0.8)' }}>¡FELICITACIONES!</h2>
+                <p className="text-xl md:text-2xl font-bold text-white mb-2 text-center" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.15)' }}>¡Terminaste Intro 2!</p>
+                <p className="text-lg text-slate-500 font-medium mb-8">Misión completada al 100%.</p>
+                <Button asChild size="lg" className="bg-zinc-900 hover:bg-zinc-800 text-white rounded-xl px-8 py-6 font-bold text-lg shadow-lg hover:scale-105 transition-transform">
+                    <Link href="/espanol/a1">Regresar a la Ruta A1</Link>
+                </Button>
+            </Card>
+        );
+    }
+
+    const memoryData = countriesExerciseData.map(c => ({
+        english: c.english,
+        spanish: `${c.spanish} / ${c.nationality}`
+    }));
+
+    return (
+        <div className="space-y-4">
+            <h3 className="text-xl font-black text-center text-primary uppercase">Nivel Final: Países y Nacionalidades</h3>
+            <MemoryGame title="Empareja: País en Inglés con País/Nacionalidad en Español" data={memoryData} onComplete={handleGameComplete} />
+            {gameState === 'completed' && (
+                <div className="flex justify-center mt-4">
+                    <Button size="lg" onClick={handleTerminar} className="px-16 font-bold h-12 uppercase bg-green-600 hover:bg-green-700 text-white shadow-lg">Terminar</Button>
+                </div>
+            )}
+        </div>
     );
 };
 
@@ -643,7 +740,9 @@ export default function EspanolIntro2Page() {
                         <CardFooter className="justify-center border-t pt-6"><Button onClick={() => handleTopicComplete('ser_y_estar')} size="lg" className="px-16 font-bold h-12 uppercase">¡Entendido!</Button></CardFooter>
                     </Card>
                 );
+            case 'memoria_ser_estar': return <MemorySerEstar onComplete={() => handleTopicComplete('memoria_ser_estar')} />;
             case 'mixed_exercises': return <MixedExercise onComplete={() => handleTopicComplete('mixed_exercises')} />;
+            case 'memoria_paises': return <MemoryPaisesNacionalidades onComplete={() => handleTopicComplete('memoria_paises')} />;
             default: return null;
         }
     };
