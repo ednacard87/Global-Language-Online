@@ -398,11 +398,11 @@ export default function Class1Content() {
                         <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-slate-100 dark:bg-slate-800/50">
                             <CardHeader><CardTitle className="text-xl font-bold">Ejemplo: "Ellos son estudiantes"</CardTitle></CardHeader>
                             <CardContent className="font-mono text-base space-y-1 text-slate-800 dark:text-slate-200">
-                                <p className="text-green-600 font-bold">(+) they are students</p>
-                                <p className="text-red-300 font-bold">(-) they are not students</p>
+                                <p className="text-blue-300 font-bold">(+) they are students</p>
+                                <p className="text-blue-300 font-bold">(-) they are not students</p>
                                 <p className="text-blue-300 font-bold">(?) are they students?</p>
-                                <p className="text-green-600 font-bold">(+A) Yes, they are</p>
-                                <p className="text-red-600 font-bold">(-A) No, they are not</p>
+                                <p className="text-blue-300 font-bold">(+A) Yes, they are</p>
+                                <p className="text-blue-300 font-bold">(-A) No, they are not</p>
                             </CardContent>
                             <CardFooter className="justify-center border-t pt-4">
                                 <Button onClick={() => handleTopicComplete('tobe-1')} size="lg" className='text-white font-bold'>Avanzar al Ejercicio</Button>
@@ -453,10 +453,10 @@ export default function Class1Content() {
                                 <div className="space-y-2">
                                     <p className="text-sm uppercase tracking-widest text-muted-foreground">Ejemplo: "Ellos son mis amigos"</p>
                                     <p className="font-mono text-primary">(+) they are my friends</p>
-                                    <p className="font-mono text-muted-foreground">(-) they are not my friends</p>
-                                    <p className="font-mono text-blue-500">(?) are they my friends?</p>
+                                    <p className="font-mono text-primary">(-) they are not my friends</p>
+                                    <p className="font-mono text-primary">(?) are they my friends?</p>
                                     <p className="font-mono text-primary">(+A) Yes, they are</p>
-                                    <p className="font-mono text-red-500">(-A) No, they are not</p>
+                                    <p className="font-mono text-primary">(-A) No, they are not</p>
                                 </div>
                             </CardContent>
                             <CardFooter className="justify-center border-t pt-4">
@@ -482,11 +482,11 @@ export default function Class1Content() {
                                 <Separator />
                                 <div className="space-y-2">
                                     <p className="text-sm uppercase tracking-widest text-muted-foreground">Ejemplo: "Mi mamá es una enfermera"</p>
-                                    <p className="font-mono text-primary">(+) my mother is a nurse</p>
-                                    <p className="font-mono text-muted-foreground">(-) my mother is not a nurse</p>
+                                    <p className="font-mono text-blue-500">(+) my mother is a nurse</p>
+                                    <p className="font-mono text-blue-500">(-) my mother is not a nurse</p>
                                     <p className="font-mono text-blue-500">(?) is my mother a nurse?</p>
-                                    <p className="font-mono text-primary">(+) Yes, she is</p>
-                                    <p className="font-mono text-red-500">(-) No, she is not</p>
+                                    <p className="font-mono text-blue-500">(+) Yes, she is</p>
+                                    <p className="font-mono text-blue-500">(-) No, she is not</p>
                                 </div>
                             </CardContent>
                             <CardFooter className="justify-center border-t pt-4">
@@ -495,7 +495,7 @@ export default function Class1Content() {
                         </Card>
                     </div>
                 );
-            case 'exercises3': return <TranslationExercise exerciseKey="class1_ex3" onComplete={() => handleTopicComplete('exercises3')} vocabulary={{'doctora': 'doctor', 'famosa': 'famous', 'abuelo': 'grandfather', 'pensionado': 'retired' , 'gato' : 'cat' , 'independiente' : 'independent'}} highlightVocabulary={true} title="Exercise 3" />;
+            case 'exercises3': return <TranslationExercise exerciseKey="class1_ex3" onComplete={() => handleTopicComplete('exercises3')} vocabulary={{'doctora': 'doctor', 'famosa': 'famous', 'abuelo': 'grandfather', 'pensionado': 'retired' , 'gato' : 'cat' , 'independiente' : 'independent', 'sobre' : 'independent'}} highlightVocabulary={true} title="Exercise 3" />;
             case 'ex-mixto-1': return <SimpleTranslationExercise course="a1" exerciseKey="mixed1" onComplete={() => handleTopicComplete('ex-mixto-1')} title="Exercise 1" vocabulary={{'estudiante': 'student', 'amigos': 'friends', 'padres': 'parents', 'hermana': 'sister', 'abogados': 'lawyers', 'Inglaterra': 'England'}} highlightVocabulary={true} />;
             case 'ex-mixto-2': return <TranslationExercise exerciseKey="qna2" formType="qna" onComplete={() => handleTopicComplete('ex-mixto-2')} title="Exercise 2" vocabulary={{'compañeros de trabajo': 'coworkers','ocupado': 'busy','libre' : 'free','hambriento': 'hungry','cansado': 'tired', 'amiga': 'friend', 'estudiantes': 'students', 'feliz': 'happy', 'curiosos': 'curious', 'novia': 'girlfriend', 'ocupada': 'busy', 'libres': 'free', 'España': 'Spain', 'ingeniero': 'engineer', 'hambriento': 'hungry', 'compañeros': 'coworkers', 'a tiempo': 'on time'}} highlightVocabulary={true} />;
             case 'ex-mixto-3': return <SimpleTranslationExercise course="a1" exerciseKey="mixed3" onComplete={() => handleTopicComplete('ex-mixto-3')} title="Exercise 3" vocabulary={{'estudiantes': 'students', 'apodos': 'nicknames', 'mamá': 'mom/mother', 'padres': 'parents', 'viejos': 'old', 'prima': 'cousin', 'abuela': 'grandma', 'hermanas': 'sisters', 'cansado': 'tired', 'aburridos': 'bored', 'profesores': 'teachers', 'enojados': 'angry', 'alta': 'tall', 'preocupados': 'worried'}} highlightVocabulary={true} />;

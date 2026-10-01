@@ -123,7 +123,7 @@ const exercises = {
                 "are your siblings at university? - no, they are not", 
                 "are your siblings at university? - no, they aren't", 
                 "are your brothers at university? - no, they are not", 
-                "are your brothers at university? no, they aren't",
+                "are your brothers at university? - no, they aren't",
             ] },
             { spanish: '¿TU HERMANA ESTÁ EN EL PARQUE? – NO, ELLA ESTÁ EN EL SUPERMERCADO', english: ["is your sister at the park? - no, she is in the supermarket." , "is your sister at the park? - no, she's in the supermarket."] },
         ]
