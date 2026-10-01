@@ -443,9 +443,9 @@ export default function Class1Content() {
                             <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase tracking-tight">2. – VERBO TO BE + POSSESSIVES</CardTitle></CardHeader>
                             <CardContent className="space-y-4 text-slate-900 dark:text-slate-100 font-bold">
                                 <div className="p-6 bg-white/20 dark:bg-background/20 rounded-2xl border font-mono text-base space-y-2">
-                                    <p><span className="text-green-500 font-black mr-2">(+)</span> Pronoun + to be + possessive + noun + comp.</p>
-                                    <p><span className="text-red-500 font-black mr-2">(-)</span> Pronoun + to be + not + possessive + noun + comp.</p>
-                                    <p><span className="text-blue-500 font-black mr-2">(?)</span> To be + pronoun + possessive + noun + comp.?</p>
+                                    <p><span className="text-green-500 font-black mr-2">(+)</span> Pronoun + to be + possessive + noun + complement.</p>
+                                    <p><span className="text-red-500 font-black mr-2">(-)</span> Pronoun + to be + not + possessive + noun + complement.</p>
+                                    <p><span className="text-blue-500 font-black mr-2">(?)</span> To be + pronoun + possessive + noun + complement?</p>
                                     <p><span className="text-green-500 font-black mr-2">(+A)</span> Yes, Pronoun + To be </p>
                                     <p><span className="text-red-500 font-black mr-2">(-A)</span> No, Pronoun + to be + not</p>
                                 </div>
