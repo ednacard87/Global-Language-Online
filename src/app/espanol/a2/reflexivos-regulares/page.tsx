@@ -157,7 +157,7 @@ const finalExPrompts = [
     { sentence: "17. Él _______ (secarse) las manos.", answer: "se seca" },
     { sentence: "18. Nosotros _______ (estirarse) antes de correr.", answer: "nos estiramos" },
     { sentence: "19. Ellas _______ (ayudarse) con la tarea.", answer: "se ayudan" },
-    { sentence: "20. Usted _______ (afeitarse) cada mañana.", answer: "se afecta" },
+    { sentence: "20. Usted _______ (afeitarse) cada mañana.", answer: "se afeita" },
 ];
 
 const translationVocabHelp = {
