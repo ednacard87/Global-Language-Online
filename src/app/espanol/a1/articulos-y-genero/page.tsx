@@ -218,16 +218,16 @@ const ex1VocabMap = {
 };
 
 const ex2VocabMap = {
-    "lápiz rojo": "red pencil",
-    "silla azul": "blue chair",
-    "mesas verdes": "green tables",
-    "cuadernos amarillos": "yellow notebooks",
-    "puerta blanca": "white door",
-    "borrador pequeño": "small eraser",
-    "tablero negro": "black board",
-    "reglas grises": "gray rulers",
-    "portátil gris": "gray laptop",
-    "reloj blanco": "white watch"
+    "lápiz": "pencil",
+    "silla": "chair",
+    "mesas": " tables",
+    "cuadernos": "notebooks",
+    "puerta": "door",
+    "borrador": "eraser",
+    "tablero": "board",
+    "reglas": "rulers",
+    "portátil": "laptop",
+    "reloj": "watch"
 };
 
 const ex3VocabMap = {
