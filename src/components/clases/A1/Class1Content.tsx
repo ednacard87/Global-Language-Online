@@ -282,7 +282,7 @@ export default function Class1Content() {
                         } else if (curT.subItems.every(sub => sub.status === 'completed')) {
                             if (curT.status !== 'completed') curT.status = 'completed';
                             if (i + 1 < newP.length) {
-                                const nextM = newP[i + 1]; 
+                                const nextM = newP[i + 1];
                                 if (nextM.status === 'locked') {
                                     nextM.status = 'active'; wasUnlocked = true;
                                     if (nextM.subItems?.[0]) nextM.subItems[0].status = 'active';
