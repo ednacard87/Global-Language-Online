@@ -90,6 +90,7 @@ export function WhQuestionsMainExercise3({ onComplete, vocabulary }: { onComplet
                 <CardContent className="p-6 text-center flex flex-col items-center justify-center min-h-[300px]">
                     <Trophy className="h-16 w-16 text-yellow-400 mb-4" />
                     <h2 className="text-3xl font-bold">¡Ejercicio Completado!</h2>
+                    <h2 className="text-3xl font-bold">Congratulations!</h2>
                     <p className="text-muted-foreground mt-2">Has dominado los ejercicios de WH Questions.</p>
                 </CardContent>
             </Card>

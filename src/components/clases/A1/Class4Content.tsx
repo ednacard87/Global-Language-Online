@@ -17,7 +17,8 @@ import {
     Info,
     ArrowLeft,
     BookText,
-    Globe
+    Globe,
+    Trophy
 } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
@@ -149,6 +150,8 @@ export default function Class4Content() {
     const [userAnswers, setUserAnswers] = useState<{[key: string]: string[]}>({});
     const [validationStatus, setValidationStatus] = useState<{[key: string]: ('correct' | 'incorrect' | 'unchecked')[]}>({});
     const [canAdvanceVocab, setCanAdvanceVocab] = useState(false);
+    const [isClassFinished, setIsClassFinished] = useState(false);
+    const [isEjercicio3Complete, setIsEjercicio3Complete] = useState(false);
 
     const initialLearningPath = useMemo((): Topic[] => [
         { key: 'vocabulary', name: 'Vocabulario', icon: BookOpen, status: 'active' },
@@ -294,68 +297,55 @@ export default function Class4Content() {
 
     useEffect(() => {
         if (!topicToComplete) return;
-    
         setLearningPath(currentPath => {
-            let wasUnlocked = false;
-            let nextToSelect: string | null = null;
-            const newPath = currentPath.map(t => ({
-                ...t,
-                subItems: t.subItems ? t.subItems.map(s => ({ ...s })) : undefined,
-            }));
-          
-            let topicFound = false;
-            for (let i = 0; i < newPath.length && !topicFound; i++) {
-                const currentTopic = newPath[i];
-  
-                if (currentTopic.key === topicToComplete) {
-                    if (currentTopic.status !== 'completed') {
-                        currentTopic.status = 'completed';
-                    }
-                    if (i + 1 < newPath.length && newPath[i + 1].status === 'locked') {
-                        const nextMain = newPath[i + 1];
-                        nextMain.status = 'active';
-                        wasUnlocked = true;
-                        nextToSelect = nextMain.subItems?.[0]?.key || nextMain.key;
-                        if (nextMain.subItems?.[0]) nextMain.subItems[0].status = 'active';
-                    }
-                    topicFound = true;
-                } else if (currentTopic.subItems) {
-                    const subIndex = currentTopic.subItems.findIndex((sub: any) => sub.key === topicToComplete);
-                    if (subIndex !== -1) {
-                        if (currentTopic.subItems[subIndex].status !== 'completed') {
-                            currentTopic.subItems[subIndex].status = 'completed';
+            let wasUnlocked = false; let nextToSel: string | null = null;
+            const newP = currentPath.map(t => ({ ...t, subItems: t.subItems ? t.subItems.map(s => ({ ...s })) : undefined }));
+            let found = false;
+            for (let i = 0; i < newP.length && !found; i++) {
+                const curT = newP[i];
+                if (curT.key === topicToComplete) {
+                    if (curT.status !== 'completed') curT.status = 'completed';
+                    
+                    if (i + 1 < newP.length) {
+                        const nextM = newP[i + 1];
+                        if (nextM.status === 'locked') {
+                            nextM.status = 'active'; wasUnlocked = true;
+                            if (nextM.subItems?.[0]) nextM.subItems[0].status = 'active';
                         }
-                        const nextSubIndex = subIndex + 1;
-                        if (nextSubIndex < currentTopic.subItems.length && currentTopic.subItems[nextSubIndex].status === 'locked') {
-                            currentTopic.subItems[nextSubIndex].status = 'active';
-                            nextToSelect = currentTopic.subItems[nextSubIndex].key;
-                            wasUnlocked = true;
-                        } else if (currentTopic.subItems.every((sub: any) => sub.status === 'completed')) {
-                            if (currentTopic.status !== 'completed') {
-                                currentTopic.status = 'completed';
+                        nextToSel = nextM.subItems?.find(s => s.status !== 'completed')?.key || nextM.subItems?.[0]?.key || nextM.key;
+                    }
+                    found = true;
+                } else if (curT.subItems) {
+                    const subIdx = curT.subItems.findIndex((sub: any) => sub.key === topicToComplete);
+                    if (subIdx !== -1) {
+                        if (curT.subItems[subIdx].status !== 'completed') curT.subItems[subIdx].status = 'completed';
+                        
+                        const nextSubIdx = subIdx + 1;
+                        if (nextSubIdx < curT.subItems.length) {
+                            if (curT.subItems[nextSubIdx].status === 'locked') {
+                                curT.subItems[nextSubIdx].status = 'active'; wasUnlocked = true;
                             }
-                            if (i + 1 < newPath.length && newPath[i + 1].status === 'locked') {
-                                const nextMain = newPath[i + 1];
-                                nextMain.status = 'active';
-                                wasUnlocked = true;
-                                nextToSelect = nextMain.subItems?.[0]?.key || nextMain.key;
-                                if (nextMain.subItems?.[0]) nextMain.subItems[0].status = 'active';
+                            nextToSel = curT.subItems[nextSubIdx].key;
+                        } else {
+                            if (curT.subItems.every((sub: any) => sub.status === 'completed')) {
+                                if (curT.status !== 'completed') curT.status = 'completed';
+                            }
+                            if (i + 1 < newP.length) {
+                                const nextM = newP[i + 1];
+                                if (nextM.status === 'locked') {
+                                    nextM.status = 'active'; wasUnlocked = true;
+                                    if (nextM.subItems?.[0]) nextM.subItems[0].status = 'active';
+                                }
+                                nextToSel = nextM.subItems?.find(s => s.status !== 'completed')?.key || nextM.subItems?.[0]?.key || nextM.key;
                             }
                         }
-                        topicFound = true;
+                        found = true;
                     }
                 }
             }
-            
-            if (wasUnlocked) {
-                setTimeout(() => toast({ title: "¡Siguiente tema desbloqueado!" }), 0);
-            }
-            if (nextToSelect) {
-                const finalNext = nextToSelect;
-                setTimeout(() => setSelectedTopic(finalNext), 0);
-            }
-            
-            return newPath;
+            if (wasUnlocked) setTimeout(() => toast({ title: "¡Siguiente tema desbloqueado!" }), 0);
+            if (nextToSel) { const n = nextToSel; setTimeout(() => setSelectedTopic(n), 0); }
+            return newP;
         });
         setTopicToComplete(null);
     }, [topicToComplete, toast, isAdmin]);
@@ -371,11 +361,6 @@ export default function Class4Content() {
         }
         
         setSelectedTopic(topicKey);
-
-        const autoViewTopics = ['grammar', 'wh-questions'];
-        if (autoViewTopics.includes(topicKey)) {
-            handleTopicComplete(topicKey);
-        }
     };
 
     const handleVocabInputChange = (category: string, index: number, value: string) => {
@@ -662,10 +647,37 @@ export default function Class4Content() {
                 return <WhFillInTheBlanksExercise onComplete={() => handleTopicComplete('ejercicio2-wh')} />;
             
             case 'ejercicio3-wh':
-                return <WhQuestionsMainExercise3 
-                            onComplete={() => handleTopicComplete('ejercicio3-wh')} 
+                if (isClassFinished) {
+                    return (
+                        <Card className="shadow-soft rounded-lg border-2 border-green-500 bg-green-500/10 p-12 text-center flex flex-col items-center animate-in fade-in zoom-in duration-500 text-foreground">
+                            <Trophy className="h-24 w-24 text-yellow-400 mb-6 animate-bounce" />
+                            <h2 className="text-4xl font-black uppercase text-green-600 tracking-tighter">Congratulations</h2>
+                            <p className="text-2xl mt-4 font-bold text-black">you finish the Class 4 (A1)</p>
+                            <p className='text-muted-foreground mt-2 text-lg font-medium'>Misión completada al 100%.</p>
+                            <Button asChild size="lg" className="mt-8 px-12 h-12 font-bold" variant="outline">
+                                <Link href="/ingles/a1/unit/1">Back to Unit 1<ArrowRight className="ml-2 h-5 w-5" /></Link>
+                            </Button>
+                        </Card>
+                    );
+                }
+                return (
+                    <div className="space-y-6">
+                        <WhQuestionsMainExercise3 
+                            onComplete={() => setIsEjercicio3Complete(true)} 
                             vocabulary={{ "próximo": "next", "banda": "band", "cantante": "singer", "jefe": "boss", "familiar": "relative", "fin de semana" : "weekend", "cansado" : "tired" , "viajar" : "to travel" , "grande" : "big" , "pequeño" : "small" }}
-                        />;
+                        />
+                        <div className="flex justify-center pt-6">
+                            <Button 
+                                onClick={() => { setIsClassFinished(true); handleTopicComplete('ejercicio3-wh'); }} 
+                                disabled={!isEjercicio3Complete && !isAdmin}
+                                size="lg" 
+                                className="px-24 font-black h-16 text-2xl shadow-xl uppercase bg-primary hover:bg-primary/90 text-white disabled:opacity-50"
+                            >
+                                Finish <CheckCircle className="ml-2 h-6 w-6" />
+                            </Button>
+                        </div>
+                    </div>
+                );
             
             case 'ejercicio-wh':
                 return <WhQuestionsMainExercise 
