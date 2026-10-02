@@ -56,6 +56,16 @@ export default function EngA1DynamicClassPage() {
         return null;
     }
 
+    const getUnitForClass = (cid: string) => {
+        const num = parseInt(cid, 10);
+        if (num >= 1 && num <= 4) return 1;
+        if (num >= 5 && num <= 8) return 2;
+        if (num >= 9 && num <= 12) return 3;
+        if (num >= 13 && num <= 16) return 4;
+        return 1;
+    };
+    const unitId = getUnitForClass(classId);
+
     const renderClassContent = () => {
         switch (classId) {
             case '1': return <Class1Content />;
@@ -92,8 +102,8 @@ export default function EngA1DynamicClassPage() {
             <main className="flex-1 p-4 md:p-8">
                 <div className="max-w-7xl mx-auto">
                     <div className="mb-8 text-left">
-                        <Link href="/ingles/a1/unit/3" className="hover:underline text-sm font-bold text-primary flex items-center gap-2">
-                            <ArrowLeft className="h-4 w-4" /> Volver a la unidad 3
+                        <Link href={`/ingles/a1/unit/${unitId}`} className="hover:underline text-sm font-bold text-primary flex items-center gap-2">
+                            <ArrowLeft className="h-4 w-4" /> Volver a la unidad {unitId}
                         </Link>
                         <h1 className="text-4xl font-bold text-white [text-shadow:1px_1px_2px_rgba(0,0,0,0.5)]">
                             Clase {classId} (A1)

@@ -2,30 +2,30 @@
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, Fragment } from 'react';
 import Link from 'next/link';
-import { 
-    Card, 
-    CardContent, 
-    CardHeader, 
-    CardTitle, 
-    CardFooter, 
-    CardDescription 
+import {
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+    CardFooter,
+    CardDescription
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
-import { 
-    BookOpen, 
-    PenSquare, 
-    Lock, 
-    GraduationCap, 
-    CheckCircle, 
+import {
+    BookOpen,
+    PenSquare,
+    Lock,
+    GraduationCap,
+    CheckCircle,
     CheckCircle2,
-    BrainCircuit, 
-    Loader2, 
-    ArrowRight, 
-    BookText, 
-    Check, 
-    X, 
+    BrainCircuit,
+    Loader2,
+    ArrowRight,
+    BookText,
+    Check,
+    X,
     ChevronDown,
     Gamepad2,
     Trophy,
@@ -100,7 +100,7 @@ const basicWords = [
 ];
 
 const simpleFormVocab = {
-    "beber": "to drink", "agua": "water", "jugar": "to play", "futbol": "soccer/football", 
+    "beber": "to drink", "agua": "water", "jugar": "to play", "futbol": "soccer/football",
     "escuchar": "listen", "música": "music", "hablar": "speak", "abrir": "open", "puerta": "door"
 };
 
@@ -177,7 +177,7 @@ export default function Class2Content({ overrideStudentId }: { overrideStudentId
 
     const currentUID = overrideStudentId || user?.uid;
     const studentDocRef = useMemoFirebase(() => (currentUID ? doc(firestore, 'students', currentUID) : null), [firestore, currentUID]);
-    const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{role?: string, lessonProgress?: any, progress?: any}>(studentDocRef);
+    const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{ role?: string, lessonProgress?: any, progress?: any }>(studentDocRef);
     const isAdmin = useMemo(() => (user && (studentProfile?.role === 'admin' || user.email === 'ednacard87@gmail.com')), [user, studentProfile]);
 
     const [learningPath, setLearningPath] = useState<any[]>([]);
@@ -197,6 +197,7 @@ export default function Class2Content({ overrideStudentId }: { overrideStudentId
     const [readVal, setReadVal] = useState<Record<string, any>>({});
     const [readingAllCorrect, setReadingAllCorrect] = useState(false);
     const [isClassFinished, setIsClassFinished] = useState(false);
+    const [isVocabGameComplete, setIsVocabGameComplete] = useState(false);
 
     const initialLearningPath = useMemo(() => [
         { key: 'vocabulary', name: '1. Vocabulary (Verbs)', icon: BookOpen, status: 'active' },
@@ -225,7 +226,7 @@ export default function Class2Content({ overrideStudentId }: { overrideStudentId
 
     useEffect(() => {
         if (isProfileLoading || isUserLoading || !studentProfile || hasInitialized.current) return;
-        let path = initialLearningPath.map(topic => ({...topic, subItems: topic.subItems ? topic.subItems.map(sub => ({...sub})) : undefined}));
+        let path = initialLearningPath.map(topic => ({ ...topic, subItems: topic.subItems ? topic.subItems.map(sub => ({ ...sub })) : undefined }));
         const d = studentProfile.lessonProgress?.[progressStorageVersion] || {};
         if (isAdmin && !overrideStudentId) path.forEach(item => { item.status = 'completed'; if (item.subItems) item.subItems.forEach(s => s.status = 'completed'); });
         else {
@@ -238,11 +239,11 @@ export default function Class2Content({ overrideStudentId }: { overrideStudentId
         }
 
         let lastMainDone = true;
-        for(let i=0; i < path.length; i++) {
+        for (let i = 0; i < path.length; i++) {
             if (lastMainDone && path[i].status === 'locked') path[i].status = 'active';
             if (path[i].subItems) {
-                let allDone = true; let subStepReady = lastMainDone && path[i].status !== 'locked'; 
-                for(let j=0; j < path[i].subItems!.length; j++) {
+                let allDone = true; let subStepReady = lastMainDone && path[i].status !== 'locked';
+                for (let j = 0; j < path[i].subItems!.length; j++) {
                     if (subStepReady && path[i].subItems![j].status === 'locked') path[i].subItems![j].status = 'active';
                     const isSubCompleted = path[i].subItems![j].status === 'completed';
                     subStepReady = isSubCompleted; if (!isSubCompleted) allDone = false;
@@ -264,7 +265,7 @@ export default function Class2Content({ overrideStudentId }: { overrideStudentId
         if (learningPath.length === 0) return 0;
         let total = 0; let done = 0;
         learningPath.forEach(t => {
-            if(t.subItems) { total += t.subItems.length; done += t.subItems.filter(st => st.status === 'completed').length; }
+            if (t.subItems) { total += t.subItems.length; done += t.subItems.filter(st => st.status === 'completed').length; }
             else { total++; if (t.status === 'completed') done++; }
         });
         return total > 0 ? Math.round((done / total) * 100) : 0;
@@ -272,7 +273,7 @@ export default function Class2Content({ overrideStudentId }: { overrideStudentId
 
     useEffect(() => {
         if (isInitialLoading || isAdmin || !studentDocRef || learningPath.length === 0 || overrideStudentId) return;
-        const data: Record<string, any> = { 
+        const data: Record<string, any> = {
             lastSelectedTopic: selectedTopic,
             verbsAnswers,
             wordsAnswers,
@@ -307,25 +308,38 @@ export default function Class2Content({ overrideStudentId }: { overrideStudentId
                 const curT = newP[i];
                 if (curT.key === topicToComplete) {
                     if (curT.status !== 'completed') curT.status = 'completed';
-                    if (i + 1 < newP.length && newP[i + 1].status === 'locked') {
-                        const nextM = newP[i + 1]; nextM.status = 'active'; wasUnlocked = true;
-                        nextToSel = nextM.subItems?.[0]?.key || nextM.key;
-                        if (nextM.subItems?.[0]) nextM.subItems[0].status = 'active';
+                    
+                    if (i + 1 < newP.length) {
+                        const nextM = newP[i + 1];
+                        if (nextM.status === 'locked') {
+                            nextM.status = 'active'; wasUnlocked = true;
+                            if (nextM.subItems?.[0]) nextM.subItems[0].status = 'active';
+                        }
+                        nextToSel = nextM.subItems?.find(s => s.status !== 'completed')?.key || nextM.subItems?.[0]?.key || nextM.key;
                     }
                     found = true;
                 } else if (curT.subItems) {
                     const subIdx = curT.subItems.findIndex((sub: any) => sub.key === topicToComplete);
                     if (subIdx !== -1) {
                         if (curT.subItems[subIdx].status !== 'completed') curT.subItems[subIdx].status = 'completed';
+                        
                         const nextSubIdx = subIdx + 1;
-                        if (nextSubIdx < curT.subItems.length && curT.subItems[nextSubIdx].status === 'locked') {
-                            curT.subItems[nextSubIdx].status = 'active'; nextToSel = curT.subItems[nextSubIdx].key; wasUnlocked = true;
-                        } else if (curT.subItems.every((sub: any) => sub.status === 'completed')) {
-                            if (curT.status !== 'completed') curT.status = 'completed';
-                            if (i + 1 < newP.length && newP[i + 1].status === 'locked') {
-                                const nextM = newP[i + 1]; nextM.status = 'active'; wasUnlocked = true;
-                                nextToSel = nextM.subItems?.[0]?.key || nextM.key;
-                                if (nextM.subItems?.[0]) nextM.subItems[0].status = 'active';
+                        if (nextSubIdx < curT.subItems.length) {
+                            if (curT.subItems[nextSubIdx].status === 'locked') {
+                                curT.subItems[nextSubIdx].status = 'active'; wasUnlocked = true;
+                            }
+                            nextToSel = curT.subItems[nextSubIdx].key;
+                        } else {
+                            if (curT.subItems.every((sub: any) => sub.status === 'completed')) {
+                                if (curT.status !== 'completed') curT.status = 'completed';
+                            }
+                            if (i + 1 < newP.length) {
+                                const nextM = newP[i + 1];
+                                if (nextM.status === 'locked') {
+                                    nextM.status = 'active'; wasUnlocked = true;
+                                    if (nextM.subItems?.[0]) nextM.subItems[0].status = 'active';
+                                }
+                                nextToSel = nextM.subItems?.find(s => s.status !== 'completed')?.key || nextM.subItems?.[0]?.key || nextM.key;
                             }
                         }
                         found = true;
@@ -344,8 +358,6 @@ export default function Class2Content({ overrideStudentId }: { overrideStudentId
         const subT = mainT?.subItems?.find(st => st.key === topicKey);
         if (!isAdmin && ((subT && subT.status === 'locked') || (!subT && mainT?.status === 'locked'))) { toast({ variant: "destructive", title: "Contenido Bloqueado" }); return; }
         setSelectedTopic(topicKey);
-        const autoView = ['tobe', 'possessives', 'tobe-1', 'tobe-2', 'tobe-3', 'demonstratives', 'grammar'];
-        if (autoView.includes(topicKey)) handleTopicComplete(topicKey);
     };
 
     const handleCheckVocab = () => {
@@ -396,59 +408,59 @@ export default function Class2Content({ overrideStudentId }: { overrideStudentId
                                 </div>
                             </ScrollArea>
                         </CardContent>
-                        <CardFooter className="flex justify-between border-t pt-6 mt-4"><Button onClick={handleCheckVocab} variant="secondary">Check</Button><Button onClick={() => handleTopicComplete('vocabulary')} disabled={!canAdvanceVocab && !isAdmin} className='text-white font-bold'>Next <ArrowRight className="ml-2 h-4 w-4"/></Button></CardFooter>
+                        <CardFooter className="flex justify-between border-t pt-6 mt-4"><Button onClick={handleCheckVocab} variant="secondary">Check</Button><Button onClick={() => handleTopicComplete('vocabulary')} disabled={!canAdvanceVocab && !isAdmin} className='text-white font-bold'>Next <ArrowRight className="ml-2 h-4 w-4" /></Button></CardFooter>
                     </Card>
                 );
             case 'grammar':
                 return (
                     <div className="space-y-6 text-left">
-                    <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-slate-100 dark:bg-slate-800/50">
-                        <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase tracking-tight">Present Simple: “DO - DOES”</CardTitle></CardHeader>
-                        <CardContent className="space-y-8 font-bold text-lg pt-4 text-foreground">
-                            <div className="p-6 bg-white/80 dark:bg-background/20 rounded-2xl border text-black dark:text-white">
-                                <p className="text-1xl font-black text-primary uppercase tracking-tight">1 - USOS PRINCIPALES:</p>
-                                <p className="mt-2 text-foreground"> AUXILIAR = “DO-DOES”  // como VERBO (HACER = TO DO).</p>
-                                <p className="font-mono text-xl font-black text-primary mt-4 uppercase text-center"> I - YOU - WE - THEY = DO // HE - SHE - IT = DOES</p>
-                            </div>
+                        <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-slate-100 dark:bg-slate-800/50">
+                            <CardHeader><CardTitle className="text-2xl font-black text-primary uppercase tracking-tight">Present Simple: “DO - DOES”</CardTitle></CardHeader>
+                            <CardContent className="space-y-8 font-bold text-lg pt-4 text-foreground">
+                                <div className="p-6 bg-white/80 dark:bg-background/20 rounded-2xl border text-black dark:text-white">
+                                    <p className="text-1xl font-black text-primary uppercase tracking-tight">1 - USOS PRINCIPALES:</p>
+                                    <p className="mt-2 text-foreground"> AUXILIAR = “DO-DOES”  // como VERBO (HACER = TO DO).</p>
+                                    <p className="font-mono text-xl font-black text-primary mt-4 uppercase text-center"> I - YOU - WE - THEY = DO // HE - SHE - IT = DOES</p>
+                                </div>
 
-                              <div className="p-6 bg-white/80 dark:bg-background/20 rounded-2xl border text-black dark:text-white space-y-4">
-                                  <p className="text-primary uppercase tracking-widest text-sm">2 - ESTRUCTURA (Fórmulas):</p>
-                                  <div className="space-y-2 p-4 bg-muted rounded-lg font-mono text-base text-foreground">
-                                      <p><span className="text-green-500 font-bold mr-2">(+)</span> pronoun + verb + complement</p>
-                                      <p><span className="text-red-500 font-bold mr-2">(-)</span> pronoun + Aux:Do/Does + Not + verb + complement</p>
-                                      <p><span className="text-blue-500 font-bold mr-2">(?)</span> Aux:Do/Does + pronoun + verb + complement?</p>
-                                      <Separator className='my-4'/>
-                                      <p className="font-sans uppercase text-xs text-muted-foreground mb-1">Short Answers:</p>
-                                      <p><span className="text-green-600 font-bold mr-2">(+A)</span> Yes, pronoun + Aux:Do/Does</p>
-                                      <p><span className="text-red-600 font-bold mr-2">(-A)</span> No, pronoun + Aux:Do/Does + Not</p>
-                                  </div>
-                              </div>
+                                <div className="p-6 bg-white/80 dark:bg-background/20 rounded-2xl border text-black dark:text-white space-y-4">
+                                    <p className="text-primary uppercase tracking-widest text-sm">2 - ESTRUCTURA (Fórmulas):</p>
+                                    <div className="space-y-2 p-4 bg-muted rounded-lg font-mono text-base text-foreground">
+                                        <p><span className="text-green-500 font-bold mr-2">(+)</span> pronoun + verb + complement</p>
+                                        <p><span className="text-red-500 font-bold mr-2">(-)</span> pronoun + Aux:Do/Does + Not + verb + complement</p>
+                                        <p><span className="text-blue-500 font-bold mr-2">(?)</span> Aux:Do/Does + pronoun + verb + complement?</p>
+                                        <Separator className='my-4' />
+                                        <p className="font-sans uppercase text-xs text-muted-foreground mb-1">Short Answers:</p>
+                                        <p><span className="text-green-600 font-bold mr-2">(+A)</span> Yes, pronoun + Aux:Do/Does</p>
+                                        <p><span className="text-red-600 font-bold mr-2">(-A)</span> No, pronoun + Aux:Do/Does + Not</p>
+                                    </div>
+                                </div>
 
-                              <div className="p-6 bg-green-50 dark:bg-green-900/10 rounded-[2rem] border-2 border-dashed border-green-500/20 text-center">
-                                  <div className="flex items-center justify-center gap-2 mb-2">
-                                      <CheckCircle2 className="h-5 w-5 text-green-600" />
-                                      <p className="text-green-600 font-black uppercase tracking-widest">3 - Contracciones Negativas</p>
-                                  </div>
-                                  <div className="flex flex-col gap-2 text-2xl font-black text-slate-900 dark:text-slate-100">
-                                      <p>DO NOT = <span className="text-green-600">DON’T</span></p>
-                                      <p>DOES NOT = <span className="text-green-600">DOESN’T</span></p>
-                                  </div>
-                              </div>
-                          </CardContent>
-                          <CardFooter className="justify-center border-t pt-6">
-                              <Button onClick={() => handleTopicComplete('grammar')} size="lg" className="px-16 font-bold h-14 text-xl text-white">
-                                  Entendido <ArrowRight className="ml-2" />
-                              </Button>
-                          </CardFooter>
-                      </Card>
-                  </div>
+                                <div className="p-6 bg-green-50 dark:bg-green-900/10 rounded-[2rem] border-2 border-dashed border-green-500/20 text-center">
+                                    <div className="flex items-center justify-center gap-2 mb-2">
+                                        <CheckCircle2 className="h-5 w-5 text-green-600" />
+                                        <p className="text-green-600 font-black uppercase tracking-widest">3 - Contracciones Negativas</p>
+                                    </div>
+                                    <div className="flex flex-col gap-2 text-2xl font-black text-slate-900 dark:text-slate-100">
+                                        <p>DO NOT = <span className="text-green-600">DON’T</span></p>
+                                        <p>DOES NOT = <span className="text-green-600">DOESN’T</span></p>
+                                    </div>
+                                </div>
+                            </CardContent>
+                            <CardFooter className="justify-center border-t pt-6">
+                                <Button onClick={() => handleTopicComplete('grammar')} size="lg" className="px-16 font-bold h-14 text-xl text-white">
+                                    Entendido <ArrowRight className="ml-2" />
+                                </Button>
+                            </CardFooter>
+                        </Card>
+                    </div>
                 );
             case 'ex-pos': return <SingleFormExercise key="ex-pos" title="Positive Form" exerciseData={posExercises} onComplete={() => handleTopicComplete('ex-pos')} vocabulary={simpleFormVocab} formType="affirmative" />;
             case 'ex-neg': return <SingleFormExercise key="ex-neg" title="Negative Form" exerciseData={negExercises} onComplete={() => handleTopicComplete('ex-neg')} vocabulary={simpleFormVocab} formType="negative" />;
             case 'ex-int': return <SingleFormExercise key="ex-int" title="Interrogative Form" exerciseData={intExercises} onComplete={() => handleTopicComplete('ex-int')} vocabulary={simpleFormVocab} formType="interrogative" />;
             case 'memory-verbs': return <VerbMemoryGame onComplete={() => handleTopicComplete('memory-verbs')} />;
-            case 'ex1': return <PresentSimpleExercise key="ex1" title="Exercise 1: Multi-Form" exerciseData={ex1Prompts} onComplete={() => handleTopicComplete('ex1')} vocabulary={{"lunes": "monday", "parque": "park", "universidad": "university", "tarde": "afternoon", "carne": "meat", "ensalada": "salad", "cerveza": "beer", "iglesia": "church", "películas": "movies", "viernes": "friday", "domingos": "sundays"}} />;
-            case 'ex2': return <PresentSimpleExercise key="ex2" title="Exercise 2: Multi-Form" exerciseData={ex2Prompts} onComplete={() => handleTopicComplete('ex2')} vocabulary={{"tarea": "homework", "hacer": "to do", "pizza": "pizza", "comer": "to eat" , "la compra" : "the shopping"}} />;
+            case 'ex1': return <PresentSimpleExercise key="ex1" title="Exercise 1: Multi-Form" exerciseData={ex1Prompts} onComplete={() => handleTopicComplete('ex1')} vocabulary={{ "lunes": "monday", "parque": "park", "universidad": "university", "tarde": "afternoon", "carne": "meat", "ensalada": "salad", "cerveza": "beer", "iglesia": "church", "películas": "movies", "viernes": "friday", "domingos": "sundays" }} />;
+            case 'ex2': return <PresentSimpleExercise key="ex2" title="Exercise 2: Multi-Form" exerciseData={ex2Prompts} onComplete={() => handleTopicComplete('ex2')} vocabulary={{ "tarea": "homework", "hacer": "to do", "pizza": "pizza", "comer": "to eat", "la compra": "the shopping" }} />;
             case 'reading':
                 return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 text-foreground text-left">
@@ -476,7 +488,7 @@ export default function Class2Content({ overrideStudentId }: { overrideStudentId
                             <div className="p-6 bg-muted rounded-2xl border italic text-lg leading-relaxed shadow-inner text-foreground">{readingData.content}</div>
                             <Separator /><div className="space-y-4">{readingData.questions.map(q => (
                                 <div key={q.id} className="space-y-2 text-foreground"><Label className='font-bold'>{q.q}</Label>
-                                <Input value={readAns[q.id] || ''} onChange={e => { if (overrideStudentId) return; setReadAns({...readAns, [q.id]: e.target.value}); setReadVal({...readVal, [q.id]: 'unchecked'}); }} className={cn('mt-1 text-lg h-12 text-foreground', readVal[q.id] === 'correct' ? 'border-green-500 bg-green-50/10' : readVal[q.id] === 'incorrect' ? 'border-destructive bg-destructive/10' : '')} autoComplete="off" readOnly={!!overrideStudentId} /></div>
+                                    <Input value={readAns[q.id] || ''} onChange={e => { if (overrideStudentId) return; setReadAns({ ...readAns, [q.id]: e.target.value }); setReadVal({ ...readVal, [q.id]: 'unchecked' }); }} className={cn('mt-1 text-lg h-12 text-foreground', readVal[q.id] === 'correct' ? 'border-green-500 bg-green-50/10' : readVal[q.id] === 'incorrect' ? 'border-destructive bg-destructive/10' : '')} autoComplete="off" readOnly={!!overrideStudentId} /></div>
                             ))}</div>
                         </CardContent>
                         <CardFooter className="flex justify-between border-t pt-6 gap-3">
@@ -511,9 +523,14 @@ export default function Class2Content({ overrideStudentId }: { overrideStudentId
                 const gameData = [...verbVocabulary.slice(0, 10), ...basicWords.slice(0, 5)].map(v => ({ spanish: v.spanish, english: [v.english] }));
                 return (
                     <div className="space-y-6">
-                        <VocabularyMatchingGame data={gameData} onComplete={() => {}} title="Final Vocab Game" />
+                        <VocabularyMatchingGame data={gameData} onComplete={() => setIsVocabGameComplete(true)} title="Final Vocab Game" />
                         <div className="flex justify-center pt-6">
-                            <Button onClick={() => { setIsClassFinished(true); handleTopicComplete('vocab_game'); }} size="lg" className="px-24 font-black h-16 text-2xl shadow-xl uppercase bg-primary hover:bg-primary/90 text-white">
+                            <Button 
+                                onClick={() => { setIsClassFinished(true); handleTopicComplete('vocab_game'); }} 
+                                disabled={!isVocabGameComplete && !isAdmin}
+                                size="lg" 
+                                className="px-24 font-black h-16 text-2xl shadow-xl uppercase bg-primary hover:bg-primary/90 text-white disabled:opacity-50"
+                            >
                                 Finish <CheckCircle className="ml-2 h-6 w-6" />
                             </Button>
                         </div>
