@@ -301,14 +301,13 @@ export default function Class1Content() {
         setTopicToComplete(null);
     }, [topicToComplete, toast]);
 
-    const handleTopicSelect = (topicKey: string) => {
+       const handleTopicSelect = (topicKey: string) => {
         const mainT = learningPath.find(t => t.key === topicKey || t.subItems?.some(st => st.key === topicKey));
         const subT = mainT?.subItems?.find(st => st.key === topicKey);
         if (!isAdmin && ((subT && subT.status === 'locked') || (!subT && mainT?.status === 'locked'))) { toast({ variant: "destructive", title: "Contenido Bloqueado" }); return; }
         setSelectedTopic(topicKey);
-        const autoView = ['tobe', 'possessives', 'tobe-1', 'tobe-2', 'tobe-3', 'demonstratives'];
-        if (autoView.includes(topicKey)) handleTopicComplete(topicKey);
     };
+
 
     const handleVocabInputChange = (category: string, index: number, value: string) => {
         setUserAnswers(prev => ({ ...prev, [category]: prev[category].map((v, i) => i === index ? value : v) }));
