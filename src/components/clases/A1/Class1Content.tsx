@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { cn } from '@/lib/utils';
-import { BookOpen, GraduationCap, CheckCircle, BrainCircuit, PenSquare, Lock, Loader2, ArrowRight, Info, XCircle } from 'lucide-react';
+import { BookOpen, GraduationCap, CheckCircle, BrainCircuit, PenSquare, Lock, Loader2, ArrowRight, Info, XCircle, Trophy } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 import { useToast } from '@/hooks/use-toast';
 import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
@@ -111,16 +111,17 @@ export default function Class1Content() {
     const [learningPath, setLearningPath] = useState<Topic[]>([]);
     const [selectedTopic, setSelectedTopic] = useState<string>('vocabulary');
     const [topicToComplete, setTopicToComplete] = useState<string | null>(null);
-    const [userAnswers, setUserAnswers] = useState<{[key: string]: string[]}>({});
-    const [validationStatus, setValidationStatus] = useState<{[key: string]: ('correct' | 'incorrect' | 'unchecked')[]}>({});
+    const [userAnswers, setUserAnswers] = useState<{ [key: string]: string[] }>({});
+    const [validationStatus, setValidationStatus] = useState<{ [key: string]: ('correct' | 'incorrect' | 'unchecked')[] }>({});
     const [isInitialLoading, setIsInitialLoading] = useState(true);
     const [canAdvanceVocab, setCanAdvanceVocab] = useState(false);
+    const [showFinalCongratulations, setShowFinalCongratulations] = useState(false);
 
     const studentDocRef = useMemoFirebase(
         () => (user ? doc(firestore, 'students', user.uid) : null),
         [firestore, user]
     );
-    const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{role?: string, lessonProgress?: any, progress?: any}>(studentDocRef);
+    const { data: studentProfile, isLoading: isProfileLoading } = useDoc<{ role?: string, lessonProgress?: any, progress?: any }>(studentDocRef);
 
     const isAdmin = useMemo(() => {
         if (!user) return false;
@@ -164,17 +165,17 @@ export default function Class1Content() {
 
         let path = initialLearningPath.map(topic => ({
             ...topic,
-            subItems: topic.subItems ? topic.subItems.map(sub => ({...sub})) : undefined,
+            subItems: topic.subItems ? topic.subItems.map(sub => ({ ...sub })) : undefined,
         }));
 
         let savedSelectedTopic = '';
 
         if (isAdmin) {
-          path.forEach(item => { 
-            item.status = 'completed';
-            if (item.subItems) item.subItems.forEach(sub => sub.status = 'completed');
-           });
-        } else if(studentProfile?.lessonProgress?.[progressStorageKey]) {
+            path.forEach(item => {
+                item.status = 'completed';
+                if (item.subItems) item.subItems.forEach(sub => sub.status = 'completed');
+            });
+        } else if (studentProfile?.lessonProgress?.[progressStorageKey]) {
             const savedData = studentProfile.lessonProgress[progressStorageKey];
             path.forEach(item => {
                 if (savedData[item.key]) item.status = savedData[item.key];
@@ -190,7 +191,7 @@ export default function Class1Content() {
         }
 
         let lastDone = true;
-        for(let i=0; i < path.length; i++) {
+        for (let i = 0; i < path.length; i++) {
             if (lastDone && path[i].status === 'locked') {
                 path[i].status = 'active';
                 if (path[i].subItems) path[i].subItems[0].status = 'active';
@@ -198,7 +199,7 @@ export default function Class1Content() {
             lastDone = path[i].status === 'completed';
             if (path[i].subItems) {
                 let allDone = true; let lastSubDone = true;
-                for(let j=0; j < path[i].subItems.length; j++) {
+                for (let j = 0; j < path[i].subItems.length; j++) {
                     if (lastSubDone && path[i].subItems[j].status === 'locked') path[i].subItems[j].status = 'active';
                     lastSubDone = path[i].subItems[j].status === 'completed';
                     if (!lastSubDone) allDone = false;
@@ -211,8 +212,8 @@ export default function Class1Content() {
         const firstA = path.find(p => p.status === 'active') || path.flatMap(p => p.subItems || []).find(sp => sp?.status === 'active');
         setSelectedTopic(savedSelectedTopic || firstA?.key || 'vocabulary');
 
-        const newAnswers: {[key: string]: string[]} = {};
-        const newValidation: {[key: string]: ('correct' | 'incorrect' | 'unchecked')[]} = {};
+        const newAnswers: { [key: string]: string[] } = {};
+        const newValidation: { [key: string]: ('correct' | 'incorrect' | 'unchecked')[] } = {};
         for (const category in vocabularyData) {
             newAnswers[category] = Array((vocabularyData as any)[category].length).fill('');
             newValidation[category] = Array((vocabularyData as any)[category].length).fill('unchecked');
@@ -226,7 +227,7 @@ export default function Class1Content() {
         if (learningPath.length === 0) return 0;
         let total = 0; let done = 0;
         learningPath.forEach(t => {
-            if(t.subItems) { total += t.subItems.length; done += t.subItems.filter(st => st.status === 'completed').length; }
+            if (t.subItems) { total += t.subItems.length; done += t.subItems.filter(st => st.status === 'completed').length; }
             else { total++; if (t.status === 'completed') done++; }
         });
         return total > 0 ? Math.round((done / total) * 100) : 0;
@@ -259,10 +260,13 @@ export default function Class1Content() {
                 const curT = newP[i];
                 if (curT.key === topicToComplete) {
                     if (curT.status !== 'completed') curT.status = 'completed';
-                    if (i + 1 < newP.length && newP[i + 1].status === 'locked') {
-                        const nextM = newP[i + 1]; nextM.status = 'active'; wasUnlocked = true;
+                    if (i + 1 < newP.length) {
+                        const nextM = newP[i + 1];
+                        if (nextM.status === 'locked') {
+                            nextM.status = 'active'; wasUnlocked = true;
+                            if (nextM.subItems?.[0]) nextM.subItems[0].status = 'active';
+                        }
                         nextToSel = nextM.subItems?.[0]?.key || nextM.key;
-                        if (nextM.subItems?.[0]) nextM.subItems[0].status = 'active';
                     }
                     found = true;
                 } else if (curT.subItems) {
@@ -270,14 +274,20 @@ export default function Class1Content() {
                     if (subIdx !== -1) {
                         if (curT.subItems[subIdx].status !== 'completed') curT.subItems[subIdx].status = 'completed';
                         const nextSubIdx = subIdx + 1;
-                        if (nextSubIdx < curT.subItems.length && curT.subItems[nextSubIdx].status === 'locked') {
-                            curT.subItems[nextSubIdx].status = 'active'; nextToSel = curT.subItems[nextSubIdx].key; wasUnlocked = true;
+                        if (nextSubIdx < curT.subItems.length) {
+                            if (curT.subItems[nextSubIdx].status === 'locked') {
+                                curT.subItems[nextSubIdx].status = 'active'; wasUnlocked = true;
+                            }
+                            nextToSel = curT.subItems[nextSubIdx].key;
                         } else if (curT.subItems.every(sub => sub.status === 'completed')) {
                             if (curT.status !== 'completed') curT.status = 'completed';
-                            if (i + 1 < newP.length && newP[i + 1].status === 'locked') {
-                                const nextM = newP[i + 1]; nextM.status = 'active'; wasUnlocked = true;
+                            if (i + 1 < newP.length) {
+                                const nextM = newP[i + 1]; 
+                                if (nextM.status === 'locked') {
+                                    nextM.status = 'active'; wasUnlocked = true;
+                                    if (nextM.subItems?.[0]) nextM.subItems[0].status = 'active';
+                                }
                                 nextToSel = nextM.subItems?.[0]?.key || nextM.key;
-                                if (nextM.subItems?.[0]) nextM.subItems[0].status = 'active';
                             }
                         }
                         found = true;
@@ -410,7 +420,7 @@ export default function Class1Content() {
                         </Card>
                     </div>
                 );
-            case 'exercises1': return <TranslationExercise exerciseKey="class1_ex1" onComplete={() => handleTopicComplete('exercises1')} vocabulary={{'el profesor': 'the teacher', 'madre': 'mother', 'estudiantes': 'students', 'inteligentes': 'intelligent' , 'oficina' : 'office' , 'profesional' : 'professional'}} highlightVocabulary={true} title="Exercise 1" />;
+            case 'exercises1': return <TranslationExercise exerciseKey="class1_ex1" onComplete={() => handleTopicComplete('exercises1')} vocabulary={{ 'el profesor': 'the teacher', 'madre': 'mother', 'estudiantes': 'students', 'inteligentes': 'intelligent', 'oficina': 'office', 'profesional': 'professional' }} highlightVocabulary={true} title="Exercise 1" />;
             case 'possessives':
                 return (
                     <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 backdrop-blur-sm text-left p-6">
@@ -465,7 +475,7 @@ export default function Class1Content() {
                         </Card>
                     </div>
                 );
-            case 'exercises2': return <TranslationExercise exerciseKey="class1_ex2" onComplete={() => handleTopicComplete('exercises2')} vocabulary={{'hermano': 'brother', 'amigo': 'friend', 'hija': 'daughter', 'bonita': 'pretty' , 'carro' : 'car'}} highlightVocabulary={true} title="Exercise 2" />;
+            case 'exercises2': return <TranslationExercise exerciseKey="class1_ex2" onComplete={() => handleTopicComplete('exercises2')} vocabulary={{ 'hermano': 'brother', 'amigo': 'friend', 'hija': 'daughter', 'bonita': 'pretty', 'carro': 'car' }} highlightVocabulary={true} title="Exercise 2" />;
             case 'tobe-3':
                 return (
                     <div className="space-y-6 text-left">
@@ -495,13 +505,41 @@ export default function Class1Content() {
                         </Card>
                     </div>
                 );
-            case 'exercises3': return <TranslationExercise exerciseKey="class1_ex3" onComplete={() => handleTopicComplete('exercises3')} vocabulary={{'doctora': 'doctor', 'famosa': 'famous', 'abuelo': 'grandfather', 'pensionado': 'retired' , 'gato' : 'cat' , 'independiente' : 'independent', 'sobre' : 'on'}} highlightVocabulary={true} title="Exercise 3" />;
-            case 'ex-mixto-1': return <SimpleTranslationExercise course="a1" exerciseKey="mixed1" onComplete={() => handleTopicComplete('ex-mixto-1')} title="Exercise 1" vocabulary={{'estudiante': 'student', 'amigos': 'friends', 'padres': 'parents', 'hermana': 'sister', 'abogados': 'lawyers', 'Inglaterra': 'England'}} highlightVocabulary={true} />;
-            case 'ex-mixto-2': return <TranslationExercise exerciseKey="qna2" formType="qna" onComplete={() => handleTopicComplete('ex-mixto-2')} title="Exercise 2" vocabulary={{'compañeros de trabajo': 'coworkers','ocupado': 'busy','libre' : 'free','hambriento': 'hungry','cansado': 'tired', 'amiga': 'friend', 'estudiantes': 'students', 'feliz': 'happy', 'curiosos': 'curious', 'novia': 'girlfriend', 'ocupada': 'busy', 'libres': 'free', 'España': 'Spain', 'ingeniero': 'engineer', 'hambriento': 'hungry', 'compañeros': 'coworkers', 'a tiempo': 'on time'}} highlightVocabulary={true} />;
-            case 'ex-mixto-3': return <SimpleTranslationExercise course="a1" exerciseKey="mixed3" onComplete={() => handleTopicComplete('ex-mixto-3')} title="Exercise 3" vocabulary={{'estudiantes': 'students', 'apodos': 'nicknames', 'mamá': 'mom/mother', 'padres': 'parents', 'viejos': 'old', 'prima': 'cousin', 'abuela': 'grandma', 'hermanas': 'sisters', 'cansado': 'tired', 'aburridos': 'bored', 'profesores': 'teachers', 'enojados': 'angry', 'alta': 'tall', 'preocupados': 'worried'}} highlightVocabulary={true} />;
-            case 'ex-mixto-4': return <SimpleTranslationExercise course="a1" exerciseKey="mixed4" onComplete={() => handleTopicComplete('ex-mixto-4')} title="Exercise 4" vocabulary={{'americano' : 'american', 'sobre' : 'on', 'tenis' : 'tennis', 'pelicula' : 'movie', 'romantico' : 'romantic' , 'españa' : 'Spain' , 'casa' : 'house' , 'cual' : 'what' , 'baloncesto': 'basketball', 'profesor': 'teacher', 'ingeniero': 'engineer', 'australiano': 'Australian', 'universidad': 'university', 'mesa': 'table', 'silla': 'chair', 'hobbies': 'hobbies', 'interesado': 'interested', 'estadio': 'stadium', 'primos': 'cousins', 'amiga': 'friend'}} highlightVocabulary={true} />;
+            case 'exercises3': return <TranslationExercise exerciseKey="class1_ex3" onComplete={() => handleTopicComplete('exercises3')} vocabulary={{ 'doctora': 'doctor', 'famosa': 'famous', 'abuelo': 'grandfather', 'pensionado': 'retired', 'gato': 'cat', 'independiente': 'independent', 'sobre': 'on', 'mesa': 'table' }} highlightVocabulary={true} title="Exercise 3" />;
+            case 'ex-mixto-1': return <SimpleTranslationExercise course="a1" exerciseKey="mixed1" onComplete={() => handleTopicComplete('ex-mixto-1')} title="Exercise 1" vocabulary={{ 'estudiante': 'student', 'amigos': 'friends', 'padres': 'parents', 'hermana': 'sister', 'abogados': 'lawyers', 'Inglaterra': 'England' }} highlightVocabulary={true} />;
+            case 'ex-mixto-2': return <TranslationExercise exerciseKey="qna2" formType="qna" onComplete={() => handleTopicComplete('ex-mixto-2')} title="Exercise 2" vocabulary={{ 'compañeros de trabajo': 'coworkers', 'ocupado': 'busy', 'libre': 'free', 'hambriento': 'hungry', 'cansado': 'tired', 'amiga': 'friend', 'estudiantes': 'students', 'feliz': 'happy', 'curiosos': 'curious', 'novia': 'girlfriend', 'ocupada': 'busy', 'libres': 'free', 'España': 'Spain', 'ingeniero': 'engineer', 'hambriento': 'hungry', 'compañeros': 'coworkers', 'a tiempo': 'on time' }} highlightVocabulary={true} />;
+            case 'ex-mixto-3': return <SimpleTranslationExercise course="a1" exerciseKey="mixed3" onComplete={() => handleTopicComplete('ex-mixto-3')} title="Exercise 3" vocabulary={{ 'estudiantes': 'students', 'apodos': 'nicknames', 'mamá': 'mom/mother', 'padres': 'parents', 'viejos': 'old', 'prima': 'cousin', 'abuela': 'grandma', 'hermanas': 'sisters', 'cansado': 'tired', 'aburridos': 'bored', 'profesores': 'teachers', 'enojados': 'angry', 'alta': 'tall', 'preocupados': 'worried' }} highlightVocabulary={true} />;
+            case 'ex-mixto-4': return <SimpleTranslationExercise course="a1" exerciseKey="mixed4" onComplete={() => handleTopicComplete('ex-mixto-4')} title="Exercise 4" vocabulary={{ 'americano': 'american', 'sobre': 'on', 'tenis': 'tennis', 'pelicula': 'movie', 'romantico': 'romantic', 'españa': 'Spain', 'casa': 'home', 'cual': 'what', 'baloncesto': 'basketball', 'profesor': 'teacher', 'ingeniero': 'engineer', 'australiano': 'Australian', 'universidad': 'university', 'mesa': 'table', 'silla': 'chair', 'hobbies': 'hobbies', 'interesado': 'interested', 'estadio': 'stadium', 'primos': 'cousins', 'amiga': 'friend' }} highlightVocabulary={true} />;
             case 'ex-mixto-5': return <ShortAnswerExercise onComplete={() => handleTopicComplete('ex-mixto-5')} />;
-            case 'ex-mixto-6': return <SimpleTranslationExercise course="a1" exerciseKey="mixed6" onComplete={() => handleTopicComplete('ex-mixto-6')} title="Exercise 6" vocabulary={{'hermanos' : 'siblings' ,'profesora': 'teacher', 'trabajo': 'work', 'hijos': 'sons', 'padrastro': 'stepfather', 'primo': 'cousin', 'estante': 'shelf', 'escritorio': 'desk', 'iglesia': 'church', 'supermercado': 'supermarket'}} highlightVocabulary={true} />;
+            case 'ex-mixto-6': {
+                if (showFinalCongratulations) {
+                    return (
+                        <Card className="shadow-xl rounded-2xl border-2 border-green-500 bg-gradient-to-tr from-teal-400 via-indigo-400 to-purple-500 p-8 md:p-12 text-center overflow-hidden">
+                            <CardContent className="space-y-4">
+                                <Trophy className="w-24 h-24 md:w-32 md:h-32 mx-auto text-yellow-400 mb-6" strokeWidth={1.5} />
+                                <h2 className="text-4xl md:text-5xl font-black text-white tracking-widest uppercase">CONGRATULATIONS!</h2>
+                                <p className="text-2xl md:text-3xl font-black text-gray-900">you finish Class 1 (A1)</p>
+                                <p className="text-lg md:text-xl text-white/80 font-medium pb-6">Misión completada al 100%.</p>
+                                <Button size="lg" onClick={() => window.location.href = '/a1'} className="bg-zinc-900 hover:bg-zinc-800 text-white rounded-xl px-8 py-6 text-base md:text-lg font-bold transition-all hover:scale-105">
+                                    Back to Unit 1 <ArrowRight className="ml-2 w-5 h-5" />
+                                </Button>
+                            </CardContent>
+                        </Card>
+                    );
+                }
+                const ex6Topic = learningPath.find(t => t.key === 'mixed')?.subItems?.find(s => s.key === 'ex-mixto-6');
+                const isEx6Completed = ex6Topic?.status === 'completed';
+                return (
+                    <div className="space-y-4">
+                        <SimpleTranslationExercise course="a1" exerciseKey="mixed6" onComplete={() => handleTopicComplete('ex-mixto-6')} title="Exercise 6" vocabulary={{ 'hermanos': 'siblings', 'profesora': 'teacher', 'trabajo': 'work', 'hijos': 'sons', 'padrastro': 'stepfather', 'primo': 'cousin', 'estante': 'shelf', 'escritorio': 'desk', 'iglesia': 'church', 'supermercado': 'supermarket' }} highlightVocabulary={true} />
+                        {isEx6Completed && (
+                            <div className="flex justify-center mt-6">
+                                <Button size="lg" onClick={() => setShowFinalCongratulations(true)} className="px-12 font-bold text-white bg-green-600 hover:bg-green-700 transition-all hover:scale-105">Finalizar</Button>
+                            </div>
+                        )}
+                    </div>
+                );
+            }
             default: return null;
         }
     };

@@ -85,22 +85,22 @@ const exercises = {
             { spanish: 'ESTOS (THESE) NO SON NUESTROS CARROS', english: ["these are not our cars", "these aren't our cars"] }
         ]
     },
-    mixed4: {
+     mixed4: {
         title: 'a1class1.exercise',
         prompts: [
-            { spanish: '¿JACK ES UN PROFESOR? – NO, ÉL ES UN INGENIERO', english: ["is jack a teacher? - no, he is an engineer", "is jack a teacher? - no, he's an engineer"] },
-            { spanish: '¿TU ERES AMERICANO? NO, YO SOY AUSTRALIANO', english: ["are you american? - no, i am australian", "are you american? - no, i'm not australian"] },
-            { spanish: '¿JON Y PAUL ESTÁN EN CASA? NO, ELLOS ESTÁN EN SU UNIVERSIDAD.', english: ["are jon and paul at home? - no, they are at their university", "are jon and paul at home? - no, they're at their university"] },
-            { spanish: '¿EL LIBRO ESTA SOBRE LA MESA? NO, ESTÁ SOBRE LA SILLA.', english: ["is the book on the table? - no, it is on the chair", "is the book on the table? - no, it's on the chair"] },
-            { spanish: '¿TU PADRE ESTÁ EN MADRID? NO, ÉL ESTÁ EN BARCELONA.', english: ["is your father in madrid? - no, he is in barcelona", "is your dad in madrid? - no, he's in barcelona"] },
+            { spanish: '¿JACK ES UN PROFESOR? - NO, ÉL ES UN INGENIERO', english: ["is jack a teacher? - no, he is an engineer", "is jack a teacher? - no, he's an engineer"] },
+            { spanish: '¿TU ERES AMERICANO? - NO, YO SOY AUSTRALIANO', english: ["are you american? - no, i am australian", "are you american? - no, i'm not australian"] },
+            { spanish: '¿JON Y PAUL ESTÁN EN CASA? - NO, ELLOS ESTÁN EN SU UNIVERSIDAD.', english: ["are jon and paul at home? - no, they are at their university", "are jon and paul at home? - no, they're at their university"] },
+            { spanish: '¿EL LIBRO ESTA SOBRE LA MESA? - NO, ESTÁ SOBRE LA SILLA.', english: ["is the book on the table? - no, it is on the chair", "is the book on the table? - no, it's on the chair"] },
+            { spanish: '¿TU PADRE ESTÁ EN MADRID? - NO, ÉL ESTÁ EN BARCELONA.', english: ["is your father in madrid? - no, he is in barcelona", "is your dad in madrid? - no, he's in barcelona"] },
             { spanish: 'MI NOMBRE ES SHARON Y YO SOY DE ALEMANIA.', english: ["my name is sharon and i am from germany", "my name is sharon and i'm from germany"] },
             { spanish: 'MIS HOBBIES SON EL TENNIS Y BALONCESTO.', english: ["my hobbies are tennis and basketball"] },
             { spanish: 'YO NO ESTOY INTERESADO EN LAS PELICULAS ROMANTICAS.', english: ["i am not interested in romantic movies", "i'm not interested in romantic movies"] },
             { spanish: '¿ELLOS ESTÁN EN EL ESTADIO? - SI', english: ["are they at the stadium? - yes, they are"] },
             { spanish: '¿DE DONDE SON TUS PRIMOS? - MIS PRIMOS SON DE BOGOTÁ', english: ["where are your cousins from? - my cousins are from bogota"] },
             { spanish: '¿TU AMIGA ES DE ITALIA? - SI', english: ["is your friend from italy? - yes, she is"] },
-            { spanish: '¿ELLOS SON DE FRANCIA? – NO, ELLOS SON DE ESPAÑA', english: ["are they from france? - no, they are from spain", "are they from france? - no, they're from spain"] },
-            { spanish: '¿CUÁL ES SU NOMBRE? (DE ÉL) – SU NOMBRE ES JOSÉ', english: ["what is his name? - his name is jose", "what's his name? - his name is jose"] }
+            { spanish: '¿ELLOS SON DE FRANCIA? - NO, ELLOS SON DE ESPAÑA', english: ["are they from france? - no, they are from spain", "are they from france? - no, they're from spain"] },
+            { spanish: '¿CUÁL ES SU NOMBRE? (DE ÉL) - SU NOMBRE ES JOSÉ', english: ["what is his name? - his name is jose", "what's his name? - his name is jose"] }
         ]
     },
     mixed6: {
@@ -110,22 +110,22 @@ const exercises = {
             { spanish: '¿ELLOS ESTÁN EN EL TRABAJO? (AT WORK)- NO', english: ["are they at work? - no, they are not", "are they at work? - no, they aren't."] },
             { spanish: '¿ELLOS SON TUS HIJOS? (SONS)- SI', english: ["are they your sons? - yes, they are"] },
             { spanish: '¿ERES DE COLOMBIA? - SI', english: ["are you from colombia? - yes, i am"] },
-            { spanish: '¿ÉL ES TU PAPÁ? –NO, EL ES MI PADRASTRO', english: ["is he your dad? - no, he is my stepfather", "is he your father? - no, he is my stepfather"] },
-            { spanish: '¿TU PRIMO ESTÁ EN CALI? – NO, EL EL ESTÁ EN MIAMI', english: ["is your cousin in cali? - no, he is in miami"] },
-            { spanish: '¿TUS LIBROS ESTAN SOBRE EL ESTANTE? – NO, ESTAN SOBRE EL ESCRITORIO', english: ["are your books on the shelf? - no, they are on the desk" , "are your books on the shelf? - no, the books are on the desk"] },
+            { spanish: '¿ÉL ES TU PAPÁ? - NO, EL ES MI PADRASTRO', english: ["is he your dad? - no, he is my stepfather", "is he your father? - no, he is my stepfather"] },
+            { spanish: '¿TU PRIMO ESTÁ EN CALI? - NO, EL EL ESTÁ EN MIAMI', english: ["is your cousin in cali? - no, he is in miami"] },
+            { spanish: '¿TUS LIBROS ESTAN SOBRE EL ESTANTE? - NO, ESTAN SOBRE EL ESCRITORIO', english: ["are your books on the shelf? - no, they are on the desk" , "are your books on the shelf? - no, the books are on the desk"] },
             { spanish: '¿TU MAMA ESTA EN LA CASA? - NO, ELLA ESTA EN LA IGLESIA', english: [
                 "is your mother at home? - no, she is in the church", 
                 "is your mother at home? - no, she's in the church", 
                 "is your mom at home? - no, she's in the church", 
                 "is your mom at home? - no, she is in the church", 
             ] },
-            { spanish: '¿TUS HERMANOS ESTÁN EN LA UNIVERSIDAD? – NO', english: [
+            { spanish: '¿TUS HERMANOS ESTÁN EN LA UNIVERSIDAD? - NO', english: [
                 "are your siblings at university? - no, they are not", 
                 "are your siblings at university? - no, they aren't", 
                 "are your brothers at university? - no, they are not", 
                 "are your brothers at university? - no, they aren't",
             ] },
-            { spanish: '¿TU HERMANA ESTÁ EN EL PARQUE? – NO, ELLA ESTÁ EN EL SUPERMERCADO', english: ["is your sister at the park? - no, she is in the supermarket." , "is your sister at the park? - no, she's in the supermarket."] },
+            { spanish: '¿TU HERMANA ESTÁ EN EL PARQUE? - NO, ELLA ESTÁ EN EL SUPERMERCADO', english: ["is your sister at the park? - no, she is in the supermarket." , "is your sister at the park? - no, she's in the supermarket."] },
         ]
     },
 
