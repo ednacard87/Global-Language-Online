@@ -174,13 +174,17 @@ export default function KidsIntro1Page() {
             const newPath = currentPath.map(item => ({ ...item }));
             const currentIndex = newPath.findIndex((t) => t.key === topicToComplete);
             
-            if (currentIndex !== -1 && newPath[currentIndex].status !== 'completed') {
-                newPath[currentIndex].status = 'completed';
+            if (currentIndex !== -1) {
+                if (newPath[currentIndex].status !== 'completed') {
+                    newPath[currentIndex].status = 'completed';
+                }
 
-                if (currentIndex + 1 < newPath.length && newPath[currentIndex + 1].status === 'locked') {
-                    (newPath[currentIndex + 1] as any).status = 'active';
+                if (currentIndex + 1 < newPath.length) {
+                    if (newPath[currentIndex + 1].status === 'locked') {
+                        (newPath[currentIndex + 1] as any).status = 'active';
+                        toast({ title: '¡Misión desbloqueada!', description: `Avanzamos a: ${newPath[currentIndex + 1].name}` });
+                    }
                     setSelectedTopicKey(newPath[currentIndex + 1].key);
-                    toast({ title: '¡Misión desbloqueada!', description: `Avanzamos a: ${newPath[currentIndex + 1].name}` });
                 }
             }
             return newPath;
@@ -197,11 +201,6 @@ export default function KidsIntro1Page() {
         }
         
         setSelectedTopicKey(topicKey);
-
-        const viewOnlyTopics = ['abc', 'numbers', 'tobe', 'possessives', 'tobe-1-grammar', 'tobe-2-grammar', 'tobe-3-grammar'];
-        if (viewOnlyTopics.includes(topicKey)) {
-            setTopicToComplete(topicKey);
-        }
     };
 
     const renderContent = () => {
@@ -209,7 +208,7 @@ export default function KidsIntro1Page() {
 
         switch (selectedTopicKey) {
             case 'abc':
-                return <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 text-foreground text-left"><CardHeader><CardTitle>{t('intro1Page.abc')}</CardTitle></CardHeader><CardContent><AlphabetGrid highlightedItem={highlightedLetter} onHighlight={setHighlightedLetter} /></CardContent><CardFooter className="justify-center"><Button onClick={() => setTopicToComplete('abc')} size="lg" className="px-12 font-bold uppercase">He terminado de estudiar</Button></CardFooter></Card>;
+                return <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 text-foreground text-left"><CardHeader><CardTitle>{t('intro1Page.abc')}</CardTitle></CardHeader><CardContent><AlphabetGrid highlightedItem={highlightedLetter} onHighlight={setHighlightedLetter} /></CardContent><CardFooter className="justify-center"><Button onClick={() => setTopicToComplete('abc')} size="lg" className="px-12 font-bold uppercase">Continuar</Button></CardFooter></Card>;
             case 'abcExercise':
                 return <AbcPronunciationExercise onGameComplete={() => setTopicToComplete('abcExercise')} />;
             case 'abc-memory':
@@ -217,7 +216,7 @@ export default function KidsIntro1Page() {
             case 'abcspelling':
                 return <SpellingExercise exerciseKey="femaleNames" onComplete={() => setTopicToComplete('abcspelling')} />;
             case 'numbers':
-                return <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 text-foreground text-left"><CardHeader><CardTitle>{t('intro1Page.numbers')}</CardTitle></CardHeader><CardContent><NumbersGrid highlightedItem={highlightedNumber} onHighlight={setHighlightedNumber} /></CardContent><CardFooter className="justify-center"><Button onClick={() => setTopicToComplete('numbers')} size="lg" className="px-12 font-bold uppercase">He terminado de estudiar</Button></CardFooter></Card>;
+                return <Card className="shadow-soft rounded-lg border-2 border-brand-purple bg-card/95 text-foreground text-left"><CardHeader><CardTitle>{t('intro1Page.numbers')}</CardTitle></CardHeader><CardContent><NumbersGrid highlightedItem={highlightedNumber} onHighlight={setHighlightedNumber} /></CardContent><CardFooter className="justify-center"><Button onClick={() => setTopicToComplete('numbers')} size="lg" className="px-12 font-bold uppercase">Continuar</Button></CardFooter></Card>;
             case 'numbers-memory':
                 return <NumbersMemoryGame onGameComplete={() => setTopicToComplete('numbers-memory')} />;
             case 'numbersspelling':
